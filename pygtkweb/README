@@ -1,0 +1,3 @@
+The wsgi server module is retrived from the last version of CherryPy server:
+http://svn.cherrypy.org/trunk/cherrypy/wsgiserver/__init__.py
+

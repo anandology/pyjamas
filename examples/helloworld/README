@@ -1,0 +1,7 @@
+This is a port of Google's Hello example.
+
+To build, run ./build.sh or:
+
+    ../../builder/build.py Hello
+
+and then open output/Hello.html in a web browser.

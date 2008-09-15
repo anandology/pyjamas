@@ -1,0 +1,12 @@
+addonsgallery/build.sh
+browserdetect/build.sh
+dynamictable/build.sh
+formpanel/build.sh
+gridtest/build.sh
+helloworld/build.sh
+jsonrpc/public/services/EchoService.py
+jsonrpc/build.sh
+kitchensink/build.sh
+libtest/build.sh
+mail/build.sh
+onclicktest/build.sh
