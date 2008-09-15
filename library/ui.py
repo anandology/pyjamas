@@ -608,9 +608,9 @@ class Panel(Widget):
 
     # TODO: fix iterator remove()
     def clear(self):
-        for child in list(self):
+        while len(self.children) > 0:
+            self.remove(self.children[0])
             # should be iterator.remove() ==> self.remove(self.children[0]) or self.remove(child) ???
-            self.remote(child)
 
     def disown(self, widget):
         if widget.getParent() != self:
