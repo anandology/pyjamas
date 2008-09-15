@@ -21,6 +21,11 @@ window["provider$user.agent"] = function() {
     var spaceIdx = ua.indexOf(' ', geckoIdx);
     if (spaceIdx == -1) 
       spaceIdx = ua.length;
+    var result = /rv:([0-9]+)\.([0-9]+)/.exec(ua);
+    if ((! result || result.length != 3) ||
+        ((parseInt(result[1])<1) ||
+           ((parseInt(result[1])==1) && (parseInt(result[2])<=7))))
+       return 'oldmoz';
     var version = parseInt(ua.substring(geckoIdx + 6, spaceIdx));
     if (version < 20051107) 
       return 'oldmoz';
