@@ -25,8 +25,8 @@ def eventGetButton(evt):
 
 def getAbsoluteLeft(elem):
     JS("""
-    var left = 0;
-    var parent = elem;
+    var left = $doc.getBoxObjectFor(elem).x;
+    var parent = elem.parentNode;
 
     while (parent) {
         if (parent.scrollLeft > 0) {
@@ -34,18 +34,14 @@ def getAbsoluteLeft(elem):
         }
         parent = parent.parentNode;
     }
-    while (elem) {
-        left = left + elem.offsetLeft;
-        elem = elem.offsetParent;
-    }
 
     return left + $doc.body.scrollLeft + $doc.documentElement.scrollLeft;
     """)
 
 def getAbsoluteTop(elem):
     JS("""
-    var top = 0;
-    var parent = elem;
+    var top = $doc.getBoxObjectFor(elem).y;
+    var parent = elem.parentNode;
     while (parent) {
         if (parent.scrollTop > 0) {
             top -= parent.scrollTop;
@@ -53,10 +49,6 @@ def getAbsoluteTop(elem):
         parent = parent.parentNode;
     }
 
-    while (elem) {
-        top += elem.offsetTop;
-        elem = elem.offsetParent;
-    }
     return top + $doc.body.scrollTop + $doc.documentElement.scrollTop;
     """)
 
