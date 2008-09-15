@@ -1,5 +1,5 @@
-from Pyjamas.ui import Button, RootPanel, HTML, DockPanel, HasAlignment, Hyperlink, VerticalPanel
-from Pyjamas import Window
+from pyjamas.ui import Button, RootPanel, HTML, DockPanel, HasAlignment, Hyperlink, VerticalPanel
+from pyjamas import Window
 from SinkList import SinkList
 from History import History
 import Info

@@ -2597,7 +2597,7 @@ class ListBox(FocusWidget):
     
     def selectValue(self, value):
         for n in range(self.getItemCount()):
-            if self.getValue(n) == value:
+            if self.getItemText(n) == value:
                 self.setSelectedIndex(n)
                 return n
         return None
