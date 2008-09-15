@@ -1,11 +1,4 @@
-def getCookie(key):
-    JS("""
-    var cookies = Cookies_loadCookies();
-    var value = cookies[key];
-    return (value == null) ? null : value;
-    """)
-
-def getCookie2(cookie_name):
+def getCookie(cookie_name):
 	JS("""
 	var results = document.cookie.match ( '(^|;) ?' + cookie_name + '=([^;]*)(;|$)' );
 
