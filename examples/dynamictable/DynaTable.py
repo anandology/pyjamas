@@ -1,7 +1,7 @@
-from Pyjamas.ui import RootPanel
+from pyjamas.ui import RootPanel
 from DayFilterWidget import DayFilterWidget
 from SchoolCalendarWidget import SchoolCalendarWidget
-from Pyjamas import Window
+from pyjamas import Window
 
 class DynaTable:
 
