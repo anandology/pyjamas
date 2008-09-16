@@ -1,9 +1,23 @@
-pyjamas
+Pyjamas
+-------
 
-pyjamas is an attempt to port the Google Web Toolkit to Python and thus enable
+Pyjamas is a port of Google Web Toolkit to Python, and thus enables
 the development of AJAX applications in Python.
 
 For more information, see:
 
     http://pyjs.org
 
+Pyjamas-Desktop
+---------------
+
+A parallel project is Pyjamas-Desktop: a port of Pyjamas to the
+desktop, using WebKit (http://webkit.org).
+
+Both projects support exactly the same set of widgets; exactly the
+same API; provide exactly the same functionality.
+
+Pyjamas runs your application in a Web Browser; Pyjamas-Desktop runs
+exactly the same python application on the Desktop.
+
+    http://pyjd.org
