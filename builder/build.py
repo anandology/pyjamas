@@ -147,11 +147,11 @@ def build(app_name, output="output", js_includes=()):
     
     print >>home_nocache_html_output, home_nocache_html_template % dict(
         app_name = app_basename,
-        safari_js = "Safari",
-        ie6_js = "IE6",
-        oldmoz_js = "OldMoz",
-        moz_js = "Mozilla",
-        opera_js = "Opera",
+        safari_js = "%s.Safari" % app_basename,
+        ie6_js = "%s.IE6" % app_basename,
+        oldmoz_js = "%s.OldMoz" % app_basename,
+        moz_js = "%s.Mozilla" % app_basename,
+        opera_js = "%s.Opera" % app_basename,
     )
     
     home_nocache_html_output.close()
@@ -165,7 +165,7 @@ def build(app_name, output="output", js_includes=()):
     app_body = '\n'.join(['<script type="text/javascript" src="%s"></script>'%script for script in js_includes])
 
     for platform in app_platforms:
-        all_cache_name = platform + ".cache.html"
+        all_cache_name = "%s.%s.cache.html" % (app_basename, platform)
         print "Creating: " + all_cache_name
 
         parser.setPlatform(platform)
