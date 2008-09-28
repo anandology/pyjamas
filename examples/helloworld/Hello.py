@@ -7,5 +7,5 @@ def greet(sender):
 
 class Hello:
     def onModuleLoad(self):
-        b = ui.Button("Click me", greet)
-        ui.RootPanel().add(b)
+        b = pyjamas.ui.Button("Click me", greet)
+        pyjamas.ui.RootPanel().add(b)

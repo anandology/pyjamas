@@ -92,7 +92,7 @@ class Translator:
                 elif importName.endswith('.js'):
                    self.imported_js.add(importName)
                 else:
-                   self.imported_modules.add(importName)
+                   self.imported_modules.add(strip_py(importName))
             elif isinstance(child, ast.From):
                 if child.modname == '__pyjamas__': # special module to help make pyjamas modules loadable in the python interpreter
                     pass
@@ -362,7 +362,10 @@ class Translator:
         if isinstance(v.expr, ast.Getattr):
             call_name = self._getattr2(v.expr, current_klass, v.attrname + "." + attr_name)
         elif isinstance(v.expr, ast.Name) and v.expr.name in self.imported_modules:
-            call_name = '__'+v.expr.name + '_' +v.attrname+".prototype.__class__."+attr_name
+            if v.expr.name == 'pyjamas':
+                call_name = v.attrname + "_" + attr_name
+            else:
+                call_name = '__'+v.expr.name + '_' +v.attrname+".prototype.__class__."+attr_name
         else:
             obj = self.expr(v.expr, current_klass)
             call_name = obj + "." + v.attrname + "." + attr_name
