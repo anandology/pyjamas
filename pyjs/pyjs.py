@@ -303,7 +303,9 @@ class Translator:
     def _getattr(self, v):
         attr_name = v.attrname
         if isinstance(v.expr, ast.Name):
-            obj = self._name(v.expr)
+            obj = self._name(v.expr, return_none_for_module=True)
+            if obj == None and v.expr.name in self.imported_modules:
+                return "__"+v.expr.name+'_'+attr_name+'.prototype.__class__'
             return obj + "." + attr_name
         elif isinstance(v.expr, ast.Getattr):
             return self._getattr(v.expr) + "." + attr_name
@@ -315,7 +317,7 @@ class Translator:
             raise TranslationError("unsupported type (in _getattr)", v.expr)
     
     
-    def _name(self, v):
+    def _name(self, v, return_none_for_module=False):
         if v.name == "True":
             return "true"
         elif v.name == "False":
@@ -330,6 +332,8 @@ class Translator:
             return "__" + self.imported_classes[v.name] + '_' + v.name + ".prototype.__class__"
         elif v.name in self.top_level_classes:
             return "__" + strip_py(self.module_prefix) + v.name + ".prototype.__class__"
+        elif v.name in self.imported_modules and return_none_for_module:
+            return None
         else:
             return v.name
 
@@ -357,6 +361,8 @@ class Translator:
     def _getattr2(self, v, current_klass, attr_name):
         if isinstance(v.expr, ast.Getattr):
             call_name = self._getattr2(v.expr, current_klass, v.attrname + "." + attr_name)
+        elif isinstance(v.expr, ast.Name) and v.expr.name in self.imported_modules:
+            call_name = '__'+v.expr.name + '_' +v.attrname+".prototype.__class__."+attr_name
         else:
             obj = self.expr(v.expr, current_klass)
             call_name = obj + "." + v.attrname + "." + attr_name
