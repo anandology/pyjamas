@@ -6,4 +6,4 @@ gendocs:
 # you need to make this your own username,pyjamasgroupname unfortunately.
 # sf being stupid.
 upload:
-	rsync -HPavz * lkcl,pyjamas@web.sf.net:/home/groups/p/py/pyjamas/htdocs/
+	rsync -rlvz * lkcl,pyjamas@web.sf.net:/home/groups/p/py/pyjamas/htdocs/
