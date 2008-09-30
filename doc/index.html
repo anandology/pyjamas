@@ -1,0 +1,144 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="content-type">
+  <title>pyjamas</title>
+</head>
+<body>
+<div
+ style="padding: 10px; background-color: rgb(102, 0, 153); font-family: Helvetica,Arial,sans-serif;">
+<big style="font-weight: bold; color: white;"><big><big><big>pyjamas</big></big></big></big><br>
+<small><br>
+</small><big><span style="color: white;">build
+AJAX apps in Python (like Google did for Java)</span></big>
+</div>
+<br>
+<br>
+<br>
+<big><span style="font-style: italic;">Welcome to
+the temporary </span><span
+ style="color: rgb(102, 0, 153); font-weight: bold; font-style: italic;">pyjamas</span><span
+ style="font-style: italic;"> web site. &nbsp;This
+site
+borrows
+heavily from James Tauber's original site, which is no longer
+available. &nbsp;A much more comprehensive site will be written
+shortly; in the meantime, please refer to the old content, below, to
+see what&nbsp;</span><span
+ style="color: rgb(102, 0, 153); font-weight: bold; font-style: italic;">pyjamas</span><span
+ style="font-style: italic;"> is all about.</span></big><br>
+<br>
+<h2><foont
+ style="font-weight: bold; font-family: Helvetica,Arial,sans-serif;">About
+<span style="color: rgb(102, 0, 153);">pyjamas</span></foont></h2>
+Many people, when first finding out about <a
+ href="http://code.google.com/webtoolkit/">Google Web
+Toolkit</a>,
+wonder "why can't I use Python instead of Java?". &nbsp;<big><span
+ style="font-style: italic;"></span><span
+ style="color: rgb(102, 0, 153); font-weight: bold;">pyjamas</span>
+</big> is
+designed to make that possible. &nbsp;And we're drawing heavily
+from Google's work.<br>
+<br>
+<h2 style="font-family: Helvetica,Arial,sans-serif;">Overview</h2>
+Like GWT,&nbsp;<big><span
+ style="color: rgb(102, 0, 153); font-weight: bold;">pyjamas</span></big>
+involves the translation of the application and libraries (including UI
+widgets and DOM classes) to Javascript and the packaging up of that
+Javascript code.<br>
+<table style="text-align: left; width: 100%;" border="0" cellpadding="0"
+ cellspacing="0">
+  <tbody>
+    <tr>
+      <td>There are two core developer tools included with&nbsp;<big><span
+ style="color: rgb(102, 0, 153); font-weight: bold;">pyjamas</span></big>.
+&nbsp;<span style="font-weight: bold;">pyjs</span><img
+ style="width: 22px; height: 22px;" alt="[1]" src="images/num1.png">
+translates Python code to Javascript by walking the Python abstract
+syntax tree and generating Javascript.<br>
+      <br>
+In many cases, built-in Python types require a custom Javascript
+implementation. &nbsp;For example, even though Python lists are similar
+to
+Javascript arrays, Python lists are converted to custom objects that
+implement methods like append. &nbsp;These custom objects required for
+translation <span style="font-weight: bold;">by pyjs</span> are
+defined in a library called <span style="font-weight: bold;">pyjslib</span>.<img
+ style="width: 22px; height: 22px;" alt="[2]" src="images/num2.png"><br>
+      <br>
+Like GWT,&nbsp;<big><span
+ style="color: rgb(102, 0, 153); font-weight: bold;">pyjamas</span></big>
+comes with a set of UI widgets as well as a library for DOM
+manipulation.<img style="width: 23px; height: 22px;" alt="[3]"
+ src="images/num3.png"> &nbsp;These libraries are written in Python but
+are, like everything else, translated to Javascript for deployment.<br>
+      <br>
+The overall translation of individual components is managed by build<img
+ style="width: 22px; height: 22px;" alt="[4]" src="images/num4.png">
+which also creates the necessary boilerplate code. &nbsp;The result is
+a set of <span style="font-family: monospace;">.html</span> and <span
+ style="font-family: monospace;">.js</span> files that can be served up
+by a Web server.<br>
+      <br>
+There are other components planned which have not been covered here
+such as server-side code for communication in client-server
+applications.</td>
+      <td><img style="width: 348px; height: 315px;" alt="[overview]"
+ src="images/overview.png"></td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<h2 style="font-family: Helvetica,Arial,sans-serif;">Building User Interfaces with Pyjamas</h2>
+The
+<span style="font-family: monospace; font-weight:bold">ui</span> module
+contains all of the main classes you need to create your user interface.  At
+first, this module can be a quite confusing because of the number of classes
+defined and the lack of good documentation strings.  To become familiar with
+the user interface side of Pyjamas, you might like to refer to the <a
+href="showcase/Showcase.html">Pyjamas User Interface Showcase</a>.  Also, you
+might find the <a href="uiHierarchy.html">ui module class hierarchy</a> useful.
+
+<h2 style="font-family: Helvetica,Arial,sans-serif;">Useful
+Links</h2>
+<ul>
+  <li style="padding-bottom: 8px;">The
+    <a href="http://code.google.com/p/pyjamas">Google
+Code page</a> has a wiki with
+several pages you may find useful,
+as well as the issue tracker we're using to log all the known bugs.
+&nbsp;You can also browse the source code in the subversion
+repository, and download&nbsp;<big><span
+ style="color: rgb(102, 0, 153); font-weight: bold;">pyjamas</span>
+    </big>version 1.0.</li>
+  <li style="padding-bottom: 8px;">The
+    <a href="http://groups.google.com/group/pyjamas-dev">Google
+Group</a> is the main mailing list
+for people using or developing
+    <big><span style="color: rgb(102, 0, 153); font-weight: bold;">pyjamas</span>.</big></li>
+  <li style="padding-bottom: 8px;"><a href="http://pyjd.org">Pyjamas-Desktop</a>
+is a tool for running&nbsp;<big><span
+ style="color: rgb(102, 0, 153); font-weight: bold;">pyjamas</span></big>
+applications
+on the desktop. &nbsp;</li>
+  <li style="padding-bottom: 8px;">The <a
+ href="http://sourceforge.net/projects/pyjamas">Sourceforge
+project page</a> will no doubt also
+be useful
+to some folks.</li>
+  <li>The <a href="http://code.google.com/webtoolkit/documentation">GWT
+documentation pages</a>
+are actually quite useful. &nbsp;<big><span
+ style="color: rgb(102, 0, 153); font-weight: bold;">pyjamas</span></big>
+has reimplemented much of
+GWT in Python, so you can use the GWT
+documentation to learn how to build user interfaces in&nbsp;<big><span
+ style="color: rgb(102, 0, 153); font-weight: bold;">pyjamas</span><span
+ style="font-style: italic;"></span></big>.</li>
+</ul>
+<big><span
+ style="color: rgb(102, 0, 153); font-weight: bold; font-style: italic;"></span></big>
+</body>
+</html>
