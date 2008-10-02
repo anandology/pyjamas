@@ -5,7 +5,7 @@
  http-equiv="content-type">
   <title>pyjamas</title>
 </head>
-<body>
+<body style="padding:20px; margin:20px;">
 <div
  style="padding: 10px; background-color: rgb(102, 0, 153); font-family: Helvetica,Arial,sans-serif;">
 <big style="font-weight: bold; color: white;"><big><big><big>pyjamas</big></big></big></big><br>
@@ -25,9 +25,8 @@ Toolkit</a>,
 wonder "why can't I use Python instead of Java?". <big><span
  style="font-style: italic;"></span><span
  style="color: rgb(102, 0, 153); font-weight: bold;">pyjamas</span>
-</big> is
-designed to make that possible. &nbsp;And we're drawing heavily
-from Google's work.<br>
+</big>
+is designed to make that possible. 
 <br>
 <h2 style="font-family: Helvetica,Arial,sans-serif;">Overview</h2>
 Like GWT,&nbsp;<big><span
@@ -50,9 +49,10 @@ In many cases, built-in Python types require a custom Javascript
 implementation. &nbsp;For example, even though Python lists are similar
 to
 Javascript arrays, Python lists are converted to custom objects that
-implement methods like append. &nbsp;These custom objects required for
-translation <span style="font-weight: bold;">by pyjs</span> are
-defined in a library called <span style="font-weight: bold;">pyjslib</span>.<img
+implement methods such as <i>append</i>. &nbsp;These custom objects,
+required for translation <span style="font-weight: bold;">by pyjs</span>,
+are defined in a library called
+<span style="font-weight: bold;">pyjslib</span>.<img
  style="width: 22px; height: 22px;" alt="[2]" src="img/num2.png"><br>
       <br>
 Like GWT,&nbsp;<big><span
@@ -71,7 +71,10 @@ by a Web server.<br>
       <br>
 There are other components planned which have not been covered here
 such as server-side code for communication in client-server
-applications.</td>
+applications.  The examples do however contain JSONRPC server-side
+source code (in cgi python, and php) which give an idea of what's
+involved.
+</td>
       <td><img style="width: 348px; height: 315px;" alt="[overview]"
  src="img/overview.png"></td>
     </tr>
@@ -83,7 +86,7 @@ The
 <span style="font-family: monospace; font-weight:bold">ui</span> module
 contains all of the main classes you need to create your user interface.  At
 first, this module can be a quite confusing because of the number of classes
-defined and the lack of good documentation strings.  To become familiar with
+defined.  To become familiar with
 the user interface side of Pyjamas, you might like to refer to the <a
 href="showcase/Showcase.html">Pyjamas User Interface Showcase</a>.  You
 might find the <a href="uiHierarchy.html">ui module class hierarchy</a> useful.
@@ -93,6 +96,13 @@ on <a href="http://pyjd.org">pyjd.org</a>, along with a
 <a href="http://pyjd.org/controls_tutorial.html">tutorial</a> on how to
 create your own interactive widget.
 
+<h2 style="font-family: Helvetica,Arial,sans-serif;">Download</h2>
+Pyjamas can be downloaded from sourceforge,
+<a href="https://sourceforge.net/project/showfiles.php?group_id=239074">here</a>.
+The current release is 0.3.  Latest source code in development
+is available from sourceforge subversion,
+<a href="http://sourceforge.net/svn/?group_id=239074">here</a>.
+
 <h2 style="font-family: Helvetica,Arial,sans-serif;">Useful
 Links</h2>
 <ul>
@@ -101,10 +111,9 @@ Links</h2>
 Code page</a> has a wiki with
 several pages you may find useful,
 as well as the issue tracker we're using to log all the known bugs.
-&nbsp;You can also browse the source code in the subversion
-repository, and download&nbsp;<big><span
- style="color: rgb(102, 0, 153); font-weight: bold;">pyjamas</span>
-    </big>version 1.0.</li>
+&nbsp;Please ignore the subversion
+repository, it is now out-of-date: we have moved to 
+<a href="http://pyjamas.sf.net">sourceforge</a>
   <li style="padding-bottom: 8px;">The
     <a href="http://groups.google.com/group/pyjamas-dev">Google
 Group</a> is the main mailing list
