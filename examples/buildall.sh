@@ -8,3 +8,4 @@
 (cd mail; ./build.sh)
 (cd onclicktest; ./build.sh)
 (cd addonsgallery; ./build.sh)
+(cd controls; ./build.sh)
