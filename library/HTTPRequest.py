@@ -47,6 +47,7 @@ class HTTPRequest:
         }
         catch (e) {
             delete xmlHttp.onreadystatechange;
+            var localHandler = handler;
             handler = null;
             xmlHttp = null;
             localHandler.onError(String(e));
@@ -80,6 +81,7 @@ class HTTPRequest:
         }
         catch (e) {
             delete xmlHttp.onreadystatechange;
+            var localHandler = handler;
             handler = null;
             xmlHttp = null;
             localHandler.onError(String(e));
