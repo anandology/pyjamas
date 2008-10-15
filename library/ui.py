@@ -2774,14 +2774,18 @@ class TabBar(Composite):
             #throw new IndexOutOfBoundsException();
             pass
 
-        if asHTML:
-            item = HTML(text)
+        if pyjslib.isString(text):
+            if asHTML:
+                item = HTML(text)
+            else:
+                item = Label(text)
+            item.setStyleName("gwt-TabBarItem")
+            item.setWordWrap(False)
         else:
-            item = Label(text)
+            # passing in a widget, it's expected to have its own style
+            item = text
 
-        item.setWordWrap(False)
         item.addClickListener(self)
-        item.setStyleName("gwt-TabBarItem")
         self.panel.insert(item, beforeIndex + 1)
 
     def onClick(self, sender):
