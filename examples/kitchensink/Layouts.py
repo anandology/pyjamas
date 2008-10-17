@@ -1,7 +1,7 @@
 from Sink import Sink, SinkInfo
-from ui import Button, CheckBox, VerticalPanel, HorizontalPanel, HTML, DockPanel, HasAlignment, FlowPanel, HTMLPanel, MenuBar, MenuItem, ScrollPanel
+from pyjamas.ui import Button, CheckBox, VerticalPanel, HorizontalPanel, HTML, DockPanel, HasAlignment, FlowPanel, HTMLPanel, MenuBar, MenuItem, ScrollPanel
 from Logger import Logger
-import DOM
+from pyjamas import DOM
 
 class Layouts(Sink):
     def __init__(self):

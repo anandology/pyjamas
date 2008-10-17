@@ -1,5 +1,5 @@
 from Sink import Sink, SinkInfo
-from ui import Button, CheckBox, VerticalPanel, HorizontalPanel, RadioButton
+from pyjamas.ui import Button, CheckBox, VerticalPanel, HorizontalPanel, RadioButton
 
 class Buttons(Sink):
     def __init__(self):

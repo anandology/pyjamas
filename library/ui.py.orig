@@ -148,26 +148,6 @@ class MouseListener:
                 for listener in listeners:
                     listener.onMouseLeave(sender)
 
-def find_idx(find_in, target, start=0):
-	JS("""
-		return find_in.indexOf(target, start);
-	""")
-
-def get_right(target, idx):
-	JS("""
-		return target.slice(idx);
-	""")
-
-def get_left(target, idx):
-	JS("""
-		return target.slice(0, idx);
-	""")
-
-def get_char(target, idx):
-	JS("""
-		return target[idx];
-	""")
-
 
 class UIObject:
 
@@ -239,35 +219,30 @@ class UIObject:
             return
         
         oldStyle = DOM.getAttribute(element, "className")
-        if oldStyle:
-            idx = find_idx(oldStyle, style)
-        else:
+        if oldStyle == None:
             oldStyle = ""
-            idx = -1;
+        idx = oldStyle.find(style)
 
         # Calculate matching index
         lastPos = len(oldStyle)
         while idx != -1:
-            if idx == 0 or (get_char(oldStyle, idx - 1) == " "):
+            if idx == 0 or (oldStyle[idx - 1] == " "):
                 last = idx + len(style)
-                if (last == lastPos) or ((last < lastPos) and (get_char(oldStyle, last) == " ")):
+                if (last == lastPos) or ((last < lastPos) and (oldStyle[last] == " ")):
                     break
-            idx = find_idx(oldStyle, style, idx + 1)
+            idx = oldStyle.find(style, idx + 1)
 
         if add:
             if idx == -1:
                 DOM.setAttribute(element, "className", oldStyle + " " + style)
         else:
             if idx != -1:
-                begin = get_left(oldStyle, idx)
-                end = get_right(oldStyle, idx + len(style))
+                begin = oldStyle[:idx]
+                end = oldStyle[idx + len(style):]
                 DOM.setAttribute(element, "className", begin + end)
 
     def setTitle(self, title):
         DOM.setAttribute(self.element, "title", title)
-
-    def setzIndex(self, index):
-        DOM.setIntStyleAttribute(self.element, "zIndex", index)
 
     def setWidth(self, width):
         """Set the width of the element associated with this UIObject.  The
@@ -281,6 +256,9 @@ class UIObject:
         are a combination of values from class L{Event}."""
         if self.element:
             DOM.sinkEvents(self.getElement(), eventBitsToAdd | DOM.getEventsSunk(self.getElement()))
+
+    def setzIndex(self, index):
+        DOM.setIntStyleAttribute(self.element, "zIndex", index)
 
     def isVisible(self, element=None):
         """Determine whether this element is currently visible, by checking the CSS
@@ -630,9 +608,9 @@ class Panel(Widget):
 
     # TODO: fix iterator remove()
     def clear(self):
-        for child in list(self):
+        while len(self.children) > 0:
+            self.remove(self.children[0])
             # should be iterator.remove() ==> self.remove(self.children[0]) or self.remove(child) ???
-            self.remote(child)
 
     def disown(self, widget):
         if widget.getParent() != self:
@@ -2619,7 +2597,8 @@ class ListBox(FocusWidget):
     
     def selectValue(self, value):
         for n in range(self.getItemCount()):
-            if self.getValue(n) == value:
+            # http://code.google.com/p/pyjamas/issues/detail?id=63
+            if self.getItemText(n) == value:
                 self.setSelectedIndex(n)
                 return n
         return None
@@ -2795,14 +2774,18 @@ class TabBar(Composite):
             #throw new IndexOutOfBoundsException();
             pass
 
-        if asHTML:
-            item = HTML(text)
+        if pyjslib.isString(text):
+            if asHTML:
+                item = HTML(text)
+            else:
+                item = Label(text)
+            item.setStyleName("gwt-TabBarItem")
+            item.setWordWrap(False)
         else:
-            item = Label(text)
+            # passing in a widget, it's expected to have its own style
+            item = text
 
-        item.setWordWrap(False)
         item.addClickListener(self)
-        item.setStyleName("gwt-TabBarItem")
         self.panel.insert(item, beforeIndex + 1)
 
     def onClick(self, sender):

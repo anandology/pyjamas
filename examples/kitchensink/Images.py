@@ -1,5 +1,5 @@
 from Sink import Sink, SinkInfo
-from ui import DockPanel, Image, VerticalPanel, HasAlignment, HTML
+from pyjamas.ui import DockPanel, Image, VerticalPanel, HasAlignment, HTML
 
 class Images(Sink):
     def __init__(self):

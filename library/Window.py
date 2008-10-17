@@ -21,9 +21,10 @@ def confirm(msg):
     """)
 
 def enableScrolling(enable):
-    JS("""
-    $doc.body.style.overflow = enable ? 'auto' : 'hidden';
-    """)
+   JS("""
+   $doc.body.style.overflow = enable ? 'auto' : 'hidden';
+   """)
+
 
 def getClientHeight():
     JS("""

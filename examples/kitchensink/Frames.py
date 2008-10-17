@@ -1,5 +1,5 @@
 from Sink import Sink, SinkInfo
-from ui import Frame
+from pyjamas.ui import Frame
 
 class Frames(Sink):
     def __init__(self):

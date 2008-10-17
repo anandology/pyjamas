@@ -1,6 +1,6 @@
 from Sink import Sink, SinkInfo
-from ui import Button, VerticalPanel, PopupPanel, ListBox, HTML, DockPanel, DialogBox, Frame, HasAlignment
-import DOM
+from pyjamas.ui import Button, VerticalPanel, PopupPanel, ListBox, HTML, DockPanel, DialogBox, Frame, HasAlignment
+from pyjamas import DOM
 
 class Popups(Sink):
     def __init__(self):

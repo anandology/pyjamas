@@ -1,7 +1,7 @@
-from ui import Button, RootPanel
-from ui import Label, Grid, CellFormatter, RowFormatter
-from ui import HTMLTable, CheckBox
-import Window
+from pyjamas.ui import Button, RootPanel
+from pyjamas.ui import Label, Grid, CellFormatter, RowFormatter
+from pyjamas.ui import HTMLTable, CheckBox
+from pyjamas import Window
 
 
 class GridTest:

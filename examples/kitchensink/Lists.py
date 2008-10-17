@@ -1,5 +1,5 @@
 from Sink import Sink, SinkInfo
-from ui import ListBox, HorizontalPanel, VerticalPanel, HasAlignment, Label, Widget
+from pyjamas.ui import ListBox, HorizontalPanel, VerticalPanel, HasAlignment, Label, Widget
 
 class Lists(Sink):
     def __init__(self):

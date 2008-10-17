@@ -1,4 +1,4 @@
-from ui import Grid
+from pyjamas.ui import Grid
 
 class Logger(Grid):
     instances = []

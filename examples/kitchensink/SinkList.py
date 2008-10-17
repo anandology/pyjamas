@@ -1,8 +1,10 @@
-from ui import Composite, VerticalPanel, Hyperlink
+from pyjamas.ui import Composite, VerticalPanel, Hyperlink
 from Logger import Logger
 
 class SinkList(Composite):
     def __init__(self):
+        Composite.__init__(self)
+
         self.vp_list=VerticalPanel()
         self.sinks=[]
         self.selectedSink=-1

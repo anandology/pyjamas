@@ -1,5 +1,5 @@
 from Sink import Sink, SinkInfo
-from ui import Grid, FlexTable, HasHorizontalAlignment, Image
+from pyjamas.ui import Grid, FlexTable, HasHorizontalAlignment, Image
 
 class Tables(Sink):
     def __init__(self):
@@ -32,3 +32,4 @@ class Tables(Sink):
 def init():
     text="The <code>FlexTable</code> widget doubles as a tabular data formatter and a panel.  In this example, you'll see that there is an outer table with four cells, two of which contain nested components."
     return SinkInfo("Tables", text, Tables)
+

@@ -1,8 +1,11 @@
 from Sink import Sink, SinkInfo
-from ui import HTML
+from pyjamas.ui import HTML
 
 class Info(Sink):
     def __init__(self):
+
+        Sink.__init__(self)
+
         text="<div class='infoProse'>This is the Kitchen Sink sample.  "
         text+="It demonstrates many of the widgets in the Google Web Toolkit."
         text+="<p>This sample also demonstrates something else really useful in GWT: "

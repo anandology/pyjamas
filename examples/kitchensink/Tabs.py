@@ -1,5 +1,5 @@
 from Sink import Sink, SinkInfo
-from ui import TabPanel, HasAlignment, Image, VerticalPanel
+from pyjamas.ui import TabPanel, HasAlignment, Image, VerticalPanel
 
 class Tabs(Sink):
     def __init__(self):

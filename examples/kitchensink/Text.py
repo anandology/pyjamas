@@ -1,5 +1,5 @@
 from Sink import Sink, SinkInfo
-from ui import Button, HorizontalPanel, HTML, PasswordTextBox, TextArea, TextBox, TextBoxBase, VerticalPanel, Widget
+from pyjamas.ui import Button, HorizontalPanel, HTML, PasswordTextBox, TextArea, TextBox, TextBoxBase, VerticalPanel, Widget
 
 class Text(Sink):
     def __init__(self):

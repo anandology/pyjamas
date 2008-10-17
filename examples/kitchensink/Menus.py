@@ -1,6 +1,6 @@
 from Sink import Sink, SinkInfo
-from ui import MenuBar, MenuItem
-import Window
+from pyjamas.ui import MenuBar, MenuItem
+from pyjamas import Window
 
 class Menus(Sink):
     def __init__(self):

@@ -317,19 +317,27 @@ class Widget(UIObject):
     def onLoad(self):
         pass
 
+    def doDetachChildren(self):
+        pass
+
+    def doAttachChildren(self):
+        pass
+
     def onAttach(self):
         """Called when this widget has an element, and that element is on the document's
         DOM tree, and we have a parent widget."""
-        if self.attached:
+        if self.isAttached():
             return
         self.attached = True
         DOM.setEventListener(self.getElement(), self)
+        self.doAttachChildren()
         self.onLoad()
         
     def onDetach(self):
         """Called when this widget is being removed from the DOM tree of the document."""
-        if not self.attached:
+        if not self.isAttached():
             return
+        self.doDetachChildren()
         self.attached = False
         DOM.setEventListener(self.getElement(), None)
 
@@ -339,9 +347,11 @@ class Widget(UIObject):
     def setParent(self, parent):
         """Update the parent attribute.  If the parent is currently attached to the DOM this
         assumes we are being attached also and calls onAttach()."""
+        oldparent = self.parent
         self.parent = parent
         if parent == None:
-            self.onDetach()
+            if oldparent != None and oldparent.attached:
+                self.onDetach()
         elif parent.attached:
             self.onAttach()
 
@@ -523,7 +533,7 @@ class CheckBox(ButtonBase):
         DOM.setBooleanAttribute(self.inputElem, "defaultChecked", checked)
 
     def isChecked(self):
-        if self.attached:
+        if self.isAttached():
             propName = "checked"
         else:
             propName = "defaultChecked"
@@ -586,17 +596,27 @@ class Composite(Widget):
         self.widget = widget
         widget.setParent(self)
 
+    def isAttached(self):
+        if self.widget:
+            return widget.isAttached()
+        return False
+
     def onAttach(self):
-        Widget.onAttach(self)
+        #print "Composite.onAttach", self
         self.widget.onAttach()
+        DOM.setEventListener(self.getElement(), self);
+
+        self.onLoad()
         
     def onDetach(self):
-        Widget.onDetach(self)
         self.widget.onDetach()
         
     def setWidget(self, widget):
         self.initWidget(widget)
 
+    def onBrowserEvent(self, event):
+        #print "Composite onBrowserEvent", self, event
+        self.widget.onBrowserEvent(event)
 
 class Panel(Widget):
     def __init__(self):
@@ -623,21 +643,19 @@ class Panel(Widget):
                 DOM.removeChild(parentElement, element)
 
     def adopt(self, widget, container):
-        widget.removeFromParent()
         if container:
+            widget.removeFromParent()
             DOM.appendChild(container, widget.getElement())
         widget.setParent(self)
 
     def remove(self, widget):
         pass
 
-    def onAttach(self):
-        Widget.onAttach(self)
+    def doAttachChildren(self):
         for child in self:
             child.onAttach()
 
-    def onDetach(self):
-        Widget.onDetach(self)
+    def doDetachChildren(self):
         for child in self:
             child.onDetach()
 
@@ -1219,14 +1237,18 @@ class ComplexPanel(Panel):
         if widget.getParent() == self:
             return
 
-        self.adopt(widget, container)
+        widget.removeFromParent()
         self.children.insert(beforeIndex, widget)
+        DOM.insertChild(container, widget.getElement(), beforeIndex)
+        self.adopt(widget, container)
 
     def remove(self, widget):
         if widget not in self.children:
             return False
 
         self.disown(widget)
+        #elem = self.getElement()
+        #DOM.removeChild(DOM.getParent(elem), elem)
         self.children.remove(widget)
         return True
 
@@ -1304,6 +1326,7 @@ class Label(Widget):
 
     def onBrowserEvent(self, event):
         type = DOM.eventGetType(event)
+        #print "Label onBrowserEvent", type, self.clickListeners
         if type == "click":
             for listener in self.clickListeners:
                 if listener.onClick: listener.onClick(self, event)
@@ -2042,18 +2065,21 @@ class SimplePanel(Panel):
 
     def remove(self, widget):
         if self.getWidget() == widget:
-            self.disown(widget)
-            del self.children[0]
-            return True
-        return False
+            return False
+        self.disown(widget)
+        self.getContainerElement().removeChild(widget.getElement())
+        del self.children[0]
+        return True
 
     def getContainerElement(self):
         return self.getElement()
 
     def setWidget(self, widget):
+        if self.getWidget() == widget:
+            return
+
         if self.getWidget() != None:
-            self.disown(self.getWidget())
-            del self.children[0]
+            self.remove(self.getWidget())
         
         if widget != None:
             self.adopt(widget, self.getContainerElement())
@@ -2162,6 +2188,7 @@ class PopupPanel(SimplePanel):
         target = DOM.eventGetTarget(event)
         event_targets_popup = target and DOM.isOrHasChild(self.getElement(), target)
         type = DOM.eventGetType(event)
+        #print "onEventPreview popup", type, event_targets_popup
         if type == "keydown":
             return self.onKeyDownPreview(DOM.eventGetKeyCode(event), KeyboardListener.getKeyboardModifiers(self, event)) and event_targets_popup
         elif type == "keyup":
@@ -2691,6 +2718,14 @@ class DialogBox(PopupPanel):
     def setText(self, text):
         self.caption.setText(text)
 
+    def doAttachChildren(self):
+        PopupPanel.doAttachChildren(self)
+        self.caption.onAttach()
+
+    def doDetachChildren(self):
+        PopupPanel.doDetachChildren(self)
+        self.caption.onDetach()
+
     def setWidget(self, widget):
         if self.child != None:
             self.panel.remove(self.child)
@@ -2716,7 +2751,53 @@ class Frame(Widget):
         return DOM.setAttribute(self.getElement(), "src", url)
 
 
+class ClickDelegatePanel(Composite):
+
+    def __init__(self, p, child, cDelegate, kDelegate) :
+
+        Composite.__init__(self)
+
+        self.clickDelegate = cDelegate
+        self.keyDelegate = kDelegate
+
+        self.focusablePanel = SimplePanel(Focus().createFocusable())
+        self.focusablePanel.setWidget(child)
+        wrapperWidget = p.createTabTextWrapper()
+        if wrapperWidget == None:
+            self.initWidget(self.focusablePanel)
+        else :
+            wrapperWidget.setWidget(self.focusablePanel)
+            self.initWidget(wrapperWidget)
+
+        # bug in click handling - Labels steal clicks!
+        child.addClickListener(self)
+        if hasattr(child, "addKeyboardListener"):
+            child.addKeyboardListener(kDelegate)
+
+        self.sinkEvents(Event.ONCLICK | Event.ONKEYDOWN)
+
+    # receive Label's onClick and pass it through, pretending it came from us
+    def onClick(self, sender, event):
+        self.clickDelegate.onClick(self, event)
+
+    def getFocusablePanel(self):
+        return self.focusablePanel
+
+    def onBrowserEvent(self, event) :
+        type = DOM.eventGetType(event)
+        if type == "click":
+            self.onClick(self, event)
+
+        elif type == "keydown":
+            modifiers = KeyboardListener().getKeyboardModifiers(event)
+            self.keyDelegate.onKeyDown(sender, DOM.eventGetKeyCode(event),
+                                       modifiers)
+
+
 class TabBar(Composite):
+
+    STYLENAME_DEFAULT = "gwt-TabBarItem"
+
     def __init__(self):
         Composite.__init__(self)
         self.panel = HorizontalPanel()
@@ -2759,13 +2840,23 @@ class TabBar(Composite):
     def getTabHTML(self, index):
         if index >= self.getTabCount():
             return None
-        widget = self.panel.getWidget(index + 1)
-        if widget.getHTML:
+        delPanel = self.panel.getWidget(index + 1)
+        focusablePanel = delPanel.getFocusablePanel()
+        widget = focusablePanel.getWidget()
+        if hasattr(widget, "getHTML"):
             return widget.getHTML()
-        else:
+        elif hasattr(widget, "getText"): # assume it's a Label if it has getText
             return widget.getText()
+        else:
+            fpe = DOM.getParent(self.focusablePanel.getElement())
+            return DOM.getInnerHTML(fpe)
+
+    def createTabTextWrapper(self):
+        return None
 
     def insertTab(self, text, asHTML, beforeIndex=None):
+        """ 1st arg can, instead of being 'text', be a widget
+        """
         if beforeIndex == None:
             beforeIndex = asHTML
             asHTML = False
@@ -2779,20 +2870,32 @@ class TabBar(Composite):
                 item = HTML(text)
             else:
                 item = Label(text)
-            item.setStyleName("gwt-TabBarItem")
             item.setWordWrap(False)
         else:
             # passing in a widget, it's expected to have its own style
             item = text
 
-        item.addClickListener(self)
-        self.panel.insert(item, beforeIndex + 1)
+        self.insertTabWidget(item, beforeIndex)
+
+    def insertTabWidget(self, widget, beforeIndex):
+
+        delWidget = ClickDelegatePanel(self, widget, self, self)
+        delWidget.setStyleName(self.STYLENAME_DEFAULT)
+
+        focusablePanel = delWidget.getFocusablePanel()
+        self.panel.insert(delWidget, beforeIndex + 1)
+
+        self.setStyleName(DOM.getParent(delWidget.getElement()),
+                          self.STYLENAME_DEFAULT + "-wrapper", True)
+
+        #print "insertTabWidget", DOM.getParent(delWidget.getElement()), DOM.getAttribute(DOM.getParent(delWidget.getElement()), "className")
+
 
     def onClick(self, sender):
         for i in range(1, self.panel.getWidgetCount() - 1):
             if self.panel.getWidget(i) == sender:
-                self.selectTab(i - 1)
-                return
+                return self.selectTab(i - 1)
+        return False
 
     def removeTab(self, index):
         self.checkTabIndex(index)
@@ -2834,16 +2937,24 @@ class TabBar(Composite):
         if item != None:
             if selected:
                 item.addStyleName("gwt-TabBarItem-selected")
+                self.setStyleName(DOM.getParent(item.getElement()),
+                                "gwt-TabBarItem-wrapper-selected", True)
+
             else:
                 item.removeStyleName("gwt-TabBarItem-selected")
+                self.setStyleName(DOM.getParent(item.getElement()),
+                                "gwt-TabBarItem-wrapper-selected", False)
 
 
 class TabPanel(Composite):
-    def __init__(self):
+    def __init__(self, tabBar=None):
         Composite.__init__(self)
         self.tab_children = [] # TODO: can self.children be used instead?
         self.deck = DeckPanel()
-        self.tabBar = TabBar()
+        if tabBar == None:
+            self.tabBar = TabBar()
+        else:
+            self.tabBar = tabBar
         self.tabListeners = []
 
         panel = VerticalPanel()
@@ -3137,7 +3248,7 @@ class TextBoxBase(FocusWidget):
         type = DOM.eventGetType(event)
         #if DOM.eventGetTypeInt(event) & Event.KEYEVENTS:
             #self.currentEvent = event
-            #KeyboardListener.fireKeyboardEvent(self, self.keyboardListeners, self, event)
+            #KeyboardListener.fireKeyboardEvent(self.keyboardListeners, self, event)
             #self.currentEvent = None
         #elif type == "click":
             #for listener in self.clickListeners:
@@ -3566,7 +3677,8 @@ class Tree(Widget):
         DOM.appendChild(self.getElement(), self.focusable)
 
         self.sinkEvents(Event.MOUSEEVENTS | Event.ONCLICK | Event.KEYEVENTS)
-        DOM.sinkEvents(self.focusable, Event.FOCUSEVENTS | Event.KEYEVENTS | DOM.getEventsSunk(self.focusable))
+        #DOM.sinkEvents(self.focusable, Event.FOCUSEVENTS | Event.KEYEVENTS | DOM.getEventsSunk(self.focusable))
+        DOM.sinkEvents(self.focusable, Event.FOCUSEVENTS)
 
         self.root = RootTreeItem()
         self.root.setTree(self)
@@ -3654,7 +3766,7 @@ class Tree(Widget):
 
             keycode = DOM.eventGetKeyCode(event)
             if keycode == KeyboardListener.KEY_UP:
-                self.moveSelectionUp(self.curSelection)
+                self.moveSelectionUp(self.curSelection, True)
                 DOM.eventPreventDefault(event)
             elif keycode == KeyboardListener.KEY_DOWN:
                 self.moveSelectionDown(self.curSelection, True)
@@ -3842,17 +3954,15 @@ class Tree(Widget):
                 for listener in self.listeners:
                     listener.onTreeItemSelected(item)
 
-    def onAttach(self):
-        Widget.onAttach(self)
-
+    def doAttachChildren(self):
         for child in self:
             child.onAttach()
+        DOM.setEventListener(self.focusable, self);
 
-    def onDetach(self):
-        Widget.onDetach(self)
-
+    def doDetachChildren(self):
         for child in self:
             child.onDetach()
+        DOM.setEventListener(self.focusable, None);
 
     def onLoad(self):
         self.root.updateStateRecursive()

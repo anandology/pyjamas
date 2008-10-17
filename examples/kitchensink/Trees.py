@@ -1,5 +1,5 @@
 from Sink import Sink, SinkInfo
-from ui import Tree, TreeItem
+from pyjamas.ui import Tree, TreeItem
 
 class Trees(Sink):
     def __init__(self):

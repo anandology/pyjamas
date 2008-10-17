@@ -1,7 +1,7 @@
 from pyjamas.ui import Button, RootPanel, HTML, DockPanel, HasAlignment, Hyperlink, VerticalPanel
 from pyjamas import Window
 from SinkList import SinkList
-from History import History
+from pyjamas.History import History
 import Info
 import Buttons
 import Layouts
@@ -64,10 +64,10 @@ class KitchenSink:
         if info == self.curInfo: return
         self.curInfo = info
 
-        Logger.write("showing " + info.getName())
+        #Logger.write("showing " + info.getName())
         if self.curSink <> None:
             self.curSink.onHide()
-            Logger.write("removing " + self.curSink)
+            #Logger.write("removing " + self.curSink)
             self.sinkContainer.remove(self.curSink)
 
         self.curSink = info.getInstance()
