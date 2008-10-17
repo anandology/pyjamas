@@ -133,6 +133,16 @@ def build(app_name, output="output", js_includes=()):
     ## Images
     
     print "Copying: Images and History"
+    copy_boilerplate("corner_dialog_topleft_black.png", output)
+    copy_boilerplate("corner_dialog_topright_black.png", output)
+    copy_boilerplate("corner_dialog_bottomright_black.png", output)
+    copy_boilerplate("corner_dialog_bottomleft_black.png", output)
+    copy_boilerplate("corner_dialog_edge_black.png", output)
+    copy_boilerplate("corner_dialog_topleft.png", output)
+    copy_boilerplate("corner_dialog_topright.png", output)
+    copy_boilerplate("corner_dialog_bottomright.png", output)
+    copy_boilerplate("corner_dialog_bottomleft.png", output)
+    copy_boilerplate("corner_dialog_edge.png", output)
     copy_boilerplate("tree_closed.gif", output)
     copy_boilerplate("tree_open.gif", output)
     copy_boilerplate("tree_white.gif", output)
