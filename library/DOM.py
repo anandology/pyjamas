@@ -22,7 +22,7 @@ def init():
     // Set up capture event dispatchers.
     $wnd.__dispatchCapturedMouseEvent = function(evt) {
         if ($wnd.__dispatchCapturedEvent(evt)) {
-            var cap = $wnd.__captureElem;
+            var cap = DOM_getCaptureElement();
             if (cap && cap.__listener) {
                 DOM_dispatchEvent(evt, cap, cap.__listener);
                 evt.stopPropagation();
@@ -43,12 +43,12 @@ def init():
     $wnd.addEventListener(
         'mouseout',
         function(evt){
-            var cap = $wnd.__captureElem;
+            var cap = DOM_getCaptureElement();
             if (cap) {
                 if (!evt.relatedTarget) {
                     // When the mouse leaves the window during capture, release capture
                     // and synthesize an 'onlosecapture' event.
-                    $wnd.__captureElem = null;
+                    DOM_sCaptureElem = null;
                     if (cap.__listener) {
                         var lcEvent = $doc.createEvent('UIEvent');
                         lcEvent.initUIEvent('losecapture', false, false, $wnd, 0);
@@ -74,6 +74,13 @@ def init():
     
         var listener, curElem = this;
         
+        var cap = DOM_getCaptureElement();
+        if (cap && cap.__listener) {
+            DOM_dispatchEvent(evt, cap, cap.__listener);
+            evt.stopPropagation();
+            return;
+        }
+
         while (curElem && !(listener = curElem.__listener)) {
             curElem = curElem.parentNode;
         }
@@ -85,8 +92,6 @@ def init():
             DOM_dispatchEvent(evt, curElem, listener);
         }
     };
-    
-    $wnd.__captureElem = null;
     """)
 
 init()
@@ -601,9 +606,6 @@ def releaseCapture(elem):
     JS("""
     if ((DOM_sCaptureElem != null) && DOM_compare(elem, DOM_sCaptureElem))
         DOM_sCaptureElem = null;
-
-    if (elem == $wnd.__captureElem)
-        $wnd.__captureElem = null;
     """)
 
 def removeChild(parent, child):
@@ -677,7 +679,6 @@ def setBooleanAttribute(elem, attr, value):
 def setCapture(elem):
     JS("""
     DOM_sCaptureElem = elem;
-    $wnd.__captureElem = elem;
     """)
 
 def setEventListener(element, listener):
