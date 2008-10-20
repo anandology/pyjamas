@@ -684,7 +684,7 @@ class CellFormatter:
         return self.outer.isVisible(element)
 
     def removeStyleName(self, row, column, styleName):
-        self.checkCellBounds(row, column)
+        self.outer.checkCellBounds(row, column)
         self.outer.setStyleName(self.getElement(row, column), styleName, False)
 
     def setAlignment(self, row, column, hAlign, vAlign):
