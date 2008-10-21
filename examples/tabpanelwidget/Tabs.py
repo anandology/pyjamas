@@ -4,6 +4,7 @@ from pyjamas.ui import HorizontalPanel, HTML, Composite
 from pyjamas.ui import MouseListener, Event
 from pyjamas import Window
 from pyjamas.decoratorpanel import DecoratedTabPanel, DecoratorPanel
+from pyjamas.decoratorpanel import DecoratorTitledPanel
 
 #class PrettyTab(DecoratorPanel):
 class PrettyTab(Composite):
@@ -48,7 +49,8 @@ class Tabs:
         self.fTabs.setWidth("100%")
         self.fTabs.setHeight("100%")
 
-        dp = DecoratorPanel()
+        dp = DecoratorTitledPanel("Tabs", "bluetitle", "bluetitleicon",
+                      ["bluetop", "bluetop2", "bluemiddle", "bluebottom"])
         dp.add(self.fTabs)
         RootPanel().add(dp)
 

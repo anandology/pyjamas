@@ -420,3 +420,142 @@ a:visited {
 {
     color: black;
 }
+
+/*
+ * Decorated Titled Panels
+ */
+
+.gwt-DecoratorPanel .bluetop /* {  } */
+{
+}
+.gwt-DecoratorPanel .bluetitleicon {
+    background: url(images/blue_arrow.png) no-repeat;
+    width: 12px;
+    height: 12px;
+    float: left;
+}
+
+.gwt-DecoratorPanel .bluetitle {
+    color: white;
+    font-size: 13px;
+    font-weight: bold;
+    margin-top: -3px;
+    float: left;
+}
+
+
+.gwt-DecoratorPanel .bluetopLeft /* { the top left cell } */
+{
+}
+.gwt-DecoratorPanel .bluetopLeftInner /* { the inner element of the cell } */
+{
+    width: 6px;
+    height: 5px;
+    background-image: url('images/blue_arrow_top_left.png');
+}
+.gwt-DecoratorPanel .bluetopCenter /* /* { the top center cell } */
+{
+    height: 5px;
+    background-image: url('images/blue_arrow_top_middle.png');
+    background-repeat: repeat-x;
+}
+.gwt-DecoratorPanel .bluetopCenterInner 
+{
+}
+.gwt-DecoratorPanel .bluetopRight /* { the top right cell } */
+{
+}
+.gwt-DecoratorPanel .bluetopRightInner /* { the inner element of the cell } */
+{
+    width: 6px;
+    height: 5px;
+    background-image: url('images/blue_arrow_top_right.png');
+}
+.gwt-DecoratorPanel .bluetop2Left /* { the top left cell } */
+{
+}
+.gwt-DecoratorPanel .bluetop2LeftInner /* { the inner element of the cell } */
+{
+    width: 6px;
+    height: 17px;
+    background-image: url('images/blue_arrow_top2_left.png');
+    background-repeat: repeat-x;
+}
+.gwt-DecoratorPanel .bluetop2Center /* /* { the top center cell } */
+{
+    height: 17px;
+    background-image: url('images/blue_arrow_top2_middle.png');
+    background-repeat: repeat-x;
+}
+.gwt-DecoratorPanel .bluetop2CenterInner 
+{
+}
+.gwt-DecoratorPanel .bluetop2Right /* { the top right cell } */
+{
+}
+.gwt-DecoratorPanel .bluetop2RightInner /* { the inner element of the cell } */
+{
+    width: 6px;
+    height: 17px;
+    background-image: url('images/blue_arrow_top2_right.png');
+    background-repeat: repeat-x;
+}
+.gwt-DecoratorPanel .bluemiddle /* { the middle row } */
+{
+}
+.gwt-DecoratorPanel .bluemiddleLeft /* { the middle left cell } */
+{
+    width: 6px;
+    background-image: url('images/panel_middle_left.png');
+    background-repeat: repeat-y;
+}
+.gwt-DecoratorPanel .bluemiddleLeftInner /* { the inner element of the cell } */
+{
+}
+.gwt-DecoratorPanel .bluemiddleCenter /* { the middle center cell } */
+{
+    padding: 10px;
+}
+.gwt-DecoratorPanel .bluemiddleCenterInner /* { the inner element of the cell } */
+{
+}
+.gwt-DecoratorPanel .bluemiddleRight /* { the middle right cell } */
+{
+    width: 6px;
+    background-image: url('images/panel_middle_right.png');
+    background-repeat: repeat-y;
+}
+.gwt-DecoratorPanel .bluemiddleRightInner /* { the inner element of the cell } */
+{
+}
+.gwt-DecoratorPanel .bluebottom /* { the bottom row } */
+{
+}
+.gwt-DecoratorPanel .bluebottomLeft /* { the bottom left cell } */
+{
+    height: 7px;
+    width: 6px;
+    background-image: url('images/panel_bottom_left.png');
+}
+.gwt-DecoratorPanel .bluebottomLeftInner /* { the inner element of the cell } */
+{
+}
+.gwt-DecoratorPanel .bluebottomCenter /* { the bottom center cell } */
+{
+    height: 7px;
+    background-image: url('images/panel_bottom_middle.png');
+    background-repeat: repeat-x;
+}
+.gwt-DecoratorPanel .bluebottomCenterInner /* { the inner element of the cell } */
+{
+}
+.gwt-DecoratorPanel .bluebottomRight /* { the bottom right cell } */
+{
+    height: 7px;
+    width: 6px;
+    background-image: url('images/panel_bottom_right.png');
+}
+.gwt-DecoratorPanel .bluebottomRightInner /* { the inner element of the cell } */
+{
+}
+

@@ -156,3 +156,27 @@ class DecoratedTabPanel(TabPanel):
 
     def createTabTextWrapper(self):
         return DecoratorPanel(DecoratedTabBar.TAB_ROW_STYLES, 1)
+
+class DecoratorTitledPanel(DecoratorPanel):
+
+    def __init__(self, title, titleStyle=None, imgStyle=None,
+                             rowStyles=None,
+                             containerIndex=2, titleIndex=1) :
+        if rowStyles == None:
+            rowStyles = [ "top", "top2", "middle", "bottom" ]
+
+        if titleStyle == None:
+            titleStyle = "title"
+
+        DecoratorPanel.__init__(self, rowStyles, containerIndex)
+
+        inner = self.getCellElement(titleIndex, 1)
+        if imgStyle:
+            img = DOM.createDiv()
+            DOM.setAttribute(img, "className", imgStyle)
+            DOM.appendChild(inner, img)
+        tdiv = DOM.createDiv()
+        DOM.setAttribute(tdiv, "className", titleStyle)
+        DOM.setInnerText(tdiv, title)
+        DOM.appendChild(inner, tdiv)
+
