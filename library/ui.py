@@ -4185,8 +4185,8 @@ class FormSubmitEvent(EventObject):
     def isCancelled(self):
        return self.cancel
    
-    def setCancelled(self):
-       self.cancel = self.cancel
+    def setCancelled(self, cancel):
+       self.cancel = cancel
 
 class FormSubmitCompleteEvent(EventObject):
     def __init__(self, source, results):
