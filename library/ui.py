@@ -2801,7 +2801,7 @@ class ClickDelegatePanel(Composite):
 
         elif type == "keydown":
             modifiers = KeyboardListener().getKeyboardModifiers(event)
-            self.keyDelegate.onKeyDown(sender, DOM.eventGetKeyCode(event),
+            self.keyDelegate.onKeyDown(self, DOM.eventGetKeyCode(event),
                                        modifiers)
 
 
