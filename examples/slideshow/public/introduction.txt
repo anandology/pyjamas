@@ -1,6 +1,12 @@
-== Slide 1 ==
-Text
- * Point 1
- * Point 2
- ** Sub-Point 2.1
+= Pyjamas - The Python Web Toolkit =
+
+About Pyjamas
+ * What is it? 
+  * Stand-alone Python-to-Javascript compiler
+  * AJAX Widget set (similar to PyQt4, PyGtk2 and wxWidgets)
+ * Why use it?
+  * Saves time and effort: write in Python (not Javascript)
+ * How does it work?
+
+About Pyjamas Desktop
 
