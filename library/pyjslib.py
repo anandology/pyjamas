@@ -512,9 +512,21 @@ def range():
 def slice(object, lower, upper):
     JS("""
     if (pyjslib_isString(object)) {
+        if (lower < 0) {
+           lower = object.length + lower;
+        }
+        if (upper < 0) {
+           upper = object.length + upper;
+        }
         if (pyjslib_isNull(upper)) upper=object.length;
         return object.substring(lower, upper);
         }
+    if (lower < 0) {
+       lower = object.length + lower;
+    }
+    if (upper < 0) {
+       upper = object.length + upper;
+    }
     if (pyjslib_isObject(object) && object.slice) return object.slice(lower, upper);
     
     return null;
