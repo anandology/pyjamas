@@ -1,0 +1,10 @@
+= What does it do? =
+ * Compiles python into javascript, for execution in browsers, v8 etc.
+   ** Pretty large subset of python is supported
+   ** Couple of niggles (e.g. undefined gets in the way)
+ * Compiles an AJAX Library (hybrid of javascript and python) into Javascript
+ * Provides, for browser use, access to the browser DOM model
+ * Takes away the pain of Web development.
+   ** No more "browser incompatibilities"
+   ** "CSS tricks" can be dealt with in a proper programming language
+   ** Allows complex apps to be divided into classes and modules

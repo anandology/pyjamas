@@ -1,0 +1,14 @@
+ * Stand-alone Python-to-Javascript Compiler
+   ** pyjs.py - understands functions, modules, classes etc.
+   ** pyjslib.py - wraps builtins such as List, Tuple, Dict, string
+ * DOM model module - DOM.py
+   ** Javascript/Python hybrid (inline asm-like javascript snippets)
+   ** Provides full access to browser DOM (getElementById etc.)
+   ** Handles browser events (onmousedown, onkeyup etc.)
+ * Browser Window.py module
+   ** Provides window.alert, window.open, get window size etc.
+   ** Handles window events (onresize, onclose); provides callback mechanism
+ * Widget-set library - ui.py
+   ** Standard PyQt4/PyGtk2-like widgets
+   ** Label, HTML, Button, Radio, Image
+   ** HorizontalPanel, VerticalPanel, Grid, HTMLTable, 2-way SplitPanels

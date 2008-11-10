@@ -1,0 +1,13 @@
+ * Experiment to run Pyjamas Apps server-side
+ * It worked!
+   ** DOM.py manipulates XML Document (python-elementree)
+   ** XML Document converted to text (output as HTML)
+   ** Poorly-formed HTML bit of a lairy nightmare.
+ * BUT - oops - browser state information lost.  try saving state...
+ * Save XML Document using pickle barfed on python-elementree
+   ** pickling not possible with elemtree nodes
+   ** fudge it: save XML doc as text, re-load, re-identify nodes
+   ** every XML node must be uniquely identified (same problem as python-kde3)
+ * Experiment proves it can be done.
+   ** Browser clients with no javascript can be supported - just.
+   ** Little bit awkward for "standard" mouseover events, resize events etc.
