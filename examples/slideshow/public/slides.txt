@@ -4,6 +4,7 @@ What is it: What does Pyjamas do?
 Whats in it: What's in Pyjamas (for Web Browsers)?
 What is PyJD: What's Pyjamas Desktop?
 What is PyJW: What's Pyjamas for Web Servers?
+Demonstrations: Quick Demos of Pyjamas Examples
 Misconceptions: FAQ - Why can't I do ... X?
 Documentation: Where's the Documentation?
 Alternatives: Comparison to PyQt4 and PyGtk2

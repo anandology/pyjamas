@@ -1,0 +1,27 @@
+ * HelloWorld (duh).
+   ** 9 lines of Python. 9 of HTML.  hurrah.
+ * DynaTable
+   ** Shows loading of PHP content
+   ** RootPanel("html_tag_id") - very useful
+ * JSONRPCExample
+   ** Very important example!
+   ** Shows MVC necessity
+ * KitchenSink
+   ** Shows off most of the widgets
+   ** SinkList itself quite useful
+   ** Shows how to do "History" frame
+ * Mail
+   ** Shows possibilities
+   ** Shows off Window "resize"
+ * http://lkcl.net
+   ** Whole reason why we're here today
+   ** Mitigates CSS Crap and HTML Hell
+   ** Cool layout restructuring (down to 300px!)
+ * http://worldfairtradeday09.org
+   ** Django / Pyjamas / Joomla Integration
+   ** Video, Document and Image upload/download
+ * Party Live Online (yippee!)
+   ** OSFlash / Red5 Integration
+   ** Interactive games (!)
+   ** Uses PostGIS for location search (cool)
+   ** PostgresQL keels over (oops)
