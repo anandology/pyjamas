@@ -1,0 +1,25 @@
+== Webkit ==
+ * Didn't have glib bindings (3 weeks intense work)
+ * Absolutely great!
+   ** CSS, HTML, Javascript, SVG 2D canvas, NPAPI
+   ** NPAPI supports Adobe Flash, Java, 'n'everyfing
+ * Blindingly quick
+ * PyWebkitGtk, PyWebkitQt4, PyWebkitSilk (GChrome)
+   ** pygobject rather obtuse (cleanup with wrapper)
+   ** PyWebkitQt4 can use gobject (saves dev effort)
+== Python-KDE3 ==
+ * Granddaddy of Webkit
+   ** Much respect
+   ** Must make happen!
+ * Subtle c++ RTTI-related bugs in object instantiation
+ * Stuffs everything up.
+   ** Must fix!
+== XULRunner ==
+ * PyXPComExt / PyDOM / NsDOM
+   ** Much promise! (Komodo and Miro)
+   ** Complete lack of stand-alone examples
+   ** Utterly obtuse and developer-hostile
+ * Needs simple way to fire up an app
+   ** Blank sheet
+   ** Python app loads HTML content (like demobrowser.py)
+ * None of this "chrome" bullshit.
