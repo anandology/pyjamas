@@ -1,0 +1,7 @@
+ * Has HTML (rich text)
+   ** but no width/height enforcement
+ * Lacks support for CSS styling
+ * QLayouts complete pain in neck
+ * No "HTMLPanel" capability
+
+Sadly, PyQt4 is better than PyGtk2, but still doesn't cut it.

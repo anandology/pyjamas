@@ -1,0 +1,12 @@
+ * Didn't have glib bindings (3 weeks intense work)
+ * Absolutely great!
+   ** CSS, HTML, Javascript, SVG 2D canvas, NPAPI
+   ** NPAPI supports Adobe Flash, Java, 'n'everyfing
+ * Blindingly quick
+ * PyWebkitGtk, PyWebkitQt4, PyWebkitSilk (GChrome)
+   ** pygobject rather obtuse (cleanup with wrapper)
+   ** PyWebkitQt4 can use gobject (saves dev effort)
+ * 650 simultaneous vi instances were harmed during the making...
+ * webkit-glib isn't just about pywebkitgtk
+   ** webkit-glib++ (possibility of Pyjamas++)
+   ** webkit-glib-java (possibility of GWT-Desktop)

@@ -1,0 +1,12 @@
+== PyGtk2 ==
+ * Lacks support for HTML 
+ * Lacks support for CSS styling
+   ** gtk-css-engine WIP subset of CSS
+ * gtkhtml2 lacks "width/height" enforcement
+   ** widgets end up with zero height!
+ * gtkhtml3 isn't going to exist
+   ** Pity - because gtkhtml3 has "HTMLPanel"
+== IronPython - gtk# ==
+ * Supports HTML (but not properly)
+
+Overall, PyGtk2 not up to the task.

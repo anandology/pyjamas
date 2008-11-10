@@ -1,0 +1,9 @@
+== XULRunner ==
+ * PyXPComExt / PyDOM / NsDOM
+   ** Much promise! (Komodo and Miro)
+   ** Complete lack of stand-alone examples
+   ** Utterly obtuse and developer-hostile
+ * Needs simple way to fire up an app
+   ** Blank sheet
+   ** Python app loads HTML content (like demobrowser.py)
+ * None of this "chrome" bullshit.
