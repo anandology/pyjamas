@@ -1,12 +1,11 @@
-= Pyjamas - The Python Web Toolkit =
-
-About Pyjamas
- * What is it? 
-  * Stand-alone Python-to-Javascript compiler
-  * AJAX Widget set (similar to PyQt4, PyGtk2 and wxWidgets)
- * Why use it?
-  * Saves time and effort: write in Python (not Javascript)
- * How does it work?
-
-About Pyjamas Desktop
-
+= Pyjamas Family =
+ * Pyjamas Projects
+   ** Pyjamas for Browsers (Client-side: AJAX)
+   ** Pyjamas/Desktop (Client-side: Desktops and Embedded)
+   ** Pyjamas/Web (Server-side)
+ * Development API (code! documentation! hooray!)
+ * Comparison of alternative Widget API frameworks
+ * Demonstrations and Examples (more code?)
+ * Compiler Technology
+ * Wicked stuff
+ * Future (TODO)

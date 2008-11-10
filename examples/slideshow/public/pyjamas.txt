@@ -1,0 +1,17 @@
+= Pyjamas - The Python Web Toolkit Family =
+ * What is Pyjamas? 
+   ** Port of Google Web Toolkit (GWT) to Python
+   ** Stand-alone Python-to-Javascript compiler
+   ** AJAX Widget set (similar to PyQt4, PyGtk2 and wxWidgets)
+ * Why use it?
+   ** Saves time and effort: write in Python (not Javascript)
+   ** It's very cool
+   ** Takes away all the HTML and AJAX pain...
+ * How does it work?
+   ** Compiles application classes and modules to Javascript
+   ** Compiles hybrid Widget set to Javascript
+   ** Runs in Web Browser
+ * Conceptually, Pyjamas takes getting used to
+   ** No more disillusionment with dire AJAX awfulness
+   ** No more "browser incompatibilities"
+   ** No more CSS nastiness

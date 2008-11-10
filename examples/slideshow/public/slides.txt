@@ -1,2 +1,5 @@
 Introduction: Pyjamas UKUUG 2009
+Pyjamas: About Pyjamas (for Web Browsers)
 What is it: What does Pyjamas do?
+What is PyJD: What's Pyjamas Desktop?
+What is PyJW: What's Pyjamas for Web Servers?

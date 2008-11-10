@@ -241,14 +241,43 @@ a:visited {
 
 
 .infoProse {
-    font-size: 20px;
+    font-size: 25px;
     margin: 8px;
 }
 
 .infoSmallerProse {
-    font-size: 16px;
+    font-size: 22px;
     margin: 8px;
 }
 
 .float {
+}
+
+.slide_heading1 {
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+.slide_heading2 {
+    font-size: 22px;
+    margin-bottom: 0px;
+}
+
+.slide_para {
+    font-size: 20px;
+}
+
+.slide_list1 {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+.slide_list2 {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+.slide_listitem1 {
+    font-size: 20px;
+}
+.slide_listitem2 {
+    font-size: 17px;
 }
