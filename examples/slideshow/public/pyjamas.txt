@@ -11,7 +11,3 @@
    ** Compiles application classes and modules to Javascript
    ** Compiles hybrid Widget set to Javascript
    ** Runs in Web Browser
- * Conceptually, Pyjamas takes getting used to
-   ** No more disillusionment with dire AJAX awfulness
-   ** No more "browser incompatibilities"
-   ** No more CSS nastiness

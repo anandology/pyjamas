@@ -1,25 +1,17 @@
-== Webkit ==
- * Didn't have glib bindings (3 weeks intense work)
- * Absolutely great!
-   ** CSS, HTML, Javascript, SVG 2D canvas, NPAPI
-   ** NPAPI supports Adobe Flash, Java, 'n'everyfing
- * Blindingly quick
- * PyWebkitGtk, PyWebkitQt4, PyWebkitSilk (GChrome)
-   ** pygobject rather obtuse (cleanup with wrapper)
-   ** PyWebkitQt4 can use gobject (saves dev effort)
-== Python-KDE3 ==
- * Granddaddy of Webkit
-   ** Much respect! Must make happen!
-   ** PyKHTML cleans up python-kde3 obtuseness
- * Subtle c++ RTTI-related bugs in object instantiation
- * Stuffs everything up.
-   ** Must fix!
-== XULRunner ==
- * PyXPComExt / PyDOM / NsDOM
-   ** Much promise! (Komodo and Miro)
-   ** Complete lack of stand-alone examples
-   ** Utterly obtuse and developer-hostile
- * Needs simple way to fire up an app
-   ** Blank sheet
-   ** Python app loads HTML content (like demobrowser.py)
- * None of this "chrome" bullshit.
+= Why use DOM Model manipulation? =
+ * DOM Modelling is the key to a successful easy widget set
+   ** Browser technology tolerant of poor layout, for two decades
+   ** Rules regarding "repaint" well established
+ * Fully-featured widget set already exists
+   ** Text, markup, fonts, SVG (2D), plugins, buttons, blah blah
+   ** you just gotta access it!
+= What's available? =
+ * Webkit
+   ** Didn't have a free-software DOM manipulator
+   ** (it does now)
+ * Python-KDE3
+   ** Grand-daddy of Webkit!
+   ** PyKHTML
+ * XulRunner
+   ** PyXPComExt / PyDOM for "embedded" (chrome)
+   ** NsDOM for python-controlled apps (?)

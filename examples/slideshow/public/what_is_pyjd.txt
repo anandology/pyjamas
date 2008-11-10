@@ -8,8 +8,7 @@
    ** All javascript ripped out, replaced with python
    ** DOM.py most heavily modified
    ** ui.py pretty much left as-is (a few bug-fixes)
-   ** pyjslib.py ripped out
-   ** pyjs.py compiler ripped out.
+   ** pyjslib.py and pyjs.py compiler ripped out.
  * Any comprehensive Python-based DOM manipulator will do, BUT:
    ** Python-KDE3 (KHTMLPart) has subtle bugs (c++ RTTI dependence)
    ** PyXPComExt / PyDOM is insanely obtuse - valiantly resisting useability

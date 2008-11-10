@@ -4,9 +4,38 @@ from SlideLoader import SlideLoader
 from HTTPRequest import HTTPRequest
 from pyjamas import Window
 
+def esc(txt):
+    return txt
+
+def urlmap(txt):
+    idx = txt.find("http://")
+    if idx == -1:
+        return esc(txt)
+    for i in range(idx, len(txt)):
+        c = txt[i]
+        if c == ' ' or c == '\n' or c == '\t':
+            i -= 1
+            break
+
+    i += 1
+
+    beg = txt[:idx]
+    if i == len(txt):
+        url = txt[idx:]
+        end = ''
+    else:
+        url = txt[idx:i]
+        end = txt[i:]
+    txt = esc(beg) + "<a href='%s'>" % url
+    txt += "%s</a>" % esc(url) + urlmap(end)
+    return txt
+ 
 def ts(txt):
     l = txt.split('\n')
-    return '<br />'.join(l)
+    r = []
+    for line in l:
+        r.append(urlmap(line))
+    return '<br />'.join(r)
 
 class Slide(Sink):
     def __init__(self):
@@ -95,6 +124,7 @@ class Slide(Sink):
                 txt = ''
 
     def onError(self, text, code):
+        self.vp.clear()
         self.vp.add(HTML("TODO: Slide '%s' not loaded" % self.name))
         self.vp.add(HTML(text))
         self.vp.add(HTML(code))

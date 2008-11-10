@@ -93,4 +93,4 @@ class EchoServicePHP(JSONProxy):
 
 class EchoServicePython(JSONProxy):
     def __init__(self):
-        JSONProxy.__init__(self, "/cgi-bin/EchoService.py", ["echo", "reverse", "uppercase", "lowercase"])
+        JSONProxy.__init__(self, "/chat/", ["echo", "reverse", "uppercase", "lowercase"])

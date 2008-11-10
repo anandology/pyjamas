@@ -8,3 +8,8 @@
    ** No more "browser incompatibilities"
    ** "CSS tricks" can be dealt with in a proper programming language
    ** Allows complex apps to be divided into classes and modules
+ * Conceptually, Pyjamas takes getting used to
+  ** No more disillusionment with dire AJAX awfulness
+  ** No more "browser incompatibilities"
+  ** No more CSS nastiness
+

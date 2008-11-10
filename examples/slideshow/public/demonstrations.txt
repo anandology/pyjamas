@@ -6,6 +6,7 @@
  * JSONRPCExample
    ** Very important example!
    ** Shows MVC necessity
+   ** Web.py demo - http://lkcl.net/webpy.jsonrpc.tgz
  * KitchenSink
    ** Shows off most of the widgets
    ** SinkList itself quite useful
