@@ -281,3 +281,11 @@ a:visited {
 .slide_listitem2 {
     font-size: 17px;
 }
+.slide_code {
+    font-size: 15px;
+    font-weight: bold;
+    padding: 15px;
+    margin-left: 20px;
+    background-color: #f0f0f0;
+    border: 1px solid #808080;
+}

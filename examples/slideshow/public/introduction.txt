@@ -3,9 +3,9 @@
    ** Pyjamas for Browsers (Client-side: AJAX)
    ** Pyjamas/Desktop (Client-side: Desktops and Embedded)
    ** Pyjamas/Web (Server-side)
+ * Common misconceptions
  * Development API (code! documentation! hooray!)
  * Comparison of alternative Widget API frameworks
  * Demonstrations and Examples (more code?)
  * Compiler Technology
- * Wicked stuff
  * Future (TODO)

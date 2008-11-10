@@ -1,0 +1,15 @@
+ * Webkit
+   ** Prod Apple's buttocks (get #16401 done)
+   ** Add SVG Canvas glib bindings
+   ** Other Widget set webkit "ports"
+ * Semi-automated conversion of GWT Libraries
+   ** java2python will help
+   ** Need more developers!
+ * Semi-automated wrapping of Javascript APIs
+   ** ply (lex) compiler needed
+ * Update to GWT 1.5.2
+   ** and more
+ * Fix damn "capture" event-handling
+   ** several weeks so far...
+ * IE8 and stupid user-agent string changes
+   ** deep joy.

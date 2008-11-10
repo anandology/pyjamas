@@ -9,8 +9,8 @@
    ** PyWebkitQt4 can use gobject (saves dev effort)
 == Python-KDE3 ==
  * Granddaddy of Webkit
-   ** Much respect
-   ** Must make happen!
+   ** Much respect! Must make happen!
+   ** PyKHTML cleans up python-kde3 obtuseness
  * Subtle c++ RTTI-related bugs in object instantiation
  * Stuffs everything up.
    ** Must fix!

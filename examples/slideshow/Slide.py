@@ -32,15 +32,35 @@ class Slide(Sink):
         self.loaded = True
         ul_stack1 = 0
         ul_stack2 = 0
+        doing_code = 0
         txt = ''
         text += '\n'
         for line in text.split("\n"):
+            if doing_code:
+                if line == "}}":
+                    doing_code = 0
+                    line = "</pre>"
+                    txt += line
+                    self.vp.add(HTML(txt))
+                    txt = ''
+                    continue
+                if line:
+                    txt += line
+                txt += "\n"
+                continue
+                
             line = line.strip()
             ul_line = False
             ul_line2 = False
             add = False
             if not line:
                 line = "&nbsp;"
+            elif line[:2] == "{{":
+                doing_code = 1
+                if len(line) > 2:
+                    line = "<pre class='slide_code'>%s" % line[2:]
+                else:
+                    line = "<pre class='slide_code'>"
             elif line[:2] == '= ' and line[-2:] == ' =':
                 line = "<h1 class='slide_heading1>%s</h1>" % line[2:-2]
             elif line[:3] == '== ' and line[-3:] == ' ==':
@@ -59,14 +79,15 @@ class Slide(Sink):
                 ul_line2 = True
                 ul_line = True
             else:
-                line = "<p class='slide_para'>%s</p>" % line
+                if not doing_code:
+                    line = "<p class='slide_para'>%s</p>" % line
             if ul_stack2 and not ul_line2:
                 ul_stack2 = False
                 txt += "</ul>\n"
             if ul_stack1 and not ul_line:
                 ul_stack1 = False
                 txt += "</ul>\n"
-            if not ul_stack2 and not ul_stack1:
+            if not ul_stack2 and not ul_stack1 and not doing_code:
                 add = True
             txt += line
             if add:

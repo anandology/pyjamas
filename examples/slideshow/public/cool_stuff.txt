@@ -1,0 +1,9 @@
+ * Python Desktop OS!
+   ** extjs and youos
+ * Mail example - get it working.
+   ** Web IMAP proxy
+   ** Or - direct talking to gmail (JQuery?)
+   ** No more gmail ads in gmail.  Hooray!
+ * Offline and Distributed apps
+   ** Peer-to-peer version of Django Models
+ * Suggestions?
