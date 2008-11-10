@@ -21,6 +21,13 @@ it, and you should get an alert "Hello Ajax!".
 
 Congratulations, you have compiled and tested your first Pyjamas
 application.
+{{-info
+If you accidentally opened examples/helloworld/Hello.html in your
+web browser, this is a "stub loader" that requires the pygwt.js
+and the compiled application to be in the same subdirectory.
+Double-check that you have opened examples/helloworld/output/Hello.html,
+not examples/helloworld/Hello.html
+}}
 
 = Debugging =
 
@@ -116,4 +123,69 @@ early stage, although our application is "functional", it doesn't
 look too pretty. We should probably add in some CSS styling, next.
 
 == CSS Styling ==
+
+Pyjamas being an HTML-capable development platform, you have complete
+access to CSS.  Start off by creating a subdirectory called "public", in
+the examples/helloworld directory, and create a file, Hello.css, as
+follows:
+{{
+.panel {
+  margin: 20px;
+  padding: 20px;
+  background-color: #80ff80;
+  width: 50%;
+  height: 200px;
+}
+.helloworldwords {
+  font-size: 200px;
+  border: 1px solid #aaaaff;
+  margin: 10px;
+  padding: 10px;
+}
+}}
+
+Next, create a matching Hello.html file, again in the subdirectory
+called "public",  If there is already one in the examples/helloworld
+directory, copy it into "public" to save yourself some time, and edit
+it to add a link to the stylesheet:
+{{
+<html>
+    <head>
+        <meta name="pygwt:module" content="Hello">
+        <link rel='stylesheet' href='Hello.css'>
+        <title>Hello</title>
+    </head>
+    <body bgcolor="white">
+        <script language="javascript" src="pygwt.js"></script>
+    </body>
+</html>
+}}
+
+All we've done, here, is add a link to our stylesheet, Hello.css - there's
+no "voodoo magic" going on, at this stage.  Our next step, however, is to
+tell the HorizontalPanel instance and the HTML instance that they should
+be using the two CSS style classes we've created.  Add the two lines,
+shown, to the Hello.py file:
+{{
+        p.add(b)
+        p.add(hw)
+
+        p.setStyleName("panel") # same name as in Hello.css
+        hw.setStyleName("helloworldwords") # style declared in Hello.css
+
+        RootPanel().add(p)
+}}
+
+The HorizontalPanel gets a CSS style class name of "panel", and the HTML
+instance gets one of "helloworldwords".  Again, recompile, and refresh
+the browser, and you should find that the HorizontalPanel now takes up
+half the screen width, is an ugly light green colour; that the size of
+the words "Hello World" have doubled in size and are surrounded by a
+pretty light-blue border.
+
+You're now well on your way to causing much grief and eye-burn to all but
+the most colour-blind of computer users.
+
+= What we done, dude =
+
 
