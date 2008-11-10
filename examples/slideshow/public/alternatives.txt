@@ -1,0 +1,18 @@
+== PyGtk2 ==
+ * Lacks support for HTML 
+ * Lacks support for CSS styling
+   ** gtk-css-engine WIP subset of CSS
+ * gtkhtml2 lacks "width/height" enforcement
+   ** widgets end up with zero height!
+ * gtkhtml3 isn't going to exist
+   ** Pity - because gtkhtml3 has "HTMLPanel"
+== PyQt4 ==
+ * Has HTML (rich text)
+   ** but no width/height enforcement
+ * Lacks support for CSS styling
+ * QLayouts complete pain in neck
+ * No "HTMLPanel" capability
+== IronPython - gtk# ==
+ * Supports HTML (but not properly)
+
+Overall, PyGtk2 and PyQt4 simply don't cut it.

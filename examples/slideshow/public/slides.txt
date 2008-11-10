@@ -6,3 +6,5 @@ What is PyJD: What's Pyjamas Desktop?
 What is PyJW: What's Pyjamas for Web Servers?
 Misconceptions: FAQ - Why can't I do ... X?
 Documentation: Where's the Documentation?
+Alternatives: Comparison to PyQt4 and PyGtk2
+DOM Modelling: DOM Model manipulation Technologies
