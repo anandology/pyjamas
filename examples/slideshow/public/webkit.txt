@@ -7,6 +7,8 @@
    ** pygobject rather obtuse (cleanup with wrapper)
    ** PyWebkitQt4 can use gobject (saves dev effort)
  * 650 simultaneous vi instances were harmed during the making...
+   ** jobs | grep vi | grep "Window"...
+   ** %209
  * webkit-glib isn't just about pywebkitgtk
    ** webkit-glib++ (possibility of Pyjamas++)
    ** webkit-glib-java (possibility of GWT-Desktop)
