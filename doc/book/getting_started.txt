@@ -1,0 +1,119 @@
+= Dive Straight in =
+
+Not only for the impatient, but also getting right to the point, start
+by downloading the Pyjamas source code, from either http://pyjs.org
+or http://code.google.com/p/pyjamas and, if you already have the standard
+Python 2.5 interpreter installed, you can begin immediately.  Pyjamas
+is self-contained and does not even require to be "installed".
+
+Unpack the downloaded archive, and browse to the examples directory.
+You will find a script called "buildall.sh".  If you just want to
+compile the "helloworld" example, browse to the examples/helloworld
+directory, and you will see a "build.sh" file and a README.  Follow
+the instructions, there, which instruct you to run the following command:
+{{
+    python ../../builder/build.py Hello.py
+}}
+You will then be able to open your web browser, browsing to the
+examples/helloworld/output/Hello.html file, and, assuming that you have
+Javascript enabled, you should see a single button, "Click me!".  Click
+it, and you should get an alert "Hello Ajax!".
+
+Congratulations, you have compiled and tested your first Pyjamas
+application.
+
+= Debugging =
+
+If you didn't get anything displayed, then it is of <it>vital</it>
+importance now and forever that you examine the Javascript Console
+of your browser of choice - right now.  Get used to doing that,
+even at this early stage: your development cycle depends critically
+on you understanding the link between the Python code you are writing
+in and the Javascript that it becomes.
+
+Also of critical importance will be to install a Javascript Debugger
+tool.  "Venkman" is the codename of the Firefox plugin that you will
+need; for Internet Explorer: you can get away with the stand-alone
+Script Debugger, although you can also use the Script Editor that comes
+with Office or Visual Studio if you prefer.  The key tool that is
+absolutely essential is to be able to see a stack trace (Opera will
+display a stack trace, by default).
+
+The alternative is to run your application under Pyjamas-Desktop, and
+you will then get a standard python stack trace error printed on the
+console output.  So, if you get absolutely stuck, running the code in
+a browser, you can always run it under Pyjamas-Desktop.
+
+More advice on debugging applications will be given later.
+
+= Editing your first application =
+
+Lovely as it is to run, it's more useful to be able to add things, so
+start by modifying Hello.py so that it looks like this:
+{{
+from pyjamas.ui import Button, RootPanel, HTML
+from pyjamas import Window
+
+def greet(sender):
+    Window.alert("Hello, AJAX!")
+
+class Hello:
+    def onModuleLoad(self):
+        b = Button("Click me", greet)
+        RootPanel().add(b)
+        hw = HTML("Hello <b>World</b>")
+        RootPanel().add(hw)
+}}
+
+The changes made are the addition of the import of HTML, from pyjamas.ui;
+the declaration of a variable, hw, and its addition to the RootPanel.
+Re-run the build command, refresh the browser window, and, underneath
+the Button there should now be the words "Hello World", with "World"
+being in bold.  Again, if it doesn't appear, double-check the Javascript
+Console for error messages - for example, if you see "HTML is undefined",
+it'll be because you missed out the line "from pyjamas.ui import HTML".
+{{-info
+if you are unfamiliar with Python, and you get a build error, read up on
+Python application editing: double-check that you have used the same
+"indent" level of whitespace, when you added the two extra lines in the
+onModuleLoad() function.
+}}
+
+== Horizontal Layout ==
+
+Next, let's try editing the application so that the Button and the HTML
+are laid out horizontally, rather than vertically.  Try this:
+{{
+from pyjamas.ui import Button, RootPanel, HTML
+from pyjamas.ui import HorizontalPanel
+from pyjamas import Window
+
+def greet(sender):
+    Window.alert("Hello, AJAX!")
+
+class Hello:
+    def onModuleLoad(self):
+        b = Button("Click me", greet)
+        hw = HTML("Hello <b>World</b>")
+
+        p = HorizontalPanel()
+        p.add(b)
+        p.add(hw)
+
+        RootPanel().add(p)
+}}
+
+Here, we have imported HorizontalPanel, then we have declared an instance
+(p) to which we have added both the Button and the HTML.  Then, we have
+added the HorizontalPanel, p, into the RootPanel.  Remember to recompile,
+and remember to refresh the browser.
+
+It's worth emphasising that Pyjamas applications <it>really</it> are this
+straightforward, and that quite complex layouts can be built up very
+quickly and in a straightforward manner, with the simple deployment of
+HorizontalPanel, VerticalPanel, Grid and HTMLTable.  However, at this
+early stage, although our application is "functional", it doesn't
+look too pretty. We should probably add in some CSS styling, next.
+
+== CSS Styling ==
+
