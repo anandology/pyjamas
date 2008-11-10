@@ -13,3 +13,6 @@
    ** several weeks so far...
  * IE8 and stupid user-agent string changes
    ** deep joy.
+ * Equivalent of Glade
+   ** UI layout specified in (sadly) an XML document
+   ** Loaded using AJAX or inline XML

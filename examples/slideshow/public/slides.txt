@@ -21,4 +21,3 @@ Compiler Tech: Pyjamas strengths and weaknesses
 Reverse Tech: Reverse compilation (speedup Pyjamas Dev)
 Future: On the TODO List / Roadmap
 Cool Stuff: Some cool ideas to use Pyjamas for
-test: deliberate error
