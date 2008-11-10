@@ -74,13 +74,6 @@ def init():
     
         var listener, curElem = this;
         
-        var cap = DOM_getCaptureElement();
-        if (cap && cap.__listener) {
-            DOM_dispatchEvent(evt, cap, cap.__listener);
-            evt.stopPropagation();
-            return;
-        }
-
         while (curElem && !(listener = curElem.__listener)) {
             curElem = curElem.parentNode;
         }
