@@ -186,6 +186,54 @@ pretty light-blue border.
 You're now well on your way to causing much grief and eye-burn to all but
 the most colour-blind of computer users.
 
+== Random things to try ==
+
+If you're feeling adventurous, you might like to add in two buttons,
+or perhaps add in a CheckBox or RadioButton (remember to import them!).
+Also, it's highly illustrative to add things to the RootPanel from the
+greet() function, as this will definitely emphasise that this is not
+"static HTML".
+{{
+from pyjamas.ui import CheckBox
+def greet(sender):
+    RootPanel().add(HTML("Not in Kansas no more"))
+    y = CheckBox("yellow road")
+    r = CheckBox("red road")
+    RootPanel().add(y)
+    RootPanel().add(r)
+}}
+
+Remember to click the button several times, and you should find that
+the text and two checkboxes are added on each click.  You might wish
+to create a global variable that counts up by one - <tt>x += 1</tt> -
+that you tack on to the end of the string - 
+<tt>"No of times not in Kansas: %d" % x</tt> as this will make it
+clearer.
+
 = What we done, dude =
 
+To recap what's been achieved, in this section, we have:
+ * Downloaded and unpacked the Pyjamas Compiler.
+ * Compiled and run the "Hello World" application (yippee!)
+ * Optionally encountered our first Javascript Console error
+ * Added an HTML widget to display "Hello World" under the button
+ * Optionally discovered that widgets need to be imported
+ * Changed the layout from vertical to horizontal
+ * Added some eye-burning colour using a CSS Stylesheet.
+ * Learned in a few minutes that Pyjamas apps are dead-easy.
+ * Discovered that we're definitely not in Kansas.
+
+So we have gained the confidence that Pyjamas applications can be
+written in very few lines of code, and also now have a feel for what
+the development cycle will be like.  The only thing is that the
+"Hello World" application is, after all, very much like a
+"Static HTML" page, despite it being in Javascript.  The reason
+is because we're not exactly interacting with the rest of the world.
+
+Quite sophisticated single-user applications can still be written
+either using SVG 2D Canvas (see the examples/addonsgallery Canvas Tab)
+for games and entertainment purposes, but it's only when we start
+using AJAX, to communicate with a Web Server, that we can really
+begin to create powerful "rich media" <it>interactive</it> - and
+useful - applications.
 
