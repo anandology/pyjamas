@@ -8,6 +8,12 @@
    ** not caught at run-time
    ** causes strings n stuff to disappear
    ** Use Pyjamas-Desktop to catch errors
+ * print only accepts 1 argument (bug)
+ * Don't rely on javascript auto-num-conversion!
+   ** "hello" + 5 => "hello5" in Javascript
+   ** Stuffs up Pyjamas-Desktop possibilities
+ * Javascript quietly happy with too many params!
+   ** Stuffs up Pyjamas-Desktop
 == java2python ==
  * Could help convert GWT to Pyjamas
  * Customised or semi-automated
