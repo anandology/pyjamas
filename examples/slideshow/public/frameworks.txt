@@ -1,0 +1,14 @@
+ * AJAX is God.
+   ** HTTPRequest.py - class with onCompletion, onError, onTimeout
+   ** JSONService.py - JSONRPC client: onRemoteResponse, onRemoteError
+   ** This slideshow fetches static text files with HTTPRequest
+   ** TemplatePanel.py (addons) gets html templates with HTTPRequest
+ * Django Framework - http://djangoproject.com
+   ** Pimentech.com's libcommonDjango
+   ** http://lkcl.net/libcommonDjango.tgz
+ * Web.py - http://webpy.org
+   ** Port of libCommonDjango to web.py
+   ** http://lkcl.net/webpy.jsonrpc.tgz
+ * Any web framework will do.
+   ** really.
+ * AJAX is God.
