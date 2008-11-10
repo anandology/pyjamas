@@ -3,7 +3,7 @@ from pyjamas import Window
 from SinkList import SinkList
 from pyjamas.History import History
 import Slide
-from HTTPRequest import HTTPRequest
+from pyjamas.HTTPRequest import HTTPRequest
 from SlideLoader import SlideListLoader
 
 class Slideshow:
@@ -46,6 +46,8 @@ class Slideshow:
         self.panel.setCellVerticalAlignment(self.sink_list, HasAlignment.ALIGN_TOP)
         self.panel.setCellWidth(vp, "100%")
         self.panel.setCellHeight(vp, "100%")
+
+        Window.addWindowResizeListener(self)
 
         History().addHistoryListener(self)
         RootPanel().add(self.panel)

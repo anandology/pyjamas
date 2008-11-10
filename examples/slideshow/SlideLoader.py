@@ -1,6 +1,6 @@
 
 class SlideListLoader:
-    def __init__(self, panel, url):
+    def __init__(self, panel):
         self.panel = panel
 
     def onCompletion(self, text):
@@ -22,7 +22,7 @@ class SlideListLoader:
 
 
 class SlideLoader:
-    def __init__(self, panel, url):
+    def __init__(self, panel):
         self.panel = panel
 
     def onCompletion(self, text):

@@ -1,7 +1,7 @@
 from Sink import Sink, SinkInfo
 from pyjamas.ui import HTML, VerticalPanel
 from SlideLoader import SlideLoader
-from HTTPRequest import HTTPRequest
+from pyjamas.HTTPRequest import HTTPRequest
 from pyjamas import Window
 
 def esc(txt):
