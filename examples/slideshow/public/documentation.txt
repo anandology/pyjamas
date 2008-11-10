@@ -1,0 +1,10 @@
+Lots and lots of documentation for Pyjamas
+ * Google Web Toolkit API is still relevant
+ * pydoc-generated (docstrings) - http://pyjs.org/api
+ * Pyjamas-generated application (based on pydoc)
+ * Showcase - includes worked examples
+ * Tutorial - "controls" demo
+ * Getting Started - http://pyjs.org
+ * Wiki on http://code.google.com/p/pyjamas
+All of these are "useful".
+There's always the source.

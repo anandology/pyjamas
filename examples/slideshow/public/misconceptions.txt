@@ -1,0 +1,24 @@
+ * Why can't I run standard python modules?
+   ** you can (mostly) - if written in pure python
+   ** modules might need tweaking
+   ** Take standard client (e.g. XMLRPC) and run it!
+ * Why can't I get access in a browser to SQL?
+   ** Because you're running in a web browser
+   ** Web browsers are restricted environments
+   ** You can only use XMLHttpRequest (AJAX)
+   ** Talk turkey to a tame talented server (JSONRPC)
+   ** AJAX-aware server talks turkey on your behalf.
+ * Why can't I make network connections?
+   ** See above
+   ** Help beat XulRunner into submission
+   ** Consider using Pyjamas-Desktop
+   ** Caveat 1: you're breaking MVC rules.
+   ** Caveat 2: you can't go back to browser-only.
+ * Why can't I use my favourite web framework?
+   ** You can - you just use AJAX to talk to it.
+ * What's with the "hanging"?  Why's my app stopped?
+   ** Check the Javascript console.
+   ** Install a debugger (Firebug, MS Script Debugger)
+   ** Check the Javascript console.
+   ** Really.  check the javascsript console.
+   ** Use Pyjamas-Desktop (python runtime error)
