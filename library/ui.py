@@ -1237,10 +1237,14 @@ class ComplexPanel(Panel):
         if widget.getParent() == self:
             return
 
-        widget.removeFromParent()
-        self.children.insert(beforeIndex, widget)
-        DOM.insertChild(container, widget.getElement(), beforeIndex)
         self.adopt(widget, container)
+        self.children.insert(beforeIndex, widget)
+
+        # this code introduces an obscure IE6 bug that corrupts its DOM tree!
+        #widget.removeFromParent()
+        #self.children.insert(beforeIndex, widget)
+        #DOM.insertChild(container, widget.getElement(), beforeIndex)
+        #self.adopt(widget, container)
 
     def remove(self, widget):
         if widget not in self.children:
