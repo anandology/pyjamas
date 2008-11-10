@@ -12,5 +12,6 @@ Documentation: Where's the Documentation?
 Alternatives: Comparison to PyQt4 and PyGtk2
 DOM Modelling: PyJD - DOM Model manipulation Technologies
 Compiler Tech: Pyjamas strengths and weaknesses
+Reverse Tech: Reverse compilation (speedup Pyjamas Dev)
 Future: On the TODO List / Roadmap
 Cool Stuff: Some cool ideas to use Pyjamas for

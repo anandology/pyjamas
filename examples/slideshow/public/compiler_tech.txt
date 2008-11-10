@@ -14,13 +14,3 @@
    ** Stuffs up Pyjamas-Desktop possibilities
  * Javascript quietly happy with too many params!
    ** Stuffs up Pyjamas-Desktop
-== java2python ==
- * Could help convert GWT to Pyjamas
- * Customised or semi-automated
- * Help port extjs (gwt-ext) to Pyjamas
-== Ply with webkit javascript lex/yacc spec ==
- * Could help automate python wrappers
- * Could help convert javascript to python
-   ** Useful for Pyjamas-Desktop (pure python)
- * Help port javascript lib (prototype) to Pyjamas
-   ** And Pyjamas-Desktop
