@@ -1,4 +1,4 @@
-from pyjamas.ui import Button, RootPanel, HTML, DockPanel, HasAlignment, Hyperlink, VerticalPanel
+from pyjamas.ui import Button, RootPanel, HTML, DockPanel, HasAlignment, Hyperlink, VerticalPanel, ScrollPanel
 from pyjamas import Window
 from SinkList import SinkList
 from pyjamas.History import History
@@ -26,10 +26,17 @@ class Slideshow:
         self.sinkContainer = DockPanel()
         self.sinkContainer.setStyleName("ks-Sink")
 
+        height = Window.getClientHeight()
+
+        self.sp = ScrollPanel(self.sinkContainer)
+        self.sp.setWidth("100%")
+        self.sp.setHeight("%dpx" % (height-110))
+
         vp=VerticalPanel()
         vp.setWidth("100%")
+        vp.setHeight("100%")
         vp.add(self.description)
-        vp.add(self.sinkContainer)
+        vp.add(self.sp)
 
         self.description.setStyleName("ks-Intro")
 
@@ -38,9 +45,14 @@ class Slideshow:
 
         self.panel.setCellVerticalAlignment(self.sink_list, HasAlignment.ALIGN_TOP)
         self.panel.setCellWidth(vp, "100%")
+        self.panel.setCellHeight(vp, "100%")
 
         History().addHistoryListener(self)
         RootPanel().add(self.panel)
+
+    def onWindowResized(self, width, height):
+        self.sink_list.resize(width, height)
+        self.sp.setHeight("%dpx" % (height-110))
 
     def show(self, info, affectHistory):
         if info == self.curInfo: return

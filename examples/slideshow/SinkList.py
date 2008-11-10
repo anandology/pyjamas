@@ -1,4 +1,5 @@
-from pyjamas.ui import Composite, VerticalPanel, Hyperlink
+from pyjamas.ui import Composite, VerticalPanel, Hyperlink, ScrollPanel
+from pyjamas import Window
 
 class SinkList(Composite):
     def __init__(self):
@@ -8,8 +9,16 @@ class SinkList(Composite):
         self.sinks=[]
         self.selectedSink=-1
         
-        self.initWidget(self.vp_list)
+        self.sp = ScrollPanel(self.vp_list)
+        self.sp.setWidth("14em")
+
+        self.initWidget(self.sp)
         self.setStyleName("ks-List")
+
+        self.resize(Window.getClientWidth(), Window.getClientHeight())
+
+    def resize(self, width, height):
+        self.sp.setHeight("%dpx" % (height - 70))
 
     def addSink(self, info):
         name = info.getName()

@@ -1,17 +1,15 @@
-= Why use DOM Model manipulation? =
  * DOM Modelling is the key to a successful easy widget set
    ** Browser technology tolerant of poor layout, for two decades
    ** Rules regarding "repaint" well established
  * Fully-featured widget set already exists
    ** Text, markup, fonts, SVG (2D), plugins, buttons, blah blah
    ** you just gotta access it!
-= What's available? =
- * Webkit
+ * Option A: Webkit
    ** Didn't have a free-software DOM manipulator
    ** (it does now)
- * Python-KDE3
+ * Option B: Python-KDE3
    ** Grand-daddy of Webkit!
    ** PyKHTML
- * XulRunner
+ * Option C: XulRunner
    ** PyXPComExt / PyDOM for "embedded" (chrome)
    ** NsDOM for python-controlled apps (?)
