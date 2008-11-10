@@ -6,4 +6,5 @@
    ** No more gmail ads in gmail.  Hooray!
  * Offline and Distributed apps
    ** Peer-to-peer version of Django Models
+ * AJAX X-Server!
  * Suggestions?

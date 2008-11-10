@@ -5,6 +5,7 @@ Whats in it: What's in Pyjamas (for Web Browsers)?
 What is PyJD: What's Pyjamas Desktop?
 What is PyJW: What's Pyjamas for Web Servers?
 Demonstrations: Quick Demos of Pyjamas Examples
+Demo Sites: Quick Demos of Example Sites
 Hello World: Show me some coooode.
 Misconceptions: FAQ - Why can't I do ... X?
 Documentation: Where's the Documentation?

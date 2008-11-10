@@ -1,0 +1,15 @@
+ * http://lkcl.net
+   ** Whole reason why we're here today
+   ** Mitigates CSS Crap and HTML Hell
+   ** Cool layout restructuring (down to 300px!)
+ * http://worldfairtradeday09.org
+   ** Django / Pyjamas / Joomla Integration
+   ** Video, Document and Image upload/download
+ * Party Live Online (yippee!)
+   ** OSFlash / Red5 Integration
+   ** Interactive games (!)
+   ** Uses PostGIS for location search (cool)
+   ** PostgresQL keels over (oops)
+ * http://pyjs.org Showcase
+   ** really useful
+   ** contains worked examples
