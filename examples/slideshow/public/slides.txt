@@ -8,3 +8,4 @@ Misconceptions: FAQ - Why can't I do ... X?
 Documentation: Where's the Documentation?
 Alternatives: Comparison to PyQt4 and PyGtk2
 DOM Modelling: PyJD - DOM Model manipulation Technologies
+Compiler Tech: Pyjamas strengths and weaknesses
