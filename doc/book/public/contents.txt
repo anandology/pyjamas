@@ -1,1 +1,3 @@
 Introduction: Why we need an ubiquitous free software Applications API
+Getting Started: A First Pyjamas Application.
+Rest of the World: Ways to connect using AJAX.

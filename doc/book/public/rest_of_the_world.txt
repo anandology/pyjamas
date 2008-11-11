@@ -1,0 +1,172 @@
+= AJAX - Gateway to the World =
+
+Javascript, when run in browsers, is restricted - for example,
+access to user's files is off-limits.  So, even when running
+Pyjamas-Desktop, your gateway to the rest of the world in Pyjamas
+apps should be with AJAX - Asynchronous Javascript and XML.
+The implications are that applications need to be divided
+down into a front-end and a back-end, with the back-end running
+on a Web Server.  Even for stand-alone applications, applications
+still need to talk to a Web Server, which will need to be installed
+locally.
+
+Pyjamas includes a library - HTTPRequest - that provides convenient
+access to AJAX.  The difference between Internet Explorer and other
+browsers is taken care of by the library, so that, on all platforms,
+the HTTPRequest library is functionally identical.
+
+The simplest use of HTTPRequest is to obtain text files or HTML
+content from the server, whilst more involved ones will use HTTPRequest
+to provide a Remote Procedure Call framework, such as JSONRPC or
+XMLRPC.  Here are some Pyjamas examples, included with the Pyjamas
+distribution, that use AJAX / HTTPRequest:
+ * The slideshow example loads its slides in text format, and then applies some simple Wiki-like markup rules to convert the text file into HTML.
+ * The TemplatePanel addons module can be used as the basis of a Content Manager, as it downloads HTML content, allows it to be edited (with FSCK Rich Text Editor) and uploaded - all using AJAX.
+ * The JSONRPCService example shows how powerful AJAX can be, as the JSONRPC infrastructure transparently makes function calls look like they were being made on the server.
+
+This latter example - the JSONRPCService one - is one which is going
+to be explored in more detail, later, but first it's worth illustrating
+with the simplest example, the Slideshow Loader.
+
+= Simple use of HTTPRequest =
+
+Here is the basis of the Slideshow example, which you should save as
+Slideshow.py:
+{{
+from pyjamas.ui import HTML, RootPanel
+from pyjamas.HTTPRequest import HTTPRequest
+
+class SlideLoader:
+    def __init__(self, panel):
+        self.panel = panel
+
+    def onCompletion(self, text):
+        self.panel.setSlide(text)
+
+    def onError(self, text, code):
+        self.panel.onError(text, code)
+
+    def onTimeout(self, text):
+        self.panel.onTimeout(text)
+
+class Slideshow:
+
+    def onModuleLoad(self):
+        self.slide = HTML()
+        RootPanel.add(self.slide)
+
+        HTTPRequest().asyncPost("test_slide.txt", "", SlideLoader(self))
+
+    def setSlide(self, content):
+        self.slide.setHTML("<pre>%s</pre>" % content
+        
+    def onError(self, text, code):
+        self.slide.setHTML(text + "<br />" + code)
+}}
+
+Create a matching Slideshow.html, saving it in a folder called public:
+{{
+<html>
+    <head>
+        <meta name="pygwt:module" content="Slideshow">
+        <title>Test Slideshow!</title>
+    </head>
+    <body bgcolor="white">
+        <script language="javascript" src="pygwt.js"></script>
+
+    <iframe id='__pygwt_historyFrame' style='width:0;height:0;border:0'></iframe>
+    </body>
+</html>
+}}
+
+Now create a test slide in the public folder, and call it test_slide.txt:
+{{
+Yippee, we get to see how AJAX works.
+We put the content here, wrapped with <pre> </pre>
+so it looks pretty.
+You could put anything you wanted in here.
+}}
+
+You should now have three files on your computer like this:
+{{
+Slideshow.py
+public/Slideshow.html
+public/test_slide.txt
+}}
+
+Compile this example to javascript, by running the following command:
+{{
+   python ../../builder/build.py Slideshow.py
+}}
+
+You will now need to use a Web browser to access the output, but it is
+important that you load the output from a Web Server, not from your local
+filesystem.  There are several free web servers and web frameworks available,
+and for the purposes of this exercise, one that serves static web pages is
+perfectly adequate.
+
+{{-info
+AJAX has security restrictions on where the content can be downloaded from,
+due to malicious misuse.  As there is no visual indication, with AJAX,
+when content is being downloaded, AJAX was used to obtain and run malicious
+scripts from web sites other than the one being presented to the user.
+So, now, when you browse a web site, if AJAX is used, the AJAX content can
+only be downloaded from the same web site.  Local file system URLs are
+definitely "out".
+}}
+
+A recommended way to serve web pages is to install and use Apache2.
+You should, after installation, set up a location where your compiled
+output is made visible.  Here is an Apache Config snippet that you
+can adapt to your needs, by changing the directory location:
+{{
+Alias /examples/ "/home/lkcl/src/pyjamas/examples/"
+<Directory "/home/lkcl/src/pyjamas/examples/">
+    Options +ExecCGI Indexes FollowSymLinks MultiViews
+    AllowOverride None
+    Order deny,allow
+    allow from all
+</Directory>
+}}
+
+{{-info
+Remember to change the location to one where your output is compiled!
+Also, make sure that you place the trailing slashes on the end of the
+directory paths
+}}
+
+With the above example, once you have started (or restarted) Apache2,
+you will be able to open up a web browser on http://localhost/examples/
+to run your application.  If successful, you should see the contents
+of the test slide in the browser.
+
+{{-info
+Remember that if you don't see anything, check the Javascript console,
+and enable script debugging.  Also, double-check that you have loaded
+output/Slideshow.html, not public/Slideshow.html, in your browser.
+}}
+
+In the Pyjamas slideshow example, setSlide() munges the
+AJAX-downloaded content before it gets displayed, and you could
+prove to yourself that this is definitely not "static HTML" by
+modifying the content in setSlide, by converting the content to
+uppercase:
+{{
+    def setSlide(self, content):
+        content = content.upper()
+        self.slide.setHTML("<pre>%s</pre>" % content
+}}
+
+{{-info
+Remember to recompile the application, and refresh the browser.
+}}
+
+So, in this simple example, we've shown how to load content, dynamically.
+Which is nice, because loading the Web page first, and the content separately,
+is what AJAX is supposed to be all about: saving time and speeding up the
+user experience.  Of course, loading only the one page isn't that much of
+an improvement, but it's the thought that counts.  definitely.
+
+= JSONRPC: a better AJAX experience =
+
+
