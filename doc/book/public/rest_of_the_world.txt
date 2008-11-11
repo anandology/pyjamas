@@ -475,3 +475,36 @@ the application will allow the JSONRPC service to be accessed on
 You will need to remember this URL when it comes to connecting the
 client with the web.py server.
 
+== Twisted Matrix txJSONRPC ==
+
+{{
+from twisted.web2 import server, static
+from twisted.web2.channel import http
+from twisted.application import service, internet
+
+from txjsonrpc.web2 import jsonrpc
+
+class Example(jsonrpc.JSONRPC):
+    """An example object to be published."""
+
+    addSlash = True
+
+    def jsonrpc_echo(self, request, x):
+        """Return all passed args."""
+        return x
+
+    def jsonrpc_add(self, request, a, b):
+        """Return sum of arguments."""
+        return a + b
+
+root = static.File("/var/www/")
+root.putChild("doc", static.File("/usr/share/doc"))
+root.putChild("test", Example())
+site = server.Site(root)
+
+chan = http.HTTPFactory(site)
+application = service.Application("Example JSON-RPC Server")
+jsonrpcServer = internet.TCPServer(7080, chan)
+jsonrpcServer.setServiceParent(application)
+}}
+
