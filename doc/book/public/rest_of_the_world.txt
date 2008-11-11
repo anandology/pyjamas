@@ -396,6 +396,82 @@ Apache2 if an error occurs, when using mod_python.
 
 So, again - there's very little involved in setting up a JSONRPC service
 under Django.  There's actually so little "hard work" that it's almost a
-let-down to know that it <i>is</i> possible to do Web Development that
-doesn't get in the way.
+let-down to know that it <i>is</i> possible to do Web Development where
+the technology doesn't get in the way.
+
+== Web.py JSONRPC Server ==
+
+Web.py is a very simple and straightforward web framework that is used
+for some very substantial web sites.  The key significance of Web.py is
+that it does not need to be run <i>from</i> a Web server, it <i>is</i> a
+Web Server.
+
+It's very simple to integrate JSONRPC into web.py.  First, download
+and install web.py from http://webpy.org and also download a JSONRPC
+library from http://lkcl.net/webpy.jsonrpc.tgz which contains a
+modified version of Pimentech's JSONRPC service.  The modifications
+are tiny but significant, allowing the raw data from the HTTP POST
+to be passed to the JSONRPC Service.
+
+Start by unpacking the archive, and creating a file with the following content.
+The file should be saved in the directory where you have unpacked the archive,
+so that the <tt>network</tt> library can be imported by it.
+{{
+#!/usr/bin/env python
+
+from network import JSONRPCService, jsonremote
+import web
+import os
+
+urls = (
+    '/chat/', 'chatcls',
+    '/chat',  'chatcls',
+    )
+
+# a "wrapper" class around the jsonrpc service "chatservice"
+class chatcls:
+    def POST(self):
+        print chatservice(web.webapi.data())
+
+chatservice = JSONRPCService()
+
+# the two demo functions
+
+@jsonremote(chatservice)
+def echo(request, msg):
+    web.debug(repr(request))
+    return "hello world %s" % msg
+
+@jsonremote(chatservice)
+def reverse(request, msg):
+    return "hello world %s" % msg[::-1]
+
+@jsonremote(chatservice)
+def uppercase(request, msg):
+    return "hello world %s" % msg.upper()
+
+@jsonremote(chatservice)
+def lowercase(request, msg):
+    return "hello world %s" % msg.lower()
+
+# start me!
+if __name__ == "__main__":
+    web.run(urls, globals())
+}}
+
+Once again, we can see that it's really quite straightforward to set up
+a JSONRPC Service.  In Web.py, the mapping between URLs and the handlers
+is done in a similar fashion to Django (the urls variable); a key difference
+between Django and Web.py is that classes must be used, and the classes
+must have a GET (or in this case, a POST) function.  In this example,
+a wrapper class has been used, that links the URL <tt>/chat/</tt> to the
+JSONRPC service.
+
+The last three lines run the built-in web server, which, by default,
+will run on port 8000.  If the above code is saved as code.py, it
+can be started with the command <tt>python code.py</tt>.  Starting
+the application will allow the JSONRPC service to be accessed on
+<tt>http://localhost:8000/chat/</tt> with a JSONRPC-aware client.
+You will need to remember this URL when it comes to connecting the
+client with the web.py server.
 
