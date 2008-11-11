@@ -208,9 +208,17 @@ the text and two checkboxes are added on each click.  You might wish
 to create a global variable that counts up by one - <tt>x += 1</tt> -
 that you tack on to the end of the string - 
 <tt>"No of times not in Kansas: %d" % x</tt> as this will make it
-clearer.
+clearer:
+{{
+global x
+x = 0
 
-= What we done, dude =
+def greet(sender):
+    x += 1
+    RootPanel().add(HTML("No of times not in Kansas: %d" % x))
+}}
+
+= What we done =
 
 To recap what's been achieved, in this section, we have:
  * Downloaded and unpacked the Pyjamas Compiler.
