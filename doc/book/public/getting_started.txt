@@ -31,7 +31,7 @@ not examples/helloworld/Hello.html
 
 = Debugging =
 
-If you didn't get anything displayed, then it is of <it>vital</it>
+If you didn't get anything displayed, then it is of <i>vital</i>
 importance now and forever that you examine the Javascript Console
 of your browser of choice - right now.  Get used to doing that,
 even at this early stage: your development cycle depends critically
@@ -115,7 +115,7 @@ Here, we have imported HorizontalPanel, then we have declared an instance
 added the HorizontalPanel, p, into the RootPanel.  Remember to recompile,
 and remember to refresh the browser.
 
-It's worth emphasising that Pyjamas applications <it>really</it> are this
+It's worth emphasising that Pyjamas applications <i>really</i> are this
 straightforward, and that quite complex layouts can be built up very
 quickly and in a straightforward manner, with the simple deployment of
 HorizontalPanel, VerticalPanel, Grid and HTMLTable.  However, at this
@@ -234,6 +234,6 @@ Quite sophisticated single-user applications can still be written
 either using SVG 2D Canvas (see the examples/addonsgallery Canvas Tab)
 for games and entertainment purposes, but it's only when we start
 using AJAX, to communicate with a Web Server, that we can really
-begin to create powerful "rich media" <it>interactive</it> - and
+begin to create powerful "rich media" <i>interactive</i> - and
 useful - applications.
 

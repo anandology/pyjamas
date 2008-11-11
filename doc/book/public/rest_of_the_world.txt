@@ -157,6 +157,9 @@ uppercase:
         self.slide.setHTML("<pre>%s</pre>" % content
 }}
 
+The extra line is the second one - modifying the content before it is
+displayed.
+
 {{-info
 Remember to recompile the application, and refresh the browser.
 }}
@@ -167,6 +170,42 @@ is what AJAX is supposed to be all about: saving time and speeding up the
 user experience.  Of course, loading only the one page isn't that much of
 an improvement, but it's the thought that counts.  definitely.
 
+However, with a small leap in imagination, it should be clear that
+by specifying a dynamic URL in the HTTPRequest, instead of a static
+page, this simple example could be adapted to load user's individual
+email messages, or turned into a wiki.  The next step is to make the
+process of loading those email messages, wiki pages or stock prices
+that much easier, and that much more like a standard desktop application.
+
 = JSONRPC: a better AJAX experience =
+
+JSONRPC stands for "JavaScript Object Notation / Remote Procedure Calls".
+To make sense of that banale sentence, it helps to look up the two
+anacronyms separately.  JSON is simply a way to encode objects - lists,
+dictionaries, integers, strings and floating point numbers - in a way
+that web browsers will find easy to encode and decode.  RPC is simply
+a way to make function calls on a server.  In other words, whilst the
+function is being <i>called</i> on the client, the function is
+<i>actually</i> executed on a (remote) server.
+
+The best RPC systems allow the function's parameters to be shipped
+back to the client, if they were modified, as well as the return
+result of the function.  However, JSONRPC isn't the brightest bunny
+on the block, and so we have to make do with just a return result.
+Fortunately, JSON is capable of returning reasonably complex results -
+lists of dictionaries, dictionaries of lists of strings etc. - so the
+limitations of JSONRPC aren't the end of the world.
+
+{{-info
+The crucial difference between running an application that makes
+"real" function calls rather than using a client-server arrangement
+to proxy the function parameters and return result back-and-forth is
+that, as a developer, you must <i>never</i> forget that the function
+call can fail!  The server can, at any time, drop off the network,
+or fail to respond in a timely fashion.  It's absolutely <i>essential</i>
+that you design your application with this in mind.  RPC frameworks
+help you out here, and the JSONRPC infrastructure in Pyjamas is no
+exception.
+}}
 
 

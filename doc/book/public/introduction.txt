@@ -1,26 +1,27 @@
 = Introduction =
 
-Computer Applications help us with the presentation, creation and
-manipulation of information and knowledge.  Deployment of applications
-on the Internet has seen an explosive rise in both quantity and
+Computer Applications help us with the presentation, creation
+and manipulation of information and knowledge.  Deployment of
+applications on the Internet has seen an explosive rise in
 complexity.  Programming languages and frameworks have struggled to
-keep up, imposing legacy infrastructure and ways of working that were
-never designed to cope with the ways in which they are now being used.
+keep up, imposing legacy infrastructure and ways of working that
+were never designed to cope with the ways in which they are now
+being used.
 
 Attempts are being made to provide better infrastructure that suits
 the increasing Internet-led demand for access to information and knowledge,
 yet at the same time provide an easier way to reuse the same source
 code to write applications that run stand-alone on the Desktop.
 Adobe AIR, Silverlight and its free-software counterpart, Moonlight, are
-proprietary-driven frameworks that blur the difference between "Desktop"
+proprietary-driven frameworks that blur the distinction between "Desktop"
 and "Internet".  Google's Web Toolkit (GWT) is a toolkit exclusive to Java 
 that allows you to write applications that look like they are Java Desktop
 applications, but actually they are being run in a web browser (as AJAX).
 You cannot, however, take the same GWT Java application and actually run
-it <it>as</it> a desktop application.
+it <i>as</i> a desktop application.
 
 In 2006, GWT was ported to python, by James Tauber, in a successful
-experiment called Pyjamas.  The 40,000 or so lines of code that made
+experiment called Pyjamas.  The 80,000 or so lines of source code that made
 up GWT 1.2 were dramatically reduced to only 8,000, for Pyjamas.
 Thus, in exactly the same way that GWT is a java-to-javascript
 compiler and AJAX Widget set, Pyjamas is a python-to-javascript
@@ -48,20 +49,20 @@ is based on DOM model - browser - manipulation, and browser
 technology has had to mature much, much faster than Desktop technology.
 Browsers have to be far more tolerant, forgiving and flexible when
 it comes to layout and presentation, whereas the Desktop application
-APIs are really quite rigid; advise developers <it>not</it> to fix
-the width and height of any widgets, for fear of interfering with
+APIs are really quite rigid; advise developers <i>not</i> to fix
+the width and height of widgets, for fear of interfering with
 the framework's limited ability to cope with resizing and layouts;
 extension of either of the competitor frameworks is far from
 straightforward; Rich text (such as HTML) support is limited or
 severely limited, and is broken by design.  By contrast, the 
-features that Pyjamas comes with <it>by default</it>, thanks to Webkit,
+features that Pyjamas comes with <i>by default</i>, thanks to Webkit,
 includes not only full and complete CSS and HTML support, but also includes
-things like SVG 2D canvas features, such as the playback of audio files!
+things like SVG 2D canvas features, including the playback of audio files!
 
 The future of Pyjamas includes, thanks to Webkit, the tantalising
-possibility of supporting other languages, such as c++ and even Java.
-It would be very interesting to see Google's Web Tookit ported to
-the Desktop, for example.  However, this book covers the Python
+possibility of supporting other languages, such as c++ (Pyjamas++)
+and even Java.  It would be very interesting to see Google's Web Tookit
+ported to the Desktop, for example.  However, this book covers the Python
 programming language, rather than these future language possibilities.
 
 = Scope of this book =
@@ -72,7 +73,7 @@ that will run both on the Desktop and in a Web browser, depending on
 whether they choose to run the application using Pyjamas-Desktop or
 to compile it to AJAX, using the Pyjamas Javascript compiler.
 
-The book will introduce the beginner to the strange concept of
+The book will introduce the beginner to the alien concept of
 "easy web application development"; it will serve as a reference
 for both beginners and experienced developers; also covered will be
 how to create your own widgets, and how to port a Javascript widget
