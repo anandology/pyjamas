@@ -216,4 +216,35 @@ help you out here, and the JSONRPC infrastructure in Pyjamas is no
 exception.
 }}
 
+So, to get started with JSONRPC, the following is needed:
+ * A JSONRPC client (there's one built in to Pyjamas)
+ * A JSONRPC-aware Web Server Framework
+ * A Web Server (even when running on the desktop)
 
+Discussed first will be the frameworks: some of the Python-based
+options, such as Twisted Matrix, Django, Web.py and cgi-bin will
+be covered.  Next, once a framework is set up, connecting to it
+with the JSONRPC example client will be covered.
+
+= JSONRPC Web Server Frameworks =
+
+There are dozens of JSONRPC frameworks available, as a quick google
+search shows.  Any one of them will suffice, however the scope of this
+book is limited to Python, so the following Python-based JSONRPC
+frameworks will be covered:
+
+ * Pimentech's libcommonDjango - JSON-RPC for Django.  libcommonDjango
+   can be downloaded from http://lkcl.net/libcommonDjango.tgz and
+   the Django Framework from http://djangoproject.com
+ * Web.py, a minimalist powerful web framework, can also be used.
+   Download the JSONRPC example here: http://lkcl.net/webpy.jsonrpc.tgz
+   and the Web.py Framework from http://webpy.org
+ * CGI-based JSONRPC - there is an example already included in the
+   Pyjamas distribution, examples/jsonrpc/public/services
+ * txJSONRPC - JSON-RPC for Twisted.  txJSONRPC can be downloaded
+   from https://launchpad.net/txjsonrpc and the Twisted Framework
+   from http://twistedmatrix.com
+
+So it is entirely up to you which one you use: the Pyjamas examples
+even include a PHP-based JSONRPC service, using a php library called
+phpolait.
