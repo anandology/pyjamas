@@ -40,7 +40,7 @@ in and the Javascript that it becomes.
 
 Also of critical importance will be to install a Javascript Debugger
 tool.  "Venkman" is the codename of the Firefox plugin that you will
-need; for Internet Explorer: you can get away with the stand-alone
+need; for Internet Explorer you can get away with the stand-alone
 Script Debugger, although you can also use the Script Editor that comes
 with Office or Visual Studio if you prefer.  The key tool that is
 absolutely essential is to be able to see a stack trace (Opera will

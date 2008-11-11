@@ -8,6 +8,7 @@ def escape(txt):
     txt = txt.replace("&", "&amp;")
     txt = txt.replace("<", "&lt;")
     txt = txt.replace(">", "&gt;")
+    txt = txt.replace("%", "&#37;")
     return txt
 
 def urlmap(txt):
@@ -37,6 +38,7 @@ def ts(txt):
     l = txt.split('\n')
     r = []
     for line in l:
+        line = line.replace("%", "&#37;")
         r.append(urlmap(line))
     return '<br />'.join(r)
 
@@ -137,6 +139,7 @@ class Chapter(Sink):
             if addline:
                 txt += addline + "\n"
             elif line:
+                line = line.replace("%", "&#37;")
                 para += line + "\n"
             if not ul_stack2 and not ul_stack1 and not doing_code :
                 add = True

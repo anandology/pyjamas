@@ -11,9 +11,10 @@ still need to talk to a Web Server, which will need to be installed
 locally.
 
 Pyjamas includes a library - HTTPRequest - that provides convenient
-access to AJAX.  The difference between Internet Explorer and other
-browsers is taken care of by the library, so that, on all platforms,
-the HTTPRequest library is functionally identical.
+access to AJAX.  The differences between Internet Explorer and other
+browsers when using AJAX, that you'd normally be faced with, is taken care of
+by the library, so that, on all platforms, the HTTPRequest library is
+functionally identical.
 
 The simplest use of HTTPRequest is to obtain text files or HTML
 content from the server, whilst more involved ones will use HTTPRequest
@@ -161,7 +162,7 @@ uppercase:
 {{
     def setSlide(self, content):
         content = content.upper()
-        self.slide.setHTML("<pre>%s</pre>" % content
+        self.slide.setHTML("<pre>%s</pre>") % content
 }}
 
 The extra line is the second one - modifying the content before it is
