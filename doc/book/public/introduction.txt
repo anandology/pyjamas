@@ -18,7 +18,7 @@ and "Internet".  Google's Web Toolkit (GWT) is a toolkit exclusive to Java
 that allows you to write applications that look like they are Java Desktop
 applications, but actually they are being run in a web browser (as AJAX).
 You cannot, however, take the same GWT Java application and actually run
-it <i>as</i> a desktop application.
+it <i>as</i> a desktop application (unless it's under Adobe AIR, as AJAX).
 
 In 2006, GWT was ported to python, by James Tauber, in a successful
 experiment called Pyjamas.  The 80,000 or so lines of source code that made
@@ -32,7 +32,8 @@ Webkit, which is the same technology behind Adobe AIR, Google Chrome,
 Safari, Midori and the iPhone browser. Thanks to Webkit, Pyjamas, by
 keeping such exulted company, becomes the world's first free-software
 Applications framework that is both cross-browser and cross-platform.
-Also, thanks to Webkit's design, the Pyjamas API is also cross-widget-set.
+Also, by using Webkit, the Pyjamas-Desktop port is cross-widget-set
+as well.
 
 The strategic significance of the independence of the Pyjamas API
 cannot be underestimated.  A free software python-based application
@@ -55,15 +56,21 @@ the framework's limited ability to cope with resizing and layouts;
 extension of either of the competitor frameworks is far from
 straightforward; Rich text (such as HTML) support is limited or
 severely limited, and is broken by design.  By contrast, the 
-features that Pyjamas comes with <i>by default</i>, thanks to Webkit,
-includes not only full and complete CSS and HTML support, but also includes
-things like SVG 2D canvas features, including the playback of audio files!
+features that Pyjamas comes with <i>by default</i>, even in Pyjamas
+Desktop, includes not only full and complete CSS and HTML support, but
+also includes support for things like SVG 2D canvas and NPAPI plugins
+such as Adobe Flash.
 
-The future of Pyjamas includes, thanks to Webkit, the tantalising
+The future of Pyjamas on Desktops includes, using Webkit, the tantalising
 possibility of supporting other languages, such as c++ (Pyjamas++)
 and even Java.  It would be very interesting to see Google's Web Tookit
-ported to the Desktop, for example.  However, this book covers the Python
-programming language, rather than these future language possibilities.
+ported to the Desktop, for example.  And it would be as equally interesting
+to see Pyjamas ported to Ruby, by using rb2js (http://rb2js.rubyforge.org/),
+as well as other languages.  So, although this book covers the Python
+programming language, it's definitely worthwhile raising these future
+language possibilities, as it would make the Pyjamas API a truly
+cross-language, cross-platform, cross-desktop and cross-widget-set
+Free Software Applications Development API.
 
 = Scope of this book =
 
