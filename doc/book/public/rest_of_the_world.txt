@@ -129,10 +129,17 @@ Alias /examples/ "/home/lkcl/src/pyjamas/examples/"
 </Directory>
 }}
 
+The above is pretty standard fare for an Apache configuration: the only
+additional thing that you might notice is that <tt>+ExecCGI</tt> has been
+added, which will allow any executable applications to be run as CGI scripts
+(such as EchoService.py for the JSONRPC example).  If you do not want
+this feature, remove <tt>+ExecCGI</tt>.
+
 {{-info
 Remember to change the location to one where your output is compiled!
 Also, make sure that you place the trailing slashes on the end of the
-directory paths
+directory paths.  Also, remember to enable mod_cgi if you want CGI
+scripts to run.
 }}
 
 With the above example, once you have started (or restarted) Apache2,
