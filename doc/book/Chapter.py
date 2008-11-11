@@ -30,8 +30,8 @@ def urlmap(txt):
     else:
         url = txt[idx:i]
         end = txt[i:]
-    txt = esc(beg) + "<a href='%s'>" % url
-    txt += "%s</a>" % esc(url) + urlmap(end)
+    txt = escape(beg) + "<a href='%s'>" % url
+    txt += "%s</a>" % escape(url) + urlmap(end)
     return txt
  
 def ts(txt):
