@@ -233,18 +233,169 @@ search shows.  Any one of them will suffice, however the scope of this
 book is limited to Python, so the following Python-based JSONRPC
 frameworks will be covered:
 
- * Pimentech's libcommonDjango - JSON-RPC for Django.  libcommonDjango
-   can be downloaded from http://lkcl.net/libcommonDjango.tgz and
-   the Django Framework from http://djangoproject.com
- * Web.py, a minimalist powerful web framework, can also be used.
-   Download the JSONRPC example here: http://lkcl.net/webpy.jsonrpc.tgz
-   and the Web.py Framework from http://webpy.org
- * CGI-based JSONRPC - there is an example already included in the
-   Pyjamas distribution, examples/jsonrpc/public/services
- * txJSONRPC - JSON-RPC for Twisted.  txJSONRPC can be downloaded
-   from https://launchpad.net/txjsonrpc and the Twisted Framework
-   from http://twistedmatrix.com
+ * Pimentech's libcommonDjango - JSON-RPC for Django.  libcommonDjango can be downloaded from http://lkcl.net/libcommonDjango.tgz and the Django Framework from http://djangoproject.com
+ * Web.py, a minimalist powerful web framework, can also be used.  Download the JSONRPC example here: http://lkcl.net/webpy.jsonrpc.tgz and the Web.py Framework from http://webpy.org
+ * CGI-based JSONRPC - there is an example already included in the Pyjamas distribution, examples/jsonrpc/public/services, called EchoService.py
+ * txJSONRPC - JSON-RPC for Twisted.  txJSONRPC can be downloaded from https://launchpad.net/txjsonrpc and the Twisted Framework from http://twistedmatrix.com
 
 So it is entirely up to you which one you use: the Pyjamas examples
 even include a PHP-based JSONRPC service, using a php library called
 phpolait.
+
+== CGI-based JSONRPC ==
+
+If you have a suitable web server installed, one of the simplest methods
+to get started has to be CGI (Common Gateway Interface).  It's also one of
+the slowest, causing the server to load an entire application just to serve
+up one and only one web page - even if the response is a couple of lines,
+which will often be the case on JSONRPC responses.
+
+Examine the jsonrpc/public/services/EchoService.py source code - it's
+pretty straightfoward:
+{{
+#!/usr/bin/env python
+
+class Service:
+    def echo(self, msg):
+        return msg
+
+    def reverse(self, msg):
+        return msg[::-1]
+
+    def uppercase(self, msg):
+        return msg.upper()
+
+    def lowercase(self, msg):
+        return msg.lower()
+
+
+from jsonrpc.cgihandler import handleCGIRequest
+
+handleCGIRequest(Service())
+}}
+
+The first line tells a unix-based system that when this script is
+executed, it must be executed as a python script.  Every individual
+HTTP Request will result in a new process being started, to handle
+the Request, and that process will terminate when the Response is
+sent to the client.
+{{-info
+If running Windows, and Apache2 has been chosen as the web server, adding
+<tt> AddHandler cgi-script .py </tt> to the Apache2 configuration section
+will make all .py scripts in that section executable.  Only add this to
+the sections that you need - don't add this Directive globally!
+}}
+
+The class "Service" contains our four functions that this JSONRPC service
+will support.  Any JSONRPC client that has EchoService.py as its HTTP
+"POST" url will be able to run these four functions.
+
+The next two lines import and use handleCGIRequest to process the JSONRPC
+query.  If you are interested, take a look in the public/services/jsonrpc
+directory, at cgihandler.py - it's pretty straightforward, but it's just
+a library.  The reason why it's mentioned is that you may be wondering
+where jsonrpc.cgihandler comes from, when you haven't installed a library
+called "jsonrpc" on your system: it's being imported from the <i>local</i>
+path, by the python application, from the examples/public/services directory.
+
+That's really all there is to it.  The dynamic capabilities of Python
+allow the jsonrpc cgihandler library to match up the function call names
+in the incoming HTTP POST with the function names in the Service() class
+instance.  Adding extra functions is a trivial matter of adding new methods
+to the Service class.
+
+== JSONRPC in Django ==
+
+This technique is a little more advanced, and relies on python "decorators",
+so you will need to ensure that you at least have Python 2.4 or greater
+(but not Python 3).  First, you should download and install both Django
+and libcommonDjango, which are available from http://djangoproject.com
+and http://lkcl.net/libcommonDjango.tgz respectively.
+
+If you are unfamiliar with Django, then first, the standard Django Tutorial
+should be followed.  By stage three, enough of a polls/view.py will have
+been created such that the following lines can be added:
+{{
+from django.pimentech.network import JSONRPCService, jsonremote
+
+testservice = JSONRPCService()
+
+@jsonremote(testservice)
+def echo(response, msg):
+    try:
+        poll_id = int(msg)
+    except ValueError:
+        return "You must type an integer, you typed: %s" % msg
+    p = Poll.objects.get(pk=poll_id)
+    return p.question
+
+@jsonremote(testservice)
+def reverse(response, msg):
+    return msg[::-1]
+
+@jsonremote(testservice)
+def uppercase(response, msg):
+    return msg.upper()
+
+@jsonremote(testservice)
+def lowercase(response, msg):
+    return msg.lower()
+}}
+
+As can be seen, the libcommonDjango library from http://pimentech.com is
+the key.  The <tt>@jsonremote()</tt> decorator turns the four functions
+into JSONRPC server functions.  Note that, unlike the CGI-based example,
+you have access to a <tt>response</tt> instance variable - just like in
+any other Django HTTP Response processing function.
+
+The <tt>echo</tt> function in this example reads from the Poll table,
+just to demonstrate how interaction between JSONRPC and a database works.
+If preferred, or the Django Tutorial is not being used, simply return msg
+instead, to maintain consistency with the CGI-based example.
+
+In Django, response-processing functions and classes don't magically get
+called: it is necessary to map them to incoming HTTP urls using urls.py.
+Edit the Django application's urls.py file, and add the line noted, below:
+{{
+urlpatterns = patterns('',
+    # this is the JSONRPC service line that needs to be added:
+    (r'^test-service/$', 'mysite.polls.views.testservice'),
+
+    (r'^admin/(.*)', admin.site.root),
+    (r'^polls/$', 'mysite.polls.views.index'),
+}}
+
+As can be seen, each line in urlpatterns maps a url to a class or function,
+and in this example, if your web server is accessible at http://localhost
+then any references to http://localhost/test-service/ will be mapped to
+the JSONRPCService instance, testservice, in mysite/polls/views.py.
+
+{{-info
+Make sure that the urlpatterns match the application - in other words,
+the example above is only valid if application is called "mysite".  Also,
+take note of the URL, above, because it will be needed, later, when it comes
+to connecting the JSONRPC-aware Pyjamas client to the Django server.
+}}
+
+When working with Django, any modifications that you make to the application
+will be picked up automatically when running Django in "test" mode
+(<tt>python manage.py 8080</tt>).  If running the application
+using mod_python under Apache2, Apache2 will need to either be restarted
+or reloaded.
+
+{{-info
+Apache2 is quite happy with a reload, if the application has no errors.
+However, if an error occurs in the application, the thread will bomb out
+and "stick".  As threads are chosen at random, to respond to requests,
+what happens is that at some point in the future, the "stuck" thread will
+be called on again to respond to a request... and it will respond with
+<em>the same</em> error message, regardless of the request and regardless
+of the requester.  So it is unfortunate but <em>vital</em> that you restart
+Apache2 if an error occurs, when using mod_python.
+}}
+
+So, again - there's very little involved in setting up a JSONRPC service
+under Django.  There's actually so little "hard work" that it's almost a
+let-down to know that it <i>is</i> possible to do Web Development that
+doesn't get in the way.
+
