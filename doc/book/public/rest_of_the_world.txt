@@ -781,7 +781,7 @@ an obtuse error message will be displayed.
 
 {{-info
 If you get an obtuse error message, then it is with very little regret,
-and quite a bit of glee to, mention that the author cares not one bit
+and quite a bit of glee, to mention that the author cares not one bit
 about PHP, and is not inclined to spend time encouraging readers, who
 are likely to be Python Programmers, to use it.  So, if an obtuse
 error message is encountered, <em>great!</em>.  Ignore it, and move on...
@@ -791,8 +791,8 @@ much boredom or irritation beyond belief, it's worthwhile moving
 swiftly on to testing the python Echo Service.  For this to work,
 the JSONRPCExample.py <i>must</i> be pointing to the correct URL,
 as has been emphasised in the sections on setting up a JSONRPC Service.
-Edit the file, examples/jsonrpc/JSONRPCExample.py, and change the
-last few lines:
+Edit the file JSONRPCExample.py in the examples/jsonrpc/ directory,
+and change the last few lines:
 
 {{
 class EchoServicePHP(JSONProxy):
@@ -853,11 +853,12 @@ source code.
 
 == Getting Pyjamas AJAX clients and Django JSONRPC Services "lined up" ==
 
-In the Django example, it's probably best to not bother to make Django
-load static HTML pages, but to go straight to running Django as a mod_python
-Apache2 module.  Install and configure mod_python, if it isn't already included
-as part of the standard Apache2 distribution, and add the following lines to
-the configuration:
+In the Django case, it's probably best to not bother to modify
+the Django example app to load static HTML pages, but to go straight
+to running Django as a mod_python Apache2 module.  Install and
+configure mod_python, if it isn't already included as part of the
+standard Apache2 distribution, and add the following lines to the
+configuration:
 
 {{
 <Location "/test-service/">
@@ -872,13 +873,21 @@ the configuration:
 }}
 Edit the directory of the PythonPath as appropriate, to point to the directory
 where the Django application was created.  Restart (or better, just reload)
-Apache2, and this is all that should be needed.
+Apache2, and this is all that should be needed, in combination with
+prior edits to the Apache2 configuration (the <tt>/examples/</tt>
+Directive), to get the JSONRPCExample to work.
 
 {{-info
 Do not add the path of the Django application itself to the PythonPath!
 If the Django application is called "mysite", do not add "/path/src/mysite",
 just add "/path/src".  Also, remember to modify the DJANGO_SETTINGS_MODULE
-to point to "mysite" only if your Django application is called "mysite",
+to point to "mysite" only if the Django application is called "mysite",
 and to <i>your</i> application, otherwise.
 }}
+
+When using mod_python, it's important to remember that any errors in the
+Django application will cause the Apache2 thread that served the page to
+"stick", and Apache2 will need to be restarted, to get rid of it.
+Also, when using mod_python, running the built-in Django Test server
+(<tt>python ./manage.py runserver 8000</tt>) is no longer necessary.
 
