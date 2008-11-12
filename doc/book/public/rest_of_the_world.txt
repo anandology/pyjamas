@@ -477,6 +477,15 @@ client with the web.py server.
 
 == Twisted Matrix txJSONRPC ==
 
+Twisted Matrix is a comprehensive framework for networking and networked
+applications, written in Python.  There is a JSONRPC library, which can be
+used to create both clients and servers, called txJSONRPC: it is available
+from https://launchpad.net/txjsonrpc. 
+
+First, you should download and install the Twisted Matrix framework,
+from http://twistedmatrix.com.  Second, you should install txJSONRPC.
+To create a Twisted Matrix JSONRPC Service, start by creating a file,
+to be saved as server.tac, with the following contents:
 {{
 from twisted.web2 import server, static
 from twisted.web2.channel import http
@@ -507,4 +516,56 @@ application = service.Application("Example JSON-RPC Server")
 jsonrpcServer = internet.TCPServer(7080, chan)
 jsonrpcServer.setServiceParent(application)
 }}
+
+Once saved as server.tac, the above can be run with this command:
+{{
+twistd -noy server.tac
+}}
+
+The example is an adaptation of the server example that can be found on
+https://wiki.ubuntu.com/txJSON-RPC/TwistedWeb2, and it is instructive
+to compare the two.  As it proved quite challenging to find easy-to-understand
+documentation on how to set up Twisted Matrix servers, some time will be
+spent explaining the above.  The key to a JSONRPC service, here, is in
+creating a class that derives from txjsonrpc.web2.jsonrpc.JSONRPC.  However,
+the example on the txJSONRPC Wiki serves pages in a way which dominates
+port 7080:
+{{
+site = server.Site(Example())
+chan = http.HTTPFactory(site)
+application = service.Application("Example JSON-RPC Server")
+jsonrpcServer = internet.TCPServer(7080, chan)
+jsonrpcServer.setServiceParent(application)
+}}
+
+In this example, taken from the txJSONRPC Wiki, the only thing that can
+be accessed is the JSONRPC Service, via the following url:
+<tt>http://localhost:7080/</tt>.  Clearly, this is of no use, in a
+real environment, as it will not be possible to serve anything else,
+such as the index.html file of the site!  These lines, therefore, are key:
+{{
+from twisted.web2 import static
+
+root = static.File("/var/www/")
+root.putChild("doc", static.File("/usr/share/doc"))
+root.putChild("test", Example())
+site = server.Site(root)
+}}
+Static HTML can, in this case, be served from <tt>/var/www/</tt>, which
+will be the "root" - accessible as <tt>http://localhost:7080/</tt>.
+The contents of <tt>/usr/share/doc</tt> will be served from
+<tt>http://localhost:7080/doc/</tt>, and, crucially, our JSONRPC Example
+service will be accessible via <tt>http://localhost:7080/test/</tt>.
+
+In this way, an AJAX application's index.html and other content, such as
+images, can be placed in <tt>/var/www</tt>, and the AJAX code in the
+Pyjamas JSONRPC client code, once downloaded from the Web Server's root
+and executed in the user's browser, can be instructed to access <tt>/test/</tt>.
+
+Once again, it is essential to remember the URI where the JSONRPC service
+will be accessible, as the Pyjamas JSONRPC client code must be told where,
+on the Web Server, that service can be found.  Lastly: the Wiki example
+https://wiki.ubuntu.com/txJSON-RPC/TwistedWeb2 has been copied near
+verbatim, and so it is missing the functions reverse, uppercase and lowercase.
+It is left as an exercise to the reader to add these missing functions.
 

@@ -17,7 +17,7 @@ def urlmap(txt):
         return escape(txt)
     for i in range(idx, len(txt)):
         c = txt[i]
-        if c == ' ' or c == '\n' or c == '\t':
+        if c == ' ' or c == '\n' or c == '\t' or c == '.' or c == ':' or c == ',':
             i -= 1
             break
 
