@@ -123,30 +123,49 @@ can adapt to your needs, by changing the directory location:
 {{
 Alias /examples/ "/home/lkcl/src/pyjamas/examples/"
 <Directory "/home/lkcl/src/pyjamas/examples/">
-    Options +ExecCGI Indexes FollowSymLinks MultiViews
+    Options Indexes FollowSymLinks MultiViews
     AllowOverride None
     Order deny,allow
     allow from all
 </Directory>
+ScriptAlias /services/ /home/lkcl/src/pyjamas/examples/jsonrpc/output/services/
+<Directory "home/lkcl/src/pyjamas/examples/jsonrpc/output/services/">
+    AllowOverride None
+    #AddHandler cgi-script .py
+    Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
+    Order allow,deny
+    Allow from all
+</Directory>
+
+
 }}
 
-The above is pretty standard fare for an Apache configuration: the only
-additional thing that you might notice is that <tt>+ExecCGI</tt> has been
-added, which will allow any executable applications to be run as CGI scripts
-(such as EchoService.py for the JSONRPC example).  If you do not want
-this feature, remove <tt>+ExecCGI</tt>.
+The above is pretty standard fare for an Apache configuration: remember
+however that you must ensure that the AJAX application matches up with
+the locations that you set, here, in the Apache2 configuration, and that
+the directories you ask the scripts and static content to be loaded from
+must actually exist!
 
 {{-info
 Remember to change the location to one where your output is compiled!
 Also, make sure that you place the trailing slashes on the end of the
 directory paths.  Also, remember to enable mod_cgi if you want CGI
-scripts to run.
+scripts to run.  Search on google for advice on how to set up Apache
+CGI scripts, for your specific system, if you run into difficulties.
 }}
 
 With the above example, once you have started (or restarted) Apache2,
 you will be able to open up a web browser on http://localhost/examples/
 to run your application.  If successful, you should see the contents
 of the test slide in the browser.
+
+You can test the CGI example, after restarting or reloading Apache2,
+by browsing to <tt>http://localhost/services/EchoService.py</tt>.
+If you are offered an opportunity do <i>download</i> EchoService.py,
+then you have not correctly set up cgi-bin execution.  If, however,
+you get presented with a blank screen, then congratulations, the
+EchoService.py is correctly running: you are ready to connect to
+it with a JSONRPC client, which will be covered later.
 
 {{-info
 Remember that if you don't see anything, check the Javascript console,
@@ -578,6 +597,13 @@ JSONRPC (yet), then start by examining the difference between the
 Django and the Web.py ports of pimentech's network library: very little
 change to the library was required, to adapt it to Web.py.
 
+Additional resources can easily be found using a google query of
+<tt>"Python JSONRPC Server"</tt> and this brings up two additional
+options not covered here, as well as some other useful links:
+ * http://www.freenet.org.nz/dojo/pyjson/
+ * http://pypi.python.org/pypi/z3c.jsonrpc/
+ * http://json-rpc.org
+
 What has been covered in this section is as follows:
  * How incredibly simple it is to make a Python JSONRPC Service
  * How to do CGI-based, Django, Web.py and Twisted Matrix JSONRPC
@@ -585,11 +611,136 @@ What has been covered in this section is as follows:
 
 It's often the case - bizarrely - that there will be more lines of python
 code to create the front-end Pyjamas application than there will be in the
-Web Server back-end that accesses the information in the database!  This
+Web Server back-end that manages the information in the database!  This
 is a testament to the power of the available Python frameworks as much as it
 is to the level of complexity of Desktop-like applications development.
 
 When such amazingly powerful technology is available, exactly how
 and why the development of comprehensive web applications are still
 done using server-side HTML-based technology is somewhat puzzling.
+
+= Testing the JSONRPC services, using Python-based JSONRPC clients =
+
+Before progressing to doing JSONRPC in a browser, it's probably a good
+idea to double-check that the example Server of choice actually works.
+Python-based JSONRPC clients are surprisingly difficult to find, perhaps
+because they are so simple to write that people forgot to do it.  So
+here are some links to the clients that <i>do</i> exist (and are easy to find):
+ * http://developer.spikesource.com/wiki/index.php/Article:Accessing_JSON-RPC_with_Python
+ * https://wiki.ubuntu.com/txJSON-RPC/TwistedWeb2
+ * http://pypi.python.org/pypi/z3c.jsonrpc/
+
+== Simple JSONRPC client ===
+
+First, download a very simple client, written by Matt Harrison.  Copies
+are available here:
+ * http://files.blog-city.com/files/F05/96843/b/jsonrpclib.tar.gz
+ * http://lkcl.net/jsonrpclib.tgz
+
+Then, create the following file, saving it as jsonrpctest.py:
+{{
+import jsonrpclib
+
+s = jsonrpclib.ServerProxy("http://localhost:7080/test/")
+reply = s.echo("foo bar")
+print reply
+}}
+As can be seen, it really couldn't get any easier, and the code is good
+enough to help prove that there's actually something there.
+
+{{-info
+Remember to adapt the URL to point to the JSONRPC Server that you want to test!
+The example shows how to test the txJSONRPC server: if you want to test the
+Django example, you will need to specify a URL of http://localhost/test-service/
+or wherever it was that you edited your Django app's urls.py to answer from.
+}}
+
+Run the script and test it:
+{{
+$ python jsonrpc_test.py 
+{u'error': None, u'id': 2, u'result': u'foo bar'}
+}}
+
+Whilst this isn't the most user-friendly of answers, it's definitely
+the right one, and it's better than this:
+{{
+NameError: global name 'ProtocolError' is not defined
+}}
+
+which is what you will encounter if you used the wrong URL.  Double-check
+that you have set the URL correctly, in whatever framework you have chosen.
+In the case of connecting to an Apache2-driven CGI script, first make sure
+that the script <i>is</i> executable, by typing the URL directly into your
+browser, for example, if you have followed verbatim the advised setup,
+then the Apache2 Directive that makes <tt>"/services/"</tt> part of your
+Apache2 server's CGI-based infrastructure, you can type
+<tt>http://localhost/services/EchoService.py</tt> into your browser,
+and you should get a blank screen (rather than downloading EchoService.py
+as a static file...)
+
+Once you have confirmed that the cgi-bin script is executed, modify
+jsonrpc_test.py to make the argument passed to ServerProxy point to
+the cgi script:
+{{
+s = jsonrpclib.ServerProxy("http://localhost/services/EchoService.py")
+}}
+Again, <tt>u'foo bar'</tt> should be printed out, thus confirming that
+everything is hunky-dory.
+
+== Simple txJSONRPC client ==
+
+Create a file, called client.py, with the following contents, remembering
+to edit it to suit the JSONRPC service to be tested:
+{{
+from twisted.internet import reactor
+
+from txjsonrpc.web.jsonrpc import Proxy
+
+def printValue(value):
+    print repr(value)
+    reactor.stop()
+
+def printError(error):
+    print 'error', error
+    reactor.stop()
+
+proxy = Proxy('http://127.0.0.1:7080/test/')
+proxy.callRemote('add', 3, 5).addCallbacks(printValue, printError)
+reactor.run()
+}}
+Again, as with the previous example, note that the URL is set in this
+instance to point to the txJSONRPC server.tac Service, and, if testing
+against Django, for example, the URL should be set to
+<tt>http://127.0.0.1/test-service/</tt>.
+
+When run, using <tt>python client.py</tt>, the number 8 should be printed.
+If you would like to test the echo function, use this, instead:
+{{
+proxy.callRemote('echo', 'hello').addCallbacks(printValue, printError)
+}}
+This will print out "hello".
+
+It has to be pointed out that, when compared to the best RPC systems,
+this example's syntax is pretty user-hostile - obtuse at best.  However,
+that's not what matters, here: the point is that it can be used to prove that
+the servers actually work - to provide an independent test mechanism
+in the future, should it prove necessary to track down the source of
+errors in the development of Pyjamas JSONRPC applications.
+
+== Purpose of using independent JSONRPC clients ==
+
+So there are at least two, possibly even four independent JSONRPC
+clients available, all written in native Python, that can be used,
+and two of them are demonstrated here.  The purpose of performing
+independent testing is firstly to confirm that the JSONRPC server
+works, but also, during the development of your application, errors
+may be encountered that would otherwise be difficult to track down.
+
+Eliminating one source of errors from the equation is always a good
+idea.  Using a Web browser, which will be difficult to control
+and perform automated test validations with, is not something that
+you should consider.  Whereas, although obtuse, the use of the above
+python clients will allow you at least to run automated tests on your
+JSONRPC service from the command-line.
+
 
