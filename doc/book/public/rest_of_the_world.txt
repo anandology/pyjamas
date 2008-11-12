@@ -959,7 +959,14 @@ once the modifications to code.py above have been saved, re-run
 the Web.py app, with the command <tt>python code.py</tt>, and open
 <tt>http://localhost:8080</tt> in a Web browser.
 
-== What's been covered ==
+= What's been covered =
+
+We've gone over how to use AJAX, in both static (straight loading of
+text files) and dynamic (using JSONRPC) fashions.  The dynamic examples
+show how to use four different kinds of Web frameworks, all of which
+are very similar to one another.  We've shown how to use python-based
+JSONRPC clients, which can be used as the basis of test frameworks for
+JSONRPC servers.
 
 In each case, with each of the Web Frameworks, the following has been
 emphasised and covered:
@@ -970,5 +977,4 @@ emphasised and covered:
 It's important to get this bit right, and well-understood, as it's the
 fundamental basis of the interaction between Pyjamas applications and the
 rest of the world - the Web Server.
-
 
