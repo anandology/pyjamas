@@ -891,3 +891,84 @@ Django application will cause the Apache2 thread that served the page to
 Also, when using mod_python, running the built-in Django Test server
 (<tt>python ./manage.py runserver 8000</tt>) is no longer necessary.
 
+== Pyjamas AJAX clients talking to Web.py ==
+
+Whilst web.py automatically supports access to static content in subdirectories,
+if slightly more strict control over the content is required, the following
+class can be used.  It's based on the Images class that can be found at
+http://webpy.org/images, with the additional mime types of HTML, Javascript,
+Text and CSS being added.  Add this to the code.py example, created earlier:
+{{
+urls = (
+    '/chat/', 'chatcls',
+    '/chat',  'chatcls',
+    '/(.*)', 'static' # static content
+    )
+
+class static:
+    def GET(self, name):
+
+        if name == '':
+            name = 'JSONRPCExample.html'
+
+        ext = name.split(".")[-1]
+
+        cType = {
+            "js":"application/x-javascript",
+            "txt":"text/plain",
+            "css":"text/css",
+            "html":"text/html",
+            "png":"images/png",
+            "jpg":"image/jpeg",
+            "gif":"image/gif",
+            "ico":"image/x-icon"            }
+
+        static_location = '/home/lkcl/src/pyjamas/examples/jsonrpc/output'
+        if name in os.listdir(static_location):
+            web.header("Content-Type", cType[ext])
+            print open('%s/%s' % (static_location, name), "rb").read()
+        else:
+            web.notfound()
+}}
+Note that the "static" class has been added to urls, right at
+the top, to deal with all URLs (except <tt>/chat/</tt>).  Also,
+it will be necessary to modify the location from where the
+static content is loaded from.  Also, for convenience, if no
+name is given, the content from JSONRPCExample.html is served.
+This allows users to type in <tt>http://localhost:8080</tt>
+once the Web.py application is running, instead of
+<tt>http://localhost:8080/JSONRPCExample.html</tt>.
+
+Also, either modify the urls to match up with the existing locations
+that the Pyjamas JSONRPCService.py has been modified to support
+(<tt>/test/</tt> or <tt>/test-service/</tt>), or edit JSONRPCService.py
+and change the URI that JSONProxy talks to:
+{{
+class EchoServicePython(JSONProxy):
+    def __init__(self):
+        # this example works against the Web.py Example:
+        JSONProxy.__init__(self, "/chat/",
+                        ["echo",
+                         "reverse",
+                         "uppercase",
+                         "lowercase"])
+}}
+
+Remember to save and recompile the Pyjamas application.  Also,
+once the modifications to code.py above have been saved, re-run
+the Web.py app, with the command <tt>python code.py</tt>, and open
+<tt>http://localhost:8080</tt> in a Web browser.
+
+== What's been covered ==
+
+In each case, with each of the Web Frameworks, the following has been
+emphasised and covered:
+ * The importance of matching up the URL in the Pyjamas application's JSONRPC Proxy with the location where the chosen Framework serves its JSONRPC Service from.
+ * The importance of pandering to the restrictions on AJAX, for security reasons
+ * The ways in which the Framework serves the static HTML and Javascript content from one location and the JSONRPC Service responses from another, but they must both come from the same Root URL (due to AJAX security restrictions).
+
+It's important to get this bit right, and well-understood, as it's the
+fundamental basis of the interaction between Pyjamas applications and the
+rest of the world - the Web Server.
+
+
