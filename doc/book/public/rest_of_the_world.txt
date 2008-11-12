@@ -567,5 +567,29 @@ will be accessible, as the Pyjamas JSONRPC client code must be told where,
 on the Web Server, that service can be found.  Lastly: the Wiki example
 https://wiki.ubuntu.com/txJSON-RPC/TwistedWeb2 has been copied near
 verbatim, and so it is missing the functions reverse, uppercase and lowercase.
-It is left as an exercise to the reader to add these missing functions.
+It is left as a simple exercise to the reader to add these missing functions.
+
+== Conclusion on Python JSONRPC Services ==
+
+The list covered here, of available Python Frameworks that can be used to run 
+JSONRPC Services, is by no means complete, but it should be clear that it's
+not exactly rocket science.  If your preferred framework does not support
+JSONRPC (yet), then start by examining the difference between the
+Django and the Web.py ports of pimentech's network library: very little
+change to the library was required, to adapt it to Web.py.
+
+What has been covered in this section is as follows:
+ * How incredibly simple it is to make a Python JSONRPC Service
+ * How to do CGI-based, Django, Web.py and Twisted Matrix JSONRPC
+ * How to specify, in each case, where the service is to be accessed, by web clients.
+
+It's often the case - bizarrely - that there will be more lines of python
+code to create the front-end Pyjamas application than there will be in the
+Web Server back-end that accesses the information in the database!  This
+is a testament to the power of the available Python frameworks as much as it
+is to the level of complexity of Desktop-like applications development.
+
+When such amazingly powerful technology is available, exactly how
+and why the development of comprehensive web applications are still
+done using server-side HTML-based technology is somewhat puzzling.
 
