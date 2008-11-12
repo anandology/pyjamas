@@ -218,7 +218,7 @@ def greet(sender):
     RootPanel().add(HTML("No of times not in Kansas: %d" % x))
 }}
 
-= What we done =
+= What we have done =
 
 To recap what's been achieved, in this section, we have:
  * Downloaded and unpacked the Pyjamas Compiler.
