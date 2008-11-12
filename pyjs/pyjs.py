@@ -772,11 +772,11 @@ class Translator:
         return "!(" + expr + ")"
 
     def _or(self, node, current_klass):
-        expr = " || ".join([self.expr(child, current_klass) for child in node.nodes])
+        expr = "("+(") || (".join([self.expr(child, current_klass) for child in node.nodes]))+')'
         return expr
 
     def _and(self, node, current_klass):
-        expr = " && ".join([self.expr(child, current_klass) for child in node.nodes])
+        expr = "("+(") && (".join([self.expr(child, current_klass) for child in node.nodes]))+")"
         return expr
 
     def _for(self, node, current_klass):
@@ -957,9 +957,9 @@ class Translator:
         elif isinstance(node, ast.Invert):
             return self._invert(node, current_klass)
         elif isinstance(node, ast.Bitand):
-            return self._bitand(node, current_klass)
+            return "("+self._bitand(node, current_klass)+")"
         elif isinstance(node, ast.Bitor):
-            return self._bitor(node, current_klass)
+            return "("+self._bitor(node, current_klass)+")"
         elif isinstance(node, ast.Compare):
             return self._compare(node, current_klass)
         elif isinstance(node, ast.CallFunc):
