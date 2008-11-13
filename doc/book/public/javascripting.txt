@@ -198,6 +198,17 @@ only to be replaced by a different form of unease at breaking a python
 convention: the disappearance of the word "self" from the python code...
 }}
 
+The inclusion of jsrecttest.js as if it was a python module is
+<i>definitely</i> non-pythonic, but due to the way that pyjamas code
+is generated, and to ensure that there are no surprises, there really
+isn't much choice.  Browsers have a habit of executing code when it is
+loaded - but <i>only</i> when the code is included from the initial
+web page.  If javascript is used, to modify the URL of the browser page,
+to load up a second HTML page, things start to go horribly wrong.
+So, the only way to guarantee that no limitations are imposed is to
+actually include the script <i>wholesale</i> and <i>inline</i>, in the
+Pyjamas compiled output!
+
 Examining the class <tt>Rect</tt>, it can be seen that the initialisation
 appears - somehow - to magically go into javascript-land and create a
 <tt>rectobj()</tt> as a member variable, and that the rectobj instance
@@ -289,5 +300,5 @@ In other words, what's happened is that the auto-generated code <i>happens</i>
 to be identical to the code that we inlined.  pyjs.py <i>happens</i> to
 "understand" how to turn python "self" into javascript "this", and the
 syntax of javascript <i>happens</i> to be similar to python, in this simple
-case.
+example.
 
