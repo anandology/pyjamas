@@ -1,3 +1,4 @@
 Introduction: Why we need a Common Free Software Applications Interface
 Getting Started: A First Pyjamas Application.
 Rest of the World: Ways to connect using AJAX.
+Javascripting: How to include Javascript objects in Python.
