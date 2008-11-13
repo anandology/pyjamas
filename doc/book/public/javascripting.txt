@@ -147,15 +147,147 @@ def rect_init(self, x, y):
 rectobj.__init__ = rect_init
 rectobj.add = rect_add
 rectobj.area = rect_area
-
-x = rectobj(5, 2)
-y = rectobj(2, 7)
-print x.area()
-x.add(y)
-print x.area()
 }}
 Python purists should either be screaming or quaking in their boots at the
 incorrectness of this approach.  The particularly well-informed ones will
-likely scream loudest about the lack of decorators.
+likely scream loudest about the lack of decorators.  All of which is
+irrelevant, because only the most insane or the most confident of Python
+programmers would dare do anything like this.  But - it's here for
+illustrative purposes.
 
+Moving swiftly on, create a file, TestRect.py, with the following contents:
+{{
+import jsrecttest.js # YUK!!!
+
+class Rect: 
+    def __init__(self, x, y):
+        JS("""
+           this.rect = new rectobj();
+           this.rect.init(x, y);
+           """)
+
+    def add(self, r):
+        JS("""
+            this.rect.add(r.rect);
+           """)
+    def area(self):
+        JS("""
+            return this.rect.area();
+           """)
+
+    def get_x(self):
+        JS("""
+            return this.rect.x;
+            """)
+
+    def get_y(self):
+        JS("""
+            return this.rect.y;
+            """)
+}}
+Straight away, notice two critical things: firstly, importing jsrecttest.js
+with an extension ".js" is <i>definitely</i> not standard python - but then
+again, the whole concept of compiling python into javascript throws spanners
+in the works.  Secondly: in this strange-looking Python class, whilst every
+function uses "self", the javascript snippets use "this".
+{{-info
+"self" in python is just a convention.  If it feels more comfortable,
+substitute all occurences of the word "self" - consistently - in a python
+class member function - and the feeling of panic and unease should subside,
+only to be replaced by a different form of unease at breaking a python
+convention: the disappearance of the word "self" from the python code...
+}}
+
+Examining the class <tt>Rect</tt>, it can be seen that the initialisation
+appears - somehow - to magically go into javascript-land and create a
+<tt>rectobj()</tt> as a member variable, and that the rectobj instance
+gets initialised with the same x and y parameters that the Python
+<tt>Rect</tt> class gets initialised with!  It's the same story, throughout
+all of the functions, and at this point, it's a very very good idea to
+run the pyjs.py compiler, to find out what's going on.  Run the following
+command (assuming that you saved the files in a subdirectory of examples,
+or are executing the command from the pyjamas/examples/jsobject directory):
+{{
+    python ../../pyjs/pyjs.py TestRect.py
+}}
+
+The output from pyjs.py is printed on-screen, and, an abbreviated version
+is shown, here:
+{{
+function __Rect() {
+}
+function Rect(x, y) {
+    var instance = new __Rect();
+    if(instance.__init__) instance.__init__.apply(instance, arguments);
+    return instance;
+}
+
+function __Rect_initialize() {
+    if(__Rect.__was_initialized__) return;
+    __Rect.__was_initialized__ = true;
+    pyjs_extend(__Rect, __pyjslib_Object);
+    __Rect.prototype.__class__.__new__ = Rect;
+    __Rect.prototype.__init__ = function(x, y) {
+
+           this.rect = new rectobj();
+           this.rect.init(x, y);
+           
+    };
+    __Rect.prototype.get_x = function() {
+
+            return this.rect.x;
+            
+    };
+
+    /* ...
+       functions cut, for clarity and brevity, are area, get_y and add.
+       as well as a boat-load of non-intuitive crud.
+       ...
+     */
+}
+__Rect_initialize();
+}}
+To explain the morass of extra code: it's to create some semblance and
+imitation of pythonic classes, in a language which doesn't have classes.
+Note in particular the use of the function pyjs_extend, which emulates
+class inheritance; the technique is prevalent in javascript libraries,
+to "extend" the functionality of an object by copying its methods into
+the child "class".
+
+The thing that needs particular attention is this line:
+{{
+    __Rect.prototype.__init__ = function(x, y) {
+}}
+This line sets up "class" initialiser function, called __init__, which
+has two parameters, x and y.  Just like in c++, the concept of "this"
+is implicit in javascript: you always unavoidably get one, and so it
+need not be passed around as a parameter.  Note that the <i>contents</i>
+of the __init__ function are - literally verbatim - what was placed
+inside the JS(""" """) inlining wrapper.
+
+Regarding the remaining functions, and to illustrate in a clearer manner
+the relationship between Python and its resultant javascript output when
+compiled, change the <tt>get_x()</tt> function, as follows:
+{{
+    def get_x(self):
+        return self.rect.x
+}}
+Re-run pyjs,py and look for the following lines, in the output:
+{{
+    __Rect.prototype.get_x = function() {
+    return this.rect.x;
+    };
+}}
+That's... that's the same, isn't it?  Yes and no: there's more
+white-space in the previous example, and the reason for <i>that</i>
+is because, inside the original JS(""" return this.rect.x; """) block
+there was... a lot of white-space.  Go back to the previous code,
+and either remove <i>all</i> white-space, add in javascript-style
+comments, or remove the indentation, and re-run pyjs.py.
+
+In other words, what's happened is that the auto-generated code <i>happens</i>
+to be identical to the code that we inlined.  pyjs.py <i>happens</i> to
+"understand" how to turn python "self" into javascript "this", and the
+syntax of javascript <i>happens</i> to be similar to python, in this simple
+case.
 

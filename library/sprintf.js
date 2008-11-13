@@ -72,7 +72,7 @@ sprintfWrapper = {
 
        if(args && args.__class__ != "pyjslib_List" && 
                   args.__class__ != "pyjslib_Tuple")
-          args = new pyjslib_List(args);
+          args = new pyjslib_List([args]);
 
        if (!args || pyjslib_len(args) < 1 || !RegExp)
        {

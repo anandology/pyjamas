@@ -1,5 +1,4 @@
 from pyjamas.ui import RootPanel, TextBox, HTML, Button
-from pyjamas import Window
 
 import jsrecttest.js # YUK!!!
 
@@ -20,9 +19,7 @@ class Rect:
            """)
 
     def get_x(self):
-        JS("""
-            return this.rect.x;
-            """)
+        return self.rect.x
 
     def get_y(self):
         JS("""
