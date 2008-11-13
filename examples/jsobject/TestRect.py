@@ -1,7 +1,7 @@
 from pyjamas.ui import RootPanel, TextBox, HTML, Button
 from pyjamas import Window
 
-#import jsrecttest.js # YUK!!!
+import jsrecttest.js # YUK!!!
 
 class Rect:
     def __init__(self, x, y):
