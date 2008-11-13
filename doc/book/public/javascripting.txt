@@ -87,9 +87,10 @@ can be created in javascript, like this:
 It's quite obtuse, but easy to follow: the function <tt>rectobj()</tt> is being
 called, but the qualifier "new" tells javascript to actually make an object,
 and thus, any occurrences of the word "this" can be used - just like "self"
-in python and "this" in c++ - to member variables, functions and objects.
-So, the function <tt>rect_init()</tt> adds two variables to a <tt>rectobj</tt>;
-<tt>rect_area</tt> can return those two variables, multiplied together.
+in python and "this" in c++ - to refer to member variables, functions and
+objects.  So, the function <tt>rect_init()</tt> adds two variables
+to a <tt>rectobj</tt>; <tt>rect_area</tt> can return those two
+variables, multiplied together.
 
 Crucially, however, the last three lines are what makes javascript incredibly
 powerful.  Notice the use of "prototype" - that's telling the javascript
@@ -185,17 +186,19 @@ class Rect:
             return this.rect.y;
             """)
 }}
-Straight away, notice two critical things: firstly, importing jsrecttest.js
-with an extension ".js" is <i>definitely</i> not standard python - but then
-again, the whole concept of compiling python into javascript throws spanners
-in the works.  Secondly: in this strange-looking Python class, whilst every
-function uses "self", the javascript snippets use "this".
+Straight away, notice two critical things: firstly, importing
+jsrecttest.js with an extension ".js" is <i>definitely</i> not
+standard python - but then again, the whole concept of compiling
+python into javascript throws spanners in the traditional works,
+anyway.  Secondly: in this strange-looking Python class, whilst
+every function uses "self", the javascript snippets use "this".
 {{-info
 "self" in python is just a convention.  If it feels more comfortable,
-substitute all occurences of the word "self" - consistently - in a python
-class member function - and the feeling of panic and unease should subside,
-only to be replaced by a different form of unease at breaking a python
-convention: the disappearance of the word "self" from the python code...
+substitute all occurences of the word "self" with the word "this" -
+consistently, in a python class member function - and the feeling of
+panic and unease should subside, only to be replaced by a different form
+of unease at breaking a python convention: the disappearance of the word
+"self" from the python code...
 }}
 
 The inclusion of jsrecttest.js as if it was a python module is
