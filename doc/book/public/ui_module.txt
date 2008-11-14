@@ -2,24 +2,25 @@
 
 == ui.AbsolutePanel ==
 
-ui.AbsolutePanel is a panel that positions its children using absolute pixel positions. This allows the panel's children to overlap.
+ui.AbsolutePanel is a panel that positions its children using
+absolute pixel positions. This allows the panel's children to
+overlap.
 
-Note that the AbsolutePanel does not automatically resize itself to fit its children. There is no straightforward way of doing this unless all the children are explicitly sized; the easier workaround is just to call panel.setWidth(width) and panel.setHeight(height) explicitly after adding the children, choosing an appropriate width and height based on the children you have added.
+Note that the AbsolutePanel does not automatically resize itself
+to fit its children. There is no straightforward way of doing this
+unless all the children are explicitly sized; the easier workaround
+is just to call panel.setWidth(width) and panel.setHeight(height)
+explicitly after adding the children, choosing an appropriate width
+and height based on the children you have added.
 
-Working Example
-
-Child 1
-Child 2
-
-Source Code
-
-
+Source Code:
 {{
 from pyjamas.ui import SimplePanel, AbsolutePanel, VerticalPanel, HTML
 from pyjamas import DOM
 
 
 class AbsolutePanelDemo(SimplePanel):
+
     def __init__(self):
         SimplePanel.__init__(self)
 
@@ -33,7 +34,6 @@ class AbsolutePanelDemo(SimplePanel):
 
         self.add(panel)
 
-
     def makeBox(self, label):
         wrapper = VerticalPanel()
         wrapper.setBorderWidth(1)
@@ -44,16 +44,19 @@ class AbsolutePanelDemo(SimplePanel):
         return wrapper
 }}
 
-
-
 == ui.DialogBox ==
 
-The ui.DialogBox class implements a panel that behaves like a dialog box.
+The ui.DialogBox class implements a panel that behaves like a
+dialog box.
 
-A dialog box has an optional caption, and a widget which is displayed as the main part of the dialog box. The user can drag the dialog box around by clicking on the caption.
+A dialog box has an optional caption, and a widget which is displayed
+as the main part of the dialog box. The user can drag the dialog
+box around by clicking on the caption.
 
-The DialogBox class makes use of stylesheet definitions; if these are not supplied, the dialog box will look very strange. The following stylesheet definitions are used by the example shown below:
-
+The DialogBox class makes use of stylesheet definitions; if these are
+not supplied, the dialog box will look very strange. The following
+stylesheet definitions are used by the example shown below:
+{{
         .gwt-DialogBox {
           border: 2px outset;
           background-color: white;
@@ -70,16 +73,15 @@ The DialogBox class makes use of stylesheet definitions; if these are not suppli
         .gwt-DialogBox .Contents {
             padding: 10px;
         }
+}}
 
-Because the DialogBox class is derived from PopupPanel, the user should be able to click outside the dialog box to close it. However, because of a problem with Firefox 3, this does not work. To get around this, the example shown below implements a "Close" button the user can click on.
+As the DialogBox class is derived from PopupPanel, the user should
+be able to click outside the dialog box to close it. However,
+because of a problem with Firefox 3, this does not work. To get
+around this, the example shown below implements a "Close" button
+the user can click on.
 
-Working Example
-
-Show Dialog
-
-Source Code
-
-
+Source Code:
 {{
 from pyjamas.ui import SimplePanel, DialogBox, VerticalPanel, HTML, Button
 from pyjamas import Window
@@ -89,7 +91,6 @@ class DialogBoxDemo(SimplePanel):
         SimplePanel.__init__(self)
 
         self.add(Button("Show Dialog", getattr(self, "showDialog")))
-
 
     def showDialog(self):
         contents = VerticalPanel()
@@ -107,35 +108,26 @@ class DialogBoxDemo(SimplePanel):
         self._dialog.setPopupPosition(left, top)
         self._dialog.show()
 
-
     def onClose(self):
         self._dialog.hide()
 }}
 
-
-
-
-
-
 == ui.DockPanel ==
 
-The ui.DockPanel class divides the panel into five pieces, arranged into North, South, East, West and center pieces. In general the outer pieces are smaller, with the centre holding the main part of the panel's contents, as shown below.
+The ui.DockPanel class divides the panel into five pieces, arranged
+into North, South, East, West and center pieces. In general the
+outer pieces are smaller, with the centre holding the main part of
+the panel's contents, as shown below.
 
-You can set the alignment and size for each widget within the DockPanel, by calling setCellHorizontalAlignment(widget, alignment), setCellVerticalAlignment(widget, alignment), setCellHeight(widget, height) and setCellWidth(widget, width). You can also set the default horizontal and vertical alignment to use for new widgets by calling setHorizontalAlignment() and setVerticalAlignment() before the widget is added.
+You can set the alignment and size for each widget within the
+DockPanel, by calling setCellHorizontalAlignment(widget, alignment),
+setCellVerticalAlignment(widget, alignment), setCellHeight(widget,
+height) and setCellWidth(widget, width). You can also set the
+default horizontal and vertical alignment to use for new widgets
+by calling setHorizontalAlignment() and setVerticalAlignment()
+before the widget is added.
 
-Working Example
-
-North
-West
-	
-Center
-	
-East
-South
-
-Source Code
-
-
+Source Code:
 {{
 from pyjamas.ui import SimplePanel, DockPanel, Label, HasAlignment
 
@@ -167,60 +159,47 @@ class DockPanelDemo(SimplePanel):
         self.add(panel)
 }}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 == ui.FlexTable ==
 
-The ui.FlexTable class implements a table that can have different numbers of cells in each row, and single cells can span multiple rows and columns.
+The ui.FlexTable class implements a table that can have different
+numbers of cells in each row, and single cells can span multiple
+rows and columns.
 
-Each FlexTable has a FlexCellFormatter which you can use to format the cells in the table. The FlexCellFormatter has methods to set the row or column spans for a cell, as well as change the cell alignment, as shown below.
+Each FlexTable has a FlexCellFormatter which you can use to format
+the cells in the table. The FlexCellFormatter has methods to set the
+row or column spans for a cell, as well as change the cell alignment,
+as shown below.
 
-Note that if you use row or column spanning, the cells on the rest of that row or column will be moved over. This can cause some surprising results. Imagine that you have a table like this:
-
+Note that if you use row or column spanning, the cells on the
+rest of that row or column will be moved over. This can cause some
+surprising results. Imagine that you have a table like this:
+{{
         +---+---+---+
         | A | B | C |
         +---+---+---+
         | D | E | F |
         +---+---+---+
+}}
 
 If you set up Cell 0,0 to span two columns, like this:
-
+{{
         flexTable.getFlexCellFormatter().setColSpan(0, 0, 2)
-
-This will cause the table to end up looking like this:
-
+}}
+then the table to end up looking like this:
+{{
         +-------+---+---+
         |   A   | B | C |
         +---+---+---+---+
         | D | E | F |
         +---+---+---+
+}}
+You might expect cell B to be above cell E, but to make this happen
+you need to place cell E at (1, 2) rather than (1, 1).
 
-you might expect cell B to be above cell E, but to make this happen you need to place cell E at (1, 2) rather than (1, 1).
+Each FlexTable also has a RowFormatter which can be used to change
+style names, attributes, and the visibility of rows in the table.
 
-Each FlexTable also has a RowFormatter which can be used to change style names, attributes, and the visibility of rows in the table.
-
-Working Example
-
-Mammals
-Cow	Rat	Dog
-Hide	1,1	2,1
-1,2	2,2
-Show
-
-Source Code
-
-
+Source Code:
 {{
 from pyjamas.ui import SimplePanel, FlexTable, HasAlignment, Button
 
@@ -260,13 +239,11 @@ class FlexTableDemo(SimplePanel):
 
         self.add(self._table)
 
-
     def hideRows(self):
         rowFormatter = self._table.getRowFormatter()
         rowFormatter.setVisible(2, False)
         rowFormatter.setVisible(3, False)
         rowFormatter.setVisible(4, True)
-
 
     def showRows(self):
         rowFormatter = self._table.getRowFormatter()
@@ -275,35 +252,30 @@ class FlexTableDemo(SimplePanel):
         rowFormatter.setVisible(4, False)
 }}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 == ui.FlowPanel ==
 
-The ui.FlowPanel is a panel that allows its contents to "flow" from left to right, and then from top to bottom, like words on a page.
+The ui.FlowPanel is a panel that allows its contents to "flow" from
+left to right, and then from top to bottom, like words on a page.
 
-Because of the way it works, only the width of a FlowPanel needs to be specified; it will automatically take up as much height as is needed to fit the panel's contents.
+Due to the way it works, only the width of a FlowPanel needs
+to be specified: it will automatically take up as much height as
+is needed to fit the panel's contents.
 
-Unfortunately, the implementation of the FlowPanel is actually quite limited, because of the way other widgets are typically implemented. Many widgets are wrapped up in a
-element, which is a block-level element that overrules the element used by the FlowPanel, which is an inline element. As a result, if you add a ui.Label to a FlowPanel, for example, it will still appear on a line by itself rather than flowing with the other elements. Because of this, you may want to avoid using FlowPanel unless you are certain that the items you are adding will flow correctly.
+Unfortunately, circumstances where FlowPanel is useful is actually
+quite limited, because of the way other widgets are typically
+implemented.  Many widgets are wrapped up in a element, which is a
+block-level element that overrules the element used by the FlowPanel,
+which is an inline element. As a result, if you add a ui.Label to
+a FlowPanel, for example, it will still appear on a line by itself
+rather than flowing with the other elements.
 
-Working Example
+So you may want to avoid using FlowPanel unless you are certain
+that the items you are adding will flow correctly, or you could also
+experiment by adding <tt>float: left;</tt> to the CSS style of the
+item being added.  If that doesn't work, then try adding the widget
+to a SimplePanel, and adding the float style to the SimplePanel.
 
-Item 1Item 2Item 3Item 4Item 5Item 6Item 7Item 8Item 9Item 10
-
-Source Code
-
-
+Source Code:
 {{
 from pyjamas.ui import SimplePanel, FlowPanel, Button
 
@@ -327,44 +299,38 @@ class FlowPanelDemo(SimplePanel):
         self.add(flow)
 }}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 == ui.FormPanel ==
 
 The ui.FormPanel class implements a traditional HTML form.
 
-Any TextBox, PasswordTextBox, TextArea, RadioButton, CheckBox, ListBox, FileUpload and Hidden fields contained within the form panel will be sent to the server when the form is submitted.
+Any TextBox, PasswordTextBox, TextArea, RadioButton, CheckBox,
+ListBox, FileUpload and Hidden fields contained within the form
+panel will be sent to the server when the form is submitted.
 
-The example below calls Google to perform a search using the query entered by the user into the text field. The results are shown in a separate Frame. Alternatively, you can call Form.addFormHandler(handler) to manually process the results of posting the form. When this is done, handler.onSubmit(event) will be called when the user is about to submit the form; call event.setCancelled(True) to cancel the event within this method. Also, handler.onSubmitComplete(event) will be called when the results of submitting the form are returned back to the browser. Call event.getResults() to retrieve the (plain-text) value returned by the server.
+The example below calls Google to perform a search using the
+query entered by the user into the text field. The results
+are shown in a separate Frame. Alternatively, you can call
+Form.addFormHandler(handler) to manually process the results of
+posting the form. When this is done, handler.onSubmit(event)
+will be called when the user is about to submit the form;
+call event.setCancelled(True) to cancel the event within this
+method. Also, handler.onSubmitComplete(event) will be called
+when the results of submitting the form are returned back to the
+browser. Call event.getResults() to retrieve the (plain-text)
+value returned by the server.
 
 Note that if you use a ui.FileUpload widget in your form, you must set the form encoding and method like this:
-
-            self.form.setEncoding(FormPanel.ENCODING_MULTIPART)
-            self.form.setMethod(FormPanel.METHOD_POST)
-
-This will ensure that the form is submitted in a way that allows files to be uploaded.
-
-Working Example
-
-Search for:
-		Submit
-
-Source Code
-
-
 {{
-from pyjamas.ui import SimplePanel, FormPanel, VerticalPanel, HorizontalPanel, TextBox, Label, Button
+    self.form.setEncoding(FormPanel.ENCODING_MULTIPART)
+    self.form.setMethod(FormPanel.METHOD_POST)
+}}
+Setting Multipart encoding and POST method will ensure that the
+form is submitted in a way that Web servers expect files to be uploaded.
+
+Source Code:
+{{
+from pyjamas.ui import SimplePanel, FormPanel, VerticalPanel, HorizontalPanel
+from pyjamas.ui import TextBox, Label, Button
 
 class FormPanelDemo(SimplePanel):
     def __init__(self):
@@ -393,39 +359,21 @@ class FormPanelDemo(SimplePanel):
         self.form.add(vPanel)
         self.add(self.form)
 
-
     def onBtnClick(self):
         self.form.submit()
 }}
 
-
-
-
-
-
-
-
-
-
-
-
 == ui.Grid ==
 
-The ui.Grid class implements a panel which lays its contents out in a grid-like fashion, very like an HTML table.
+The ui.Grid class implements a panel which lays its contents out
+in a grid-like fashion, very like an HTML table.
 
-You can use the setHTML(row, col, html) method to set the HTML-formatted text to be displayed at the given row and column within the grid. Similarly, you can call setText(row, col, text) to display plain (unformatted) text at the given row and column.
+You can use the setHTML(row, col, html) method to set the
+HTML-formatted text to be displayed at the given row and column
+within the grid. Similarly, you can call setText(row, col, text)
+to display plain (unformatted) text at the given row and column.
 
-Working Example
-
-Hello, World!	 	 	 	 
- 	1*1 = 1	1*2 = 2	1*3 = 3	1*4 = 4
- 	2*1 = 2	2*2 = 4	2*3 = 6	2*4 = 8
- 	3*1 = 3	3*2 = 6	3*3 = 9	3*4 = 12
- 	4*1 = 4	4*2 = 8	4*3 = 12	4*4 = 16
-
-Source Code
-
-
+Source Code:
 {{
 from pyjamas.ui import SimplePanel, Grid
 
@@ -441,50 +389,39 @@ class GridDemo(SimplePanel):
 
         for row in range(1, 5):
             for col in range(1, 5):
-                grid.setText(row, col, str(row) + "*" + str(col) + " = " + str(row*col))
+                grid.setText(row, col, "%d*%d=%d" % (row, col row*col))
 
         self.add(grid)
 }}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+{{-info
+Please note that there is a bug in the sprintf code, in versions of Pyjamas
+up to 0.3, that will stop "%d*%d=%d" from working.  Either use this, instead:
+            str(row) + "*" + str(col) + " = " + str(row*col)
+or upgrade Pyjamas.
+}}
 
 == ui.HorizontalPanel ==
 
-The ui.HorizontalPanel class is a panel that lays out its contents from left to right.
+The ui.HorizontalPanel class is a panel that lays out its contents
+from left to right.
 
-It is often useful to call setSpacing(spacing) to add space between each of the panel's widgets. You can also call setHorizontalAlignment(alignment) and setVerticalAlignment(alignment) before adding widgets to control how those widgets are aligned within the available space. Alternatively, you can call setCellHorizontalAlignment(widget, alignment) and setCellVerticalAlignment(widget, alignment) to change the alignment of a single widget after it has been added.
+It is often useful to call setSpacing(spacing) to add
+space between each of the panel's widgets. You can also call
+setHorizontalAlignment(alignment) and setVerticalAlignment(alignment)
+before adding widgets to control how those widgets are
+aligned within the available space. Alternatively, you
+can call setCellHorizontalAlignment(widget, alignment) and
+setCellVerticalAlignment(widget, alignment) to change the alignment
+of a single widget after it has been added.
 
-Note that if you want to have different widgets within the panel take up different amounts of space, don't call widget.setWidth(width) or widget.setHeight(height) as these are ignored by the panel. Instead, call panel.setCellWidth(widget, width) and panel.setCellHeight(widget, height).
+Note that if you want to have different widgets within the panel take
+up different amounts of space, don't call widget.setWidth(width)
+or widget.setHeight(height) as these are ignored by the
+panel. Instead, call panel.setCellWidth(widget, width) and
+panel.setCellHeight(widget, height).
 
-Working Example
-
-Part 1
-	
-Part 2
-	
-Part 3
-	
-Part 4
-
-Source Code
-
-
+Source Code:
 {{
 from pyjamas.ui import SimplePanel, HorizontalPanel, Label, HasAlignment
 
@@ -521,33 +458,13 @@ class HorizontalPanelDemo(SimplePanel):
         self.add(panel)
 }}
 
-
-
-
-
-
-
-
-
-
-
-
 == ui.HtmlPanel ==
 
-The ui.HTMLPanel class allows you to include HTML within your application, and embed other widgets inside the panel's contents by wrapping them inside a <span> tag.
+The ui.HTMLPanel class allows you to include HTML within your
+application, and embed other widgets inside the panel's contents
+by wrapping them inside a <span> tag.
 
-Working Example
-
-This is some HTML
-First widget:Hi there
-Second widget:
-This label intentionally left blank
-
-More HTML
-
-Source Code
-
-
+Source Code:
 {{
 from pyjamas.ui import SimplePanel, HTMLPanel, Button, Label
 
@@ -569,37 +486,28 @@ class HtmlPanelDemo(SimplePanel):
         self.add(panel)
 }}
 
-
-
-
-
-
-
-
-
-
 == ui.PopupPanel ==
 
-The ui.PopupPanel class implements a panel that pops up in the browser window to display some contents. When the user clicks outside the popup, it disappears again.
+The ui.PopupPanel class implements a panel that pops up in the
+browser window to display some contents. When the user clicks
+outside the popup, it disappears again.
 
-The PopupPanel requires stylesheet definitions in order to work properly. The following stylesheet definitions were used in the example below:
-
+The PopupPanel requires stylesheet definitions in order to work
+properly. The following stylesheet definitions were used in the
+example below:
+{{
         .showcase-popup {
             background-color: white;
             border: 1px solid #87B3FF;
             padding: 4px;
         }
+}}
+Note that the popup panel is supposed to close when the user clicks
+outside of it. However, this doesn't work under Firefox 3, so the
+code below adds a click handler so the user can click on the popup
+itself to close it.
 
-Note that the popup panel is supposed to close when the user clicks outside of it. However, this doesn't work under Firefox 3, so the code below adds a click handler so the user can click on the popup itself to close it.
-
-Working Example
-
-Click on the button below to display the popup.
-Click Me
-
-Source Code
-
-
+Source Code:
 {{
 from pyjamas.ui import SimplePanel, VerticalPanel, HTML, Button, PopupPanel
 
@@ -617,7 +525,6 @@ class PopupPanelDemo(SimplePanel):
 
         self.add(vPanel)
 
-
     def showPopup(self):
         contents = HTML("Hello, World!")
         contents.addClickListener(getattr(self, "onClick"))
@@ -631,46 +538,22 @@ class PopupPanelDemo(SimplePanel):
         self._popup.setPopupPosition(left, top)
         self._popup.show()
 
-
     def onClick(self):
         self._popup.hide()
 }}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 == ui.ScrollPanel ==
 
-The ui.ScrollPanel class implements a panel that scrolls its contents.
+The ui.ScrollPanel class implements a panel that scrolls its
+contents.
 
-If you want the scroll bars to be always visible, call setAlwaysShowScrollBars(True). You can also change the current scrolling position programmatically by calling setScrollPosition(vPos) and setScrollHorizontalPosition(hPos) to change the horizontal and vertical scrolling position, respectively.
+If you want the scroll bars to be always visible, call
+setAlwaysShowScrollBars(True). You can also change the
+current scrolling position programmatically by calling
+setScrollPosition(vPos) and setScrollHorizontalPosition(hPos) to
+change the horizontal and vertical scrolling position, respectively.
 
-Working Example
-
-Tao Te Ching, Chapter One
-
-The Way that can be told of is not an unvarying way;
-
-The names that can be named are not unvarying names.
-
-It was from the Nameless that Heaven and Earth sprang;
-
-The named is but the mother that rears the ten thousand creatures, each after its kind.
-
-Source Code
-
-
+Source Code:
 {{
 from pyjamas.ui import SimplePanel, ScrollPanel, HTML
 
@@ -693,24 +576,16 @@ class ScrollPanelDemo(SimplePanel):
         self.add(panel)
 }}
 
-
-
-
-
-
-
-
-
-
-
-
-
 == ui.StackPanel ==
 
-The ui.StackPanel class displays a "stack" of sub-panels where only one sub-panel is open at a time.
+The ui.StackPanel class displays a "stack" of sub-panels where only
+one sub-panel is open at a time.
 
-The StackPanel relies heavily on stylesheet definitions to make it look good; the default look of a StackPanel without any styles defined is almost unusable. The following stylesheet definitions were used for the example given below:
-
+The StackPanel relies heavily on stylesheet definitions to make
+it look good; the default look of a StackPanel without any styles
+defined is almost unusable. The following stylesheet definitions
+were used for the example given below:
+{{
         .gwt-StackPanel {
             border: 5px solid #999999;
             background-color: #CCCCCC;
@@ -730,31 +605,15 @@ The StackPanel relies heavily on stylesheet definitions to make it look good; th
             cursor: default;
             font-weight: bold;
         }
+}}
 
-You can programatically change the currently-open panel by calling the setStackVisible(index, visible) method. To find out which panel is currently open, call getSelectedIndex(). To retrieve the widget at a given index, call getWidget(index). Finally, you can change the label for a stack item by calling setStackText(index, text).
+You can programatically change the currently-open panel by calling
+the setStackVisible(index, visible) method. To find out which panel
+is currently open, call getSelectedIndex(). To retrieve the widget
+at a given index, call getWidget(index). Finally, you can change
+the label for a stack item by calling setStackText(index, text).
 
-Working Example
-
-Stack 1
-The quick
-brown fox
-jumps over the
-lazy dog.
-Stack 2
-The
-early
-bird
-catches
-the
-worm.
-Stack 3
-The smart money
-is on the
-black horse.
-
-Source Code
-
-
+Source Code:
 {{
 from pyjamas.ui import SimplePanel, StackPanel, HTML
 
@@ -775,22 +634,15 @@ class StackPanelDemo(SimplePanel):
         self.add(stack)
 }}
 
-
-
-
-
-
-
-
-
-
-
 == ui.TabPanel ==
 
-The ui.TabPanel class implements a tabbed window, where clicking on a tab causes the associated contents to be displayed.
+The ui.TabPanel class implements a tabbed window, where clicking
+on a tab causes the associated contents to be displayed.
 
-The TabPanel relies heavily on cascading stylesheet definitions to operate. The following stylesheet definitions are used by the example shown below:
-
+The TabPanel relies heavily on cascading stylesheet definitions
+to operate. The following stylesheet definitions are used by the
+example shown below:
+{{
         .gwt-TabPanel {
         }
 
@@ -828,25 +680,9 @@ The TabPanel relies heavily on cascading stylesheet definitions to operate. The 
           padding: 2px;
           cursor: default;
         }
+}}
 
-Working Example
-
- 
-	
-Tab 1
-	
-Tab 2
-	
-Tab 3
-	
- 
-The quick brown fox jumps over the lazy dog.
-The early bird catches the worm.
-The smart money is on the black horse.
-
-Source Code
-
-
+Source Code:
 {{
 from pyjamas.ui import SimplePanel, TabPanel, HTML
 
@@ -866,34 +702,27 @@ class TabPanelDemo(SimplePanel):
         self.add(tabs)
 }}
 
-
-
-
-
-
-
-
-
-
-
 == ui.VerticalPanel ==
 
-The ui.VerticalPanel class is a panel that lays out its contents from top to bottom.
+The ui.VerticalPanel class is a panel that lays out its contents
+from top to bottom.
 
-It is often useful to call setSpacing(spacing) to add space between each of the panel's widgets. You can also call setHorizontalAlignment(alignment) and setVerticalAlignment(alignment) before adding widgets to control how those widgets are aligned within the available space. Alternatively, you can call setCellHorizontalAlignment(widget, alignment) and setCellVerticalAlignment(widget, alignment) to change the alignment of a single widget after it has been added.
+It is often useful to call setSpacing(spacing) to add
+space between each of the panel's widgets. You can also call
+setHorizontalAlignment(alignment) and setVerticalAlignment(alignment)
+before adding widgets to control how those widgets are
+aligned within the available space. Alternatively, you
+can call setCellHorizontalAlignment(widget, alignment) and
+setCellVerticalAlignment(widget, alignment) to change the alignment
+of a single widget after it has been added.
 
-Note that if you want to have different widgets within the panel take up different amounts of space, don't call widget.setWidth(width) or widget.setHeight(height) as these are ignored by the panel. Instead, call panel.setCellWidth(widget, width) and panel.setCellHeight(widget, height).
+Note that if you want to have different widgets within the panel take
+up different amounts of space, don't call widget.setWidth(width)
+or widget.setHeight(height) as these are ignored by the
+panel. Instead, call panel.setCellWidth(widget, width) and
+panel.setCellHeight(widget, height).
 
-Working Example
-
-Part 1
-Part 2
-Part 3
-Part 4
-
-Source Code
-
-
+Source Code:
 {{
 from pyjamas.ui import SimplePanel, VerticalPanel, Label, HasAlignment
 
@@ -930,23 +759,24 @@ class VerticalPanelDemo(SimplePanel):
         self.add(panel)
 }}
 
-
-
 == ui.Button ==
 
-The ui.Button class is used to show a button. When the user clicks on the button, the given listener function is called.
+The ui.Button class is used to show a button. When the user clicks
+on the button, the given listener function is called.
 
-Note that you can use the getattr() function to specify which method you want called when the button is clicked. This is the best way to write button click handlers if you have more than one button on your panel. If you have only one button, you can use btn = Button("...", self) instead, and define a method called onClick() to respond to the button click.
+Note that you can use the getattr() function to specify which
+method you want called when the button is clicked. This is the
+best way to write button click handlers if you have more than one
+button on your panel. If you have only one button, you can use btn =
+Button("...", self) instead, and define a method called onClick()
+to respond to the button click.
 
-Another useful method is Button.setEnabled(enabled), which enables or disables the button depending on the value of its parameter.
-
-Working Example
+Another useful method is Button.setEnabled(enabled), which enables
+or disables the button depending on the value of its parameter.
 
 Click Me
 
-Source Code
-
-
+Source Code:
 {{
 from pyjamas.ui import SimplePanel, Button
 from pyjamas import Window
@@ -958,38 +788,26 @@ class ButtonDemo(SimplePanel):
         btn = Button("Click Me", getattr(self, "onButtonClick"))
         self.add(btn)
 
-
     def onButtonClick(self):
         Window.alert("Ouch!")
 }}
 
-
-
-
-
-
-
-
-
-
-
-
-
 == ui.CheckBox ==
 
-The ui.CheckBox class is used to show a standard checkbox. When the user clicks on the checkbox, the checkbox's state is toggled.
+The ui.CheckBox class is used to show a standard checkbox. When
+the user clicks on the checkbox, the checkbox's state is toggled.
 
-The setChecked(checked) method checks or unchecks the checkbox depending on the value of the parameter. To get the current value of the checkbox, call isChecked().
+The setChecked(checked) method checks or unchecks the checkbox
+depending on the value of the parameter. To get the current value
+of the checkbox, call isChecked().
 
-You can enable or disable a checkbox using setEnabled(enabled). You can also call addClickListener() to respond when the user clicks on the checkbox, as shown below. This can be useful when building complicated input screens where checking a checkbox causes other input fields to be enabled.
+You can enable or disable a checkbox using setEnabled(enabled). You
+can also call addClickListener() to respond when the user clicks
+on the checkbox, as shown below. This can be useful when building
+complicated input screens where checking a checkbox causes other
+input fields to be enabled.
 
-Working Example
-
-Print Results?
-
-Source Code
-
-
+Source Code:
 {{
 from pyjamas.ui import SimplePanel, CheckBox
 from pyjamas import Window
@@ -1003,44 +821,30 @@ class CheckBoxDemo(SimplePanel):
 
         self.add(self.box)
 
-
     def onClick(self):
         Window.alert("checkbox status: " + self.box.isChecked())
 }}
-
-
-
-
-
-
-
-
-
-
 
 == ui.FileUpload ==
 
 The ui.FileUpload class implements a file uploader widget.
 
 The FileUpload widget must be inside a ui.FormPanel which is used to submit the HTML form to the server. Note that you must set the form encoding and method like this:
+{
+    self.form.setEncoding(FormPanel.ENCODING_MULTIPART)
+    self.form.setMethod(FormPanel.METHOD_POST)
+}
+Setting Multipart encoding and POST method will ensure that the
+form is submitted in a way that Web servers expect files to be uploaded.
 
-            self.form.setEncoding(FormPanel.ENCODING_MULTIPART)
-            self.form.setMethod(FormPanel.METHOD_POST)
+The example below doesn't really work, as there is no suitable
+server at nonexistent.com. However, it does show how a file upload
+widget could be used within a FormPanel.
 
-This will ensure that the form is submitted in a way that allows files to be uploaded.
-
-The example below doesn't really work, as there is no suitable server at nonexistent.com. However, it does show how a file upload widget could be used within a FormPanel.
-
-Working Example
-
-Upload file:
-		Submit
-
-Source Code
-
-
+Source Code:
 {{
-from pyjamas.ui import SimplePanel, FormPanel, VerticalPanel, HorizontalPanel, FileUpload, Label, Button
+from pyjamas.ui import SimplePanel, FormPanel, VerticalPanel, HorizontalPanel
+from pyjamas.ui import FileUpload, Label, Button
 
 class FileUploadDemo(SimplePanel):
     def __init__(self):
@@ -1049,7 +853,7 @@ class FileUploadDemo(SimplePanel):
         self.form = FormPanel()
         self.form.setEncoding(FormPanel.ENCODING_MULTIPART)
         self.form.setMethod(FormPanel.METHOD_POST)
-        self.form.setAction("http://nonexistent.com")
+        self.form.setAction("http://nonexistent.com") # set this as appropriate
         self.form.setTarget("results")
 
         vPanel = VerticalPanel()
@@ -1072,30 +876,21 @@ class FileUploadDemo(SimplePanel):
         self.form.add(vPanel)
         self.add(self.form)
 
-
     def onBtnClick(self):
         self.form.submit()
 }}
 
-
-
-
-
-
-
-
-
 == ui.Frame ==
 
-The ui.Frame class is used to embed a separate HTML page within your application.
+The ui.Frame class is used to embed a separate HTML page within
+your application.
 
-If you pass a URL when the Frame is created, that URL will be used immediately. Alternatively, you can call the Frame.setUrl() method to change the URL at any time. You can also call Frame.getUrl() to retrieve the current URL for this frame.
+If you pass a URL when the Frame is created, that URL will be used
+immediately. Alternatively, you can call the Frame.setUrl() method
+to change the URL at any time. You can also call Frame.getUrl()
+to retrieve the current URL for this frame.
 
-Working Example
-
-Source Code
-
-
+Source Code:
 {{
 from pyjamas.ui import SimplePanel, Frame
 
@@ -1109,33 +904,17 @@ class FrameDemo(SimplePanel):
         self.add(frame)
 }}
 
-
-
-
-
-
-
-
-
-
-
-
-
 == ui.Hidden ==
 
 The ui.Hidden class represents a hidden form field.
 
-This is really only useful when the hidden field is part of a ui.FormPanel.
+This is really only useful when the hidden field is part of a
+ui.FormPanel.
 
-Working Example
-
-Search
-
-Source Code
-
-
+Source Code:
 {{
-from pyjamas.ui import SimplePanel, FormPanel, VerticalPanel, Hidden, Button, NamedFrame
+from pyjamas.ui import SimplePanel, FormPanel, VerticalPanel
+from pyjamas.ui import Hidden, Button, NamedFrame
 
 class HiddenDemo(SimplePanel):
     def __init__(self):
@@ -1155,30 +934,21 @@ class HiddenDemo(SimplePanel):
         self.form.add(panel)
         self.add(self.form)
 
-
     def onBtnClick(self):
         self.form.submit()
 
 }}
 
-
-
-
-
-
-
-
 == ui.Html ==
 
-The ui.HTML class displays HTML-formatted text. To display unformatted text, use ui.Label.
+The ui.HTML class displays HTML-formatted text. To display
+unformatted text, use ui.Label.
 
-Working Example
+ui.HTML's content can be set and retrieved, using setHTML and getHTML.
+Also, the second argument to the constructor, which defaults to True,
+sets word wrap on or off.
 
-Hello, World!
-
-Source Code
-
-
+Source Code:
 {{
 from pyjamas.ui import SimplePanel, HTML
 
@@ -1190,40 +960,45 @@ class HtmlDemo(SimplePanel):
         self.add(html)
 }}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 == ui.Hyperlink ==
 
-The ui.Hyperlink class acts as an "internal" hyperlink to a particular state of the application. These states are stored in the application's history, allowing for the use of the Back and Next buttons in the browser to move between application states.
+The ui.Hyperlink class acts as an "internal" hyperlink to a
+particular state of the application. These states are stored in
+the application's history, allowing for the use of the Back and
+Next buttons in the browser to move between application states.
 
-The ui.Hyperlink class only makes sense in an application which keeps track of state using the History module. When the user clicks on a hyperlink, the application changes state by calling History.newItem(newState). The application then uses a history listener function to respond to the change in state in whatever way makes sense.
+The ui.Hyperlink class only makes sense in an application which
+keeps track of state using the History module. When the user
+clicks on a hyperlink, the application changes state by calling
+History.newItem(newState). The application then uses a history
+listener function to respond to the change in state in whatever
+way makes sense.
 
-Working Example
+{{-info
+Critical to ensuring that the History module works is adding a
+hidden "history" frame to the HTML file of the application.
+}}
 
-state number 2
-State 1
-	
-State 2
-
-Source Code
-
-
+Here is the pyjamas "Kitchen Sink" html file, as an example:
 {{
-from pyjamas.ui import SimplePanel, VerticalPanel, HorizontalPanel, Hyperlink, Label
+<html>
+    <head>
+        <meta name="pygwt:module" content="KitchenSink">
+        <link rel='stylesheet' href='KitchenSink.css'>
+        <title>KitchenSink</title>
+    </head>
+    <body bgcolor="white">
+        <script language="javascript" src="pygwt.js"></script>
+
+	<iframe id='__pygwt_historyFrame' style='width:0;height:0;border:0'></iframe>
+    </body>
+</html>
+}}
+
+Source Code:
 {{
+from pyjamas.ui import SimplePanel, VerticalPanel, HorizontalPanel
+from pyjamas.ui import Hyperlink, Label
 from History import History
 
 
@@ -1246,40 +1021,30 @@ class HyperlinkDemo(SimplePanel):
         vPanel.add(hPanel)
         self.add(vPanel)
 
-
     def onHistoryChanged(self, state):
         self.stateDisplay.setText(state)
 }}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 == ui.Image ==
 
 The ui.Image class is used to display an image.
 
-The Image class can display any image that is specified by a URL. This can be an image stored somewhere on the internet, or alternatively you can store an image in the "public" directory within your application's source folder, and then access it using a relative URL, as shown below.
+The Image class can display any image that is specified by a
+URL. This can be an image stored somewhere on the internet, or
+alternatively you can store an image in the "public" directory
+within your application's source folder, and then access it using
+a relative URL, as shown below.
 
-In this example, the image file named "myImage.jpg" is stored inside the "images" sub-directory, which is in the "public" directory within the application's main source directory.
+In this example, the image file named "myImage.jpg" is stored inside
+the "images" sub-directory, which is in the "public" directory
+within the application's main source directory.
 
-As well as passing the image URL to the initialiser, you can call setURL() to change the image being displayed at any time. You can also call addClickListener() to add a listener function to be called when the user clicks on the image.
+As well as passing the image URL to the initialiser, you can call
+setURL() to change the image being displayed at any time. You can
+also call addClickListener() to add a listener function to be called
+when the user clicks on the image.
 
-Working Example
-
-Source Code
-
-
+Source Code:
 {{
 from pyjamas.ui import SimplePanel, Image
 from pyjamas import Window
@@ -1295,34 +1060,18 @@ class ImageDemo(SimplePanel):
         img.addClickListener(getattr(self, "onImageClicked"))
         self.add(img)
 
-
     def onImageClicked(self):
         Window.alert("Stop that!")
 }}
 
-
-
-
-
-
-
-
-
-
-
-
-
 == ui.Label ==
 
-The ui.Label class is used to display unformatted text. Unlike the ui.HTML class, it does not interpret HTML format codes. If you pass False as the second parameter when creating your label, word wrapping will be disabled, forcing all the text to be on one line.
+The ui.Label class is used to display unformatted text. Unlike
+the ui.HTML class, it does not interpret HTML format codes. If you
+pass False as the second parameter when creating your label, word
+wrapping will be disabled, forcing all the text to be on one line.
 
-Working Example
-
-This is a label
-
-Source Code
-
-
+Source Code:
 {{
 from pyjamas.ui import SimplePanel, Label
 
@@ -1334,32 +1083,24 @@ class LabelDemo(SimplePanel):
         self.add(label)
 }}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 == ui.ListBox ==
 
-The ui.ListBox class allows the user to select one or more items from a list. There are two variations of the ListBox: a normal list of items the user can click on, and a dropdown menu of items. Both variations are shown in the example below.
+The ui.ListBox class allows the user to select one or more items
+from a list. There are two variations of the ListBox: a normal list
+of items the user can click on, and a dropdown menu of items. Both
+variations are shown in the example below.
 
-You add items to a list by calling ListBox.addItem(). This can take the label to display, and also an optional value to associate with that item in the list. ListBox.getSelectedIndex() returns the index of the currently selected item, or -1 if nothing is selected. ListBox.getItemText(n) returns the text for the given item in the list, while ListBox.getValue(n) returns the value associated with the given list item. To detect when the user selects something from a ListBox, call addChangeLister(). And finally, ListBox.clear() clears the current contents of the ListBox.
+Add items to a list by calling ListBox.addItem(). addItem can take
+the label to display, and also an optional value to associate
+with that item in the list. ListBox.getSelectedIndex() returns
+the index of the currently selected item, or -1 if nothing is
+selected. ListBox.getItemText(n) returns the text for the given item
+in the list, while ListBox.getValue(n) returns the value associated
+with the given list item. To detect when the user selects something
+from a ListBox, set up a listener by calling addChangeListener().
+Finally, ListBox.clear() clears the current contents of the ListBox.
 
-Working Example
-
-	
-
-Source Code
-
-
+Source Code:
 {{
 from pyjamas.ui import SimplePanel, HorizontalPanel, ListBox
 from pyjamas import Window
@@ -1389,39 +1130,25 @@ class ListBoxDemo(SimplePanel):
         hPanel.add(self.list2)
         self.add(hPanel)
 
-
     def onList1ItemSelected(self):
         item = self.list1.getItemText(self.list1.getSelectedIndex())
         Window.alert("You selected " + item + " from list 1")
-
 
     def onList2ItemSelected(self):
         item = self.list2.getItemText(self.list2.getSelectedIndex())
         Window.alert("You selected " + item + " from list 2")
 }}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 == ui.Menubar ==
 
-The ui.MenuBar and ui.MenuItem classes allow you to define menu bars in your application.
+The ui.MenuBar and ui.MenuItem classes allow you to define menu
+bars in your application.
 
-There are several important things to be aware of when adding menus to your application:
+There are several important things to be aware of when adding menus
+to your application:
 
-    * You have to use a stylesheet to define the look of your menu. The default style is terrible, as it makes the menu unusable. The following stylesheet entries were used for the example code below:
-
+ * You have to use a stylesheet to define the look of your menu. The default style is terrible, as it makes the menu unusable. The following stylesheet entries were used for the example code below: 
+{{
             .gwt-MenuBar {
               background-color: #C3D9FF;
               border: 1px solid #87B3FF;
@@ -1437,20 +1164,12 @@ There are several important things to be aware of when adding menus to your appl
             .gwt-MenuBar .gwt-MenuItem-selected {
               background-color: #E8EEF7;
             }
+}}
+ * By default, each menu item can be associated with a class, whose execute method will be called when that item is selected. Note that a helper class, MenuCmd, is defined below to allow more than one menu item handler method to be defined within a single class.
+ * You add menu items directly, passing the item label and the associated command to MenuBar.addItem(). For adding sub-menus, you need to wrap the sub-menu up in a MenuItem, as shown below.
+ * You can use HTML codes in a menu item's label by calling MenuBar.addItem(label, True, cmd) instead of MenuBar.addItem(label, cmd). Similarly, you can use HTML styling in a menu's title by calling MenuItem(label, True, submenu), as in the second-to-last line of MenubarDemo.__init__, below. 
 
-    * By default, each menu item can be associated with a class, whose execute method will be called when that item is selected. Note that a helper class, MenuCmd, is defined below to allow more than one menu item handler method to be defined within a single class.
-
-    * You add menu items directly, passing the item label and the associated command to MenuBar.addItem(). For adding sub-menus, you need to wrap the sub-menu up in a MenuItem, as shown below.
-
-    * You can use HTML codes in a menu item's label by calling MenuBar.addItem(label, True, cmd) instead of MenuBar.addItem(label, cmd). Similarly, you can use HTML styling in a menu's title by calling MenuItem(label, True, submenu), as in the second-to-last line of MenubarDemo.__init__, below. 
-
-Working Example
-
-Menu 1	Menu 2
-
-Source Code
-
-
+Source Code:
 {{
 from pyjamas.ui import SimplePanel, MenuBar, MenuItem
 from pyjamas import Window
@@ -1495,30 +1214,14 @@ class MenuCmd:
         handler()
 }}
 
-
-
-
-
-
-
-
-
-
-
-
-
 == ui.NamedFrame ==
 
-The ui.NamedFrame class is a variation of the ui.Frame which lets you assign a name to the frame. Naming a frame allows you to refer to that frame by name in Javascript code, and as the target for a hyperlink.
+The ui.NamedFrame class is a variation of the ui.Frame which lets
+you assign a name to the frame. Naming a frame allows you to refer
+to that frame by name in Javascript code, and as the target for
+a hyperlink.
 
-Working Example
-
-Google
-Yahoo
-
-Source Code
-
-
+Source Code:
 {{
 from pyjamas.ui import SimplePanel, VerticalPanel, NamedFrame, HTML
 
@@ -1529,45 +1232,36 @@ class NamedFrameDemo(SimplePanel):
         vPanel = VerticalPanel()
         vPanel.setSpacing(5)
 
-        frame = NamedFrame("myFrame")
+        frame = NamedFrame("myFrame") # note name of frame
         frame.setWidth("100%")
         frame.setHeight("200px")
 
         vPanel.add(frame)
+
+        # note targets are set to "myFrame"
         vPanel.add(HTML('<a href="http://google.com" target="myFrame">Google</a>'))
         vPanel.add(HTML('<a href="http://yahoo.com" target="myFrame">Yahoo</a>'))
 
         self.add(vPanel)
 }}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 == ui.PasswordTextBox ==
 
-The ui.PasswordTextBox class implements a standard password input field.
+The ui.PasswordTextBox class implements a standard password input
+field.
 
-Like its cousins the ui.TextBox and ui.TextArea classes, ui.PasswordTextBox defines many useful methods which you may find useful.
+Like its cousins the ui.TextBox and ui.TextArea classes,
+ui.PasswordTextBox defines many methods which you may find useful.
 
-The most important methods are probably setText() and getText() which set and retrieve the contents of the input field, and setMaxLength() to specify how many characters the user can type into the field.
+The most important methods are going to be setText() and getText(), which
+set and retrieve the contents of the input field, and setMaxLength()
+to specify how many characters the user can type into the field.
 
-Note that for some reason, the setVisibleLength() method is not defined for a password field. This means that you have to specify the width of the field in pixels, as is shown below.
+Note that for some reason, the setVisibleLength() method is not
+defined for a password field. This means that you have to specify
+the width of the field in pixels, as shown below.
 
-Working Example
-
-Source Code
-
-
+Source Code:
 {{
 from pyjamas.ui import SimplePanel, PasswordTextBox
 
@@ -1580,39 +1274,21 @@ class PasswordTextBoxDemo(SimplePanel):
         self.add(field)
 }}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 == ui.RadioButton ==
 
-The ui.RadioButton class is used to show a radio button. Each radio button is given a "group" value; when the user clicks on a radio button, the other radio buttons in that group are deselected, and the clicked on radio button is selected.
+The ui.RadioButton class is used to show a radio button. Each
+radio button is given a "group" value; when the user clicks on a
+radio button, the other radio buttons in that group are deselected,
+and the clicked on radio button is selected.
 
-You can use the setChecked(checked) method to select or deselect a radio button, and you can call isChecked() to see if a radio button is currently selected. You can also enable or disable a checkbox using setEnabled(enabled). And finally, you can call addClickListener() to respond when the user clicks on the radio button.
+You can use the setChecked(checked) method to select or deselect a
+radio button, and you can call isChecked() to see if a radio button
+is currently selected. You can also enable or disable a checkbox
+using setEnabled(enabled).  Finally, you can call addClickListener()
+to set a function that will be called when the user clicks on the
+radio button.
 
-Working Example
-
-Red
-Green
-Blue
-	
-Solid
-Liquid
-Gas
-
-Source Code
-
-
+Source Code:
 {{
 from pyjamas.ui import SimplePanel, HorizontalPanel, VerticalPanel, RadioButton
 
@@ -1622,11 +1298,14 @@ class RadioButtonDemo(SimplePanel):
 
         panel1 = VerticalPanel()
 
+        # First group, called "group1"
         panel1.add(RadioButton("group1", "Red"))
         panel1.add(RadioButton("group1", "Green"))
         panel1.add(RadioButton("group1", "Blue"))
 
         panel2 = VerticalPanel()
+
+        # Second group, called "group2"
         panel2.add(RadioButton("group2", "Solid"))
         panel2.add(RadioButton("group2", "Liquid"))
         panel2.add(RadioButton("group2", "Gas"))
@@ -1638,30 +1317,20 @@ class RadioButtonDemo(SimplePanel):
         self.add(hPanel)
 }}
 
-
-
-
-
-
-
-
-
-
-
-
 == ui.TextArea ==
 
 The ui.TextArea class implements a standard multi-line input field.
 
-The setCharacterWidth() method sets the width of the input field, in characters, while setVisibleLines() sets the height of the field, in lines.
+The setCharacterWidth() method sets the width of the input field,
+in characters, while setVisibleLines() sets the height of the field,
+in lines.
 
-Use the getText() method to retrieve the field's current text, and setText() to set it. There are many other useful methods defined by ui.TextArea and its parent classes; see the module documentation for more details.
+Use the getText() method to retrieve the field's current text, and
+setText() to set it. There are many other useful methods defined
+by ui.TextArea and its parent classes; see the module documentation
+for more details.
 
-Working Example
-
-Source Code
-
-
+Source Code:
 {{
 from pyjamas.ui import SimplePanel, TextArea
 
@@ -1675,33 +1344,20 @@ class TextAreaDemo(SimplePanel):
         self.add(field)
 }}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 == ui.TextBox ==
 
 The ui.TextBox class implements a standard one-line input field.
 
-There are many useful methods defined by ui.TextBox and its parent classes. For example, getText() returns the current contents of the input field, and setText() lets you set the field's contents to a given string.
+There are many useful methods defined by ui.TextBox and its parent
+classes. For example, getText() returns the current contents of
+the input field, and setText() lets you set the field's contents
+to a given string.
 
-setVisibleLength() lets you set the width of the field, in characters. Similarly, setMaxLength() lets you set the maximum number of characters the user can enter into the field.
+setVisibleLength() lets you set the width of the field, in
+characters. Similarly, setMaxLength() lets you set the maximum
+number of characters the user can enter into the field.
 
-Working Example
-
-Source Code
-
-
+Source Code:
 {{
 from pyjamas.ui import SimplePanel, TextBox
 
@@ -1716,36 +1372,24 @@ class TextBoxDemo(SimplePanel):
         self.add(field)
 }}
 
-
-
-
-
-
-
-
-
-
-
 == ui.Tree ==
 
-The ui.Tree class lets you add a tree control to your application.
+The ui.Tree class lets you add a tree control to an application.
 
-Call Tree.addTreeListener() to add a tree listener object to a tree, that listener object's onTreeItemSelected() method will be called as the user clicks on that item in the tree control. Similarly, the listener object's onTreeItemStateChanged() method will be called whenever the user opens or closes a branch of the tree. Both of these methods have to be defined, even if you don't use them both.
+Call Tree.addTreeListener() to add a tree listener object to a tree.
+That listener object's onTreeItemSelected() method will be called
+when the user clicks on that item in the tree control with which the
+listener has been associated.  Similarly, the
+listener object's onTreeItemStateChanged() method will be called
+whenever the user opens or closes a branch of the tree.  The listener
+object <i>must</i> have both these methods defined, even if you don't use
+one or either of them.
 
-To open a branch of the tree, call TreeItem.setState() method. If the state parameter is True, the branch of the tree will be opened; if it is False, the branch of the tree will be closed.
+To open a branch of the tree, call the TreeItem.setState() method. If
+the state parameter is True, the branch of the tree will be opened;
+if it is False, the branch of the tree will be closed.
 
-Working Example
-
-	Section 1
-	Item 1.1
-	Item 1.2
-	Section 2
-	Item 2.1
-	Item 2.2
-
-Source Code
-
-
+Source Code:
 {{
 from pyjamas.ui import SimplePanel, Tree, TreeItem
 from pyjamas import DOM
@@ -1773,7 +1417,6 @@ class TreeDemo(SimplePanel):
         tree.addItem(s2)
         self.add(tree)
 
-
     def createItem(self, label, value=None):
         item = TreeItem(label)
         DOM.setStyleAttribute(item.getElement(), "cursor", "pointer")
@@ -1781,11 +1424,9 @@ class TreeDemo(SimplePanel):
             item.setUserObject(value)
         return item
 
-
     def onTreeItemSelected(self, item):
         value = item.getUserObject()
         Window.alert("You clicked on " + value)
-
 
     def onTreeItemStateChanged(self, item):
         pass # We ignore this.
