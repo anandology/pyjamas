@@ -8,10 +8,12 @@ overlap.
 
 Note that the AbsolutePanel does not automatically resize itself
 to fit its children. There is no straightforward way of doing this
-unless all the children are explicitly sized; the easier workaround
+unless all the children are explicitly sized; the easiest workaround
 is just to call panel.setWidth(width) and panel.setHeight(height)
-explicitly after adding the children, choosing an appropriate width
-and height based on the children you have added.
+explicitly after adding the children (or specifying the width
+and height in a CSS stylesheet).  Choose an appropriate width and
+height, based on the sizes and locations of children that are added
+to the AbsolutePanel.
 
 Source Code:
 {{
@@ -95,7 +97,7 @@ class DialogBoxDemo(SimplePanel):
     def showDialog(self):
         contents = VerticalPanel()
         contents.setSpacing(4)
-        contents.add(HTML('You can place any contents you like in a dialog box.'))
+        contents.add(HTML('You can place anything in a dialog box. Even drivel.'))
         contents.add(Button("Close", getattr(self, "onClose")))
         contents.setStyleName("Contents")
 
@@ -119,13 +121,13 @@ into North, South, East, West and center pieces. In general the
 outer pieces are smaller, with the centre holding the main part of
 the panel's contents, as shown below.
 
-You can set the alignment and size for each widget within the
+The alignment and size can be set for each widget within the
 DockPanel, by calling setCellHorizontalAlignment(widget, alignment),
 setCellVerticalAlignment(widget, alignment), setCellHeight(widget,
-height) and setCellWidth(widget, width). You can also set the
-default horizontal and vertical alignment to use for new widgets
-by calling setHorizontalAlignment() and setVerticalAlignment()
-before the widget is added.
+height) and setCellWidth(widget, width). The default horizontal and
+vertical alignment to use for new widgets can be set by calling
+setHorizontalAlignment() and setVerticalAlignment() before the
+widget is added.
 
 Source Code:
 {{
@@ -165,14 +167,14 @@ The ui.FlexTable class implements a table that can have different
 numbers of cells in each row, and single cells can span multiple
 rows and columns.
 
-Each FlexTable has a FlexCellFormatter which you can use to format
+Each FlexTable has a FlexCellFormatter which can be used to format
 the cells in the table. The FlexCellFormatter has methods to set the
 row or column spans for a cell, as well as change the cell alignment,
 as shown below.
 
-Note that if you use row or column spanning, the cells on the
+Note that if row or column spanning is used, the cells on the
 rest of that row or column will be moved over. This can cause some
-surprising results. Imagine that you have a table like this:
+surprising results. Imagine a table with a 3x2 layout, like this:
 {{
         +---+---+---+
         | A | B | C |
@@ -181,11 +183,11 @@ surprising results. Imagine that you have a table like this:
         +---+---+---+
 }}
 
-If you set up Cell 0,0 to span two columns, like this:
+If Cell is set up 0,0 to span two columns, like this:
 {{
-        flexTable.getFlexCellFormatter().setColSpan(0, 0, 2)
+    flexTable.getFlexCellFormatter().setColSpan(0, 0, 2)
 }}
-then the table to end up looking like this:
+then the table, when displayed, ends up looking like this:
 {{
         +-------+---+---+
         |   A   | B | C |
@@ -193,11 +195,25 @@ then the table to end up looking like this:
         | D | E | F |
         +---+---+---+
 }}
-You might expect cell B to be above cell E, but to make this happen
-you need to place cell E at (1, 2) rather than (1, 1).
+It might be expected that cell B would be above cell E, but to make this
+happen it would be necessary to place cell E at (1, 2) rather than (1, 1),
+as Cell A at (0, 0) has specifically been set to span the first two
+columns.
 
 Each FlexTable also has a RowFormatter which can be used to change
 style names, attributes, and the visibility of rows in the table.
+
+{{-info
+Please note that, whilst FlexTable is useful for laying out complex
+patterns, some browsers are not perfect in determining the layout.
+If the patterns are particularly jagged, Firefox 2.0, for example,
+can get horribly confused.  There isn't anything that can be done
+about this, other than to raise a bugreport with Mozilla, and redesign
+the application to work around the problem.  Welcome to an unfortunate
+instance where browser incompatibility "hell" still applies, although
+it's necessary to push Firefox pretty hard, with an exceptionally
+complex layout, to encounter this particular bug.
+}}
 
 Source Code:
 {{
@@ -265,15 +281,15 @@ Unfortunately, circumstances where FlowPanel is useful is actually
 quite limited, because of the way other widgets are typically
 implemented.  Many widgets are wrapped up in a element, which is a
 block-level element that overrules the element used by the FlowPanel,
-which is an inline element. As a result, if you add a ui.Label to
+which is an inline element. As a result, if a ui.Label is added to
 a FlowPanel, for example, it will still appear on a line by itself
 rather than flowing with the other elements.
 
-So you may want to avoid using FlowPanel unless you are certain
-that the items you are adding will flow correctly, or you could also
-experiment by adding <tt>float: left;</tt> to the CSS style of the
-item being added.  If that doesn't work, then try adding the widget
-to a SimplePanel, and adding the float style to the SimplePanel.
+So it may be desirable to avoid using FlowPanel unless it is certain
+that the items being added will flow correctly.  Also, it's worth
+experimenting by adding <tt>float: left;</tt> to the CSS style of the
+item being added.  If that doesn't work, try adding the widget
+to a SimplePanel, and adding the float-left style to the SimplePanel.
 
 Source Code:
 {{
@@ -307,19 +323,19 @@ Any TextBox, PasswordTextBox, TextArea, RadioButton, CheckBox,
 ListBox, FileUpload and Hidden fields contained within the form
 panel will be sent to the server when the form is submitted.
 
-The example below calls Google to perform a search using the
-query entered by the user into the text field. The results
-are shown in a separate Frame. Alternatively, you can call
-Form.addFormHandler(handler) to manually process the results of
-posting the form. When this is done, handler.onSubmit(event)
-will be called when the user is about to submit the form;
-call event.setCancelled(True) to cancel the event within this
-method. Also, handler.onSubmitComplete(event) will be called
-when the results of submitting the form are returned back to the
-browser. Call event.getResults() to retrieve the (plain-text)
-value returned by the server.
+The example below calls Google to perform a search using the query
+entered by the user into the text field. The results are shown in a
+separate Frame. Alternatively, Form.addFormHandler(handler) can be
+called, to manually process the results of posting the form. When
+this is done, handler.onSubmit(event) will be called when the user
+is about to submit the form; call event.setCancelled(True) to cancel
+the event within this method. Also, handler.onSubmitComplete(event)
+will be called when the results of submitting the form are returned
+back to the browser. Call event.getResults() to retrieve the
+(plain-text) value returned by the server.
 
-Note that if you use a ui.FileUpload widget in your form, you must set the form encoding and method like this:
+Note that if a ui.FileUpload widget is used in in a form, the
+form encoding and method must be set, as follows:
 {{
     self.form.setEncoding(FormPanel.ENCODING_MULTIPART)
     self.form.setMethod(FormPanel.METHOD_POST)
@@ -368,9 +384,9 @@ class FormPanelDemo(SimplePanel):
 The ui.Grid class implements a panel which lays its contents out
 in a grid-like fashion, very like an HTML table.
 
-You can use the setHTML(row, col, html) method to set the
+The setHTML(row, col, html) method can be used to set the
 HTML-formatted text to be displayed at the given row and column
-within the grid. Similarly, you can call setText(row, col, text)
+within the grid. Similarly, setText(row, col, text) can be called
 to display plain (unformatted) text at the given row and column.
 
 Source Code:
@@ -406,20 +422,21 @@ or upgrade Pyjamas.
 The ui.HorizontalPanel class is a panel that lays out its contents
 from left to right.
 
-It is often useful to call setSpacing(spacing) to add
-space between each of the panel's widgets. You can also call
-setHorizontalAlignment(alignment) and setVerticalAlignment(alignment)
-before adding widgets to control how those widgets are
-aligned within the available space. Alternatively, you
-can call setCellHorizontalAlignment(widget, alignment) and
-setCellVerticalAlignment(widget, alignment) to change the alignment
-of a single widget after it has been added.
+It is often useful to call setSpacing(spacing) to add space between
+each of the panel's widgets. setHorizontalAlignment(alignment) and
+setVerticalAlignment(alignment) can be called, before adding widgets,
+to control how those widgets are aligned within the available
+space. Alternatively, setCellHorizontalAlignment(widget, alignment)
+and setCellVerticalAlignment(widget, alignment) can be called,
+to change the alignment of a single widget after it has been added.
 
-Note that if you want to have different widgets within the panel take
-up different amounts of space, don't call widget.setWidth(width)
-or widget.setHeight(height) as these are ignored by the
+{{-info
+Note that if it is desired that different widgets within the panel take
+up different amounts of space, do not call widget.setWidth(width)
+or widget.setHeight(height), as these are ignored by the
 panel. Instead, call panel.setCellWidth(widget, width) and
 panel.setCellHeight(widget, height).
+}}
 
 Source Code:
 {{
@@ -460,8 +477,8 @@ class HorizontalPanelDemo(SimplePanel):
 
 == ui.HtmlPanel ==
 
-The ui.HTMLPanel class allows you to include HTML within your
-application, and embed other widgets inside the panel's contents
+The ui.HTMLPanel class allows HTML to be included within an
+application, and other widgets embedded inside the panel's contents,
 by wrapping them inside a <span> tag.
 
 Source Code:
@@ -547,9 +564,9 @@ class PopupPanelDemo(SimplePanel):
 The ui.ScrollPanel class implements a panel that scrolls its
 contents.
 
-If you want the scroll bars to be always visible, call
-setAlwaysShowScrollBars(True). You can also change the
-current scrolling position programmatically by calling
+If scroll bars are required to be always visible, call
+setAlwaysShowScrollBars(True). It's also possible to change the
+current scrolling position programmatically, by calling
 setScrollPosition(vPos) and setScrollHorizontalPosition(hPos) to
 change the horizontal and vertical scrolling position, respectively.
 
@@ -607,11 +624,11 @@ were used for the example given below:
         }
 }}
 
-You can programatically change the currently-open panel by calling
+The currently-open panel can be programatically changed, by calling
 the setStackVisible(index, visible) method. To find out which panel
 is currently open, call getSelectedIndex(). To retrieve the widget
-at a given index, call getWidget(index). Finally, you can change
-the label for a stack item by calling setStackText(index, text).
+at a given index, call getWidget(index). Finally, the label for a
+stack item can be changed, by calling setStackText(index, text).
 
 Source Code:
 {{
@@ -707,18 +724,17 @@ class TabPanelDemo(SimplePanel):
 The ui.VerticalPanel class is a panel that lays out its contents
 from top to bottom.
 
-It is often useful to call setSpacing(spacing) to add
-space between each of the panel's widgets. You can also call
-setHorizontalAlignment(alignment) and setVerticalAlignment(alignment)
-before adding widgets to control how those widgets are
-aligned within the available space. Alternatively, you
-can call setCellHorizontalAlignment(widget, alignment) and
-setCellVerticalAlignment(widget, alignment) to change the alignment
-of a single widget after it has been added.
+It is often useful to call setSpacing(spacing) to add space between
+each of the panel's widgets.  setHorizontalAlignment(alignment)
+and setVerticalAlignment(alignment) can also be called before adding
+widgets to control how those widgets are aligned within the available
+space. Alternatively, setCellHorizontalAlignment(widget, alignment)
+and setCellVerticalAlignment(widget, alignment) can be called,
+to change the alignment of a single widget after it has been added.
 
-Note that if you want to have different widgets within the panel take
-up different amounts of space, don't call widget.setWidth(width)
-or widget.setHeight(height) as these are ignored by the
+Note that if it is desired that different widgets within the panel take
+up different amounts of space, do not call widget.setWidth(width)
+or widget.setHeight(height), as these are ignored by the
 panel. Instead, call panel.setCellWidth(widget, width) and
 panel.setCellHeight(widget, height).
 
@@ -764,15 +780,16 @@ class VerticalPanelDemo(SimplePanel):
 The ui.Button class is used to show a button. When the user clicks
 on the button, the given listener function is called.
 
-Note that you can use the getattr() function to specify which
-method you want called when the button is clicked. This is the
-best way to write button click handlers if you have more than one
-button on your panel. If you have only one button, you can use btn =
-Button("...", self) instead, and define a method called onClick()
-to respond to the button click.
+Note that the getattr() function can be used to specify which
+method will be called when the button is clicked. This is the
+best way to write button click handlers if there is more than one
+button on the panel. If there is only one button,
+<tt>btn = Button("...", self)</tt> can be used, instead, and,
+under these circumstances, a method called onClick() must be provided,
+which will respond to the button click.
 
 Another useful method is Button.setEnabled(enabled), which enables
-or disables the button depending on the value of its parameter.
+or disables the button, depending on the value of its parameter.
 
 Click Me
 
@@ -788,8 +805,17 @@ class ButtonDemo(SimplePanel):
         btn = Button("Click Me", getattr(self, "onButtonClick"))
         self.add(btn)
 
+        self.btn2 = Button("Tickle me!", self)
+        self.add(btn2)
+
     def onButtonClick(self):
         Window.alert("Ouch!")
+
+    def onClick(self, sender):
+        if sender == self.btn2:
+            Window.alert("That tickles!")
+        else:
+            Window.alert("Who sent that???")
 }}
 
 == ui.CheckBox ==
@@ -801,11 +827,12 @@ The setChecked(checked) method checks or unchecks the checkbox
 depending on the value of the parameter. To get the current value
 of the checkbox, call isChecked().
 
-You can enable or disable a checkbox using setEnabled(enabled). You
-can also call addClickListener() to respond when the user clicks
-on the checkbox, as shown below. This can be useful when building
-complicated input screens where checking a checkbox causes other
-input fields to be enabled.
+A checkbox can be enabled or disables using setEnabled(enabled).
+Also, addClickListener() can be called to add a function that
+responds when the user clicks on the checkbox, as shown below. This
+listener feature can be useful when building complicated input
+screens where checking a checkbox causes other input fields to
+be enabled.
 
 Source Code:
 {{
@@ -829,7 +856,9 @@ class CheckBoxDemo(SimplePanel):
 
 The ui.FileUpload class implements a file uploader widget.
 
-The FileUpload widget must be inside a ui.FormPanel which is used to submit the HTML form to the server. Note that you must set the form encoding and method like this:
+The FileUpload widget must be inside a ui.FormPanel which is used
+to submit the HTML form to the server. Note that it is necessary
+to set the form encoding and method as follows:
 {
     self.form.setEncoding(FormPanel.ENCODING_MULTIPART)
     self.form.setMethod(FormPanel.METHOD_POST)
@@ -883,12 +912,12 @@ class FileUploadDemo(SimplePanel):
 == ui.Frame ==
 
 The ui.Frame class is used to embed a separate HTML page within
-your application.
+the application.
 
-If you pass a URL when the Frame is created, that URL will be used
-immediately. Alternatively, you can call the Frame.setUrl() method
-to change the URL at any time. You can also call Frame.getUrl()
-to retrieve the current URL for this frame.
+If URL is passed when the Frame is created, that URL will be used
+immediately. Alternatively, the Frame.setUrl() method can be called
+to change the URL at any time. Frame.getUrl() can also be called
+to retrieve the current URL for the frame.
 
 Source Code:
 {{
@@ -945,8 +974,8 @@ The ui.HTML class displays HTML-formatted text. To display
 unformatted text, use ui.Label.
 
 ui.HTML's content can be set and retrieved, using setHTML and getHTML.
-Also, the second argument to the constructor, which defaults to True,
-sets word wrap on or off.
+If False is passed as the second parameter when creating an HTML instance,
+word wrapping will be disabled, forcing all the text to be on one line.
 
 Source Code:
 {{
@@ -1031,17 +1060,17 @@ The ui.Image class is used to display an image.
 
 The Image class can display any image that is specified by a
 URL. This can be an image stored somewhere on the internet, or
-alternatively you can store an image in the "public" directory
-within your application's source folder, and then access it using
-a relative URL, as shown below.
+alternatively an image can be stored in the "public" directory
+within the application's source folder, and accessed using
+a relative URL, as shown in the example below.
 
 In this example, the image file named "myImage.jpg" is stored inside
 the "images" sub-directory, which is in the "public" directory
 within the application's main source directory.
 
-As well as passing the image URL to the initialiser, you can call
-setURL() to change the image being displayed at any time. You can
-also call addClickListener() to add a listener function to be called
+As well as passing the image URL to the initialiser, setURL() can be called
+to change the image being displayed at any time.  addClickListener() can
+also be used to add a listener function callback that will be called
 when the user clicks on the image.
 
 Source Code:
@@ -1067,8 +1096,8 @@ class ImageDemo(SimplePanel):
 == ui.Label ==
 
 The ui.Label class is used to display unformatted text. Unlike
-the ui.HTML class, it does not interpret HTML format codes. If you
-pass False as the second parameter when creating your label, word
+the ui.HTML class, it does not interpret HTML format codes. If False is
+passed as the second parameter when creating a label, word
 wrapping will be disabled, forcing all the text to be on one line.
 
 Source Code:
@@ -1141,13 +1170,13 @@ class ListBoxDemo(SimplePanel):
 
 == ui.Menubar ==
 
-The ui.MenuBar and ui.MenuItem classes allow you to define menu
-bars in your application.
+The ui.MenuBar and ui.MenuItem classes allow menu bars to be created
+in an application.
 
 There are several important things to be aware of when adding menus
-to your application:
+to an application:
 
- * You have to use a stylesheet to define the look of your menu. The default style is terrible, as it makes the menu unusable. The following stylesheet entries were used for the example code below: 
+ * A stylesheet is absolutely essential, to define the look of the menu. The default style is terrible, and makes the menu unusable. The following stylesheet entries were used for the example code below: 
 {{
             .gwt-MenuBar {
               background-color: #C3D9FF;
@@ -1166,8 +1195,8 @@ to your application:
             }
 }}
  * By default, each menu item can be associated with a class, whose execute method will be called when that item is selected. Note that a helper class, MenuCmd, is defined below to allow more than one menu item handler method to be defined within a single class.
- * You add menu items directly, passing the item label and the associated command to MenuBar.addItem(). For adding sub-menus, you need to wrap the sub-menu up in a MenuItem, as shown below.
- * You can use HTML codes in a menu item's label by calling MenuBar.addItem(label, True, cmd) instead of MenuBar.addItem(label, cmd). Similarly, you can use HTML styling in a menu's title by calling MenuItem(label, True, submenu), as in the second-to-last line of MenubarDemo.__init__, below. 
+ * Menu items are added directly, passing the item label and the associated command to MenuBar.addItem(). For adding sub-menus, the sub-menu must be wrapped up in a MenuItem, as shown below.
+ * The HTML codes in a menu item's label can be used, by calling MenuBar.addItem(label, True, cmd) instead of MenuBar.addItem(label, cmd). Similarly, HTML styling can be used in a menu's title by calling MenuItem(label, True, submenu): see the second-to-last line of MenubarDemo.__init__, below. 
 
 Source Code:
 {{
@@ -1217,9 +1246,9 @@ class MenuCmd:
 == ui.NamedFrame ==
 
 The ui.NamedFrame class is a variation of the ui.Frame which lets
-you assign a name to the frame. Naming a frame allows you to refer
-to that frame by name in Javascript code, and as the target for
-a hyperlink.
+a name be assigned to the frame. Naming a frame makes it possible
+to refer to that frame by name in both Javascript code and as the
+target for a hyperlink.
 
 Source Code:
 {{
@@ -1251,14 +1280,14 @@ The ui.PasswordTextBox class implements a standard password input
 field.
 
 Like its cousins the ui.TextBox and ui.TextArea classes,
-ui.PasswordTextBox defines many methods which you may find useful.
+ui.PasswordTextBox defines many methods which may prove useful.
 
 The most important methods are going to be setText() and getText(), which
 set and retrieve the contents of the input field, and setMaxLength()
 to specify how many characters the user can type into the field.
 
 Note that for some reason, the setVisibleLength() method is not
-defined for a password field. This means that you have to specify
+defined for a password field. This means that it is necessary to specify
 the width of the field in pixels, as shown below.
 
 Source Code:
@@ -1281,10 +1310,10 @@ radio button is given a "group" value; when the user clicks on a
 radio button, the other radio buttons in that group are deselected,
 and the clicked on radio button is selected.
 
-You can use the setChecked(checked) method to select or deselect a
-radio button, and you can call isChecked() to see if a radio button
-is currently selected. You can also enable or disable a checkbox
-using setEnabled(enabled).  Finally, you can call addClickListener()
+The setChecked(checked) method can be used to select or deselect a
+radio button, and isChecked() can be called to see if a radio button
+is currently selected.  Also a checkbox can be enabled or disabled 
+using setEnabled(enabled).  Finally, addClickListener() can be used
 to set a function that will be called when the user clicks on the
 radio button.
 
@@ -1350,11 +1379,11 @@ The ui.TextBox class implements a standard one-line input field.
 
 There are many useful methods defined by ui.TextBox and its parent
 classes. For example, getText() returns the current contents of
-the input field, and setText() lets you set the field's contents
+the input field, and setText() lets the field's contents be set
 to a given string.
 
-setVisibleLength() lets you set the width of the field, in
-characters. Similarly, setMaxLength() lets you set the maximum
+setVisibleLength() sets the width of the field, in
+characters.  Similarly, setMaxLength() sets the maximum
 number of characters the user can enter into the field.
 
 Source Code:
@@ -1374,7 +1403,7 @@ class TextBoxDemo(SimplePanel):
 
 == ui.Tree ==
 
-The ui.Tree class lets you add a tree control to an application.
+The ui.Tree class adds a tree control to an application.
 
 Call Tree.addTreeListener() to add a tree listener object to a tree.
 That listener object's onTreeItemSelected() method will be called
@@ -1382,8 +1411,8 @@ when the user clicks on that item in the tree control with which the
 listener has been associated.  Similarly, the
 listener object's onTreeItemStateChanged() method will be called
 whenever the user opens or closes a branch of the tree.  The listener
-object <i>must</i> have both these methods defined, even if you don't use
-one or either of them.
+object <i>must</i> have both these methods defined, even if neither
+of them is used.
 
 To open a branch of the tree, call the TreeItem.setState() method. If
 the state parameter is True, the branch of the tree will be opened;
