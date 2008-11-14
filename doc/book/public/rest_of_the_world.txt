@@ -642,7 +642,7 @@ here are some links to the clients that <i>do</i> exist (and are easy to find):
  * https://wiki.ubuntu.com/txJSON-RPC/TwistedWeb2
  * http://pypi.python.org/pypi/z3c.jsonrpc/
 
-== Simple JSONRPC client ===
+== Simple JSONRPC client ==
 
 First, download a very simple client, written by Matt Harrison.  Copies
 are available here:
