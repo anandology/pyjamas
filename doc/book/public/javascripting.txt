@@ -22,7 +22,7 @@ simply cannot be rewritten.  A way to interact with javascript is therefore
 essential.
 
 Being able to insert javascript fragments is conceptually identical to the gcc
-method of doing "inline assembler".  in gcc, you do horrible things like this:
+method of doing "inline assembler".  In gcc, you do horrible things like this:
 {{
     int a=10, b;
     asm ("movl %1, %%eax; 
@@ -287,14 +287,14 @@ class inheritance; the technique is prevalent in javascript libraries,
 to "extend" the functionality of an object by copying its methods into
 the child "class".
 
-The thing that needs particular attention is this line:
+One thing that deserves particular attention is this line:
 {{
     __Rect.prototype.__init__ = function(x, y) {
 }}
-This line sets up "class" initialiser function, called __init__, which
+This line sets up a "class" initialiser function, called __init__, which
 has two parameters, x and y.  Just like in c++, the concept of "this"
 is implicit in javascript: you always unavoidably get one, and so it
-need not be passed around as a parameter.  Note that the <i>contents</i>
+need not be passed around as a parameter.  Note also that the <i>contents</i>
 of the __init__ function are - literally verbatim - what was placed
 inside the JS(""" """) inlining wrapper.
 
@@ -318,13 +318,23 @@ there was... a lot of white-space.  Go back to the previous code,
 and either remove <i>all</i> white-space, add in javascript-style
 comments, or remove the indentation, and re-run pyjs.py.
 
+{{-info
+Note!  Javascript separates statements with semi-colons!
+Python does actually support semi-colons to separate statements,
+but typical well-written python applications don't try to cram
+vast numbers of statements onto one line, so the semi-colons are
+unnecessary.  semi-colons are usually used in python line-cramming
+competitions, such as writing a fully-functional wiki server in
+11 lines of code...
+}}
+
 In other words, what's happened is that the auto-generated code <i>happens</i>
 to be identical to the code that we inlined.  pyjs.py <i>happens</i> to
 "understand" how to turn python "self" into javascript "this", and the
 syntax of javascript <i>happens</i> to be similar to python, in this simple
-example.  So, rather unnecessarily, and for the purposes of this exercise,
-unnecessary work was done by putting "inline" the very javascript that
-Pyjamas <i>would</i> have generated, if the compiler was trusted to do
+example.  So, purely for the purposes of this exercise, unnecessary
+work was done by putting "inline" the very javascript that Pyjamas
+<i>would</i> have generated, if the compiler was trusted to do
 its job.  Try the same thing with the <tt>area()</tt> function:
 {{
     def area(self):
@@ -700,6 +710,7 @@ covered the following:
   * Where to look for pyjslib.py (in the libraries/ directory);
   * How pyjamas implements Python built-ins, by wrapping and mapping to javascript built-in classes and functions;
   * The importance - once again - of carefully examining the compiled output from pyjs.py and build.py, to assist in the development of javascript wrappers.
+  * Remembering that python doesn't typically use semi-colons (although it's supported) to separate statements but that in javascript, the use of semi-colons is<i>essential</i>.
 
 = Conclusion =
 
