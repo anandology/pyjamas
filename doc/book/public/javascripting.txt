@@ -723,7 +723,7 @@ covered the following:
   * Where to look for pyjslib.py (in the libraries/ directory);
   * How pyjamas implements Python built-ins, by wrapping and mapping to javascript built-in classes and functions;
   * The importance - once again - of carefully examining the compiled output from pyjs.py and build.py, to assist in the development of javascript wrappers.
-  * Remembering that python doesn't typically use semi-colons (although it's supported) to separate statements but that in javascript, the use of semi-colons is<i>essential</i>.
+  * Remembering that python doesn't typically use semi-colons (although it's supported) to separate statements but that in javascript, the use of semi-colons is <i>essential</i>.
 
 = Conclusion =
 

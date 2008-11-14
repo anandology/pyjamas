@@ -4,22 +4,32 @@ from BookLoader import ChapterLoader
 from pyjamas.HTTPRequest import HTTPRequest
 from pyjamas import Window
 
-def escape(txt):
+def escape(txt, esc=1):
+    if not esc:
+        return txt
     txt = txt.replace("&", "&amp;")
     txt = txt.replace("<", "&lt;")
     txt = txt.replace(">", "&gt;")
     txt = txt.replace("%", "&#37;")
     return txt
 
-def urlmap(txt):
+def urlmap(txt, esc=1):
     idx = txt.find("http://")
     if idx == -1:
-        return escape(txt)
-    for i in range(idx, len(txt)):
+        idx = txt.find("https://")
+    if idx == -1:
+        return escape(txt, esc)
+    for i in range(idx+7, len(txt)):
         c = txt[i]
-        if c == ' ' or c == '\n' or c == '\t' or c == '.' or c == ':' or c == ',':
+        if c == ' ' or c == '\n' or c == '\t' or c == ',' or c == '<' or c == ')' or c == '(' or c == '>':
             i -= 1
             break
+        # full-stop space test
+        if i != len(txt)-1:
+            c1 = txt[i+1]
+            if (c1 == ' ' or c1 == '\n') and (c == '.' or c == ':'):
+                i -= 1
+                break
 
     i += 1
 
@@ -30,16 +40,16 @@ def urlmap(txt):
     else:
         url = txt[idx:i]
         end = txt[i:]
-    txt = escape(beg) + "<a href='%s'>" % url
-    txt += "%s</a>" % escape(url) + urlmap(end)
+    txt = escape(beg, esc) + "<a href='%s'>" % url
+    txt += "%s</a>" % escape(url) + urlmap(end, esc)
     return txt
  
-def ts(txt):
+def ts(txt, esc=1):
     l = txt.split('\n')
     r = []
     for line in l:
         line = line.replace("%", "&#37;")
-        r.append(urlmap(line))
+        r.append(urlmap(line, esc))
     return '<br />'.join(r)
 
 def qr(line):
@@ -122,14 +132,14 @@ class Chapter(Sink):
             elif line[:2] == '* ':
                 if not ul_stack1:
                     txt += "<ul class='chapter_list1'>\n"
-                addline = "<li class='chapter_listitem1'/>%s\n" % ts(line[2:])
+                addline = "<li class='chapter_listitem1'/>%s\n" % ts(line[2:], 0)
                 ul_stack1 = True
                 ul_line = True
                 addpara = True
             elif line[:3] == '** ':
                 if not ul_stack2:
                     txt += "<ul class='chapter_list2'>\n"
-                addline = "<li class='chapter_listitem2'/>%s\n" % ts(line[2:])
+                addline = "<li class='chapter_listitem2'/>%s\n" % ts(line[2:], 0)
                 ul_stack2 = True
                 ul_line2 = True
                 ul_line = True
@@ -147,7 +157,7 @@ class Chapter(Sink):
             if not ul_stack2 and not ul_stack1 and not doing_code :
                 add = True
             if para and addpara:
-                para = "<p class='chapter_para'>%s</p>" % para
+                para = "<p class='chapter_para'>%s</p>" % urlmap(para, 0)
                 self.vp.add(HTML(para))
                 para = ''
             if add:
