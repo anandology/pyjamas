@@ -700,17 +700,17 @@ python_get_value() and the javascript_get_value() functions.  However,
 if the latter part of the exercise was followed, by calling update() from
 inside jstestdict.js, then the resultant output will instead be "cruel world".
 
+Again, just as with the TestRect.py example, remember to look at
+the compiled output, TestDict.Mozilla.cache.html for example,
+looking for WrapperDict and its use, and looking for dictobj,
+and how that's used.
+
 {{-info
 If an error appears, "WrapperDict is undefined" in the Javascript console of
 the browser, check that the contents of TestDict.py haven't been overwritten:
 "import jstestdict.js", and the declaration of the WrapperDict class, still
 need to be included in TestDict.py!
 }}
-
-Again, just as with the TestRect.py example, remember to look at
-the compiled output, TestDict.Mozilla.cache.html for example,
-looking for WrapperDict and its use, and looking for dictobj,
-and how that's used.
 
 == What's been covered ==
 

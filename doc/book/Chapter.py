@@ -42,6 +42,9 @@ def ts(txt):
         r.append(urlmap(line))
     return '<br />'.join(r)
 
+def qr(line):
+    return line.replace("'", "&#39;")
+
 class Chapter(Sink):
     def __init__(self):
 
@@ -109,11 +112,11 @@ class Chapter(Sink):
                 else:
                     addline = "<pre class='chapter_code'>"
             elif line[:2] == '= ' and line[-2:] == ' =':
-                addline = "<h1 class='chapter_heading1>%s</h1>" % line[2:-2]
+                addline = "<h1 class='chapter_heading1>%s</h1>" % qr(line[2:-2])
                 add = True
                 addpara = True
             elif line[:3] == '== ' and line[-3:] == ' ==':
-                addline = "<h2 class='chapter_heading2>%s</h2>" % line[3:-3]
+                addline = "<h2 class='chapter_heading2>%s</h2>" % qr(line[3:-3])
                 add = True
                 addpara = True
             elif line[:2] == '* ':
