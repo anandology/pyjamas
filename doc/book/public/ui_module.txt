@@ -1,4 +1,39 @@
+= User-Interface Applications =
+
+The ui module is the most comprehensive of the Pyjamas libraries and,
+in many ways, is the raison d'etre for the entire Pyjamas project.
+The ui module's class structure and API is near-identical to the Google Web
+Toolkit ui module, and is also incredibly similar to Python-Qt4 and
+Python-Gtk2.  As such, pyjamas.ui is almost minimalist in what it provides,
+but is definitely comprehensive enough to build decent and functional
+applications.
+
+Covered in this reference chapter will be each of the main classes
+in pyjamas.ui, which, for convenience, are broken down into two sections:
+Panels and Widgets.  Each of the two sections' classes are listed in
+alphabetical order.  Each class description contains the following:
+ * A short description of each class
+ * A source code example
+ * Where one is needed, a CSS stylesheet is given
+ * The key functions are described which make each class useful
+
+The chapter covers <i>existing</i> widgets in the pyjamas.ui library.
+A separate chapter covers how to write widgets from scratch.
+
 = Panels =
+
+A Panel is a name given to a container, which other widgets and panels
+can be added to.  For example, the SimplePanel can only have one widget
+added to it (which isn't as daft as it sounds: some widgets have different
+interaction rules with other widgets that can be mitigated by placing the
+widget in a "wrapper" panel).  Other more complex panels control the layout
+and placement of their child widgets in interesting and wonderful ways.
+
+The set of available Panel widgets is quite basic, yet functional.  The
+widgets are most definitely <i>not</i> as pretty or as comprehensive as,
+for example, those that are available at http://extjs.com, but certainly
+the ui Panel widgets are the "building blocks" - the foundation on which
+such lovelier widgets could be built.
 
 == ui.AbsolutePanel ==
 
@@ -89,6 +124,7 @@ from pyjamas.ui import SimplePanel, DialogBox, VerticalPanel, HTML, Button
 from pyjamas import Window
 
 class DialogBoxDemo(SimplePanel):
+
     def __init__(self):
         SimplePanel.__init__(self)
 
@@ -134,6 +170,7 @@ Source Code:
 from pyjamas.ui import SimplePanel, DockPanel, Label, HasAlignment
 
 class DockPanelDemo(SimplePanel):
+
     def __init__(self):
         SimplePanel.__init__(self)
 
@@ -220,6 +257,7 @@ Source Code:
 from pyjamas.ui import SimplePanel, FlexTable, HasAlignment, Button
 
 class FlexTableDemo(SimplePanel):
+
     def __init__(self):
         SimplePanel.__init__(self)
 
@@ -296,6 +334,7 @@ Source Code:
 from pyjamas.ui import SimplePanel, FlowPanel, Button
 
 class FlowPanelDemo(SimplePanel):
+
     def __init__(self):
         SimplePanel.__init__(self)
 
@@ -349,6 +388,7 @@ from pyjamas.ui import SimplePanel, FormPanel, VerticalPanel, HorizontalPanel
 from pyjamas.ui import TextBox, Label, Button
 
 class FormPanelDemo(SimplePanel):
+
     def __init__(self):
         SimplePanel.__init__(self)
 
@@ -396,6 +436,7 @@ Source Code:
 from pyjamas.ui import SimplePanel, Grid, Button
 
 class GridDemo(SimplePanel):
+
     def __init__(self):
         SimplePanel.__init__(self)
 
@@ -447,6 +488,7 @@ Source Code:
 from pyjamas.ui import SimplePanel, HorizontalPanel, Label, HasAlignment
 
 class HorizontalPanelDemo(SimplePanel):
+
     def __init__(self):
         SimplePanel.__init__(self)
 
@@ -490,6 +532,7 @@ Source Code:
 from pyjamas.ui import SimplePanel, HTMLPanel, Button, Label
 
 class HtmlPanelDemo(SimplePanel):
+
     def __init__(self):
         SimplePanel.__init__(self)
 
@@ -533,6 +576,7 @@ Source Code:
 from pyjamas.ui import SimplePanel, VerticalPanel, HTML, Button, PopupPanel
 
 class PopupPanelDemo(SimplePanel):
+
     def __init__(self):
         SimplePanel.__init__(self)
 
@@ -579,6 +623,7 @@ Source Code:
 from pyjamas.ui import SimplePanel, ScrollPanel, HTML
 
 class ScrollPanelDemo(SimplePanel):
+
     def __init__(self):
         SimplePanel.__init__(self)
 
@@ -639,6 +684,7 @@ Source Code:
 from pyjamas.ui import SimplePanel, StackPanel, HTML
 
 class StackPanelDemo(SimplePanel):
+
     def __init__(self):
         SimplePanel.__init__(self)
 
@@ -708,6 +754,7 @@ Source Code:
 from pyjamas.ui import SimplePanel, TabPanel, HTML
 
 class TabPanelDemo(SimplePanel):
+
     def __init__(self):
         SimplePanel.__init__(self)
 
@@ -749,6 +796,7 @@ Source Code:
 from pyjamas.ui import SimplePanel, VerticalPanel, Label, HasAlignment
 
 class VerticalPanelDemo(SimplePanel):
+
     def __init__(self):
         SimplePanel.__init__(self)
 
@@ -783,6 +831,31 @@ class VerticalPanelDemo(SimplePanel):
 
 = Widgets =
 
+The definition of a Widget is "an element of a graphical user interface that
+displays information or allows the user to interact with an application".
+It should therefore come as no surprise that pyjamas.ui contains the 
+basic widgets - buttons, input boxes etc. - that can be expected of a
+Widget set.
+
+Also included are the kinds of widgets that are expected of an HTML-based
+widget set, such as those that deal with Frames, Forms and Hyperlinks.
+These concepts, whilst unique to the HTML world, still need to be
+"widgetified", if Pyjamas applications are to get at them.
+
+{{-info
+These HTML-based widgets, and the HTMLPanel, made it difficult to port
+Pyjamas to the desktop-based widget sets, PyQt4 and PyGtk2.  Consequently,
+Webkit, an HTML Web Engine, had to be used as the basis for the Pyjamas
+Desktop port.
+}}
+
+It's worth reiterating that, whilst the Pyjamas Widgets are in some ways
+minimalist yet comprehensive, it is still possible, thanks to manipulation
+of the Browser DOM model, to write custom widgets very easily.  pyjamas.ui
+is stuffed full of widgets that manipulate the DOM model (such as Tree
+and Menubar), so it's not like there's a lack of examples to follow, or
+anything.
+
 == ui.Button ==
 
 The ui.Button class is used to show a button. When the user clicks
@@ -816,6 +889,7 @@ from pyjamas.ui import SimplePanel, Button
 from pyjamas import Window
 
 class ButtonDemo(SimplePanel):
+
     def __init__(self):
         SimplePanel.__init__(self)
 
@@ -864,6 +938,7 @@ from pyjamas.ui import SimplePanel, CheckBox
 from pyjamas import Window
 
 class CheckBoxDemo(SimplePanel):
+
     def __init__(self):
         SimplePanel.__init__(self)
 
@@ -900,6 +975,7 @@ from pyjamas.ui import SimplePanel, FormPanel, VerticalPanel, HorizontalPanel
 from pyjamas.ui import FileUpload, Label, Button
 
 class FileUploadDemo(SimplePanel):
+
     def __init__(self):
         SimplePanel.__init__(self)
 
@@ -948,6 +1024,7 @@ Source Code:
 from pyjamas.ui import SimplePanel, Frame
 
 class FrameDemo(SimplePanel):
+
     def __init__(self):
         SimplePanel.__init__(self)
 
@@ -970,6 +1047,7 @@ from pyjamas.ui import SimplePanel, FormPanel, VerticalPanel
 from pyjamas.ui import Hidden, Button, NamedFrame
 
 class HiddenDemo(SimplePanel):
+
     def __init__(self):
         SimplePanel.__init__(self)
 
@@ -1006,6 +1084,7 @@ Source Code:
 from pyjamas.ui import SimplePanel, HTML
 
 class HtmlDemo(SimplePanel):
+
     def __init__(self):
         SimplePanel.__init__(self)
 
@@ -1057,6 +1136,7 @@ from History import History
 
 
 class HyperlinkDemo(SimplePanel):
+
     def __init__(self):
         SimplePanel.__init__(self)
 
@@ -1104,6 +1184,7 @@ from pyjamas.ui import SimplePanel, Image
 from pyjamas import Window
 
 class ImageDemo(SimplePanel):
+
     def __init__(self):
         SimplePanel.__init__(self)
 
@@ -1130,6 +1211,7 @@ Source Code:
 from pyjamas.ui import SimplePanel, Label
 
 class LabelDemo(SimplePanel):
+
     def __init__(self):
         SimplePanel.__init__(self)
 
@@ -1160,6 +1242,7 @@ from pyjamas.ui import SimplePanel, HorizontalPanel, ListBox
 from pyjamas import Window
 
 class ListBoxDemo(SimplePanel):
+
     def __init__(self):
         SimplePanel.__init__(self)
 
@@ -1229,6 +1312,7 @@ from pyjamas.ui import SimplePanel, MenuBar, MenuItem
 from pyjamas import Window
 
 class MenubarDemo(SimplePanel):
+
     def __init__(self):
         SimplePanel.__init__(self)
 
@@ -1259,6 +1343,7 @@ class MenubarDemo(SimplePanel):
 
 
 class MenuCmd:
+
     def __init__(self, object, handler):
         self._object  = object
         self._handler = handler
@@ -1280,6 +1365,7 @@ Source Code:
 from pyjamas.ui import SimplePanel, VerticalPanel, NamedFrame, HTML
 
 class NamedFrameDemo(SimplePanel):
+
     def __init__(self):
         SimplePanel.__init__(self)
 
@@ -1320,6 +1406,7 @@ Source Code:
 from pyjamas.ui import SimplePanel, PasswordTextBox
 
 class PasswordTextBoxDemo(SimplePanel):
+
     def __init__(self):
         SimplePanel.__init__(self)
 
@@ -1347,6 +1434,7 @@ Source Code:
 from pyjamas.ui import SimplePanel, HorizontalPanel, VerticalPanel, RadioButton
 
 class RadioButtonDemo(SimplePanel):
+
     def __init__(self):
         SimplePanel.__init__(self)
 
@@ -1389,6 +1477,7 @@ Source Code:
 from pyjamas.ui import SimplePanel, TextArea
 
 class TextAreaDemo(SimplePanel):
+
     def __init__(self):
         SimplePanel.__init__(self)
 
@@ -1416,6 +1505,7 @@ Source Code:
 from pyjamas.ui import SimplePanel, TextBox
 
 class TextBoxDemo(SimplePanel):
+
     def __init__(self):
         SimplePanel.__init__(self)
 
@@ -1450,6 +1540,7 @@ from pyjamas import DOM
 from pyjamas import Window
 
 class TreeDemo(SimplePanel):
+
     def __init__(self):
         SimplePanel.__init__(self)
 
