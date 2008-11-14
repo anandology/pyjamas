@@ -3,6 +3,7 @@ from pyjamas.ui import HTML, VerticalPanel
 from BookLoader import ChapterLoader
 from pyjamas.HTTPRequest import HTTPRequest
 from pyjamas import Window
+from pyjamas.Timer import Timer
 
 def escape(txt, esc=1):
     if not esc:
@@ -77,92 +78,114 @@ class Chapter(Sink):
 
     def setChapter(self, text):
         self.loaded = True
-        ul_stack1 = 0
-        ul_stack2 = 0
-        doing_code = 0
-        custom_style = False
-        txt = ''
-        para = ''
-        text += '\n'
-        for line in text.split("\n"):
-            if doing_code:
-                if line == "}}":
-                    doing_code = 0
-                    custom_style = False
-                    line = "</pre>"
-                    txt += line
-                    self.vp.add(HTML(txt))
-                    txt = ''
-                    continue
-                if line:
-                    if not custom_style:
-                        txt += escape(line)
-                    else:
-                        txt += line
-                txt += "\n"
-                continue
-                
-            line = line.strip()
-            ul_line = False
-            ul_line2 = False
-            addline = ''
-            add = False
-            addpara = False
-            if not line:
-                line = ""
-                addpara = True
-            elif line[:2] == "{{":
-                doing_code = 1
-                addpara = True
-                if len(line) > 4 and line[2] == '-':
-                    addline = "<pre class='chapter_%s'>" % line[3:]
-                    custom_style = True
-                elif len(line) > 2:
-                    addline = "<pre class='chapter_code'>%s" % line[2:]
+
+        self.text = text + '\n'
+
+        self.ul_stack1 = 0
+        self.ul_stack2 = 0
+        self.doing_code = 0
+        self.custom_style = False
+        self.txt = ''
+        self.para = ''
+
+        Timer(1, self)
+
+    def onTimer(self, sender):
+
+        count = 0
+        while count < 50:
+            count += 1
+            idx = self.text.find("\n")
+            if idx < 0:
+                self.text = None
+                break
+            self.process_line(self.text[:idx])
+            self.text = self.text[idx+1:]
+
+        if self.text:
+            Timer(1, self)
+
+
+    def process_line(self, line):
+
+        if self.doing_code:
+            if line == "}}":
+                self.doing_code = 0
+                self.custom_style = False
+                line = "</pre>"
+                self.txt += line
+                self.vp.add(HTML(self.txt))
+                self.txt = ''
+                return
+            if line:
+                if not self.custom_style:
+                    self.txt += escape(line)
                 else:
-                    addline = "<pre class='chapter_code'>"
-            elif line[:2] == '= ' and line[-2:] == ' =':
-                addline = "<h1 class='chapter_heading1>%s</h1>" % qr(line[2:-2])
-                add = True
-                addpara = True
-            elif line[:3] == '== ' and line[-3:] == ' ==':
-                addline = "<h2 class='chapter_heading2>%s</h2>" % qr(line[3:-3])
-                add = True
-                addpara = True
-            elif line[:2] == '* ':
-                if not ul_stack1:
-                    txt += "<ul class='chapter_list1'>\n"
-                addline = "<li class='chapter_listitem1'/>%s\n" % ts(line[2:], 0)
-                ul_stack1 = True
-                ul_line = True
-                addpara = True
-            elif line[:3] == '** ':
-                if not ul_stack2:
-                    txt += "<ul class='chapter_list2'>\n"
-                addline = "<li class='chapter_listitem2'/>%s\n" % ts(line[2:], 0)
-                ul_stack2 = True
-                ul_line2 = True
-                ul_line = True
-            if ul_stack2 and not ul_line2:
-                ul_stack2 = False
-                txt += "</ul>\n"
-            if ul_stack1 and not ul_line:
-                ul_stack1 = False
-                txt += "</ul>\n"
-            if addline:
-                txt += addline + "\n"
-            elif line:
-                line = line.replace("%", "&#37;")
-                para += line + "\n"
-            if not ul_stack2 and not ul_stack1 and not doing_code :
-                add = True
-            if para and addpara:
-                para = "<p class='chapter_para'>%s</p>" % urlmap(para, 0)
-                self.vp.add(HTML(para))
-                para = ''
-            if add:
-                self.vp.add(HTML(txt))
-                txt = ''
+                    self.txt += line
+            self.txt += "\n"
+            return
+            
+        line = line.strip()
+        ul_line = False
+        ul_line2 = False
+        addline = ''
+        add = False
+        addpara = False
+        if not line:
+            line = ""
+            addpara = True
+        elif line[:2] == "{{":
+            self.doing_code = 1
+            addpara = True
+            if len(line) > 4 and line[2] == '-':
+                addline = "<pre class='chapter_%s'>" % line[3:]
+                self.custom_style = True
+            elif len(line) > 2:
+                addline = "<pre class='chapter_code'>%s" % line[2:]
+            else:
+                addline = "<pre class='chapter_code'>"
+        elif line[:2] == '= ' and line[-2:] == ' =':
+            addline = "<h1 class='chapter_heading1>%s</h1>" % qr(line[2:-2])
+            add = True
+            addpara = True
+        elif line[:3] == '== ' and line[-3:] == ' ==':
+            addline = "<h2 class='chapter_heading2>%s</h2>" % qr(line[3:-3])
+            add = True
+            addpara = True
+        elif line[:2] == '* ':
+            if not self.ul_stack1:
+                self.txt += "<ul class='chapter_list1'>\n"
+            addline = "<li class='chapter_listitem1'/>%s\n" % ts(line[2:], 0)
+            self.ul_stack1 = True
+            ul_line = True
+            addpara = True
+        elif line[:3] == '** ':
+            if not self.ul_stack2:
+                self.txt += "<ul class='chapter_list2'>\n"
+            addline = "<li class='chapter_listitem2'/>%s\n" % ts(line[2:], 0)
+            self.ul_stack2 = True
+            ul_line2 = True
+            ul_line = True
+        if self.ul_stack2 and not ul_line2:
+            self.ul_stack2 = False
+            self.txt += "</ul>\n"
+        if self.ul_stack1 and not ul_line:
+            self.ul_stack1 = False
+            self.txt += "</ul>\n"
+        if addline:
+            self.txt += addline + "\n"
+        elif line:
+            line = line.replace("%", "&#37;")
+            self.para += line + "\n"
+        if not self.ul_stack2 and not self.ul_stack1 and not self.doing_code :
+            add = True
+        if self.para and addpara:
+            self.para = "<p class='chapter_para'>%s</p>" % urlmap(self.para, 0)
+            self.vp.add(HTML(self.para))
+            self.para = ''
+        if add:
+            self.vp.add(HTML(self.txt))
+            self.txt = ''
 
     def onError(self, text, code):
         self.vp.clear()
