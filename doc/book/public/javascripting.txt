@@ -439,3 +439,281 @@ far, however, is how to call Python functions from inside pure javascript.
 Correction: how to make it <i>look</i> like python functions are being called,
 given that the output is entirely javascript, in the end...
 
+= Calling Python from Javascript =
+
+It's a lie!  What's actually needed is to understand how the Pyjamas
+compiler translates python functions, especially those in classes
+and modules, into javascript.  Understanding the translation is
+important, because when no longer relying on pyjs.py to do the job
+automatically, it's clearly necessary to write, inside the <tt>JS()</tt>
+block, exactly the same code that <i>would</i> have been generated.
+
+So it's not like python is <i>actually</i> being called, from javascript -
+it just looks that way.
+
+{{-code
+If the thought of how not in Kansas this all is, take a little time
+for a Zen three-heels-clicking moment until the dizziness passes.
+}}
+
+Once calm and zen-like peace has been achieved, create a file called
+jsdicttest.js, as follows:
+{{
+function dictobj() {
+}
+
+function dict_init(d) {
+    this.d = d;
+}
+
+function dict_get_value(key) {
+    return this.d.__getitem__(key)
+}
+
+dictobj.prototype.get_value = dict_get_value;
+dictobj.prototype.init = dict_init;
+}}
+
+Next, create a file called TestDict.py with the following contents:
+{{
+import jsdicttest.js # YUK!!!
+
+class WrapperDict:
+    def __init__(self):
+        d = {'hello': 'world',
+                     'goodbye': 2}
+        JS("""
+           this.dict = new dictobj();
+           this.dict.init(d);
+           """)
+
+    def python_get_value(self, key):
+        return self.dict.d[key]
+
+    def javascript_get_value(self, key):
+        JS("""
+        return this.dict.get_value(key);
+           """)
+}}
+Notice that the jsdicttest.js file is being imported, verbatim, in that
+all-important and completely non-pythonic fashion; notice also that, in
+the class initialisation, the local variable, d, is being passed in to the
+inline-assembler-like <tt>JS()</tt> function.
+
+Run pyjs.py, as follows, to compile the code to javascript
+{{
+    python ../../pyjs/pyjs.py TestDict.py
+}}
+
+Examine the output. and look for this particular section:
+{{
+    __WrapperDict.prototype.__init__ = function() {
+    var d = new pyjslib_Dict([['hello', 'world'], ['goodbye', 2]]);
+
+           this.dict = new dictobj();
+           this.dict.init(d);
+           
+    };
+}}
+Comparing this carefully against the original javascript, notice how the
+dictionary has been declared, and how the input data has been turned into a
+javascript array.  <tt>pyjslib_Dict</tt> is the name of the function that
+is created when the <tt>Dict</tt> class, in the pyjamas library called
+"pyjslib.py", is compiled to javascript.
+
+{{-info
+When you run build.py, the location of the Pyjamas library is automatically
+added to the module import path, for convenience of building Pyjamas Web
+applications.  Take a moment to look at builder/build.py's source code,
+looking for the word "library".  build.py uses pyjs.py but does quite a
+bit more work - specifically - in preparing a web application - whereas
+pyjs.py is definitely just a straight compiler.
+}}
+
+Understanding how pyjs.py treats builtins such as Dict, List, Tuple and
+String is crucial, if wrapping javascript, as is understanding how modules
+are imported.  Take a look at library/pyjslib.py, looking for the class
+<tt>Dict</tt>.  In particular, it may be illustrative to compare the
+"builtin" pyjamas implementation of Dict to UserDict.py which comes as
+standard as part of the Python 2 distribution.  Note that, apart from
+<tt>getObject()</tt>, which has been added for convenience, the function
+names in pyjslib.py's Dict class, and those in UserDict.py, are identical.
+
+The implementation of Dict, in pyjslib.py, however, can be seen to be using
+standard javascript arrays to "emulate" the expected functionality and
+behaviour that Python programmers would expect a Dict object to have.
+On the basis that it's unreasonable to expect python programmers to have to"get involved" with javascript builtin objects, pyjalib.py take care of the
+differences, making javascript builtin objects look like Python builtins.
+So, looking further at the output from compiling TestDict.py, the following
+code fragment should come as no surprise:
+{{
+    __WrapperDict.prototype.python_get_value = function(key) {
+    return this.dict.d.__getitem__(key);
+    };
+}}
+Accessing the dictionary's items, by key, in the python_get_value() function
+in the original python code, TestDict.py, has been compiled into a call
+to <tt>__getitem__</tt>.  This is <i>exactly</i> what happens in standard
+Python, as can be clearly seen with a simple test, using the UserDict.py
+module that comes with the standard python distribution, so it should come
+as no surprise that Pyjamas is emulating this behaviour, for convenience.
+
+== Illustrating how to "call" Python functions from javascript ==
+
+Take the line which was generated by the compiler, above, in declaring
+the variable d in the WrapperDict constructor, and adapt it to make
+changes to jstestdict.js, as follows:
+{{
+function dict_init(d) {
+    var u = new pyjslib_Dict([['goodbye', 'cruel world']]);
+    this.d = d;
+    d.update(u);
+}
+}}
+What is expected to happen, here, is that the value referenced by the key 
+'goodbye' will overwritten, from its expected value, before - the number '2' -
+with the string 'cruel world'.  However, it was done <i>inside</i> the
+javascript, by manually declaring a built-in Dict object, using the
+auto-generated <tt>pyjslib_Dict()</tt> function.
+
+{{-info
+Take special note of this "trick".  If looking to achieve something in
+a Javascript snippet, first write the code that you want, in Python.
+Then, run the Python code through pyjs.py (or build.py, as appropriate),
+and literally cut-and-paste - and adapt - the resultant output.
+There's no point in making life difficult, when there is an automated
+tool that accurately does the job, already.
+}}
+
+To illustrate this, again, add another function to WrapperDict, which
+gets the length of the dictionary:
+{{
+    def python_dict_length(self):
+        return len(self.dict)
+}}
+Again, <tt>len()</tt> is a built-in, that is implemented in pyjslib.py,
+and so it should come as no surprise to find, when compiling TestDict.py
+by running pyjs.py TestDict.py, that the output contains this:
+{{
+    __WrapperDict.prototype.python_dict_length = function() {
+    return pyjslib_len(this.dict);
+    };
+}}
+So, again, it has been illustrated that if it is required to find the
+length of a pyjslib.py-implemented Python Dict object from inside Javascript,
+<tt>pyjslib_len</tt> must be used.  All this is is the name of the module,
+separated from the function name by an underscore, and this same trick
+applies to absolutely any python modules that are imported into an application.
+It's just that, for recognised built-in functions such as len, map, filter
+and getattr, pyjs.py automatically recognises those and prepends the module
+name "pyjslib".  Any other functions, including not only in the
+modules that come with Pyjamas but also developer-written code, must be
+imported as would normally be done, in Python, and the javascript generated
+will be of the form "<tt>importedmodulename_functionname</tt>" or
+"<tt>importedmodulename_classname</tt>".
+
+{{-info
+Warning! This trick - of separating the module name from the function name -
+is something that was chosen for the convenience of the Pyjamas compiler,
+in order to emulate in javascript, as best as possible, the class and
+variable scope rules of python.  At some point, a better mechanism may be
+deployed, and, as a result, it's possible that all use of this trick may
+be utterly broken - at least, definitely version-dependent.
+In fact, in the llpamies branch of Pyjamas, it already is broken!
+The module-function calling conventions in the llpamies branch have
+been completely changed, but the work was an experiment that has not
+yet been completed.
+}}
+
+== Running TestDict in a Browser ==
+
+To run TestDict in a Web browser, add the following lines to TestDict.py:
+{{
+from pyjamas.ui import RootPanel, TextBox, HTML, Button
+
+class TestDict:
+
+    def onModuleLoad(self):
+
+        self.r = WrapperDict()
+
+        self.kbox = TextBox()
+        self.addbutton = Button("Click to look up key value (hello or goodbye)")
+        self.addbutton.addClickListener(self)
+
+        self.kbox.setText("hello") # default to make life easier
+
+        RootPanel().add(HTML("Key:"))
+        RootPanel().add(self.kbox)
+        RootPanel().add(self.addbutton)
+
+    def display_value(self):
+
+        key = self.kbox.getText()
+
+        RootPanel().add(HTML("Value using python:" ))
+        RootPanel().add(HTML(self.r.python_get_value(key)))
+        RootPanel().add(HTML("Value using javascript:" ))
+        RootPanel().add(HTML(self.r.javascript_get_value(key)))
+
+    def onClick(self, sender):
+
+        self.display_value()
+}}
+
+Next, create a file, public/TestDict.html, with the following contents:
+{{
+<html>
+    <head>
+        <meta name="pygwt:module" content="TestDict">
+        <title>Test Dictionary Javascript Object</title>
+    </head>
+    <body bgcolor="white">
+        <script language="javascript" src="pygwt.js"></script>
+    </body>
+</html>
+}}
+
+After saving the modifications to TestDict.py, and saving public/TestDict.html,
+compile the application to javascript, using build.py:
+{{
+    python ../../builder/build.py TestDict.py
+}}
+Browse to the examples/jsobject/output/ directory (or wherever the application
+is being built) and click on output/TestDict.html.  
+
+{{-info
+If an error appears, "WrapperDict is undefined" in the Javascript console of
+the browser, check that the contents of TestDict.py haven't been overwritten:
+"import jstestdict.js", and the declaration of the WrapperDict class, still
+need to be included in TestDict.py!
+}}
+
+== What's been covered ==
+
+This section, on pretending to call Python from inside Javascript,
+covered the following:
+ * How it's a lie that python is being "called" from javascript, and how it's actually the other way round: that the python is being translated so that the inline javascript, in <tt>JS()</tt>, can be made to match up with the compiled python code.
+  * How to "trick"-compile code into inline javascript, by writing the code first in Python, compiling it to javascript and then copying that into the <tt>JS()</tt> block, to save time and effort.
+  * How a class or function in a Python module is turned into a javascript function by the compiler (separating the two with an underscore is the current convention, as of Pyjamas 0.3).
+  * How the builtin classes and functions automatically have the module name "pyjslib_" prepended, in the compiled javascript.
+  * Where to look for pyjslib.py (in the libraries/ directory);
+  * How pyjamas implements Python built-ins, by wrapping and mapping to javascript built-in classes and functions;
+  * The importance - once again - of carefully examining the compiled output from pyjs.py and build.py, to assist in the development of javascript wrappers.
+
+= Conclusion =
+
+This quite comprehensive chapter emphasises that, whilst it's
+necessary to not only know both Python and Javascript but also to
+know how the pyjs.py compiler turns python into javascript, it's not
+rocket science to integrate javascript into Pyjamas applications.
+The same type of techniques and care that are required, when
+writing inline assembler in a c or c++ program for example, are
+also required, here.
+
+Yet, compared to writing inline assembler in c or c++, the task of integrating
+javascript inline into Pyjamas applications is definitely a <i>lot</i> easier.
+Not least in making the task easier is the fact that javascript
+itself is a high-level language (albeit an obtuse but very well-understood
+one), and asm programming is definitely a black art.
+
