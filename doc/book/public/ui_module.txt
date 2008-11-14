@@ -1,4 +1,6 @@
-ui.AbsolutePanel
+= Panels =
+
+== ui.AbsolutePanel ==
 
 ui.AbsolutePanel is a panel that positions its children using absolute pixel positions. This allows the panel's children to overlap.
 
@@ -12,8 +14,9 @@ Child 2
 Source Code
 
 
-from ui import SimplePanel, AbsolutePanel, VerticalPanel, HTML
-import DOM
+{{
+from pyjamas.ui import SimplePanel, AbsolutePanel, VerticalPanel, HTML
+from pyjamas import DOM
 
 
 class AbsolutePanelDemo(SimplePanel):
@@ -39,11 +42,11 @@ class AbsolutePanelDemo(SimplePanel):
         DOM.setAttribute(wrapper.getTable(), "bgColor", "#C3D9FF")
 
         return wrapper
+}}
 
 
 
-
-ui.DialogBox
+== ui.DialogBox ==
 
 The ui.DialogBox class implements a panel that behaves like a dialog box.
 
@@ -77,8 +80,9 @@ Show Dialog
 Source Code
 
 
-from ui import SimplePanel, DialogBox, VerticalPanel, HTML, Button
-import Window
+{{
+from pyjamas.ui import SimplePanel, DialogBox, VerticalPanel, HTML, Button
+from pyjamas import Window
 
 class DialogBoxDemo(SimplePanel):
     def __init__(self):
@@ -106,14 +110,14 @@ class DialogBoxDemo(SimplePanel):
 
     def onClose(self):
         self._dialog.hide()
+}}
 
 
 
 
 
 
-
-ui.DockPanel
+== ui.DockPanel ==
 
 The ui.DockPanel class divides the panel into five pieces, arranged into North, South, East, West and center pieces. In general the outer pieces are smaller, with the centre holding the main part of the panel's contents, as shown below.
 
@@ -132,7 +136,8 @@ South
 Source Code
 
 
-from ui import SimplePanel, DockPanel, Label, HasAlignment
+{{
+from pyjamas.ui import SimplePanel, DockPanel, Label, HasAlignment
 
 class DockPanelDemo(SimplePanel):
     def __init__(self):
@@ -160,6 +165,7 @@ class DockPanelDemo(SimplePanel):
         panel.setCellWidth(center, "400px")
 
         self.add(panel)
+}}
 
 
 
@@ -174,8 +180,7 @@ class DockPanelDemo(SimplePanel):
 
 
 
-
-ui.FlexTable
+== ui.FlexTable ==
 
 The ui.FlexTable class implements a table that can have different numbers of cells in each row, and single cells can span multiple rows and columns.
 
@@ -216,7 +221,8 @@ Show
 Source Code
 
 
-from ui import SimplePanel, FlexTable, HasAlignment, Button
+{{
+from pyjamas.ui import SimplePanel, FlexTable, HasAlignment, Button
 
 class FlexTableDemo(SimplePanel):
     def __init__(self):
@@ -267,6 +273,7 @@ class FlexTableDemo(SimplePanel):
         rowFormatter.setVisible(2, True)
         rowFormatter.setVisible(3, True)
         rowFormatter.setVisible(4, False)
+}}
 
 
 
@@ -281,8 +288,7 @@ class FlexTableDemo(SimplePanel):
 
 
 
-
-ui.FlowPanel
+== ui.FlowPanel ==
 
 The ui.FlowPanel is a panel that allows its contents to "flow" from left to right, and then from top to bottom, like words on a page.
 
@@ -298,7 +304,8 @@ Item 1Item 2Item 3Item 4Item 5Item 6Item 7Item 8Item 9Item 10
 Source Code
 
 
-from ui import SimplePanel, FlowPanel, Button
+{{
+from pyjamas.ui import SimplePanel, FlowPanel, Button
 
 class FlowPanelDemo(SimplePanel):
     def __init__(self):
@@ -318,6 +325,7 @@ class FlowPanelDemo(SimplePanel):
         flow.add(Button("Item 10"))
         flow.setWidth("400px")
         self.add(flow)
+}}
 
 
 
@@ -332,8 +340,7 @@ class FlowPanelDemo(SimplePanel):
 
 
 
-
-ui.FormPanel
+== ui.FormPanel ==
 
 The ui.FormPanel class implements a traditional HTML form.
 
@@ -356,7 +363,8 @@ Search for:
 Source Code
 
 
-from ui import SimplePanel, FormPanel, VerticalPanel, HorizontalPanel, TextBox, Label, Button
+{{
+from pyjamas.ui import SimplePanel, FormPanel, VerticalPanel, HorizontalPanel, TextBox, Label, Button
 
 class FormPanelDemo(SimplePanel):
     def __init__(self):
@@ -388,6 +396,7 @@ class FormPanelDemo(SimplePanel):
 
     def onBtnClick(self):
         self.form.submit()
+}}
 
 
 
@@ -400,8 +409,7 @@ class FormPanelDemo(SimplePanel):
 
 
 
-
-ui.Grid
+== ui.Grid ==
 
 The ui.Grid class implements a panel which lays its contents out in a grid-like fashion, very like an HTML table.
 
@@ -418,7 +426,8 @@ Hello, World!
 Source Code
 
 
-from ui import SimplePanel, Grid
+{{
+from pyjamas.ui import SimplePanel, Grid
 
 class GridDemo(SimplePanel):
     def __init__(self):
@@ -435,6 +444,7 @@ class GridDemo(SimplePanel):
                 grid.setText(row, col, str(row) + "*" + str(col) + " = " + str(row*col))
 
         self.add(grid)
+}}
 
 
 
@@ -454,8 +464,7 @@ class GridDemo(SimplePanel):
 
 
 
-
-ui.HorizontalPanel
+== ui.HorizontalPanel ==
 
 The ui.HorizontalPanel class is a panel that lays out its contents from left to right.
 
@@ -476,7 +485,8 @@ Part 4
 Source Code
 
 
-from ui import SimplePanel, HorizontalPanel, Label, HasAlignment
+{{
+from pyjamas.ui import SimplePanel, HorizontalPanel, Label, HasAlignment
 
 class HorizontalPanelDemo(SimplePanel):
     def __init__(self):
@@ -509,6 +519,7 @@ class HorizontalPanelDemo(SimplePanel):
         panel.setHeight("200px")
 
         self.add(panel)
+}}
 
 
 
@@ -521,8 +532,7 @@ class HorizontalPanelDemo(SimplePanel):
 
 
 
-
-ui.HtmlPanel
+== ui.HtmlPanel ==
 
 The ui.HTMLPanel class allows you to include HTML within your application, and embed other widgets inside the panel's contents by wrapping them inside a <span> tag.
 
@@ -538,7 +548,8 @@ More HTML
 Source Code
 
 
-from ui import SimplePanel, HTMLPanel, Button, Label
+{{
+from pyjamas.ui import SimplePanel, HTMLPanel, Button, Label
 
 class HtmlPanelDemo(SimplePanel):
     def __init__(self):
@@ -556,6 +567,7 @@ class HtmlPanelDemo(SimplePanel):
         panel.add(Label("This label intentionally left blank"), id2)
 
         self.add(panel)
+}}
 
 
 
@@ -566,8 +578,7 @@ class HtmlPanelDemo(SimplePanel):
 
 
 
-
-ui.PopupPanel
+== ui.PopupPanel ==
 
 The ui.PopupPanel class implements a panel that pops up in the browser window to display some contents. When the user clicks outside the popup, it disappears again.
 
@@ -589,7 +600,8 @@ Click Me
 Source Code
 
 
-from ui import SimplePanel, VerticalPanel, HTML, Button, PopupPanel
+{{
+from pyjamas.ui import SimplePanel, VerticalPanel, HTML, Button, PopupPanel
 
 class PopupPanelDemo(SimplePanel):
     def __init__(self):
@@ -622,6 +634,7 @@ class PopupPanelDemo(SimplePanel):
 
     def onClick(self):
         self._popup.hide()
+}}
 
 
 
@@ -637,8 +650,7 @@ class PopupPanelDemo(SimplePanel):
 
 
 
-
-ui.ScrollPanel
+== ui.ScrollPanel ==
 
 The ui.ScrollPanel class implements a panel that scrolls its contents.
 
@@ -659,7 +671,8 @@ The named is but the mother that rears the ten thousand creatures, each after it
 Source Code
 
 
-from ui import SimplePanel, ScrollPanel, HTML
+{{
+from pyjamas.ui import SimplePanel, ScrollPanel, HTML
 
 class ScrollPanelDemo(SimplePanel):
     def __init__(self):
@@ -678,6 +691,7 @@ class ScrollPanelDemo(SimplePanel):
         panel.add(contents)
         panel.setSize("300px", "100px")
         self.add(panel)
+}}
 
 
 
@@ -691,8 +705,7 @@ class ScrollPanelDemo(SimplePanel):
 
 
 
-
-ui.StackPanel
+== ui.StackPanel ==
 
 The ui.StackPanel class displays a "stack" of sub-panels where only one sub-panel is open at a time.
 
@@ -742,7 +755,8 @@ black horse.
 Source Code
 
 
-from ui import SimplePanel, StackPanel, HTML
+{{
+from pyjamas.ui import SimplePanel, StackPanel, HTML
 
 class StackPanelDemo(SimplePanel):
     def __init__(self):
@@ -759,6 +773,7 @@ class StackPanelDemo(SimplePanel):
 
         stack.setWidth("100%")
         self.add(stack)
+}}
 
 
 
@@ -770,8 +785,7 @@ class StackPanelDemo(SimplePanel):
 
 
 
-
-ui.TabPanel
+== ui.TabPanel ==
 
 The ui.TabPanel class implements a tabbed window, where clicking on a tab causes the associated contents to be displayed.
 
@@ -833,7 +847,8 @@ The smart money is on the black horse.
 Source Code
 
 
-from ui import SimplePanel, TabPanel, HTML
+{{
+from pyjamas.ui import SimplePanel, TabPanel, HTML
 
 class TabPanelDemo(SimplePanel):
     def __init__(self):
@@ -849,6 +864,7 @@ class TabPanelDemo(SimplePanel):
         tabs.setHeight("250px")
 
         self.add(tabs)
+}}
 
 
 
@@ -860,8 +876,7 @@ class TabPanelDemo(SimplePanel):
 
 
 
-
-ui.VerticalPanel
+== ui.VerticalPanel ==
 
 The ui.VerticalPanel class is a panel that lays out its contents from top to bottom.
 
@@ -879,7 +894,8 @@ Part 4
 Source Code
 
 
-from ui import SimplePanel, VerticalPanel, Label, HasAlignment
+{{
+from pyjamas.ui import SimplePanel, VerticalPanel, Label, HasAlignment
 
 class VerticalPanelDemo(SimplePanel):
     def __init__(self):
@@ -912,11 +928,11 @@ class VerticalPanelDemo(SimplePanel):
         panel.setHeight("300px")
 
         self.add(panel)
+}}
 
 
 
-
-ui.Button
+== ui.Button ==
 
 The ui.Button class is used to show a button. When the user clicks on the button, the given listener function is called.
 
@@ -931,8 +947,9 @@ Click Me
 Source Code
 
 
-from ui import SimplePanel, Button
-import Window
+{{
+from pyjamas.ui import SimplePanel, Button
+from pyjamas import Window
 
 class ButtonDemo(SimplePanel):
     def __init__(self):
@@ -944,6 +961,7 @@ class ButtonDemo(SimplePanel):
 
     def onButtonClick(self):
         Window.alert("Ouch!")
+}}
 
 
 
@@ -957,8 +975,7 @@ class ButtonDemo(SimplePanel):
 
 
 
-
-ui.CheckBox
+== ui.CheckBox ==
 
 The ui.CheckBox class is used to show a standard checkbox. When the user clicks on the checkbox, the checkbox's state is toggled.
 
@@ -973,8 +990,9 @@ Print Results?
 Source Code
 
 
-from ui import SimplePanel, CheckBox
-import Window
+{{
+from pyjamas.ui import SimplePanel, CheckBox
+from pyjamas import Window
 
 class CheckBoxDemo(SimplePanel):
     def __init__(self):
@@ -988,6 +1006,7 @@ class CheckBoxDemo(SimplePanel):
 
     def onClick(self):
         Window.alert("checkbox status: " + self.box.isChecked())
+}}
 
 
 
@@ -999,8 +1018,7 @@ class CheckBoxDemo(SimplePanel):
 
 
 
-
-ui.FileUpload
+== ui.FileUpload ==
 
 The ui.FileUpload class implements a file uploader widget.
 
@@ -1021,7 +1039,8 @@ Upload file:
 Source Code
 
 
-from ui import SimplePanel, FormPanel, VerticalPanel, HorizontalPanel, FileUpload, Label, Button
+{{
+from pyjamas.ui import SimplePanel, FormPanel, VerticalPanel, HorizontalPanel, FileUpload, Label, Button
 
 class FileUploadDemo(SimplePanel):
     def __init__(self):
@@ -1056,6 +1075,7 @@ class FileUploadDemo(SimplePanel):
 
     def onBtnClick(self):
         self.form.submit()
+}}
 
 
 
@@ -1065,8 +1085,7 @@ class FileUploadDemo(SimplePanel):
 
 
 
-
-ui.Frame
+== ui.Frame ==
 
 The ui.Frame class is used to embed a separate HTML page within your application.
 
@@ -1077,7 +1096,8 @@ Working Example
 Source Code
 
 
-from ui import SimplePanel, Frame
+{{
+from pyjamas.ui import SimplePanel, Frame
 
 class FrameDemo(SimplePanel):
     def __init__(self):
@@ -1087,6 +1107,7 @@ class FrameDemo(SimplePanel):
         frame.setWidth("100%")
         frame.setHeight("200px")
         self.add(frame)
+}}
 
 
 
@@ -1100,8 +1121,7 @@ class FrameDemo(SimplePanel):
 
 
 
-
-ui.Hidden
+== ui.Hidden ==
 
 The ui.Hidden class represents a hidden form field.
 
@@ -1114,7 +1134,8 @@ Search
 Source Code
 
 
-from ui import SimplePanel, FormPanel, VerticalPanel, Hidden, Button, NamedFrame
+{{
+from pyjamas.ui import SimplePanel, FormPanel, VerticalPanel, Hidden, Button, NamedFrame
 
 class HiddenDemo(SimplePanel):
     def __init__(self):
@@ -1138,6 +1159,7 @@ class HiddenDemo(SimplePanel):
     def onBtnClick(self):
         self.form.submit()
 
+}}
 
 
 
@@ -1146,8 +1168,7 @@ class HiddenDemo(SimplePanel):
 
 
 
-
-ui.Html
+== ui.Html ==
 
 The ui.HTML class displays HTML-formatted text. To display unformatted text, use ui.Label.
 
@@ -1158,7 +1179,8 @@ Hello, World!
 Source Code
 
 
-from ui import SimplePanel, HTML
+{{
+from pyjamas.ui import SimplePanel, HTML
 
 class HtmlDemo(SimplePanel):
     def __init__(self):
@@ -1166,6 +1188,7 @@ class HtmlDemo(SimplePanel):
 
         html = HTML("Hello, <b><i>World!</i></b>")
         self.add(html)
+}}
 
 
 
@@ -1182,8 +1205,7 @@ class HtmlDemo(SimplePanel):
 
 
 
-
-ui.Hyperlink
+== ui.Hyperlink ==
 
 The ui.Hyperlink class acts as an "internal" hyperlink to a particular state of the application. These states are stored in the application's history, allowing for the use of the Back and Next buttons in the browser to move between application states.
 
@@ -1199,7 +1221,9 @@ State 2
 Source Code
 
 
-from ui import SimplePanel, VerticalPanel, HorizontalPanel, Hyperlink, Label
+{{
+from pyjamas.ui import SimplePanel, VerticalPanel, HorizontalPanel, Hyperlink, Label
+{{
 from History import History
 
 
@@ -1225,6 +1249,7 @@ class HyperlinkDemo(SimplePanel):
 
     def onHistoryChanged(self, state):
         self.stateDisplay.setText(state)
+}}
 
 
 
@@ -1240,8 +1265,7 @@ class HyperlinkDemo(SimplePanel):
 
 
 
-
-ui.Image
+== ui.Image ==
 
 The ui.Image class is used to display an image.
 
@@ -1256,8 +1280,9 @@ Working Example
 Source Code
 
 
-from ui import SimplePanel, Image
-import Window
+{{
+from pyjamas.ui import SimplePanel, Image
+from pyjamas import Window
 
 class ImageDemo(SimplePanel):
     def __init__(self):
@@ -1273,6 +1298,7 @@ class ImageDemo(SimplePanel):
 
     def onImageClicked(self):
         Window.alert("Stop that!")
+}}
 
 
 
@@ -1286,8 +1312,7 @@ class ImageDemo(SimplePanel):
 
 
 
-
-ui.Label
+== ui.Label ==
 
 The ui.Label class is used to display unformatted text. Unlike the ui.HTML class, it does not interpret HTML format codes. If you pass False as the second parameter when creating your label, word wrapping will be disabled, forcing all the text to be on one line.
 
@@ -1298,7 +1323,8 @@ This is a label
 Source Code
 
 
-from ui import SimplePanel, Label
+{{
+from pyjamas.ui import SimplePanel, Label
 
 class LabelDemo(SimplePanel):
     def __init__(self):
@@ -1306,6 +1332,7 @@ class LabelDemo(SimplePanel):
 
         label = Label("This is a label", wordWrap=False)
         self.add(label)
+}}
 
 
 
@@ -1320,8 +1347,7 @@ class LabelDemo(SimplePanel):
 
 
 
-
-ui.ListBox
+== ui.ListBox ==
 
 The ui.ListBox class allows the user to select one or more items from a list. There are two variations of the ListBox: a normal list of items the user can click on, and a dropdown menu of items. Both variations are shown in the example below.
 
@@ -1334,8 +1360,9 @@ Working Example
 Source Code
 
 
-from ui import SimplePanel, HorizontalPanel, ListBox
-import Window
+{{
+from pyjamas.ui import SimplePanel, HorizontalPanel, ListBox
+from pyjamas import Window
 
 class ListBoxDemo(SimplePanel):
     def __init__(self):
@@ -1371,6 +1398,7 @@ class ListBoxDemo(SimplePanel):
     def onList2ItemSelected(self):
         item = self.list2.getItemText(self.list2.getSelectedIndex())
         Window.alert("You selected " + item + " from list 2")
+}}
 
 
 
@@ -1386,8 +1414,7 @@ class ListBoxDemo(SimplePanel):
 
 
 
-
-ui.Menubar
+== ui.Menubar ==
 
 The ui.MenuBar and ui.MenuItem classes allow you to define menu bars in your application.
 
@@ -1424,8 +1451,9 @@ Menu 1	Menu 2
 Source Code
 
 
-from ui import SimplePanel, MenuBar, MenuItem
-import Window
+{{
+from pyjamas.ui import SimplePanel, MenuBar, MenuItem
+from pyjamas import Window
 
 class MenubarDemo(SimplePanel):
     def __init__(self):
@@ -1465,6 +1493,7 @@ class MenuCmd:
     def execute(self):
         handler = getattr(self._object, self._handler)
         handler()
+}}
 
 
 
@@ -1478,8 +1507,7 @@ class MenuCmd:
 
 
 
-
-ui.NamedFrame
+== ui.NamedFrame ==
 
 The ui.NamedFrame class is a variation of the ui.Frame which lets you assign a name to the frame. Naming a frame allows you to refer to that frame by name in Javascript code, and as the target for a hyperlink.
 
@@ -1491,7 +1519,8 @@ Yahoo
 Source Code
 
 
-from ui import SimplePanel, VerticalPanel, NamedFrame, HTML
+{{
+from pyjamas.ui import SimplePanel, VerticalPanel, NamedFrame, HTML
 
 class NamedFrameDemo(SimplePanel):
     def __init__(self):
@@ -1509,6 +1538,7 @@ class NamedFrameDemo(SimplePanel):
         vPanel.add(HTML('<a href="http://yahoo.com" target="myFrame">Yahoo</a>'))
 
         self.add(vPanel)
+}}
 
 
 
@@ -1523,8 +1553,7 @@ class NamedFrameDemo(SimplePanel):
 
 
 
-
-ui.PasswordTextBox
+== ui.PasswordTextBox ==
 
 The ui.PasswordTextBox class implements a standard password input field.
 
@@ -1539,7 +1568,8 @@ Working Example
 Source Code
 
 
-from ui import SimplePanel, PasswordTextBox
+{{
+from pyjamas.ui import SimplePanel, PasswordTextBox
 
 class PasswordTextBoxDemo(SimplePanel):
     def __init__(self):
@@ -1548,6 +1578,7 @@ class PasswordTextBoxDemo(SimplePanel):
         field = PasswordTextBox()
         field.setWidth("100px")
         self.add(field)
+}}
 
 
 
@@ -1563,8 +1594,7 @@ class PasswordTextBoxDemo(SimplePanel):
 
 
 
-
-ui.RadioButton
+== ui.RadioButton ==
 
 The ui.RadioButton class is used to show a radio button. Each radio button is given a "group" value; when the user clicks on a radio button, the other radio buttons in that group are deselected, and the clicked on radio button is selected.
 
@@ -1583,7 +1613,8 @@ Gas
 Source Code
 
 
-from ui import SimplePanel, HorizontalPanel, VerticalPanel, RadioButton
+{{
+from pyjamas.ui import SimplePanel, HorizontalPanel, VerticalPanel, RadioButton
 
 class RadioButtonDemo(SimplePanel):
     def __init__(self):
@@ -1605,6 +1636,7 @@ class RadioButtonDemo(SimplePanel):
         hPanel.add(panel2)
 
         self.add(hPanel)
+}}
 
 
 
@@ -1617,8 +1649,7 @@ class RadioButtonDemo(SimplePanel):
 
 
 
-
-ui.TextArea
+== ui.TextArea ==
 
 The ui.TextArea class implements a standard multi-line input field.
 
@@ -1631,7 +1662,8 @@ Working Example
 Source Code
 
 
-from ui import SimplePanel, TextArea
+{{
+from pyjamas.ui import SimplePanel, TextArea
 
 class TextAreaDemo(SimplePanel):
     def __init__(self):
@@ -1641,6 +1673,7 @@ class TextAreaDemo(SimplePanel):
         field.setCharacterWidth(20)
         field.setVisibleLines(4)
         self.add(field)
+}}
 
 
 
@@ -1656,8 +1689,7 @@ class TextAreaDemo(SimplePanel):
 
 
 
-
-ui.TextBox
+== ui.TextBox ==
 
 The ui.TextBox class implements a standard one-line input field.
 
@@ -1670,7 +1702,8 @@ Working Example
 Source Code
 
 
-from ui import SimplePanel, TextBox
+{{
+from pyjamas.ui import SimplePanel, TextBox
 
 class TextBoxDemo(SimplePanel):
     def __init__(self):
@@ -1681,6 +1714,7 @@ class TextBoxDemo(SimplePanel):
         field.setMaxLength(10)
 
         self.add(field)
+}}
 
 
 
@@ -1692,8 +1726,7 @@ class TextBoxDemo(SimplePanel):
 
 
 
-
-ui.Tree
+== ui.Tree ==
 
 The ui.Tree class lets you add a tree control to your application.
 
@@ -1713,9 +1746,10 @@ Working Example
 Source Code
 
 
-from ui import SimplePanel, Tree, TreeItem
-import DOM
-import Window
+{{
+from pyjamas.ui import SimplePanel, Tree, TreeItem
+from pyjamas import DOM
+from pyjamas import Window
 
 class TreeDemo(SimplePanel):
     def __init__(self):
@@ -1755,5 +1789,5 @@ class TreeDemo(SimplePanel):
 
     def onTreeItemStateChanged(self, item):
         pass # We ignore this.
-
+}}
 
