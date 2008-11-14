@@ -552,7 +552,7 @@ names in pyjslib.py's Dict class, and those in UserDict.py, are identical.
 The implementation of Dict, in pyjslib.py, however, can be seen to be using
 standard javascript arrays to "emulate" the expected functionality and
 behaviour that Python programmers would expect a Dict object to have.
-On the basis that it's unreasonable to expect python programmers to have to"get involved" with javascript builtin objects, pyjalib.py take care of the
+On the basis that it's unreasonable to expect python programmers to have to"get involved" with javascript builtin objects, pyjslib.py take care of the
 differences, making javascript builtin objects look like Python builtins.
 So, looking further at the output from compiling TestDict.py, the following
 code fragment should come as no surprise:
