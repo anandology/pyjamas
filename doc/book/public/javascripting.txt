@@ -14,7 +14,12 @@ There is quite a lot of javascript functionality which needs to be accessible
 by Pyjamas applications, in order for Pyjamas to be useful (especially in
 Web Browsers), and so the design of the Pyjamas compiler has had to include
 a way to understand javascript libraries, and to be able to include javascript
-code fragments into the output, unmodified.
+code fragments into the output, unmodified.  The reasons are simple:
+not only would it be too much to expect developers to rewrite
+perfectly good javascript libraries in python, but also there are built-in
+functions - in both the Javascript language and in Web browsers - that
+simply cannot be rewritten.  A way to interact with javascript is therefore
+essential.
 
 Being able to insert javascript fragments is conceptually identical to the gcc
 method of doing "inline assembler".  in gcc, you do horrible things like this:
@@ -117,6 +122,8 @@ dynamism as Python and Javascript.  Consequently, Java Bytecode -
 and the JVM it runs on - does not react favourably to such maltreatment.
 }}
 
+== Slight Detour, illustrating python-javascript equivalence ==
+
 Whilst it would be unkind to create an <i>exact</i> replica of what's going
 on with <tt>jsrecttest.js</tt>, an "equivalent" program in Python is here,
 for illustrative purposes only:
@@ -155,6 +162,8 @@ likely scream loudest about the lack of decorators.  All of which is
 irrelevant, because only the most insane or the most confident of Python
 programmers would dare do anything like this.  But - it's here for
 illustrative purposes.
+
+== Wrapping javascript, inline, with JS() ==
 
 Moving swiftly on, create a file, TestRect.py, with the following contents:
 {{
@@ -303,5 +312,99 @@ In other words, what's happened is that the auto-generated code <i>happens</i>
 to be identical to the code that we inlined.  pyjs.py <i>happens</i> to
 "understand" how to turn python "self" into javascript "this", and the
 syntax of javascript <i>happens</i> to be similar to python, in this simple
-example.
+example.  So, rather unnecessarily, and for the purposes of this exercise,
+unnecessary work was done by putting "inline" the very javascript that
+Pyjamas <i>would</i> have generated, if the compiler was trusted to do
+its job.  Try the same thing with the <tt>area()</tt> function:
+{{
+    def area(self):
+        return self.rect.area()
+}}
+Re-run pyjs.py TestRect.py, and, in the output, you will see this:
+{{
+
+    __Rect.prototype.area = function() {
+    return this.rect.area();
+    };
+}}
+Gosh.  again, that's identical to the javascript substituted inline.  how funny.
+
+== Running the example in a Web Browser ==
+
+Whilst it's left to the reader as an experimental exercise to adapt and
+run this code in, for example, Mozilla's spidermonkey javascript interpreter,
+it's quicker to test this code from inside a web browser.  Add the following
+lines to TestRect.py:
+{{
+from pyjamas.ui import RootPanel, TextBox, HTML, Button
+
+class TestRect:
+
+    def onModuleLoad(self):
+
+        self.r = Rect(0.0, 0.0)
+
+        self.xbox = TextBox()
+        self.ybox = TextBox()
+        self.addbutton = Button("Click to add x and y to Rectangle")
+        self.addbutton.addClickListener(self)
+
+        self.xbox.setText("2")
+        self.ybox.setText("5")
+
+        RootPanel().add(HTML("X Value:"))
+        RootPanel().add(self.xbox)
+        RootPanel().add(HTML("Y Value:"))
+        RootPanel().add(self.ybox)
+        RootPanel().add(self.addbutton)
+
+        RootPanel().add(HTML("Current value: %d %d" % ( self.r.get_x(), self.r.get_y())))
+
+    def onClick(self, sender):
+
+        x = int(self.xbox.getText())
+        y = int(self.ybox.getText())
+
+        r = Rect(x, y)
+
+        self.r.add(r)
+
+        RootPanel().add(HTML("New value: %d %d" % ( self.r.get_x(), self.r.get_y())))
+        RootPanel().add(HTML("New Area: %d" % self.r.area()))
+}}
+The application isn't designed to be pretty, it's designed to be functional.
+Create a file, public/TestRect.html, with the following contents:
+{{
+<html>
+    <head>
+        <meta name="pygwt:module" content="TestRect">
+        <title>Test Rectangle Javascript Object</title>
+    </head>
+    <body bgcolor="white">
+        <script language="javascript" src="pygwt.js"></script>
+    </body>
+</html>
+}}
+Compile the application, as follows:
+{{
+    python ../../builder/build.py TestRect.py
+}}
+Browse to the examples/jsobject/output/ directory (or wherever the application
+is being built) and click on output/TestRect.html
+
+{{-info
+If using Pyjamas 0.3, the sprintf routine is limited to one % modifier
+per specifier string.  So, whilst "New Area: %d" % 20 is acceptable,
+"New value: %d %d" % (5, 4) is not.  Change this to:
+    RootPanel().add(HTML("New X value: %d" % self.r.get_x()))
+    RootPanel().add(HTML("New Y value: %d" % self.r.get_y()))
+and likewise for the display of "Current value".  Alternatively, 
+upgrade to a new version of Pyjamas.
+}}
+
+As can be seen, the application sets up the Button to call an
+<tt>onClick</tt> function, which reads the text-input boxes,
+creates a Rect() and adds it to the instance self.r.  self.r,
+another instance of Rect(), accumulates values added; the new x
+and y values are printed out, as is the area of the rectangle.
 
