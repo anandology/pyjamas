@@ -163,6 +163,16 @@ irrelevant, because only the most insane or the most confident of Python
 programmers would dare do anything like this.  But - it's here for
 illustrative purposes.
 
+{{-info
+Consider compiling the above examples to javascript, using this command:
+    python pyjs.py horribletest.py
+Compare the resultant output with the original jsrecttest.js, to get
+a feel for how pyjs.py works and also to gain confidence in its
+capabilities.  If the output from pyjs.py looks close to what would
+be written in "pure" javascript, it makes life a lot easier when it
+comes to understanding and writing Python-Javascript hybrids.
+}}
+
 == Wrapping javascript, inline, with JS() ==
 
 Moving swiftly on, create a file, TestRect.py, with the following contents:
@@ -407,4 +417,25 @@ As can be seen, the application sets up the Button to call an
 creates a Rect() and adds it to the instance self.r.  self.r,
 another instance of Rect(), accumulates values added; the new x
 and y values are printed out, as is the area of the rectangle.
+
+Remember, also: look at the output - for example TestRect.Mozilla.cache.html -
+and look for both the rectobj and the use of the Rect object, comparing
+it to the original javascript and the original Python code.
+
+== Recap ==
+
+What's been illustrated in this simple example is as follows:
+ * How to import javascript as if it was python <tt>(import jsfile.js)</tt>
+ * How to use the inline-assembly-like function <tt>JS()</tt> to put fragments of javascript directly into the compiler output, unmodified.
+ * How to call javascript functions and access javascript objects as if they were Python - and how simple it is.
+ * The importance of examining the compiler's output, counting blessings that javascript is human-readable and that pyjs.py generates human-readable output
+ * The fundamental similarity between python and javascript - their ability to modify objects at run-time - which makes the languages a much better match (than java, for example).
+
+So, whilst it's necessary to have an understanding of both Javascript
+<i>and</i> Python, as well as how the Pyjamas compiler works, the key to
+successfully wrapping javascript is definitely to keep an eye on the output
+from the compiler, at every step of the way.  One thing not covered, so
+far, however, is how to call Python functions from inside pure javascript.
+Correction: how to make it <i>look</i> like python functions are being called,
+given that the output is entirely javascript, in the end...
 
