@@ -176,11 +176,11 @@ Note that if row or column spanning is used, the cells on the
 rest of that row or column will be moved over. This can cause some
 surprising results. Imagine a table with a 3x2 layout, like this:
 {{
-        +---+---+---+
-        | A | B | C |
-        +---+---+---+
-        | D | E | F |
-        +---+---+---+
++---+---+---+
+| A | B | C |
++---+---+---+
+| D | E | F |
++---+---+---+
 }}
 
 If Cell is set up 0,0 to span two columns, like this:
@@ -189,11 +189,11 @@ If Cell is set up 0,0 to span two columns, like this:
 }}
 then the table, when displayed, ends up looking like this:
 {{
-        +-------+---+---+
-        |   A   | B | C |
-        +---+---+---+---+
-        | D | E | F |
-        +---+---+---+
++-------+---+---+
+|   A   | B | C |
++---+---+---+---+
+| D | E | F |
++---+---+---+
 }}
 It might be expected that cell B would be above cell E, but to make this
 happen it would be necessary to place cell E at (1, 2) rather than (1, 1),
@@ -334,7 +334,7 @@ will be called when the results of submitting the form are returned
 back to the browser. Call event.getResults() to retrieve the
 (plain-text) value returned by the server.
 
-Note that if a ui.FileUpload widget is used in in a form, the
+Note that if a ui.FileUpload widget is used in a form, the
 form encoding and method must be set, as follows:
 {{
     self.form.setEncoding(FormPanel.ENCODING_MULTIPART)
@@ -387,11 +387,13 @@ in a grid-like fashion, very like an HTML table.
 The setHTML(row, col, html) method can be used to set the
 HTML-formatted text to be displayed at the given row and column
 within the grid. Similarly, setText(row, col, text) can be called
-to display plain (unformatted) text at the given row and column.
+to display plain (unformatted) text at the given row and column,
+and setWidget(row, col, widget) can be called to add any widget
+at the given row and column within the grid.
 
 Source Code:
 {{
-from pyjamas.ui import SimplePanel, Grid
+from pyjamas.ui import SimplePanel, Grid, Button
 
 class GridDemo(SimplePanel):
     def __init__(self):
@@ -407,14 +409,16 @@ class GridDemo(SimplePanel):
             for col in range(1, 5):
                 grid.setText(row, col, "%d*%d=%d" % (row, col row*col))
 
+        grid.setWidget(4, 4, Button("Peekaboo")
+
         self.add(grid)
 }}
 
 {{-info
 Please note that there is a bug in the sprintf code, in versions of Pyjamas
-up to 0.3, that will stop "%d*%d=%d" from working.  Either use this, instead:
-            str(row) + "*" + str(col) + " = " + str(row*col)
-or upgrade Pyjamas.
+up to 0.3, that will stop "%d*%d=%d" from working.  Either use this:
+    str(row) + "*" + str(col) + " = " + str(row*col)
+or upgrade Pyjamas to greater than version 0.3
 }}
 
 == ui.HorizontalPanel ==
@@ -431,7 +435,7 @@ and setCellVerticalAlignment(widget, alignment) can be called,
 to change the alignment of a single widget after it has been added.
 
 {{-info
-Note that if it is desired that different widgets within the panel take
+Note that if it is desired that a specific widget within the panel takes
 up different amounts of space, do not call widget.setWidth(width)
 or widget.setHeight(height), as these are ignored by the
 panel. Instead, call panel.setCellWidth(widget, width) and
@@ -595,13 +599,13 @@ class ScrollPanelDemo(SimplePanel):
 
 == ui.StackPanel ==
 
-The ui.StackPanel class displays a "stack" of sub-panels where only
+The ui.StackPanel class displays a "stack" of sub-panels, where only
 one sub-panel is open at a time.
 
 The StackPanel relies heavily on stylesheet definitions to make
-it look good; the default look of a StackPanel without any styles
-defined is almost unusable. The following stylesheet definitions
-were used for the example given below:
+it look good: the default look of a StackPanel without any styles
+defined is almost unusable. The following eye-burning stylesheet
+definitions were used for the example given below:
 {{
         .gwt-StackPanel {
             border: 5px solid #999999;
@@ -657,7 +661,7 @@ The ui.TabPanel class implements a tabbed window, where clicking
 on a tab causes the associated contents to be displayed.
 
 The TabPanel relies heavily on cascading stylesheet definitions
-to operate. The following stylesheet definitions are used by the
+to operate correctly. The following stylesheet definitions are used by the
 example shown below:
 {{
         .gwt-TabPanel {
@@ -732,11 +736,13 @@ space. Alternatively, setCellHorizontalAlignment(widget, alignment)
 and setCellVerticalAlignment(widget, alignment) can be called,
 to change the alignment of a single widget after it has been added.
 
-Note that if it is desired that different widgets within the panel take
+{{-info
+Note that if it is desired that a specific widget within the panel takes
 up different amounts of space, do not call widget.setWidth(width)
 or widget.setHeight(height), as these are ignored by the
 panel. Instead, call panel.setCellWidth(widget, width) and
 panel.setCellHeight(widget, height).
+}}
 
 Source Code:
 {{
@@ -775,6 +781,8 @@ class VerticalPanelDemo(SimplePanel):
         self.add(panel)
 }}
 
+= Widgets =
+
 == ui.Button ==
 
 The ui.Button class is used to show a button. When the user clicks
@@ -784,14 +792,23 @@ Note that the getattr() function can be used to specify which
 method will be called when the button is clicked. This is the
 best way to write button click handlers if there is more than one
 button on the panel. If there is only one button,
-<tt>btn = Button("...", self)</tt> can be used, instead, and,
-under these circumstances, a method called onClick() must be provided,
-which will respond to the button click.
+<tt>btn = Button("...", self)</tt> can be used, instead.
+Under these circumstances, a method called onClick() must be provided
+in the class, which will respond to the button click.
 
 Another useful method is Button.setEnabled(enabled), which enables
 or disables the button, depending on the value of its parameter.
 
-Click Me
+{{-info
+It's particularly useful to call setEnabled(False) when some data has been
+sent to a server, using AJAX.  Normally in a web-based application, the
+browser stops responding whilst the page is reloaded after a form is submitted.
+However, in an AJAX application, pressing a button usually causes an AJAX
+submit - and there is nothing to stop the user from pressing the button
+more than once.  So it is a really good idea to disable the button, explicitly,
+until the AJAX response is received, and re-enable the button, if appropriate
+for the application, after the response has been processed.
+}}
 
 Source Code:
 {{
@@ -811,7 +828,7 @@ class ButtonDemo(SimplePanel):
     def onButtonClick(self):
         Window.alert("Ouch!")
 
-    def onClick(self, sender):
+    def onClick(self, sender, event):
         if sender == self.btn2:
             Window.alert("That tickles!")
         else:
@@ -831,8 +848,15 @@ A checkbox can be enabled or disables using setEnabled(enabled).
 Also, addClickListener() can be called to add a function that
 responds when the user clicks on the checkbox, as shown below. This
 listener feature can be useful when building complicated input
-screens where checking a checkbox causes other input fields to
-be enabled.
+screens, where checking a checkbox causes other input fields to
+be enabled or disabled.
+
+{{-info
+Note: the onClick method will be called irrespective of whether
+the checkbox is checked or unchecked, which is very useful. If it
+is necessary to only take action when the checkbox is checked,
+call isChecked() to determine its value at the time.
+}}
 
 Source Code:
 {{
@@ -912,11 +936,11 @@ class FileUploadDemo(SimplePanel):
 == ui.Frame ==
 
 The ui.Frame class is used to embed a separate HTML page within
-the application.
+an application.
 
-If URL is passed when the Frame is created, that URL will be used
-immediately. Alternatively, the Frame.setUrl() method can be called
-to change the URL at any time. Frame.getUrl() can also be called
+If a URL is passed when the Frame is created, that URL will be used
+immediately.  Alternatively, the Frame.setUrl() method can be called
+to change the URL at any time.  Frame.getUrl() can also be called
 to retrieve the current URL for the frame.
 
 Source Code:
@@ -937,7 +961,7 @@ class FrameDemo(SimplePanel):
 
 The ui.Hidden class represents a hidden form field.
 
-This is really only useful when the hidden field is part of a
+ui.Hidden is really only useful when the hidden field is part of a
 ui.FormPanel.
 
 Source Code:
@@ -1004,8 +1028,9 @@ listener function to respond to the change in state in whatever
 way makes sense.
 
 {{-info
-Critical to ensuring that the History module works is adding a
-hidden "history" frame to the HTML file of the application.
+Critical to ensuring that the History module works correctly is the
+addition of a hidden "history" frame to the HTML loader file of the
+application.
 }}
 
 Here is the pyjamas "Kitchen Sink" html file, as an example:
@@ -1059,17 +1084,17 @@ class HyperlinkDemo(SimplePanel):
 The ui.Image class is used to display an image.
 
 The Image class can display any image that is specified by a
-URL. This can be an image stored somewhere on the internet, or
-alternatively an image can be stored in the "public" directory
-within the application's source folder, and accessed using
-a relative URL, as shown in the example below.
+URL. The image can be stored somewhere on the internet, or on any
+Web Server, anywhere.  In the example below, the "public" directory
+within the application's source folder is used, and the image is
+then accessed using a relative URL.
 
-In this example, the image file named "myImage.jpg" is stored inside
-the "images" sub-directory, which is in the "public" directory
-within the application's main source directory.
+The example image file named "myImage.jpg" must be stored in "images"
+sub-directory, which must be in the "public" directory of the
+application's main source directory.
 
 As well as passing the image URL to the initialiser, setURL() can be called
-to change the image being displayed at any time.  addClickListener() can
+to change the image being displayed, at any time.  addClickListener() can
 also be used to add a listener function callback that will be called
 when the user clicks on the image.
 
