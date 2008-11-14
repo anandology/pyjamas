@@ -415,7 +415,7 @@ is being built) and click on output/TestRect.html
 {{-info
 If using Pyjamas 0.3, the sprintf routine is limited to one % modifier
 per specifier string.  So, whilst "New Area: %d" % 20 is acceptable,
-"New value: %d %d" % (5, 4) is not.  Change this to:
+"New value: %d %d" % (5, 4) is not.  Adapt the application as follows:
     RootPanel().add(HTML("New X value: %d" % self.r.get_x()))
     RootPanel().add(HTML("New Y value: %d" % self.r.get_y()))
 and likewise for the display of "Current value".  Alternatively, 
@@ -690,7 +690,18 @@ compile the application to javascript, using build.py:
     python ../../builder/build.py TestDict.py
 }}
 Browse to the examples/jsobject/output/ directory (or wherever the application
-is being built) and click on output/TestDict.html.  
+is being built) and click on output/TestDict.html.  The application will,
+when the button is pressed, look up the key "hello" and should output
+"world".  If the value in the input box is changed to "goodbye", then,
+in the first example, the value "2" is outputted - from both the
+python_get_value() and the javascript_get_value() functions.  However,
+if the latter part of the exercise was followed, by calling update() from
+inside jstestdict.js, then the resultant output will instead be "cruel world".
+
+Again, just as with the TestRect.py example, remember to look at
+the compiled output, TestDict.Mozilla.cache.html for example,
+looking for WrapperDict and its use, and looking for dictobj,
+and how that's used.
 
 {{-info
 If an error appears, "WrapperDict is undefined" in the Javascript console of
