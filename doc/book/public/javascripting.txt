@@ -552,7 +552,7 @@ names in pyjslib.py's Dict class, and those in UserDict.py, are identical.
 The implementation of Dict, in pyjslib.py, however, can be seen to be using
 standard javascript arrays to "emulate" the expected functionality and
 behaviour that Python programmers would expect a Dict object to have.
-On the basis that it's unreasonable to expect python programmers to have to"get involved" with javascript builtin objects, pyjslib.py take care of the
+On the basis that it's unreasonable to expect python programmers to have to"get involved" with javascript builtin objects, pyjslib.py takes care of the
 differences, making javascript builtin objects look like Python builtins.
 So, looking further at the output from compiling TestDict.py, the following
 code fragment should come as no surprise:
@@ -609,17 +609,19 @@ by running pyjs.py TestDict.py, that the output contains this:
     return pyjslib_len(this.dict);
     };
 }}
-So, again, it has been illustrated that if it is required to find the
-length of a pyjslib.py-implemented Python Dict object from inside Javascript,
-<tt>pyjslib_len</tt> must be used.  All this is is the name of the module,
-separated from the function name by an underscore, and this same trick
-applies to absolutely any python modules that are imported into an application.
-It's just that, for recognised built-in functions such as len, map, filter
-and getattr, pyjs.py automatically recognises those and prepends the module
-name "pyjslib".  Any other functions, including not only in the
-modules that come with Pyjamas but also developer-written code, must be
-imported as would normally be done, in Python, and the javascript generated
-will be of the form "<tt>importedmodulename_functionname</tt>" or
+So, again, it has been illustrated that if it is required to find
+the length of a pyjslib.py-implemented Python Dict object from
+inside Javascript, <tt>pyjslib_len</tt> must be used.  All that's
+happening here is that the name of the module is separated from
+the function name by an underscore. This same trick applies to
+absolutely any python modules that are imported into an application.
+It's just that, for recognised built-in functions such as len,
+map, filter and getattr, pyjs.py automatically recognises those
+and prepends the module name "pyjslib".  Any other functions,
+including not only in the modules that come with Pyjamas
+but also developer-written code, must be imported as would
+normally be done, in Python, and the javascript generated will
+be of the form "<tt>importedmodulename_functionname</tt>" or
 "<tt>importedmodulename_classname</tt>".
 
 {{-info
