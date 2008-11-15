@@ -244,22 +244,22 @@ at the end of the function, and try again:
         self.addClickListener(self)
 }}
 Amazing!  a working slider widget!  A single-click moves the slider to
-where you clicked the mouse.  Notice how the slider centre moves to where
+where mouse is clicked.  Notice how the slider centre moves to where
 your mouse pointer actually points to: this is entirely a fluke, and is
 probably due to browser bugs in the CSS style implementation.
-Notice also that we haven't actually set the value of the "slider", but
-there's enough maths to calculate it.  We can add these extra lines
-on to the end of moveSlider():
+Notice also that the value of the "slider" - the control - hasn't actually
+been set, but there's enough maths to calculate the value.
+Add these extra lines on to the end of moveSlider():
 {{
         val_diff = self.max_value - self.min_value
         new_value = ((val_diff * relative_y) / height_range) + self.min_value
         self.setValue(new_value)
 }}
-Then, we also add a setValue() function, which not only records the
+Then, also add a setValue() function, which not only records the
 new value but also notifies any listeners.  Copying the style of
 Label and other widgets' addClickListener() and removeClickListener()
-functions, we're doing addControlValueListener() and
-removeControlValueListener() to match.
+functions, add functions addControlValueListener() and
+removeControlValueListener() to match:
 {{
     def setValue(self, new_value):
 
@@ -275,9 +275,10 @@ removeControlValueListener() to match.
         self.valuechange_listeners.remove(listener)
 
 }}
-Now we should really see if that works.  In the "test code",
-add these extra lines to ControlDemo.onModuleLoad() and also
-add the additional function onControlValueChanged:
+Save the file, as the next step is to check that this code works.
+In the "test code", ControlDemo.py, add these extra lines to
+ControlDemo.onModuleLoad() and also add the additional function
+onControlValueChanged:
 {{
         b.addControlValueListener(self)
         self.label = Label("Not set yet")
@@ -286,127 +287,56 @@ add the additional function onControlValueChanged:
     def onControlValueChanged(self, slider, old_value, new_value):
         self.label.setText("Value: %d" % int(new_value))
 }}
-A quick run of this shows our
-<a href="./controls/output/ControlDemo.html">Control Demo app</a>
-has a very boring
-Text Label 200 pixels underneath a grey box, with the words
-"Not set yet".  Clicking anywhere between the box and the words
-not only moves the slider, but also changes the text to say
-"Value: 83" or something to that effect.  Amazing.
+Save the changes to ControlDemo.py, recompile the application with
+build.py, and refresh the browser window (or reopen output/ControlDemo.html).
+There should be a very boring Text Label 200 pixels underneath a grey box,
+with the words "Not set yet" displayed.  Clicking anywhere between the box
+and the words should not only move the slider, but also changes the text to
+say "Value: 83", or something to that effect.  Amazing.
 
-== Improvements ==
+== What's been covered ==
+
+In this section, the following issues have been covered:
+ * How to create a widget that can react to user-input, by deriving from FocusWidget
+ * How to use manipulation of the DOM model to change screen-content, by adding HTML Elements to it
+ * How to use the DOM module to change attributes and CSS Style attributes
+ * The importance of checking the W3C HTML Specifications when it comes to distinguishing the difference between HTML Element attributes and HTML Element CSS attributes
+ * How a Pyjamas ui widget is effectively a "guardian" of HTML elements - parts of the DOM model.
+ * How a widget can be made to react to user-input and other events, by adding an onBrowserEvent
+ * The importance of looking at the existing pyjamas.ui source code to work out what is going on, and the importance of copying sections of existing code that do the same thing as is desired.
+
+This latter advice is perhaps just general good advice for programming.
+In the Pyjamas case, given that the pyjamas.ui module is really quite
+small, it's a lot easier advice to follow than if confronted with tens of
+thousands of lines of code.
+
+Also, it's worth reiterating at this point that at no time, anywhere in
+the code, was there any mention of a "repaint" function, a "redraw",
+"refresh" or other function that otherwise interferes with the simple,
+simple job of doing exactly what you want: putting stuff on-screen.
+Although many people bitch like hell about how "difficult" web browsers
+are, the bitching is invariably down to the requirement to get involved
+with Javascript.  Web browser technology <i>actually</i> does a stunningly
+good job, and is clearly a better basis for a Desktop widget framework
+than most Desktop widget frameworks!  And, given that the programming
+is being done in Python, one of the key reasons for all the complaining
+goes away.
+
+{{-info
+The reason why "repaint" isn't needed is because whenever a part of the DOM
+model is changed, the underlying browser technology gets an automatic
+notification to take care of redrawing the screen.  It does have to be said
+that in certain circumstances, certain browsers (in particular IE6 and IE7)
+don't actually get it right every time - and even Firefox can be made to screw
+up, if pushed particularly hard in the right places.  However, with care and
+attention, and a little studying of HTML and CSS behaviour, the automatic
+redrawing will be perfect every time.
+}}
+
+= Improvements to the Slider =
 
 Congratulations, you have a slider, in 70 lines of python code, and
 a demonstration of its use in 20.  You can click on it.  Please
 feel free to resist the urge to press the up and down arrows and
-to click and hold the mouse: it won't work.  Adding that functionality
-will be for another day's hacking, which you're welcome to send to
-me (<a href="mailto:lkcl@lkcl.net">lkcl@lkcl.net</a>) and I will
-add it in.
+to click and hold the mouse: it won't work.  
 
-Hints: look at Image.onBrowserEvent() - you will notice that it
-differs from FocusWidget.onBrowserEvent() in that it also handles
-mouse move, enter, leave and up.  These events all get passed
-to an instance of MouseListener(), calling its fireMouseEvent()
-function.  Then, look at DialogBox and notice that it does all
-sorts of strange and wonderful things, including the use of
-"capture":
-{{
-    def onMouseDown(self, sender, x, y):
-        self.dragging = True
-        DOM.setCapture(self.caption.getElement())
-        self.dragStartX = x
-        self.dragStartY = y
-}}
-This is pretty important - to set "capture" of all mouse events.
-In the case of the Dialog Box, the events are captured by the
-"caption" at the top of the box, which is the "drag bar".  That
-sounds... very much exactly like what we want, so feel free to
-cut-and-paste DialogBox's onMouseDown, onMouseUp, onMouseMove,
-onMouseLeave and onMouseEnter functions; remember to call
-VerticalDemoSlider.moveSlider() not setPopupPosition(); and remember
-to take a copy e.g. of Image.onBrowserEvent(), or take a copy
-of FocusWidget.onBrowserEvent() and extend it with these all-important
-lines:
-{{
-        elif type == "mouseup" or type == "mousemove" or type == "mouseover" or type == "mouseout":
-            MouseListener().fireMouseEvent(self.mouseListeners, self, event)
-}}
-That should give you a slider which now accepts mouse drag-move
-events, making it that little bit much more useful than one which
-deals in single-clicks.  Once you've done that, of course, you might
-want to remove the onClick() altogether, because of course a
-single-click is also a mouse-down followed by a mouse-up event,
-often, in many cases, accompanied by intermediate but very brief
-mouse-move events.  The end-result will be doubling- or possibly
-tripling- or more of value change notifications, all redundant,
-and all wasting CPU cycles.
-
-Once you've done <i>that</i>, you might also wish to improve the
-widget further by detecting whether or not the mouse position was
-<i>actually</i> changed.  Otherwise, you may end up with entirely
-unnecessary calls to onControlValueChanged().  Don't be tempted to
-short-cut the process by doing "if new_value != old_value", although
-this is, strictly speaking, needed as well.  Record the old mouse
-position on mouse-down, and only start sending onControlValueChanged()
-notifications when the mouse "y" position differs from this recorded
-value.
-== Further enhancements and considerations ==
-
-As part of a c++ widget set I helped develop and maintain in 1992
-we had "ganging" sliders, which were for Stereo Volume control.
-We created a "container" widget which allowed us to receive value
-changes from an arbitrary number of "Control" widgets placed
-within it.  The "difference" between the old and new values were
-very important: we utilised these to make changes to the other
-volume slider, allowing users to set the Left volume slightly
-higher or lower than the Right volume, and then, on selecting the
-"Ganging" switch, both volumes would waggle up and down by the
-same amount, without mashing up to the same absolute value: an
-undesirable oversight.
-
-We had quite a lot of fun making test applications with half a dozen
-sliders and dials, waggling one and watching the rest go bananas.
-Given that this was running on 386sx 25mhz systems, it was also
-quite impressive.  As it was a real-time (single-process!) application,
-we had to pay particular attention to ensuring that the priority
-was on getting the volume values to the DSP as fast as possible,
-leaving visual changes as the absolute last priority-queued event.
-Yes, we have a message-event system, like in Windows 3.1, except
-we added "priority" to it, thus avoiding the need for threading
-and still giving the application both responsiveness as well
-as aural and visually accurate representation.
-
-Any good "Control" widget system should keep these principles and
-lessons in mind.
-
-= Advanced Widgets = 
-
-So, you read this tutorial: you went wow, big deal: my imagination
-is now unlimited by the wondrous possibilities of being able to
-manipulate the DOM model of a "page" - a screen - in a quick and
-easy fashion.  However, my requirements are beyond what "DOM model"
-can handle.  I want video.  I want 2D graphics.  I want 3D
-graphics.  What do I do?
-
-There are two answers.  The first one is: if your project requires
-advanced 2D graphics manipulation, there is always the SVG Canvas, if
-you have a web browser that can support SVG.  The Pyjamas "Canvas"
-widget has been ported from the GWT Addons, and it works very well.
-Pyjamas-Desktop does not at the moment support SVG, however it is
-on the Roadmap.
-
-Your second <i>really</i> "far out" option - given that the underlying
-technology is web-browser-based - is to use Web Plugins.  For Safari,
-Netscape, Firefox and WebKit (the last in the case of Pyjamas-Desktop),
-you can write a plugin that conforms to the NPAPI standard, and
-you're away.  I recommend that you start with the Adobe Flash plugin
-source code.
-
-But, before you go writing your own 3D, Video or other Multimedia
-plugin, first check to see whether there is an existing NPAPI
-or existing Web-based plugin that you can place into an iframe
-or otherwise embed into a page.  Can you write the plugin in
-Java, and run a Java applet in your page?  Can you use Adobe
-Flash?  All of these possibilites are open to you, with no extra
-particularly complex programming.
