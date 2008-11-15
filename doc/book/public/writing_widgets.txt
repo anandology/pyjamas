@@ -24,10 +24,10 @@ with manipulating an HTML page, it's not necessary to get involved with
 Javascript - unless desired.  Pyjamas provides a module which
 makes the job of controlling the underlying DOM model that much easier,
 and this chapter shows step-by-step how to go about creating a
-custom widget.
+custom widget, through DOM model manipulation and DOM event interaction.
 
 Missing from the HTML specification, but present in Adobe Flash,
-is things like sliders and dials.  Many Desktop widget sets have
+are widgets such as sliders and dials.  Many Desktop widget sets have
 control widgets, so it makes a lot of sense to create one.  So this
 chapter starts with a simple Vertical scroller which receives
 "mouse click" to change the position.
@@ -42,18 +42,18 @@ called Controls.py, starting off with the following lines:
 {{
 from pyjamas import DOM
 from pyjamas.ui import FocusWidget
-}
+}}
 The class will be derived from FocusWidget.  Width and height parameters
 will not be added to the constructor, because Pyjamas Widgets are based on
-HTML principles: DOM models.  So, a CSS "Class" is added, with
-setStyleName(), and the width and/or height set as desired in the
-CSS stylesheet, or the functions setWidth() and setHeight() must be used.
-It <i>is</i> however necessary to pass in the slider's
+HTML principles: DOM models.  So, a developer can add a CSS "Class", with
+setStyleName(), and set the width and/or height set as desired in the
+CSS stylesheet.  Alternatively, the functions setWidth() and setHeight()
+can be used.  It <i>is</i> however necessary to pass in the slider's
 minimum, maximum and default values.
 {{-info
 This is an important point to emphasise: widgets should not impose "look"
 onto users - that should, ideally, be defined through CSS. A Widget Class
-API should be about "function" rather than "look".  So, the constructor
+API should be about "function" rather than "form".  So, the constructor
 for the widget has minimum, maximum and default values, not width, height
 or colour.
 }}
@@ -87,7 +87,7 @@ possible for the handle to move freely.  In other words, it is
 necessary to be able to set the coordinates, exactly, of the
 slider "handle".  There is a Pyjamas ui widget which has exactly
 this functionality, already: AbsolutePanel. 
-Take a look at pyjamas/ui.py and search for "class AbsolutePanel".
+Take a look at <tt>pyjamas/ui.py</tt> and search for "class AbsolutePanel".
 Examining what AbsolutePanel.__init__() does, it can be seen that
 by setting its "div" container tag to be position "relative",
 child elements can be positioned accurately.  Also, a second hard-coded
@@ -101,7 +101,7 @@ child elements can be positioned accurately.  Also, a second hard-coded
 }}
 Note that the second "handle" div is appended to the container "div".
 As this is just a demonstration, we're going to hand-code the
-slider handle with some attributes, making it 10 pixels high, a border
+slider handle with some attributes, making it 10 pixels high, with a border
 of 1 pixel, fixing it to be the same width as the Widget, and making it
 a grey colour.
 {{-info
@@ -112,22 +112,22 @@ would have a CSS style added to it, using addStyleName.
 Note also that DOM.setAttribute() is not used to set the border,
 width and height.  HTML specifications need to be consulted,
 here: observe that "border" is a CSS attribute reserved for DOM
-components such as "table".  So, if DOM.setAttribute() is called
-on a "div" tag, it silently fails to do anything, in the browser.
-If the Javascript Console is examined, luck <i>might</i> have it
-that there is a warning.
+components such as "table".  So, if DOM.setAttribute("border", "1px")
+is called on a "div" tag, it silently fails to do anything, in the
+browser.  If the Javascript Console is examined, there <i>might</i>
+be a warning - but it is likely swamped by all the other CSS errors...
 {{-info
 If the same thing is tried under Pyjamas-Desktop, a much more useful
 run-time error will occur, as the attributes and the CSS style attributes
 of an element are directly accessed as static variables, in entirely
-different structures. If the variables don't exist, Python can do nothing
-but complain.
+different data structures.  So, if the variable being accessed don't exist,
+Python can do nothing but complain.
 }}
 The upshot is: pay attention to the underlying DOM model, and remember
 to simultaneously develop your app using <i>both</i> Pyjamas <i>and</i>
 Pyjamas-Desktop, to save yourself a great deal of time.  If you want 
 to set a border on a "div" tag, you must set it as a CSS Style attribute,
-<i>not</a> an attribute (with setAttribute):
+<i>not</i> as an attribute (with setAttribute):
 {{
     DOM.setStyleAttribute(self.handle, "border", "1px")
     DOM.setStyleAttribute(self.handle, "width", "100%")
@@ -140,8 +140,8 @@ handle width to always be the same as its container; set its height to
 
 == Testing ==
 
-With these basic beginnings, it's enough to test out, to see if it's
-working.  If that was wanted was a little grey box in a widget, the
+With these basic beginnings, it's enough to test the application, to see if
+it's working.  If all that was wanted was a little grey box in a widget, the
 task would be complete.  However, it's good practice to confirm what's
 already working, before proceeding.  In the same directory that the
 Controls.py module has been saved, create an HTML Loader file,
