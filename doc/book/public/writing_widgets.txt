@@ -9,28 +9,34 @@ is invariably too simplistic.  Changes in width or height of a single
 widget can have a knock-on effect that dramatically alters the layout
 of the entire application.  Rather than attempting to solve this really
 quite difficult problem, Desktop widgets simply avoid it entirely, and
-impose on the developer to sort out the mess for themselves.
+impose on the developer to sort out the mess for themselves, and are
+given stern warnings about how hard-coding widths and heights could mess
+things up.
 
 The only technology that has tackled the issue of complex layouts,
 with any degree of success, is Web Browsers.  Web browsers simply
-<i>have</i> to tackle layouts properly, due to the sheer user-driven
-diversity. Consequently, Pyjamas and Pyjamas-Desktop, both being based
-on web technology, benefit from the underlying layout issues having
-been made a lot easier.
+<i>have</i> to tackle layouts properly, due to the overwhelming
+user-driven diversity and the sheer numbers of people that use Web
+browsers.  Consequently, Pyjamas and Pyjamas-Desktop, both being
+based on web technology, benefit from the underlying layout issues
+having been made a lot easier.
 
-Both Pyjamas and Pyjamas-Desktop manipulate the DOM model - an
-HTML page - as if it was an XML document.  Better than that: unlike
-with manipulating an HTML page, it's not necessary to get involved with
-Javascript - unless desired.  Pyjamas provides a module which
-makes the job of controlling the underlying DOM model that much easier,
-and this chapter shows step-by-step how to go about creating a
-custom widget, through DOM model manipulation and DOM event interaction.
+Both Pyjamas and Pyjamas-Desktop manipulate the DOM model -
+an HTML page - as if it was an XML document.  Better than that:
+unlike with manipulating an HTML page in traditional web browser
+development, it's not necessary to get involved with Javascript -
+unless desired.  Pyjamas provides a module which makes the job of
+controlling the underlying DOM model that much easier, and this
+chapter shows step-by-step how to go about creating a custom widget,
+through DOM model manipulation and DOM event interaction.
 
 Missing from the HTML specification, but present in Adobe Flash,
 are widgets such as sliders and dials.  Many Desktop widget sets have
 control widgets, so it makes a lot of sense to create one.  So this
 chapter starts with a simple Vertical scroller which receives
-"mouse click" to change the position.
+"mouse click" to change the position, goes on later to add
+"drag" and then adds keyboard interaction, almost as an afterthought
+(just like most badly-designed applications do.  hoorary!)
 
 = Vertical Slider =
 
@@ -46,7 +52,7 @@ from pyjamas.ui import FocusWidget
 The class will be derived from FocusWidget.  Width and height parameters
 will not be added to the constructor, because Pyjamas Widgets are based on
 HTML principles: DOM models.  So, a developer can add a CSS "Class", with
-setStyleName(), and set the width and/or height set as desired in the
+setStyleName(), and thus set the width and/or height set as desired in the
 CSS stylesheet.  Alternatively, the functions setWidth() and setHeight()
 can be used.  It <i>is</i> however necessary to pass in the slider's
 minimum, maximum and default values.
@@ -90,8 +96,9 @@ this functionality, already: AbsolutePanel.
 Take a look at <tt>pyjamas/ui.py</tt> and search for "class AbsolutePanel".
 Examining what AbsolutePanel.__init__() does, it can be seen that
 by setting its "div" container tag to be position "relative",
-child elements can be positioned accurately.  Also, a second hard-coded
-"div" will be added, to represent the actual slider handle:
+child elements can be positioned accurately within it.  Also,
+a second hard-coded "div" will be added, to represent the actual slider
+handle:
 {{
         DOM.setStyleAttribute(element, "position", "relative")
         DOM.setStyleAttribute(element, "overflow", "hidden") 
@@ -99,18 +106,18 @@ child elements can be positioned accurately.  Also, a second hard-coded
         self.handle = DOM.createDiv()
         DOM.appendChild(element, self.handle)
 }}
-Note that the second "handle" div is appended to the container "div".
-As this is just a demonstration, we're going to hand-code the
-slider handle with some attributes, making it 10 pixels high, with a border
-of 1 pixel, fixing it to be the same width as the Widget, and making it
-a grey colour.
+Note that the second "handle" div is appended to the container
+"div" as a child element.  As this is just a demonstration, we're
+going to hand-code the slider handle with some attributes, making
+it 10 pixels high, with a border of 1 pixel, fixing it to be the
+same width as the Widget, and making it a grey colour.
 {{-info
 A much better way to do this would be to set a CSS stylesheet where
 users could over-ride all these settings.  the "handle" element
-would have a CSS style added to it, using addStyleName.
+would have a CSS style added to it, using setStyleName.
 }}
 Note also that DOM.setAttribute() is not used to set the border,
-width and height.  HTML specifications need to be consulted,
+width and height.  W3C HTML specifications need to be consulted,
 here: observe that "border" is a CSS attribute reserved for DOM
 components such as "table".  So, if DOM.setAttribute("border", "1px")
 is called on a "div" tag, it silently fails to do anything, in the
@@ -127,7 +134,8 @@ The upshot is: pay attention to the underlying DOM model, and remember
 to simultaneously develop your app using <i>both</i> Pyjamas <i>and</i>
 Pyjamas-Desktop, to save yourself a great deal of time.  If you want 
 to set a border on a "div" tag, you must set it as a CSS Style attribute,
-<i>not</i> as an attribute (with setAttribute):
+with <tt>DOM.setStyleAttribute</tt> <i>not</i> as an attribute
+(with <tt>DOM.setAttribute</tt>):
 {{
     DOM.setStyleAttribute(self.handle, "border", "1px")
     DOM.setStyleAttribute(self.handle, "width", "100%")
@@ -257,11 +265,12 @@ at the end of the function, and try again:
 The significance of this line can be seen from how FocusPanel's
 onBrowserEvent function works: unless the instance of the slider
 class is listening to click events, the onClick function will not
-be called.  Once added, then amazing things happen!  the slider
-widget works!  A single-click moves the slider handle to where mouse
-is clicked.  Notice how the slider centre moves to where your
-mouse pointer actually points to: this is entirely a fluke, and
-is probably due to browser bugs in the CSS style implementation.
+be called.  Once added, and the application is recompiled, then
+amazing things happen!  the slider widget works!  A single-click
+moves the slider handle to where mouse is clicked.  Notice how the
+slider centre moves to where your mouse pointer actually points to:
+this is entirely a fluke, and is probably due to browser bugs in
+the CSS style implementation.
 
 Notice also that the value of the "slider" - the control - hasn't
 actually been made use of, but there's enough maths to calculate
@@ -299,7 +308,10 @@ receive notification of when the value of the slider changes.  Also,
 notice how we're defining the interface, here - the interaction with
 other widgets - by expecting classes to have a function called
 <tt>onControlValueChanged()</tt> that will take as parameters
-the sender, the old value and the new value of the slider control.  
+the sender, the old value and the new value of the slider control.
+The reason for this is that a listener will find it useful to know
+not only which widget changed, and also the new value, but also it
+may be useful to a listener to know by <i>how much</i> a value changed.
 
 Save the file, as the next step is to check that this code works.
 In the "test code", ControlDemo.py, add these extra lines to
@@ -332,8 +344,8 @@ In this section, the following issues have been covered:
  * How to use the DOM module to change attributes and CSS Style attributes
  * The importance of checking the W3C HTML Specifications when it comes to distinguishing the difference between HTML Element attributes and HTML Element CSS attributes
  * How a Pyjamas ui widget is effectively a "guardian" of HTML elements - parts of the DOM model.
- * How a widget can be made to react to user-input and other events, by adding an onBrowserEvent
- * The importance of looking at the existing pyjamas.ui source code to work out what is going on, and the importance of copying sections of existing code that do the same thing as is desired.
+ * How a widget could be made to react to user-input and other events, by using the features provided by an onBrowserEvent function of a base class (in this example, FocusWidget).
+ * The importance of looking at the existing pyjamas.ui source code to work out what is going on, and the importance of identifying, copying and adapting sections of existing code.
 
 This latter advice is perhaps just general good advice for programming.
 In the Pyjamas case, given that the pyjamas.ui module is really quite
