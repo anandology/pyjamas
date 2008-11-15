@@ -195,13 +195,23 @@ a "click listener" is needed.
 == Making it move ==
 
 To receive a click event, FocusWidget.addClickListener() is to be used.
-The widget itself will receive the mouse click event.  Open pyjamas/ui.py
-and search for the function at FocusWidget.onBrowserEvent().  Examining
-this function, it can be seen that a function called onClick() 
-must be added to the VerticalDemoSlider class.  As we want to know <i>where</i>
-the mouse was clicked, it is necessary to add two arguments to the onClick()
-function, in order to receive the mouse event object as the second.
-Add these additional lines to the ControlDemo class:
+The widget itself will receive the mouse click event.  Open <tt>pyjamas/ui.py</tt>
+and search for the function in FocusWidget called onBrowserEvent().  For
+convenience, the relevant portion is shown here:
+{{
+    def onBrowserEvent(self, event):
+        type = DOM.eventGetType(event)
+        if type == "click": 
+            for listener in self.clickListeners:
+                if hasattr(listener, "onClick"): listener.onClick(self, event)
+                else: listener(self, event)
+}}
+Examining this function, it can clearly be seen that, in order to
+receive "click" events, a function called onClick() must be added
+to the VerticalDemoSlider class.  As we want to know <i>where</i>
+the mouse was clicked, it is necessary to add two arguments to the
+onClick() function, in order to receive the mouse event object as
+the second.  Add these additional lines to the ControlDemo class:
 {{
         def onClick(self, sender, event):
 
@@ -227,7 +237,8 @@ Add these additional lines to the ControlDemo class:
             DOM.setStyleAttribute(self.handle, "position", "absolute")
 }}
 As can be seen, the mouse event y position is retrieved from the incoming
-event; the absolute location of the container is subtracted, and this is
+event, with <tt>DOM.eventGetClientY</tt>; the absolute location of the
+container is subtracted, and the resultant relative value is
 passed to <tt>moveSlider()</tt>.  In moveSlider, the "offset height" of the
 widget is the total height of the widget, giving the travel range.
 With a little math, the new position of the "handle" can be calculated,
@@ -243,13 +254,19 @@ at the end of the function, and try again:
 {{
         self.addClickListener(self)
 }}
-Amazing!  a working slider widget!  A single-click moves the slider to
-where mouse is clicked.  Notice how the slider centre moves to where
-your mouse pointer actually points to: this is entirely a fluke, and is
-probably due to browser bugs in the CSS style implementation.
-Notice also that the value of the "slider" - the control - hasn't actually
-been set, but there's enough maths to calculate the value.
-Add these extra lines on to the end of moveSlider():
+The significance of this line can be seen from how FocusPanel's
+onBrowserEvent function works: unless the instance of the slider
+class is listening to click events, the onClick function will not
+be called.  Once added, then amazing things happen!  the slider
+widget works!  A single-click moves the slider handle to where mouse
+is clicked.  Notice how the slider centre moves to where your
+mouse pointer actually points to: this is entirely a fluke, and
+is probably due to browser bugs in the CSS style implementation.
+
+Notice also that the value of the "slider" - the control - hasn't
+actually been made use of, but there's enough maths to calculate
+the value that it should be set to.  Add these extra lines on to
+the end of moveSlider():
 {{
         val_diff = self.max_value - self.min_value
         new_value = ((val_diff * relative_y) / height_range) + self.min_value
@@ -258,7 +275,7 @@ Add these extra lines on to the end of moveSlider():
 Then, also add a setValue() function, which not only records the
 new value but also notifies any listeners.  Copying the style of
 Label and other widgets' addClickListener() and removeClickListener()
-functions, add functions addControlValueListener() and
+functions, add the functions addControlValueListener() and
 removeControlValueListener() to match:
 {{
     def setValue(self, new_value):
@@ -275,6 +292,15 @@ removeControlValueListener() to match:
         self.valuechange_listeners.remove(listener)
 
 }}
+Notice how, right at the beginning, in the constructor, an empty list
+was added: <tt>self.valuechange_listeners</tt> was initialised, and that
+list can now be used, as shown above, by storing listeners that will
+receive notification of when the value of the slider changes.  Also,
+notice how we're defining the interface, here - the interaction with
+other widgets - by expecting classes to have a function called
+<tt>onControlValueChanged()</tt> that will take as parameters
+the sender, the old value and the new value of the slider control.  
+
 Save the file, as the next step is to check that this code works.
 In the "test code", ControlDemo.py, add these extra lines to
 ControlDemo.onModuleLoad() and also add the additional function
@@ -287,6 +313,10 @@ onControlValueChanged:
     def onControlValueChanged(self, slider, old_value, new_value):
         self.label.setText("Value: %d" % int(new_value))
 }}
+Note how the ControlDemo class is set as a listener for change notification:
+this is why an <tt>onControlValueChanged</tt> function was added.  In it,
+the label's text will be changed.
+
 Save the changes to ControlDemo.py, recompile the application with
 build.py, and refresh the browser window (or reopen output/ControlDemo.html).
 There should be a very boring Text Label 200 pixels underneath a grey box,
