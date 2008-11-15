@@ -54,7 +54,7 @@ class Slideshow:
 
     def onModuleLoad(self):
         self.slide = HTML()
-        RootPanel.add(self.slide)
+        RootPanel().add(self.slide)
 
         HTTPRequest().asyncPost("test_slide.txt", "", SlideLoader(self))
 
