@@ -16,6 +16,7 @@ from __pyjamas__ import JS
 
 sCaptureElem = None
 sEventPreviewStack = []
+currentEvent = None
 
 def init():
     JS("""
@@ -785,11 +786,18 @@ def dispatchEventAndCatch(evt, elem, listener, handler):
     pass
 
 def dispatchEventImpl(event, element, listener):
-    global sCaptureElem
+    global sCaptureElem, currentEvent
     if element == sCaptureElem:
         if eventGetType(event) == "losecapture":
             sCaptureElem = None
+    prevCurrentEvent = currentEvent
+    currentEvent = event
     listener.onBrowserEvent(event)
+    currentEvent = prevCurrentEvent
+
+def eventGetCurrentEvent():
+    global currentEvent
+    return currentEvent
 
 def insertListItem(select, item, value, index):
     option = createElement("OPTION")
