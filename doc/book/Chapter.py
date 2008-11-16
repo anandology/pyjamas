@@ -87,20 +87,21 @@ class Chapter(Sink):
         self.custom_style = False
         self.txt = ''
         self.para = ''
+        self.up_to = 0
 
         Timer(1, self)
 
     def onTimer(self, sender):
 
         count = 0
-        while count < 50:
+        while count < 10:
             count += 1
-            idx = self.text.find("\n")
+            idx = self.text.find("\n", self.up_to)
             if idx < 0:
                 self.text = None
                 break
-            self.process_line(self.text[:idx])
-            self.text = self.text[idx+1:]
+            self.process_line(self.text[self.up_to:idx])
+            self.up_to = idx+1
 
         if self.text:
             Timer(1, self)

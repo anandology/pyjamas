@@ -255,11 +255,11 @@ a:visited {
 }
 
 .chapter_heading1 {
-    font-size: 20px;
+    font-size: 23px;
 }
 
 .chapter_heading2 {
-    font-size: 18px;
+    font-size: 17px;
 }
 
 .chapter_para {
@@ -282,6 +282,16 @@ a:visited {
 .chapter_listitem2 {
     font-size: 13px;
 }
+.chapter_contents {
+    font-size: 13px;
+    margin-left: 20px;
+}
+
+.chapter_method {
+    font-size: 13px;
+    margin-left: 50px;
+}
+
 .chapter_code {
     font-size: 14px;
     font-weight: bold;
