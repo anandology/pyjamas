@@ -210,10 +210,10 @@ that you tack on to the end of the string -
 <tt>"No of times not in Kansas: %d" % x</tt> as this will make it
 clearer:
 {{
-global x
 x = 0
 
 def greet(sender):
+    global x
     x += 1
     RootPanel().add(HTML("No of times not in Kansas: %d" % x))
 }}
