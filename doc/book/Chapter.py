@@ -1,5 +1,5 @@
 from Sink import Sink, SinkInfo
-from pyjamas.ui import HTML, VerticalPanel
+from pyjamas.ui import HTML, VerticalPanel, HTMLPanel, Hyperlink
 from BookLoader import ChapterLoader
 from pyjamas.HTTPRequest import HTTPRequest
 from pyjamas import Window
@@ -14,6 +14,56 @@ def escape(txt, esc=1):
     txt = txt.replace("%", "&#37;")
     return txt
 
+def sect_markup(txt, name):
+
+    res = ''
+    idx = 0
+    links = []
+
+    while 1:
+        prev_idx = idx
+        idx = txt.find("L#{", idx)
+        if idx == -1:
+            res += txt[prev_idx:]
+            break
+
+        beg = txt[prev_idx:idx]
+        idx += 3
+        i = txt.find("}", idx)
+        if i == -1:
+            res += txt[prev_idx:]
+            break
+
+        if i == len(txt)-1:
+            url = txt[idx:]
+            end = ''
+        else:
+            url = txt[idx:i]
+            end = txt[i+1:]
+
+        res += beg
+        idx = i+1
+
+        page_url = "%s_" % name
+        page_url += url.lower()
+        i = HTMLPanel.createUniqueId()
+
+        res += "<span id='%s'></span>" % str(i)
+
+        links.append([i, Hyperlink(url, False, page_url)])
+
+    if not links:
+        return HTML(res)
+
+    p = HTMLPanel(res)
+
+    for il in links:
+        i = il[0]
+        l = il[1]
+        p.add(l, i)
+
+    return p
+ 
 def urlmap(txt, esc=1):
     idx = txt.find("http://")
     if idx == -1:
@@ -61,8 +111,6 @@ class Chapter(Sink):
 
         Sink.__init__(self)
 
-        text="<div class='infoProse'>This is the Kitchen Sink sample.  "
-
         self.vp = VerticalPanel()
         self.initWidget(self.vp)
         self.loaded = False
@@ -72,9 +120,9 @@ class Chapter(Sink):
         if self.loaded:
             return 
 
-        name = self.name.replace(" ", "_")
-        name = name.lower()
-        HTTPRequest().asyncPost("%s.txt" % name, "", ChapterLoader(self))
+        self.name = self.name.replace(" ", "_")
+        self.name = self.name.lower()
+        HTTPRequest().asyncPost("%s.txt" % self.name, "", ChapterLoader(self))
 
     def setChapter(self, text):
         self.loaded = True
@@ -115,7 +163,8 @@ class Chapter(Sink):
                 self.custom_style = False
                 line = "</pre>"
                 self.txt += line
-                self.vp.add(HTML(self.txt))
+                panel = sect_markup(self.txt, self.name)
+                self.vp.add(panel)
                 self.txt = ''
                 return
             if line:
@@ -182,10 +231,12 @@ class Chapter(Sink):
             add = True
         if self.para and addpara:
             self.para = "<p class='chapter_para'>%s</p>" % urlmap(self.para, 0)
-            self.vp.add(HTML(self.para))
+            panel = sect_markup(self.para, self.name)
+            self.vp.add(panel)
             self.para = ''
         if add:
-            self.vp.add(HTML(self.txt))
+            panel = sect_markup(self.txt, self.name)
+            self.vp.add(panel)
             self.txt = ''
 
     def onError(self, text, code):

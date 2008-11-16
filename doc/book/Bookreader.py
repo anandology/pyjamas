@@ -1,10 +1,12 @@
-from pyjamas.ui import Button, RootPanel, HTML, DockPanel, HasAlignment, Hyperlink, VerticalPanel, ScrollPanel
+from pyjamas.ui import Button, RootPanel, HTML, NamedFrame, Hyperlink
+from pyjamas.ui import DockPanel, HasAlignment, VerticalPanel, ScrollPanel
 from pyjamas import Window
 from SinkList import SinkList
 from pyjamas.History import History
 import Chapter
 from pyjamas.HTTPRequest import HTTPRequest
 from BookLoader import ChapterListLoader
+from pyjamas.vertsplitpanel import VerticalSplitPanel
 
 class Bookreader:
 
@@ -16,6 +18,22 @@ class Bookreader:
             self.showInfo()
 
     def onModuleLoad(self):
+        section = Window.getLocation().getSearchVar("section")
+        if not section:
+            self.loadChapters()
+        else:
+            self.loadSection(section)
+
+    def loadSection(self, section):
+
+        chapter = Chapter.Chapter()
+        chapter.setStyleName("ks-Sink")
+        chapter.name = section
+        RootPanel().add(chapter)
+        chapter.onShow()
+
+    def loadChapters(self):
+
         self.curInfo=''
         self.curSink=None
         self.description=HTML()
@@ -26,11 +44,20 @@ class Bookreader:
         self.sinkContainer = DockPanel()
         self.sinkContainer.setStyleName("ks-Sink")
 
+        self.nf = NamedFrame("section")
+        self.nf.setWidth("100%")
+        self.nf.setHeight("10000")
+
         height = Window.getClientHeight()
 
-        self.sp = ScrollPanel(self.sinkContainer)
+        #self.sp = ScrollPanel(self.sinkContainer)
+        self.sp = VerticalSplitPanel()
         self.sp.setWidth("100%")
         self.sp.setHeight("%dpx" % (height-110))
+
+        self.sp.setTopWidget(self.sinkContainer)
+        self.sp.setBottomWidget(self.nf)
+        self.sp.setSplitPosition(10000) # deliberately high - max out.
 
         vp=VerticalPanel()
         vp.setWidth("100%")
@@ -51,6 +78,7 @@ class Bookreader:
 
         History().addHistoryListener(self)
         RootPanel().add(self.panel)
+
 
     def onWindowResized(self, width, height):
         self.sink_list.resize(width, height)
@@ -81,7 +109,6 @@ class Bookreader:
         
     def loadSinks(self):
         HTTPRequest().asyncPost("contents.txt", "", ChapterListLoader(self))
-
 
     def setChapters(self, chapters):
         for l in chapters:
