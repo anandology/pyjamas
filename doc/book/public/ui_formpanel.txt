@@ -1,6 +1,6 @@
 = Class FormPanel (derived from SimplePanel) =
 
-A panel that wraps its contents in an HTML <FORM> element.
+A panel that wraps its contents in an HTML "FORM" element.
 
 This panel can be used to achieve interoperability with servers
 that accept traditional HTML form encoding. The following widgets
