@@ -26,7 +26,9 @@ class HTTPRequest:
         var xmlHttp = this.doCreateXmlHTTPRequest();
         try {
             xmlHttp.open("POST", url, true);
-            xmlHttp.setRequestHeader("Content-Type", "text/plain; charset=utf-8");
+            xmlHttp.setRequestHeader("Content-Type",
+                                           "application/x-www-form-urlencoded");
+            xmlHttp.setRequestHeader("Content-Length", postData.length);
             xmlHttp.onreadystatechange = function() {
                 if (xmlHttp.readyState == 4) {
                     delete xmlHttp.onreadystatechange;
