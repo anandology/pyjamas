@@ -34,10 +34,10 @@ method of doing "inline assembler".  In gcc, you do horrible things like this:
 }}
 And, in Pyjamas, it's not that different:
 {{
-def foo(b): # this is python-land
-    a = 10; # this is still python-land
+def foo(b): # this is python-land (to be translated to javascript)
+    a = 10; # this is still python-land (to be translated to javascript)
     JS("""
-        b = a; /* this is javascript-land */
+        b = a; /* this is javascript-land (and will be outputted, verbatim) */
     """)
 }}
 
@@ -47,18 +47,20 @@ should be called from inside wrapped javascript (and the problems associated
 with doing that); and the importance of double-checking the compiled output
 against the original Python code, to make sure that everything's reasonable.
 
-Crucially, at this point, it must be said that this is not for the
-faint-hearted: assembly-style programming never is.  Not only is it necessary
-to know <i>two</i> programming languages; not only is it necessary to know
-how the compiler interfaces the two together, but also, it's necessary to
-work at "second hand" with one of the languages, when debugging the application!
-That having been said, it <i>is</i> quite straightforward.
+At this point, it must be said that this is not for the
+faint-hearted: assembly-style programming never is.  Not only is
+it necessary to know <i>two</i> programming languages; not only is
+it necessary to know how the compiler interfaces the two together,
+but also, it's necessary to work at "second hand" with one of the
+languages, when debugging the application!  That having been said,
+it <i>is</i> quite straightforward.
 
 = Simple Rectangle Test Class =
 
 The purpose of this exercise is to show, using as small a useful javascript
 library as possible, how to wrap Javascript with Pyjamas.  Start by saving
-the following javascript code as a file called jsrecttest.js:
+the following javascript code as a file called jsrecttest.js as the
+javascript "library":
 {{
 function rectobj() {
 }
@@ -82,20 +84,21 @@ rectobj.prototype.add = rect_add;
 rectobj.prototype.init = rect_init;
 }}
 
-If javascript is unfamiliar, then <i>right now</i> please take a minute to
-look up prototyping, and how javascript objects work.  An object instance
-can be created in javascript, like this:
+If javascript is unfamiliar, then <i>right now</i> take a minute
+to look up prototyping, and how javascript objects work.  An object
+instance can be created in javascript, like this:
 {{
     var obj = new rectobj();
 }}
-
-It's quite obtuse, but easy to follow: the function <tt>rectobj()</tt> is being
-called, but the qualifier "new" tells javascript to actually make an object,
-and thus, any occurrences of the word "this" can be used - just like "self"
-in python and "this" in c++ - to refer to member variables, functions and
-objects.  So, the function <tt>rect_init()</tt> adds two variables
-to a <tt>rectobj</tt>; <tt>rect_area</tt> can return those two
-variables, multiplied together.
+It's quite obtuse, but easy to follow: the function
+<tt>rectobj()</tt> is being called, but the qualifier "new" tells
+javascript to actually make an object (using the function rectobj),
+and thus, any occurrences of the word "this" can be used in the
+function - just like "self" in python and "this" in c++ - to refer
+to member variables, functions and objects.  So, the function
+<tt>rect_init()</tt> adds two variables to a <tt>rectobj</tt>;
+<tt>rect_area</tt> can return those two variables, multiplied
+together.
 
 Crucially, however, the last three lines are what makes javascript incredibly
 powerful.  Notice the use of "prototype" - that's telling the javascript
@@ -314,9 +317,11 @@ Re-run pyjs,py and look for the following lines, in the output:
 That's... that's the same, isn't it?  Yes and no: there's more
 white-space in the previous example, and the reason for <i>that</i>
 is because, inside the original JS(""" return this.rect.x; """) block
-there was... a lot of white-space.  Go back to the previous code,
+there was... a lot of white-space, all of which was substituted, verbatim,
+into the compiled output (go back to the previous code,
 and either remove <i>all</i> white-space, add in javascript-style
-comments, or remove the indentation, and re-run pyjs.py.
+comments, or remove the indentation, and re-run pyjs.py, to help emphasise
+this point).
 
 {{-info
 Note!  Javascript separates statements with semi-colons!

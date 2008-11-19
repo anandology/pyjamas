@@ -626,11 +626,14 @@ class Panel(Widget):
     def add(self):
         console.error("This panel does not support no-arg add()")
 
-    # TODO: fix iterator remove()
     def clear(self):
-        while len(self.children) > 0:
-            self.remove(self.children[0])
-            # should be iterator.remove() ==> self.remove(self.children[0]) or self.remove(child) ???
+        # use this method, due to list changing as it's being iterated.
+        children = []
+        for child in panel.children:
+            children.append(child)
+
+        for child in children:
+            panel.remove(child)
 
     def disown(self, widget):
         if widget.getParent() != self:

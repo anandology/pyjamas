@@ -274,7 +274,7 @@ of the test slide in the browser.
 
 You can test the CGI example, after restarting or reloading Apache2,
 by browsing to <tt>http://localhost/services/EchoService.py</tt>.
-If you are offered an opportunity do <i>download</i> EchoService.py,
+If you are offered an opportunity to <i>download</i> EchoService.py,
 then you have not correctly set up cgi-bin execution.  If, however,
 you get presented with a blank screen, then congratulations, the
 EchoService.py is correctly running: you are ready to connect to
@@ -312,7 +312,7 @@ the Request, and that process will terminate when the Response is
 sent to the client.
 {{-info
 If running Windows, and Apache2 has been chosen as the web server, adding
-<tt> AddHandler cgi-script .py </tt> to the Apache2 configuration section
+"AddHandler cgi-script .py" to the Apache2 configuration section
 will make all .py scripts in that section executable.  Only add this to
 the sections that you need - don't add this Directive globally!
 }}
@@ -845,9 +845,11 @@ root = static.File("home/lkcl/src/pyjamas/examples/jsonrpc/output/")
 root.putChild("test", Example())
 site = server.Site(root)
 }}
-This will allow the compiled output of the JSONRPCExample to be accessed
-by browsing to <tt>http://localhost:7080/</tt>, and, as can be seen,
-there is a <tt>/test/</tt> URL which points to the Example txJSONRPC
+Remember to substitute the appropriate location where the jsonrpc compiled
+output can be accessed.  By making the static files be the root
+of the server.tac example, the compiled output of the JSONRPCExample can
+be accessed by browsing to <tt>http://localhost:7080/</tt>.  And, as can be
+seen, there is also a <tt>/test/</tt> URL which points to the Example txJSONRPC
 Service that now matches up with the modifications made in the Pyjamas client
 source code.
 
@@ -882,7 +884,7 @@ Do not add the path of the Django application itself to the PythonPath!
 If the Django application is called "mysite", do not add "/path/src/mysite",
 just add "/path/src".  Also, remember to modify the DJANGO_SETTINGS_MODULE
 to point to "mysite" only if the Django application is called "mysite",
-and to <i>your</i> application, otherwise.
+and to modify it, otherwise.
 }}
 
 When using mod_python, it's important to remember that any errors in the
