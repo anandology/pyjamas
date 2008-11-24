@@ -143,6 +143,7 @@ sprintfWrapper = {
 				substitution = sprintfWrapper.convert(matches[i]);
 			}
 			else if (matches[i].code == 's') {
+				matches[i].argument = String(matches[i].argument)
 				matches[i].argument = matches[i].argument.substring(0, matches[i].precision ? matches[i].precision : matches[i].argument.length)
 				substitution = sprintfWrapper.convert(matches[i], true);
 			}

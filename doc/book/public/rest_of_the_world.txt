@@ -59,7 +59,7 @@ class Slideshow:
         HTTPRequest().asyncPost("test_slide.txt", "", SlideLoader(self))
 
     def setSlide(self, content):
-        self.slide.setHTML("<pre>%s</pre>" % content
+        self.slide.setHTML("<pre>%s</pre>" % content)
         
     def onError(self, text, code):
         self.slide.setHTML(text + "<br />" + code)
