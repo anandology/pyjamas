@@ -116,6 +116,8 @@ only be downloaded from the same web site.  Local file system URLs are
 definitely "out".
 }}
 
+== Configuring Apache2 ==
+
 A recommended way to serve web pages is to install and use Apache2.
 You should, after installation, set up a location where your compiled
 output is made visible.  Here is an Apache Config snippet that you
@@ -154,6 +156,42 @@ Remember that if you don't see anything, check the Javascript console,
 and enable script debugging.  Also, double-check that you have loaded
 output/Slideshow.html, not public/Slideshow.html, in your browser.
 }}
+
+== Using Python's SimpleHTTPServer.py ==
+
+TODO
+{{
+python -c "import CGIHTTPServer; CGIHTTPServer.test()"
+}}
+
+== Using Lighttpd ==
+
+TODO
+{{
+server_modules = (
+	       "mod_access",
+	       "mod_accesslog",
+	       "mod_dirlisting"
+	       )
+
+server.port = 3000
+server.document-root = "/home/Administrator/prg/pyjamas-book"
+
+server.errorlog = "/tmp/errorlog"
+
+accesslog.filename = "/tmp/accesslog"
+
+dir-listing.activate = "enable"
+
+mimetype.assign = (
+  ".html" => "text/html", 
+  ".txt" => "text/plain",
+  ".jpg" => "image/jpeg",
+  ".png" => "image/png" 
+)
+}}
+
+== Simple enhancements ==
 
 In the Pyjamas slideshow example, setSlide() munges the
 AJAX-downloaded content before it gets displayed, and you could
