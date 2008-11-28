@@ -58,12 +58,18 @@ def strip_py(name):
 
 class Translator:
 
-    def __init__(self, module_name, mod, output):
+    def __init__(self, module_name, raw_module_name, src, debug, mod, output):
     
         if module_name:
             self.module_prefix = module_name + "_"
         else:
             self.module_prefix = ""
+        self.raw_module_name = raw_module_name
+        src = src.replace("\r\n", "\n")
+        src = src.replace("\n\r", "\n")
+        src = src.replace("\r",   "\n")
+        self.src = src.split("\n")
+        self.debug = debug
         self.imported_modules = set()
         self.imported_js = set()
         self.top_level_functions = set()
@@ -73,7 +79,29 @@ class Translator:
         self.imported_classes = {}
         self.method_imported_globals = set()
         self.method_self = None
-        
+
+        if self.debug:
+            haltException = self.module_prefix + "HaltException"
+            print >>self.output, 'function ' + haltException + '() {'
+            print >>self.output, '  this.message = "Program Halted";'
+            print >>self.output, '  this.name = "' + haltException + '";'
+            print >>self.output, '}'
+            print >>self.output, ''
+            print >>self.output, haltException + ".prototype.toString = function()"
+            print >>self.output, '{'
+            print >>self.output, 'return this.name + ": \\"" + this.message + "\\"";'
+            print >>self.output, '}'
+
+            isHaltFunction = self.module_prefix + "IsHaltException"
+            print >>self.output, 'function ' + isHaltFunction + '(s) {'
+            print >>self.output, '  var suffix="HaltException";'
+            print >>self.output, '  if (s.length < suffix.length) {'
+            print >>self.output, '    return false;'
+            print >>self.output, '  } else {'
+            print >>self.output, '    return s.substring(suffix.length, (s.length - suffix.length)) == suffix;'
+            print >>self.output, '  }'
+            print >>self.output, '}'
+
         for child in mod.node:
             if isinstance(child, ast.Function):
                 self.top_level_functions.add(child.name)
@@ -575,6 +603,20 @@ class Translator:
         self.method_imported_globals = set()
 
     def _stmt(self, node, current_klass):
+        if self.debug:
+            debugStmt = True # initially.
+            if isinstance(node, ast.Discard):
+                if isinstance(node.expr, ast.CallFunc):
+                    if isinstance(node.expr.node, ast.Name) and \
+                       node.expr.node.name == NATIVE_JS_FUNC_NAME:
+                        # Don't try to debug JS() functions.
+                        debugStmt = False
+        else:
+            debugStmt = False
+
+        if debugStmt:
+            print >>self.output, '  try {'
+
         if isinstance(node, ast.Return):
             self._return(node, current_klass)
         elif isinstance(node, ast.Break):
@@ -607,6 +649,38 @@ class Translator:
            self._print(node, current_klass)
         else:
             raise TranslationError("unsupported type (in _stmt)", node)
+
+        if debugStmt:
+            lineNum = "Unknown"
+            srcLine = ""
+            if hasattr(node, "lineno"):
+                if node.lineno != None:
+                    lineNum = node.lineno
+                    srcLine = self.src[lineNum-1]
+                    srcLine = srcLine.replace('\\', '\\\\')
+                    srcLine = srcLine.replace('"', '\\"')
+
+            errMsg = "Error in " + self.raw_module_name + ".py, line " \
+                   + str(lineNum) + ":"\
+                   + "\\n\\n" \
+                   + "    " + srcLine \
+                   + "\\n\\n"
+
+            haltException = self.module_prefix + "HaltException"
+            isHaltFunction = self.module_prefix + "IsHaltException"
+
+            print >>self.output, '  } catch (err) {'
+            print >>self.output, '      if (' + isHaltFunction + '(err.name)) {'
+            print >>self.output, '          throw err;'
+            print >>self.output, '      } else {'
+            print >>self.output, '          alert("' + errMsg + '"' \
+                                                + '+err.name+": "+err.message'\
+                                                + ');'
+
+            print >>self.output, '          throw new ' + self.module_prefix + "HaltException();"
+            print >>self.output, '      }'
+            print >>self.output, '  }'
+
     
     def _augassign(self, node, current_klass):
         v = node.node
@@ -985,10 +1059,13 @@ class Translator:
 
 import cStringIO
 
-def translate(file_name, module_name):
+def translate(file_name, module_name, debug=False):
+    f = file(file_name, "r")
+    src = f.read()
+    f.close()
     output = cStringIO.StringIO()
     mod = compiler.parseFile(file_name)
-    t = Translator(module_name, mod, output)
+    t = Translator(module_name, module_name, src, debug, mod, output)
     return output.getvalue()
 
 
@@ -1098,7 +1175,7 @@ class AppTranslator:
         
         raise Exception("file not found: " + file_name)
     
-    def translate(self, module_name, is_app=True):
+    def translate(self, module_name, is_app=True, debug=False):
 
         if module_name not in self.library_modules:
             self.library_modules.append(module_name)
@@ -1112,14 +1189,18 @@ class AppTranslator:
         
         output = cStringIO.StringIO()
         
+        f = file(file_name, "r")
+        src = f.read()
+        f.close()
+
         mod = self.parser.parseModule(module_name, file_name)
-        t = Translator(module_name_translated, mod, output)
+        t = Translator(module_name_translated, module_name, src, debug, mod, output)
         module_str = output.getvalue()
         
         imported_modules_str = ""
         for module in t.imported_modules:
             if module not in self.library_modules:
-                imported_modules_str += self.translate(module, False)
+                imported_modules_str += self.translate(module, False, debug)
         for js in t.imported_js:
            path = self.findFile(js)
            if os.path.isfile(path):
@@ -1134,12 +1215,12 @@ class AppTranslator:
             return imported_modules_str 
         return imported_modules_str + module_str
 
-    def translateLibraries(self, library_modules=[]):
+    def translateLibraries(self, library_modules=[], debug=False):
         self.library_modules = library_modules
 
         imported_modules_str = ""
         for library in self.library_modules:
-            imported_modules_str += self.translate(library, False)
+            imported_modules_str += self.translate(library, False, debug)
         
         return imported_modules_str
 

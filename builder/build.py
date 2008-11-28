@@ -75,10 +75,13 @@ def copytree_exists(src, dst, symlinks=False):
         print errors
 
 
-def build(app_name, output="output", js_includes=()):
+def build(app_name, output="output", js_includes=(), debug=False):
     dir_public = "public"
 
-    print "Building '%(app_name)s' to output directory '%(output)s'" % locals()
+    msg = "Building '%(app_name)s' to output directory '%(output)s'" % locals()
+    if debug:
+        msg += " with debugging statements"
+    print msg
 
     # check the output directory
     if os.path.exists(output) and not os.path.isdir(output):
@@ -180,8 +183,8 @@ def build(app_name, output="output", js_includes=()):
 
         parser.setPlatform(platform)
         app_translator = pyjs.AppTranslator(app_library_dirs, parser)
-        app_libs = app_translator.translateLibraries(['pyjslib'])
-        app_code = app_translator.translate(app_name)
+        app_libs = app_translator.translateLibraries(['pyjslib'], debug)
+        app_code = app_translator.translate(app_name, debug=debug)
         all_cache_html_output = open(join(output, all_cache_name), "w")
         
         print >>all_cache_html_output, all_cache_html_template % dict(
@@ -210,7 +213,9 @@ def main():
         help="paths to search for python modules")
     parser.add_option("-P", "--platforms", dest="platforms",
         help="platforms to build for, comma-seperated")
-    parser.set_defaults(output = "output", js_includes=[], library_dirs=[], platforms=(','.join(app_platforms)))
+    parser.add_option("-d", "--debug", action="store_true", dest="debug")
+
+    parser.set_defaults(output = "output", js_includes=[], library_dirs=[], platforms=(','.join(app_platforms)), debug=False)
     (options, args) = parser.parse_args()
     if len(args) != 1:
         parser.error("incorrect number of arguments")
@@ -218,7 +223,7 @@ def main():
     app_library_dirs += options.library_dirs
     if options.platforms:
        app_platforms = options.platforms.split(',')
-    build(args[0], options.output, options.js_includes)
+    build(args[0], options.output, options.js_includes, options.debug)
 
 
 if __name__ == "__main__":
