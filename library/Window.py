@@ -20,6 +20,11 @@ def confirm(msg):
     return $wnd.confirm(msg);
     """)
 
+def prompt(msg, defaultReply=""):
+    JS("""
+        return $wnd.prompt(msg, defaultReply);
+    """)
+
 def enableScrolling(enable):
    JS("""
    $doc.body.style.overflow = enable ? 'auto' : 'hidden';

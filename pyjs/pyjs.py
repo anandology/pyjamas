@@ -79,6 +79,7 @@ class Translator:
         self.imported_classes = {}
         self.method_imported_globals = set()
         self.method_self = None
+        self.nextTupleAssignID = 1
 
         if self.debug:
             haltException = self.module_prefix + "HaltException"
@@ -261,6 +262,8 @@ class Translator:
                 call_name = "pyjslib_int"
             elif v.node.name == "str":
                 call_name = "pyjslib_str"
+            elif v.node.name == "repr":
+                call_name = "pyjslib_repr"
             elif v.node.name == "range":
                 call_name = "pyjslib_range"
             elif v.node.name == "len":
@@ -269,6 +272,12 @@ class Translator:
                 call_name = "pyjslib_hash"
             elif v.node.name == "abs":
                 call_name = "pyjslib_abs"
+            elif v.node.name == "enumerate":
+                call_name = "pyjslib_enumerate"
+            elif v.node.name == "min":
+                call_name = "pyjslib_min"
+            elif v.node.name == "max":
+                call_name = "pyjslib_max"
             else:
                 call_name = v.node.name
             call_args = []
@@ -703,36 +712,44 @@ class Translator:
                self._assign(tnode2, current_klass, top_level)
             return
 
-        v = node.nodes[0]
-        if isinstance(v, ast.AssAttr):
+        def _lhsFromAttr(v):
             attr_name = v.attrname
             if isinstance(v.expr, ast.Name):
                 obj = v.expr.name
-                lhs = "    " + self._name(v.expr) + "." + attr_name
-
+                lhs = self._name(v.expr) + "." + attr_name
             elif isinstance(v.expr, ast.Getattr):
-                lhs = "    " + self._getattr(v)
+                lhs = self._getattr(v)
             elif isinstance(v.expr, ast.Subscript):
-                lhs = "    " + self._subscript(v.expr, current_klass) + "." + attr_name
+                lhs = self._subscript(v.expr, current_klass) + "." + attr_name
             else:
                 raise TranslationError("unsupported type (in _assign)", v.expr)
+            return lhs
+
+        def _lhsFromName(v, top_level, current_klass):
+            if top_level:
+                if current_klass:
+                    lhs = "__" + current_klass.name + ".prototype.__class__." \
+                               + v.name
+                else:
+                    self.top_level_vars.add(v.name)
+                    lhs = "var " + strip_py(self.module_prefix) + v.name
+            else:
+                if v.name in self.method_imported_globals:
+                    lhs = strip_py(self.module_prefix) + v.name
+                else:
+                    lhs = "var " + v.name
+            return lhs
+
+        v = node.nodes[0]
+        if isinstance(v, ast.AssAttr):
+            lhs = _lhsFromAttr(v)
             if v.flags == "OP_ASSIGN":
                 op = "="
             else:
                 raise TranslationError("unsupported flag (in _assign)", v)
     
         elif isinstance(v, ast.AssName):
-            if top_level:
-                if current_klass:
-                    lhs = "__" + current_klass.name + ".prototype.__class__." + v.name
-                else:
-                    self.top_level_vars.add(v.name)
-                    lhs = "var " + strip_py(self.module_prefix) + v.name
-            else:
-                if v.name in self.method_imported_globals:
-                    lhs = "    " + strip_py(self.module_prefix) + v.name
-                else:
-                    lhs = "    var " + v.name
+            lhs = _lhsFromName(v, top_level, current_klass)
             if v.flags == "OP_ASSIGN":
                 op = "="
             else:
@@ -748,12 +765,37 @@ class Translator:
                 return
             else:
                 raise TranslationError("unsupported flag (in _assign)", v)
+        elif isinstance(v, (ast.AssList, ast.AssTuple)):
+            uniqueID = self.nextTupleAssignID
+            self.nextTupleAssignID += 1
+            tempName = "__tupleassign" + str(uniqueID) + "__"
+            print >>self.output, "    var " + tempName + " = " + \
+                                 self.expr(node.expr, current_klass) + ";"
+            for index,child in enumerate(v.getChildNodes()):
+                rhs = tempName + ".__getitem__(" + str(index) + ")"
+
+                if isinstance(child, ast.AssAttr):
+                    lhs = _lhsFromAttr(child)
+                elif isinstance(child, ast.AssName):
+                    lhs = _lhsFromName(child, top_level, current_klass)
+                elif isinstance(child, ast.Subscript):
+                    if child.flags == "OP_ASSIGN":
+                        obj = self.expr(child.expr, current_klass)
+                        if len(child.subs) != 1:
+                            raise TranslationError("must have one sub " +
+                                                   "(in _assign)", child)
+                        idx = self.expr(child.subs[0], current_klass)
+                        value = self.expr(node.expr, current_klass)
+                        print >>self.output, "    " + obj + ".__setitem__(" \
+                                           + idx + ", " + rhs + ");"
+                        continue
+                print >>self.output, "    " + lhs + " = " + rhs + ";"
+            return
         else:
             raise TranslationError("unsupported type (in _assign)", v)
-    
 
         rhs = self.expr(node.expr, current_klass)
-        print >>self.output, lhs + " " + op + " " + rhs + ";"
+        print >>self.output, "    " + lhs + " " + op + " " + rhs + ";"
     
     
     def _discard(self, node, current_klass):
@@ -836,6 +878,8 @@ class Translator:
             return "!" + rhs + ".__contains__(" + lhs + ")"
         elif op == "is":
             op = "=="
+        elif op == "is not":
+            op = "!="
            
         return "(" + lhs + " " + op + " " + rhs + ")"
 
@@ -931,6 +975,9 @@ class Translator:
         else:
             raise TranslationError("unsupported type (in _const)", node)
 
+    def _unaryadd(self, node, current_klass):
+        return self.expr(node.expr, current_klass)
+
     def _unarysub(self, node, current_klass):
         return "-" + self.expr(node.expr, current_klass)
 
@@ -1020,6 +1067,8 @@ class Translator:
             return " ( " + self._div(node, current_klass) + " ) "
         elif isinstance(node, ast.Mod):
             return self._mod(node, current_klass)
+        elif isinstance(node, ast.UnaryAdd):
+            return self._unaryadd(node, current_klass)
         elif isinstance(node, ast.UnarySub):
             return self._unarysub(node, current_klass)
         elif isinstance(node, ast.Not):

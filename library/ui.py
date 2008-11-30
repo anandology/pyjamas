@@ -182,6 +182,9 @@ class UIObject:
            value should be given as a CSS value, such as 100px, 30%, or 50pi"""
         DOM.setStyleAttribute(self.element, "height", height)
 
+    def getHeight(self):
+        return DOM.getStyleAttribute(self.element, "height")
+
     def setPixelSize(self, width, height):
         """Set the width and height of the element associated with this UIObject
            in pixels.  Width and height should be numbers."""
@@ -248,6 +251,9 @@ class UIObject:
         """Set the width of the element associated with this UIObject.  The
            value should be given as a CSS value, such as 100px, 30%, or 50pi"""
         DOM.setStyleAttribute(self.element, "width", width)
+
+    def getWidth(self):
+        return DOM.getStyleAttribute(self.element, "width")
 
     def sinkEvents(self, eventBitsToAdd):
         """Request that the given events be delivered to the event handler for this
@@ -1410,6 +1416,8 @@ class CellPanel(ComplexPanel):
         
         self.table = DOM.createTable()
         self.body = DOM.createTBody()
+        self.spacing = None
+        self.padding = None
         DOM.appendChild(self.table, self.body)
         self.setElement(self.table)
 
@@ -1421,6 +1429,9 @@ class CellPanel(ComplexPanel):
 
     def getSpacing(self):
         return self.spacing
+
+    def getPadding(self):
+        return self.padding
 
     def getWidgetTd(self, widget):
         if widget.getParent() != self:
@@ -1451,6 +1462,10 @@ class CellPanel(ComplexPanel):
     def setSpacing(self, spacing):
         self.spacing = spacing
         DOM.setIntAttribute(self.table, "cellSpacing", spacing)
+
+    def setPadding(self, padding):
+        self.padding = padding
+        DOM.setIntAttribute(self.table, "cellPadding", padding)
 
 
 class HorizontalPanel(CellPanel):
@@ -2204,10 +2219,10 @@ class PopupPanel(SimplePanel):
             return self.onKeyPressPreview(DOM.eventGetKeyCode(event), KeyboardListener.getKeyboardModifiers(self, event)) and event_targets_popup
         elif type == "mousedown" or type == "mouseup" or type == "mousemove" or type == "click" or type == "dblclick":
             if DOM.getCaptureElement() == None:
-				if not event_targets_popup and self.autoHide and \
-					   (type == "mousedown"):
-					self.hide(True)
-					return True
+		if not event_targets_popup and self.autoHide \
+                                           and (type == "mousedown"):
+                    self.hide(True)
+                    return True
 
         return event_targets_popup
 
@@ -3426,7 +3441,8 @@ class TreeItem(UIObject):
         DOM.appendChild(tr, tdContent)
         DOM.setStyleAttribute(tdImg, "verticalAlign", "middle")
         DOM.setStyleAttribute(tdContent, "verticalAlign", "middle")
-        
+        DOM.setStyleAttribute(self.getElement(), "cursor", "pointer")
+  
         DOM.appendChild(self.getElement(), self.itemTable)
         DOM.appendChild(self.getElement(), self.childSpanElem)
         DOM.appendChild(tdImg, self.imgElem)

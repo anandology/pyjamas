@@ -356,7 +356,8 @@ class Dict:
         if (pyjslib_isArray(data)) {
             for (var i in data) {
                 var item=data[i];
-                this.d[item[0]]=item[1];
+                var sKey=this._keyToStr(item[0]);
+                this.d[sKey]=item[1];
                 }
             }
         else if (pyjslib_isIteratable(data)) {
@@ -364,7 +365,8 @@ class Dict:
             try {
                 while (true) {
                     var item=iter.next();
-                    this.d[item.__getitem__(0)]=item.__getitem__(1);
+                    var sKey=this._keyToStr(item.__getitem__(0));
+                    this.d[sKey]=item.__getitem__(1);
                     }
                 }
             catch (e) {
@@ -379,11 +381,15 @@ class Dict:
         """)
     
     def __setitem__(self, key, value):
-        JS(""" this.d[key]=value;""")
+        JS("""
+        var sKey = this._keyToStr(key);
+        this.d[sKey]=value;
+        """)
 
     def __getitem__(self, key):
         JS("""
-        var value=this.d[key];
+        var sKey = this._keyToStr(key);
+        var value=this.d[sKey];
         // if (pyjslib_isUndefined(value)) throw KeyError;
         return value;
         """)
@@ -397,15 +403,22 @@ class Dict:
 
     def has_key(self, key):
         JS("""
-        if (pyjslib_isUndefined(this.d[key])) return false;
+        var sKey = this._keyToStr(key);
+        if (pyjslib_isUndefined(this.d[sKey])) return false;
         return true;
         """)
     
     def __delitem__(self, key):
-        JS(""" delete this.d[key];""")
+        JS("""
+        var sKey = this._keyToStr(key);
+        delete this.d[sKey];
+        """)
 
     def __contains__(self, key):
-        JS("""    return (pyjslib_isUndefined(this.d[key])) ? false : true;""")
+        JS("""
+        var sKey = this._keyToStr(key);
+        return (pyjslib_isUndefined(this.d[sKey])) ? false : true;
+        """)
 
     def keys(self):
         JS("""
@@ -421,6 +434,16 @@ class Dict:
         return keys;
         """)
         
+    def items(self):
+        JS("""
+        var items = new pyjslib_List();
+        for (var key in this.d) {
+          var value = this.d[key];
+          items.append(new pyjslib_List([key, value]))
+          }
+          return items;
+        """)
+
     def __iter__(self):
         JS("""
         return this.keys().__iter__();
@@ -458,12 +481,14 @@ class Dict:
         };
         """)
         
-    def setdefault(self, key, default_value): 
-        if not self.has_key(key):
-            self[key] = default_value
+    def setdefault(self, key, default_value):
+        sKey = self._keyToStr(key)
+        if not self.has_key(sKey):
+            self[sKey] = default_value
     
     def get(self, key, default_value=None):    
-        value = self[key]
+        sKey = self._keyToStr(key)
+        value = self[sKey]
         JS("if(pyjslib_isUndefined(value)) { value = default_value; }")
         return value;
     
@@ -476,6 +501,14 @@ class Dict:
         Return the javascript Object which this class uses to store dictionary keys and values
         """
         return self.d
+
+    def _keyToStr(self, key):
+        """ Convert the given object to a string we can safely use as a key.
+        """
+        if isString(key) or isNumber(key):
+            return key
+        else:
+            return repr(key)
 dict = Dict
             
 # taken from mochikit: range( [start,] stop[, step] )
@@ -535,6 +568,101 @@ def slice(object, lower, upper):
 def str(text):
     JS("""
     return String(text);
+    """)
+
+def repr(x):
+    """ Return the string representation of 'x'.
+    """
+    JS("""
+       if (x === null)
+           return "null";
+
+       if (x === undefined)
+           return "undefined";
+
+       var t = typeof(x);
+
+       if (t == "boolean")
+           return x.toString();
+
+       if (t == "function")
+           return "<function " + x.toString() + ">";
+
+       if (t == "number")
+           return x.toString();
+
+       if (t == "string") {
+           if (x.indexOf('"') == -1)
+               return '"' + x + '"';
+           if (x.indexOf("'") == -1)
+               return "'" + x + "'";
+           var s = x.replace(new RegExp('"', "g"), '\\\\"');
+           return '"' + s + '"';
+       };
+
+       if (t == "undefined")
+           return "undefined";
+
+       // If we get here, x is an object.  See if it's a Pyjamas class.
+
+       if (!pyjslib_hasattr(x, "__init__"))
+           return "<" + x.toString() + ">";
+
+       // Handle the common Pyjamas data types.
+
+       var constructor = "UNKNOWN";
+
+       if (pyjslib_hasattr(x, "__class__"))
+           if (pyjslib_hasattr(x.__class__, "__new__"))
+               var src = x.__class__.__new__.toString();
+               constructor = src.match(/function (\w*)/)[1];
+
+       if (constructor == "pyjslib_Tuple") {
+           var contents = x.getArray();
+           var s = "(";
+           for (var i=0; i < contents.length; i++) {
+               s += uiHelpers_repr(contents[i]);
+               if (i < contents.length - 1)
+                   s += ", ";
+           };
+           s += ")"
+           return s;
+       };
+
+       if (constructor == "pyjslib_List") {
+           var contents = x.getArray();
+           var s = "[";
+           for (var i=0; i < contents.length; i++) {
+               s += uiHelpers_repr(contents[i]);
+               if (i < contents.length - 1)
+                   s += ", ";
+           };
+           s += "]"
+           return s;
+       };
+
+       if (constructor == "pyjslib_Dict") {
+           var keys = new Array();
+           for (var key in x.d)
+               keys.push(key);
+
+           var s = "{";
+           for (var i=0; i<keys.length; i++) {
+               var key = keys[i]
+               s += uiHelpers_repr(key) + ": " + uiHelpers_repr(x.d[key]);
+               if (i < keys.length-1)
+                   s += ", "
+           };
+           s += "}";
+           return s;
+       };
+
+       // If we get here, the class isn't one we know -> return the class name.
+       // Note that we replace underscores with dots so that the name will
+       // (hopefully!) look like the original Python name.
+
+       var s = constructor.replace(new RegExp('_', "g"), '.');
+       return "<" + s + " object>";
     """)
 
 def int(text, radix=0):
@@ -607,6 +735,35 @@ def map(obj, method, sequence=None):
             items.append(method.call(obj, item))
     
     return items
+
+
+def enumerate(sequence):
+    enumeration = []
+    nextIndex = 0
+    for item in sequence:
+        enumeration.append([nextIndex, item])
+        nextIndex = nextIndex + 1
+    return enumeration
+
+
+def min(sequence):
+    minValue = None
+    for item in sequence:
+        if minValue == None:
+            minValue = item
+        elif item < minValue:
+            minValue = item
+    return minValue
+
+
+def max(sequence):
+    maxValue = None
+    for item in sequence:
+        if maxValue == None:
+            maxValue = item
+        elif item > maxValue:
+            maxValue = item
+    return maxValue
 
 
 next_hash_id = 0
