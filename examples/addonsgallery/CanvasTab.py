@@ -1,7 +1,7 @@
 from Sink import Sink, SinkInfo
-from ui import Image, HTML, VerticalPanel, HorizontalPanel
+from pyjamas.ui import Image, HTML, VerticalPanel, HorizontalPanel
 from Canvas import Canvas, CanvasImage, ImageLoadListener
-from Timer import Timer
+from pyjamas.Timer import Timer
 from math import floor, cos, sin
 
 class CanvasTab(Sink):

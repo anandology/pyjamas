@@ -1,10 +1,6 @@
-# import com.google.gwt.core.client.EntryPoint;
-# import com.google.gwt.user.client.Command;
-# import com.google.gwt.user.client.DeferredCommand;
-import Window
-# import com.google.gwt.user.client.WindowResizeListener;
-from DeferredCommand import DeferredCommand
-from ui import DockPanel, RootPanel, VerticalPanel
+from pyjamas import Window
+from pyjamas.DeferredCommand import DeferredCommand
+from pyjamas.ui import DockPanel, RootPanel, VerticalPanel
 from MailDetail import MailDetail
 from Shortcuts import Shortcuts
 from MailList import MailList

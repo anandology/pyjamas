@@ -1,4 +1,4 @@
-from ui import Composite, VerticalPanel, Hyperlink
+from pyjamas.ui import Composite, VerticalPanel, Hyperlink
 
 class SinkList(Composite):
     def __init__(self):

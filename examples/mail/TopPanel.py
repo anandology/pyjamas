@@ -1,5 +1,5 @@
-import Window
-from ui import ClickListener, Composite, HTML, HorizontalPanel, VerticalPanel, Widget, HasAlignment
+from pyjamas import Window
+from pyjamas.ui import ClickListener, Composite, HTML, HorizontalPanel, VerticalPanel, Widget, HasAlignment
 from AboutDialog import AboutDialog
 from Logger import Logger
 

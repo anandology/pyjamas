@@ -1,5 +1,5 @@
-from ui import RootPanel, TextArea, Label, Button, HTML, VerticalPanel, HorizontalPanel, ListBox
-from JSONService import JSONProxy
+from pyjamas.ui import RootPanel, TextArea, Label, Button, HTML, VerticalPanel, HorizontalPanel, ListBox
+from pyjamas.JSONService import JSONProxy
 
 class JSONRPCExample:
     def onModuleLoad(self):

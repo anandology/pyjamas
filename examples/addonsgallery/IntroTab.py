@@ -1,5 +1,5 @@
 from Sink import Sink, SinkInfo
-from ui import HTML
+from pyjamas.ui import HTML
 
 class IntroTab(Sink):
     def __init__(self):

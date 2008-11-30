@@ -1,4 +1,4 @@
-import Window
+from pyjamas import Window
 
 def log(text):
     Window.alert(text)

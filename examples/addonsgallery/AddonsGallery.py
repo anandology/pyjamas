@@ -1,7 +1,7 @@
-from ui import Button, RootPanel, HTML, DockPanel, HasAlignment, Hyperlink, VerticalPanel
-import Window
+from pyjamas.ui import Button, RootPanel, HTML, DockPanel, HasAlignment, Hyperlink, VerticalPanel
+from pyjamas import Window
 from SinkList import SinkList
-from History import History
+from pyjamas.History import History
 import IntroTab
 import TooltipTab
 import AutoCompleteTab

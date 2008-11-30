@@ -1,4 +1,4 @@
-from ui import Composite, DockPanel, HTML, HorizontalPanel, DockPanel, HasAlignment, Button, Grid
+from pyjamas.ui import Composite, DockPanel, HTML, HorizontalPanel, DockPanel, HasAlignment, Button, Grid
 
 class NavBar(Composite):
 

@@ -1,4 +1,4 @@
-from ui import Composite
+from pyjamas.ui import Composite
 
 class Sink(Composite):
     def __init__(self):

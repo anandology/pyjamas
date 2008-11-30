@@ -1,5 +1,5 @@
-from ui import Button, RootPanel
-import Window
+from pyjamas.ui import Button, RootPanel
+from pyjamas import Window
 
 
 def onButtonClick(sender):

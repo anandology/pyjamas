@@ -1,4 +1,4 @@
-from ui import Button, ClickListener, DialogBox, DockPanel, HorizontalPanel, HTML, Image, KeyboardListener, Widget, HasAlignment
+from pyjamas.ui import Button, ClickListener, DialogBox, DockPanel, HorizontalPanel, HTML, Image, KeyboardListener, Widget, HasAlignment
 
 class AboutDialog(DialogBox):
     

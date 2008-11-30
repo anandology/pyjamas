@@ -1,4 +1,4 @@
-import DOM
+from pyjamas import DOM
 
 def getBodyElement():
     JS(""" return $doc.body; """)

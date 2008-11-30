@@ -1,4 +1,4 @@
-from ui import Composite, Tree, TreeItem
+from pyjamas.ui import Composite, Tree, TreeItem
 
     
 class Mailboxes(Composite):

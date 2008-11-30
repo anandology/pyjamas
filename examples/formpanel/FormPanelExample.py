@@ -1,6 +1,6 @@
-from ui import RootPanel, TextArea, Label, Button, HTML, VerticalPanel,\
+from pyjamas.ui import RootPanel, TextArea, Label, Button, HTML, VerticalPanel,\
                HorizontalPanel, ListBox, FormPanel, FileUpload, TextBox
-import Window
+from pyjamas import Window
 
 class FormPanelExample:
     def onModuleLoad(self):

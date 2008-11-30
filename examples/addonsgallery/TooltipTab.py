@@ -1,5 +1,5 @@
 from Sink import Sink, SinkInfo
-from ui import Image, HTML, VerticalPanel, HorizontalPanel
+from pyjamas.ui import Image, HTML, VerticalPanel, HorizontalPanel
 from Tooltip import TooltipListener
 
 class TooltipTab(Sink):

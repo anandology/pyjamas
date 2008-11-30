@@ -1,4 +1,4 @@
-from ui import Composite, StackPanel, Label
+from pyjamas.ui import Composite, StackPanel, Label
 from Tasks import Tasks
 from Mailboxes import Mailboxes
 from Contacts import Contacts

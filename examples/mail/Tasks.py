@@ -1,4 +1,4 @@
-from ui import CheckBox, Composite, VerticalPanel
+from pyjamas.ui import CheckBox, Composite, VerticalPanel
 
 class Tasks(Composite):
 

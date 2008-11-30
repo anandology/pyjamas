@@ -1,4 +1,4 @@
-from ui import ClickListener, Composite, FlexTable, HTML, HorizontalPanel, SourcesTableEvents, TableListener, Widget, Label, HasAlignment
+from pyjamas.ui import ClickListener, Composite, FlexTable, HTML, HorizontalPanel, SourcesTableEvents, TableListener, Widget, Label, HasAlignment
 from MailItems import MailItems
 from Logger import Logger
 
