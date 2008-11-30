@@ -683,7 +683,11 @@ def getattr(obj, method):
     if (!pyjslib_isFunction(obj[method])) return obj[method];
 
     return function() {
-        obj[method].call(obj);
+        var args = [];
+        for (var i = 0; i < arguments.length; i++) {
+          args.push(arguments[i]);
+        }
+        obj[method].apply(obj,args);
         }
     """)
 
