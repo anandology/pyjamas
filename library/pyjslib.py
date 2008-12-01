@@ -28,6 +28,11 @@ KeyError.prototype = new Error();
 KeyError.name = 'KeyError';
 KeyError.message = 'KeyError';
 
+TypeError = function () {};
+TypeError.prototype = new Error();
+TypeError.name = "TypeError";
+TypeError.message = "TypeError";
+
 function pyjslib_String_find(sub, start, end) {
     var pos=this.indexOf(sub, start);
     if (pyjslib_isUndefined(end)) return pos;
@@ -568,6 +573,22 @@ def slice(object, lower, upper):
 def str(text):
     JS("""
     return String(text);
+    """)
+
+def ord(x):
+    if(isString(x) and len(x) == 1):
+        JS("""
+            return x.charCodeAt(0);
+        """)
+    else:
+        JS("""
+            throw TypeError;
+        """)
+    return None
+
+def chr(x):
+    JS("""
+        return String.fromCharCode(x)
     """)
 
 def repr(x):

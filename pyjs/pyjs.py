@@ -272,6 +272,10 @@ class Translator:
                 call_name = "pyjslib_hash"
             elif v.node.name == "abs":
                 call_name = "pyjslib_abs"
+            elif v.node.name == "ord":
+                call_name = "pyjslib_ord"
+            elif v.node.name == "chr":
+                call_name = "pyjslib_chr"
             elif v.node.name == "enumerate":
                 call_name = "pyjslib_enumerate"
             elif v.node.name == "min":
