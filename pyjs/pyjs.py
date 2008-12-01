@@ -1004,6 +1004,15 @@ class Translator:
 
     def _bitand(self, node, current_klass):
         return " & ".join([self.expr(child, current_klass) for child in node.nodes])
+    
+    def _bitshiftleft(self, node, current_klass):
+        return self.expr(node.left, current_klass) + " << " + self.expr(node.right, current_klass)
+
+    def _bitshiftright(self, node, current_klass):
+        return self.expr(node.left, current_klass) + " >>> " + self.expr(node.right, current_klass)
+
+    def _bitxor(self,node, current_klass):
+        return " ^ ".join([self.expr(child, current_klass) for child in node.nodes])
 
     def _bitor(self, node, current_klass):
         return " | ".join([self.expr(child, current_klass) for child in node.nodes])
@@ -1081,6 +1090,12 @@ class Translator:
             return self._invert(node, current_klass)
         elif isinstance(node, ast.Bitand):
             return "("+self._bitand(node, current_klass)+")"
+        elif isinstance(node,ast.LeftShift):
+            return self._bitshiftleft(node, current_klass)
+        elif isinstance(node, ast.RightShift):
+            return self._bitshiftright(node, current_klass)
+        elif isinstance(node, ast.Bitxor):
+            return "("+self._bitxor(node, current_klass)+")"
         elif isinstance(node, ast.Bitor):
             return "("+self._bitor(node, current_klass)+")"
         elif isinstance(node, ast.Compare):
