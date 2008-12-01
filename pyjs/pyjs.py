@@ -339,7 +339,27 @@ class Translator:
             call_args.append(arg)
         
         print >>self.output, "pyjslib_printFunc([", ', '.join(call_args), "],", int(isinstance(node, ast.Printnl)), ");"
-        
+
+    def _tryExcept(self, node, current_klass):
+        ok = True
+        if len(node.handlers) != 1: ok = False
+        elif node.handlers[0][0] != None: ok = False
+        elif node.handlers[0][1] != None: ok = False
+        if not ok:
+            raise TranslationError("only simple try...except statements " +
+                                   "supported", node)
+
+        print >>self.output, "    try {"
+        for stmt in node.body.nodes:
+            self._stmt(stmt, current_klass)
+        print >>self.output, "    } catch(err) {"
+        for stmt in node.handlers[0][2]:
+            self._stmt(stmt, current_klass)
+        if node.else_ != None:
+            print >>self.output, "    } finally {"
+            for stmt in node.else_:
+                self._stmt(stmt, current_klass)
+        print >>self.output, "    }"
 
     def _getattr(self, v):
         attr_name = v.attrname
@@ -660,6 +680,8 @@ class Translator:
            self._print(node, current_klass)
         elif isinstance(node, ast.Print):
            self._print(node, current_klass)
+        elif isinstance(node, ast.TryExcept):
+            self._tryExcept(node, current_klass)
         else:
             raise TranslationError("unsupported type (in _stmt)", node)
 
