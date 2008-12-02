@@ -1,0 +1,126 @@
+                    Changes made to Pyjamas since 0.3
+                    ---------------------------------
+
+Enhancements
+
+ * Added library/splitpanel.py and library/vertsplitpanel.py, along with
+  examples/splitpanel
+
+ * Changed ui.TabBar.insertTab() to allow widgets to be passed as well as text.
+
+ * Added examples/tabpanelwidget
+
+ * Added gtk_converter to the "contrib" directory (thanks to Jeremy)
+
+ * Added library/decoratorpanel.py
+
+ * Added examples/slideshow
+
+ * Added support for slicing with negative numbers.
+
+ * Added examples/jsobject
+
+ * Added support for a debugging mode, which can be turned on by include a "-d"
+  command-line option when calling build.py.  With this option turned on, each
+  statement in your Python code is surrounded by a try...except statement that
+  displays an alert if an exception occurs.  The alert message contains the
+  original Python source text, the line number in your Python source file
+  where the error occurred, and the details of the Javscript error which
+  occurred.  This should greatly simplify debugging your Pyjamas code.
+
+ * Issue #75: Added support for "is not None" syntax.
+
+ * Issue #85: Implemented the repr() built-in function.
+
+ * Issue #93: Implemented dict.items().
+
+ * Issue #95: Implemented Window.prompt().
+
+ * Issue #100: Added a setPadding() method to ui.CellPanel.
+
+ * Issue #103: Implemented the enumerate() built-in function.
+
+ * Issue #104: Added the ability to assign to a list of variables, for example:
+  x,y = self.method()
+
+ * Issue #105: Implemented the min() and max() built-in functions.
+
+ * Issue #88: It is now possible to use the getattr() built-in function to
+  obtain a method, and then pass parameters to that method when you call it.
+  There is a new example in the "examples/" directory, called "getattr", which
+  demonstrates how this can be used.
+
+ * Issue #111: Added XOR and bit-shift operators, thanks to legith.
+
+ * Issue #112: Added support for the ord() and chr() built-in functions
+  (thanks, legith!).
+
+ * Issue #113: Implemented support for basic try...except statements.  There is
+  also a new module, examples/libtest/ExceptionTest.py, which tests the use of
+  the try...except statement.
+
+
+Bug Fixes, etc.
+
+ * Added a new implementation of sprintf.
+
+ * Issue #86: Fixed a bug which could cause HTTPRequest to crash.  Thanks to
+  finder83 from code.google.com/p/pyjamas for helping to find this.
+
+ * Added standard images to use for the edges and corners of a dialog box
+
+ * Various changes to ui.py and DOM.py to (partially) support event handling on
+  dialog boxes.
+
+ * Fixed a bug in ui.CellFormatter.getElement() which could cause a crash.
+
+ * Fixed a problem with ui.FormSubmitEvent.setCancelled()
+
+ * Fixed bug in ui.clickDelegatePanel.onBrowserEvent() which caused a crash
+  when processing a keyDown event.
+
+ * Changed ui.ClickDelegatePanel.onBrowserEvent() to check that the key
+  delegate actually has an "onKeyDown" method before attempting to call it.
+
+ * Issue #54: Fixed a probem with browser detection (via the "user-agent"
+  string) under Internet Explorer 7.0.  Apparently Microsoft decided to change
+  the user-agent string in IE 7, breaking the code in Pyjamas which identified
+  the user's browser.
+
+ * Removed code from DOM.init() which was attempting to fix a bug with
+  capturing elements, but didn't work.
+
+ * Fixed a bug in ComplexPanel.insert which was causing Internet Explorer 6 to
+  corrupt its DOM model.
+
+ * Issue #53: Fixed a problem with operator precedence.
+
+ * Issue #91: Added DOM.eventGetCurrentEvent() function to retrieve the current
+  event.
+
+ * Changed FocusWidget.onBrowserEvent() to check that the click listener
+  actually has an "onClick" method before attempting to call it.
+
+ * Issue #82: Changed content-type sent by library/HTTPRequest.asyncPostImpl to
+  "application/x-www-form-urlencoded" rather than "text/plain".  This allows
+  the HTTPRequest object to be used to make AJAX calls using HTTP POST
+  requests.
+
+ * Issue #81: Fixed library/ui.Panel.clear().
+
+ * Added a cascading stylesheet to the examples/mail program
+
+ * Issue #106: Fixed a problem where using a tuple as a dictionary key produced
+  unexpected results
+
+ * Issue #107: It is now possible to include a plus sign at the start of a
+  numeric literal
+
+ * Moved datetime.py from the addons directory into library.
+
+ * Issue #80: Changed many of the examples to use the new "pyjamas" package
+  name.
+
+ * Fixed a problem with using negative slices on lists (thanks, Legith).
+
+
