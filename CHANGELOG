@@ -4,7 +4,7 @@
 Enhancements
 
  * Added library/splitpanel.py and library/vertsplitpanel.py, along with
-  examples/splitpanel
+  examples/splitpanel.  NOTE: splitpanels should be in ui.
 
  * Changed ui.TabBar.insertTab() to allow widgets to be passed as well as text.
 
@@ -12,7 +12,9 @@ Enhancements
 
  * Added gtk_converter to the "contrib" directory (thanks to Jeremy)
 
- * Added library/decoratorpanel.py
+ * Added library/decoratorpanel.py which includes DecoratorPanel,
+   DecoratedTabPanel and DecoratedTabBar.  NOTE: these classes should
+   be in ui.
 
  * Added examples/slideshow
 
