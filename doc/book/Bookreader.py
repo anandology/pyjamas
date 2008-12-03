@@ -44,20 +44,20 @@ class Bookreader:
         self.sinkContainer = DockPanel()
         self.sinkContainer.setStyleName("ks-Sink")
 
-        self.nf = NamedFrame("section")
-        self.nf.setWidth("100%")
-        self.nf.setHeight("10000")
+        #self.nf = NamedFrame("section")
+        #self.nf.setWidth("100%")
+        #self.nf.setHeight("10000")
 
         height = Window.getClientHeight()
 
-        #self.sp = ScrollPanel(self.sinkContainer)
-        self.sp = VerticalSplitPanel()
+        self.sp = ScrollPanel(self.sinkContainer)
+        #self.sp = VerticalSplitPanel()
         self.sp.setWidth("100%")
         self.sp.setHeight("%dpx" % (height-110))
 
-        self.sp.setTopWidget(self.sinkContainer)
-        self.sp.setBottomWidget(self.nf)
-        self.sp.setSplitPosition(10000) # deliberately high - max out.
+        #self.sp.setTopWidget(self.sinkContainer)
+        #self.sp.setBottomWidget(self.nf)
+        #self.sp.setSplitPosition(10000) # deliberately high - max out.
 
         vp=VerticalPanel()
         vp.setWidth("100%")
