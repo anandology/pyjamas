@@ -35,8 +35,8 @@ Applications framework that is both cross-browser and cross-platform.
 Also, by using Webkit, the Pyjamas-Desktop port is cross-widget-set
 as well.
 
-The strategic significance of the independence of the Pyjamas API
-cannot be underestimated.  A free software python-based application
+The strategic significance of the independence of the Pyjamas User-Interface
+API is easily underestimated.  A free software python-based application
 can be written - once - and can run on any web browser, including
 IE6, IE7, Opera, Mozilla, Firefox and Safari, and also it can be run
 on embedded platforms such as smartphones and PDAs, as well as Desktop
