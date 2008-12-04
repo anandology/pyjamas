@@ -3,7 +3,7 @@ class Focus:
 
     def blur(self, elem):
         JS("""
-        elem.firstChild.blur();
+        elem.blur();
         """)
     
     def createFocusable(self):
@@ -36,7 +36,7 @@ class Focus:
 
     def focus(self, elem):
         JS("""
-        elem.firstChild.focus();
+        elem.focus();
         """)
     
     def getTabIndex(self, elem):

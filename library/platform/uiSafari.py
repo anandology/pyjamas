@@ -3,7 +3,13 @@ class Focus:
 
     def blur(self, elem):
         JS("""
-        elem.firstChild.blur();
+        // Attempts to blur elements from within an event callback will
+        // generally be unsuccessful, so we invoke blur() from outside of
+        // the callback.
+        $wnd.setTimeout(function() {
+                                       elem.firstChild.blur();
+                        },
+                        0);
         """)
     
     def createFocusable(self):
@@ -36,7 +42,13 @@ class Focus:
 
     def focus(self, elem):
         JS("""
-        elem.firstChild.focus();
+        // Attempts to focus elements from within an event callback will
+        // generally be unsuccessful, so we invoke focus() from outside of
+        // the callback.
+        $wnd.setTimeout(function() {
+                                       elem.firstChild.focus();
+                        },
+                        0);
         """)
     
     def getTabIndex(self, elem):
