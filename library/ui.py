@@ -604,7 +604,7 @@ class Composite(Widget):
 
     def isAttached(self):
         if self.widget:
-            return widget.isAttached()
+            return self.widget.isAttached()
         return False
 
     def onAttach(self):
