@@ -7,7 +7,7 @@ class Focus:
         // generally be unsuccessful, so we invoke blur() from outside of
         // the callback.
         $wnd.setTimeout(function() {
-                                       elem.firstChild.blur();
+                                       elem.blur();
                         },
                         0);
         """)
@@ -46,7 +46,7 @@ class Focus:
         // generally be unsuccessful, so we invoke focus() from outside of
         // the callback.
         $wnd.setTimeout(function() {
-                                       elem.firstChild.focus();
+                                       elem.focus();
                         },
                         0);
         """)
