@@ -4369,8 +4369,111 @@ class FormPanel(SimplePanel):
         form.onsubmit = null;
         """)
 
+class ClickableHeader(SimplePanel):
+    def __init__(self, disclosurePanel):
+	SimplePanel.__init__(self, DOM.createAnchor())
+	self.disclosurePanel = disclosurePanel
+	element = self.getElement()
+	DOM.setStyleAttribute(element, "display", "block")
+	self.sinkEvents(Event.ONCLICK)
+	self.setStyleName("gwt-disclosurePanel-header")
 
+    def onBrowserEvent(self, event):
+	type = DOM.eventGetType(event)
+	if type == "click":
+	    DOM.eventPreventDefault(event)
+	    currentState = self.disclosurePanel.getOpen()
+	    invertedState = not currentState
+	    self.disclosurePanel.setOpen(invertedState)
 
+class DefaultHeader(Widget):
+    def __init__(self, text, disclosurePanel):
+	self.disclosurePanel = disclosurePanel
+	self.imageBase = pygwt.getModuleBaseURL()
 
+	self.root = DOM.createTable()
+	self.tbody = DOM.createTBody()
+	self.tr = DOM.createTR()
+	self.imageTD = DOM.createTD()
+	self.labelTD = DOM.createTD()
+	self.imgElem = DOM.createImg()
 
+	self.updateState()
+
+	self.setElement(self.root)
+	DOM.appendChild(self.root, self.tbody)
+	DOM.appendChild(self.tbody, self.tr)
+	DOM.appendChild(self.tr, self.imageTD)
+	DOM.appendChild(self.tr, self.labelTD)
+	DOM.appendChild(self.imageTD, self.imgElem)
+
+	self.setText(text)
+
+    def getText(self):
+	return DOM.getInnerText(self.labelTD)
+
+    def setText(self, text):
+	DOM.setInnerText(self.labelTD, text)
+
+    def updateState(self):
+	if self.disclosurePanel.getOpen():
+	    DOM.setAttribute(self.imgElem, "src", self.imageBase + "disclosurePanelOpen.png")
+	else:
+	    DOM.setAttribute(self.imgElem, "src", self.imageBase + "disclosurePanelClosed.png")
+	
+
+class DisclosurePanel(Composite):
+    def __init__(self, headerText, isOpen):
+	self.mainPanel = VerticalPanel()
+	self.header = ClickableHeader(self)
+	self.contentWrapper = SimplePanel()
+	self.mainPanel.add(self.header)
+	self.mainPanel.add(self.contentWrapper)
+	self.isOpen = isOpen
+	self.headerObj = DefaultHeader(headerText, self)
+	self.setHeader(self.headerObj)
+	self.setContentDisplay()
+	self.initWidget(self.mainPanel)
+
+    def add(self, widget):
+	if self.getContent() is None:
+	    self.setContent(widget)
+
+    def clear(self):
+	self.setContent(None)
+
+    def getContent(self):
+	return self.content
+
+    def getHeader(self):
+	return self.header.getWidget()
+
+    def getOpen(self):
+	return self.isOpen
+
+    def remove(self, widget):
+	if widget == self.getContent():
+	    self.setContent(None)
+	    return True
+	return False
+
+    def setContent(self, widget):
+	if self.content is not None:
+	    self.contentWrapper.setWidget(None)
+
+	self.content = widget
+	if self.content is not None:
+	    self.contentWrapper.setWidget(self.content)
+
+    def setHeader(self, widget):
+	self.header.setWidget(widget)
+
+    def setOpen(self, isOpen):
+	if self.isOpen != isOpen:
+	    self.isOpen = isOpen
+	self.setContentDisplay()
+
+    def setContentDisplay(self):
+	self.contentWrapper.setVisible(self.isOpen)
+	self.headerObj.updateState()
 
