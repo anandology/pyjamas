@@ -430,7 +430,7 @@ onBrowserEvent being called, which is the next key function needed:
            type == "mousemove" or type == "mouseover" or type == "mouseout":
             MouseListener().fireMouseEvent(self.mouseListeners, self, event)
         else:
-            VerticalSliderDemo.onBrowserEvent(self, event)
+            VerticalDemoSlider.onBrowserEvent(self, event)
 }}
 Here, as can be seen, it's very straightforward: mouse events are
 passed to a convenience function (<tt>fireMouseEvent</tt>) which will call
