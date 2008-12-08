@@ -328,6 +328,10 @@ onControlValueChanged:
 Note how the ControlDemo class is set as a listener for change notification:
 this is why an <tt>onControlValueChanged</tt> function was added.  In it,
 the label's text will be changed.
+{{-info
+(Also, remember to add an import of Label to the top of the
+file - the line "from pyjamas.ui import Label" will suffice).
+}}
 
 Save the changes to ControlDemo.py, recompile the application with
 build.py, and refresh the browser window (or reopen output/ControlDemo.html).
