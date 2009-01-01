@@ -107,6 +107,7 @@ def build(app_name, output="output", js_includes=(), debug=False):
         return
 
     ## public dir
+    dir_public = join(dirname(app_name), dir_public) 
     print "Copying: public directory"
     copytree_exists(dir_public, output)
 
