@@ -48,7 +48,7 @@ class GridEdit:
         self.input.setEnabled(True)
 
     def set_grid_value(self, row, col, val):
-        self.values[y][x] = val
+        self.values[row][col] = val
         if val == "":
             val = "&nbsp;"
         self.g.setHTML(row, col, val)
