@@ -2711,7 +2711,8 @@ class DialogBox(PopupPanel):
         type = DOM.eventGetType(event)
         if type == 'mousedown':
             target = DOM.eventGetTarget(event)
-            event_targets_popup = target and DOM.isOrHasChild(self.getElement(), target)
+            elem = self.caption.getElement()
+            event_targets_popup = target and DOM.isOrHasChild(elem, target) 
             if event_targets_popup:
                 DOM.eventPreventDefault(event)
         return PopupPanel.onEventPreview(self, event)
