@@ -46,6 +46,7 @@ class GridEdit:
         val = self.values[row][col]
         self.input.setText(val)
         self.input.setEnabled(True)
+        self.input.setFocus(True)
 
     def set_grid_value(self, row, col, val):
         self.values[row][col] = val
@@ -64,7 +65,4 @@ class GridEdit:
             for x in range(5):
                 val = self.values[y][x]
                 self.set_grid_value(y, x, val)
-
-
-
 
