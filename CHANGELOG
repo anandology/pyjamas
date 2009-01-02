@@ -1,3 +1,11 @@
+                    Changes made to Pyjamas since 0.4
+                    ---------------------------------
+
+ * added none modal behaviour to DialogBox
+
+ * fixed bug if mouse is moved too fast while dragging a dialog
+
+
                     Changes made to Pyjamas since 0.3
                     ---------------------------------
 

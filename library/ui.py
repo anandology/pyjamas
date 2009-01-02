@@ -24,13 +24,13 @@ from sets import Set
 class Event:
     """
     This class contains flags and integer values used by the event system.
-    
+
     It is not meant to be subclassed or instantiated.
     """
     BUTTON_LEFT   = 1
     BUTTON_MIDDLE = 4
     BUTTON_RIGHT  = 2
-    
+
     ONBLUR        = 0x01000
     ONCHANGE      = 0x00400
     ONCLICK       = 0x00001
@@ -48,7 +48,7 @@ class Event:
     ONMOUSEOVER   = 0x00010
     ONMOUSEUP     = 0x00008
     ONSCROLL      = 0x04000
-    
+
     FOCUSEVENTS   = 0x01800 # ONFOCUS | ONBLUR
     KEYEVENTS     = 0x00380 # ONKEYDOWN | ONKEYPRESS | ONKEYUP
     MOUSEEVENTS   = 0x0007C # ONMOUSEDOWN | ONMOUSEUP | ONMOUSEMOVE | ONMOUSEOVER | ONMOUSEOUT
@@ -84,7 +84,7 @@ class KeyboardListener:
     KEY_SHIFT = 16
     KEY_TAB = 9
     KEY_UP = 38
-    
+
     MODIFIER_ALT = 4
     MODIFIER_CTRL = 2
     MODIFIER_SHIFT = 1
@@ -93,22 +93,22 @@ class KeyboardListener:
         shift = 0
         ctrl = 0
         alt = 0
-        
+
         if DOM.eventGetShiftKey(event):
             shift = KeyboardListener.MODIFIER_SHIFT
-    
+
         if DOM.eventGetCtrlKey(event):
             ctrl = KeyboardListener.MODIFIER_CTRL
-            
+
         if DOM.eventGetAltKey(event):
             alt = KeyboardListener.MODIFIER_ALT
-    
+
         return shift | ctrl | alt
 
 
     def fireKeyboardEvent(self, listeners, sender, event):
         modifiers = KeyboardListener.getKeyboardModifiers(self, event)
-    
+
         type = DOM.eventGetType(event)
         if type == "keydown":
             for listener in listeners:
@@ -126,7 +126,7 @@ class MouseListener:
     def fireMouseEvent(self, listeners, sender, event):
         x = DOM.eventGetClientX(event) - DOM.getAbsoluteLeft(sender.getElement())
         y = DOM.eventGetClientY(event) - DOM.getAbsoluteTop(sender.getElement())
-    
+
         type = DOM.eventGetType(event)
         if type == "mousedown":
             for listener in listeners:
@@ -163,7 +163,7 @@ class UIObject:
 
     def getOffsetHeight(self):
         return DOM.getIntAttribute(self.element, "offsetHeight")
-    
+
     def getOffsetWidth(self):
         return DOM.getIntAttribute(self.element, "offsetWidth")
 
@@ -220,7 +220,7 @@ class UIObject:
             style = element
             DOM.setAttribute(self.element, "className", style)
             return
-        
+
         oldStyle = DOM.getAttribute(element, "className")
         if oldStyle == None:
             oldStyle = ""
@@ -306,7 +306,7 @@ class Widget(UIObject):
 
     def getLayoutData(self):
         return self.layoutData
-    
+
     def getParent(self):
         """Widgets are kept in a hierarchy, and widgets that have been added to a panel
         will have a parent widget that contains them.  This retrieves the containing
@@ -338,7 +338,7 @@ class Widget(UIObject):
         DOM.setEventListener(self.getElement(), self)
         self.doAttachChildren()
         self.onLoad()
-        
+
     def onDetach(self):
         """Called when this widget is being removed from the DOM tree of the document."""
         if not self.isAttached():
@@ -389,7 +389,7 @@ class FocusWidget(Widget):
 
     def addClickListener(self, listener):
         self.clickListeners.append(listener)
-        
+
     def addFocusListener(self, listener):
         self.focusListeners.append(listener)
 
@@ -424,7 +424,7 @@ class FocusWidget(Widget):
 
     def setAccessKey(self, key):
         DOM.setAttribute(self.getElement(), "accessKey", "" + key)
-        
+
     def setEnabled(self, enabled):
         DOM.setBooleanAttribute(self.getElement(), "disabled", not enabled)
 
@@ -461,10 +461,10 @@ class Button(ButtonBase):
     def __init__(self, html=None, listener=None):
         """
         Create a new button widget.
-        
+
         @param html: Html content (e.g. the button label); see setHTML()
         @param listener: A new click listener; see addClickListener()
-        
+
         """
         ButtonBase.__init__(self, DOM.createButton())
         self.adjustType(self.getElement())
@@ -489,10 +489,10 @@ class Button(ButtonBase):
 
 
 class CheckBox(ButtonBase):
-    
+
     def __init__(self, label=None, asHTML=False):
         self.initElement(DOM.createInputCheck())
-        
+
         self.setStyleName("gwt-CheckBox")
         if label:
             if asHTML:
@@ -507,10 +507,10 @@ class CheckBox(ButtonBase):
 
         self.unsinkEvents(Event.FOCUSEVENTS| Event.ONCLICK)
         DOM.sinkEvents(self.inputElem, Event.FOCUSEVENTS | Event.ONCLICK | DOM.getEventsSunk(self.inputElem))
-        
+
         DOM.appendChild(self.getElement(), self.inputElem)
         DOM.appendChild(self.getElement(), self.labelElem)
-        
+
         uid = "check" + self.getUniqueID()
         DOM.setAttribute(self.inputElem, "id", uid)
         DOM.setAttribute(self.labelElem, "htmlFor", uid)
@@ -543,7 +543,7 @@ class CheckBox(ButtonBase):
             propName = "checked"
         else:
             propName = "defaultChecked"
-            
+
         return DOM.getBooleanAttribute(self.inputElem, propName)
 
     def isEnabled(self):
@@ -613,10 +613,10 @@ class Composite(Widget):
         DOM.setEventListener(self.getElement(), self);
 
         self.onLoad()
-        
+
     def onDetach(self):
         self.widget.onDetach()
-        
+
     def setWidget(self, widget):
         self.initWidget(widget)
 
@@ -673,10 +673,10 @@ class Panel(Widget):
 
 
 class CellFormatter:
-    
+
     def __init__(self, outer):
         self.outer = outer
-    
+
     def addStyleName(self, row, column, styleName):
         self.outer.prepareCell(row, column)
         self.outer.setStyleName(self.getElement(row, column), styleName, True)
@@ -732,7 +732,7 @@ class CellFormatter:
             wrap_str = ""
         else:
             wrap_str = "nowrap"
-        
+
         DOM.setStyleAttribute(self.getElement(row, column), "whiteSpace", wrap_str)
 
     def getCellElement(self, table, row, col):
@@ -769,7 +769,7 @@ class RowFormatter:
     def getElement(self, row):
         self.outer.checkRowBounds(row)
         return self.getRow(self.outer.bodyElem, row)
-        
+
     def getStyleName(self, row):
         return DOM.getAttribute(self.getElement(row), "className")
 
@@ -783,7 +783,7 @@ class RowFormatter:
     def setStyleName(self, row, styleName):
         elem = self.ensureElement(row)
         DOM.setAttribute(elem, "className", styleName)
-        
+
     def setVerticalAlign(self, row, align):
         DOM.setStyleAttribute(self.ensureElement(row), "verticalAlign", align)
 
@@ -806,7 +806,7 @@ class RowFormatter:
 
 
 class HTMLTable(Panel):
-    
+
     def __init__(self):
         Panel.__init__(self)
         self.cellFormatter = CellFormatter(self)
@@ -840,10 +840,10 @@ class HTMLTable(Panel):
 
     def getCellFormatter(self):
         return self.cellFormatter
-    
+
     def getCellPadding(self):
         return DOM.getIntAttribute(self.tableElem, "cellPadding")
-    
+
     def getCellSpacing(self):
         return DOM.getIntAttribute(self.tableElem, "cellSpacing")
 
@@ -853,10 +853,10 @@ class HTMLTable(Panel):
 
     def getRowCount(self):
         return 0
-        
+
     def getRowFormatter(self):
         return self.rowFormatter
-        
+
     def getText(self, row, column):
         self.checkCellBounds(row, column)
         element = self.cellFormatter.getElement(row, column)
@@ -878,10 +878,10 @@ class HTMLTable(Panel):
         # GWT uses "and", possibly a bug
         if row >= self.getRowCount() or row < 0:
             return False
-        
+
         if column < 0 or column >= self.getCellCount(row):
             return False
-        
+
         return True
 
     def __iter__(self):
@@ -897,7 +897,7 @@ class HTMLTable(Panel):
             body = DOM.getParent(tr)
             row = DOM.getChildIndex(body, tr)
             column = DOM.getChildIndex(tr, td)
-        
+
             for listener in self.tableListeners:
                 if listener.onCellClicked:
                     listener.onCellClicked(self, row, column)
@@ -907,7 +907,7 @@ class HTMLTable(Panel):
     def remove(self, widget):
         if widget.getParent() != self:
             return False
-        
+
         self.removeWidget(widget)
         return True
 
@@ -983,7 +983,7 @@ class HTMLTable(Panel):
 
     def createCell(self):
         return DOM.createTD()
-        
+
     def getBodyElement(self):
         return self.bodyElem
 
@@ -1020,7 +1020,7 @@ class HTMLTable(Panel):
             if DOM.compare(td, self.bodyElem):
                 return None
             td = DOM.getParent(td)
-        
+
         return None
 
     def insertCell(self, row, column):
@@ -1037,7 +1037,7 @@ class HTMLTable(Panel):
     def insertRow(self, beforeRow):
         if beforeRow != self.getRowCount():
             self.checkRowBounds(beforeRow)
-        
+
         tr = DOM.createTR()
         DOM.insertChild(self.bodyElem, tr, beforeRow)
         return beforeRow
@@ -1077,10 +1077,10 @@ class HTMLTable(Panel):
 
     def setRowFormatter(self, rowFormatter):
         self.rowFormatter = rowFormatter
-    
+
 
 class Grid(HTMLTable):
-    
+
     def __init__(self, rows=0, columns=0):
         HTMLTable.__init__(self)
         self.cellFormatter = CellFormatter(self)
@@ -1097,7 +1097,7 @@ class Grid(HTMLTable):
     def resizeColumns(self, columns):
         if self.numColumns == columns:
             return
-        
+
         if self.numColumns > columns:
             for i in range(0, self.numRows):
                 for j in range(self.numColumns - 1, columns - 1, -1):
@@ -1139,10 +1139,10 @@ class Grid(HTMLTable):
 
     def getCellCount(self, row):
         return self.numColumns
-    
+
     def getColumnCount(self):
         return self.numColumns
-    
+
     def getRowCount(self):
         return self.numRows
 
@@ -1165,13 +1165,13 @@ class Grid(HTMLTable):
 class FlexCellFormatter(CellFormatter):
     def __init__(self, outer):
         CellFormatter.__init__(self, outer)
-    
+
     def getColSpan(self, row, column):
         return DOM.getIntAttribute(self.getElement(row, column), "colSpan")
 
     def getRowSpan(self, row, column):
         return DOM.getIntAttribute(self.getElement(row, column), "rowSpan")
-        
+
     def setColSpan(self, row, column, colSpan):
         DOM.setIntAttribute(self.ensureElement(row, column), "colSpan", colSpan)
 
@@ -1205,7 +1205,7 @@ class FlexTable(HTMLTable):
     def prepareCell(self, row, column):
         self.prepareRow(row)
         #if column < 0: throw new IndexOutOfBoundsException("Cannot create a column with a negative index: " + column);
-        
+
         cellCount = self.getCellCount(row)
         required = column + 1 - cellCount
         if required > 0:
@@ -1235,13 +1235,13 @@ class ComplexPanel(Panel):
     def __init__(self):
         Panel.__init__(self)
         self.children = []
-    
+
     def add(self, widget, container):
         self.insert(widget, container, len(self.children))
 
     def getChildren(self):
         return self.children
-    
+
     def insert(self, widget, container, beforeIndex):
         if widget.getParent() == self:
             return
@@ -1282,7 +1282,7 @@ class AbsolutePanel(ComplexPanel):
 
     def setWidgetPosition(self, widget, left, top):
         self.checkWidgetParent(widget)
-        
+
         h = widget.getElement()
         if (left == -1) and (top == -1):
             DOM.setStyleAttribute(h, "left", "")
@@ -1313,7 +1313,7 @@ class Label(Widget):
         self.horzAlign = ""
         self.clickListeners = []
         self.mouseListeners = []
-        
+
         self.setElement(DOM.createDiv())
         self.sinkEvents(Event.ONCLICK | Event.MOUSEEVENTS)
         self.setStyleName("gwt-Label")
@@ -1321,7 +1321,7 @@ class Label(Widget):
             self.setText(text)
 
         self.setWordWrap(wordWrap)
-            
+
     def addClickListener(self, listener):
         self.clickListeners.append(listener)
 
@@ -1369,18 +1369,18 @@ class Label(Widget):
 
 
 class HTML(Label):
-    
+
     def __init__(self, html=None, wordWrap=True):
         Label.__init__(self)
-    
+
         self.setElement(DOM.createDiv())
         self.sinkEvents(Event.ONCLICK | Event.MOUSEEVENTS)
         self.setStyleName("gwt-HTML")
         if html:
             self.setHTML(html)
-            
+
         self.setWordWrap(wordWrap)
-    
+
     def getHTML(self):
         return DOM.getInnerHTML(self.getElement())
 
@@ -1410,10 +1410,10 @@ class HasAlignment:
 
 
 class CellPanel(ComplexPanel):
-    
+
     def __init__(self):
         ComplexPanel.__init__(self)
-        
+
         self.table = DOM.createTable()
         self.body = DOM.createTBody()
         self.spacing = None
@@ -1469,16 +1469,16 @@ class CellPanel(ComplexPanel):
 
 
 class HorizontalPanel(CellPanel):
-    
+
     def __init__(self):
         CellPanel.__init__(self)
 
         self.horzAlign = HasHorizontalAlignment.ALIGN_LEFT
         self.vertAlign = HasVerticalAlignment.ALIGN_TOP
-        
+
         self.tableRow = DOM.createTR()
         DOM.appendChild(self.getBody(), self.tableRow)
-        
+
         DOM.setAttribute(self.getTable(), "cellSpacing", "0")
         DOM.setAttribute(self.getTable(), "cellPadding", "0")
 
@@ -1487,7 +1487,7 @@ class HorizontalPanel(CellPanel):
 
     def getHorizontalAlignment(self):
         return self.horzAlign
-    
+
     def getVerticalAlignment(self):
         return self.vertAlign
 
@@ -1502,12 +1502,12 @@ class HorizontalPanel(CellPanel):
 
     def insert(self, widget, beforeIndex):
         widget.removeFromParent()
-        
+
         td = DOM.createTD()
         DOM.insertChild(self.tableRow, td, beforeIndex)
-        
+
         CellPanel.insert(self, widget, td, beforeIndex)
-        
+
         self.setCellHorizontalAlignment(widget, self.horzAlign)
         self.setCellVerticalAlignment(widget, self.vertAlign)
 
@@ -1529,22 +1529,22 @@ class HorizontalPanel(CellPanel):
 
 
 class VerticalPanel(CellPanel):
-    
+
     def __init__(self):
         CellPanel.__init__(self)
 
         self.horzAlign = HasHorizontalAlignment.ALIGN_LEFT
         self.vertAlign = HasVerticalAlignment.ALIGN_TOP
-        
+
         DOM.setAttribute(self.getTable(), "cellSpacing", "0")
         DOM.setAttribute(self.getTable(), "cellPadding", "0")
 
     def add(self, widget):
         self.insert(widget, self.getWidgetCount())
-    
+
     def getHorizontalAlignment(self):
         return self.horzAlign
-    
+
     def getVerticalAlignment(self):
         return self.vertAlign
 
@@ -1556,39 +1556,39 @@ class VerticalPanel(CellPanel):
 
     def getWidgetIndex(self, child):
         return self.children.index(child)
-    
+
     def setWidget(self, index, widget):
         """Replace the widget at the given index with a new one"""
         existing = self.getWidget(index)
         if existing:
             self.remove(existing)
         self.insert(widget, index)
-        
+
     def insert(self, widget, beforeIndex):
         widget.removeFromParent()
-        
+
         tr = DOM.createTR()
         td = DOM.createTD()
-        
+
         DOM.insertChild(self.getBody(), tr, beforeIndex)
         DOM.appendChild(tr, td)
-        
+
         CellPanel.insert(self, widget, td, beforeIndex)
-        
+
         self.setCellHorizontalAlignment(widget, self.horzAlign)
         self.setCellVerticalAlignment(widget, self.vertAlign)
 
     def remove(self, widget):
         if pyjslib.isNumber(widget):
             widget = self.getWidget(widget)
-        
+
         if widget.getParent() != self:
             return False
 
         td = DOM.getParent(widget.getElement())
         tr = DOM.getParent(td)
         DOM.removeChild(self.getBody(), tr)
-        
+
         CellPanel.remove(self, widget)
         return True
 
@@ -1610,13 +1610,13 @@ class LayoutData:
 
 
 class DockPanel(CellPanel):
-    
+
     CENTER = "center"
     EAST = "east"
     NORTH = "north"
     SOUTH = "south"
     WEST = "west"
-    
+
     def __init__(self):
         CellPanel.__init__(self)
 
@@ -1638,13 +1638,13 @@ class DockPanel(CellPanel):
         widget.setLayoutData(layout)
         self.setCellHorizontalAlignment(widget, self.horzAlign)
         self.setCellVerticalAlignment(widget, self.vertAlign)
-        
+
         self.dock_children.append(widget)
         self.realizeTable(widget)
 
     def getHorizontalAlignment(self):
         return self.horzAlign
-    
+
     def getVerticalAlignment(self):
         return self.vertAlign
 
@@ -1686,7 +1686,7 @@ class DockPanel(CellPanel):
         data.width = width
         if data.td:
             DOM.setStyleAttribute(data.td, "width", data.width)
-            
+
     def setHorizontalAlignment(self, align):
         self.horzAlign = align
 
@@ -1719,17 +1719,17 @@ class DockPanel(CellPanel):
         northRow = 0
         southRow = rowCount - 1
         centerTd = None
-        
+
         for child in self.dock_children:
             layout = child.getLayoutData()
-            
+
             td = DOM.createTD()
             layout.td = td
             DOM.setAttribute(layout.td, "align", layout.hAlign)
             DOM.setStyleAttribute(layout.td, "verticalAlign", layout.vAlign)
             DOM.setAttribute(layout.td, "width", layout.width)
             DOM.setAttribute(layout.td, "height", layout.height)
-            
+
             if layout.direction == self.NORTH:
                 DOM.insertChild(rows[northRow].tr, td, rows[northRow].center)
                 self.appendAndMaybeAdopt(td, child.getElement(), beingAdded)
@@ -1781,7 +1781,7 @@ class RootPanelCls(AbsolutePanel):
         AbsolutePanel.__init__(self)
         if element == None:
             element = self.getBodyElement()
-        
+
         self.setElement(element)
         self.onAttach()
 
@@ -1789,17 +1789,17 @@ class RootPanelCls(AbsolutePanel):
         JS("""
         return $doc.body;
         """)
-    
+
     @classmethod
     def get(cls, id=None):
         """
-        
+
         """
         global rootPanels
-        
+
         if rootPanels.has_key(id):
             return rootPanels[id]
-        
+
         element = None
         if id:
             element = DOM.getElementById(id)
@@ -1808,7 +1808,7 @@ class RootPanelCls(AbsolutePanel):
 
         if len(rootPanels) < 1:
             cls.hookWindowClosing()
-        
+
         panel = RootPanel(element)
         rootPanels[id] = panel
         return panel
@@ -1820,7 +1820,7 @@ class RootPanelCls(AbsolutePanel):
     @classmethod
     def onWindowClosed(cls):
         global rootPanels
-        
+
         for panel in rootPanels.itervalues():
             panel.onDetach()
 
@@ -1851,7 +1851,7 @@ class Hyperlink(Widget):
             self.setHTML(text)
         else:
             self.setText(text)
-        
+
         if targetHistoryToken:
             self.setTargetHistoryToken(targetHistoryToken)
 
@@ -1897,11 +1897,11 @@ class Image(Widget):
         self.clickListeners = []
         self.loadListeners = []
         self.mouseListeners = []
-        
+
         self.setElement(DOM.createImg())
         self.sinkEvents(Event.ONCLICK | Event.MOUSEEVENTS | Event.ONLOAD | Event.ONERROR)
         self.setStyleName("gwt-Image")
-        
+
         if url:
             self.setUrl(url)
 
@@ -1934,7 +1934,7 @@ class Image(Widget):
 
     def prefetch(self, url):
         global prefetchImages
-        
+
         img = DOM.createImg()
         DOM.setAttribute(img, "src", url)
         prefetchImages[url] = img
@@ -1947,7 +1947,7 @@ class FlowPanel(ComplexPanel):
     def __init__(self):
         ComplexPanel.__init__(self)
         self.setElement(DOM.createDiv())
-    
+
     def add(self, w):
         ComplexPanel.add(self, w, self.getElement())
 
@@ -1983,22 +1983,22 @@ class HTMLPanel(ComplexPanel):
 
     def createUniqueId(self):
         global HTMLPanel_sUid
-        
+
         HTMLPanel_sUid += 1
         return "HTMLPanel_" + HTMLPanel_sUid
-    
+
     def getElementById(self, element, id):
         element_id = DOM.getAttribute(element, "id")
         if element_id != None and element_id == id:
             return element
-        
+
         child = DOM.getFirstChild(element)
         while child != None:
             ret = self.getElementById(child, id)
             if ret != None:
                 return ret
             child = DOM.getNextSibling(child)
-        
+
         return None
 
 
@@ -2027,9 +2027,9 @@ class DeckPanel(ComplexPanel):
         if (self.beforeIndex < 0) or (self.beforeIndex > self.getWidgetCount()):
             # throw new IndexOutOfBoundsException();
             return
-        
+
         ComplexPanel.insert(self, widget, self.getElement(), beforeIndex)
-        
+
         child = widget.getElement()
         DOM.setStyleAttribute(child, "width", "100%")
         DOM.setStyleAttribute(child, "height", "100%")
@@ -2038,7 +2038,7 @@ class DeckPanel(ComplexPanel):
     def remove(self, widget):
         if pyjslib.isNumber(widget):
             widget = self.getWidget(widget)
-            
+
         if not ComplexPanel.remove(self, widget):
             return False
 
@@ -2102,7 +2102,7 @@ class SimplePanel(Panel):
 
         if self.getWidget() != None:
             self.remove(self.getWidget())
-        
+
         if widget != None:
             self.adopt(widget, self.getContainerElement())
             self.children[0] = widget
@@ -2112,10 +2112,10 @@ class ScrollPanel(SimplePanel):
     def __init__(self, child=None):
         SimplePanel.__init__(self)
         self.scrollListeners = []
-        
+
         self.setAlwaysShowScrollBars(False)
         self.sinkEvents(Event.ONSCROLL)
-        
+
         if child != None:
             self.setWidget(child)
 
@@ -2171,11 +2171,12 @@ class ScrollPanel(SimplePanel):
 
 
 class PopupPanel(SimplePanel):
-    def __init__(self, autoHide=False):
+    def __init__(self, autoHide=False, modal=True):
         self.popupListeners = []
         self.showing = False
         self.autoHide = False
-        
+        self.modal = modal
+
         SimplePanel.__init__(self, self.createElement())
         DOM.setStyleAttribute(self.getElement(), "position", "absolute")
         if autoHide:
@@ -2193,18 +2194,21 @@ class PopupPanel(SimplePanel):
     # PopupImpl.createElement
     def createElement(self):
         return DOM.createDiv()
-    
+
     def hide(self, autoClosed=False):
         if not self.showing:
             return
         self.showing = False
         DOM.removeEventPreview(self)
-        
+
         RootPanel().get().remove(self)
         self.onHideImpl(self.getElement())
         for listener in self.popupListeners:
             if listener.onPopupClosed: listener.onPopupClosed(self, autoClosed)
             else: listener(self, autoClosed)
+
+    def isModal(self):
+        return self.modal
 
     def onEventPreview(self, event):
         target = DOM.eventGetTarget(event)
@@ -2212,19 +2216,40 @@ class PopupPanel(SimplePanel):
         type = DOM.eventGetType(event)
         #print "onEventPreview popup", type, event_targets_popup
         if type == "keydown":
-            return self.onKeyDownPreview(DOM.eventGetKeyCode(event), KeyboardListener.getKeyboardModifiers(self, event)) and event_targets_popup
+            return (    self.onKeyDownPreview(
+                            DOM.eventGetKeyCode(event),
+                            KeyboardListener.getKeyboardModifiers(self, event)
+                            )
+                    and (event_targets_popup or not self.modal)
+                   )
         elif type == "keyup":
-            return self.onKeyUpPreview(DOM.eventGetKeyCode(event), KeyboardListener.getKeyboardModifiers(self, event)) and event_targets_popup
+            return (    self.onKeyUpPreview(
+                            DOM.eventGetKeyCode(event),
+                            KeyboardListener.getKeyboardModifiers(self, event)
+                            )
+                    and (event_targets_popup or not self.modal)
+                   )
         elif type == "keypress":
-            return self.onKeyPressPreview(DOM.eventGetKeyCode(event), KeyboardListener.getKeyboardModifiers(self, event)) and event_targets_popup
-        elif type == "mousedown" or type == "mouseup" or type == "mousemove" or type == "click" or type == "dblclick":
-            if DOM.getCaptureElement() == None:
-		if not event_targets_popup and self.autoHide \
-                                           and (type == "mousedown"):
-                    self.hide(True)
-                    return True
-
-        return event_targets_popup
+            return (    self.onKeyPressPreview(
+                            DOM.eventGetKeyCode(event),
+                            KeyboardListener.getKeyboardModifiers(self, event)
+                            )
+                    and (event_targets_popup or not self.modal)
+                   )
+        elif type == "mousedown":
+            if DOM.getCaptureElement() != None:
+                return True
+            if not event_targets_popup and self.autoHide:
+                self.hide(True)
+                return True
+        elif (   type == "mouseup"
+              or type == "mousemove"
+              or type == "click"
+              or type == "dblclick"
+             ):
+            if DOM.getCaptureElement() != None:
+                return True
+        return not self.modal or event_targets_popup
 
     def onKeyDownPreview(self, key, modifiers):
         return True
@@ -2242,7 +2267,7 @@ class PopupPanel(SimplePanel):
     # PopupImpl.onShow
     def onShowImpl(self, popup):
         pass
-    
+
     def removePopupListener(self, listener):
         self.popupListeners.remove(listener)
 
@@ -2259,7 +2284,7 @@ class PopupPanel(SimplePanel):
     def show(self):
         if self.showing:
             return
-        
+
         self.showing = True
         DOM.addEventPreview(self)
 
@@ -2295,7 +2320,7 @@ class MenuItem(UIObject):
         self.setElement(DOM.createTD())
         self.sinkEvents(Event.ONCLICK | Event.ONMOUSEOVER | Event.ONMOUSEOUT)
         self.setSelectionStyle(False)
-                
+
         if asHTML:
             self.setHTML(text)
         else:
@@ -2316,10 +2341,10 @@ class MenuItem(UIObject):
 
     def getParentMenu(self):
         return self.parentMenu
-    
+
     def getSubMenu(self):
         return self.subMenu
-    
+
     def getText(self):
         return DOM.getInnerText(self.getElement())
 
@@ -2328,10 +2353,10 @@ class MenuItem(UIObject):
 
     def setHTML(self, html):
         DOM.setInnerHTML(self.getElement(), html)
-        
+
     def setSubMenu(self, subMenu):
         self.subMenu = subMenu
-    
+
     def setText(self, text):
         DOM.setInnerText(self.getElement(), text)
 
@@ -2358,7 +2383,7 @@ class MenuBar(Widget):
         self.autoOpen = False
 
         Widget.__init__(self)
-        
+
         table = DOM.createTable()
         self.body = DOM.createTBody()
         DOM.appendChild(table, self.body)
@@ -2368,7 +2393,7 @@ class MenuBar(Widget):
             DOM.appendChild(self.body, tr)
 
         self.vertical = vertical
-        
+
         outer = DOM.createDiv()
         DOM.appendChild(outer, table)
         self.setElement(outer)
@@ -2390,12 +2415,12 @@ class MenuBar(Widget):
             tr = DOM.getChild(self.body, 0)
 
         DOM.appendChild(tr, item.getElement())
-        
+
         item.setParentMenu(self)
         item.setSelectionStyle(False)
         self.items.append(item)
         return item
-    
+
     def clearItems(self):
         container = self.getItemContainerElement()
         while DOM.getChildCount(container) > 0:
@@ -2407,11 +2432,11 @@ class MenuBar(Widget):
 
     def onBrowserEvent(self, event):
         Widget.onBrowserEvent(self, event)
-        
+
         item = self.findItem(DOM.eventGetTarget(event))
         if item == None:
             return
-        
+
         type = DOM.eventGetType(event)
         if type == "click":
             self.doItemAction(item, True)
@@ -2432,7 +2457,7 @@ class MenuBar(Widget):
         idx = self.items.index(item)
         if idx == -1:
             return
-        
+
         container = self.getItemContainerElement()
         DOM.removeChild(container, DOM.getChild(container, idx))
         del self.items[idx]
@@ -2444,7 +2469,7 @@ class MenuBar(Widget):
         curMenu = self
         while curMenu != None:
             curMenu.close()
-        
+
             if (curMenu.parentMenu == None) and (curMenu.selectedItem != None):
                 curMenu.selectedItem.setSelectionStyle(False)
                 curMenu.selectedItem = None
@@ -2462,7 +2487,7 @@ class MenuBar(Widget):
         if item.getSubMenu() == None:
             if fireCommand:
                 self.closeAllParents()
-    
+
                 cmd = item.getCommand()
                 if cmd != None:
                     DeferredCommand().add(cmd)
@@ -2480,7 +2505,7 @@ class MenuBar(Widget):
         self.shownChildMenu = item.getSubMenu()
         sub_menu = item.getSubMenu()
         sub_menu.parentMenu = self
-        
+
         self.popup.show()
 
     def onDetach(self):
@@ -2495,7 +2520,7 @@ class MenuBar(Widget):
                 return
 
         self.selectItem(item)
-        
+
         if item != None:
             if (self.shownChildMenu != None) or (self.parentMenu != None) or self.autoOpen:
                 self.doItemAction(item, False)
@@ -2508,7 +2533,7 @@ class MenuBar(Widget):
         for item in self.items:
             if DOM.isOrHasChild(item.getElement(), hItem):
                 return item
-            
+
         return None
 
     def getItemContainerElement(self):
@@ -2532,7 +2557,7 @@ class MenuBar(Widget):
 
         if self.selectedItem != None:
             self.selectedItem.setSelectionStyle(False)
-        
+
         if item != None:
             item.setSelectionStyle(True)
 
@@ -2543,7 +2568,7 @@ class MenuBarPopupPanel(PopupPanel):
     def __init__(self, item):
         self.item = item
         PopupPanel.__init__(self, True)
-        
+
         self.setWidget(item.getSubMenu())
         item.getSubMenu().onShow()
 
@@ -2622,7 +2647,7 @@ class ListBox(FocusWidget):
                     listener(self)
         else:
             FocusWidget.onBrowserEvent(self, event)
-    
+
     def removeChangeListener(self, listener):
         self.changeListeners.remove(listener)
 
@@ -2637,13 +2662,13 @@ class ListBox(FocusWidget):
 
     def setMultipleSelect(self, multiple):
         DOM.setBooleanAttribute(self.getElement(), "multiple", multiple)
-            
+
     def setName(self, name):
         DOM.setAttribute(self.getElement(), "name", name)
 
     def setSelectedIndex(self, index):
         DOM.setIntAttribute(self.getElement(), "selectedIndex", index)
-    
+
     def selectValue(self, value):
         for n in range(self.getItemCount()):
             # http://code.google.com/p/pyjamas/issues/detail?id=63
@@ -2651,7 +2676,7 @@ class ListBox(FocusWidget):
                 self.setSelectedIndex(n)
                 return n
         return None
-    
+
     def setItemText(self, index, text):
         self.checkIndex(index)
         if text == None:
@@ -2676,15 +2701,15 @@ class ListBox(FocusWidget):
 
 
 class DialogBox(PopupPanel):
-    def __init__(self, autoHide=None):
-        PopupPanel.__init__(self, autoHide)
+    def __init__(self, autoHide=None, modal=True):
+        PopupPanel.__init__(self, autoHide, modal)
         self.caption = HTML()
         self.child = None
         self.dragging = False
         self.dragStartX = 0
         self.dragStartY = 0
         self.panel = FlexTable()
-        
+
         self.panel.setWidget(0, 0, self.caption)
         self.panel.setHeight("100%")
         self.panel.setBorderWidth(0)
@@ -2694,7 +2719,7 @@ class DialogBox(PopupPanel):
         self.panel.getCellFormatter().setWidth(1, 0, "100%")
         self.panel.getCellFormatter().setAlignment(1, 0, HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE)
         PopupPanel.setWidget(self, self.panel)
-    
+
         self.setStyleName("gwt-DialogBox")
         self.caption.setStyleName("Caption")
         self.caption.addMouseListener(self)
@@ -2712,7 +2737,7 @@ class DialogBox(PopupPanel):
         if type == 'mousedown':
             target = DOM.eventGetTarget(event)
             elem = self.caption.getElement()
-            event_targets_popup = target and DOM.isOrHasChild(elem, target) 
+            event_targets_popup = target and DOM.isOrHasChild(elem, target)
             if event_targets_popup:
                 DOM.eventPreventDefault(event)
         return PopupPanel.onEventPreview(self, event)
@@ -2838,20 +2863,20 @@ class TabBar(Composite):
         self.panel = HorizontalPanel()
         self.selectedTab = None
         self.tabListeners = []
-        
+
         self.initWidget(self.panel)
         self.sinkEvents(Event.ONCLICK)
         self.setStyleName("gwt-TabBar")
-        
+
         self.panel.setVerticalAlignment(HasAlignment.ALIGN_BOTTOM)
-        
+
         first = HTML("&nbsp;", True)
         rest = HTML("&nbsp;", True)
         first.setStyleName("gwt-TabBarFirst")
         rest.setStyleName("gwt-TabBarRest")
         first.setHeight("100%")
         rest.setHeight("100%")
-        
+
         self.panel.add(first)
         self.panel.add(rest)
         first.setHeight("100%")
@@ -2945,11 +2970,11 @@ class TabBar(Composite):
 
     def selectTab(self, index):
         self.checkTabIndex(index)
-        
+
         for listener in self.tabListeners:
             if not listener.onBeforeTabSelected(self, index):
                 return False
-        
+
         self.setSelectionStyle(self.selectedTab, False)
         if index == -1:
             self.selectedTab = None
@@ -3002,7 +3027,7 @@ class TabPanel(Composite):
         self.initWidget(panel)
         self.setStyleName("gwt-TabPanel")
         self.deck.setStyleName("gwt-TabPanelBottom")
-        
+
     def add(self, widget, tabText=None, asHTML=False):
         if tabText == None:
             console.error("A tabText parameter must be specified with add().")
@@ -3079,22 +3104,22 @@ class StackPanel(ComplexPanel):
         ComplexPanel.__init__(self)
         self.body = None
         self.visibleStack = -1
-        
+
         table = DOM.createTable()
         self.setElement(table)
-        
+
         self.body = DOM.createTBody()
         DOM.appendChild(table, self.body)
         DOM.setIntAttribute(table, "cellSpacing", 0)
         DOM.setIntAttribute(table, "cellPadding", 0)
-        
+
         DOM.sinkEvents(table, Event.ONCLICK)
         self.setStyleName("gwt-StackPanel")
-        
+
     def add(self, widget, stackText="", asHTML=False):
         widget.removeFromParent()
         index = self.getWidgetCount()
-        
+
         tr = DOM.createTR()
         td = DOM.createTD()
         DOM.appendChild(self.body, tr)
@@ -3102,7 +3127,7 @@ class StackPanel(ComplexPanel):
         self.setStyleName(td, "gwt-StackPanelItem", True)
         DOM.setIntAttribute(td, "__index", index)
         DOM.setAttribute(td, "height", "1px")
-        
+
         tr = DOM.createTR()
         td = DOM.createTD()
         DOM.appendChild(self.body, tr)
@@ -3111,11 +3136,11 @@ class StackPanel(ComplexPanel):
         DOM.setAttribute(td, "vAlign", "top")
 
         ComplexPanel.add(self, widget, td)
-        
+
         self.setStackVisible(index, False)
         if self.visibleStack == -1:
             self.showStack(0)
-            
+
         if stackText != "":
             self.setStackText(self.getWidgetCount() - 1, stackText, asHTML)
 
@@ -3179,14 +3204,14 @@ class StackPanel(ComplexPanel):
             DOM.setInnerHTML(td, text)
         else:
             DOM.setInnerText(td, text)
-    
+
     def showStack(self, index):
         if (index >= self.getWidgetCount()) or (index == self.visibleStack):
             return
 
         if self.visibleStack >= 0:
             self.setStackVisible(self.visibleStack, False)
-        
+
         self.visibleStack = index
         self.setStackVisible(self.visibleStack, True)
 
@@ -3195,9 +3220,9 @@ class StackPanel(ComplexPanel):
             expando = DOM.getAttribute(elem, "__index")
             if expando != None:
                 return int(expando)
-            
+
             elem = DOM.getParent(elem)
-        
+
         return -1
 
     def setStackVisible(self, index, visible):
@@ -3207,7 +3232,7 @@ class StackPanel(ComplexPanel):
 
         td = DOM.getFirstChild(tr)
         self.setStyleName(td, "gwt-StackPanelItem-selected", visible)
-        
+
         tr = DOM.getChild(self.body, (index * 2) + 1)
         self.setVisible(tr, visible)
         self.getWidget(index).setVisible(visible)
@@ -3221,29 +3246,29 @@ class TextBoxBase(FocusWidget):
     ALIGN_JUSTIFY = "justify"
     ALIGN_LEFT = "left"
     ALIGN_RIGHT = "right"
-    
+
     def __init__(self, element):
         self.changeListeners = []
         self.clickListeners = []
         self.currentEvent = None
         self.keyboardListeners = []
-        
+
         FocusWidget.__init__(self, element)
         self.sinkEvents(Event.ONCHANGE)
 
     def addChangeListener(self, listener):
         self.changeListeners.append(listener)
-    
+
     def addClickListener(self, listener):
         self.clickListeners.append(listener)
-        
+
     def addKeyboardListener(self, listener):
         self.keyboardListeners.append(listener)
-        
+
     def cancelKey(self):
         if self.currentEvent != None:
             DOM.eventPreventDefault(self.currentEvent)
-    
+
     def getCursorPos(self):
         JS("""
         try {
@@ -3262,7 +3287,7 @@ class TextBoxBase(FocusWidget):
         length = self.getSelectionLength()
         text = self.getText()
         return text[start:start + length]
-    
+
     def getSelectionLength(self):
         JS("""
         try{
@@ -3275,7 +3300,7 @@ class TextBoxBase(FocusWidget):
 
     def getText(self):
         return DOM.getAttribute(self.getElement(), "value")
-    
+
     # BUG: keyboard & click events already fired in FocusWidget.onBrowserEvent
     def onBrowserEvent(self, event):
         FocusWidget.onBrowserEvent(self, event)
@@ -3300,7 +3325,7 @@ class TextBoxBase(FocusWidget):
 
     def removeChangeListener(self, listener):
         self.changeListeners.remove(listener)
-    
+
     def removeClickListener(self, listener):
         self.clickListeners.remove(listener)
 
@@ -3314,7 +3339,7 @@ class TextBoxBase(FocusWidget):
 
     def setCursorPos(self, pos):
         self.setSelectionRange(pos, 0)
-        
+
     def setKey(self, key):
         if self.currentEvent != None:
             DOM.eventSetKeyCode(self.currentEvent, key)
@@ -3333,7 +3358,7 @@ class TextBoxBase(FocusWidget):
 
         element = self.getElement()
         element.setSelectionRange(pos, pos + length)
-        
+
     def setText(self, text):
         DOM.setAttribute(self.getElement(), "value", text)
 
@@ -3345,19 +3370,19 @@ class TextBox(TextBoxBase):
     def __init__(self):
         TextBoxBase.__init__(self, DOM.createInputText())
         self.setStyleName("gwt-TextBox")
-        
+
     def getMaxLength(self):
         return DOM.getIntAttribute(self.getElement(), "maxLength")
-    
+
     def getVisibleLength(self):
         return DOM.getIntAttribute(self.getElement(), "size")
-    
+
     def setMaxLength(self, length):
         DOM.setIntAttribute(self.getElement(), "maxLength", length)
-    
+
     def setVisibleLength(self, length):
         DOM.setIntAttribute(self.getElement(), "size", length)
-        
+
 
 class PasswordTextBox(TextBoxBase):
     def __init__(self):
@@ -3367,25 +3392,25 @@ class PasswordTextBox(TextBoxBase):
 
 class TextArea(TextBoxBase):
     """
-    HTML textarea widget, allowing multi-line text entry.  Use setText/getText to 
+    HTML textarea widget, allowing multi-line text entry.  Use setText/getText to
     get and access the current text.
     """
     def __init__(self):
         TextBoxBase.__init__(self, DOM.createTextArea())
         self.setStyleName("gwt-TextArea")
-    
+
     def getCharacterWidth(self):
         return DOM.getIntAttribute(self.getElement(), "cols")
-    
+
     def getCursorPos(self):
         return TextBoxBase.getCursorPos(self)
-    
+
     def getVisibleLines(self):
         return DOM.getIntAttribute(self.getElement(), "rows")
-    
+
     def setCharacterWidth(self, width):
         DOM.setIntAttribute(self.getElement(), "cols", width)
-    
+
     def setVisibleLines(self, lines):
         DOM.setIntAttribute(self.getElement(), "rows", lines)
 
@@ -3426,7 +3451,7 @@ class TreeItem(UIObject):
         self.userObject = None
 
         self.setElement(DOM.createDiv())
-        
+
         self.itemTable = DOM.createTable()
         self.contentElem = DOM.createSpan()
         self.childSpanElem = DOM.createSpan()
@@ -3443,12 +3468,12 @@ class TreeItem(UIObject):
         DOM.setStyleAttribute(tdImg, "verticalAlign", "middle")
         DOM.setStyleAttribute(tdContent, "verticalAlign", "middle")
         DOM.setStyleAttribute(self.getElement(), "cursor", "pointer")
-  
+
         DOM.appendChild(self.getElement(), self.itemTable)
         DOM.appendChild(self.getElement(), self.childSpanElem)
         DOM.appendChild(tdImg, self.imgElem)
         DOM.appendChild(tdContent, self.contentElem)
-        
+
         DOM.setAttribute(self.getElement(), "position", "relative")
         DOM.setStyleAttribute(self.contentElem, "display", "inline")
         DOM.setStyleAttribute(self.getElement(), "whiteSpace", "nowrap")
@@ -3461,7 +3486,7 @@ class TreeItem(UIObject):
                 self.setHTML(html)
             else:
                 self.setWidget(html)
-    
+
     # also callable as addItem(widget) and addItem(itemText)
     def addItem(self, item):
         if not hasattr(item, "getTree"):
@@ -3484,9 +3509,9 @@ class TreeItem(UIObject):
     def getChild(self, index):
         if (index < 0) or (index >= len(self.children)):
             return None
-        
+
         return self.children[index]
-    
+
     def getChildCount(self):
         return len(self.children)
 
@@ -3498,7 +3523,7 @@ class TreeItem(UIObject):
 
     def getText(self):
         return DOM.getInnerText(self.contentElem)
-    
+
     def getParentItem(self):
         return self.parent
 
@@ -3519,7 +3544,7 @@ class TreeItem(UIObject):
 
     def isSelected(self):
         return self.selected
-    
+
     def remove(self):
         if self.parent != None:
             self.parent.removeItem(self)
@@ -3536,7 +3561,7 @@ class TreeItem(UIObject):
         DOM.removeChild(self.childSpanElem, item.getElement())
         if len(self.children) == 0:
             self.updateState()
-            
+
     def removeItems(self):
         while self.getChildCount() > 0:
             self.removeItem(self.getChild(0))
@@ -3561,7 +3586,7 @@ class TreeItem(UIObject):
 
         self.open = open
         self.updateState()
-        
+
         if fireEvents:
             self.tree.fireStateChanged(self)
 
@@ -3642,7 +3667,7 @@ class TreeItem(UIObject):
 
             if self.contentPanel != None:
                 self.tree.disown(self.contentPanel)
-    
+
         self.tree = tree
         for child in self.children:
             child.setTree(tree)
@@ -3655,7 +3680,7 @@ class TreeItem(UIObject):
             self.setVisible(self.childSpanElem, False)
             DOM.setAttribute(self.imgElem, "src", self.imgSrc("tree_white.gif"))
             return
-            
+
         if self.open:
             self.setVisible(self.childSpanElem, True)
             DOM.setAttribute(self.imgElem, "src", self.imgSrc("tree_open.gif"))
@@ -3675,16 +3700,16 @@ class RootTreeItem(TreeItem):
         if (item.getParentItem() != None) or (item.getTree() != None):
             item.remove()
         item.setTree(self.getTree())
-        
+
         item.setParentItem(None)
         self.children.append(item)
-        
+
         DOM.setIntStyleAttribute(item.getElement(), "marginLeft", 0)
 
     def removeItem(self, item):
         if item not in self.children:
             return
-        
+
         item.setTree(None)
         item.setParentItem(None)
         self.children.remove(item)
@@ -3737,7 +3762,7 @@ class Tree(Widget):
 
     def addKeyboardListener(self, listener):
         self.keyboardListeners.append(listener)
-    
+
     def addMouseListener(self, listener):
         self.mouseListeners.append(listener)
 
@@ -3760,7 +3785,7 @@ class Tree(Widget):
 
     def getImageBase(self):
         return self.imageBase
-    
+
     def getItem(self, index):
         return self.root.getChild(index)
 
@@ -3824,7 +3849,7 @@ class Tree(Widget):
                     self.setSelectedItem(item, True)
         elif type == "keypress":
             KeyboardListener.fireKeyboardEvent(self, self.keyboardListeners, self, event)
-        
+
         Widget.onBrowserEvent(self, event)
         self.lastEventType = type
 
@@ -3871,7 +3896,7 @@ class Tree(Widget):
             return
 
         self.onSelection(item, fireEvents)
-    
+
     def setTabIndex(self, index):
         Focus.setTabIndex(self, self.focusable, index)
 
@@ -3906,7 +3931,7 @@ class Tree(Widget):
         if not item.getState():
             return item
         return self.findDeepestOpenChild(item.getChild(item.getChildCount() - 1))
-    
+
     def findItemByChain(self, chain, idx, root):
         if idx == len(chain):
             return root
@@ -3919,7 +3944,7 @@ class Tree(Widget):
                 if retItem == None:
                     return child
                 return retItem
-        
+
         return self.findItemByChain(chain, idx + 1, root)
 
     def moveFocus(self, selection):
@@ -3931,17 +3956,17 @@ class Tree(Widget):
             selectedElem = selection.getContentElem()
             containerLeft = self.getAbsoluteLeft()
             containerTop = self.getAbsoluteTop()
-        
+
             left = DOM.getAbsoluteLeft(selectedElem) - containerLeft
             top = DOM.getAbsoluteTop(selectedElem) - containerTop
             width = DOM.getIntAttribute(selectedElem, "offsetWidth")
             height = DOM.getIntAttribute(selectedElem, "offsetHeight")
-        
+
             DOM.setIntStyleAttribute(self.focusable, "left", left)
             DOM.setIntStyleAttribute(self.focusable, "top", top)
             DOM.setIntStyleAttribute(self.focusable, "width", width)
             DOM.setIntStyleAttribute(self.focusable, "height", height)
-        
+
             DOM.scrollIntoView(self.focusable)
             Focus.focus(self, self.focusable)
 
@@ -4014,7 +4039,7 @@ class Tree(Widget):
     def fireStateChanged(self, item):
         for listener in self.listeners:
             listener.onTreeItemStateChanged(item)
-    
+
     def getChildWidgets(self):
         return self.childWidgets
 
@@ -4040,7 +4065,7 @@ class FocusPanel(SimplePanel):
 
     def addClickListener(self, listener):
         self.clickListeners.append(listener)
-    
+
     def addFocusListener(self, listener):
         self.focusListeners.append(listener)
 
@@ -4052,10 +4077,10 @@ class FocusPanel(SimplePanel):
 
     def getTabIndex(self):
         return Focus.getTabIndex(self, self.getElement())
-        
+
     def onBrowserEvent(self, event):
         type = DOM.eventGetType(event)
-        
+
         if type == "click":
             for listener in self.clickListeners:
                 if listener.onClick: listener.onClick(self, event)
@@ -4066,7 +4091,7 @@ class FocusPanel(SimplePanel):
             FocusListener.fireFocusEvent(self, self.focusListeners, self, event)
         elif type == "keydown" or type == "keypress" or type == "keyup":
             KeyboardListener.fireKeyboardEvent(self, self.keyboardListeners, self, event)
-        
+
     def removeClickListener(self, listener):
         self.clickListeners.remove(listener)
 
@@ -4081,7 +4106,7 @@ class FocusPanel(SimplePanel):
 
     def setAccessKey(self, key):
         Focus.setAccessKey(self, self.getElement(), key)
-    
+
     def setFocus(self, focused):
         if (focused):
             Focus.focus(self, self.getElement())
@@ -4099,7 +4124,7 @@ class Focus:
         JS("""
         elem.blur();
         """)
-    
+
     def createFocusable(self):
         JS("""
         var e = $doc.createElement("DIV");
@@ -4111,17 +4136,17 @@ class Focus:
         JS("""
         elem.focus();
         """)
-    
+
     def getTabIndex(self, elem):
         JS("""
         return elem.tabIndex;
         """)
-    
+
     def setAccessKey(self, elem, key):
         JS("""
         elem.accessKey = key;
         """)
-    
+
     def setTabIndex(self, elem, index):
         JS("""
         elem.tabIndex = index;
@@ -4157,10 +4182,10 @@ class Hidden(Widget):
 
         if value != None:
             self.setValue(value)
-    
+
     def getDefaultValue(self):
         return DOM.getAttribute(self.getElement(), "defaultValue")
-    
+
     def getName(self):
         return DOM.getAttribute(self.getElement(), "name")
 
@@ -4201,15 +4226,15 @@ class EventObject:
        self.source = source
     def getSource(self):
        return self.source
-   
+
 class FormSubmitEvent(EventObject):
     def __init__(self, source):
        EventObject.__init__(self, source)
        self.cancel = False # ?
-       
+
     def isCancelled(self):
        return self.cancel
-   
+
     def setCancelled(self, cancel):
        self.cancel = cancel
 
@@ -4244,11 +4269,11 @@ class FormPanel(SimplePanel):
         DOM.setAttribute(self.getElement(), "target", formName)
         DOM.setInnerHTML(self.getElement(), "<iframe name='" + formName + "'>")
         self.iframe = DOM.getFirstChild(self.getElement())
-        
+
         DOM.setIntStyleAttribute(self.iframe, "width", 0)
         DOM.setIntStyleAttribute(self.iframe, "height", 0)
         DOM.setIntStyleAttribute(self.iframe, "border", 0)
-        
+
         self.sinkEvents(Event.ONLOAD)
 
         if target != None:
@@ -4278,7 +4303,7 @@ class FormPanel(SimplePanel):
         try {
             if (!iframe.contentWindow.document)
                 return null;
-        
+
             return iframe.contentWindow.document.body.innerHTML;
         } catch (e) {
             return null;
@@ -4292,7 +4317,7 @@ class FormPanel(SimplePanel):
             iframe.onload = function() {
                 if (!iframe.__formAction)
                     return;
-        
+
                 listener.onFrameLoad();
             };
         }
