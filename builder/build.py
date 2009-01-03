@@ -13,7 +13,7 @@ import pyjs
 usage = """
   usage: %prog [options] <application name>
 
-This is the command line builder for the pyjamas project, which can be used to 
+This is the command line builder for the pyjamas project, which can be used to
 build Ajax applications from Python.
 For more information, see the website at http://pyjamas.pyworks.org/
 """
@@ -47,7 +47,7 @@ def copy_boilerplate(filename, output_dir):
 def copytree_exists(src, dst, symlinks=False):
     if not os.path.exists(src):
         return
-    
+
     names = os.listdir(src)
     try:
         os.mkdir(dst)
@@ -78,6 +78,10 @@ def copytree_exists(src, dst, symlinks=False):
 def build(app_name, output="output", js_includes=(), debug=False):
     dir_public = "public"
 
+    # make sure the output directory is always created in the current working
+    # directory or at the place given if it is an absolute path.
+    output = os.path.abspath(output)
+
     msg = "Building '%(app_name)s' to output directory '%(output)s'" % locals()
     if debug:
         msg += " with debugging statements"
@@ -101,13 +105,19 @@ def build(app_name, output="output", js_includes=(), debug=False):
     if app_name[-3:] == ".py":
         app_name = app_name[:-3]
     app_basename = basename(app_name)
-    
+
     if not os.path.isfile(py_app_name):
         print >>sys.stderr, "Could not find %s" % py_app_name
         return
 
+    # make the app directory the working directory to make relative imports
+    # work if the directory from where build is started is not the same as the
+    # app directory.
+    app_dir = dirname(app_name)
+    if app_dir:
+        os.chdir(app_dir)
+
     ## public dir
-    dir_public = join(dirname(app_name), dir_public) 
     print "Copying: public directory"
     copytree_exists(dir_public, output)
 
@@ -120,22 +130,22 @@ def build(app_name, output="output", js_includes=(), debug=False):
                 shutil.copy(html_input_filename, html_output_filename)
             except:
                 print >>sys.stderr, "Warning: Missing module HTML file %s" % html_input_filename
-    
+
             print "Copying: %(html_input_filename)s" % locals()
 
     ## pygwt.js
-    
+
     print "Copying: pygwt.js"
 
     pygwt_js_template = read_boilerplate("pygwt.js")
     pygwt_js_output = open(join(output, "pygwt.js"), "w")
-    
+
     print >>pygwt_js_output, pygwt_js_template
-    
+
     pygwt_js_output.close()
 
     ## Images
-    
+
     print "Copying: Images and History"
     copy_boilerplate("corner_dialog_topleft_black.png", output)
     copy_boilerplate("corner_dialog_topright_black.png", output)
@@ -151,14 +161,14 @@ def build(app_name, output="output", js_includes=(), debug=False):
     copy_boilerplate("tree_open.gif", output)
     copy_boilerplate("tree_white.gif", output)
     copy_boilerplate("history.html", output)
-    
+
     ## AppName.nocache.html
-    
+
     print "Creating: %(app_basename)s.nocache.html" % locals()
-    
+
     home_nocache_html_template = read_boilerplate("home.nocache.html")
     home_nocache_html_output = open(join(output, app_basename + ".nocache.html"), "w")
-    
+
     print >>home_nocache_html_output, home_nocache_html_template % dict(
         app_name = app_basename,
         safari_js = "%s.Safari" % app_basename,
@@ -167,7 +177,7 @@ def build(app_name, output="output", js_includes=(), debug=False):
         moz_js = "%s.Mozilla" % app_basename,
         opera_js = "%s.Opera" % app_basename,
     )
-    
+
     home_nocache_html_output.close()
 
     ## all.cache.html
@@ -187,7 +197,7 @@ def build(app_name, output="output", js_includes=(), debug=False):
         app_libs = app_translator.translateLibraries(['pyjslib'], debug)
         app_code = app_translator.translate(app_name, debug=debug)
         all_cache_html_output = open(join(output, all_cache_name), "w")
-        
+
         print >>all_cache_html_output, all_cache_html_template % dict(
             app_name = app_basename,
             app_libs = app_libs,
@@ -195,11 +205,11 @@ def build(app_name, output="output", js_includes=(), debug=False):
             app_body = app_body,
             app_headers = app_headers
         )
-        
+
         all_cache_html_output.close()
 
     ## Done.
-    
+
     print "Done. You can run your app by opening '%(html_output_filename)s' in a browser" % locals()
 
 def main():
@@ -220,7 +230,7 @@ def main():
     (options, args) = parser.parse_args()
     if len(args) != 1:
         parser.error("incorrect number of arguments")
-    
+
     app_library_dirs += options.library_dirs
     if options.platforms:
        app_platforms = options.platforms.split(',')
