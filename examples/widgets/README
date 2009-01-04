@@ -1,7 +1,11 @@
-This is a port of Google's Hello example.
-
 To build, run ./build.sh or:
 
-    ../../builder/build.py Hello.py
+    ../../builder/build.py Widgets.py
 
-and then open output/Hello.html in a web browser.
+and then open output/Widgets.html in a web browser.
+
+The Analog Clock PNG comes from the Superkaramba KClock theme, by linuxbob,
+and is GPL'd.  http://kde-look.org/content/show.php/KClock?content=66205
+
+... so that makes this example licensed under the GPL.
+
