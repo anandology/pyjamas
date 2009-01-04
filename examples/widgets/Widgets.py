@@ -25,14 +25,10 @@ class Widgets:
 class SolarCanvas(Canvas):
     def __init__(self):
         Canvas.__init__(self, 300, 300)     
-        self.sun = CanvasImage('images/Clock.png')
-        self.moon = CanvasImage('images/moon.png')
-        self.earth = CanvasImage('images/earth.png')
+        self.clock = CanvasImage('images/Clock.png')
         
         self.loader = ImageLoadListener()
-        self.loader.add(self.sun)
-        self.loader.add(self.moon)
-        self.loader.add(self.earth) 
+        self.loader.add(self.clock)
         
         self.isActive = True
         self.onTimer()
@@ -110,5 +106,5 @@ class SolarCanvas(Canvas):
         
         self.context.restore()
         
-        self.context.drawImage(self.sun,0,0)
+        self.context.drawImage(self.clock,0,0)
 
