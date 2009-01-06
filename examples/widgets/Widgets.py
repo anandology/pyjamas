@@ -80,16 +80,14 @@ class SolarCanvas(Canvas):
         self.context.translate(50,50)
         
         secs = self.getTimeSeconds()
-        mins = (self.getTimeMinutes() * 60) + secs
-        hours = (self.getTimeHours() * 3600) + mins
-        mins = mins / 60.0
-        hours = hours / 3600.0
+        mins = self.getTimeMinutes() + secs / 60.0
+        hours = self.getTimeHours() + mins / 60.0
 
         # Seconds
         self.context.save()
         self.context.fillStyle = 'rgba(255,0,0,0.4)'
         self.context.rotate( ((2*pi)/60)*secs + pi)
-        self.context.fillRect(-1,-1,2,38) 
+        self.context.fillRect(-1,-4,2,38) 
         self.context.restore()
         
         # Minutes
@@ -100,7 +98,7 @@ class SolarCanvas(Canvas):
         
         # Hours
         self.context.save()
-        self.context.rotate( ((2*pi)/60)*hours + pi)
+        self.context.rotate( ((2*pi)/12)*hours + pi)
         self.context.fillRect(-2,-2,4,20) 
         self.context.restore()
         
