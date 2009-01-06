@@ -2,20 +2,28 @@ from pyjamas.ui import RootPanel, HTML, Label, HasAlignment, Button
 from pyjamas import Window
 
 from pyjamas.vertsplitpanel import VerticalSplitPanel
+from pyjamas.horizsplitpanel import HorizontalSplitPanel
 
 class SplitPanel:
 
     def onModuleLoad(self):
-        self.panel=VerticalSplitPanel()
-        
-        self.panel.setSize("500px", "350px")
-        self.panel.setSplitPosition("30%")
+        self.vertpanel=VerticalSplitPanel()
+        self.vertpanel.setSize("500px", "350px")
+        self.vertpanel.setSplitPosition("30%")
+
+        self.horzpanel=HorizontalSplitPanel()
+        self.horzpanel.setSize("500px", "350px")
+        self.horzpanel.setSplitPosition("30%")
 
         randomText = ""
         for i in range(200):
-            randomText += "hello "
+            randomText += "hello %d " % i
 
-        self.panel.setTopWidget(HTML(randomText))
-        self.panel.setBottomWidget(HTML(randomText))
+        self.vertpanel.setTopWidget(HTML(randomText))
+        self.vertpanel.setBottomWidget(HTML(randomText))
 
-        RootPanel().add(self.panel)
+        self.horzpanel.setLeftWidget(HTML(randomText))
+        self.horzpanel.setRightWidget(HTML(randomText))
+
+        RootPanel().add(self.vertpanel)
+        RootPanel().add(self.horzpanel)
