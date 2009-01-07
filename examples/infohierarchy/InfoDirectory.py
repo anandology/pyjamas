@@ -5,15 +5,16 @@ from pyjamas import Window
 
 from pyjamas.horizsplitpanel import HorizontalSplitPanel
 
+from pyjamas.JSONService import JSONProxy
+
 from Trees import Trees
 
 class RightGrid(DockPanel):
 
-    def __init__(self, name):
+    def __init__(self, items):
         DockPanel.__init__(self)
         self.grid = Grid()
-        self.grid.resize(5, 8)
-        title = HTML(name)
+        title = HTML("test title")
         self.add(title, DockPanel.NORTH)
         self.setCellHorizontalAlignment(title,
                                         HasHorizontalAlignment.ALIGN_CENTER)
@@ -21,21 +22,38 @@ class RightGrid(DockPanel):
         self.grid.setBorderWidth("1px")
         self.grid.setCellSpacing("5px")
 
-        for row in range(5):
-            for col in range(8):
-                self.grid.setHTML(row, col, str(row*col))
+        max_rows = 0
+        max_cols = 0
+
+        for i in range(len(items)):
+            item = items[i]
+            col = item[0]
+            row = item[1]
+            data = item[2]
+            if col+1 > max_cols:
+                self.grid.resizeColumns(col+1)
+                max_cols = col+1
+
+            if row+1 >= max_rows:
+                self.grid.resizeRows(row+1)
+                max_rows = row+1
+
+            self.grid.setHTML(row, col, data)
 
 class RightPanel(Grid):
 
     def __init__(self):
         Grid.__init__(self)
-        self.resize(1, 1)
+        self.resize(0, 1)
 
-    def set_items(self, item_names):
+    def clear_items(self):
+        self.clear()
 
-        self.resizeRows(len(item_names))
-        for i in range(len(item_names)):
-            self.setWidget(i, 0, RightGrid(item_names[i]))
+    def add_items(self, items):
+
+        rc = self.getRowCount()
+        self.resize(rc+1, 1)
+        self.setWidget(rc, 0, RightGrid(items))
 
 class MidPanel(Grid):
 
@@ -52,16 +70,22 @@ class MidPanel(Grid):
             self.styleRow(self.selected_row, False)
 
         self.item_names = []
+        self.item_locations = []
         self.resizeRows(len(items))
         for i in range(len(items)):
-            self.setHTML(i, 0, items[i])
-            self.item_names.append(items[i])
+            item = items[i]
+            name = item[0]
+            location = item[1]
+            self.setHTML(i, 0, name)
+            self.item_names.append(name)
+            self.item_locations.append(location)
 
     def onCellClicked(self, sender, row, col):
         self.styleRow(self.selected_row, False)
         self.selected_row = row
         self.styleRow(self.selected_row, True)
-        self.sink.select_right_grid(self.item_names[row])
+        self.sink.select_right_grid(self.item_locations[row],
+                                    self.item_names[row])
         
     def styleRow(self, row, selected):
         if (row != -1):
@@ -73,6 +97,8 @@ class MidPanel(Grid):
 class InfoDirectory:
 
     def onModuleLoad(self):
+
+        self.remote = InfoServicePython()
 
         self.tree_width = 300
 
@@ -134,7 +160,7 @@ class InfoDirectory:
             self.clear_mid_panel()
             return
 
-        self.set_mid_panel(obj.text)
+        self.remote.get_midpanel_data(obj.root + "/" + obj.text, self)
         self.clear_right_panel()
 
     def clear_right_panel(self):
@@ -144,25 +170,44 @@ class InfoDirectory:
         self.clear_right_panel()
         self.horzpanel2.setLeftWidget(HTML(""))
 
-    def set_mid_panel(self, fake_text):
+    def set_mid_panel(self, response):
 
-        fake_items = []
-        for i in range(len(fake_text)):
-            fake_item = "%d - " % (i+1) + fake_text
-            fake_items.append(fake_item)
-
-        self.midpanel.set_items(fake_items)
+        self.midpanel.set_items(response)
 
         self.horzpanel2.setLeftWidget(self.midpanel)
 
-    def select_right_grid(self, fake_text):
-        
+    def select_right_grid(self, location, name):
+        self.rp.clear_items()
         self.horzpanel2.setRightWidget(self.rp)
+        self.remote.get_rightpanel_datanames(location, self)
 
-        fake_items = []
-        for i in range(len(fake_text)):
-            fake_item = "%d - " % (i+1) + fake_text
-            fake_items.append(fake_item)
+    def get_rightpanel_datasets(self, datasets):
 
-        self.rp.set_items(fake_items)
+        for i in range(len(datasets)):
+            item = datasets[i]
+            fname = item[0]
+            self.remote.get_rightpanel_data(fname, self)
+        
+    def fill_right_grid(self, data):
+        self.rp.add_items(data)
+
+    def onRemoteResponse(self, response, request_info):
+        method = request_info.method
+        if method == "get_midpanel_data":
+            self.set_mid_panel(response)
+        elif method == "get_rightpanel_datanames":
+            self.get_rightpanel_datasets(response)
+        elif method == "get_rightpanel_data":
+            self.fill_right_grid(response)
+
+    def onRemoteError(self, code, message, request_info):
+        RootPanel().add(HTML("Server Error or Invalid Response: ERROR " + code))
+        RootPanel().add(HTML(message))
+
+class InfoServicePython(JSONProxy):
+    def __init__(self):
+            JSONProxy.__init__(self, "/infoservice/EchoService.py",
+                    ["get_midpanel_data",
+                     "get_rightpanel_datanames",
+                     "get_rightpanel_data"])
 

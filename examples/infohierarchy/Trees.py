@@ -1,85 +1,48 @@
-from pyjamas.ui import Tree, TreeItem, Composite
+from pyjamas.ui import Tree, TreeItem, Composite, RootPanel, HTML
+from pyjamas import Window
+
+from pyjamas.JSONService import JSONProxy
 
 class Trees(Composite):
     def __init__(self):
         Composite.__init__(self)
 
-        self.fProto = [
-            Proto("Beethoven", [
-                Proto("Concertos", [
-                    Proto("No. 1 - C"), 
-                    Proto("No. 2 - B-Flat Major"), 
-                    Proto("No. 3 - C Minor"), 
-                    Proto("No. 4 - G Major"), 
-                    Proto("No. 5 - E-Flat Major")
-                ]),
-                Proto("Quartets", [
-                    Proto("Six String Quartets"), 
-                    Proto("Three String Quartets"), 
-                    Proto("Grosse Fugue for String Quartets")
-                ]),
-                Proto("Sonatas", [
-                    Proto("Sonata in A Minor"), 
-                    Proto("Sonata in F Major")
-                ]),
-                Proto("Symphonies", [
-                    Proto("No. 1 - C Major"), 
-                    Proto("No. 2 - D Major"), 
-                    Proto("No. 3 - E-Flat Major"), 
-                    Proto("No. 4 - B-Flat Major"), 
-                    Proto("No. 5 - C Minor"), 
-                    Proto("No. 6 - F Major"), 
-                    Proto("No. 7 - A Major"), 
-                    Proto("No. 8 - F Major"), 
-                    Proto("No. 9 - D Minor")
-                ])
-            ]),
-        
-            Proto("Brahms", [
-                Proto("Concertos", [
-                    Proto("Violin Concerto"),
-                    Proto("Double Concerto - A Minor"),
-                    Proto("Piano Concerto No. 1 - D Minor"),
-                    Proto("Piano Concerto No. 2 - B-Flat Major")
-                ]),
-                Proto("Quartets", [
-                    Proto("Piano Quartet No. 1 - G Minor"),
-                    Proto("Piano Quartet No. 2 - A Major"),
-                    Proto("Piano Quartet No. 3 - C Minor"),
-                    Proto("String Quartet No. 3 - B-Flat Minor")
-                ]),
-                Proto("Sonatas", [
-                    Proto("Two Sonatas for Clarinet - F Minor"),
-                    Proto("Two Sonatas for Clarinet - E-Flat Major")
-                ]),
-                Proto("Symphonies", [
-                    Proto("No. 1 - C Minor"),
-                    Proto("No. 2 - D Minor"),
-                    Proto("No. 3 - F Major"),
-                    Proto("No. 4 - E Minor")
-                ])      
-            ]),
-        
-            Proto("Mozart", [
-                Proto("Concertos", [
-                    Proto("Piano Concerto No. 12"),
-                    Proto("Piano Concerto No. 17"),
-                    Proto("Clarinet Concerto"),
-                    Proto("Violin Concerto No. 5"),
-                    Proto("Violin Concerto No. 4")
-                ]),
-            ])
-        ]
-
+        self.fProto = []
         self.fTree = Tree()
-        
-        for i in range(len(self.fProto)):
-            self.createItem(self.fProto[i])
-            self.fTree.addItem(self.fProto[i].item)
         
         self.fTree.addTreeListener(self)
         self.initWidget(self.fTree)
+        self.remote = InfoServicePython()
+        self.remote.index("", 1, self)
         
+    def protoise_tree(self, data):
+
+        res = []
+        for i in range(len(data)):
+            d = data[i]
+            name = d[0]
+            children = d[1]
+
+            res.append(Proto(name, self.protoise_tree(children)))
+        return res
+
+    def create_tree(self, data):
+
+        self.fProto = self.protoise_tree(data)
+        
+        for i in range(len(self.fProto)):
+            p = self.fProto[i]
+            p.pathify()
+            self.createItem(p)
+            self.fTree.addItem(p.item)
+
+    def onRemoteResponse(self, response, request_info):
+        if request_info.method == "index":
+            self.create_tree(response)
+
+    def onRemoteError(self, code, message, request_info):
+        RootPanel().add(HTML("Server Error or Invalid Response: ERROR " + code + " - " + message))
+
     def onTreeItemSelected(self, item):
         pass
     
@@ -105,9 +68,18 @@ class Proto:
         self.children = []
         self.item = None
         self.text = text
+        self.root = '/'
         
         if children != None:
             self.children = children
+
+    def pathify(self):
+        """ cascade setup of full path
+        """
+
+        for c in self.children:
+            c.root = self.root + self.text + "/"
+            c.pathify()
 
 
 class PendingItem(TreeItem):
@@ -116,4 +88,11 @@ class PendingItem(TreeItem):
 
     def isPendingItem(self):
         return True
+
+
+class InfoServicePython(JSONProxy):
+    def __init__(self):
+        JSONProxy.__init__(self, "/infoservice/EchoService.py",
+                                    ["index"])
+
 
