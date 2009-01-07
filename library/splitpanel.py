@@ -229,9 +229,9 @@ class SplitPanel(Panel):
         # Remove the old child.
         if (oldWidget != None):
           # Orphan old.
-          orphan(oldWidget)
+          self.disown(oldWidget)
           # Physical detach old.
-          DOM.removeChild(self.elements[index], oldWidget.getElement())
+          #DOM.removeChild(self.elements[index], oldWidget.getElement())
 
         # Logical detach old / attach new.
         self.widgets[index] = w
