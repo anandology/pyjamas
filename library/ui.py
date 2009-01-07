@@ -3581,11 +3581,13 @@ class TreeItem(UIObject):
         self.setStyleName(self.contentElem, "gwt-TreeItem-selected", selected)
 
     def setState(self, open, fireEvents=True):
-        if open and len(self.children) == 0:
-            return
 
-        self.open = open
-        self.updateState()
+        # lkcl: experiment with allowing event state changed to be
+        # fired even on items with no children.  otherwise you never
+        # get to find out if an end-item was selected!
+        if not open or len(self.children) != 0:
+            self.open = open
+            self.updateState()
 
         if fireEvents:
             self.tree.fireStateChanged(self)
