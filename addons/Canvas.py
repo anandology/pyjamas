@@ -9,8 +9,8 @@
 #   - place excanvas.js in your apps public folder
 #   - add this to your MainModule.html: <!--[if IE]><script src="excanvas.js" type="text/javascript"></script><![endif]-->
 
-import DOM
-from ui import Image, Widget
+from pyjamas import DOM
+from pyjamas.ui import Image, Widget, Event, MouseListener
 
 class Canvas(Widget):
     def __init__(self, width, height):
@@ -31,6 +31,33 @@ class Canvas(Widget):
         
         self.context.fillStyle = "black"
         self.context.strokeStyle = "black"
+
+        self.clickListeners = []
+        self.mouseListeners = []
+
+        DOM.sinkEvents(canvas, Event.ONCLICK | Event.MOUSEEVENTS | DOM.getEventsSunk(canvas))
+
+    def addClickListener(self, listener):
+        self.clickListeners.append(listener)
+
+    def addMouseListener(self, listener):
+        self.mouseListeners.append(listener)
+
+    def onBrowserEvent(self, event):
+        type = DOM.eventGetType(event)
+        #print "Label onBrowserEvent", type, self.clickListeners
+        if type == "click":
+            for listener in self.clickListeners:
+                if listener.onClick: listener.onClick(self, event)
+                else: listener(self, event)
+        elif type == "mousedown" or type == "mouseup" or type == "mousemove" or type == "mouseover" or type == "mouseout":
+            MouseListener.fireMouseEvent(self, self.mouseListeners, self, event)
+
+    def removeClickListener(self, listener):
+        self.clickListeners.remove(listener)
+
+    def removeMouseListener(self, listener):
+        self.mouseListeners.remove(listener)
 
     def getContext(self):
         return self.context

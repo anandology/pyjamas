@@ -1,5 +1,5 @@
 from Sink import Sink, SinkInfo
-from pyjamas.ui import Image, HTML, VerticalPanel, HorizontalPanel
+from pyjamas.ui import Image, HTML, VerticalPanel, HorizontalPanel, RootPanel
 from Canvas import Canvas, CanvasImage, ImageLoadListener
 from pyjamas.Timer import Timer
 from math import floor, cos, sin
@@ -51,6 +51,7 @@ class ColourGridCanvas(Canvas):
     def __init__(self):
         Canvas.__init__(self, 150, 150)
         self.draw()
+        self.addMouseListener(self)
         
     def draw(self):
         for i in range(0, 6):
@@ -58,6 +59,20 @@ class ColourGridCanvas(Canvas):
                 self.context.fillStyle = 'rgb(' + floor(255-42.5*i) + ',' + floor(255-42.5*j) + ',0)'
                 self.context.fillRect(j*25,i*25,25,25)
 
+    def onMouseDown(self, sender, x, y):
+        pass
+
+    def onMouseEnter(self, sender):
+        pass
+
+    def onMouseLeave(self, sender):
+        pass
+
+    def onMouseMove(self, sender, x, y):
+        RootPanel().add(HTML("move: x %d " % x + "y %d" % y))
+
+    def onMouseUp(self, sender, x, y):
+        pass
 
 class RotatedCanvas(Canvas):
     def __init__(self):
