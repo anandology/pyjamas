@@ -20,7 +20,8 @@ class RightGrid(DockPanel):
                                         HasHorizontalAlignment.ALIGN_CENTER)
         self.add(self.grid, DockPanel.CENTER)
         self.grid.setBorderWidth("1px")
-        self.grid.setCellSpacing("5px")
+        self.grid.setCellSpacing("2px")
+        self.grid.setCellPadding("4px")
 
         max_rows = 0
         max_cols = 0

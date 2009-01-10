@@ -1,0 +1,4 @@
+array
+5, 2, hello
+3, 9, fred
+joe, 5, 2

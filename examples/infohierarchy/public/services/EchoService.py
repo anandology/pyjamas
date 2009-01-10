@@ -35,22 +35,33 @@ class Service:
         pth = "%s/%s" % (pth, fname)
         f = open(pth)
         res = []
-        for l in f.readlines():
-            l = l.strip()
-            if not l:
-                continue
-            cidx = l.find(":")
-            if cidx == -1:
-                continue
-            location = l[:cidx].strip()
-            location = location.split(",")
-            if not len(location) == 2:
-                continue
-            location = map(strip, location)
-            [x, y] = map(int, location)
-            data = l[cidx+1:].lstrip()
+        fmt = f.readline()
+        if fmt[:6] == 'sparse':
+            for l in f.readlines():
+                l = l.strip()
+                if not l:
+                    continue
+                cidx = l.find(":")
+                if cidx == -1:
+                    continue
+                location = l[:cidx].strip()
+                location = location.split(",")
+                if not len(location) == 2:
+                    continue
+                location = map(strip, location)
+                [x, y] = map(int, location)
+                data = l[cidx+1:].lstrip()
 
-            res.append([x, y, data])
+                res.append([x, y, data])
+        else:
+            y = 0
+            for l in f.readlines():
+                l = l.strip()
+                vals = l.split(",")
+                for x in range(len(vals)):
+                    val = vals[x].strip()
+                    res.append([x, y, val])
+                y += 1
 
         return res
 
