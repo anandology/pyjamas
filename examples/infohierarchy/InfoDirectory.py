@@ -10,6 +10,8 @@ from pyjamas.JSONService import JSONProxy
 
 from Trees import Trees
 
+from Timer import Timer
+
 class RightGrid(DockPanel):
 
     def __init__(self):
@@ -25,37 +27,49 @@ class RightGrid(DockPanel):
         self.grid.setCellPadding("4px")
 
     def set_items(self, items):
+        self.items = items
+        self.index = 0
+        self.max_rows = 0
+        self.max_cols = 0
+        Timer(1, self)
 
-        max_rows = 0
-        max_cols = 0
+    def onTimer(self, t):
+        count = 0
+        while count < 10 and self.index < len(self.items):
+            self._add_items(self.index)
+            self.index += 1
+            count += 1
+        if self.index < len(self.items):
+            Timer(1, self)
 
-        for i in range(len(items)):
-            item = items[i]
-            col = item[0]
-            row = item[1]
-            data = item[2]
-            format_row = -1
-            format_col = -1
-            if col+1 > max_cols:
-                format_col = max_cols
-                self.grid.resizeColumns(col+1)
-                max_cols = col+1
+    def _add_items(self, i):
 
-            if row+1 >= max_rows:
-                format_row = max_rows
-                self.grid.resizeRows(row+1)
-                max_rows = row+1
+        item = self.items[i]
+        col = item[0]
+        row = item[1]
+        data = item[2]
+        format_row = -1
+        format_col = -1
+        if col+1 > self.max_cols:
+            format_col = self.max_cols
+            self.grid.resizeColumns(col+1)
+            self.max_cols = col+1
 
-            if format_col >= 0:
-                for k in range(format_col, max_cols):
-                    for j in range(max_rows):
-                        self.formatCell(j, k)
-            if format_row >= 0:
-                for j in range(max_cols):
-                    for k in range(format_row, max_rows):
-                        self.formatCell(k, j)
+        if row+1 >= self.max_rows:
+            format_row = self.max_rows
+            self.grid.resizeRows(row+1)
+            self.max_rows = row+1
 
-            self.grid.setHTML(row, col, data)
+        if format_col >= 0:
+            for k in range(format_col, self.max_cols):
+                for j in range(self.max_rows):
+                    self.formatCell(j, k)
+        if format_row >= 0:
+            for j in range(self.max_cols):
+                for k in range(format_row, self.max_rows):
+                    self.formatCell(k, j)
+
+        self.grid.setHTML(row, col, data)
 
     def formatCell(self, row, col):
         if col == 0 and row != 0:
@@ -78,6 +92,7 @@ class RightPanel(DockPanel):
         self.grids = {}
         self.tabs = TabPanel()
         self.add(self.tabs, DockPanel.CENTER)
+        self.tabs.addTabListener(self)
 
     def clear_items(self):
 
@@ -88,15 +103,38 @@ class RightPanel(DockPanel):
     def setup_panels(self, datasets):
 
         self.grids = {}
+        self.data = {}
+        self.names = {}
+        self.loaded = {}
         for i in range(len(datasets)):
             item = datasets[i]
             fname = item[0]
             self.grids[i] = RightGrid()
             self.tabs.add(self.grids[i], fname)
-        
+   
     def add_items(self, items, name, index):
+        res = []
+        #for i in range(len(items)):
+        #    it = items[i]
+        #    item = []
+        #    for d in it:
+        #        item.append(d)
+        #    res.append(item)
+        self.data[index] = items
+        self.names[index] = name
+        self.loaded[index] = False
 
+    def display_items(self, items, name, index):
         self.grids[index].set_items(items)
+
+    def onBeforeTabSelected(self, sender, idx):
+        if not self.loaded[idx]:
+            self.display_items(self.data[idx], self.names[idx], idx)
+            self.loaded[idx] = True
+        return True
+
+    def onTabSelected(self, sender, idx):
+        pass
 
 class MidPanel(Grid):
 
