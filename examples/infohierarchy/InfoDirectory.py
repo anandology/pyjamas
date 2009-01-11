@@ -1,5 +1,6 @@
 from pyjamas.ui import RootPanel, HTML, Label, HasAlignment, Button
 from pyjamas.ui import HorizontalPanel, AbsolutePanel, ScrollPanel, Grid
+from pyjamas.ui import TabPanel
 from pyjamas.ui import DockPanel, HasHorizontalAlignment
 from pyjamas import Window
 
@@ -11,7 +12,7 @@ from Trees import Trees
 
 class RightGrid(DockPanel):
 
-    def __init__(self, items):
+    def __init__(self):
         DockPanel.__init__(self)
         self.grid = Grid()
         title = HTML("test title")
@@ -22,6 +23,8 @@ class RightGrid(DockPanel):
         self.grid.setBorderWidth("0px")
         self.grid.setCellSpacing("0px")
         self.grid.setCellPadding("4px")
+
+    def set_items(self, items):
 
         max_rows = 0
         max_cols = 0
@@ -68,20 +71,32 @@ class RightGrid(DockPanel):
             fmt = "rightpanel-cellleftformat"
         self.grid.getCellFormatter().setStyleName(row, col, fmt)
 
-class RightPanel(Grid):
+class RightPanel(DockPanel):
 
     def __init__(self):
-        Grid.__init__(self)
-        self.resize(0, 1)
+        DockPanel.__init__(self)
+        self.grids = {}
+        self.tabs = TabPanel()
+        self.add(self.tabs, DockPanel.CENTER)
 
     def clear_items(self):
-        self.clear()
 
-    def add_items(self, items):
+        self.grids = {}
+        while self.tabs.getWidgetCount() > 0:
+            self.tabs.remove(0)
 
-        rc = self.getRowCount()
-        self.resize(rc+1, 1)
-        self.setWidget(rc, 0, RightGrid(items))
+    def setup_panels(self, datasets):
+
+        self.grids = {}
+        for i in range(len(datasets)):
+            item = datasets[i]
+            fname = item[0]
+            self.grids[i] = RightGrid()
+            self.tabs.add(self.grids[i], fname)
+        
+    def add_items(self, items, name, index):
+
+        self.grids[index].set_items(items)
 
 class MidPanel(Grid):
 
@@ -205,19 +220,21 @@ class InfoDirectory:
         self.horzpanel2.setLeftWidget(self.midpanel)
 
     def select_right_grid(self, location, name):
-        self.rp.clear_items()
         self.horzpanel2.setRightWidget(self.rp)
         self.remote.get_rightpanel_datanames(location, self)
 
     def get_rightpanel_datasets(self, datasets):
 
+        self.rp.clear_items()
+        self.rp.setup_panels(datasets)
+
         for i in range(len(datasets)):
             item = datasets[i]
             fname = item[0]
-            self.remote.get_rightpanel_data(fname, self)
+            self.remote.get_rightpanel_data(fname, fname, i, self)
         
     def fill_right_grid(self, data):
-        self.rp.add_items(data)
+        self.rp.add_items(data.get('items'), data.get('name'), data.get('index'))
 
     def onRemoteResponse(self, response, request_info):
         method = request_info.method

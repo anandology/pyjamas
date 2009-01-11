@@ -30,7 +30,7 @@ class Service:
         pth = "%s/%s" % (pth, fname)
         return get_directory_info(fname, pth, 0)
 
-    def get_rightpanel_data(self, fname):
+    def get_rightpanel_data(self, fname, name, index):
         pth = os.path.join(os.getcwd(), "data")
         pth = "%s/%s" % (pth, fname)
         f = open(pth)
@@ -70,7 +70,7 @@ class Service:
                     res.append([x+1, y, val])
                 y += 1
 
-        return res
+        return {'items': res, 'name': name, 'index': index }
 
     def get_midpanel_data(self, fname):
         pth = os.path.join(os.getcwd(), "structure")
