@@ -586,6 +586,26 @@ def chr(x):
         return String.fromCharCode(x)
     """)
 
+def is_basetype(x):
+    JS("""
+       var t = typeof(x);
+       return t == 'boolean' ||
+       t == 'function' ||
+       t == 'number' ||
+       t == 'string' ||
+       t == 'undefined'
+       ;
+    """)
+
+def get_pyjs_classtype(x):
+    JS("""
+       if (pyjslib_hasattr(x, "__class__"))
+           if (pyjslib_hasattr(x.__class__, "__new__"))
+               var src = x.__class__.__new__.toString();
+               return src.match(/function (\w*)/)[1];
+       return null;
+    """)
+
 def repr(x):
     """ Return the string representation of 'x'.
     """
@@ -628,10 +648,7 @@ def repr(x):
 
        var constructor = "UNKNOWN";
 
-       if (pyjslib_hasattr(x, "__class__"))
-           if (pyjslib_hasattr(x.__class__, "__new__"))
-               var src = x.__class__.__new__.toString();
-               constructor = src.match(/function (\w*)/)[1];
+       constructor = pyjslib_get_pyjs_classtype(x);
 
        if (constructor == "pyjslib_Tuple") {
            var contents = x.getArray();

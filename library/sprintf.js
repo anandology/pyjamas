@@ -70,11 +70,20 @@ sprintfWrapper = {
 
 	init : function (str, args) {
 
-       if(args && args.__class__ != "pyjslib_List" && 
-                  args.__class__ != "pyjslib_Tuple")
-          args = new pyjslib_List([args]);
+        if (args === undefined)
+        {
+            return null;
+        }
+        constructor = null;
+        if (!pyjslib_is_basetype(args))
+            constructor = pyjslib__get_pyjs_classtype(args);
 
-       if (!args || pyjslib_len(args) < 1 || !RegExp)
+        if(constructor != "pyjslib_List" && constructor != "pyjslib_Tuple")
+        {
+            args = new pyjslib_List([args]);
+        }
+
+       if (pyjslib_len(args) < 1 || !RegExp)
        {
           return null;
        }
