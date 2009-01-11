@@ -16,12 +16,37 @@
 }
 
 .midpanel-SelectedRow td {
-  border-bottom: 1px solid #666;
-  border-top: 1px solid #666;
+  border-bottom: 1px solid #33A;
+  border-top: 1px solid #33A;
+}
+
+.rightpanel-cellcornerformat {
+  border: 1px solid #33A;
+  background: #CCf;
+}
+
+.rightpanel-celltitleformat {
+  background: #CCf;
+  border-top: 1px solid #33A;
+  border-bottom: 1px solid #33A;
+  border-right: 1px solid #33A;
+}
+
+.rightpanel-cellleftformat {
+  border-bottom: 1px solid #33A;
+  border-right: 1px solid #33A;
+  border-left: 1px solid #33A;
+  background: #DDf;
+}
+
+.rightpanel-cellformat {
+  border-bottom: 1px solid #33A;
+  border-right: 1px solid #33A;
+  background: #EEf;
 }
 
 .midpanel-SelectedRow {
-  background: #eee;
+  background: #CCf;
 }
 
 

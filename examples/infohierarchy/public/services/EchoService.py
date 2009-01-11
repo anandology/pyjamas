@@ -52,15 +52,22 @@ class Service:
                 [x, y] = map(int, location)
                 data = l[cidx+1:].lstrip()
 
-                res.append([x, y, data])
+                res.append([x+1, y+1, data])
         else:
-            y = 0
+            headings = f.readline()
+            l = headings.strip()
+            vals = l.split(",")
+            for x in range(len(vals)):
+                val = vals[x].strip()
+                res.append([x+1, 0, val])
+
+            y = 1
             for l in f.readlines():
                 l = l.strip()
                 vals = l.split(",")
                 for x in range(len(vals)):
                     val = vals[x].strip()
-                    res.append([x, y, val])
+                    res.append([x+1, y, val])
                 y += 1
 
         return res

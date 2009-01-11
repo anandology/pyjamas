@@ -19,8 +19,8 @@ class RightGrid(DockPanel):
         self.setCellHorizontalAlignment(title,
                                         HasHorizontalAlignment.ALIGN_CENTER)
         self.add(self.grid, DockPanel.CENTER)
-        self.grid.setBorderWidth("1px")
-        self.grid.setCellSpacing("2px")
+        self.grid.setBorderWidth("0px")
+        self.grid.setCellSpacing("0px")
         self.grid.setCellPadding("4px")
 
         max_rows = 0
@@ -31,15 +31,42 @@ class RightGrid(DockPanel):
             col = item[0]
             row = item[1]
             data = item[2]
+            format_row = -1
+            format_col = -1
             if col+1 > max_cols:
+                format_col = max_cols
                 self.grid.resizeColumns(col+1)
                 max_cols = col+1
 
             if row+1 >= max_rows:
+                format_row = max_rows
                 self.grid.resizeRows(row+1)
                 max_rows = row+1
 
+            if format_col >= 0:
+                for k in range(format_col, max_cols):
+                    for j in range(max_rows):
+                        self.formatCell(j, k)
+            if format_row >= 0:
+                for j in range(max_cols):
+                    for k in range(format_row, max_rows):
+                        self.formatCell(k, j)
+
             self.grid.setHTML(row, col, data)
+
+    def formatCell(self, row, col):
+        if col == 0 and row != 0:
+            self.grid.setHTML(row, col, "%d" % row)
+        if row != 0 and col != 0:
+            self.grid.setHTML(row, col, "&nbsp;")
+            fmt = "rightpanel-cellformat"
+        if col == 0 and row == 0:
+            fmt = "rightpanel-cellcornerformat"
+        elif row == 0:
+            fmt = "rightpanel-celltitleformat"
+        elif col == 0:
+            fmt = "rightpanel-cellleftformat"
+        self.grid.getCellFormatter().setStyleName(row, col, fmt)
 
 class RightPanel(Grid):
 
