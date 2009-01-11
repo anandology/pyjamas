@@ -1512,6 +1512,9 @@ class HorizontalPanel(CellPanel):
         self.setCellVerticalAlignment(widget, self.vertAlign)
 
     def remove(self, widget):
+        if pyjslib.isNumber(widget):
+            widget = self.getWidget(widget)
+
         if widget.getParent() != self:
             return False
 
