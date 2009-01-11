@@ -1,7 +1,9 @@
 from pyjamas.ui import RootPanel, HTML, Label, HasAlignment, Button
 from pyjamas.ui import HorizontalPanel, AbsolutePanel, ScrollPanel, Grid
 from pyjamas.ui import TabPanel, SimplePanel, FlexTable, Image
-from pyjamas.ui import DockPanel, HasHorizontalAlignment
+from pyjamas.ui import DockPanel
+from pyjamas.ui import HasHorizontalAlignment, HasVerticalAlignment, HasAlignment
+from pyjamas.ui import HasAlignment
 from pyjamas import Window
 
 #from pyjamas.horizsplitpanel import HorizontalSplitPanel
@@ -13,8 +15,9 @@ from Trees import Trees
 from Timer import Timer
 
 class CollapserPanel(SimplePanel):
-    def __init__(self):
+    def __init__(self, sink):
         SimplePanel.__init__(self)
+        self.sink = sink 
         self.caption = HTML()
         self.child = None 
         self.showing = False
@@ -23,52 +26,67 @@ class CollapserPanel(SimplePanel):
         self.dragStartY = 0
         self.panel = FlexTable()
 
-        closeButton = Image("./images/cancel.png")
-        closeButton.addClickListener(self)
+        self.collapse = Image("./images/cancel.png")
+        self.collapse.addClickListener(self)
         dock = DockPanel()
         dock.setSpacing(0)
         
-        dock.add(closeButton, DockPanel.EAST)
+        dock.add(self.collapse, DockPanel.EAST)
         dock.add(self.caption, DockPanel.WEST)
 
-        dock.setCellHorizontalAlignment(closeButton, HasAlignment.ALIGN_RIGHT)
+        dock.setCellHorizontalAlignment(self.collapse, HasAlignment.ALIGN_RIGHT)
+        dock.setCellVerticalAlignment(self.collapse, HasAlignment.ALIGN_TOP)
         dock.setCellHorizontalAlignment(self.caption, HasAlignment.ALIGN_LEFT)
         dock.setCellWidth(self.caption, "100%")
         dock.setWidth("100%")
+        dock.setHeight("100%")
 
         self.panel.setWidget(0, 0, dock)
         self.panel.setHeight("100%")
+        self.panel.setWidth("100%")
         self.panel.setBorderWidth(0)
         self.panel.setCellPadding(0)
         self.panel.setCellSpacing(0)
         self.panel.getCellFormatter().setHeight(1, 0, "100%")
         self.panel.getCellFormatter().setWidth(1, 0, "100%")
-        #self.panel.getCellFormatter().setAlignment(1, 0, HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE)
+        self.panel.getCellFormatter().setAlignment(1, 0, HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_TOP)
         SimplePanel.setWidget(self, self.panel)
 
         self.setStyleName("gwt-DialogBox")
         self.caption.setStyleName("Caption")
-        closeButton.setStyleName("Close")
+        self.collapse.setStyleName("Close")
         dock.setStyleName("Header")
         #self.caption.addMouseListener(self)
         self.collapsed = False
 
-        self.collapsed_width = "10px"
+        self.collapsed_width = "15px"
         self.uncollapsed_width = "100%"
+
+    def setInitialWidth(self, width):
+        self.uncollapsed_width = width
+        SimplePanel.setWidth(self, width)
+        self.sink.setCollapserWidth(self, width)
+
+    def setHeight(self, height):
+        SimplePanel.setHeight(self, height)
 
     def onClick(self, sender):
         if self.collapsed == False:
+            self.collapse.setUrl("./tree_closed.gif")
             self.collapsed = True
             self.caption.setVisible(False)
             if self.child:
                 self.child.setVisible(False)
             self.setWidth(self.collapsed_width)
+            self.sink.setCollapserWidth(self, self.collapsed_width)
         else:
+            self.collapse.setUrl("./images/cancel.png")
             self.collapsed = False
             self.caption.setVisible(True)
             if self.child:
                 self.child.setVisible(True)
             self.setWidth(self.uncollapsed_width)
+            self.sink.setCollapserWidth(self, self.uncollapsed_width)
 
     def setHTML(self, html):
         self.caption.setHTML(html)
@@ -103,17 +121,21 @@ class CollapserPanel(SimplePanel):
 
 class RightGrid(DockPanel):
 
-    def __init__(self):
+    def __init__(self, title):
         DockPanel.__init__(self)
         self.grid = Grid()
-        title = HTML("test title")
+        title = HTML(title)
         self.add(title, DockPanel.NORTH)
         self.setCellHorizontalAlignment(title,
-                                        HasHorizontalAlignment.ALIGN_CENTER)
+                                        HasHorizontalAlignment.ALIGN_LEFT)
         self.add(self.grid, DockPanel.CENTER)
         self.grid.setBorderWidth("0px")
         self.grid.setCellSpacing("0px")
         self.grid.setCellPadding("4px")
+
+    def clear_items(self):
+        self.index = 0
+        self.items = {}
 
     def set_items(self, items):
         self.items = items
@@ -179,15 +201,26 @@ class RightPanel(DockPanel):
     def __init__(self):
         DockPanel.__init__(self)
         self.grids = {}
-        self.tabs = TabPanel()
-        self.add(self.tabs, DockPanel.CENTER)
-        self.tabs.addTabListener(self)
+        self.g = Grid()
+        self.g.setCellSpacing("0px")
+        self.g.setCellPadding("8px")
+        self.title = HTML("&nbsp;")
+        self.title.setStyleName("rightpanel-title")
+        self.add(self.title, DockPanel.NORTH)
+        self.setCellWidth(self.title, "100%")
+        self.setCellHorizontalAlignment(self.title,
+                                        HasHorizontalAlignment.ALIGN_LEFT)
+        self.add(self.g, DockPanel.CENTER)
 
+    def setTitle(self, title):
+        self.title.setHTML(title)
+        
     def clear_items(self):
 
+        for i in range(len(self.grids)):
+            self.grids[i].clear_items()
         self.grids = {}
-        while self.tabs.getWidgetCount() > 0:
-            self.tabs.remove(0)
+        self.g.resize(0, 0)
 
     def setup_panels(self, datasets):
 
@@ -195,35 +228,18 @@ class RightPanel(DockPanel):
         self.data = {}
         self.names = {}
         self.loaded = {}
-        for i in range(len(datasets)):
+        size = len(datasets)
+        self.g.resize(size, 1)
+        for i in range(size):
             item = datasets[i]
             fname = item[0]
-            self.grids[i] = RightGrid()
-            self.tabs.add(self.grids[i], fname)
+            self.grids[i] = RightGrid(fname)
+            self.g.setWidget(i, 0, self.grids[i])
    
     def add_items(self, items, name, index):
-        res = []
-        #for i in range(len(items)):
-        #    it = items[i]
-        #    item = []
-        #    for d in it:
-        #        item.append(d)
-        #    res.append(item)
         self.data[index] = items
         self.names[index] = name
-        self.loaded[index] = False
-
-    def display_items(self, items, name, index):
         self.grids[index].set_items(items)
-
-    def onBeforeTabSelected(self, sender, idx):
-        if not self.loaded[idx]:
-            self.display_items(self.data[idx], self.names[idx], idx)
-            self.loaded[idx] = True
-        return True
-
-    def onTabSelected(self, sender, idx):
-        pass
 
 class MidPanel(Grid):
 
@@ -270,46 +286,44 @@ class InfoDirectory:
 
         self.remote = InfoServicePython()
 
-        self.tree_width = 300
+        self.tree_width = 200
 
         self.tp = HorizontalPanel()
-        self.tp.setWidth("%dpx" % (self.tree_width-20))
-        self.tp.setBorderWidth("1px")
+        self.tp.setWidth("%dpx" % (self.tree_width))
         self.treeview = Trees()
         self.treeview.fTree.addTreeListener(self)
         self.sp = ScrollPanel()
         self.tp.add(self.treeview)
         self.sp.add(self.tp)
+        self.sp.setHeight("100%")
 
         self.horzpanel1 = HorizontalPanel()
         self.horzpanel1.setSize("100%", "100%")
         self.horzpanel1.setBorderWidth("1px")
-
-        self.hp = HorizontalPanel()
-        self.hp.setWidth("800px")
-        self.hp.setHeight("100%")
-        self.horzpanel2 = HorizontalPanel()
-        self.horzpanel2.setSize("100%", "100%")
-        self.hp.add(self.horzpanel2)
-        #self.hp.setBorderWidth("1px")
+        self.horzpanel1.setSpacing("10px")
 
         self.rp = RightPanel()
+        self.rps = ScrollPanel()
+        self.rps.add(self.rp)
+        self.rps.setWidth("100%")
+        self.rp.setWidth("100%")
 
-        self.cp1 = CollapserPanel()
+        self.cp1 = CollapserPanel(self)
         self.cp1.setWidget(self.sp)
         self.cp1.setHTML("&nbsp;")
 
-        self.horzpanel1.add(self.cp1)
-        self.horzpanel1.add(self.hp)
 
         self.midpanel = MidPanel(self)
-        self.cp2 = CollapserPanel()
+        self.cp2 = CollapserPanel(self)
         self.cp2.setWidget(self.midpanel)
         self.cp2.setHTML("&nbsp;")
 
-        self.horzpanel2.add(self.cp2)
-        self.horzpanel2.add(self.rp)
+        self.horzpanel1.add(self.cp1)
+        self.horzpanel1.add(self.cp2)
+        self.horzpanel1.add(self.rps)
 
+        self.cp1.setInitialWidth("%dpx" % self.tree_width)
+        self.cp2.setInitialWidth("200px")
 
         RootPanel().add(self.horzpanel1)
 
@@ -319,11 +333,16 @@ class InfoDirectory:
         self.onWindowResized(width, height)
         Window.addWindowResizeListener(self)
   
+    def setCollapserWidth(self, widget, width):
+        self.horzpanel1.setCellWidth(widget, width)
 
     def onWindowResized(self, width, height):
-        self.hp.setWidth("%dpx" % (width - self.tree_width))
-        self.hp.setHeight("%dpx" % (height - 20))
-        self.sp.setHeight("%dpx" % (height - 20))
+        #self.hp.setWidth("%dpx" % (width - self.tree_width))
+        #self.hp.setHeight("%dpx" % (height - 20))
+        self.cp1.setHeight("%dpx" % (height - 30))
+        self.cp2.setHeight("%dpx" % (height - 30))
+        self.rps.setHeight("%dpx" % (height - 30))
+        self.horzpanel1.setHeight("%dpx" % (height - 20))
 
     def onTreeItemStateChanged(self, item):
         if item.isSelected():
@@ -341,8 +360,9 @@ class InfoDirectory:
         self.clear_right_panel()
 
     def clear_right_panel(self):
-        self.horzpanel2.remove(1)
-        self.horzpanel2.add(HTML(""))
+        self.horzpanel1.remove(2)
+        self.horzpanel1.insert(HTML(""), 2)
+        self.rp.setTitle("&nbsp;")
 
     def clear_mid_panel(self):
         self.clear_right_panel()
@@ -355,8 +375,9 @@ class InfoDirectory:
         self.cp2.setWidget(self.midpanel)
 
     def select_right_grid(self, location, name):
-        self.horzpanel2.remove(1)
-        self.horzpanel2.add(self.rp)
+        self.horzpanel1.remove(2)
+        self.horzpanel1.insert(self.rps, 2)
+        self.rp.setTitle(name)
         self.remote.get_rightpanel_datanames(location, self)
 
     def get_rightpanel_datasets(self, datasets):
