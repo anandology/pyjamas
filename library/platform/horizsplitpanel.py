@@ -3,7 +3,6 @@
 
 /*
  * Copyright 2008 Google Inc.
- * Copyright 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
  * 
  * Licensed under the Apache License, Version 2.0 (the "License") you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -20,9 +19,9 @@
 """
 
 from pyjamas.splitpanel import SplitPanel
-from pyjamas import DOM
-from pyjamas.DeferredCommand import DeferredCommand
-from pyjamas.Timer import Timer
+import DOM
+from DeferredCommand import DeferredCommand
+from Timer import Timer
 
 class ImplHorizontalSplitPanel:
     """ The standard implementation for horizontal split panels.
@@ -64,15 +63,6 @@ class ImplHorizontalSplitPanel:
     def onDetach(self):
         pass
 
-    def onTimer(self, sender):
-        pass
-    def execute(self):
-        pass
-    def addResizeListener(self, container):
-        pass
-    def onResize(self):
-        pass
-
     def onSplitterResize(self, px):
         self.setSplitPositionUsingPixels(px)
 
@@ -82,9 +72,6 @@ class ImplHorizontalSplitPanel:
         self.setSplitPositionUsingPixels(self.panel.getOffsetWidth(leftElem))
 
     def setSplitPositionUsingPixels(self, px):
-        self._setSplitPositionUsingPixels(px)
-
-    def _setSplitPositionUsingPixels(self, px):
         """ Set the splitter's position in units of pixels.
               
               px represents the splitter's position as a distance
@@ -136,6 +123,146 @@ class ImplHorizontalSplitPanel:
         # right-side width.
         pass
   
+class ImplIE6HorizontalSplitPanel(ImplHorizontalSplitPanel):
+    """ The IE6 implementation for horizontal split panels.
+    """
+
+    def __init__(self, panel):
+        
+        self.panel = panel
+        self.isResizeInProgress = false
+        self.splitPosition = 0
+
+        elem = panel.getElement()
+
+        # Prevents inherited text-align settings from interfering with the
+        # panel's layout. The setting we choose must be bidi-sensitive,
+        # as left-alignment is the default with LTR directionality, and
+        # right-alignment is the default with RTL directionality.            
+        if True: # TODO (LocaleInfo.getCurrentLocale().isRTL()) {
+            DOM.setStyleAttribute(elem, "textAlign", "right")
+        else:
+            DOM.setStyleAttribute(elem, "textAlign", "left")  
+
+        DOM.setStyleAttribute(elem, "position", "relative")
+
+        # Technically, these are snapped to the top and bottom, but IE doesn't
+        # provide a reliable way to make that happen, so a resize listener is
+        # wired up to control the height of these elements.
+        self.addAbsolutePositoning(panel.getWidgetElement(0))
+        self.addAbsolutePositoning(panel.getWidgetElement(1))
+        self.addAbsolutePositoning(panel.getSplitElement())
+
+        self.expandToFitParentUsingPercentages(panel.container)
+
+        if True: # TODO (LocaleInfo.getCurrentLocale().isRTL()):
+        # Snap the left pane to the left edge of the container. We 
+        # only need to do this when layout is RTL if we don't, the 
+        # left pane will overlap the right pane.
+            panel.setLeft(panel.getWidgetElement(0), "0px")
+
+    def onAttach(self):
+        self.addResizeListener(self.panel.container)
+        self.onResize()
+
+    def onDetach(self):
+        DOM.setElementAttribute(self.panel.container, "onresize", null)
+
+    def onTimer(self, sender):
+        self.setSplitPositionUsingPixels(       self.splitPosition)
+        self.isResizeInProgress = False
+
+    def onSplitResize(self, px):
+        if not self.isResizeInProgress:
+            self.isResizeInProgress = true
+            Timer(self, 20)
+        self.splitPosition = px
+
+    def setSplitPositionUsingPixels(self, px):
+        if True: # TODO (LocaleInfo.getCurrentLocale().isRTL()) {
+            splitElem = self.panel.getSplitElement()
+
+            rootElemWidth = self.panel.getOffsetWidth(self.panel.container)
+            splitElemWidth = self.panel.getOffsetWidth(splitElem)
+
+            # This represents an invalid state where layout is incomplete. This
+            # typically happens before DOM attachment, but I leave it here as a
+            # precaution because negative width/height style attributes produce
+            # errors on IE.
+            if (rootElemWidth < splitElemWidth):
+                return
+
+            # Compute the new right side width.
+            newRightWidth = rootElemWidth - px - splitElemWidth
+
+            # Constrain the dragging to the physical size of the panel.
+            if (px < 0):
+                px = 0
+                newRightWidth = rootElemWidth - splitElemWidth
+            elif (newRightWidth < 0):
+                px = rootElemWidth - splitElemWidth
+                newRightWidth = 0
+
+            # Set the width of the right side.
+            self.panel.setElemWidth(self.panel.getWidgetElement(1), newRightWidth + "px")
+
+            # Move the splitter to the right edge of the left element. 
+            self.panel.setLeft(splitElem, px + "px")    
+
+            # Update the width of the left side        
+            if (px == 0):
+
+              # This takes care of a qurky RTL layout bug with IE6. 
+              # During DOM construction and layout, onResize events
+              # are fired, and this method is called with px == 0. 
+              # If one tries to set the width of the 0 element to
+              # before layout completes, the 1 element will
+              # appear to be blanked out.
+              
+                DeferredCommand.addCommand(self)
+            else:
+                self.panel.setElemWidth(self.panel.getWidgetElement(0), px + "px")
+
+        else:
+            ImplHorizontalSplitPanel.setSplitPositionUsingPixels(self, px)
+
+    def execute(self):
+        self.panel.setElemWidth(self.panel.getWidgetElement(0), "0px")
+
+    def updateRightWidth(self, rightElem, newRightWidth):
+        self.panel.setElemWidth(rightElem, newRightWidth + "px")
+
+    def addResizeListener(self, container):
+        JS("""
+            this.container.onresize = function() {
+                           __ImplIE6HorizontalSplitPanel_onResize();
+                                      }
+        """)
+
+    def onResize(self):
+      leftElem = self.panel.getWidgetElement(0)
+      rightElem = self.panel.getWidgetElement(1)
+
+      height = self.getOffsetHeight(self.panel.container) + "px"
+      self.panel.setElemHeight(rightElem, height)
+      self.panel.setElemHeight(self.panel.getSplitElement(), height)
+      self.panel.setElemHeight(leftElem, height)
+      self.setSplitPositionUsingPixels(self.getOffsetWidth(leftElem))      
+
+class ImplSafariHorizontalSplitPanel(ImplHorizontalSplitPanel):
+    """ 
+        The Safari implementation which owes its existence entirely to a single
+        WebKit bug: http:#bugs.webkit.org/show_bug.cgi?id=9137.
+    """
+    def __init__(self, panel):
+        
+      fullSize = "100%"
+      ImplHorizontalSplitPanel.__init__(self, panel)
+      self.panel.setElemHeight(self.panel.container, fullSize)
+      self.panel.setElemHeight(self.panel.getWidgetElement(0), fullSize)
+      self.panel.setElemHeight(self.panel.getWidgetElement(1), fullSize)
+      self.panel.setElemHeight(self.panel.getSplitElement(), fullSize)
+
 class HorizontalSplitPanel(SplitPanel):
     """  A panel that arranges two widgets in a single horizontal row
          and allows the user to interactively change the proportion
