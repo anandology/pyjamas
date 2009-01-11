@@ -1,16 +1,105 @@
 from pyjamas.ui import RootPanel, HTML, Label, HasAlignment, Button
 from pyjamas.ui import HorizontalPanel, AbsolutePanel, ScrollPanel, Grid
-from pyjamas.ui import TabPanel
+from pyjamas.ui import TabPanel, SimplePanel, FlexTable, Image
 from pyjamas.ui import DockPanel, HasHorizontalAlignment
 from pyjamas import Window
 
-from pyjamas.horizsplitpanel import HorizontalSplitPanel
+#from pyjamas.horizsplitpanel import HorizontalSplitPanel
 
 from pyjamas.JSONService import JSONProxy
 
 from Trees import Trees
 
 from Timer import Timer
+
+class CollapserPanel(SimplePanel):
+    def __init__(self):
+        SimplePanel.__init__(self)
+        self.caption = HTML()
+        self.child = None 
+        self.showing = False
+        self.dragging = False
+        self.dragStartX = 0
+        self.dragStartY = 0
+        self.panel = FlexTable()
+
+        closeButton = Image("./images/cancel.png")
+        closeButton.addClickListener(self)
+        dock = DockPanel()
+        dock.setSpacing(0)
+        
+        dock.add(closeButton, DockPanel.EAST)
+        dock.add(self.caption, DockPanel.WEST)
+
+        dock.setCellHorizontalAlignment(closeButton, HasAlignment.ALIGN_RIGHT)
+        dock.setCellHorizontalAlignment(self.caption, HasAlignment.ALIGN_LEFT)
+        dock.setCellWidth(self.caption, "100%")
+        dock.setWidth("100%")
+
+        self.panel.setWidget(0, 0, dock)
+        self.panel.setHeight("100%")
+        self.panel.setBorderWidth(0)
+        self.panel.setCellPadding(0)
+        self.panel.setCellSpacing(0)
+        self.panel.getCellFormatter().setHeight(1, 0, "100%")
+        self.panel.getCellFormatter().setWidth(1, 0, "100%")
+        #self.panel.getCellFormatter().setAlignment(1, 0, HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE)
+        SimplePanel.setWidget(self, self.panel)
+
+        self.setStyleName("gwt-DialogBox")
+        self.caption.setStyleName("Caption")
+        closeButton.setStyleName("Close")
+        dock.setStyleName("Header")
+        #self.caption.addMouseListener(self)
+        self.collapsed = False
+
+        self.collapsed_width = "10px"
+        self.uncollapsed_width = "100%"
+
+    def onClick(self, sender):
+        if self.collapsed == False:
+            self.collapsed = True
+            self.caption.setVisible(False)
+            if self.child:
+                self.child.setVisible(False)
+            self.setWidth(self.collapsed_width)
+        else:
+            self.collapsed = False
+            self.caption.setVisible(True)
+            if self.child:
+                self.child.setVisible(True)
+            self.setWidth(self.uncollapsed_width)
+
+    def setHTML(self, html):
+        self.caption.setHTML(html)
+
+    def setText(self, text):
+        self.caption.setText(text)
+
+    def remove(self, widget):
+        if self.child != widget:
+            return False
+
+        self.panel.remove(widget)
+        return True
+
+    def doAttachChildren(self):
+        SimplePanel.doAttachChildren(self)
+        self.caption.onAttach()
+
+    def doDetachChildren(self):
+        SimplePanel.doDetachChildren(self)
+        self.caption.onDetach()
+
+    def setWidget(self, widget):
+        if self.child != None:
+            self.panel.remove(self.child)
+
+        if widget != None:
+            self.panel.setWidget(1, 0, widget)
+
+        self.child = widget
+
 
 class RightGrid(DockPanel):
 
@@ -199,22 +288,28 @@ class InfoDirectory:
         self.hp = HorizontalPanel()
         self.hp.setWidth("800px")
         self.hp.setHeight("100%")
-        self.horzpanel2 = HorizontalSplitPanel()
+        self.horzpanel2 = HorizontalPanel()
         self.horzpanel2.setSize("100%", "100%")
-        self.horzpanel2.setSplitPosition("200px")
         self.hp.add(self.horzpanel2)
-        self.hp.setBorderWidth("1px")
+        #self.hp.setBorderWidth("1px")
 
         self.rp = RightPanel()
 
-        self.horzpanel2.setLeftWidget(HTML(""))
-        #self.horzpanel2.setRightWidget(HTML(randomText))
-        self.horzpanel2.setRightWidget(self.rp)
+        self.cp1 = CollapserPanel()
+        self.cp1.setWidget(self.sp)
+        self.cp1.setHTML("&nbsp;")
 
-        self.horzpanel1.add(self.sp)
+        self.horzpanel1.add(self.cp1)
         self.horzpanel1.add(self.hp)
 
         self.midpanel = MidPanel(self)
+        self.cp2 = CollapserPanel()
+        self.cp2.setWidget(self.midpanel)
+        self.cp2.setHTML("&nbsp;")
+
+        self.horzpanel2.add(self.cp2)
+        self.horzpanel2.add(self.rp)
+
 
         RootPanel().add(self.horzpanel1)
 
@@ -242,23 +337,26 @@ class InfoDirectory:
             return
 
         self.remote.get_midpanel_data(obj.root + "/" + obj.text, self)
+        self.cp2.setHTML(obj.text)
         self.clear_right_panel()
 
     def clear_right_panel(self):
-        self.horzpanel2.setRightWidget(HTML(""))
+        self.horzpanel2.remove(1)
+        self.horzpanel2.add(HTML(""))
 
     def clear_mid_panel(self):
         self.clear_right_panel()
-        self.horzpanel2.setLeftWidget(HTML(""))
+        #self.horzpanel2.setLeftWidget(HTML(""))
 
     def set_mid_panel(self, response):
 
         self.midpanel.set_items(response)
 
-        self.horzpanel2.setLeftWidget(self.midpanel)
+        self.cp2.setWidget(self.midpanel)
 
     def select_right_grid(self, location, name):
-        self.horzpanel2.setRightWidget(self.rp)
+        self.horzpanel2.remove(1)
+        self.horzpanel2.add(self.rp)
         self.remote.get_rightpanel_datanames(location, self)
 
     def get_rightpanel_datasets(self, datasets):
