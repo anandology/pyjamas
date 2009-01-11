@@ -1518,7 +1518,7 @@ class HorizontalPanel(CellPanel):
         td = DOM.getParent(widget.getElement())
         DOM.removeChild(self.tableRow, td)
 
-        CellPanel.remove(widget)
+        CellPanel.remove(self, widget)
         return True
 
     def setHorizontalAlignment(self, align):
