@@ -1,0 +1,52 @@
+"""
+The ``ui.PopupPanel`` class implements a panel that pops up in the browser
+window to display some contents.  When the user clicks outside the popup, it
+disappears again.
+
+The PopupPanel requires stylesheet definitions in order to work properly.  The
+following stylesheet definitions were used in the example below:
+
+    .showcase-popup {
+        background-color: white;
+        border: 1px solid #87B3FF;
+        padding: 4px;
+    }
+
+Note that the popup panel is supposed to close when the user clicks outside of
+it.  However, this doesn't work under Firefox 3, so the code below adds a click
+handler so the user can click on the popup itself to close it.
+"""
+from ui import SimplePanel, VerticalPanel, HTML, Button, PopupPanel
+
+class PopupPanelDemo(SimplePanel):
+    def __init__(self):
+        SimplePanel.__init__(self)
+
+        vPanel = VerticalPanel()
+        vPanel.setSpacing(4)
+
+        self._btn = Button("Click Me", getattr(self, "showPopup"))
+
+        vPanel.add(HTML("Click on the button below to display the popup."))
+        vPanel.add(self._btn)
+
+        self.add(vPanel)
+
+
+    def showPopup(self):
+        contents = HTML("Hello, World!")
+        contents.addClickListener(getattr(self, "onClick"))
+
+        self._popup = PopupPanel(autoHide=True)
+        self._popup.add(contents)
+        self._popup.setStyleName("showcase-popup")
+
+        left = self._btn.getAbsoluteLeft() + 10
+        top  = self._btn.getAbsoluteTop() + 10
+        self._popup.setPopupPosition(left, top)
+        self._popup.show()
+
+
+    def onClick(self):
+        self._popup.hide()
+
