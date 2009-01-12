@@ -711,6 +711,7 @@ class Translator:
             print >>self.output, '          alert("' + errMsg + '"' \
                                                 + '+err.name+": "+err.message'\
                                                 + ');'
+            print >>self.output, '          debugger;'
 
             print >>self.output, '          throw new ' + self.module_prefix + "HaltException();"
             print >>self.output, '      }'
