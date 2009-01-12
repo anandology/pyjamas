@@ -10,7 +10,7 @@
 #   - add this to your MainModule.html: <!--[if IE]><script src="excanvas.js" type="text/javascript"></script><![endif]-->
 
 from pyjamas import DOM
-from pyjamas.ui import Image, Widget, Event, MouseListener
+from pyjamas.ui import Image, Widget, Event, MouseListener, KeyboardListener, Focus, FocusListener
 
 class Canvas(Widget):
     def __init__(self, width, height):
@@ -32,16 +32,29 @@ class Canvas(Widget):
         self.context.fillStyle = "black"
         self.context.strokeStyle = "black"
 
+        self.focusable = None
+        self.focusable = Focus.createFocusable()
+        
+        self.focusListeners = []
         self.clickListeners = []
         self.mouseListeners = []
-
+        self.keyboardListeners = []
+        
+        DOM.appendChild(self.getElement(canvas), self.focusable)
         DOM.sinkEvents(canvas, Event.ONCLICK | Event.MOUSEEVENTS | DOM.getEventsSunk(canvas))
+        DOM.sinkEvents(self.focusable, Event.FOCUSEVENTS | Event.KEYEVENTS)
 
     def addClickListener(self, listener):
         self.clickListeners.append(listener)
 
     def addMouseListener(self, listener):
         self.mouseListeners.append(listener)
+
+    def addFocusListener(self, listener):
+        self.focusListeners.append(listener)
+
+    def addKeyboardListener(self, listener):
+        self.keyboardListeners.append(listener)
 
     def onBrowserEvent(self, event):
         type = DOM.eventGetType(event)
@@ -50,6 +63,10 @@ class Canvas(Widget):
             for listener in self.clickListeners:
                 if listener.onClick: listener.onClick(self, event)
                 else: listener(self, event)
+        elif type == "blur" or type == "focus":
+            FocusListener.fireFocusEvent(self, self.focusListeners, self, event)
+        elif type == "keydown" or type == "keypress" or type == "keyup":
+            KeyboardListener.fireKeyboardEvent(self, self.keyboardListeners, self, event)
         elif type == "mousedown" or type == "mouseup" or type == "mousemove" or type == "mouseover" or type == "mouseout":
             MouseListener.fireMouseEvent(self, self.mouseListeners, self, event)
 
@@ -58,6 +75,18 @@ class Canvas(Widget):
 
     def removeMouseListener(self, listener):
         self.mouseListeners.remove(listener)
+
+    def removeFocusListener(self, listener):
+        self.focusListeners.remove(listener)
+
+    def removeKeyboardListener(self, listener):
+        self.keyboardListeners.remove(listener)
+
+    def setFocus(self, focused):
+        if (focused):
+            Focus.focus(self, self.focusable)
+        else:
+            Focus.blur(self, self.focusable)
 
     def getContext(self):
         return self.context

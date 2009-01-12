@@ -52,6 +52,7 @@ class ColourGridCanvas(Canvas):
         Canvas.__init__(self, 150, 150)
         self.draw()
         self.addMouseListener(self)
+        self.addKeyboardListener(self)
         
     def draw(self):
         for i in range(0, 6):
@@ -63,10 +64,10 @@ class ColourGridCanvas(Canvas):
         pass
 
     def onMouseEnter(self, sender):
-        pass
+        self.setFocus(True)
 
     def onMouseLeave(self, sender):
-        pass
+        self.setFocus(False)
 
     def onMouseMove(self, sender, x, y):
         RootPanel().add(HTML("move: x %d " % x + "y %d" % y))
@@ -74,26 +75,36 @@ class ColourGridCanvas(Canvas):
     def onMouseUp(self, sender, x, y):
         pass
 
+    def onKeyUp(self, sender, keyCode, modifiers):
+        pass
+    
+    def onKeyDown(self, sender, keyCode, modifiers):
+        pass
+
+    def onKeyPress(self, sender, keyCode, modifiers):
+        RootPanel().add(HTML("keypressed: %s" % keyCode))      
+
+
 class RotatedCanvas(Canvas):
     def __init__(self):
         Canvas.__init__(self, 150, 150)
         self.context.translate(75,75)
         self.draw()
-        
+
     def draw(self):
         pi = 3.14159265358979323
         # Loop through rings (from inside to out)
         for i in range(1,6):
             self.context.save()
             self.context.fillStyle = 'rgb('+(51*i)+','+(255-51*i)+',255)'
-        
+
             # draw individual dots
             for j in range(0,i*6): 
                 self.context.rotate(pi*2/(i*6))
                 self.context.beginPath()
                 self.context.arc(0,i*12.5,5,0,pi*2,True)
                 self.context.fill()
-        
+
             self.context.restore()
 
 
