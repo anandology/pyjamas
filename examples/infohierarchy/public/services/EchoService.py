@@ -8,7 +8,7 @@ def get_directory_info(prefix, pth, recursive):
     directory = os.listdir(pth)
     directory.sort()
     for p in directory:
-        if p != '.' and p != '..':
+        if p[0] != '.':
             subp = os.path.join(pth, p)
             p = os.path.join(prefix, p)
             if recursive and os.path.isdir(subp):
