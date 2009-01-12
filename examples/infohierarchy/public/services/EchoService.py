@@ -44,22 +44,27 @@ class Service:
                 cidx = l.find(":")
                 if cidx == -1:
                     continue
-                location = l[:cidx].strip()
+                command = l[:cidx].strip()
+                args = l[cidx+1:].lstrip()
+                cidx = args.find(" ")
+                if cidx == -1:
+                    continue
+                location = args[:cidx].strip()
                 location = location.split(",")
                 if not len(location) == 2:
                     continue
                 location = map(strip, location)
                 [x, y] = map(int, location)
-                data = l[cidx+1:].lstrip()
+                data = args[cidx+1:].lstrip()
 
-                res.append([x+1, y+1, data])
+                res.append([command, x+1, y, data])
         else:
             headings = f.readline()
             l = headings.strip()
             vals = l.split(",")
             for x in range(len(vals)):
                 val = vals[x].strip()
-                res.append([x+1, 0, val])
+                res.append(["data", x+1, 0, val])
 
             y = 1
             for l in f.readlines():
@@ -67,8 +72,12 @@ class Service:
                 vals = l.split(",")
                 for x in range(len(vals)):
                     val = vals[x].strip()
-                    res.append([x+1, y, val])
+                    res.append(["data", x+1, y, val])
                 y += 1
+
+        f = open("/tmp/log.txt", "w")
+        f.write(repr(res))
+        f.close()
 
         return {'items': res, 'name': name, 'index': index }
 

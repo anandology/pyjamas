@@ -29,11 +29,11 @@ body {
 
 .rightpanel-cellcornerformat {
   border: 1px solid #33A;
-  background: #CCf;
+  background-color: #CCf;
 }
 
 .rightpanel-celltitleformat {
-  background: #CCf;
+  background-color: #CCf;
   border-top: 1px solid #33A;
   border-bottom: 1px solid #33A;
   border-right: 1px solid #33A;
@@ -43,17 +43,17 @@ body {
   border-bottom: 1px solid #33A;
   border-right: 1px solid #33A;
   border-left: 1px solid #33A;
-  background: #DDf;
+  background-color: #DDf;
 }
 
 .rightpanel-cellformat {
   border-bottom: 1px solid #33A;
   border-right: 1px solid #33A;
-  background: #EEf;
+  background-color: #EEf;
 }
 
 .midpanel-SelectedRow {
-  background: #CCf;
+  background-color: #CCf;
 }
 
 

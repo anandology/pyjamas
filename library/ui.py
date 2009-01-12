@@ -748,6 +748,14 @@ class CellFormatter:
         self.outer.prepareCell(row, column)
         return DOM.getChild(self.outer.rowFormatter.ensureElement(row), column)
 
+    def getStyleAttr(self, row, column, attr):
+        elem = self.getElement(row, column)
+        return DOM.getStyleAttribute(elem, attr)
+
+    def setStyleAttr(self, row, column, attrName, value):
+        elem = self.getElement(row, column)
+        DOM.setStyleAttribute(elem, attrName, value)
+
     def getAttr(self, row, column, attr):
         elem = self.getElement(row, column)
         return DOM.getAttribute(elem, attr)
@@ -799,6 +807,10 @@ class RowFormatter:
         JS("""
         return element.rows[row];
         """)
+
+    def setStyleAttr(self, row, attrName, value):
+        element = self.ensureElement(row)
+        DOM.setStyleAttribute(element, attrName, value)
 
     def setAttr(self, row, attrName, value):
         element = self.ensureElement(row)

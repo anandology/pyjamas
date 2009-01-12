@@ -76,7 +76,7 @@ sprintfWrapper = {
         }
         constructor = null;
         if (!pyjslib_is_basetype(args))
-            constructor = pyjslib__get_pyjs_classtype(args);
+            constructor = pyjslib_get_pyjs_classtype(args);
 
         if(constructor != "pyjslib_List" && constructor != "pyjslib_Tuple")
         {

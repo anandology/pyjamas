@@ -118,12 +118,18 @@ class CollapserPanel(SimplePanel):
 
         self.child = widget
 
+def space_split(data):
+    res = []
+    idx = data.find(" ")
+    res.append(data[:idx])
+    res.append(data[idx+1:])
+    return res
 
 class RightGrid(DockPanel):
 
     def __init__(self, title):
         DockPanel.__init__(self)
-        self.grid = Grid()
+        self.grid = FlexTable()
         title = HTML(title)
         self.add(title, DockPanel.NORTH)
         self.setCellHorizontalAlignment(title,
@@ -132,6 +138,9 @@ class RightGrid(DockPanel):
         self.grid.setBorderWidth("0px")
         self.grid.setCellSpacing("0px")
         self.grid.setCellPadding("4px")
+
+        self.formatCell(0, 0)
+        self.grid.setHTML(0, 0, "&nbsp;")
 
     def clear_items(self):
         self.index = 0
@@ -156,37 +165,49 @@ class RightGrid(DockPanel):
     def _add_items(self, i):
 
         item = self.items[i]
-        col = item[0]
-        row = item[1]
-        data = item[2]
+        command = item[0]
+        col = item[1]
+        row = item[2]
+        data = item[3]
+
         format_row = -1
         format_col = -1
         if col+1 > self.max_cols:
             format_col = self.max_cols
-            self.grid.resizeColumns(col+1)
+            #self.grid.resizeColumns(col+1)
             self.max_cols = col+1
 
         if row+1 >= self.max_rows:
             format_row = self.max_rows
-            self.grid.resizeRows(row+1)
+            #self.grid.resizeRows(row+1)
             self.max_rows = row+1
 
-        if format_col >= 0:
-            for k in range(format_col, self.max_cols):
-                for j in range(self.max_rows):
-                    self.formatCell(j, k)
         if format_row >= 0:
-            for j in range(self.max_cols):
-                for k in range(format_row, self.max_rows):
-                    self.formatCell(k, j)
+            for k in range(format_row, self.max_rows):
+                self.formatCell(k, 0)
 
-        self.grid.setHTML(row, col, data)
+        self.formatCell(row, col)
+
+        if command == 'data':
+            self.grid.setHTML(row, col, data)
+        elif command == 'cellstyle':
+            data = space_split(data)
+            attr = data[0]
+            val = data[1]
+            self.grid.getCellFormatter().setStyleAttr(row, col, attr, val)
+        elif command == 'cellspan':
+            data = space_split(data)
+            rowspan = data[0]
+            colspan = data[1]
+            self.grid.getCellFormatter().setColSpan(row, col, colspan)
+            self.grid.getCellFormatter().setRowSpan(row, col, rowspan)
 
     def formatCell(self, row, col):
+        self.grid.prepareCell(row, col)
         if col == 0 and row != 0:
             self.grid.setHTML(row, col, "%d" % row)
         if row != 0 and col != 0:
-            self.grid.setHTML(row, col, "&nbsp;")
+            #self.grid.setHTML(row, col, "&nbsp;")
             fmt = "rightpanel-cellformat"
         if col == 0 and row == 0:
             fmt = "rightpanel-cellcornerformat"
