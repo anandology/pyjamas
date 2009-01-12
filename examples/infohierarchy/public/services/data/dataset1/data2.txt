@@ -14,6 +14,8 @@ data: 2,0 &nbsp;
 data: 3,0 &nbsp;
 cellspan: 0,1 1 4
 data: 0,1 <b>see how comments could be done</b>
+align: 0,1 - center
 cellstyle: 0,0 color #ff00ff
+align: 1,2 top right
 cellstyle: 1,2 background #00FF00
 cellstyle: 0,0 width 200px

@@ -188,19 +188,31 @@ class RightGrid(DockPanel):
 
         self.formatCell(row, col)
 
+        cf = self.grid.getCellFormatter()
+
         if command == 'data':
             self.grid.setHTML(row, col, data)
         elif command == 'cellstyle':
             data = space_split(data)
             attr = data[0]
             val = data[1]
-            self.grid.getCellFormatter().setStyleAttr(row, col, attr, val)
+            cf.setStyleAttr(row, col, attr, val)
+        elif command == 'align':
+            data = space_split(data)
+            vert = data[0]
+            horiz = data[1]
+            if vert != '-':
+                cf.setVerticalAlignment(row, col, vert)
+            if horiz != '-':
+                cf.setHorizontalAlignment(row, col, horiz)
         elif command == 'cellspan':
             data = space_split(data)
             rowspan = data[0]
             colspan = data[1]
-            self.grid.getCellFormatter().setColSpan(row, col, colspan)
-            self.grid.getCellFormatter().setRowSpan(row, col, rowspan)
+            if colspan != '-':
+                cf.setColSpan(row, col, colspan)
+            if rowspan != '-':
+                cf.setRowSpan(row, col, rowspan)
 
     def formatCell(self, row, col):
         self.grid.prepareCell(row, col)
