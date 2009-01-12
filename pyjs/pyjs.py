@@ -995,7 +995,9 @@ class Translator:
         elif isinstance(node.value, float):
             return str(node.value)
         elif isinstance(node.value, str):
-            return "'" + node.value.encode('string_escape') + "'"
+            s = unicode(node.value, 'utf-8')
+            s = repr(s)[2:-1].replace("'", "\\'")
+            return "'" + s + "'"
         elif node.value is None:
             return "null"
         else:
