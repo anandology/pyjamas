@@ -5,7 +5,9 @@ from string import split, strip
 
 def get_directory_info(prefix, pth, recursive):
     res = []
-    for p in os.listdir(pth):
+    directory = os.listdir(pth)
+    directory.sort()
+    for p in directory:
         if p != '.' and p != '..':
             subp = os.path.join(pth, p)
             p = os.path.join(prefix, p)
@@ -36,6 +38,8 @@ class Service:
         f = open(pth)
         res = []
         fmt = f.readline()
+        if fmt[:4] == 'html':
+            return {'html': f.read(), 'index': index, 'name': name}
         if fmt[:6] == 'sparse':
             for l in f.readlines():
                 l = l.strip()

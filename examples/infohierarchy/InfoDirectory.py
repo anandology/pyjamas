@@ -251,7 +251,10 @@ class RightPanel(DockPanel):
     def clear_items(self):
 
         for i in range(len(self.grids)):
-            self.grids[i].clear_items()
+            g = self.grids[i]
+            if hasattr(g, "clear_items"):
+                g.clear_items()
+
         self.grids = {}
         self.g.resize(0, 0)
 
@@ -263,16 +266,24 @@ class RightPanel(DockPanel):
         self.loaded = {}
         size = len(datasets)
         self.g.resize(size, 1)
-        for i in range(size):
-            item = datasets[i]
-            fname = item[0]
-            self.grids[i] = RightGrid(fname)
-            self.g.setWidget(i, 0, self.grids[i])
+        #for i in range(size):
+        #    item = datasets[i]
+        #    fname = item[0]
+        #    self.grids[i] = RightGrid(fname)
+        #    self.g.setWidget(i, 0, self.grids[i])
    
+    def add_html(self, html, name, index):
+        self.data[index] = html
+        self.names[index] = name
+        self.grids[index] = HTML(html)
+        self.g.setWidget(index, 0, self.grids[index])
+
     def add_items(self, items, name, index):
         self.data[index] = items
         self.names[index] = name
+        self.grids[index] = RightGrid("")
         self.grids[index].set_items(items)
+        self.g.setWidget(index, 0, self.grids[index])
 
 class MidPanel(Grid):
 
@@ -424,7 +435,12 @@ class InfoDirectory:
             self.remote.get_rightpanel_data(fname, fname, i, self)
         
     def fill_right_grid(self, data):
-        self.rp.add_items(data.get('items'), data.get('name'), data.get('index'))
+        index = data.get('index')
+        name = data.get('name')
+        if data.has_key('items'):
+            self.rp.add_items(data.get('items'), name, index)
+        elif data.has_key('html'):
+            self.rp.add_html(data.get('html'), name, index)
 
     def onRemoteResponse(self, response, request_info):
         method = request_info.method
