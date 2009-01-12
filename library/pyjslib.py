@@ -654,7 +654,7 @@ def repr(x):
            var contents = x.getArray();
            var s = "(";
            for (var i=0; i < contents.length; i++) {
-               s += uiHelpers_repr(contents[i]);
+               s += pyjslib_repr(contents[i]);
                if (i < contents.length - 1)
                    s += ", ";
            };
@@ -666,7 +666,7 @@ def repr(x):
            var contents = x.getArray();
            var s = "[";
            for (var i=0; i < contents.length; i++) {
-               s += uiHelpers_repr(contents[i]);
+               s += pyjslib_repr(contents[i]);
                if (i < contents.length - 1)
                    s += ", ";
            };
@@ -682,7 +682,7 @@ def repr(x):
            var s = "{";
            for (var i=0; i<keys.length; i++) {
                var key = keys[i]
-               s += uiHelpers_repr(key) + ": " + uiHelpers_repr(x.d[key]);
+               s += pyjslib_repr(key) + ": " + pyjslib_repr(x.d[key]);
                if (i < keys.length-1)
                    s += ", "
            };
@@ -902,4 +902,4 @@ def printFunc(objs):
     }
     console.debug(s)
     """)
-   
+
