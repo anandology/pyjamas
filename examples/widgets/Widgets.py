@@ -4,12 +4,16 @@ from pyjamas.ui import Image, HTML, VerticalPanel, HorizontalPanel
 from Canvas import Canvas, CanvasImage, ImageLoadListener
 from pyjamas.Timer import Timer
 from math import floor, cos, sin
+from pyjamas import DOM
 
 
 class Widgets:
     def onModuleLoad(self):
 
-        self.solar = SolarCanvas()
+        img_url = Window.getLocation().getSearchVar("img")
+        if not img_url:
+            img_url = 'images/clock.png'
+        self.solar = SolarCanvas(img_url)
         
         RootPanel().add(self.solar)
         self.onShow()
@@ -23,15 +27,24 @@ class Widgets:
 
 
 class SolarCanvas(Canvas):
-    def __init__(self):
-        Canvas.__init__(self, 300, 300)     
-        self.clock = CanvasImage('images/Clock.png')
+    def __init__(self, img_url):
+        Canvas.__init__(self, 300, 300)
+        self.clock = CanvasImage(img_url)
+        self.width = 150
+        self.height = 150
         
-        self.loader = ImageLoadListener()
+        self.loader = ImageLoadListener(self)
         self.loader.add(self.clock)
         
         self.isActive = True
         self.onTimer()
+
+    def onLoad(self):
+        el = self.clock.getElement()
+        self.width = DOM.getAttribute(el, "width")
+        self.height = DOM.getIntAttribute(el, "height")
+        self.setWidth("%dpx" % self.width)
+        self.setHeight("%dpx" % self.height)
 
     def onTimer(self):
         if not self.isActive:
@@ -72,12 +85,12 @@ class SolarCanvas(Canvas):
         self.context.globalCompositeOperation = 'destination-over'
 
         # clear canvas
-        self.context.clearRect(0,0,100,100) 
+        self.context.clearRect(0,0,self.width,self.height) 
         
         self.context.save()
         self.context.fillStyle = 'rgba(0,0,0,0.4)'
         self.context.strokeStyle = 'rgba(0,153,255,0.4)'
-        self.context.translate(50,50)
+        self.context.translate(self.width/2,self.height/2)
         
         secs = self.getTimeSeconds()
         mins = self.getTimeMinutes() + secs / 60.0
@@ -87,19 +100,19 @@ class SolarCanvas(Canvas):
         self.context.save()
         self.context.fillStyle = 'rgba(255,0,0,0.4)'
         self.context.rotate( ((2*pi)/60)*secs + pi)
-        self.context.fillRect(-1,-4,2,38) 
+        self.context.fillRect(-1,-(self.width * 0.04),2, self.width * 0.38) 
         self.context.restore()
         
         # Minutes
         self.context.save()
         self.context.rotate( ((2*pi)/60)*mins + pi)
-        self.context.fillRect(-1,-1,3,35) 
+        self.context.fillRect(-1,-1,3,self.width * 0.35) 
         self.context.restore()
         
         # Hours
         self.context.save()
         self.context.rotate( ((2*pi)/12)*hours + pi)
-        self.context.fillRect(-2,-2,4,20) 
+        self.context.fillRect(-2,-2,4,self.width * 0.2) 
         self.context.restore()
         
         self.context.restore()
