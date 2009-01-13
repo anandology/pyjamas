@@ -635,11 +635,11 @@ class Panel(Widget):
     def clear(self):
         # use this method, due to list changing as it's being iterated.
         children = []
-        for child in panel.children:
+        for child in self.children:
             children.append(child)
 
         for child in children:
-            panel.remove(child)
+            self.remove(child)
 
     def disown(self, widget):
         if widget.getParent() != self:
@@ -2746,7 +2746,7 @@ class DialogBox(PopupPanel):
         return self.caption.getText()
 
     def onEventPreview(self, event):
-        # preventDefault on mosedown events, outside of the
+        # preventDefault on mousedown events, outside of the
         # dialog, to stop text-selection on dragging
         type = DOM.eventGetType(event)
         if type == 'mousedown':
