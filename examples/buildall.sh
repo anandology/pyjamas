@@ -14,7 +14,7 @@
 (cd gridedit; ./build.sh)
 (cd infohierarchy; ./build.sh)
 (cd jsobject; ./build.sh)
-(cd showcase; ./build.sh)
+(cd showcase; python compile.py)
 (cd slideshow; ./build.sh)
 (cd splitpanel; ./build.sh)
 (cd tabpanelwidget; ./build.sh)

@@ -20,7 +20,7 @@ import pyColourize
 # Modify the following to refer to the full path to your Pyjamas installation,
 # relative to the pyjamas-showcase source directory:
 
-PATH_TO_PYJAMAS = "pyjamas"
+PATH_TO_PYJAMAS = "../../../pyjamas"
 
 #############################################################################
 
