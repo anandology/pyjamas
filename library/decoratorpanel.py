@@ -2,48 +2,45 @@ import DOM
 from pyjamas.ui import SimplePanel, TabPanel, TabBar
 
 """
-/**
- * <p>
- * A {@link SimplePanel} that wraps its contents in stylized boxes, which can be
- * used to add rounded corners to a {@link Widget}.
- * </p>
- * <p>
- * Wrapping a {@link Widget} in a "9-box" allows users to specify images in each
- * of the corners and along the four borders. This method allows the content
- * within the {@link DecoratorPanel} to resize without disrupting the look of
- * the border. In addition, rounded corners can generally be combined into a
- * single image file, which reduces the number of downloaded files at startup.
- * This class also simplifies the process of using AlphaImageLoaders to support
- * 8-bit transparencies (anti-aliasing and shadows) in ie6, which does not
- * support them normally.
- * </p>
- * 
- * <h3>CSS Style Rules</h3>
- * <ul class='css'>
- * <li>.gwt-DecoratorPanel { the panel }</li>
- * <li>.gwt-DecoratorPanel .top { the top row }</li>
- * <li>.gwt-DecoratorPanel .topLeft { the top left cell }</li>
- * <li>.gwt-DecoratorPanel .topLeftInner { the inner element of the cell }</li>
- * <li>.gwt-DecoratorPanel .topCenter { the top center cell }</li>
- * <li>.gwt-DecoratorPanel .topCenterInner { the inner element of the cell }</li>
- * <li>.gwt-DecoratorPanel .topRight { the top right cell }</li>
- * <li>.gwt-DecoratorPanel .topRightInner { the inner element of the cell }</li>
- * <li>.gwt-DecoratorPanel .middle { the middle row }</li>
- * <li>.gwt-DecoratorPanel .middleLeft { the middle left cell }</li>
- * <li>.gwt-DecoratorPanel .middleLeftInner { the inner element of the cell }</li>
- * <li>.gwt-DecoratorPanel .middleCenter { the middle center cell }</li>
- * <li>.gwt-DecoratorPanel .middleCenterInner { the inner element of the cell }</li>
- * <li>.gwt-DecoratorPanel .middleRight { the middle right cell }</li>
- * <li>.gwt-DecoratorPanel .middleRightInner { the inner element of the cell }</li>
- * <li>.gwt-DecoratorPanel .bottom { the bottom row }</li>
- * <li>.gwt-DecoratorPanel .bottomLeft { the bottom left cell }</li>
- * <li>.gwt-DecoratorPanel .bottomLeftInner { the inner element of the cell }</li>
- * <li>.gwt-DecoratorPanel .bottomCenter { the bottom center cell }</li>
- * <li>.gwt-DecoratorPanel .bottomCenterInner { the inner element of the cell }</li>
- * <li>.gwt-DecoratorPanel .bottomRight { the bottom right cell }</li>
- * <li>.gwt-DecoratorPanel .bottomRightInner { the inner element of the cell }</li>
- * </ul>
- */
+  
+  A {@link SimplePanel} that wraps its contents in stylized boxes, which can be
+  used to add rounded corners to a {@link Widget}.
+  
+  Wrapping a {@link Widget} in a "9-box" allows users to specify images in each
+  of the corners and along the four borders. This method allows the content
+  within the {@link DecoratorPanel} to resize without disrupting the look of
+  the border. In addition, rounded corners can generally be combined into a
+  single image file, which reduces the number of downloaded files at startup.
+  This class also simplifies the process of using AlphaImageLoaders to support
+  8-bit transparencies (anti-aliasing and shadows) in ie6, which does not
+  support them normally.
+  
+  
+  CSS Style Rules
+
+  .gwt-DecoratorPanel { the panel }
+  .gwt-DecoratorPanel .top { the top row }
+  .gwt-DecoratorPanel .topLeft { the top left cell }
+  .gwt-DecoratorPanel .topLeftInner { the inner element of the cell }
+  .gwt-DecoratorPanel .topCenter { the top center cell }
+  .gwt-DecoratorPanel .topCenterInner { the inner element of the cell }
+  .gwt-DecoratorPanel .topRight { the top right cell }
+  .gwt-DecoratorPanel .topRightInner { the inner element of the cell }
+  .gwt-DecoratorPanel .middle { the middle row }
+  .gwt-DecoratorPanel .middleLeft { the middle left cell }
+  .gwt-DecoratorPanel .middleLeftInner { the inner element of the cell }
+  .gwt-DecoratorPanel .middleCenter { the middle center cell }
+  .gwt-DecoratorPanel .middleCenterInner { the inner element of the cell }
+  .gwt-DecoratorPanel .middleRight { the middle right cell }
+  .gwt-DecoratorPanel .middleRightInner { the inner element of the cell }
+  .gwt-DecoratorPanel .bottom { the bottom row }
+  .gwt-DecoratorPanel .bottomLeft { the bottom left cell }
+  .gwt-DecoratorPanel .bottomLeftInner { the inner element of the cell }
+  .gwt-DecoratorPanel .bottomCenter { the bottom center cell }
+  .gwt-DecoratorPanel .bottomCenterInner { the inner element of the cell }
+  .gwt-DecoratorPanel .bottomRight { the bottom right cell }
+  .gwt-DecoratorPanel .bottomRightInner { the inner element of the cell }
+
 """
 class DecoratorPanel(SimplePanel):
     #The default style name.
