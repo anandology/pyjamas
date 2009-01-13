@@ -2101,10 +2101,9 @@ class SimplePanel(Panel):
         return None
 
     def remove(self, widget):
-        if self.getWidget() == widget:
+        if self.getWidget() != widget:
             return False
         self.disown(widget)
-        self.getContainerElement().removeChild(widget.getElement())
         del self.children[0]
         return True
 
