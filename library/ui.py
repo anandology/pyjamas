@@ -4054,7 +4054,8 @@ class Tree(Widget):
 
     def fireStateChanged(self, item):
         for listener in self.listeners:
-            listener.onTreeItemStateChanged(item)
+            if hasattr(listener, "onTreeItemStateChanged"):
+                listener.onTreeItemStateChanged(item)
 
     def getChildWidgets(self):
         return self.childWidgets
