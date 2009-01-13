@@ -996,6 +996,11 @@ class Translator:
         elif isinstance(node.value, float):
             return str(node.value)
         elif isinstance(node.value, str):
+            return "'" + node.value.encode('string_escape') + "'"
+            # lkcl: reverting r208.  bug #127
+            # erik - string_escape does something necessary, without
+            # which quotes inside comments (docstrings) causes a
+            # javascript syntax error.  e.g. """ 'hello' """
             s = unicode(node.value, 'utf-8')
             s = repr(s)[2:-1].replace("'", "\\'")
             return "'" + s + "'"
