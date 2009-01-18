@@ -132,6 +132,8 @@ class Translator:
                 self._discard(child, None)
             elif isinstance(child, ast.Assign):
                 self._assign(child, None, True)
+            elif isinstance(child, ast.AugAssign):
+                self._augassign(child, None) 
             else:
                 raise TranslationError("unsupported type (in __init__)", child)
         
