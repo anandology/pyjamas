@@ -9,7 +9,7 @@ class HTTPRequest:
 
     # also callable as: asyncGet(self, url, handler)
     def asyncGet(self, user, pwd, url, handler):
-        if url == None:
+        if handler == None:
             return self.asyncGetImpl(None, None, user, pwd)
         return self.asyncGetImpl(user, pwd, url, handler)
 
