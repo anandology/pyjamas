@@ -22,6 +22,6 @@ class Mailboxes(Composite):
 
     def imageItemHTML(self, imageUrl, title):
         value  = "<span><img style='margin-right:4px' src='"
-        value += "http://code.google.com/webtoolkit/documentation/examples/desktopclone/"
+        value += "./"
         value += imageUrl.toLowerCase() + "'>" + title + "</span>"
         return value

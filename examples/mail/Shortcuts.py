@@ -17,7 +17,7 @@ class Shortcuts(Composite):
 
     def createHeaderHTML(self, imageUrl, caption):
         header =  "<table align='left'><tr>" + "<td><img src='"
-        header += "http://code.google.com/webtoolkit/documentation/examples/desktopclone/"
+        header += "./"
         header += imageUrl + "'></td>"
         header += "<td style='vertical-align:middle'><b style='white-space:nowrap'>"
         header +=  caption + "</b></td>" + "</tr></table>"
