@@ -45,6 +45,11 @@ def getClientWidth():
     return $doc.body.clientWidth;
     """)
 
+def setLocation(url):
+    JS("""
+    $wnd.location = url;
+    """)
+ 
 JS("var Window_location = null")
 def getLocation():
     global location
