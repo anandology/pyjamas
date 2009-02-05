@@ -1094,6 +1094,13 @@ class Translator:
         else:
             raise TranslationError("unsupported flag (in _slice)", node)
 
+
+    def _lambda(self, node, current_klass):
+        ret = ast.Stmt([ast.Return(node.code)])
+        lambdafunc = ast.Function(None, "___lambda" + str(node.lineno),
+            node.argnames, node.defaults, node.flags, None, ret, node.lineno)
+        self._function(lambdafunc, False)
+
     def _global(self, node, current_klass):
         for name in node.names:
             self.method_imported_globals.add(name)
@@ -1151,7 +1158,11 @@ class Translator:
         elif isinstance(node, ast.Tuple):
             return self._tuple(node, current_klass)
         elif isinstance(node, ast.Slice):
+            return self._tuple(node, current_klass)
+        elif isinstance(node, ast.Slice):
             return self._slice(node, current_klass)
+        elif isinstance(node, ast.Lambda):
+            return self._lambda(node, current_klass)
         else:
             raise TranslationError("unsupported type (in expr)", node)
 
