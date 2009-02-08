@@ -81,7 +81,7 @@ class HTTPRequest:
                     handler = null;
                     xmlHttp = null;
                     if(status == 200) {
-                        localHandler.onCompletion(responseText);
+                        localHandler.onCompletion(response);
                     } else {
                         localHandler.onError(xmlHttp.responseText, status);
                     }
