@@ -1,0 +1,10 @@
+<?xml version="1.0" ?>
+<contacts>
+    <contact>
+        <firstname>fred</firstname>
+    </contact>
+    <contact>
+        <firstname>joe</firstname>
+    </contact>
+</contacts>
+

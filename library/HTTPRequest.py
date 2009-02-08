@@ -2,16 +2,17 @@ from __pyjamas__ import JS
 
 class HTTPRequest:
     # also callable as: asyncPost(self, url, postData, handler)
-    def asyncPost(self, user, pwd, url, postData=None, handler=None):
+    def asyncPost(self, user, pwd, url, postData=None, handler=None,
+                                        returnxml=0):
         if postData == None:
-            return self.asyncPostImpl(None, None, user, pwd, url)
-        return self.asyncPostImpl(user, pwd, url, postData, handler)
+            return self.asyncPostImpl(None, None, user, pwd, url, returnxml)
+        return self.asyncPostImpl(user, pwd, url, postData, handler, returnxml)
 
     # also callable as: asyncGet(self, url, handler)
-    def asyncGet(self, user, pwd, url, handler):
+    def asyncGet(self, user, pwd, url, handler, returnxml=0):
         if url == None:
-            return self.asyncGetImpl(None, None, user, pwd)
-        return self.asyncGetImpl(user, pwd, url, handler)
+            return self.asyncGetImpl(None, None, user, pwd, returnxml)
+        return self.asyncGetImpl(user, pwd, url, handler, returnxml)
 
     def createXmlHTTPRequest(self):
         return self.doCreateXmlHTTPRequest()
@@ -21,7 +22,7 @@ class HTTPRequest:
         return new XMLHttpRequest();
         """)
 
-    def asyncPostImpl(self, user, pwd, url, postData, handler):
+    def asyncPostImpl(self, user, pwd, url, postData, handler, returnxml=0):
         JS("""
         var xmlHttp = this.doCreateXmlHTTPRequest();
         try {
@@ -33,14 +34,18 @@ class HTTPRequest:
                 if (xmlHttp.readyState == 4) {
                     delete xmlHttp.onreadystatechange;
                     var localHandler = handler;
-                    var responseText = xmlHttp.responseText;
+                    var response;
                     var status = xmlHttp.status;
+                    if (returnxml)
+                        response = xmlHttp.responseXML;
+                    else
+                        response = xmlHttp.responseText;
                     handler = null;
                     xmlHttp = null;
                     if(status == 200) {
-                        localHandler.onCompletion(responseText);
+                        localHandler.onCompletion(response);
                     } else {
-                        localHandler.onError(responseText, status);
+                        localHandler.onError(xmlHttp.responseText, status);
                     }
                 }
             };
@@ -57,7 +62,7 @@ class HTTPRequest:
         }
         """)
 
-    def asyncGetImpl(self, user, pwd, url, handler):
+    def asyncGetImpl(self, user, pwd, url, handler, returnxml=0):
         JS("""
         var xmlHttp = this.doCreateXmlHTTPRequest();
         try {
@@ -67,14 +72,18 @@ class HTTPRequest:
                 if (xmlHttp.readyState == 4) {
                     delete xmlHttp.onreadystatechange;
                     var localHandler = handler;
-                    var responseText = xmlHttp.responseText;
+                    var response;
                     var status = xmlHttp.status;
+                    if (returnxml)
+                        response = xmlHttp.responseXML;
+                    else
+                        response = xmlHttp.responseText;
                     handler = null;
                     xmlHttp = null;
                     if(status == 200) {
                         localHandler.onCompletion(responseText);
                     } else {
-                        localHandler.onError(responseText, status);
+                        localHandler.onError(xmlHttp.responseText, status);
                     }
                 }
             };
