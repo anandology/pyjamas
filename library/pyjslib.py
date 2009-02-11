@@ -720,7 +720,7 @@ def getattr(obj, method):
         for (var i = 0; i < arguments.length; i++) {
           args.push(arguments[i]);
         }
-        obj[method].apply(obj,args);
+        return obj[method].apply(obj,args);
         }
     """)
 
