@@ -725,7 +725,7 @@ def isinstance(obj, klass):
 def cmp(a,b):
     if hasattr(a, "__cmp__"):
         return a.__cmp__(b)
-    elif hasattr(a, "__cmp__"):
+    elif hasattr(b, "__cmp__"):
         return -b.__cmp__(a)
     if a > b:
         return 1
