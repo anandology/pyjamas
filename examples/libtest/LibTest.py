@@ -4,9 +4,10 @@ from ClassTest import ClassTest
 from SetTest import SetTest
 from ArgsTest import ArgsTest
 from VarsTest import VarsTest
+from AttributeTest import AttributeTest
 from ExceptionTest import ExceptionTest
 
-class LibTest:	
+class LibTest:
 	def onModuleLoad(self):
 		ExceptionTest().run()
 		ClassTest().run()
@@ -15,7 +16,5 @@ class LibTest:
 		SetTest().run()
 		ArgsTest().run()
 		VarsTest().run()
-
-
-
+		AttributeTest().run()
 

@@ -32,10 +32,10 @@ class Klass:
         self.name = name
         self.klasses[name] = self
         self.functions = set()
-        
+
     def set_base(self, base_name):
         self.base = self.klasses.get(base_name)
-        
+
     def add_function(self, function_name):
         self.functions.add(function_name)
 
@@ -59,7 +59,7 @@ def strip_py(name):
 class Translator:
 
     def __init__(self, module_name, raw_module_name, src, debug, mod, output):
-    
+
         if module_name:
             self.module_prefix = module_name + "_"
         else:
@@ -133,14 +133,14 @@ class Translator:
             elif isinstance(child, ast.Assign):
                 self._assign(child, None, True)
             elif isinstance(child, ast.AugAssign):
-                self._augassign(child, None) 
+                self._augassign(child, None)
             else:
                 raise TranslationError("unsupported type (in __init__)", child)
-        
+
         # Initialize all classes for this module
         for className in self.top_level_classes:
             print >> self.output, "__"+strip_py(self.module_prefix)+className+"_initialize();"
-    
+
     def _default_args_handler(self, node, arg_names, current_klass):
         if len(node.defaults):
             default_pos = len(arg_names) - len(node.defaults)
@@ -155,18 +155,18 @@ class Translator:
                     default_value = self._unarysub(default_node, current_klass)
                 else:
                     raise TranslationError("unsupported type (in _method)", default_node)
-                
+
                 default_name = arg_names[default_pos]
                 default_pos += 1
                 print >>self.output, "    if (typeof %s == 'undefined') %s=%s;" % (default_name, default_name, default_value)
-    
+
     def _varargs_handler(self, node, varargname, arg_names, current_klass):
         print >>self.output, "    var", varargname, '= new pyjslib_List([]);'
         print >>self.output, "    for(var __va_arg="+str(len(arg_names))+"; __va_arg < arguments.length; __va_arg++) {"
         print >>self.output, "        var __arg = arguments[__va_arg];"
         print >>self.output, "        "+varargname+".append(__arg);"
         print >>self.output, "    }"
-                
+
     def _kwargs_parser(self, node, function_name, arg_names, current_klass):
         if len(node.defaults) or node.kwargs:
             default_pos = len(arg_names) - len(node.defaults)
@@ -183,12 +183,12 @@ class Translator:
 #                    default_value = self._unarysub(default_node, current_klass)
 #                else:
 #                    raise TranslationError("unsupported type (in _method)", default_node)
-                
+
                 default_name = arg_names[default_pos]
                 print >>self.output, "    if (typeof %s == 'undefined')"%(default_name)
                 print >>self.output, "        %s=__kwargs.%s;"% (default_name, default_name)
                 default_pos += 1
-            
+
             #self._default_args_handler(node, arg_names, current_klass)
             if node.kwargs: arg_names += ["pyjslib_Dict(__kwargs)"]
             print >>self.output, "    var __r = "+"".join(["[", ", ".join(arg_names), "]"])+";"
@@ -197,7 +197,7 @@ class Translator:
                 print >>self.output, "    __r.push.apply(__r, __args.getArray())"
             print >>self.output, "    return __r;"
             print >>self.output, "};"
-        
+
     def _function(self, node, local=False):
         if local: function_name = node.name
         else: function_name = strip_py(self.module_prefix) + node.name
@@ -207,23 +207,23 @@ class Translator:
         if node.varargs: varargname = normal_arg_names.pop()
         declared_arg_names = list(normal_arg_names)
         if node.kwargs: declared_arg_names.append(kwargname)
-        
+
         function_args = "(" + ", ".join(declared_arg_names) + ")"
         print >>self.output, "function %s%s {" % (function_name, function_args)
         self._default_args_handler(node, normal_arg_names, None)
-        
+
         if node.varargs:
             self._varargs_handler(node, varargname, declared_arg_names, None)
-        
+
         for child in node.code:
             self._stmt(child, None)
-            
+
         print >>self.output, "}"
         print >>self.output, "\n"
-        
+
         self._kwargs_parser(node, function_name, normal_arg_names, None)
-    
-    
+
+
     def _return(self, node, current_klass):
         expr = self.expr(node.value, current_klass)
         if expr != "null":
@@ -258,6 +258,8 @@ class Translator:
                 call_name = "pyjslib_dir"
             elif v.node.name == "getattr":
                 call_name = "pyjslib_getattr"
+            elif v.node.name == "setattr":
+                call_name = "pyjslib_setattr"
             elif v.node.name == "hasattr":
                 call_name = "pyjslib_hasattr"
             elif v.node.name == "int":
@@ -308,7 +310,7 @@ class Translator:
                 raise TranslationError("unsupported type (in _callfunc)", v.node.expr)
         else:
             raise TranslationError("unsupported type (in _callfunc)", v.node)
-         
+
         call_name = strip_py(call_name)
 
         kwargs = []
@@ -319,7 +321,7 @@ class Translator:
             else:
                 arg = self.expr(ch4, current_klass)
                 call_args.append(arg)
-        
+
         if kwargs:
             try: call_this, method_name = call_name.rsplit(".", 1)
             except ValueError:
@@ -333,13 +335,13 @@ class Translator:
                                   + ")")
         else:
             return call_name + "(" + ", ".join(call_args) + ")"
-    
+
     def _print(self, node, current_klass):
         call_args = []
         for ch4 in node.nodes:
             arg = self.expr(ch4, current_klass)
             call_args.append(arg)
-        
+
         print >>self.output, "pyjslib_printFunc([", ', '.join(call_args), "],", int(isinstance(node, ast.Printnl)), ");"
 
     def _tryExcept(self, node, current_klass):
@@ -378,8 +380,8 @@ class Translator:
             return self._callfunc(v.expr, strip_py(self.module_prefix)) + "." + attr_name
         else:
             raise TranslationError("unsupported type (in _getattr)", v.expr)
-    
-    
+
+
     def _name(self, v, return_none_for_module=False):
         if v.name == "True":
             return "true"
@@ -432,49 +434,49 @@ class Translator:
         else:
             obj = self.expr(v.expr, current_klass)
             call_name = obj + "." + v.attrname + "." + attr_name
-            
+
         return call_name
-    
-    
+
+
     def _class(self, node):
         """
         Handle a class definition.
-        
+
         In order to translate python semantics reasonably well, the following
         structure is used:
-        
+
         A special object is created for the class, which inherits attributes
         from the superclass, or Object if there's no superclass.  This is the
         class object; the object which you refer to when specifying the
         class by name.  Static, class, and unbound methods are copied
         from the superclass object.
-        
+
         A special constructor function is created with the same name as the
         class, which is used to create instances of that class.
-        
+
         A javascript class (e.g. a function with a prototype attribute) is
         created which is the javascript class of created instances, and
-        which inherits attributes from the class object. Bound methods are 
+        which inherits attributes from the class object. Bound methods are
         copied from the superclass into this class rather than inherited,
         because the class object contains unbound, class, and static methods
         that we don't necessarily want to inherit.
-        
+
         The type of a method can now be determined by inspecting its
         static_method, unbound_method, class_method, or instance_method
         attribute; only one of these should be true.
-        
+
         Much of this work is done in pyjs_extend, is pyjslib.py
         """
         class_name = strip_py(self.module_prefix) + node.name
         current_klass = Klass(class_name)
-        
+
         init_method = None
         for child in node.code:
             if isinstance(child, ast.Function):
                 current_klass.add_function(child.name)
                 if child.name == "__init__":
                     init_method = child
-                
+
 
         if len(node.bases) == 0:
             base_class = "pyjslib_Object"
@@ -492,23 +494,23 @@ class Translator:
             current_klass.set_base(base_class)
         else:
             raise TranslationError("more than one base (in _class)", node)
-        
+
         print >>self.output, "function __" + class_name + "() {"
         # call superconstructor
         #if base_class:
         #    print >>self.output, "    __" + base_class + ".call(this);"
         print >>self.output, "}"
-        
+
         if not init_method:
             init_method = ast.Function([], "__init__", ["self"], [], 0, None, [])
             #self._method(init_method, current_klass, class_name)
-            
+
         # Generate a function which constructs the object
-        clsfunc = ast.Function([], 
-           node.name, 
+        clsfunc = ast.Function([],
+           node.name,
            init_method.argnames[1:],
-           init_method.defaults, 
-           init_method.flags, 
+           init_method.defaults,
+           init_method.flags,
            None,
            [ast.Discard(ast.CallFunc(ast.Name("JS"), [ast.Const(
 #            I attempted lazy initialization, but then you can't access static class members
@@ -518,13 +520,13 @@ class Translator:
             "    if(instance.__init__) instance.__init__.apply(instance, arguments);\n" +
             "    return instance;"
             )]))])
-        
+
         self._function(clsfunc, False)
         print >>self.output, "function __" + class_name + "_initialize() {"
         print >>self.output, "    if(__"+class_name+".__was_initialized__) return;"
         print >>self.output, "    __"+class_name+".__was_initialized__ = true;"
         cls_obj = "__" + class_name + '.prototype.__class__'
-    
+
         if class_name == "pyjslib_Object":
             print >>self.output, "    "+cls_obj+" = {};"
         else:
@@ -534,9 +536,9 @@ class Translator:
                 print >>self.output, "    pyjs_extend(__" + class_name + ", __"+base_class+");"
             else:
                 print >>self.output, "    pyjs_extend(__" + class_name + ", __pyjslib_Object);"
-        
+
         print >>self.output, "    "+cls_obj+".__new__ = "+class_name+";"
-        
+
         for child in node.code:
             if isinstance(child, ast.Pass):
                 pass
@@ -550,19 +552,19 @@ class Translator:
             else:
                 raise TranslationError("unsupported type (in _class)", child)
         print >>self.output, "}"
-        
-        
-    
+
+
+
     def classattr(self, node, current_klass):
         self._assign(node, current_klass, True)
-    
-        
+
+
     def _method(self, node, current_klass, class_name):
         # reset global var scope
         self.method_imported_globals = set()
-        
+
         arg_names = list(node.argnames)
-        
+
         classmethod = False
         staticmethod = False
         if node.decorators:
@@ -571,29 +573,29 @@ class Translator:
                     classmethod = True
                 elif d.name == "staticmethod":
                     staticmethod = True
-       
+
         if staticmethod:
             staticfunc = ast.Function([], class_name+"_"+node.name, node.argnames, node.defaults, node.flags, node.doc, node.code, node.lineno)
             self._function(staticfunc, True)
             print >>self.output, "    __" + class_name + ".prototype.__class__." + node.name + " = " + class_name+"_"+node.name+";";
             print >>self.output, "    __" + class_name + ".prototype.__class__." + node.name + ".static_method = true;";
             return
-        else: 
+        else:
             if len(arg_names) == 0:
                 raise TranslationError("methods must take an argument 'self' (in _method)", node)
             self.method_self = arg_names[0]
-            
+
             #if not classmethod and arg_names[0] != "self":
             #    raise TranslationError("first arg not 'self' (in _method)", node)
 
         normal_arg_names = arg_names[1:]
         if node.kwargs: kwargname = normal_arg_names.pop()
-        if node.varargs: varargname = normal_arg_names.pop()        
+        if node.varargs: varargname = normal_arg_names.pop()
         declared_arg_names = list(normal_arg_names)
         if node.kwargs: declared_arg_names.append(kwargname)
-        
+
         function_args = "(" + ", ".join(declared_arg_names) + ")"
-    
+
         if classmethod:
             fexpr = "__" + class_name + ".prototype.__class__." + node.name
         else:
@@ -602,17 +604,17 @@ class Translator:
 
         # default arguments
         self._default_args_handler(node, normal_arg_names, current_klass)
-        
+
         if node.varargs:
             self._varargs_handler(node, varargname, declared_arg_names, current_klass)
 
         for child in node.code:
             self._stmt(child, current_klass)
-        
+
         print >>self.output, "    };"
-            
+
         self._kwargs_parser(node, fexpr, normal_arg_names, current_klass)
-        
+
         if classmethod:
             # Have to create a version on the instances which automatically passes the
             # class as "self"
@@ -630,10 +632,10 @@ class Translator:
             print >>self.output, "    };"
             print >>self.output, "    "+altexpr+".unbound_method = true;"
             print >>self.output, "    "+fexpr+".instance_method = true;"
-            
+
         if node.kwargs or len(node.defaults):
             print >>self.output, "    "+altexpr + ".parse_kwargs = " + fexpr + ".parse_kwargs;"
-        
+
         self.method_self = None
         self.method_imported_globals = set()
 
@@ -719,7 +721,7 @@ class Translator:
             print >>self.output, '      }'
             print >>self.output, '  }'
 
-    
+
     def _augassign(self, node, current_klass):
         v = node.node
         if isinstance(v, ast.Getattr):
@@ -730,7 +732,7 @@ class Translator:
         rhs = self.expr(node.expr, current_klass)
         print >>self.output, "    " + lhs + " " + op + " " + rhs + ";"
 
-    
+
     def _assign(self, node, current_klass, top_level = False):
         if len(node.nodes) != 1:
             tempvar = '__temp'+str(node.lineno)
@@ -776,7 +778,7 @@ class Translator:
                 op = "="
             else:
                 raise TranslationError("unsupported flag (in _assign)", v)
-    
+
         elif isinstance(v, ast.AssName):
             lhs = _lhsFromName(v, top_level, current_klass)
             if v.flags == "OP_ASSIGN":
@@ -825,8 +827,8 @@ class Translator:
 
         rhs = self.expr(node.expr, current_klass)
         print >>self.output, "    " + lhs + " " + op + " " + rhs + ";"
-    
-    
+
+
     def _discard(self, node, current_klass):
         if isinstance(node.expr, ast.CallFunc):
             if isinstance(node.expr.node, ast.Name) and node.expr.node.name == NATIVE_JS_FUNC_NAME:
@@ -843,8 +845,8 @@ class Translator:
                 print >>self.output, self._const(node.expr)
         else:
             raise TranslationError("unsupported type (in _discard)", node.expr)
-    
-    
+
+
     def _if(self, node, current_klass):
         for i in range(len(node.tests)):
             test, consequence = node.tests[i]
@@ -854,20 +856,20 @@ class Translator:
                 keyword = "else if"
 
             self._if_test(keyword, test, consequence, current_klass)
-            
+
         if node.else_:
             keyword = "else"
             test = None
             consequence = node.else_
 
             self._if_test(keyword, test, consequence, current_klass)
-            
-        
+
+
     def _if_test(self, keyword, test, consequence, current_klass):
-    
+
         if test:
             expr = self.expr(test, current_klass)
-    
+
             print >>self.output, "    " + keyword + " (" + expr + ") {"
         else:
             print >>self.output, "    " + keyword + " {"
@@ -909,7 +911,7 @@ class Translator:
             op = "=="
         elif op == "is not":
             op = "!="
-           
+
         return "(" + lhs + " " + op + " " + rhs + ")"
 
 
@@ -958,10 +960,10 @@ class Translator:
             list_expr = self._callfunc(node.list, current_klass)
         else:
             raise TranslationError("unsupported type (in _for)", node.list)
-        
+
         lhs = "var " + assign_name
         iterator_name = "__" + assign_name
-        
+
         print >>self.output, """
         var %(iterator_name)s = %(list_expr)s.__iter__();
         try {
@@ -1040,7 +1042,7 @@ class Translator:
 
     def _bitand(self, node, current_klass):
         return " & ".join([self.expr(child, current_klass) for child in node.nodes])
-    
+
     def _bitshiftleft(self, node, current_klass):
         return self.expr(node.left, current_klass) + " << " + self.expr(node.right, current_klass)
 
@@ -1177,7 +1179,7 @@ class PlatformParser:
 
     def setPlatform(self, platform):
         self.platform = platform
-        
+
     def parseModule(self, module_name, file_name):
         if self.parse_cache.has_key(file_name):
             mod = self.parse_cache[file_name]
@@ -1185,7 +1187,7 @@ class PlatformParser:
             print "Importing " + module_name
             mod = compiler.parseFile(file_name)
             self.parse_cache[file_name] = mod
-        
+
         platform_file_name = self.generatePlatformFilename(file_name)
         if self.platform and os.path.isfile(platform_file_name):
             mod = copy.deepcopy(mod)
@@ -1193,11 +1195,11 @@ class PlatformParser:
             self.merge(mod, mod_override)
 
         return mod
-        
+
     def generatePlatformFilename(self, file_name):
         (module_name, extension) = os.path.splitext(os.path.basename(file_name))
         platform_file_name = module_name + self.platform + extension
-        
+
         return os.path.join(os.path.dirname(file_name), self.platform_dir, platform_file_name)
 
     def merge(self, tree1, tree2):
@@ -1208,7 +1210,7 @@ class PlatformParser:
                 self.replaceClassMethods(tree1, child.name, child)
 
         return tree1
-            
+
     def replaceFunction(self, tree, function_name, function_node):
         # find function to replace
         for child in tree.node:
@@ -1224,10 +1226,10 @@ class PlatformParser:
             if isinstance(child, ast.Class) and child.name == class_name:
                 old_class_node = child
                 break
-        
+
         if not old_class_node:
             raise TranslationError("class not found: " + class_name, class_node)
-        
+
         # replace methods
         for function_node in class_node.code:
             if isinstance(function_node, ast.Function):
@@ -1255,7 +1257,7 @@ class AppTranslator:
 
         self.library_modules = []
         self.library_dirs = library_dirs
-        
+
         if not parser:
             self.parser = PlatformParser()
         else:
@@ -1272,23 +1274,23 @@ class AppTranslator:
             full_file_name = os.path.join(os.path.dirname(__file__), library_dir, file_name)
             if os.path.isfile(full_file_name):
                 return full_file_name
-        
+
         raise Exception("file not found: " + file_name)
-    
+
     def translate(self, module_name, is_app=True, debug=False):
 
         if module_name not in self.library_modules:
             self.library_modules.append(module_name)
-        
+
         file_name = self.findFile(module_name + self.extension)
-        
+
         if is_app:
             module_name_translated = ""
         else:
             module_name_translated = module_name
-        
+
         output = cStringIO.StringIO()
-        
+
         f = file(file_name, "r")
         src = f.read()
         f.close()
@@ -1296,7 +1298,7 @@ class AppTranslator:
         mod = self.parser.parseModule(module_name, file_name)
         t = Translator(module_name_translated, module_name, src, debug, mod, output)
         module_str = output.getvalue()
-        
+
         imported_modules_str = ""
         for module in t.imported_modules:
             if module not in self.library_modules:
@@ -1310,9 +1312,9 @@ class AppTranslator:
               imported_modules_str += '\n//\n// END '+js+'\n//\n'
            else:
               print >>sys.stderr, 'Warning: Unable to find imported javascript:', js
-           
+
         if module_name == 'pyjamas':
-            return imported_modules_str 
+            return imported_modules_str
         return imported_modules_str + module_str
 
     def translateLibraries(self, library_modules=[], debug=False):
@@ -1321,7 +1323,7 @@ class AppTranslator:
         imported_modules_str = ""
         for library in self.library_modules:
             imported_modules_str += self.translate(library, False, debug)
-        
+
         return imported_modules_str
 
 

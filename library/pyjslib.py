@@ -724,6 +724,14 @@ def getattr(obj, method):
         }
     """)
 
+def setattr(obj, method, value):
+    JS("""
+    if (!pyjslib_isObject(obj)) return null;
+
+    obj[method] = value;
+
+    """)
+
 def hasattr(obj, method):
     JS("""
     if (!pyjslib_isObject(obj)) return false;
