@@ -30,6 +30,7 @@ class AttributeTest(UnitTest):
 
         # test on none object type
         self.assertEqual(getattr(1, 'x', 2), 2)
+        self.assertEqual(getattr(None, 'x', 2), 2)
 
         try:
             self.assertEqual(1, getattr(foo, "vv"))

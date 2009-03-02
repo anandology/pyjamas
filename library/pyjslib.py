@@ -760,7 +760,7 @@ def _isinstance(object_, classinfo):
 
 def getattr(obj, name, default_):
     JS("""
-    if (pyjslib_isUndefined(obj[name])){
+    if ((!pyjslib_isObject(obj))||(pyjslib_isUndefined(obj[name]))){
         if (pyjslib_isUndefined(default_)){
             throw pyjslib_AttributeError(obj, name);
         }else{
