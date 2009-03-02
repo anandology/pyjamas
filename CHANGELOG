@@ -28,6 +28,9 @@
 
  * fixed bug if mouse is moved too fast while dragging a dialog
 
+ * added support for statements at the "global" level in pyjs.py, so
+   that compiling "if __name__ == '__main__': " and other such global
+   code statements will now work.
 
                     Changes made to Pyjamas since 0.3
                     ---------------------------------
