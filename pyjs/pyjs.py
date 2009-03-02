@@ -336,7 +336,6 @@ class Translator:
         print >>self.output, "pyjslib_printFunc([", ', '.join(call_args), "],", int(isinstance(node, ast.Printnl)), ");"
 
     def _tryExcept(self, node, current_klass):
-        ok = True
         if len(node.handlers) != 1:
             raise TranslationError("except statements in this form are" +
                                    " not supported", node)
@@ -347,12 +346,6 @@ class Translator:
             errName = as_.name
         else:
             errName = 'err'
-        if not ok:
-            expr = self.expr(node.handlers[0][0], current_klass)
-            import pdb;pdb.set_trace()
-            raise TranslationError("only simple try...except statements " +
-                                   "supported", node)
-
         print >>self.output, "    try {"
         for stmt in node.body.nodes:
             self._stmt(stmt, current_klass)
