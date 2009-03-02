@@ -1,12 +1,17 @@
 from UnitTest import UnitTest
 
+class MyException:
+
+    def toString(self):
+        return "MyException"
+
 class ExceptionTest(UnitTest):
     def __init__(self):
         UnitTest.__init__(self)
 
     def getName(self):
         return "Exception"
- 
+
     def testExceptionOrdTrigger(self):
         try:
             x = ord(5) # shouldn't be a number
@@ -17,8 +22,16 @@ class ExceptionTest(UnitTest):
 
     def testExceptionOrdNoTrigger(self):
         try:
-            x = ord("5") 
+            x = ord("5")
         except:
             self.assertTrue(False, "the exception shouldn't have happened")
             return
         self.assertTrue(True, "the exception should have happened")
+
+
+    def testRaiseException(self):
+        try:
+            raise MyException()
+        except:
+            return
+        self.fail('MyException was not raised')

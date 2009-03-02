@@ -24,6 +24,20 @@ class AttributeTest(UnitTest):
         func = getattr(self, "getName")
         self.assertEqual(func(), "Attribute", "getattr does not return correct value'")
 
+        self.assertEqual(1, getattr(Foo, "notthere", 1))
+        foo = Foo(1)
+        self.assertEqual(foo.v, getattr(foo, "v"))
+
+        # test on none object type
+        self.assertEqual(getattr(1, 'x', 2), 2)
+
+        # at this time we only can catch bare exceptions
+        try:
+            self.assertEqual(1, getattr(foo, "vv"))
+        except:
+            return
+        self.fail("No AttributeError raised")
+
     def testSetAttr(self):
 
         f1 = Foo(1)

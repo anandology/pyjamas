@@ -558,6 +558,12 @@ class Translator:
     def classattr(self, node, current_klass):
         self._assign(node, current_klass, True)
 
+    def _raise(self, node, current_klass):
+        if node.expr2:
+            raise TranslationError("More than one expression unsupported",
+                                   node)
+        print >> self.output, "throw (%s);" % self.expr(
+            node.expr1, current_klass)
 
     def _method(self, node, current_klass, class_name):
         # reset global var scope
@@ -686,6 +692,8 @@ class Translator:
            self._print(node, current_klass)
         elif isinstance(node, ast.TryExcept):
             self._tryExcept(node, current_klass)
+        elif isinstance(node, ast.Raise):
+            self._raise(node, current_klass)
         else:
             raise TranslationError("unsupported type (in _stmt)", node)
 

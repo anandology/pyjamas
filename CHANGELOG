@@ -1,6 +1,11 @@
                     Changes made to Pyjamas since 0.4
                     ---------------------------------
 
+ * implemented the 'raise' statement. it only works with a single expression.
+
+ * changed 'getattr' to accept a default and raise an AttributeError
+   if the attribute cannot be found.
+
  * implemented 'setattr'
 
  * added none modal behaviour to DialogBox

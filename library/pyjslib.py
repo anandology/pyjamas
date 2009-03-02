@@ -28,6 +28,13 @@ KeyError.prototype = new Error();
 KeyError.name = 'KeyError';
 KeyError.message = 'KeyError';
 
+AttributeError = function () {};
+AttributeError.name = 'KeyError';
+AttributeError.message = 'KeyError';
+AttributeError.prototype.toString = function () {
+   return "AttributeError";
+}
+
 TypeError = function () {};
 TypeError.prototype = new Error();
 TypeError.name = "TypeError";
@@ -40,10 +47,10 @@ function pyjslib_String_find(sub, start, end) {
     if (pos + sub.length>end) return -1;
     return pos;
 }
-    
+
 function pyjslib_String_join(data) {
     var text="";
-    
+
     if (pyjslib_isArray(data)) {
         return data.join(this);
     }
@@ -69,16 +76,16 @@ function pyjslib_String_replace(old, replace, count) {
     var start=0;
     var new_str="";
     var pos=0;
-    
+
     if (!pyjslib_isString(old)) return this.__replace(old, replace);
     if (!pyjslib_isUndefined(count)) do_max=true;
-    
+
     while (start<this.length) {
         if (do_max && !count--) break;
-        
+
         pos=this.indexOf(old, start);
         if (pos<0) break;
-        
+
         new_str+=this.substring(start, pos) + replace;
         start=pos+old.length;
     }
@@ -93,7 +100,7 @@ function pyjslib_String_split(sep, maxsplit) {
     var subject=this;
     var start=0;
     var pos=0;
-    
+
     if (pyjslib_isUndefined(sep) || pyjslib_isNull(sep)) {
         sep=" ";
         subject=subject.strip();
@@ -103,15 +110,15 @@ function pyjslib_String_split(sep, maxsplit) {
 
     while (start<subject.length) {
         if (do_max && !maxsplit--) break;
-    
+
         pos=subject.indexOf(sep, start);
         if (pos<0) break;
-        
+
         items.append(subject.substring(start, pos));
         start=pos+sep.length;
     }
     if (start<subject.length) items.append(subject.substring(start));
-    
+
     return items;
 }
 
@@ -168,13 +175,13 @@ function pyjs_extend(klass, base) {
             klass_object[i] = v;
         }
     }
-    
+
     function klass_inherit() {}
     klass_inherit.prototype = klass_object;
     klass.prototype = new klass_inherit();
     klass_object.constructor = klass;
     klass.prototype.__class__ = klass_object;
-    
+
     for (var i in base.prototype) {
         v = base.prototype[i];
         if (typeof v == "function" && v.instance_method)
@@ -203,7 +210,7 @@ class Object:
 class Class:
     def __init__(self, name):
         self.name = name
-        
+
     def __str___(self):
         return self.name
 
@@ -223,7 +230,7 @@ class List:
     def __init__(self, data=None):
         JS("""
         this.l = [];
-        
+
         if (pyjslib_isArray(data)) {
             for (var i=0; i < data.length; i++) {
                 this.l[i]=data[i];
@@ -243,7 +250,7 @@ class List:
                 }
             }
         """)
-    
+
     def append(self, item):
         JS("""    this.l[this.l.length] = item;""")
 
@@ -254,7 +261,7 @@ class List:
         this.l.splice(index, 1);
         return true;
         """)
-        
+
     def index(self, value, start=0):
         JS("""
         var length=this.l.length;
@@ -305,7 +312,6 @@ class List:
         JS("""
         var i = 0;
         var l = this.l;
-        
         return {
             'next': function() {
                 if (i >= l.length) {
@@ -318,7 +324,7 @@ class List:
             }
         };
         """)
-    
+
     def sort(self, compareFunc=None, keyFunc=None, reverse=False):
         if not compareFunc:
             global cmp
@@ -337,7 +343,7 @@ class List:
             self.l.sort(thisSort3)
         else:
             self.l.sort(compareFunc)
-    
+
     def getArray(self):
         """
         Access the javascript Array that is used internally by this list
@@ -349,7 +355,7 @@ list = List
 class Tuple(List):
     def __init__(self, data):
         List.__init__(self, data)
-    
+
 tuple = Tuple
 
 
@@ -384,7 +390,7 @@ class Dict:
                 }
             }
         """)
-    
+
     def __setitem__(self, key, value):
         JS("""
         var sKey = this._keyToStr(key);
@@ -412,7 +418,7 @@ class Dict:
         if (pyjslib_isUndefined(this.d[sKey])) return false;
         return true;
         """)
-    
+
     def __delitem__(self, key):
         JS("""
         var sKey = this._keyToStr(key);
@@ -438,7 +444,7 @@ class Dict:
         for (var key in this.d) keys.append(this.d[key]);
         return keys;
         """)
-        
+
     def items(self):
         JS("""
         var items = new pyjslib_List();
@@ -468,7 +474,7 @@ class Dict:
         JS("""
         var d = this.d;
         var iter=this.keys().__iter__();
-        
+
         return {
             '__iter__': function() {
                 return this;
@@ -485,18 +491,18 @@ class Dict:
             }
         };
         """)
-        
+
     def setdefault(self, key, default_value):
         sKey = self._keyToStr(key)
         if not self.has_key(sKey):
             self[sKey] = default_value
-    
-    def get(self, key, default_value=None):    
+
+    def get(self, key, default_value=None):
         sKey = self._keyToStr(key)
         value = self[sKey]
         JS("if(pyjslib_isUndefined(value)) { value = default_value; }")
         return value;
-    
+
     def update(self, d):
         for k,v in d.iteritems():
             self[k] = v
@@ -515,7 +521,7 @@ class Dict:
         else:
             return repr(key)
 dict = Dict
-            
+
 # taken from mochikit: range( [start,] stop[, step] )
 def range():
     JS("""
@@ -561,7 +567,7 @@ def slice(object, lower, upper):
     }
     if (pyjslib_isObject(object) && object.slice)
         return object.slice(lower, upper);
-    
+
     return null;
     """)
 
@@ -710,32 +716,37 @@ def len(object):
     return object.length;
     """)
 
-def getattr(obj, method):
+def getattr(obj, name, default_):
     JS("""
-    if (!pyjslib_isObject(obj)) return null;
-    if (!pyjslib_isFunction(obj[method])) return obj[method];
-
+    if (pyjslib_isUndefined(obj[name])){
+        if (pyjslib_isUndefined(default_)){
+            throw new AttributeError();
+        }else{
+        return default_;
+        }
+    }
+    if (!pyjslib_isFunction(obj[name])) return obj[name];
     return function() {
         var args = [];
         for (var i = 0; i < arguments.length; i++) {
           args.push(arguments[i]);
         }
-        return obj[method].apply(obj,args);
+        return obj[name].apply(obj,args);
         }
     """)
 
-def setattr(obj, method, value):
+def setattr(obj, name, value):
     JS("""
     if (!pyjslib_isObject(obj)) return null;
 
-    obj[method] = value;
+    obj[name] = value;
 
     """)
 
-def hasattr(obj, method):
+def hasattr(obj, name):
     JS("""
     if (!pyjslib_isObject(obj)) return false;
-    if (pyjslib_isUndefined(obj[method])) return false;
+    if (pyjslib_isUndefined(obj[name])) return false;
 
     return true;
     """)
@@ -768,17 +779,17 @@ def filter(obj, method, sequence=None):
 
 def map(obj, method, sequence=None):
     items = []
-    
+
     if sequence == None:
         sequence = method
         method = obj
-        
+
         for item in sequence:
             items.append(method(item))
     else:
         for item in sequence:
             items.append(method.call(obj, item))
-    
+
     return items
 
 
@@ -816,11 +827,11 @@ next_hash_id = 0
 def hash(obj):
     JS("""
     if (obj == null) return null;
-    
+
     if (obj.$H) return obj.$H;
     if (obj.__hash__) return obj.__hash__();
     if (obj.constructor == String || obj.constructor == Number || obj.constructor == Date) return obj;
-    
+
     obj.$H = ++pyjslib_next_hash_id;
     return obj.$H;
     """)
@@ -873,13 +884,13 @@ def toJSObjects(x):
        objects, recursively.
     """
     result = x
-   
+
     if isObject(x) and x.__class__:
         if x.__class__ == 'pyjslib_Dict':
             return toJSObjects(x.d)
         elif x.__class__ == 'pyjslib_List':
             return toJSObjects(x.l)
-   
+
     if isObject(x):
         JS("""
         result = {};
@@ -898,7 +909,7 @@ def toJSObjects(x):
            result.push(tv);
         }
         """)
-        
+
     return result
 
 def printFunc(objs):
