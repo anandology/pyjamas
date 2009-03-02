@@ -44,3 +44,4 @@ echo test043; ../pyjs.py test043.py    | diff - test043.js
 echo test044; ../pyjs.py test044.py    | diff - test044.js
 echo test045; ../pyjs.py test045.py    | diff - test045.js
 echo test046; ../pyjs.py test046.py    | diff - test046.js
+echo test047; ../pyjs.py test047.py    | diff - test047.js

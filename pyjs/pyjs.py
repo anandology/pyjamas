@@ -176,6 +176,26 @@ class Translator:
                 self._assign(child, None, True)
             elif isinstance(child, ast.AugAssign):
                 self._augassign(child, None)
+            elif isinstance(child, ast.If):
+                self._if(child, None)
+            elif isinstance(child, ast.For):
+                self._for(child, None)
+            elif isinstance(child, ast.While):
+                self._while(child, None)
+            elif isinstance(child, ast.Subscript):
+                self._subscript_stmt(child, None)
+            elif isinstance(child, ast.Global):
+                self._global(child, None)
+            elif isinstance(child, ast.Printnl):
+               self._print(child, None)
+            elif isinstance(child, ast.Print):
+               self._print(child, None)
+            elif isinstance(child, ast.TryExcept):
+                self._tryExcept(child, None)
+            elif isinstance(child, ast.Raise):
+                self._raise(child, None)
+            elif isinstance(child, ast.Stmt):
+                self._stmt(child, None)
             else:
                 raise TranslationError("unsupported type (in __init__)", child)
 
