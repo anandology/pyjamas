@@ -717,6 +717,15 @@ def len(object):
     """)
 
 def isinstance(object_, classinfo):
+    if _isinstance(classinfo, Tuple):
+        for ci in classinfo:
+            if isinstance(object_, ci):
+                return True
+        return False
+    else:
+        return _isinstance(object_, classinfo)
+
+def _isinstance(object_, classinfo):
     JS("""
     if (object_.__class__){
         var res =  object_ instanceof classinfo.constructor;

@@ -5,6 +5,11 @@ class MyException:
     def toString(self):
         return "MyException"
 
+class MyException2:
+
+    def toString(self):
+        return "MyException2"
+
 class ExceptionTest(UnitTest):
     def __init__(self):
         UnitTest.__init__(self)
@@ -40,6 +45,15 @@ class ExceptionTest(UnitTest):
         try:
             raise MyException()
         except MyException, e:
+            self.assertEqual(e.toString(), 'MyException',
+                             "Catched exception does not match")
+            return
+        self.fail('MyException was not catched or raised')
+
+    def testCatchMultiClassException(self):
+        try:
+            raise MyException()
+        except (MyException, MyException2), e:
             self.assertEqual(e.toString(), 'MyException',
                              "Catched exception does not match")
             return

@@ -169,9 +169,15 @@ class ClassTest(UnitTest):
 
     def testIsInstance(self):
         c = ExampleChildClass()
+        self.failIf(isinstance(c, ExampleClass))
         self.failUnless(isinstance(c, ExampleChildClass))
         self.failUnless(isinstance(c, ExampleParentClass))
 
+    def testIsInstanceNested(self):
+        c = ExampleChildClass()
+        self.failUnless(isinstance(c, (ExampleClass, ExampleChildClass)))
+        self.failIf(isinstance(c, (ExampleClass, ExampleParentObject)))
+        self.failUnless(isinstance(c, (ExampleClass, (ExampleChildClass,))))
 
 # testClassVars
 class ExampleClass:
