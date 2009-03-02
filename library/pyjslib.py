@@ -716,6 +716,15 @@ def len(object):
     return object.length;
     """)
 
+def isinstance(object_, classinfo):
+    JS("""
+    if (object_.__class__){
+        var res =  object_ instanceof classinfo.constructor;
+        return res;
+    }
+    return false;
+    """)
+
 def getattr(obj, name, default_):
     JS("""
     if (pyjslib_isUndefined(obj[name])){

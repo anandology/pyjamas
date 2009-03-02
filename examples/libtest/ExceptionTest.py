@@ -35,3 +35,20 @@ class ExceptionTest(UnitTest):
         except:
             return
         self.fail('MyException was not raised')
+
+    def testCatchClassException(self):
+        try:
+            raise MyException()
+        except MyException, e:
+            self.assertEqual(e.toString(), 'MyException',
+                             "Catched exception does not match")
+            return
+        self.fail('MyException was not catched or raised')
+
+    def testCatchStringException(self):
+        try:
+            raise "test"
+        except "test":
+            return
+        self.fail('"test" was not catched or raised')
+

@@ -1,6 +1,13 @@
                     Changes made to Pyjamas since 0.4
                     ---------------------------------
 
+ * implemented try except statements with an expression. Raising and
+   catching of class based Exceptions is now possible. String based
+   Exceptions also work.
+
+ * implemented the 'isinstance' builtin function, currently onnly
+   works on normal class instances.
+
  * implemented the 'raise' statement. it only works with a single expression.
 
  * changed 'getattr' to accept a default and raise an AttributeError

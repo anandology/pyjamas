@@ -286,6 +286,8 @@ class Translator:
                 call_name = "pyjslib_min"
             elif v.node.name == "max":
                 call_name = "pyjslib_max"
+            elif v.node.name == "isinstance":
+                call_name = "pyjslib_isinstance"
             else:
                 call_name = v.node.name
             call_args = []
@@ -346,19 +348,32 @@ class Translator:
 
     def _tryExcept(self, node, current_klass):
         ok = True
-        if len(node.handlers) != 1: ok = False
-        elif node.handlers[0][0] != None: ok = False
-        elif node.handlers[0][1] != None: ok = False
+        if len(node.handlers) != 1:
+            raise TranslationError("except statements in this form are" +
+                                   " not supported", node)
+
+        expr = node.handlers[0][0]
+        as_ = node.handlers[0][1]
+        if as_:
+            errName = as_.name
+        else:
+            errName = 'err'
         if not ok:
+            expr = self.expr(node.handlers[0][0], current_klass)
+            import pdb;pdb.set_trace()
             raise TranslationError("only simple try...except statements " +
                                    "supported", node)
 
         print >>self.output, "    try {"
         for stmt in node.body.nodes:
             self._stmt(stmt, current_klass)
-        print >>self.output, "    } catch(err) {"
+        print >> self.output, "    } catch(%s) {" % errName
+        if expr:
+            print >> self.output, "   if((%(err)s === %(expr)s)||(pyjslib_isinstance(%(err)s, %(expr)s))){" % dict (err=errName, expr=self.expr(expr, current_klass))
         for stmt in node.handlers[0][2]:
             self._stmt(stmt, current_klass)
+        if expr:
+            print >> self.output, "}"
         if node.else_ != None:
             print >>self.output, "    } finally {"
             for stmt in node.else_:
