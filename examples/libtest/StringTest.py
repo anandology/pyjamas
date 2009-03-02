@@ -90,7 +90,9 @@ class StringTest(UnitTest):
     def testIsDigit(self):
         self.assertEqual("123".isdigit(), True)
 
-        self.assertEqual("-123.45".isdigit(), False)
+        self.assertEqual("-123".isdigit(), False)
+
+        self.assertEqual("123.45".isdigit(), False)
 
         self.assertEqual("1a".isdigit(), False)
 
