@@ -86,3 +86,12 @@ class StringTest(UnitTest):
     def testUnicode(self):
         text=u"""Liebe 'hallo' "grüsse" Grüsse"""
         self.assertEqual(text, text[:])
+
+    def testIsDigit(self):
+        self.assertEqual("123".isdigit(), True)
+
+        self.assertEqual("-123.45".isdigit(), False)
+
+        self.assertEqual("1a".isdigit(), False)
+
+        self.assertEqual("   ".isdigit(), False)

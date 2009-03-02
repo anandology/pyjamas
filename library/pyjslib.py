@@ -88,6 +88,10 @@ function pyjslib_String_join(data) {
     return text;
 }
 
+function pyjslib_String_isdigit() {
+    return (this.match(/^\d+$/g) != null);
+}
+
 function pyjslib_String_replace(old, replace, count) {
     var do_max=false;
     var start=0;
@@ -167,6 +171,7 @@ String.prototype.upper = String.prototype.toUpperCase;
 String.prototype.lower = String.prototype.toLowerCase;
 String.prototype.find=pyjslib_String_find;
 String.prototype.join=pyjslib_String_join;
+String.prototype.isdigit=pyjslib_String_isdigit;
 
 String.prototype.__replace=String.prototype.replace;
 String.prototype.replace=pyjslib_String_replace;

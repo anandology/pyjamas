@@ -1,6 +1,8 @@
                     Changes made to Pyjamas since 0.4
                     ---------------------------------
 
+ * implemented "isdigit" for strings
+
  * added support for unicode constants, the encoding is now explicitly
    set in the *.chache.html files to "utf-8". Strings should now be
    encoded in a safer manner.
