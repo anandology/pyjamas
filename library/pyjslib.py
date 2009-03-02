@@ -52,13 +52,6 @@ KeyError.prototype = new Error();
 KeyError.name = 'KeyError';
 KeyError.message = 'KeyError';
 
-AttributeError = function () {};
-AttributeError.name = 'KeyError';
-AttributeError.message = 'KeyError';
-AttributeError.prototype.toString = function () {
-   return "AttributeError";
-}
-
 TypeError = function () {};
 TypeError.prototype = new Error();
 TypeError.name = "TypeError";
