@@ -1333,8 +1333,7 @@ class AppTranslator:
 
         return imported_modules_str
 
-
-if __name__ == "__main__":
+def main():
     import sys
     file_name = sys.argv[1]
     if len(sys.argv) > 2:
@@ -1342,3 +1341,7 @@ if __name__ == "__main__":
     else:
         module_name = None
     print translate(file_name, module_name),
+
+if __name__ == "__main__":
+    main()
+

@@ -6,7 +6,8 @@ import shutil
 from os.path import join, dirname, basename
 from optparse import OptionParser
 
-sys.path.append(join(dirname(__file__), "../pyjs"))
+builddir = dirname(__file__)
+sys.path.append(join(builddir, "../pyjs"))
 import pyjs
 
 
@@ -31,7 +32,10 @@ For more information, see the website at http://pyjamas.pyworks.org/
 
 version = "%prog pyjamas version 2006-08-19"
 app_platforms = ['IE6', 'Opera', 'OldMoz', 'Safari', 'Mozilla']
-app_library_dirs = ["../library/builtins", "../library", "../addons"]
+app_library_dirs = [
+            join(builddir, "../library/builtins"),
+            join(builddir, "../library"),
+            join(builddir, "../addons")]
 
 
 def read_boilerplate(filename):
@@ -215,6 +219,7 @@ def build(app_name, output="output", js_includes=(), debug=False):
 def main():
     global app_library_dirs
     global app_platforms
+
     parser = OptionParser(usage = usage, version = version)
     parser.add_option("-o", "--output", dest="output",
         help="directory to which the webapp should be written")
