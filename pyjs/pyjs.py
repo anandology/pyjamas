@@ -24,6 +24,31 @@ import copy
 # this is the python function used to wrap native javascript
 NATIVE_JS_FUNC_NAME = "JS"
 
+PYJSLIB_BUILTIN_FUNCTIONS=("map",
+                           "filter",
+                           "dir",
+                           "getattr",
+                           "setattr",
+                           "hasattr",
+                           "int",
+                           "str",
+                           "repr",
+                           "range",
+                           "len",
+                           "hash",
+                           "abs",
+                           "ord",
+                           "chr",
+                           "enumerate",
+                           "min",
+                           "max",
+                           "isinstance")
+
+PYJSLIB_BUILTIN_CLASSES=("BaseException",
+                         "Exception",
+                         "StandardError",
+                         "AttributeError")
+
 class Klass:
 
     klasses = {}
@@ -250,44 +275,8 @@ class Translator:
                 call_name = self.imported_classes[v.node.name] + '_' + v.node.name
             elif v.node.name == "callable":
                 call_name = "pyjslib_isFunction"
-            elif v.node.name == "map":
-                call_name = "pyjslib_map"
-            elif v.node.name == "filter":
-                call_name = "pyjslib_filter"
-            elif v.node.name == "dir":
-                call_name = "pyjslib_dir"
-            elif v.node.name == "getattr":
-                call_name = "pyjslib_getattr"
-            elif v.node.name == "setattr":
-                call_name = "pyjslib_setattr"
-            elif v.node.name == "hasattr":
-                call_name = "pyjslib_hasattr"
-            elif v.node.name == "int":
-                call_name = "pyjslib_int"
-            elif v.node.name == "str":
-                call_name = "pyjslib_str"
-            elif v.node.name == "repr":
-                call_name = "pyjslib_repr"
-            elif v.node.name == "range":
-                call_name = "pyjslib_range"
-            elif v.node.name == "len":
-                call_name = "pyjslib_len"
-            elif v.node.name == "hash":
-                call_name = "pyjslib_hash"
-            elif v.node.name == "abs":
-                call_name = "pyjslib_abs"
-            elif v.node.name == "ord":
-                call_name = "pyjslib_ord"
-            elif v.node.name == "chr":
-                call_name = "pyjslib_chr"
-            elif v.node.name == "enumerate":
-                call_name = "pyjslib_enumerate"
-            elif v.node.name == "min":
-                call_name = "pyjslib_min"
-            elif v.node.name == "max":
-                call_name = "pyjslib_max"
-            elif v.node.name == "isinstance":
-                call_name = "pyjslib_isinstance"
+            elif v.node.name in PYJSLIB_BUILTIN_FUNCTIONS:
+                call_name = 'pyjslib_' + v.node.name
             else:
                 call_name = v.node.name
             call_args = []
@@ -398,6 +387,7 @@ class Translator:
 
 
     def _name(self, v, return_none_for_module=False):
+
         if v.name == "True":
             return "true"
         elif v.name == "False":
@@ -414,9 +404,10 @@ class Translator:
             return "__" + strip_py(self.module_prefix) + v.name + ".prototype.__class__"
         elif v.name in self.imported_modules and return_none_for_module:
             return None
+        elif v.name in PYJSLIB_BUILTIN_CLASSES:
+            return "__pyjslib_" + v.name +  ".prototype.__class__"
         else:
             return v.name
-
 
     def _name2(self, v, current_klass, attr_name):
         obj = v.name

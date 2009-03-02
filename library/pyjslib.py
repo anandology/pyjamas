@@ -17,6 +17,30 @@
 # pyjs_extend from Kevin Lindsey's Inteheritance Tutorial (http://www.kevlindev.com/tutorials/javascript/inheritance/)
 from __pyjamas__ import JS
 
+class BaseException:
+
+    name = "BaseException"
+
+    def __init__(self, *args):
+        self.args = args
+
+    def toString(self):
+        return str(self)
+
+class Exception(BaseException):
+
+    name = "Exception"
+
+class StandardError(Exception):
+    name = "StandardError"
+
+class AttributeError(StandardError):
+
+    name = "AttributeError"
+
+    def toString(self):
+        return "AttributeError: %s of %s" % (self.args[1], self.args[0])
+
 JS("""
 StopIteration = function () {};
 StopIteration.prototype = new Error();
@@ -738,13 +762,13 @@ def getattr(obj, name, default_):
     JS("""
     if (pyjslib_isUndefined(obj[name])){
         if (pyjslib_isUndefined(default_)){
-            throw new AttributeError();
+            throw pyjslib_AttributeError(obj, name);
         }else{
         return default_;
         }
     }
     if (!pyjslib_isFunction(obj[name])) return obj[name];
-    return function() {
+   return function() {
         var args = [];
         for (var i = 0; i < arguments.length; i++) {
           args.push(arguments[i]);

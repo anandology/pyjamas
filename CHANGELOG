@@ -1,6 +1,9 @@
                     Changes made to Pyjamas since 0.4
                     ---------------------------------
 
+ * implemented basic Exceptions in pyjslib and added them to the global
+   namespace.
+
  * implemented try except statements with an expression. Raising and
    catching of class based Exceptions is now possible. String based
    Exceptions also work.

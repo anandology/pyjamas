@@ -31,10 +31,10 @@ class AttributeTest(UnitTest):
         # test on none object type
         self.assertEqual(getattr(1, 'x', 2), 2)
 
-        # at this time we only can catch bare exceptions
         try:
             self.assertEqual(1, getattr(foo, "vv"))
-        except:
+        except AttributeError, e:
+            self.assertEqual(e.name, 'AttributeError')
             return
         self.fail("No AttributeError raised")
 
