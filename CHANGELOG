@@ -1,6 +1,10 @@
                     Changes made to Pyjamas since 0.4
                     ---------------------------------
 
+ * added support for unicode constants, the encoding is now explicitly
+   set in the *.chache.html files to "utf-8". Strings should now be
+   encoded in a safer manner.
+
  * implemented basic Exceptions in pyjslib and added them to the global
    namespace.
 

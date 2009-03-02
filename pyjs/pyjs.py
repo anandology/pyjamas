@@ -49,6 +49,23 @@ PYJSLIB_BUILTIN_CLASSES=("BaseException",
                          "StandardError",
                          "AttributeError")
 
+# This is taken from the django project.
+# Escape every ASCII character with a value less than 32.
+JS_ESCAPES = (
+    ('\'', r'\x27'),
+    ('"', r'\x22'),
+    ('>', r'\x3E'),
+    ('<', r'\x3C'),
+    ('&', r'\x26'),
+    (';', r'\x3B')
+    ) + tuple([('%c' % z, '\\x%02X' % z) for z in range(32)])
+
+def escapejs(value):
+    """Hex encodes characters for use in JavaScript strings."""
+    for bad, good in JS_ESCAPES:
+        value = value.replace(bad, good)
+    return value
+
 class Klass:
 
     klasses = {}
@@ -1006,15 +1023,11 @@ class Translator:
             return str(node.value)
         elif isinstance(node.value, float):
             return str(node.value)
-        elif isinstance(node.value, str):
-            return "'" + node.value.encode('string_escape') + "'"
-            # lkcl: reverting r208.  bug #127
-            # erik - string_escape does something necessary, without
-            # which quotes inside comments (docstrings) causes a
-            # javascript syntax error.  e.g. """ 'hello' """
-            s = unicode(node.value, 'utf-8')
-            s = repr(s)[2:-1].replace("'", "\\'")
-            return "'" + s + "'"
+        elif isinstance(node.value, basestring):
+            v = v = node.value
+            if isinstance(node.value, unicode):
+                v = v.encode('utf-8')
+            return  "'%s'" % escapejs(v)
         elif node.value is None:
             return "null"
         else:
@@ -1278,10 +1291,10 @@ class AppTranslator:
             if file_name != "pyjamas.py":
                 file_name = file_name[8:]
         for library_dir in self.library_dirs:
-            full_file_name = os.path.join(os.path.dirname(__file__), library_dir, file_name)
+            full_file_name = os.path.join(
+                os.path.abspath(os.path.dirname(__file__)), library_dir, file_name)
             if os.path.isfile(full_file_name):
                 return full_file_name
-
         raise Exception("file not found: " + file_name)
 
     def translate(self, module_name, is_app=True, debug=False):

@@ -3,13 +3,12 @@
 import sys
 import os
 import shutil
-from os.path import join, dirname, basename
+from os.path import join, dirname, basename, abspath
 from optparse import OptionParser
 
-builddir = dirname(__file__)
-sys.path.append(join(builddir, "../pyjs"))
+builddir = abspath(dirname(dirname(__file__)))
+sys.path.append(join(builddir, "pyjs"))
 import pyjs
-
 
 usage = """
   usage: %prog [options] <application name>
@@ -33,9 +32,9 @@ For more information, see the website at http://pyjamas.pyworks.org/
 version = "%prog pyjamas version 2006-08-19"
 app_platforms = ['IE6', 'Opera', 'OldMoz', 'Safari', 'Mozilla']
 app_library_dirs = [
-            join(builddir, "../library/builtins"),
-            join(builddir, "../library"),
-            join(builddir, "../addons")]
+            join(builddir, "library/builtins"),
+            join(builddir, "library"),
+            join(builddir, "addons")]
 
 
 def read_boilerplate(filename):
