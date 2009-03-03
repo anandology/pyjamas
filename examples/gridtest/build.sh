@@ -1,1 +1,1 @@
-python ../../builder/build.py GridTest.py
+../../bin/pyjsbuild GridTest.py

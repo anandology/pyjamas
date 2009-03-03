@@ -1,1 +1,1 @@
-python ../../builder/build.py JSONRPCExample.py
+../../bin/pyjsbuild JSONRPCExample.py

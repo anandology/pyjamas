@@ -56,20 +56,15 @@ def get_files(d):
     return res
 
 # ok - examples is a bit of a pain.  
-
 for d in glob.glob("examples/*"):
     if os.path.isdir(d):
         (pth, fname) = os.path.split(d)
         expath = get_files(d)
         pth = os.path.join("/usr/share/pyjamas/examples", fname)
-        print pth, expath
+        #print pth, expath
         data_files.append((pth, expath))
     else:
         data_files.append(("/usr/share/pyjamas/examples", [d]))
- 
-from pprint import pprint
-
-pprint(data_files)
 
 if __name__ == '__main__':
     setup(name = "Pyjamas",
@@ -83,7 +78,7 @@ if __name__ == '__main__':
         #scripts = ["bin/pyjscompile", "bin/pyjsbuild"],
         entry_points = {'console_scripts':[
                        'pyjsbuild=pyjs.build:main',
-                       'pyjscompile=pyjs.pyjs:main',
+                       'pyjscompile=pyjs:main',
                        ]},
         packages=["pyjs"],
         install_requires = install_requires,

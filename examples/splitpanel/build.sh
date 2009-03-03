@@ -1,1 +1,1 @@
-python ../../builder/build.py SplitPanel.py
+../../bin/pyjsbuild SplitPanel.py

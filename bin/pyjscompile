@@ -1,10 +1,14 @@
-#!/usr/bin/env python 
+#!/opt/local/Library/Frameworks/Python.framework/Versions/2.5/Resources/Python.app/Contents/MacOS/Python
 
 import sys
-import os
+sys.path[0:0] = [
+  '/Users/bd/sandbox/pyjamas',
+  ]
 
-if __name__ == "__main__":
-    path = os.path.join(sys.prefix, "share/pyjamas/pyjs")
-    sys.path = [path] + sys.path
-    from pyjs import main
-    main()
+import pyjs
+pyjs.path += ['/Users/bd/sandbox/pyjamas/library']
+
+import pyjs
+
+if __name__ == '__main__':
+    pyjs.main()

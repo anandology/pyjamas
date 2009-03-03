@@ -1,1 +1,1 @@
-python ../../builder/build.py ControlDemo.py
+../../bin/pyjsbuild ControlDemo.py

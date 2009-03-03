@@ -1,1 +1,1 @@
-python ../../builder/build.py BrowserDetect.py
+../../bin/pyjsbuild BrowserDetect.py

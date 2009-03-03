@@ -1,1 +1,1 @@
-python ../../builder/build.py Slideshow.py
+../../bin/pyjsbuild Slideshow.py

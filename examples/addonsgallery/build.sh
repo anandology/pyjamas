@@ -1,1 +1,1 @@
-python ../../builder/build.py AddonsGallery.py
+../../bin/pyjsbuild AddonsGallery.py

@@ -1,1 +1,1 @@
-python ../../builder/build.py DynaTable.py
+../../bin/pyjsbuild DynaTable.py

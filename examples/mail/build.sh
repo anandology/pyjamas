@@ -1,1 +1,1 @@
-python ../../builder/build.py Mail.py
+../../bin/pyjsbuild Mail.py

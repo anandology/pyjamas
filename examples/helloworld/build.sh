@@ -1,1 +1,1 @@
-python ../../builder/build.py Hello.py
+../../bin/pyjsbuild Hello.py

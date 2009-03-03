@@ -1,1 +1,1 @@
-python ../../builder/build.py FormPanelExample.py
+../../bin/pyjsbuild FormPanelExample.py

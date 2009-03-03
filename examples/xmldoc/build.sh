@@ -1,1 +1,1 @@
-python ../../builder/build.py XMLload.py
+../../bin/pyjsbuild XMLload.py

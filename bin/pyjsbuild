@@ -1,11 +1,18 @@
-#!/usr/bin/env python
+#!/opt/local/Library/Frameworks/Python.framework/Versions/2.5/Resources/Python.app/Contents/MacOS/Python
 
 import sys
-import os
+sys.path[0:0] = [
+  '/Users/bd/sandbox/pyjamas',
+  ]
 
-if __name__ == "__main__":
-    path = os.path.join(sys.prefix, "share/pyjamas/builder")
-    print path
-    sys.path = [path] + sys.path
-    from build import main
-    main()
+import pyjs, sys
+pyjs.path += ['/Users/bd/sandbox/pyjamas/library',
+'/Users/bd/sandbox/pyjamas/library/builtins',
+'/Users/bd/sandbox/pyjamas/addons',
+]
+sys.argv.extend(['-D', '/Users/bd/sandbox/pyjamas'])
+
+import pyjs.build
+
+if __name__ == '__main__':
+    pyjs.build.main()

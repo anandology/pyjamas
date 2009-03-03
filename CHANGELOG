@@ -1,6 +1,13 @@
                     Changes made to Pyjamas since 0.4
                     ---------------------------------
 
+ * the pyjs compiler now uses the pyjs.path variable using the same
+   semantics as sys.path in python to find python module files to be
+   compiled to javascript. the path can also be set via the
+   environment variable PYJSPATH
+
+ * Changed development setup to generate ./bin/pyjscompile ./bin/pyjsbuild
+
  * implemented "isdigit" for strings
 
  * added support for unicode constants, the encoding is now explicitly

@@ -1,1 +1,1 @@
-python ../../builder/build.py InfoDirectory.py
+../../bin/pyjsbuild InfoDirectory.py

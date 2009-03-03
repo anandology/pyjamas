@@ -1,1 +1,1 @@
-python ../../builder/build.py GridEdit.py
+../../bin/pyjsbuild GridEdit.py

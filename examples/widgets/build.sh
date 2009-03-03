@@ -1,1 +1,1 @@
-python ../../pyjs/build.py --data_dir=../.. Widgets
+../../bin/pyjsbuild Widgets

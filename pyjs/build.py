@@ -5,10 +5,7 @@ import os
 import shutil
 from os.path import join, dirname, basename, abspath, split, isfile, isdir
 from optparse import OptionParser
-
 import pyjs
-
-
 
 usage = """
   usage: %prog [options] <application module name or path>
@@ -32,14 +29,11 @@ For more information, see the website at http://pyjamas.pyworks.org/
 version = "%prog pyjamas version 2006-08-19"
 app_platforms = ['IE6', 'Opera', 'OldMoz', 'Safari', 'Mozilla']
 
-app_library_dirs = []
-data_dir = dirname(__file__)
-
-def read_boilerplate(filename):
+def read_boilerplate(data_dir, filename):
     return open(join(data_dir, "builder/boilerplate", filename)).read()
 
 
-def copy_boilerplate(filename, output_dir):
+def copy_boilerplate(data_dir, filename, output_dir):
     filename = join(data_dir, "builder/boilerplate", filename)
     shutil.copy(filename, output_dir)
 
@@ -76,14 +70,11 @@ def copytree_exists(src, dst, symlinks=False):
         print errors
 
 
-def build(app_name, output="output", js_includes=(), debug=False):
-
-    dir_public = "public"
+def build(app_name, output, js_includes=(), debug=False, data_dir=None):
 
     # make sure the output directory is always created in the current working
     # directory or at the place given if it is an absolute path.
     output = os.path.abspath(output)
-
     msg = "Building '%(app_name)s' to output directory '%(output)s'" % locals()
     if debug:
         msg += " with debugging statements"
@@ -101,7 +92,7 @@ def build(app_name, output="output", js_includes=(), debug=False):
             print >>sys.stderr, "Exception creating output directory %s: %s" % (output, e)
 
     ## public dir
-    for p in app_library_dirs:
+    for p in pyjs.path:
         pub_dir = join(p, 'public')
         if isdir(pub_dir):
             print "Copying: public directory of library %r" % p
@@ -123,7 +114,7 @@ def build(app_name, output="output", js_includes=(), debug=False):
 
     print "Copying: pygwt.js"
 
-    pygwt_js_template = read_boilerplate("pygwt.js")
+    pygwt_js_template = read_boilerplate(data_dir, "pygwt.js")
     pygwt_js_output = open(join(output, "pygwt.js"), "w")
 
     print >>pygwt_js_output, pygwt_js_template
@@ -133,26 +124,26 @@ def build(app_name, output="output", js_includes=(), debug=False):
     ## Images
 
     print "Copying: Images and History"
-    copy_boilerplate("corner_dialog_topleft_black.png", output)
-    copy_boilerplate("corner_dialog_topright_black.png", output)
-    copy_boilerplate("corner_dialog_bottomright_black.png", output)
-    copy_boilerplate("corner_dialog_bottomleft_black.png", output)
-    copy_boilerplate("corner_dialog_edge_black.png", output)
-    copy_boilerplate("corner_dialog_topleft.png", output)
-    copy_boilerplate("corner_dialog_topright.png", output)
-    copy_boilerplate("corner_dialog_bottomright.png", output)
-    copy_boilerplate("corner_dialog_bottomleft.png", output)
-    copy_boilerplate("corner_dialog_edge.png", output)
-    copy_boilerplate("tree_closed.gif", output)
-    copy_boilerplate("tree_open.gif", output)
-    copy_boilerplate("tree_white.gif", output)
-    copy_boilerplate("history.html", output)
+    copy_boilerplate(data_dir, "corner_dialog_topleft_black.png", output)
+    copy_boilerplate(data_dir, "corner_dialog_topright_black.png", output)
+    copy_boilerplate(data_dir, "corner_dialog_bottomright_black.png", output)
+    copy_boilerplate(data_dir, "corner_dialog_bottomleft_black.png", output)
+    copy_boilerplate(data_dir, "corner_dialog_edge_black.png", output)
+    copy_boilerplate(data_dir, "corner_dialog_topleft.png", output)
+    copy_boilerplate(data_dir, "corner_dialog_topright.png", output)
+    copy_boilerplate(data_dir, "corner_dialog_bottomright.png", output)
+    copy_boilerplate(data_dir, "corner_dialog_bottomleft.png", output)
+    copy_boilerplate(data_dir, "corner_dialog_edge.png", output)
+    copy_boilerplate(data_dir, "tree_closed.gif", output)
+    copy_boilerplate(data_dir, "tree_open.gif", output)
+    copy_boilerplate(data_dir, "tree_white.gif", output)
+    copy_boilerplate(data_dir, "history.html", output)
 
     ## AppName.nocache.html
 
     print "Creating: %(app_name)s.nocache.html" % locals()
 
-    home_nocache_html_template = read_boilerplate("home.nocache.html")
+    home_nocache_html_template = read_boilerplate(data_dir, "home.nocache.html")
     home_nocache_html_output = open(join(output, app_name + ".nocache.html"), "w")
 
     print >>home_nocache_html_output, home_nocache_html_template % dict(
@@ -168,7 +159,7 @@ def build(app_name, output="output", js_includes=(), debug=False):
 
     ## all.cache.html
 
-    all_cache_html_template = read_boilerplate("all.cache.html")
+    all_cache_html_template = read_boilerplate(data_dir, "all.cache.html")
 
     parser = pyjs.PlatformParser("platform")
     app_headers = ''
@@ -177,9 +168,8 @@ def build(app_name, output="output", js_includes=(), debug=False):
     for platform in app_platforms:
         all_cache_name = "%s.%s.cache.html" % (app_name, platform)
         print "Creating: " + all_cache_name
-
         parser.setPlatform(platform)
-        app_translator = pyjs.AppTranslator(app_library_dirs, parser)
+        app_translator = pyjs.AppTranslator(parser=parser)
         app_libs = app_translator.translateLibraries(['pyjslib'], debug)
         app_code = app_translator.translate(app_name, debug=debug)
         all_cache_html_output = open(join(output, all_cache_name), "w")
@@ -199,9 +189,7 @@ def build(app_name, output="output", js_includes=(), debug=False):
     print "Done. You can run your app by opening '%(html_output_filename)s' in a browser" % locals()
 
 def main():
-    global app_library_dirs
     global app_platforms
-    global data_dir
 
     parser = OptionParser(usage = usage, version = version)
     parser.add_option("-o", "--output", dest="output",
@@ -209,18 +197,16 @@ def main():
     parser.add_option("-j", "--include-js", dest="js_includes", action="append",
         help="javascripts to load into the same frame as the rest of the script")
     parser.add_option("-I", "--library_dir", dest="library_dirs",
-        action="append", help="path for data directory")
-    parser.add_option("-D", "--data_dir", dest="data_dir", 
+        action="append", help="additional paths appended to PYJSPATH")
+    parser.add_option("-D", "--data_dir", dest="data_dir",
         help="path for data directory")
     parser.add_option("-P", "--platforms", dest="platforms",
         help="platforms to build for, comma-seperated")
     parser.add_option("-d", "--debug", action="store_true", dest="debug")
 
-    data_dir = os.path.join(sys.prefix, "share/pyjamas")
-
     parser.set_defaults(output = "output", js_includes=[], library_dirs=[],
                         platforms=(','.join(app_platforms)),
-                        data_dir=data_dir,
+                        data_dir=os.path.join(sys.prefix, "share/pyjamas"),
                         debug=False)
     (options, args) = parser.parse_args()
     if len(args) != 1:
@@ -228,7 +214,6 @@ def main():
 
     data_dir = abspath(options.data_dir)
 
-    lib_dirs = set()
     app_path = args[0]
     if app_path.endswith('.py'):
         app_path = abspath(app_path)
@@ -236,34 +221,27 @@ def main():
             parser.error("Application file not found %r" % app_path)
         app_path, app_name = split(app_path)
         app_name = app_name[:-3]
-        lib_dirs.add(app_path)
+        pyjs.path.append(app_path)
     elif os.path.sep in app_path:
         parser.error("Not a valid module declaration %r" % app_path)
     else:
         app_name = app_path
 
     for d in options.library_dirs:
-        lib_dirs.add(abspath(d))
-
-    app_library_dirs += tuple(lib_dirs)
+        pyjs.path.append(abspath(d))
 
     # ok these are the three "default" library directories, containing
     # the builtins (str, List, Dict, ord, round, len, range etc.)
     # the main pyjamas libraries (pyjamas.ui, pyjamas.Window etc.)
     # and the contributed addons
-    app_library_dirs += [join(data_dir, "library/builtins"),
-                         join(data_dir, "library"),
-                         join(data_dir, "addons")]
-
     if options.platforms:
        app_platforms = options.platforms.split(',')
 
     # this is mostly for getting boilerplate stuff
     data_dir = os.path.abspath(options.data_dir)
 
-    build(args[0], options.output, options.js_includes,
-                   options.debug)
-                   
+    build(app_name, options.output, options.js_includes,
+          options.debug, data_dir)
 
 if __name__ == "__main__":
     main()

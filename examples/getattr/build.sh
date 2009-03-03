@@ -1,1 +1,1 @@
-python ../../builder/build.py MainTest.py
+../../bin/pyjsbuild MainTest.py

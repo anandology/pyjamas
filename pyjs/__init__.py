@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-from types import StringType
-
 # Copyright 2006 James Tauber and contributors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,10 +14,30 @@ from types import StringType
 # limitations under the License.
 
 
+import sys
+from types import StringType
 import compiler
 from compiler import ast
 import os
 import copy
+
+path = [os.path.abspath('')]
+
+_data_dir = os.path.join(sys.prefix, "share/pyjamas")
+
+for p in ["library/builtins",
+          "library",
+          "addons"]:
+    p = os.path.join(_data_dir, p)
+    if os.path.isdir(p):
+        path.append(p)
+
+if os.environ.has_key('PYJSPATH'):
+    for p in os.environ['PYJSPATH'].split(os.pathsep):
+        p = os.path.abspath(p)
+        if os.path.isdir(p):
+            path.append(p)
+
 
 # this is the python function used to wrap native javascript
 NATIVE_JS_FUNC_NAME = "JS"
@@ -1293,11 +1311,11 @@ class PlatformParser:
 
 class AppTranslator:
 
-    def __init__(self, library_dirs=["../library"], parser=None):
+    def __init__(self, library_dirs=[], parser=None):
         self.extension = ".py"
 
         self.library_modules = []
-        self.library_dirs = library_dirs
+        self.library_dirs = path + library_dirs
 
         if not parser:
             self.parser = PlatformParser()
@@ -1375,9 +1393,19 @@ class AppTranslator:
 
         return imported_modules_str
 
+usage = """
+  usage: %s file_name [module_name]
+"""
+
 def main():
     import sys
-    file_name = sys.argv[1]
+    if len(sys.argv)<2:
+        print >> sys.stderr, usage % sys.argv[0]
+        sys.exit(1)
+    file_name = os.path.abspath(sys.argv[1])
+    if not os.path.isfile(file_name):
+        print >> sys.stderr, "File not found %s" % file_name
+        sys.exit(1)
     if len(sys.argv) > 2:
         module_name = sys.argv[2]
     else:

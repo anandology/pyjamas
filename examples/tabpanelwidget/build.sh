@@ -1,1 +1,1 @@
-python ../../builder/build.py Tabs.py
+../../bin/pyjsbuild Tabs.py
