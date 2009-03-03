@@ -19,7 +19,7 @@ keyw = """\
 
 lib_data_files = glob.glob("library/*.py")
 bp_data_files = glob.glob("builder/boilerplate/*")
-build_file = ["builder/build.py"]
+#build_file = ["builder/build.py"]
 pyjs_file = ["pyjs/pyjs.py"]
 test_files = glob.glob("pyjs/tests/*")
 stub_files = glob.glob("stubs/*")
@@ -35,7 +35,7 @@ data_files = [("/usr/share/pyjamas/library", lib_data_files),
               ("/usr/share/pyjamas/pyjs/tests", test_files),
               ("/usr/share/pyjamas/pyjs", pyjs_file),
               ("/usr/share/pyjamas/stubs", stub_files),
-              ("/usr/share/pyjamas/builder", build_file),
+              #("/usr/share/pyjamas/builder", build_file),
               ("/usr/share/pyjamas/library/platform", platform_data_files),
               ("/usr/share/pyjamas/library/pyjamas", pyjamas_data_files),
               ("/usr/share/pyjamas/addons", addons_data_files)
@@ -51,6 +51,8 @@ def get_files(d):
         (pth, fname) = os.path.split(p)
         if fname == "output":
             continue
+        if fname[-4:] == ".pyc": # ehmm.. noooo.
+            continue 
         if os.path.isdir(p):
             res += get_files(p)
         else:
@@ -82,11 +84,15 @@ if __name__ == '__main__':
         author = "The Pyjamas Project",
         author_email = "lkcl@lkcl.net",
         keywords = keyw,
-        scripts = ["bin/pyjscompile", "bin/pyjsbuild"],
-        #packages=["pyjamas"],
+        #scripts = ["bin/pyjscompile", "bin/pyjsbuild"],
+        entry_points = {'console_scripts':[
+                       'pyjsbuild=pyjs.build:main',
+                       'pyjscompile=pyjs.pyjs:main',
+                       ]},
+        packages=["pyjs"],
         install_requires = install_requires,
         data_files = data_files,
-        zip_safe=True,
+        zip_safe=False,
         license = "Apache Software License",
         platforms = ["any"],
         classifiers = [

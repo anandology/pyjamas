@@ -6,8 +6,6 @@ import shutil
 from os.path import join, dirname, basename, abspath, split, isfile, isdir
 from optparse import OptionParser
 
-builddir = abspath(dirname(dirname(__file__)))
-sys.path.append(join(builddir, "pyjs"))
 import pyjs
 
 
@@ -33,18 +31,16 @@ For more information, see the website at http://pyjamas.pyworks.org/
 
 version = "%prog pyjamas version 2006-08-19"
 app_platforms = ['IE6', 'Opera', 'OldMoz', 'Safari', 'Mozilla']
-app_library_dirs = [
-            join(builddir, "library/builtins"),
-            join(builddir, "library"),
-            join(builddir, "addons")]
 
+app_library_dirs = []
+data_dir = dirname(__file__)
 
 def read_boilerplate(filename):
-    return open(join(dirname(__file__), "boilerplate", filename)).read()
+    return open(join(data_dir, "builder/boilerplate", filename)).read()
 
 
 def copy_boilerplate(filename, output_dir):
-    filename = join(dirname(__file__), "boilerplate", filename)
+    filename = join(data_dir, "builder/boilerplate", filename)
     shutil.copy(filename, output_dir)
 
 
@@ -81,6 +77,11 @@ def copytree_exists(src, dst, symlinks=False):
 
 
 def build(app_name, output="output", js_includes=(), debug=False):
+<<<<<<< HEAD:builder/build.py
+=======
+
+    dir_public = "public"
+>>>>>>> tidyup and shuffle on setup.py.  moved build.py into pyjs/:pyjs/build.py
 
     # make sure the output directory is always created in the current working
     # directory or at the place given if it is an absolute path.
@@ -203,21 +204,27 @@ def build(app_name, output="output", js_includes=(), debug=False):
 def main():
     global app_library_dirs
     global app_platforms
+    global data_dir
 
     parser = OptionParser(usage = usage, version = version)
     parser.add_option("-o", "--output", dest="output",
         help="directory to which the webapp should be written")
     parser.add_option("-j", "--include-js", dest="js_includes", action="append",
         help="javascripts to load into the same frame as the rest of the script")
-    parser.add_option("-I", "--library_dir", dest="library_dirs", action="append",
-        help="paths to search for python modules")
+    parser.add_option("-I", "--library_dir", dest="library_dirs",
+        action="append", help="path for data directory")
+    parser.add_option("-D", "--data_dir", dest="data_dir", 
+        help="path for data directory")
     parser.add_option("-P", "--platforms", dest="platforms",
         help="platforms to build for, comma-seperated")
     parser.add_option("-d", "--debug", action="store_true", dest="debug")
 
-    parser.set_defaults(output = "output", js_includes=[],
-                        library_dirs=[],
-                        platforms=(','.join(app_platforms)), debug=False)
+    data_dir = os.path.join(sys.prefix, "share/pyjamas")
+
+    parser.set_defaults(output = "output", js_includes=[], library_dirs=[],
+                        platforms=(','.join(app_platforms)),
+                        data_dir=data_dir,
+                        debug=False)
     (options, args) = parser.parse_args()
     if len(args) != 1:
         parser.error("incorrect number of arguments")
@@ -238,11 +245,26 @@ def main():
 
     for d in options.library_dirs:
         lib_dirs.add(abspath(d))
+
     app_library_dirs += tuple(lib_dirs)
+
+    # ok these are the three "default" library directories, containing
+    # the builtins (str, List, Dict, ord, round, len, range etc.)
+    # the main pyjamas libraries (pyjamas.ui, pyjamas.Window etc.)
+    # and the contributed addons
+    app_library_dirs += [join(data_dir, "library/builtins"),
+                         join(data_dir, "library"),
+                         join(data_dir, "addons")]
+
     if options.platforms:
        app_platforms = options.platforms.split(',')
-    build(app_name, options.output, options.js_includes, options.debug)
 
+    # this is mostly for getting boilerplate stuff
+    data_dir = os.path.abspath(options.data_dir)
+
+    build(args[0], options.output, options.js_includes,
+                   options.debug)
+                   
 
 if __name__ == "__main__":
     main()

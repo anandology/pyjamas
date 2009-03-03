@@ -5,7 +5,6 @@ import os
 
 if __name__ == "__main__":
     path = os.path.join(sys.prefix, "share/pyjamas/pyjs")
-    print path
     sys.path = [path] + sys.path
     from pyjs import main
     main()
