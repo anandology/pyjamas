@@ -1338,7 +1338,7 @@ class AppTranslator:
         mod = self.parser.parseModule(module_name, file_name)
         t = Translator(module_name_translated, module_name, src, debug, mod, output)
         module_str = output.getvalue()
-
+        imported_js.update(set(t.imported_js))
         imported_modules_str = ""
         for module in t.imported_modules:
             if module not in self.library_modules:
