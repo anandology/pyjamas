@@ -20,7 +20,8 @@ import pyColourize
 # Modify the following to refer to the full path to your Pyjamas installation,
 # relative to the pyjamas-showcase source directory:
 
-PATH_TO_PYJAMAS = "../../../pyjamas"
+here = os.path.dirname(os.path.abspath(__file__))
+PATH_TO_PYJAMAS = os.path.dirname(os.path.dirname(here))
 
 #############################################################################
 
@@ -104,9 +105,11 @@ def main():
     f.close()
 
     # Compile the application using Pyjamas.
-
-    if os.system("cd src; python ../" + PATH_TO_PYJAMAS + "/builder/build.py" +
-                 " -o ../build Showcase > /dev/null") != 0: return
+    stmt = (os.path.join(PATH_TO_PYJAMAS, 'bin', 'pyjsbuild') +
+                 " -o " + os.path.join(here,'build') + " " +
+                 os.path.join(here, 'src', 'Showcase.py') +
+                 " > /dev/null")
+    if os.system(stmt) != 0: return
 
     # Finally, launch a web browser to show the compiled application.
 
