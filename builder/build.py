@@ -3,15 +3,17 @@
 import sys
 import os
 import shutil
-from os.path import join, dirname, basename, abspath
+from os.path import join, dirname, basename, abspath, split, isfile
 from optparse import OptionParser
 
 builddir = abspath(dirname(dirname(__file__)))
 sys.path.append(join(builddir, "pyjs"))
 import pyjs
 
+
+
 usage = """
-  usage: %prog [options] <application name>
+  usage: %prog [options] <application module name or path>
 
 This is the command line builder for the pyjamas project, which can be used to
 build Ajax applications from Python.
@@ -101,25 +103,6 @@ def build(app_name, output="output", js_includes=(), debug=False):
         except StandardError, e:
             print >>sys.stderr, "Exception creating output directory %s: %s" % (output, e)
 
-    # Check that the app_name file exists
-    py_app_name = app_name[:]
-    if py_app_name[-2:] != "py":
-        py_app_name = app_name + ".py"
-    if app_name[-3:] == ".py":
-        app_name = app_name[:-3]
-    app_basename = basename(app_name)
-
-    if not os.path.isfile(py_app_name):
-        print >>sys.stderr, "Could not find %s" % py_app_name
-        return
-
-    # make the app directory the working directory to make relative imports
-    # work if the directory from where build is started is not the same as the
-    # app directory.
-    app_dir = dirname(app_name)
-    if app_dir:
-        os.chdir(app_dir)
-
     ## public dir
     print "Copying: public directory"
     copytree_exists(dir_public, output)
@@ -167,18 +150,18 @@ def build(app_name, output="output", js_includes=(), debug=False):
 
     ## AppName.nocache.html
 
-    print "Creating: %(app_basename)s.nocache.html" % locals()
+    print "Creating: %(app_name)s.nocache.html" % locals()
 
     home_nocache_html_template = read_boilerplate("home.nocache.html")
-    home_nocache_html_output = open(join(output, app_basename + ".nocache.html"), "w")
+    home_nocache_html_output = open(join(output, app_name + ".nocache.html"), "w")
 
     print >>home_nocache_html_output, home_nocache_html_template % dict(
-        app_name = app_basename,
-        safari_js = "%s.Safari" % app_basename,
-        ie6_js = "%s.IE6" % app_basename,
-        oldmoz_js = "%s.OldMoz" % app_basename,
-        moz_js = "%s.Mozilla" % app_basename,
-        opera_js = "%s.Opera" % app_basename,
+        app_name = app_name,
+        safari_js = "%s.Safari" % app_name,
+        ie6_js = "%s.IE6" % app_name,
+        oldmoz_js = "%s.OldMoz" % app_name,
+        moz_js = "%s.Mozilla" % app_name,
+        opera_js = "%s.Opera" % app_name,
     )
 
     home_nocache_html_output.close()
@@ -192,7 +175,7 @@ def build(app_name, output="output", js_includes=(), debug=False):
     app_body = '\n'.join(['<script type="text/javascript" src="%s"></script>'%script for script in js_includes])
 
     for platform in app_platforms:
-        all_cache_name = "%s.%s.cache.html" % (app_basename, platform)
+        all_cache_name = "%s.%s.cache.html" % (app_name, platform)
         print "Creating: " + all_cache_name
 
         parser.setPlatform(platform)
@@ -202,7 +185,7 @@ def build(app_name, output="output", js_includes=(), debug=False):
         all_cache_html_output = open(join(output, all_cache_name), "w")
 
         print >>all_cache_html_output, all_cache_html_template % dict(
-            app_name = app_basename,
+            app_name = app_name,
             app_libs = app_libs,
             app_code = app_code,
             app_body = app_body,
@@ -230,15 +213,34 @@ def main():
         help="platforms to build for, comma-seperated")
     parser.add_option("-d", "--debug", action="store_true", dest="debug")
 
-    parser.set_defaults(output = "output", js_includes=[], library_dirs=[], platforms=(','.join(app_platforms)), debug=False)
+    parser.set_defaults(output = "output", js_includes=[],
+                        library_dirs=[],
+                        platforms=(','.join(app_platforms)), debug=False)
     (options, args) = parser.parse_args()
     if len(args) != 1:
         parser.error("incorrect number of arguments")
 
-    app_library_dirs += options.library_dirs
+    lib_dirs = set()
+    app_path = args[0]
+    if app_path.endswith('.py'):
+        app_path = abspath(app_path)
+        if not isfile(app_path):
+            parser.error("Application file not found %r" % app_path)
+        app_path, app_name = split(app_path)
+        app_name = app_name[:-3]
+        lib_dirs.add(app_path)
+    elif os.path.sep in app_path:
+        parser.error("Not a valid module declaration %r" % app_path)
+    else:
+        app_name = app_path
+
+    for d in options.library_dirs:
+        lib_dirs.add(abspath(d))
+    app_library_dirs += tuple(lib_dirs)
     if options.platforms:
        app_platforms = options.platforms.split(',')
-    build(args[0], options.output, options.js_includes, options.debug)
+    print app_name, app_library_dirs
+    build(app_name, options.output, options.js_includes, options.debug)
 
 
 if __name__ == "__main__":
