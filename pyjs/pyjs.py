@@ -874,6 +874,7 @@ class Translator:
 
 
     def _discard(self, node, current_klass):
+        
         if isinstance(node.expr, ast.CallFunc):
             if isinstance(node.expr.node, ast.Name) and node.expr.node.name == NATIVE_JS_FUNC_NAME:
                 if len(node.expr.args) != 1:
@@ -1317,13 +1318,12 @@ class AppTranslator:
                 return full_file_name
         raise Exception("file not found: " + file_name)
 
-    def translate(self, module_name, is_app=True, debug=False):
-
+    def _translate(self, module_name, is_app=True, debug=False,
+                   imported_js=set()):
         if module_name not in self.library_modules:
             self.library_modules.append(module_name)
 
         file_name = self.findFile(module_name + self.extension)
-
         if is_app:
             module_name_translated = ""
         else:
@@ -1342,20 +1342,29 @@ class AppTranslator:
         imported_modules_str = ""
         for module in t.imported_modules:
             if module not in self.library_modules:
-                imported_modules_str += self.translate(module, False, debug)
-        for js in t.imported_js:
-           path = self.findFile(js)
-           if os.path.isfile(path):
-              print 'Including', js
-              imported_modules_str += '\n//\n// BEGIN '+js+'\n//\n'
-              imported_modules_str += file(path).read()
-              imported_modules_str += '\n//\n// END '+js+'\n//\n'
-           else:
-              print >>sys.stderr, 'Warning: Unable to find imported javascript:', js
+                imported_js.update(set(t.imported_js))
+                imported_modules_str += self._translate(module, False,
+                                                        debug, imported_js)
 
         if module_name == 'pyjamas':
             return imported_modules_str
         return imported_modules_str + module_str
+
+
+    def translate(self, module_name, is_app=True, debug=False):
+        imported_js = set()
+        res = self._translate(
+            module_name, is_app=is_app, debug=False, imported_js=imported_js)
+        for js in imported_js:
+           path = self.findFile(js)
+           if os.path.isfile(path):
+              print 'Including', js
+              res += '\n//\n// BEGIN '+js+'\n//\n'
+              res += file(path).read()
+              res += '\n//\n// END '+js+'\n//\n'
+           else:
+              print >>sys.stderr, 'Warning: Unable to find imported javascript:', js
+        return res
 
     def translateLibraries(self, library_modules=[], debug=False):
         self.library_modules = library_modules
