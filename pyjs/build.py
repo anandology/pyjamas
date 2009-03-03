@@ -77,11 +77,8 @@ def copytree_exists(src, dst, symlinks=False):
 
 
 def build(app_name, output="output", js_includes=(), debug=False):
-<<<<<<< HEAD:builder/build.py
-=======
 
     dir_public = "public"
->>>>>>> tidyup and shuffle on setup.py.  moved build.py into pyjs/:pyjs/build.py
 
     # make sure the output directory is always created in the current working
     # directory or at the place given if it is an absolute path.
@@ -228,6 +225,8 @@ def main():
     (options, args) = parser.parse_args()
     if len(args) != 1:
         parser.error("incorrect number of arguments")
+
+    data_dir = abspath(options.data_dir)
 
     lib_dirs = set()
     app_path = args[0]
