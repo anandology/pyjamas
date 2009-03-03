@@ -29,6 +29,15 @@ For more information, see the website at http://pyjamas.pyworks.org/
 version = "%prog pyjamas version 2006-08-19"
 app_platforms = ['IE6', 'Opera', 'OldMoz', 'Safari', 'Mozilla']
 
+_data_dir = os.path.join(sys.prefix, "share/pyjamas")
+
+for p in ["library/builtins",
+          "library",
+          "addons"]:
+    p = os.path.join(_data_dir, p)
+    if os.path.isdir(p):
+        pyjs.path.append(p)
+
 def read_boilerplate(data_dir, filename):
     return open(join(data_dir, "builder/boilerplate", filename)).read()
 

@@ -23,21 +23,11 @@ import copy
 
 path = [os.path.abspath('')]
 
-_data_dir = os.path.join(sys.prefix, "share/pyjamas")
-
-for p in ["library/builtins",
-          "library",
-          "addons"]:
-    p = os.path.join(_data_dir, p)
-    if os.path.isdir(p):
-        path.append(p)
-
 if os.environ.has_key('PYJSPATH'):
     for p in os.environ['PYJSPATH'].split(os.pathsep):
         p = os.path.abspath(p)
         if os.path.isdir(p):
             path.append(p)
-
 
 # this is the python function used to wrap native javascript
 NATIVE_JS_FUNC_NAME = "JS"
