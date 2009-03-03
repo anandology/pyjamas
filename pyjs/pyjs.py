@@ -1359,29 +1359,30 @@ class AppTranslator:
         return imported_modules_str + module_str
 
 
-    def translate(self, module_name, is_app=True, debug=False):
+    def translate(self, module_name, is_app=True, debug=False,
+                  library_modules=[]):
+        app_code = cStringIO.StringIO()
+        lib_code = cStringIO.StringIO()
         imported_js = set()
-        res = self._translate(
+        self.library_modules = library_modules
+        for library in self.library_modules:
+            print 'Including LIB', library
+            print >> lib_code, '\n//\n// BEGIN LIB '+library+'\n//\n'
+            print >> lib_code, self._translate(
+                library, False, debug=debug, imported_js=imported_js)
+            print >> lib_code, '\n//\n// END LIB '+library+'\n//\n'
+        print >> app_code, self._translate(
             module_name, is_app=is_app, debug=debug, imported_js=imported_js)
         for js in imported_js:
            path = self.findFile(js)
            if os.path.isfile(path):
-              print 'Including', js
-              res += '\n//\n// BEGIN '+js+'\n//\n'
-              res += file(path).read()
-              res += '\n//\n// END '+js+'\n//\n'
+              print 'Including JS', js
+              print >> lib_code,  '\n//\n// BEGIN JS '+js+'\n//\n'
+              print >> lib_code, file(path).read()
+              print >> lib_code,  '\n//\n// END JS '+js+'\n//\n'
            else:
               print >>sys.stderr, 'Warning: Unable to find imported javascript:', js
-        return res
-
-    def translateLibraries(self, library_modules=[], debug=False):
-        self.library_modules = library_modules
-
-        imported_modules_str = ""
-        for library in self.library_modules:
-            imported_modules_str += self.translate(library, False, debug=debug)
-
-        return imported_modules_str
+        return lib_code.getvalue(), app_code.getvalue()
 
 usage = """
   usage: %s file_name [module_name]

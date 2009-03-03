@@ -179,8 +179,8 @@ def build(app_name, output, js_includes=(), debug=False, data_dir=None):
         print "Creating: " + all_cache_name
         parser.setPlatform(platform)
         app_translator = pyjs.AppTranslator(parser=parser)
-        app_libs = app_translator.translateLibraries(['pyjslib'], debug)
-        app_code = app_translator.translate(app_name, debug=debug)
+        app_libs, app_code = app_translator.translate(app_name, debug=debug,
+                                                      library_modules=['pyjslib'])
         all_cache_html_output = open(join(output, all_cache_name), "w")
 
         print >>all_cache_html_output, all_cache_html_template % dict(
