@@ -1,0 +1,24 @@
+==================
+Installing Pyjamas
+==================
+
+System Installation
+===================
+
+XXX
+
+Developer Sandbox Setup
+=======================
+
+In this directory run::
+
+ python bootstrap.py
+ ./bin/buildout
+
+The files ``./bin/pyjsbuild`` and ``./bin/pyjscompile`` will be created.
+
+To build pyjama apps see ``./bin/pyjsbuild --help``
+
+
+
+
