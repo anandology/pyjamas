@@ -3,7 +3,7 @@
 import sys
 import os
 import shutil
-from os.path import join, dirname, basename, abspath, split, isfile
+from os.path import join, dirname, basename, abspath, split, isfile, isdir
 from optparse import OptionParser
 
 builddir = abspath(dirname(dirname(__file__)))
@@ -70,7 +70,7 @@ def copytree_exists(src, dst, symlinks=False):
             if symlinks and os.path.islink(srcname):
                 linkto = os.readlink(srcname)
                 os.symlink(linkto, dstname)
-            elif os.path.isdir(srcname):
+            elif isdir(srcname):
                 copytree_exists(srcname, dstname, symlinks)
             else:
                 shutil.copy2(srcname, dstname)
@@ -81,7 +81,6 @@ def copytree_exists(src, dst, symlinks=False):
 
 
 def build(app_name, output="output", js_includes=(), debug=False):
-    dir_public = "public"
 
     # make sure the output directory is always created in the current working
     # directory or at the place given if it is an absolute path.
@@ -104,8 +103,11 @@ def build(app_name, output="output", js_includes=(), debug=False):
             print >>sys.stderr, "Exception creating output directory %s: %s" % (output, e)
 
     ## public dir
-    print "Copying: public directory"
-    copytree_exists(dir_public, output)
+    for p in app_library_dirs:
+        pub_dir = join(p, 'public')
+        if isdir(pub_dir):
+            print "Copying: public directory of library %r" % p
+            copytree_exists(pub_dir, output)
 
     ## AppName.html - can be in current or public directory
     html_input_filename = app_name + ".html"
@@ -239,7 +241,6 @@ def main():
     app_library_dirs += tuple(lib_dirs)
     if options.platforms:
        app_platforms = options.platforms.split(',')
-    print app_name, app_library_dirs
     build(app_name, options.output, options.js_includes, options.debug)
 
 
