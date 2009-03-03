@@ -1343,8 +1343,8 @@ class AppTranslator:
         for module in t.imported_modules:
             if module not in self.library_modules:
                 imported_js.update(set(t.imported_js))
-                imported_modules_str += self._translate(module, False,
-                                                        debug, imported_js)
+                imported_modules_str += self._translate(
+                    module, False, debug=debug, imported_js=imported_js)
 
         if module_name == 'pyjamas':
             return imported_modules_str
@@ -1354,7 +1354,7 @@ class AppTranslator:
     def translate(self, module_name, is_app=True, debug=False):
         imported_js = set()
         res = self._translate(
-            module_name, is_app=is_app, debug=False, imported_js=imported_js)
+            module_name, is_app=is_app, debug=debug, imported_js=imported_js)
         for js in imported_js:
            path = self.findFile(js)
            if os.path.isfile(path):
@@ -1371,7 +1371,7 @@ class AppTranslator:
 
         imported_modules_str = ""
         for library in self.library_modules:
-            imported_modules_str += self.translate(library, False, debug)
+            imported_modules_str += self.translate(library, False, debug=debug)
 
         return imported_modules_str
 
