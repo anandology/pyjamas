@@ -230,8 +230,10 @@ class Translator:
         for className in self.top_level_classes:
             print >> self.output, "__"+strip_py(self.module_prefix)+className+"_initialize();"
 
-    def _default_args_handler(self, node, arg_names, current_klass):
+    def _default_args_handler(self, node, arg_names, current_klass,
+                              output=None):
         if len(node.defaults):
+            output = output or self.output
             default_pos = len(arg_names) - len(node.defaults)
             if arg_names and arg_names[0] == self.method_self:
                 default_pos -= 1
@@ -247,7 +249,7 @@ class Translator:
 
                 default_name = arg_names[default_pos]
                 default_pos += 1
-                print >>self.output, "    if (typeof %s == 'undefined') %s=%s;" % (default_name, default_name, default_value)
+                print >> output, "    if (typeof %s == 'undefined') %s=%s;" % (default_name, default_name, default_value)
 
     def _varargs_handler(self, node, varargname, arg_names, current_klass):
         print >>self.output, "    var", varargname, '= new pyjslib_List([]);'
@@ -1151,6 +1153,22 @@ class Translator:
     def _tuple(self, node, current_klass):
         return "new pyjslib_Tuple([" + ", ".join([self.expr(x, current_klass) for x in node.nodes]) + "])"
 
+    def _lambda(self, node, current_klass):
+        if node.varargs:
+            raise TranslationError("varargs are not supported in Lambdas", node)
+        if node.kwargs:
+            raise TranslationError("kwargs are not supported in Lambdas", node)
+        res = cStringIO.StringIO()
+        arg_names = list(node.argnames)
+        function_args = ", ".join(arg_names)
+        for child in node.getChildNodes():
+            expr = self.expr(child, None)
+        print >> res, "function (%s){" % function_args
+        self._default_args_handler(node, arg_names, None,
+                                   output=res)
+        print >> res, 'return %s;}' % expr
+        return res.getvalue()
+
     def _slice(self, node, current_klass):
         if node.flags == "OP_APPLY":
             lower = "null"
@@ -1221,6 +1239,8 @@ class Translator:
             return self._tuple(node, current_klass)
         elif isinstance(node, ast.Slice):
             return self._slice(node, current_klass)
+        elif isinstance(node, ast.Lambda):
+            return self._lambda(node, current_klass)
         else:
             raise TranslationError("unsupported type (in expr)", node)
 

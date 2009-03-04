@@ -1,6 +1,9 @@
                     Changes made to Pyjamas since 0.4
                     ---------------------------------
 
+ * implemented "lambda". note that lambdas are only supported without
+   kwargs or varargs
+
  * "while" and "if" statements now use the new "bool" function to
    evaluate their expressions. Now it is possible to do things like
    "if ([])".
