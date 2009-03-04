@@ -8,13 +8,15 @@ from AttributeTest import AttributeTest
 from ExceptionTest import ExceptionTest
 
 class LibTest:
-	def onModuleLoad(self):
-		ExceptionTest().run()
-		ClassTest().run()
-		StringTest().run()
-		ListTest().run()
-		SetTest().run()
-		ArgsTest().run()
-		VarsTest().run()
-		AttributeTest().run()
+
+    def onModuleLoad(self):
+
+        ExceptionTest().run()
+        ClassTest().run()
+        StringTest().run()
+        ListTest().run()
+        SetTest().run()
+        ArgsTest().run()
+        VarsTest().run()
+        AttributeTest().run()
 
