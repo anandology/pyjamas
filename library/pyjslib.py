@@ -249,15 +249,24 @@ def cmp(a,b):
         return 0
 
 def bool(v):
-    if isObject(v):
-        f = getattr(v, '__nonzero__', None)
-        if callable(f):
-            return f()
-        f = getattr(v, '__len__', None)
-        if callable(f):
-            return f()>0
-        return True
-    return Boolean(v)
+    # this needs to stay in native code without any dependencies here,
+    # because this is used by if and while, we need to prevent
+    # recursion
+    JS("""
+    if (!v) return false;
+    switch(typeof v){
+    case 'boolean':
+        return v;
+    case 'object':
+        if (v.__nonzero__){
+            return v.__nonzero__();
+        }else if (v.__len__){
+            return v.__len__()>0;
+        }
+        return true;
+    }
+    return Boolean(v);
+    """)
 
 class List:
     def __init__(self, data=None):
