@@ -21,6 +21,24 @@ from compiler import ast
 import os
 import copy
 
+# the standard location for builtins (e.g. pyjslib) can be
+# over-ridden by changing this.  it defaults to sys.prefix
+# so that on a system-wide install of pyjamas the builtins
+# can be found in e.g. {sys.prefix}/share/pyjamas
+#
+# over-rides can be done by either explicitly modifying
+# pyjs.prefix or by setting an environment variable, PYJSPREFIX.
+
+prefix = sys.prefix
+
+if os.environ.has_key('PYJSPREFIX'):
+    prefix = os.environ['PYJSPREFIX']
+
+# pyjs.path is the list of paths, just like sys.path, from which
+# library modules will be searched for, for compile purposes.
+# obviously we don't want to use sys.path because that would result
+# in compiling standard python modules into javascript!
+
 path = [os.path.abspath('')]
 
 if os.environ.has_key('PYJSPATH'):

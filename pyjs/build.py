@@ -29,7 +29,14 @@ For more information, see the website at http://pyjamas.pyworks.org/
 version = "%prog pyjamas version 2006-08-19"
 app_platforms = ['IE6', 'Opera', 'OldMoz', 'Safari', 'Mozilla']
 
-_data_dir = os.path.join(sys.prefix, "share/pyjamas")
+# usually defaults to e.g. /usr/share/pyjamas
+_data_dir = os.path.join(pyjs.prefix, "share/pyjamas")
+
+
+# ok these are the three "default" library directories, containing
+# the builtins (str, List, Dict, ord, round, len, range etc.)
+# the main pyjamas libraries (pyjamas.ui, pyjamas.Window etc.)
+# and the contributed addons
 
 for p in ["library/builtins",
           "library",
@@ -38,9 +45,9 @@ for p in ["library/builtins",
     if os.path.isdir(p):
         pyjs.path.append(p)
 
+
 def read_boilerplate(data_dir, filename):
     return open(join(data_dir, "builder/boilerplate", filename)).read()
-
 
 def copy_boilerplate(data_dir, filename, output_dir):
     filename = join(data_dir, "builder/boilerplate", filename)
@@ -60,6 +67,10 @@ def copytree_exists(src, dst, symlinks=False):
 
     errors = []
     for name in names:
+        if name.startswith('CVS'):
+            continue
+        if name.startswith('.git'):
+            continue
         if name.startswith('.svn'):
             continue
 
@@ -111,7 +122,9 @@ def build(app_name, output, js_includes=(), debug=False, data_dir=None):
     html_input_filename = app_name + ".html"
     html_output_filename = join(output, basename(html_input_filename))
     if os.path.isfile(html_input_filename):
-        if not os.path.isfile(html_output_filename) or os.path.getmtime(html_input_filename) > os.path.getmtime(html_output_filename):
+        if not os.path.isfile(html_output_filename) or \
+               os.path.getmtime(html_input_filename) > \
+               os.path.getmtime(html_output_filename):
             try:
                 shutil.copy(html_input_filename, html_output_filename)
             except:
@@ -153,7 +166,8 @@ def build(app_name, output, js_includes=(), debug=False, data_dir=None):
     print "Creating: %(app_name)s.nocache.html" % locals()
 
     home_nocache_html_template = read_boilerplate(data_dir, "home.nocache.html")
-    home_nocache_html_output = open(join(output, app_name + ".nocache.html"), "w")
+    home_nocache_html_output = open(join(output, app_name + ".nocache.html"),
+                                    "w")
 
     print >>home_nocache_html_output, home_nocache_html_template % dict(
         app_name = app_name,
@@ -172,7 +186,9 @@ def build(app_name, output, js_includes=(), debug=False, data_dir=None):
 
     parser = pyjs.PlatformParser("platform")
     app_headers = ''
-    app_body = '\n'.join(['<script type="text/javascript" src="%s"></script>'%script for script in js_includes])
+    scripts = ['<script type="text/javascript" src="%s"></script>'%script \
+                                                  for script in js_includes]
+    app_body = '\n'.join(scripts)
 
     for platform in app_platforms:
         all_cache_name = "%s.%s.cache.html" % (app_name, platform)
@@ -180,7 +196,7 @@ def build(app_name, output, js_includes=(), debug=False, data_dir=None):
         parser.setPlatform(platform)
         app_translator = pyjs.AppTranslator(parser=parser)
         app_libs, app_code = app_translator.translate(app_name, debug=debug,
-                                                      library_modules=['pyjslib'])
+                                                  library_modules=['pyjslib'])
         all_cache_html_output = open(join(output, all_cache_name), "w")
 
         print >>all_cache_html_output, all_cache_html_template % dict(
@@ -239,10 +255,6 @@ def main():
     for d in options.library_dirs:
         pyjs.path.append(abspath(d))
 
-    # ok these are the three "default" library directories, containing
-    # the builtins (str, List, Dict, ord, round, len, range etc.)
-    # the main pyjamas libraries (pyjamas.ui, pyjamas.Window etc.)
-    # and the contributed addons
     if options.platforms:
        app_platforms = options.platforms.split(',')
 
