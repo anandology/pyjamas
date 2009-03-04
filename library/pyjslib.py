@@ -248,6 +248,17 @@ def cmp(a,b):
     else:
         return 0
 
+def bool(v):
+    if isObject(v):
+        f = getattr(v, '__nonzero__', None)
+        if callable(f):
+            return f()
+        f = getattr(v, '__len__', None)
+        if callable(f):
+            return f()>0
+        return True
+    return Boolean(v)
+
 class List:
     def __init__(self, data=None):
         JS("""
@@ -425,6 +436,14 @@ class Dict:
         var value=this.d[sKey];
         // if (pyjslib_isUndefined(value)) throw KeyError;
         return value;
+        """)
+
+    def __nonzero__(self):
+        JS("""
+        for (var i in this.d){
+            return true;
+        }
+        return false;
         """)
 
     def __len__(self):

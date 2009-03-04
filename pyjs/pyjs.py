@@ -50,6 +50,7 @@ PYJSLIB_BUILTIN_FUNCTIONS=("map",
                            "enumerate",
                            "min",
                            "max",
+                           "bool",
                            "isinstance")
 
 PYJSLIB_BUILTIN_CLASSES=("BaseException",
@@ -961,9 +962,9 @@ class Translator:
         elif op == "not in":
             return "!" + rhs + ".__contains__(" + lhs + ")"
         elif op == "is":
-            op = "=="
+            op = "==="
         elif op == "is not":
-            op = "!="
+            op = "!=="
 
         return "(" + lhs + " " + op + " " + rhs + ")"
 

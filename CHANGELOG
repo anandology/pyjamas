@@ -1,6 +1,10 @@
                     Changes made to Pyjamas since 0.4
                     ---------------------------------
 
+ * implemented builtin "bool" function, also the "is" and "is not"
+   operators are now generating "===" and "!==", this is needed to
+   distinct between undefined and null.
+
  * added CaptionPanel (see showcase)
 
  * the pyjs compiler now uses the pyjs.path variable using the same

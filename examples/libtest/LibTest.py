@@ -6,11 +6,13 @@ from ArgsTest import ArgsTest
 from VarsTest import VarsTest
 from AttributeTest import AttributeTest
 from ExceptionTest import ExceptionTest
+from BoolTest import BoolTest
 
 class LibTest:
 
     def onModuleLoad(self):
 
+        BoolTest().run()
         ExceptionTest().run()
         ClassTest().run()
         StringTest().run()
