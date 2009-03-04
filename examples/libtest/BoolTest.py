@@ -49,7 +49,6 @@ class BoolTest(UnitTest):
         self.assertTrue(bool('a'))
         self.assertFalse(bool(''))
 
-
     def testObjects(self):
 
         # objects
@@ -72,3 +71,19 @@ class BoolTest(UnitTest):
         self.assertFalse(bool({}))
         self.assertTrue(bool({'x':1}))
 
+
+    def testIfStatement(self):
+        if([]):
+            self.fail("Empty lists should not evaluate to True in If")
+        if([1]):
+            return
+        self.fail("None-empty lists should evaluate to True in If")
+
+    def testWhileStatement(self):
+        while([]):
+            self.fail("Empty lists should not evaluate to True in While")
+            break;
+
+        while([1]):
+            return
+        self.fail("None-empty lists should evaluate to True in While")

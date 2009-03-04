@@ -938,11 +938,10 @@ class Translator:
 
 
     def _if_test(self, keyword, test, consequence, current_klass):
-
         if test:
             expr = self.expr(test, current_klass)
 
-            print >>self.output, "    " + keyword + " (" + expr + ") {"
+            print >>self.output, "    " + keyword + " (pyjslib_bool(" + expr + ")) {"
         else:
             print >>self.output, "    " + keyword + " {"
 
@@ -1057,7 +1056,7 @@ class Translator:
 
     def _while(self, node, current_klass):
         test = self.expr(node.test, current_klass)
-        print >>self.output, "    while (" + test + ") {"
+        print >>self.output, "    while (pyjslib_bool(" + test + ")) {"
         if isinstance(node.body, ast.Stmt):
             for child in node.body.nodes:
                 self._stmt(child, current_klass)

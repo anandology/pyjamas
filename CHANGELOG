@@ -1,6 +1,10 @@
                     Changes made to Pyjamas since 0.4
                     ---------------------------------
 
+ * "while" and "if" statements now use the new "bool" function to
+   evaluate their expressions. Now it is possible to do things like
+   "if ([])".
+
  * implemented builtin "bool" function, also the "is" and "is not"
    operators are now generating "===" and "!==", this is needed to
    distinct between undefined and null.
