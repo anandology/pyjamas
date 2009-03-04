@@ -4520,3 +4520,32 @@ class DisclosurePanel(Composite):
         self.contentWrapper.setVisible(self.isOpen)
         self.headerObj.updateState()
 
+
+class CaptionPanel(SimplePanel):
+    """
+    A panel that wraps its contents in a border with a caption that appears in
+    the upper left corner of the border. This is an implementation of the
+    fieldset HTML element.
+    """
+
+    def __init__(self, caption, w=None):
+        SimplePanel.__init__(self, DOM.createElement("fieldset"))
+        self.caption = caption
+        self.legend = DOM.createElement("legend");
+        DOM.appendChild(self.getElement(), self.legend);
+        self.setCaption(caption);
+        if w is not None:
+            self.setWidget(w);
+
+    def getCaption(self):
+        return self.caption
+
+    def setCaption(self, caption):
+        self.caption = caption
+        if caption is not None and not caption == "":
+            DOM.setInnerHTML(self.legend, caption)
+            DOM.insertChild(self.getElement(), self.legend, 0)
+        elif DOM.getParent(self.legend) is not None:
+            DOM.removeChild(self.getElement(), self.legend)
+
+
