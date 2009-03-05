@@ -1,6 +1,9 @@
                     Changes made to Pyjamas since 0.4
                     ---------------------------------
 
+ * all none-native functions always return None now, which matches the
+   behaviour of python.
+
  * implemented "lambda". note that lambdas are only supported without
    kwargs or varargs
 

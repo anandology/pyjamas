@@ -7,14 +7,14 @@ from VarsTest import VarsTest
 from AttributeTest import AttributeTest
 from ExceptionTest import ExceptionTest
 from BoolTest import BoolTest
-from LambdaTest import LambdaTest
+from FunctionTest import FunctionTest
 
 class LibTest:
 
     def onModuleLoad(self):
 
         BoolTest().run()
-        LambdaTest().run()
+        FunctionTest().run()
         ExceptionTest().run()
         ClassTest().run()
         StringTest().run()

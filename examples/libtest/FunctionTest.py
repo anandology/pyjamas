@@ -8,16 +8,26 @@ class Handler:
     def handle(self, y):
         return self._x == y
 
-class LambdaTest(UnitTest):
+def aProcedure():
+    x = 1
+    if x == 2:
+        # a return statement which is not reached
+        return "something"
+    #this is a comment
+
+def aFunctionReturningNone():
+    return None
+
+class FunctionTest(UnitTest):
 
     def __init__(self):
         UnitTest.__init__(self)
 
     def getName(self):
-        return "Lambda"
+        return "Function"
 
     def testLambda(self):
-        # NOTE: kwargs and varargs are currently not supported an
+        # NOTE: kwargs and varargs are currently not supported and
         # raise a TranslationError
         f = lambda x: x
         self.assertEqual(f(1), 1)
@@ -34,3 +44,8 @@ class LambdaTest(UnitTest):
         self.assertTrue(f(5))
         self.assertFalse(f(4))
 
+    def testProcedure(self):
+        self.assertTrue(aFunctionReturningNone() is None,
+                        "Function should return None")
+        self.assertTrue(aProcedure() is None,
+                        "Procedures should always return None")

@@ -309,6 +309,10 @@ class Translator:
         for child in node.code:
             self._stmt(child, None)
 
+        # we need to return null always, so it is not undefined
+        if not isinstance([p for p in node.code][-1], ast.Return):
+            print >>self.output, "    return null;"
+
         print >>self.output, "}"
         print >>self.output, "\n"
 
@@ -317,10 +321,9 @@ class Translator:
 
     def _return(self, node, current_klass):
         expr = self.expr(node.value, current_klass)
-        if expr != "null":
-            print >>self.output, "    return " + expr + ";"
-        else:
-            print >>self.output, "    return;"
+        # in python a function call always returns None, so we do it
+        # here too
+        print >>self.output, "    return " + expr + ";"
 
 
     def _break(self, node, current_klass):
