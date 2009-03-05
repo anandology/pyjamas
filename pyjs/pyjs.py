@@ -310,8 +310,10 @@ class Translator:
             self._stmt(child, None)
 
         # we need to return null always, so it is not undefined
-        if not isinstance([p for p in node.code][-1], ast.Return):
-            print >>self.output, "    return null;"
+        lastStmt = [p for p in node.code][-1]
+        if not isinstance(lastStmt, ast.Return):
+            if not self._isNativeFunc(lastStmt):
+                print >>self.output, "    return null;"
 
         print >>self.output, "}"
         print >>self.output, "\n"
@@ -713,18 +715,16 @@ class Translator:
         self.method_self = None
         self.method_imported_globals = set()
 
-    def _stmt(self, node, current_klass):
-        if self.debug:
-            debugStmt = True # initially.
-            if isinstance(node, ast.Discard):
-                if isinstance(node.expr, ast.CallFunc):
-                    if isinstance(node.expr.node, ast.Name) and \
+    def _isNativeFunc(self, node):
+        if isinstance(node, ast.Discard):
+            if isinstance(node.expr, ast.CallFunc):
+                if isinstance(node.expr.node, ast.Name) and \
                        node.expr.node.name == NATIVE_JS_FUNC_NAME:
-                        # Don't try to debug JS() functions.
-                        debugStmt = False
-        else:
-            debugStmt = False
+                    return True
+        return False
 
+    def _stmt(self, node, current_klass):
+        debugStmt = self.debug and not self._isNativeFunc(node)
         if debugStmt:
             print >>self.output, '  try {'
 
