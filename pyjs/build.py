@@ -6,6 +6,9 @@ import shutil
 from os.path import join, dirname, basename, abspath, split, isfile, isdir
 from optparse import OptionParser
 import pyjs
+from cStringIO import StringIO
+import md5
+import re
 
 usage = """
   usage: %prog [options] <application module name or path>
@@ -27,11 +30,17 @@ For more information, see the website at http://pyjamas.pyworks.org/
 # Old          | safari, gecko, opera  | --                   | --
 
 version = "%prog pyjamas version 2006-08-19"
+
+# these names in lowercase need match the strings
+# returned by "provider$user.agent" in order to be selected corretly
 app_platforms = ['IE6', 'Opera', 'OldMoz', 'Safari', 'Mozilla']
 
 # usually defaults to e.g. /usr/share/pyjamas
 _data_dir = os.path.join(pyjs.prefix, "share/pyjamas")
 
+
+# .cache.html files produces look like this
+CACHE_HTML_PAT=re.compile('^[0-9a-f]{32}\.cache\.html$')
 
 # ok these are the three "default" library directories, containing
 # the builtins (str, List, Dict, ord, round, len, range etc.)
@@ -161,6 +170,10 @@ def build(app_name, output, js_includes=(), debug=False, data_dir=None):
     copy_boilerplate(data_dir, "tree_white.gif", output)
     copy_boilerplate(data_dir, "history.html", output)
 
+
+    ## all.cache.html
+    app_files = generateAppFiles(data_dir, js_includes, app_name, debug, output)
+
     ## AppName.nocache.html
 
     print "Creating: %(app_name)s.nocache.html" % locals()
@@ -169,21 +182,34 @@ def build(app_name, output, js_includes=(), debug=False, data_dir=None):
     home_nocache_html_output = open(join(output, app_name + ".nocache.html"),
                                     "w")
 
+    # the selector templ is added to the selectScript function
+    select_tmpl = """O(["true","%s"],"%s");"""
+    script_selectors = StringIO()
+
+    for platform, file_prefix in app_files:
+        print >> script_selectors, select_tmpl % (platform, file_prefix)
+
     print >>home_nocache_html_output, home_nocache_html_template % dict(
         app_name = app_name,
-        safari_js = "%s.Safari" % app_name,
-        ie6_js = "%s.IE6" % app_name,
-        oldmoz_js = "%s.OldMoz" % app_name,
-        moz_js = "%s.Mozilla" % app_name,
-        opera_js = "%s.Opera" % app_name,
+        script_selectors = script_selectors.getvalue(),
     )
 
     home_nocache_html_output.close()
 
-    ## all.cache.html
+    print "Done. You can run your app by opening '%(html_output_filename)s' in a browser" % locals()
 
-    all_cache_html_template = read_boilerplate(data_dir, "all.cache.html")
 
+def generateAppFiles(data_dir, js_includes, app_name, debug, output):
+
+    # clean out the old ones first
+    for name in os.listdir(output):
+        if CACHE_HTML_PAT.match(name):
+            p = join(output, name)
+            print "Deleting existing app file %s" % p
+            os.unlink(p)
+
+    app_files = []
+    tmpl = read_boilerplate(data_dir, "all.cache.html")
     parser = pyjs.PlatformParser("platform")
     app_headers = ''
     scripts = ['<script type="text/javascript" src="%s"></script>'%script \
@@ -191,27 +217,27 @@ def build(app_name, output, js_includes=(), debug=False, data_dir=None):
     app_body = '\n'.join(scripts)
 
     for platform in app_platforms:
-        all_cache_name = "%s.%s.cache.html" % (app_name, platform)
-        print "Creating: " + all_cache_name
         parser.setPlatform(platform)
         app_translator = pyjs.AppTranslator(parser=parser)
         app_libs, app_code = app_translator.translate(app_name, debug=debug,
                                                   library_modules=['pyjslib'])
-        all_cache_html_output = open(join(output, all_cache_name), "w")
-
-        print >>all_cache_html_output, all_cache_html_template % dict(
+        file_contents = tmpl % dict(
             app_name = app_name,
             app_libs = app_libs,
             app_code = app_code,
             app_body = app_body,
             app_headers = app_headers
         )
-
-        all_cache_html_output.close()
-
-    ## Done.
-
-    print "Done. You can run your app by opening '%(html_output_filename)s' in a browser" % locals()
+        digest = md5.new(file_contents).hexdigest()
+        file_name = "%s.cache.html" % digest
+        out_path = join(output, file_name)
+        out_file = open(out_path, 'w')
+        out_file.write(file_contents)
+        out_file.close()
+        app_files.append((platform.lower(), file_name))
+        print "Created app file %s:%s: %s" % (
+            app_name, platform, out_path)
+    return app_files
 
 def main():
     global app_platforms

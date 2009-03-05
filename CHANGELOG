@@ -1,6 +1,13 @@
                     Changes made to Pyjamas since 0.4
                     ---------------------------------
 
+ * The user.agent value for Mozilla is no longer "moz", instead
+   "mozilla" is returned, to be consistent with platform names.
+
+ * .cache.html files are now generated with their md5 hash in the name
+   like in gwt. This now allows to cache those files on the
+   browser.
+
  * all none-native functions always return None now, which matches the
    behaviour of python.
 

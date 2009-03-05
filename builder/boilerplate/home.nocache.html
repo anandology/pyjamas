@@ -35,7 +35,7 @@ window["provider$user.agent"] = function() {
     var version = parseInt(ua.substring(geckoIdx + 6, spaceIdx));
     if (version < 20051107) 
       return 'oldmoz';
-    return 'moz';
+    return 'mozilla';
   }
   return 'unknown';
 }
@@ -45,13 +45,13 @@ window["prop$user.agent"] = function() {
   var v = window["provider$user.agent"]();
   switch (v) {
     case "ie6":
-    case "moz":
+    case "mozilla":
     case "oldmoz":
     case "opera":
     case "safari":
       return v;
     default:
-      parent.__pygwt_onBadProperty("%(app_name)s", "user.agent", ['"ie6"', '"moz"', '"oldmoz"', '"opera"', '"safari"'], v);
+      parent.__pygwt_onBadProperty("%(app_name)s", "user.agent", ['"ie6"', '"mozilla"', '"oldmoz"', '"opera"', '"safari"'], v);
       throw null;
   }
 };
@@ -75,14 +75,10 @@ function selectScript() {
     var F;
     var I = ["true", (F=window["prop$user.agent"],F())];
 
-    O(["true","safari"],"%(safari_js)s");
-    O(["true","ie6"],"%(ie6_js)s");
-    O(["true","oldmoz"],"%(oldmoz_js)s");
-    O(["true","moz"],"%(moz_js)s");
-    O(["true","opera"],"%(opera_js)s");
+    %(script_selectors)s
 
     var strongName = O.answers[I[0]][I[1]];
-    location.replace(strongName + '.cache.html');
+    location.replace(strongName);
   } catch (e) {
     // intentionally silent on property failure
   }
