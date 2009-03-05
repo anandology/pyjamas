@@ -982,6 +982,7 @@ def toJSObjects(x):
 
 def printFunc(objs):
     JS("""
+    if ($wnd.console==undefined)  return;
     var s = "";
     for(var i=0; i < objs.length; i++) {
         if(s != "") s += " ";
