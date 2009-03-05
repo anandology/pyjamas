@@ -1076,7 +1076,7 @@ class Translator:
         elif isinstance(node.value, float):
             return str(node.value)
         elif isinstance(node.value, basestring):
-            v = v = node.value
+            v = node.value
             if isinstance(node.value, unicode):
                 v = v.encode('utf-8')
             return  "'%s'" % escapejs(v)
