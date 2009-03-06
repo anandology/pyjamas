@@ -1,6 +1,8 @@
                     Changes made to Pyjamas since 0.4
                     ---------------------------------
 
+ * added "reverse" method of List. Thanks to Soulburner
+
  * The user.agent value for Mozilla is no longer "moz", instead
    "mozilla" is returned, to be consistent with platform names.
 

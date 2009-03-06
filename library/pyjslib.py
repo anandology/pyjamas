@@ -367,6 +367,9 @@ class List:
         };
         """)
 
+    def reverse(self):
+        JS("""    this.l.reverse();""")
+
     def sort(self, compareFunc=None, keyFunc=None, reverse=False):
         if not compareFunc:
             global cmp

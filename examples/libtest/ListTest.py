@@ -118,6 +118,12 @@ class ListTest(UnitTest):
         self.assertTrue(l1[0] == a)
         self.assertTrue(l2[0] == a)
 
+    def testReverse(self):
+        l = [1,2,3]
+        l.reverse()
+        self.assertEqual(l[0], 3)
+        self.assertEqual(l[2], 1)
+
 class A:
 
     def __cmp__(self, other):
