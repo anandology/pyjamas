@@ -3,6 +3,7 @@
 import sys
 import os
 import shutil
+from copy import copy
 from os.path import join, dirname, basename, abspath, split, isfile, isdir
 from optparse import OptionParser
 import pyjs
@@ -40,7 +41,7 @@ _data_dir = os.path.join(pyjs.prefix, "share/pyjamas")
 
 
 # .cache.html files produces look like this
-CACHE_HTML_PAT=re.compile('^[0-9a-f]{32}\.cache\.html$')
+CACHE_HTML_PAT=re.compile('^[a-z]*.[0-9a-f]{32}\.cache\.html$')
 
 # ok these are the three "default" library directories, containing
 # the builtins (str, List, Dict, ord, round, len, range etc.)
@@ -98,8 +99,71 @@ def copytree_exists(src, dst, symlinks=False):
     if errors:
         print errors
 
+def check_html_file(source_file, dest_path):
+    """ Checks if a base HTML-file is available in the PyJamas
+        output directory.
+        If the HTML-file isn't available, it will be created.
 
-def build(app_name, output, js_includes=(), debug=False, data_dir=None):
+        If a CSS-file with the same name is available
+        in the output directory, a reference to this CSS-file
+        is included.
+
+        If no CSS-file is found, this function will look for a special
+        CSS-file in the output directory, with the name
+        "pyjamas_default.css", and if found it will be referenced
+        in the generated HTML-file.
+
+        [thank you to stef mientki for contributing this function]
+    """
+
+    base_html = """\
+<html>
+    <!-- auto-generated html - you should consider editing and
+         adapting this to suit your requirements
+     -->
+    <head>
+      <meta name="pygwt:module" content="%(modulename)s">
+      %(css)s
+      <title>%(title)s</title>
+    </head>
+    <body bgcolor="white">
+      <script language="javascript" src="pygwt.js"></script>
+    </body>
+</html>
+"""
+
+    filename = os.path.split    ( source_file )[1]
+    mod_name = os.path.splitext ( filename    )[0]
+    file_name = os.path.join     ( dest_path, mod_name + '.html' )
+
+    # if html file in output directory exists, leave it alone.
+    if os.path.exists ( file_name ):
+        return 0
+
+    if os.path.exists (
+        os.path.join ( dest_path, mod_name + '.css' ) ) :
+        css = "<link rel='stylesheet' href='" + mod_name + ".css'>"
+    elif os.path.exists (
+        os.path.join ( dest_path, 'pyjamas_default.css' ) ) :
+        css = "<link rel='stylesheet' href='pyjamas_default.css'>"
+
+    else:
+        css = ''
+
+    title = 'PyJamas Auto-Generated HTML file ' + mod_name
+
+    base_html = base_html % {'modulename': mod_name, 'title': title, 'css': css}
+
+    fh = open (file_name, 'w')
+    fh.write  (base_html)
+    fh.close  ()
+
+    return 1
+
+
+def build(app_name, output, js_includes=(), debug=False, dynamic=0,
+                                            data_dir=None,
+                                            cache_buster=False):
 
     # make sure the output directory is always created in the current working
     # directory or at the place given if it is an absolute path.
@@ -141,6 +205,9 @@ def build(app_name, output, js_includes=(), debug=False, data_dir=None):
 
             print "Copying: %(html_input_filename)s" % locals()
 
+    if check_html_file(html_input_filename, output):
+        print >>sys.stderr, "Warning: Module HTML file %s has been auto-generated" % html_input_filename
+
     ## pygwt.js
 
     print "Copying: pygwt.js"
@@ -172,7 +239,8 @@ def build(app_name, output, js_includes=(), debug=False, data_dir=None):
 
 
     ## all.cache.html
-    app_files = generateAppFiles(data_dir, js_includes, app_name, debug, output)
+    app_files = generateAppFiles(data_dir, js_includes, app_name, debug,
+                                 output, dynamic, cache_buster)
 
     ## AppName.nocache.html
 
@@ -199,7 +267,11 @@ def build(app_name, output, js_includes=(), debug=False, data_dir=None):
     print "Done. You can run your app by opening '%(html_output_filename)s' in a browser" % locals()
 
 
-def generateAppFiles(data_dir, js_includes, app_name, debug, output):
+def generateAppFiles(data_dir, js_includes, app_name, debug, output, dynamic,
+                     cache_buster):
+
+    all_cache_html_template = read_boilerplate(data_dir, "all.cache.html")
+    mod_cache_html_template = read_boilerplate(data_dir, "mod.cache.html")
 
     # clean out the old ones first
     for name in os.listdir(output):
@@ -216,20 +288,196 @@ def generateAppFiles(data_dir, js_includes, app_name, debug, output):
                                                   for script in js_includes]
     app_body = '\n'.join(scripts)
 
+    mod_code = {}
+    modules = {}
+    app_libs = {}
+    app_code = {}
+    overrides = {}
+    pover = {}
+    app_modnames = {}
+    mod_levels = {}
+
+    # First, generate all the code.
+    # Second, (dynamic only), post-analyse the places where modules
+    # haven't changed
+    # Third, write everything out.
+    
     for platform in app_platforms:
+
+        mod_code[platform] = {}
+        modules[platform] = []
+        pover[platform] = {}
+        app_libs[platform] = {}
+        app_code[platform] = {}
+        app_modnames[platform] = {}
+
+        # Application.Platform.cache.html
+
         parser.setPlatform(platform)
-        app_translator = pyjs.AppTranslator(parser=parser)
-        app_libs, app_code = app_translator.translate(app_name, debug=debug,
-                                                  library_modules=['pyjslib'])
-        file_contents = tmpl % dict(
+        app_translator = pyjs.AppTranslator(parser=parser, dynamic=dynamic)
+        app_libs[platform], app_code[platform] = \
+                     app_translator.translate(app_name, #is_app=True,
+                                              debug=debug,
+                                      library_modules=['dynamicajax.js',
+                                                    '_pyjs.js', 'sys',
+                                                     'pyjslib'])
+        pover[platform].update(app_translator.overrides.items())
+        for mname, name in app_translator.overrides.items():
+            pd = overrides.setdefault(mname, {})
+            pd[platform] = name
+
+        # platform.Module.cache.js 
+
+        modules_done = [app_name, 'pyjslib', 'sys', '_pyjs.js']
+        #modules_to_do = [app_name] + app_translator.library_modules
+        modules_to_do = app_translator.library_modules
+
+        dependencies = {}
+
+        deps = map(pyjs.strip_py, modules_to_do)
+        for d in deps:
+            sublist = add_subdeps(dependencies, d)
+            modules_to_do += sublist
+        deps = uniquify(deps)
+        dependencies[app_name] = deps
+
+        modules[platform] = modules_done + modules_to_do
+
+        while modules_to_do:
+
+            #print "modules to do", modules_to_do
+
+            mn = modules_to_do.pop()
+            mod_name = pyjs.strip_py(mn)
+
+            if mod_name in modules_done:
+                continue
+
+            modules_done.append(mod_name)
+
+            mod_cache_name = "%s.%s.cache.js" % (platform.lower(), mod_name)
+
+            parser.setPlatform(platform)
+            mod_translator = pyjs.AppTranslator(parser=parser)
+            mod_code[platform][mod_name] = mod_translator._translate(mod_name,
+                                                  #is_app=mod_name==app_name,
+                                                  is_app=False,
+                                                  debug=debug)
+            pover[platform].update(mod_translator.overrides.items())
+            for mname, name in mod_translator.overrides.items():
+                pd = overrides.setdefault(mname, {})
+                pd[platform] = name
+
+            mods = mod_translator.library_modules
+            modules_to_do += mods
+            modules[platform] += mods
+
+            deps = map(pyjs.strip_py, mods)
+            sd = subdeps(mod_name)
+            if len(sd) > 1:
+                deps += sd[:-1]
+            while mod_name in deps:
+                deps.remove(mod_name)
+
+            #print
+            #print
+            #print "modname preadd:", mod_name, deps
+            #print
+            #print
+            for d in deps:
+                sublist = add_subdeps(dependencies, d)
+                modules_to_do += sublist
+            modules_to_do += add_subdeps(dependencies, mod_name)
+            #print "modname:", mod_name, deps
+            deps = uniquify(deps)
+            #print "modname:", mod_name, deps
+            dependencies[mod_name] = deps
+            
+        # work out the dependency ordering of the modules
+    
+        mod_levels[platform] = make_deps(app_name, dependencies, modules_done)
+
+    # now write everything out
+
+    for platform in app_platforms:
+
+        app_libs_ = app_libs[platform]
+        app_code_ = app_code[platform]
+        #modules_ = filter_mods(app_name, modules[platform])
+        mods = flattenlist(mod_levels[platform])
+        mods.reverse()
+        modules_ = filter_mods(app_name, mods)
+
+        for mod_name in modules_:
+
+            mod_code_ = mod_code[platform][mod_name]
+
+            mod_name = pyjs.strip_py(mod_name)
+
+            if pover[platform].has_key(mod_name):
+                mod_cache_name = "%s.%s.cache.js" % (platform.lower(), mod_name)
+            else:
+                mod_cache_name = "%s.cache.js" % (mod_name)
+
+            print "Creating: " + mod_cache_name
+
+            if dynamic:
+                mod_cache_html_output = open(join(output, mod_cache_name), "w")
+            else:
+                mod_cache_html_output = StringIO()
+
+            print >>mod_cache_html_output, mod_cache_html_template % dict(
+                mod_name = mod_name,
+                mod_libs = '',
+                mod_code = mod_code_,
+            )
+
+            if dynamic:
+                mod_cache_html_output.close()
+            else:
+                mod_cache_html_output.seek(0)
+                app_libs_ += mod_cache_html_output.read()
+
+        # write out the dependency ordering of the modules
+    
+        app_modnames = []
+
+        for md in mod_levels[platform]:
+            mnames = map(lambda x: "'%s'" % x, md)
+            mnames = "new pyjslib.List([\n\t\t\t%s])" % ',\n\t\t\t'.join(mnames)
+            app_modnames.append(mnames)
+
+        app_modnames.reverse()
+        app_modnames = "new pyjslib.List([\n\t\t%s\n\t])" % ',\n\t\t'.join(app_modnames)
+
+        # convert the overrides
+
+        overnames = map(lambda x: "'%s': '%s'" % x, pover[platform].items())
+        overnames = "new pyjslib.Dict({\n\t\t%s\n\t})" % ',\n\t\t'.join(overnames)
+
+        #print "platform names", platform, overnames
+        #print pover
+
+        # now write app.allcache including dependency-ordered list of
+        # library modules
+
+        file_contents = all_cache_html_template % dict(
             app_name = app_name,
-            app_libs = app_libs,
-            app_code = app_code,
+            app_libs = app_libs_,
+            app_code = app_code_,
             app_body = app_body,
+            overrides = overnames,
+            platform = platform.lower(),
+            dynamic = dynamic,
+            app_modnames = app_modnames,
             app_headers = app_headers
         )
-        digest = md5.new(file_contents).hexdigest()
-        file_name = "%s.cache.html" % digest
+        if cache_buster:
+            digest = md5.new(file_contents).hexdigest()
+            file_name = "%s.%s.%s" % (platform.lower(), app_name, digest)
+        else:
+            file_name = "%s.%s" % (platform.lower(), app_name)
+        file_name += ".cache.html" 
         out_path = join(output, file_name)
         out_file = open(out_path, 'w')
         out_file.write(file_contents)
@@ -237,7 +485,121 @@ def generateAppFiles(data_dir, js_includes, app_name, debug, output):
         app_files.append((platform.lower(), file_name))
         print "Created app file %s:%s: %s" % (
             app_name, platform, out_path)
+
     return app_files
+
+def flattenlist(ll):
+    res = []
+    for l in ll:
+        res += l
+    return res
+
+# creates sub-dependencies e.g. pyjamas.ui.Widget
+# creates pyjamas.ui.Widget, pyjamas.ui and pyjamas.
+def subdeps(m):
+    d = []
+    m = m.split(".")
+    for i in range(0, len(m)):
+        d.append('.'.join(m[:i+1]))
+    return d
+
+import time
+
+def add_subdeps(deps, mod_name):
+    sd = subdeps(mod_name)
+    if len(sd) == 1:
+        return []
+    #print "subdeps", mod_name, sd
+    #print "deps", deps
+    res = []
+    for i in range(0, len(sd)-1):
+        parent = sd[i]
+        child = sd[i+1]
+        l = deps.get(child, [])
+        l.append(parent)
+        deps[child] = l
+        if parent not in res:
+            res.append(parent)
+    #print deps
+    return res
+
+# makes unique and preserves list order
+def uniquify(md):
+    res = []
+    for m in md:
+        if m not in res:
+            res.append(m)
+    return res
+
+def filter_mods(app_name, md):
+    while 'sys' in md:
+        md.remove('sys')
+    while 'pyjslib' in md:
+        md.remove('pyjslib')
+    while app_name in md:
+        md.remove(app_name)
+    md = filter(lambda x: not x.endswith('.js'), md)
+    md = map(pyjs.strip_py, md)
+
+    return uniquify(md)
+
+def filter_deps(app_name, deps):
+
+    res = {}
+    for (k, l) in deps.items():
+        mods = filter_mods(k, l)
+        while k in mods:
+            mods.remove(k)
+        res[k] = mods
+    return res
+
+def has_nodeps(mod, deps):
+    if not deps.has_key(mod) or not deps[mod]:
+        return True
+    return False
+
+def nodeps_list(mod_list, deps):
+    res = []
+    for mod in mod_list:
+        if has_nodeps(mod, deps):
+            res.append(mod)
+    return res
+        
+# this function takes a dictionary of dependent modules and
+# creates a list of lists.  the first list will be modules
+# that have no dependencies; the second list will be those
+# modules that have the first list as dependencies; the
+# third will be those modules that have the first and second...
+# etc.
+
+
+def make_deps(app_name, deps, mod_list):
+    mod_list = filter_mods(app_name, mod_list)
+    deps = filter_deps(app_name, deps)
+
+    #print mod_list
+    #print deps
+
+    ordered_deps = []
+    while deps:
+        #print "deps", deps
+        #print "modlist", mod_list
+        nodeps = nodeps_list(mod_list, deps)
+        #print "nodeps", nodeps
+        mod_list = filter(lambda x: x not in nodeps, mod_list)
+        newdeps = {}
+        for k in deps.keys():
+            depslist = deps[k]
+            depslist = filter(lambda x: x not in nodeps, depslist)
+            if depslist:
+                newdeps[k] = depslist
+        deps = newdeps
+        ordered_deps.append(nodeps)
+        #time.sleep(2)
+
+    ordered_deps.reverse()
+
+    return ordered_deps
 
 def main():
     global app_platforms
@@ -251,13 +613,20 @@ def main():
         action="append", help="additional paths appended to PYJSPATH")
     parser.add_option("-D", "--data_dir", dest="data_dir",
         help="path for data directory")
+    parser.add_option("-m", "--dynamic-modules", dest="dynamic", type="int",
+        help="Split output into separate dynamically-loaded modules (experimental)")
     parser.add_option("-P", "--platforms", dest="platforms",
-        help="platforms to build for, comma-seperated")
+        help="platforms to build for, comma-separated")
     parser.add_option("-d", "--debug", action="store_true", dest="debug")
+    parser.add_option("-c", "--cache_buster", action="store_true",
+                  dest="cache_buster",
+        help="Enable browser cache-busting (MD5 hash added to output filenames)")
 
     parser.set_defaults(output = "output", js_includes=[], library_dirs=[],
                         platforms=(','.join(app_platforms)),
                         data_dir=os.path.join(sys.prefix, "share/pyjamas"),
+                        dynamic=0,
+                        cache_buster=False,
                         debug=False)
     (options, args) = parser.parse_args()
     if len(args) != 1:
@@ -288,7 +657,8 @@ def main():
     data_dir = os.path.abspath(options.data_dir)
 
     build(app_name, options.output, options.js_includes,
-          options.debug, data_dir)
+          options.debug, options.dynamic, data_dir,
+          options.cache_buster)
 
 if __name__ == "__main__":
     main()

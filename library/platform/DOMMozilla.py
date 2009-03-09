@@ -137,8 +137,8 @@ def isOrHasChild(parent, child):
 
 def releaseCapture(elem):
     JS("""
-    if ((DOM_sCaptureElem != null) && DOM_compare(elem, DOM_sCaptureElem))
-        DOM_sCaptureElem = null;
+    if ((DOM.sCaptureElem != null) && DOM.compare(elem, DOM.sCaptureElem))
+        DOM.sCaptureElem = null;
     
 	if (!elem.isSameNode) {
 		if (elem == $wnd.__captureElem) {

@@ -1,4 +1,6 @@
-from pyjamas.ui import Composite, VerticalPanel, Hyperlink
+from pyjamas.ui.Composite import Composite
+from pyjamas.ui.VerticalPanel import VerticalPanel
+from pyjamas.ui.Hyperlink import Hyperlink
 from Logger import Logger
 
 class SinkList(Composite):

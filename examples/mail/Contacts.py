@@ -1,4 +1,11 @@
-from pyjamas.ui import ClickListener, Composite, HTML, HorizontalPanel, Image, PopupPanel, VerticalPanel, Widget, Label
+from pyjamas.ui.Composite import Composite
+from pyjamas.ui.HTML import HTML
+from pyjamas.ui.HorizontalPanel import HorizontalPanel
+from pyjamas.ui.Image import Image
+from pyjamas.ui.PopupPanel import PopupPanel
+from pyjamas.ui.VerticalPanel import VerticalPanel
+from pyjamas.ui.Widget import Widget
+from pyjamas.ui.Label import Label
 from Logger import Logger
 
 class Contact:

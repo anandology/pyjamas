@@ -11,8 +11,9 @@ also call ``addClickListener()`` to respond when the user clicks on the
 checkbox, as shown below.  This can be useful when building complicated input
 screens where checking a checkbox causes other input fields to be enabled.
 """
-from ui import SimplePanel, CheckBox
-import Window
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.CheckBox import CheckBox
+from pyjamas import Window
 
 class CheckBoxDemo(SimplePanel):
     def __init__(self):

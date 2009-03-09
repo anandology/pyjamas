@@ -1,6 +1,21 @@
                     Changes made to Pyjamas since 0.4
                     ---------------------------------
 
+ * added a helper tool (in contrib) called replacer.py which helps convert
+   apps: "from pyjamas.ui import X,Y" is converted to
+   "from pyjamas.ui.X import X; from pyjamas.ui.Y import Y"
+
+ * split ui.py into separate modules.  cache file sizes are now drastically
+   reduced due to importing only including what is needed.  the reduction
+   is possible with both dynamic and static code-generation, although not
+   as much for static.
+
+ * dynamic module loading is now possible (add -m 1 to build).  each module
+   is placed in its own separate cache file, with platform overrides
+   also getting their own cache file.  cache files are shared between
+   platforms rather than four separate identical compiled modules being
+   created.  none of this optimisation is possible without dynamic loading
+
  * added "reverse" method of List. Thanks to Soulburner
 
  * The user.agent value for Mozilla is no longer "moz", instead
@@ -8,7 +23,7 @@
 
  * .cache.html files are now generated with their md5 hash in the name
    like in gwt. This now allows to cache those files on the
-   browser.
+   browser.  add -c or --cache-buster to builder command-line to enable.
 
  * all none-native functions always return None now, which matches the
    behaviour of python.

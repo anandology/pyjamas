@@ -1,8 +1,12 @@
 from Sink import Sink, SinkInfo
-from pyjamas.ui import Grid, FlexTable, HasHorizontalAlignment, Image
+from pyjamas.ui.Grid import Grid
+from pyjamas.ui.FlexTable import FlexTable
+from pyjamas.ui import HasHorizontalAlignment
+from pyjamas.ui.Image import Image
 
 class Tables(Sink):
     def __init__(self):
+        Sink.__init__(self)
         inner = Grid(10, 5)
         outer = FlexTable()
 

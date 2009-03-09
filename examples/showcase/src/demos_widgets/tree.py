@@ -12,9 +12,11 @@ To open a branch of the tree, call ``TreeItem.setState()`` method.  If the
 ``state`` parameter is True, the branch of the tree will be opened; if it is
 False, the branch of the tree will be closed.
 """
-from ui import SimplePanel, Tree, TreeItem
-import DOM
-import Window
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.Tree import Tree
+from pyjamas.ui.TreeItem import TreeItem
+from pyjamas import DOM
+from pyjamas import Window
 
 class TreeDemo(SimplePanel):
     def __init__(self):

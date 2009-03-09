@@ -1,8 +1,17 @@
 from Sink import Sink, SinkInfo
-from pyjamas.ui import Button, HorizontalPanel, HTML, PasswordTextBox, TextArea, TextBox, TextBoxBase, VerticalPanel, Widget
+from pyjamas.ui.Button import Button
+from pyjamas.ui.HorizontalPanel import HorizontalPanel
+from pyjamas.ui.HTML import HTML
+from pyjamas.ui.PasswordTextBox import PasswordTextBox
+from pyjamas.ui.TextArea import TextArea
+from pyjamas.ui.TextBox import TextBox
+from pyjamas.ui.TextBoxBase import TextBoxBase
+from pyjamas.ui.VerticalPanel import VerticalPanel
+from pyjamas.ui.Widget import Widget
 
 class Text(Sink):
     def __init__(self):
+        Sink.__init__(self)
         self.fPasswordText = PasswordTextBox()
         self.fTextArea = TextArea()
         self.fTextBox = TextBox()

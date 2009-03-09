@@ -10,7 +10,13 @@
 #   - add this to your MainModule.html: <!--[if IE]><script src="excanvas.js" type="text/javascript"></script><![endif]-->
 
 from pyjamas import DOM
-from pyjamas.ui import Image, Widget, Event, MouseListener, KeyboardListener, Focus, FocusListener
+from pyjamas.ui.Image import Image
+from pyjamas.ui.Widget import Widget
+from pyjamas.ui.Event import Event
+from pyjamas.ui.MouseListener import MouseListener
+from pyjamas.ui.KeyboardListener import KeyboardListener
+from pyjamas.ui.Focus import Focus
+from pyjamas.ui.FocusListener import FocusListener
 
 class Canvas(Widget):
     def __init__(self, width, height):

@@ -13,9 +13,9 @@ def getCookie(cookie_name):
 def setCookie(name, value, expires, domain=None, path=None, secure=False):
     JS("""
     if (expires instanceof Date) expires = expires.getTime();
-    if (pyjslib_isUndefined(domain)) domain = null;
-    if (pyjslib_isUndefined(path)) path = null;
-    if (pyjslib_isUndefined(secure)) secure = false;
+    if (pyjslib.isUndefined(domain)) domain = null;
+    if (pyjslib.isUndefined(path)) path = null;
+    if (pyjslib.isUndefined(secure)) secure = false;
     
     var today = new Date();
     var expiration = new Date();

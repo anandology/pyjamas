@@ -1,7 +1,11 @@
 # Autocomplete component for Pyjamas
 # Ported by Willie Gollino from Autocomplete component for GWT - Originally by Oliver Albers http://gwt.components.googlepages.com/
 
-from ui import TextBox, PopupPanel, ListBox, KeyboardListener, RootPanel
+from pyjamas.ui.TextBox import TextBox
+from pyjamas.ui.PopupPanel import PopupPanel
+from pyjamas.ui.ListBox import ListBox
+from pyjamas.ui.KeyboardListener import KeyboardListener
+from pyjamas.ui.RootPanel import RootPanel
 
 class AutoCompleteTextBox(TextBox):
     def __init__(self):

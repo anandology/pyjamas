@@ -1,12 +1,17 @@
 import Location
-closingListeners = []
-resizeListeners = []
+
+global closingListeners
+global resizeListeners
+closingListeners = None
+resizeListeners = None
 
 def addWindowCloseListener(listener):
+    init_listeners()
     global closingListeners
     closingListeners.append(listener)
 
 def addWindowResizeListener(listener):
+    init_listeners()
     global resizeListeners
     resizeListeners.append(listener)
 
@@ -50,13 +55,15 @@ def setLocation(url):
     $wnd.location = url;
     """)
  
-JS("var Window_location = null")
+global location
+location = None
+
 def getLocation():
     global location
     JS("""
-    if(!Window_location)
-       Window_location = Location_Location($wnd.location);
-    return Window_location;
+    if(!Window.location)
+       Window.location = Location.Location($wnd.location);
+    return Window.location;
     """)
  
  
@@ -134,17 +141,26 @@ def fireResizedImpl():
     for listener in resizeListeners:
         listener.onWindowResized(getClientWidth(), getClientHeight())
 
+def init_listeners():
+    global closingListeners
+    global resizeListeners
+    if not closingListeners:
+        closingListeners = []
+    if not resizeListeners:
+        resizeListeners = []
+
 def init():
+    init_listeners()
     JS("""
     $wnd.__pygwt_initHandlers(
         function() {
-            Window_onResize();
+            Window.onResize();
         },
         function() {
-            return Window_onClosing();
+            return Window.onClosing();
         },
         function() {
-            Window_onClosed();
+            Window.onClosed();
             /*$wnd.onresize = null;
             $wnd.onbeforeclose = null;
             $wnd.onclose = null;*/

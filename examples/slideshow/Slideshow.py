@@ -1,4 +1,11 @@
-from pyjamas.ui import Button, RootPanel, HTML, DockPanel, HasAlignment, Hyperlink, VerticalPanel, ScrollPanel
+from pyjamas.ui.Button import Button
+from pyjamas.ui.RootPanel import RootPanel
+from pyjamas.ui.HTML import HTML
+from pyjamas.ui.DockPanel import DockPanel
+from pyjamas.ui import HasAlignment
+from pyjamas.ui.Hyperlink import Hyperlink
+from pyjamas.ui.VerticalPanel import VerticalPanel
+from pyjamas.ui.ScrollPanel import ScrollPanel
 from pyjamas import Window
 from SinkList import SinkList
 from pyjamas.History import History

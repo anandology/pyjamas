@@ -36,7 +36,7 @@ def init():
             $wnd.location.hash = encodeURIComponent(token);
             // TODO - move init back into History
             // this.onHistoryChanged(token);
-            var h = new __History_History();
+            var h = new History.__History();
             h.onHistoryChanged(token);
         }
     };

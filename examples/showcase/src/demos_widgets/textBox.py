@@ -10,7 +10,8 @@ Similarly, ``setMaxLength()`` lets you set the maximum number of characters the
 user can enter into the field.
 
 """
-from ui import SimplePanel, TextBox
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.TextBox import TextBox
 
 class TextBoxDemo(SimplePanel):
     def __init__(self):

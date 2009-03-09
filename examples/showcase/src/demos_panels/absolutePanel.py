@@ -9,8 +9,11 @@ children are explicitly sized; the easier workaround is just to call
 adding the children, choosing an appropriate width and height based on the
 children you have added.
 """
-from ui import SimplePanel, AbsolutePanel, VerticalPanel, HTML
-import DOM
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.AbsolutePanel import AbsolutePanel
+from pyjamas.ui.VerticalPanel import VerticalPanel
+from pyjamas.ui.HTML import HTML
+from pyjamas import DOM
 
 
 class AbsolutePanelDemo(SimplePanel):

@@ -5,7 +5,9 @@
 """
 
 from pyjamas import DOM
-from pyjamas.ui import FocusWidget, MouseListener, Event
+from pyjamas.ui.FocusWidget import FocusWidget
+from pyjamas.ui.MouseListener import MouseListener
+from pyjamas.ui.Event import Event
 
 class VerticalDemoSlider(FocusWidget):
 

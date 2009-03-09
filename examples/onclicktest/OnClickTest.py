@@ -1,4 +1,5 @@
-from pyjamas.ui import Button, RootPanel
+from pyjamas.ui.Button import Button
+from pyjamas.ui.RootPanel import RootPanel
 from pyjamas import Window
 
 

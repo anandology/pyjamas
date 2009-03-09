@@ -16,7 +16,11 @@ Note that the popup panel is supposed to close when the user clicks outside of
 it.  However, this doesn't work under Firefox 3, so the code below adds a click
 handler so the user can click on the popup itself to close it.
 """
-from ui import SimplePanel, VerticalPanel, HTML, Button, PopupPanel
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.VerticalPanel import VerticalPanel
+from pyjamas.ui.HTML import HTML
+from pyjamas.ui.Button import Button
+from pyjamas.ui.PopupPanel import PopupPanel
 
 class PopupPanelDemo(SimplePanel):
     def __init__(self):

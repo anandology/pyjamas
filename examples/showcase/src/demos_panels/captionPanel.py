@@ -3,7 +3,9 @@ The ``ui.CaptionPanel`` class implements a panel that displays a caption
 in the upper left corner of the border.
 
 """
-from ui import SimplePanel, CaptionPanel, HTML
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.CaptionPanel import CaptionPanel
+from pyjamas.ui.HTML import HTML
 
 class CaptionPanelDemo(SimplePanel):
     def __init__(self):

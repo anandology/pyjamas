@@ -10,7 +10,10 @@ selected.  You can also enable or disable a checkbox using
 ``setEnabled(enabled)``.  And finally, you can call ``addClickListener()`` to
 respond when the user clicks on the radio button.
 """
-from ui import SimplePanel, HorizontalPanel, VerticalPanel, RadioButton
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.HorizontalPanel import HorizontalPanel
+from pyjamas.ui.VerticalPanel import VerticalPanel
+from pyjamas.ui.RadioButton import RadioButton
 
 class RadioButtonDemo(SimplePanel):
     def __init__(self):

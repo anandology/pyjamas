@@ -1,0 +1,23 @@
+// %(mod_name)s
+
+// module libs (usually imported javascript)
+
+%(mod_libs)s
+
+// module code
+
+%(mod_code)s
+
+%(mod_name)s_loaded_fn = function() {
+    module_load_request['%(mod_name)s'] = 2;
+    //alert("module ajax loaded fn called %(mod_name)s");
+
+    if ('%(mod_name)s' != 'pyjamas') { /* XXX hack! */
+        modules['%(mod_name)s'] = %(mod_name)s();
+    }
+    module_load_request['%(mod_name)s'] = 3;
+}
+
+
+//alert("module ajax loaded %(mod_name)s");
+%(mod_name)s_loaded_fn();

@@ -2,7 +2,8 @@
 The ``ui.HTML`` class displays HTML-formatted text.  To display unformatted
 text, use ``ui.Label``.
 """
-from ui import SimplePanel, HTML
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.HTML import HTML
 
 class HtmlDemo(SimplePanel):
     def __init__(self):

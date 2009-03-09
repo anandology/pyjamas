@@ -1,5 +1,6 @@
 from Sink import Sink, SinkInfo
-from pyjamas.ui import HTML, VerticalPanel
+from pyjamas.ui.HTML import HTML
+from pyjamas.ui.VerticalPanel import VerticalPanel
 from SlideLoader import SlideLoader
 from pyjamas.HTTPRequest import HTTPRequest
 from pyjamas import Window

@@ -3,18 +3,18 @@
     A simply Pyjamas application that showcases the various widgets and panels
     defined by the 'ui' module.
 """
-from ui import HorizontalPanel
-from ui import HTML
-from ui import HTMLPanel
-from ui import RootPanel
-from ui import ScrollPanel
-from ui import SimplePanel
-from ui import Tree
-from ui import TreeItem
-from ui import VerticalPanel
+from pyjamas.ui.HorizontalPanel import HorizontalPanel
+from pyjamas.ui.HTML import HTML
+from pyjamas.ui.HTMLPanel import HTMLPanel
+from pyjamas.ui.RootPanel import RootPanel
+from pyjamas.ui.ScrollPanel import ScrollPanel
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.Tree import Tree
+from pyjamas.ui.TreeItem import TreeItem
+from pyjamas.ui.VerticalPanel import VerticalPanel
 
-import Window
-import DOM
+from pyjamas import Window
+from pyjamas import DOM
 
 import demoInfo
 

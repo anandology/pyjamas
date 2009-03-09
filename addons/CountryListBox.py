@@ -1,4 +1,4 @@
-from ui import ListBox
+from pyjamas.ui.ListBox import ListBox
 
 class CountryListBox(ListBox):
    country_list = [

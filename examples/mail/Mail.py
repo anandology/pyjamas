@@ -1,6 +1,8 @@
 from pyjamas import Window
 from pyjamas.DeferredCommand import DeferredCommand
-from pyjamas.ui import DockPanel, RootPanel, VerticalPanel
+from pyjamas.ui.DockPanel import DockPanel
+from pyjamas.ui.RootPanel import RootPanel
+from pyjamas.ui.VerticalPanel import VerticalPanel
 from MailDetail import MailDetail
 from Shortcuts import Shortcuts
 from MailList import MailList

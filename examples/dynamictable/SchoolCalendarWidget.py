@@ -1,4 +1,4 @@
-from pyjamas.ui import Composite
+from pyjamas.ui.Composite import Composite
 from pyjamas.DeferredCommand import DeferredCommand
 from SchoolCalendarService import SchoolCalendarService
 from DynaTableWidget import DynaTableWidget

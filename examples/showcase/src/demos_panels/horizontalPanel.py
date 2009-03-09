@@ -16,7 +16,10 @@ different amounts of space, don't call ``widget.setWidth(width)`` or
 ``panel.setCellWidth(widget, width)`` and ``panel.setCellHeight(widget,
 height)``.
 """
-from ui import SimplePanel, HorizontalPanel, Label, HasAlignment
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.HorizontalPanel import HorizontalPanel
+from pyjamas.ui.Label import Label
+from pyjamas.ui import HasAlignment
 
 class HorizontalPanelDemo(SimplePanel):
     def __init__(self):

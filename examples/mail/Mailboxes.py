@@ -1,8 +1,12 @@
-from pyjamas.ui import Composite, Tree, TreeItem
+from pyjamas.ui.Composite import Composite
+from pyjamas.ui.Tree import Tree
+from pyjamas.ui.TreeItem import TreeItem
 
     
 class Mailboxes(Composite):
     def __init__(self):
+        Composite.__init__(self)
+
         self.tree = Tree()
         root = TreeItem(self.imageItemHTML("home.gif", "foo@example.com"))
         self.tree.addItem(root)     

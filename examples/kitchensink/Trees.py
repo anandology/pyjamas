@@ -1,8 +1,10 @@
 from Sink import Sink, SinkInfo
-from pyjamas.ui import Tree, TreeItem
+from pyjamas.ui.Tree import Tree
+from pyjamas.ui.TreeItem import TreeItem
 
 class Trees(Sink):
     def __init__(self):
+        Sink.__init__(self)
         self.fProto = [
             Proto("Beethoven", [
                 Proto("Concertos", [

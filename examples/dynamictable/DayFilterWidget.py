@@ -1,4 +1,9 @@
-from pyjamas.ui import Composite, CheckBox, HorizontalPanel, VerticalPanel, Button, HasAlignment
+from pyjamas.ui.Composite import Composite
+from pyjamas.ui.CheckBox import CheckBox
+from pyjamas.ui.HorizontalPanel import HorizontalPanel
+from pyjamas.ui.VerticalPanel import VerticalPanel
+from pyjamas.ui.Button import Button
+from pyjamas.ui import HasAlignment
 
 class DayCheckBox(CheckBox):
 

@@ -9,7 +9,8 @@ Use the ``getText()`` method to retrieve the field's current text, and
 ``ui.TextArea`` and its parent classes; see the module documentation for more
 details.
 """
-from ui import SimplePanel, TextArea
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.TextArea import TextArea
 
 class TextAreaDemo(SimplePanel):
     def __init__(self):

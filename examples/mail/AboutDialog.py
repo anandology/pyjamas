@@ -1,11 +1,21 @@
-from pyjamas.ui import Button, ClickListener, DialogBox, DockPanel, HorizontalPanel, HTML, Image, KeyboardListener, Widget, HasAlignment
+from pyjamas.ui.Button import Button
+from pyjamas.ui.DialogBox import DialogBox
+from pyjamas.ui.DockPanel import DockPanel
+from pyjamas.ui.HorizontalPanel import HorizontalPanel
+from pyjamas.ui.HTML import HTML
+from pyjamas.ui.Image import Image
+from pyjamas.ui.KeyboardListener import KeyboardListener
+from pyjamas.ui.Widget import Widget
+from pyjamas.ui import HasAlignment
 
 class AboutDialog(DialogBox):
     
   LOGO_IMAGE = "http://trac.pyworks.org/pyjamas/chrome/site/pyjamas-logo-small.png"
 
   def __init__(self):
+
       DialogBox.__init__(self)
+
       # Use this opportunity to set the dialog's caption.
       self.setText("About the Mail Sample")
 

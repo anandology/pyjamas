@@ -40,8 +40,10 @@ application:
    ``MenuItem(label, True, submenu)``, as in the second-to-last line of
    ``MenubarDemo.__init__``, below.
 """
-from ui import SimplePanel, MenuBar, MenuItem
-import Window
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.MenuBar import MenuBar
+from pyjamas.ui.MenuItem import MenuItem
+from pyjamas import Window
 
 class MenubarDemo(SimplePanel):
     def __init__(self):

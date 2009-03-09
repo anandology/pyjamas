@@ -1,8 +1,13 @@
 from Sink import Sink, SinkInfo
-from pyjamas.ui import TabPanel, HasAlignment, Image, VerticalPanel
+from pyjamas.ui.TabPanel import TabPanel
+from pyjamas.ui import HasAlignment
+from pyjamas.ui.Image import Image
+from pyjamas.ui.VerticalPanel import VerticalPanel
 
 class Tabs(Sink):
     def __init__(self):
+        Sink.__init__(self)
+
         self.fTabs = TabPanel()
         self.fTabs.add(self.createImage(self.baseURL() + "rembrandt/JohannesElison.jpg"), "1634")
         self.fTabs.add(self.createImage(self.baseURL() + "rembrandt/SelfPortrait1640.jpg"), "1640")

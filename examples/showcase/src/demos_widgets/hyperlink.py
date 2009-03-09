@@ -10,7 +10,11 @@ the application changes state by calling ``History.newItem(newState)``.  The
 application then uses a history listener function to respond to the change in
 state in whatever way makes sense.
 """
-from ui import SimplePanel, VerticalPanel, HorizontalPanel, Hyperlink, Label
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.VerticalPanel import VerticalPanel
+from pyjamas.ui.HorizontalPanel import HorizontalPanel
+from pyjamas.ui.Hyperlink import Hyperlink
+from pyjamas.ui.Label import Label
 from History import History
 
 

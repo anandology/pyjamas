@@ -1,8 +1,9 @@
 from Sink import Sink, SinkInfo
-from pyjamas.ui import Frame
+from pyjamas.ui.Frame import Frame
 
 class Frames(Sink):
     def __init__(self):
+        Sink.__init__(self)
         self.frame=Frame(self.baseURL() + "rembrandt/LaMarcheNocturne.html")
         
         self.frame.setWidth("100%")

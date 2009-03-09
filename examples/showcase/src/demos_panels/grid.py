@@ -7,7 +7,8 @@ text to be displayed at the given row and column within the grid.  Similarly,
 you can call ``setText(row, col, text)`` to display plain (unformatted) text at
 the given row and column.
 """
-from ui import SimplePanel, Grid
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.Grid import Grid
 
 class GridDemo(SimplePanel):
     def __init__(self):

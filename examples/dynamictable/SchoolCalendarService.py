@@ -1,4 +1,4 @@
-from JSONService import JSONProxy
+from pyjamas.JSONService import JSONProxy
 
 class SchoolCalendarService(JSONProxy):
     def __init__(self):

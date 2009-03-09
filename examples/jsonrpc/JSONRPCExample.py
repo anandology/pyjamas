@@ -1,4 +1,11 @@
-from pyjamas.ui import RootPanel, TextArea, Label, Button, HTML, VerticalPanel, HorizontalPanel, ListBox
+from pyjamas.ui.RootPanel import RootPanel
+from pyjamas.ui.TextArea import TextArea
+from pyjamas.ui.Label import Label
+from pyjamas.ui.Button import Button
+from pyjamas.ui.HTML import HTML
+from pyjamas.ui.VerticalPanel import VerticalPanel
+from pyjamas.ui.HorizontalPanel import HorizontalPanel
+from pyjamas.ui.ListBox import ListBox
 from pyjamas.JSONService import JSONProxy
 
 class JSONRPCExample:

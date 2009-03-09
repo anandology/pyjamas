@@ -1,10 +1,17 @@
-from pyjamas.ui import TabPanel, HasAlignment, Image, VerticalPanel, RootPanel
-from pyjamas.ui import HorizontalPanel, HTML, Composite
+from pyjamas.ui.TabPanel import TabPanel
+from pyjamas.ui import HasAlignment
+from pyjamas.ui.Image import Image
+from pyjamas.ui.VerticalPanel import VerticalPanel
+from pyjamas.ui.RootPanel import RootPanel
+from pyjamas.ui.HorizontalPanel import HorizontalPanel
+from pyjamas.ui.HTML import HTML
+from pyjamas.ui.Composite import Composite
 #from pyjamas.ui import DecoratorPanel
-from pyjamas.ui import MouseListener, Event
+from pyjamas.ui.MouseListener import MouseListener
+from pyjamas.ui.Event import Event
 from pyjamas import Window
-from pyjamas.decoratorpanel import DecoratedTabPanel, DecoratorPanel
-from pyjamas.decoratorpanel import DecoratorTitledPanel
+from pyjamas.ui.decoratorpanel import DecoratedTabPanel, DecoratorPanel
+from pyjamas.ui.decoratorpanel import DecoratorTitledPanel
 
 #class PrettyTab(DecoratorPanel):
 class PrettyTab(Composite):

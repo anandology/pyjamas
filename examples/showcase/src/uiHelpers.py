@@ -3,15 +3,15 @@
     This module contains various helper classes and functions to make it easier
     to build a Pyjamas application.
 """
-from ui import RootPanel
-from ui import DockPanel
-from ui import HTML
-from ui import SimplePanel
-from ui import VerticalPanel
-from ui import Widget
+from pyjamas.ui.RootPanel import RootPanel
+from pyjamas.ui.DockPanel import DockPanel
+from pyjamas.ui.HTML import HTML
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.VerticalPanel import VerticalPanel
+from pyjamas.ui.Widget import Widget
 
-import DOM
-import Window
+from pyjamas import DOM
+from pyjamas import Window
 
 #############################################################################
 

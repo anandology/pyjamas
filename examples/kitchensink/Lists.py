@@ -1,8 +1,15 @@
 from Sink import Sink, SinkInfo
-from pyjamas.ui import ListBox, HorizontalPanel, VerticalPanel, HasAlignment, Label, Widget
+from pyjamas.ui.ListBox import ListBox
+from pyjamas.ui.HorizontalPanel import HorizontalPanel
+from pyjamas.ui.VerticalPanel import VerticalPanel
+from pyjamas.ui import HasAlignment
+from pyjamas.ui.Label import Label
+from pyjamas.ui.Widget import Widget
 
 class Lists(Sink):
     def __init__(self):
+        Sink.__init__(self)
+
         self.sStrings=[["foo0", "bar0", "baz0", "toto0", "tintin0"],
             ["foo1", "bar1", "baz1", "toto1", "tintin1"],
             ["foo2", "bar2", "baz2", "toto2", "tintin2"],

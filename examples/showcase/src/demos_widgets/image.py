@@ -15,8 +15,9 @@ to change the image being displayed at any time.  You can also call
 ``addClickListener()`` to add a listener function to be called when the user
 clicks on the image.
 """
-from ui import SimplePanel, Image
-import Window
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.Image import Image
+from pyjamas import Window
 
 class ImageDemo(SimplePanel):
     def __init__(self):

@@ -14,6 +14,9 @@
 
 from __pyjamas__ import JS
 
+global sCaptureElem
+global sEventPreviewStack 
+global currentEvent 
 sCaptureElem = None
 sEventPreviewStack = []
 currentEvent = None
@@ -23,16 +26,16 @@ def init():
     // Set up capture event dispatchers.
     $wnd.__dispatchCapturedMouseEvent = function(evt) {
         if ($wnd.__dispatchCapturedEvent(evt)) {
-            var cap = DOM_getCaptureElement();
+            var cap = DOM.getCaptureElement();
             if (cap && cap.__listener) {
-                DOM_dispatchEvent(evt, cap, cap.__listener);
+                DOM.dispatchEvent(evt, cap, cap.__listener);
                 evt.stopPropagation();
             }
         }
     };
 
     $wnd.__dispatchCapturedEvent = function(evt) {
-        if (!DOM_previewEvent(evt)) {
+        if (!DOM.previewEvent(evt)) {
             evt.stopPropagation();
             evt.preventDefault();
             return false;
@@ -44,16 +47,16 @@ def init():
     $wnd.addEventListener(
         'mouseout',
         function(evt){
-            var cap = DOM_getCaptureElement();
+            var cap = DOM.getCaptureElement();
             if (cap) {
                 if (!evt.relatedTarget) {
                     // When the mouse leaves the window during capture, release capture
                     // and synthesize an 'onlosecapture' event.
-                    DOM_sCaptureElem = null;
+                    DOM.sCaptureElem = null;
                     if (cap.__listener) {
                         var lcEvent = $doc.createEvent('UIEvent');
                         lcEvent.initUIEvent('losecapture', false, false, $wnd, 0);
-                        DOM_dispatchEvent(lcEvent, cap, cap.__listener);
+                        DOM.dispatchEvent(lcEvent, cap, cap.__listener);
                     }
                 }
             }
@@ -83,12 +86,10 @@ def init():
         }
     
         if (listener) {
-            DOM_dispatchEvent(evt, curElem, listener);
+            DOM.dispatchEvent(evt, curElem, listener);
         }
     };
     """)
-
-init()
 
 def addEventPreview(preview):
     global sEventPreviewStack
@@ -442,7 +443,7 @@ def getInnerText(element):
     var text = '', child = element.firstChild;
     while (child) {
       if (child.nodeType == 1){ // 1 == Element node
-        text += DOM_getInnerText(child);
+        text += DOM.getInnerText(child);
       } else if (child.nodeValue) {
         text += child.nodeValue;
       }
@@ -526,7 +527,7 @@ def iterChildren(elem):
                 throw StopIteration;
             }
             lastChild = child;
-            child = DOM_getNextSibling(child);
+            child = DOM.getNextSibling(child);
             return lastChild;
         },
         'remove': function() {        
@@ -546,7 +547,7 @@ def walkChildren(elem):
     """
     JS("""
     var parent = elem;
-    var child = DOM_getFirstChild(elem);
+    var child = DOM.getFirstChild(elem);
     var lastChild = null;
     var stack = [];
     var parentStack = [];
@@ -556,8 +557,8 @@ def walkChildren(elem):
                 throw StopIteration;
             }
             lastChild = child;
-            var firstChild = DOM_getFirstChild(child);
-            var nextSibling = DOM_getNextSibling(child);
+            var firstChild = DOM.getFirstChild(child);
+            var nextSibling = DOM.getNextSibling(child);
             if(firstChild != null) {
                if(nextSibling != null) {
                    stack.push(nextSibling);
@@ -598,8 +599,8 @@ def isOrHasChild(parent, child):
 
 def releaseCapture(elem):
     JS("""
-    if ((DOM_sCaptureElem != null) && DOM_compare(elem, DOM_sCaptureElem))
-        DOM_sCaptureElem = null;
+    if ((DOM.sCaptureElem != null) && DOM.compare(elem, DOM.sCaptureElem))
+        DOM.sCaptureElem = null;
     """)
 
 def removeChild(parent, child):
@@ -672,7 +673,7 @@ def setBooleanAttribute(elem, attr, value):
 
 def setCapture(elem):
     JS("""
-    DOM_sCaptureElem = elem;
+    DOM.sCaptureElem = elem;
     """)
 
 def setEventListener(element, listener):
@@ -811,4 +812,5 @@ def insertListItem(select, item, value, index):
 
 
 
+init()
 

@@ -45,7 +45,7 @@ class HTTPRequest:
                     if(status == 200) {
                         localHandler.onCompletion(response);
                     } else {
-                        localHandler.onError(xmlHttp.responseText, status);
+                        localHandler.onError(response, status);
                     }
                 }
             };
@@ -83,7 +83,7 @@ class HTTPRequest:
                     if(status == 200) {
                         localHandler.onCompletion(response);
                     } else {
-                        localHandler.onError(xmlHttp.responseText, status);
+                        localHandler.onError(response, status);
                     }
                 }
             };

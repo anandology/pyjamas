@@ -1,15 +1,15 @@
 from __pyjamas__ import unescape
 from RichTextEditor import RichTextEditor
-import Window
+from pyjamas import Window
 from __pyjamas__ import encodeURIComponent
 from EventDelegate import EventDelegate
-from ui import Label
-from pyjslib import List
-from ui import ComplexPanel
+from pyjamas.ui.Label import Label
+from pyjamas.ui.ComplexPanel import ComplexPanel
 from __pyjamas__ import console
-from HTTPRequest import HTTPRequest
-from ui import HTML, SimplePanel
-import DOM
+from pyjamas.HTTPRequest import HTTPRequest
+from pyjamas.ui.HTML import HTML
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas import DOM
 
 class TemplateLoader:
     def __init__(self, panel, url):

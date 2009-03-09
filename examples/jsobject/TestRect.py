@@ -1,4 +1,7 @@
-from pyjamas.ui import RootPanel, TextBox, HTML, Button
+from pyjamas.ui.RootPanel import RootPanel
+from pyjamas.ui.TextBox import TextBox
+from pyjamas.ui.HTML import HTML
+from pyjamas.ui.Button import Button
 
 import jsrecttest.js # YUK!!!
 

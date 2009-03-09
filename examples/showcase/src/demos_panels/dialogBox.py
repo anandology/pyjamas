@@ -31,8 +31,12 @@ be able to click outside the dialog box to close it.  However, because of a
 problem with Firefox 3, this does not work.  To get around this, the example
 shown below implements a "Close" button the user can click on.
 """
-from ui import SimplePanel, DialogBox, VerticalPanel, HTML, Button
-import Window
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.DialogBox import DialogBox
+from pyjamas.ui.VerticalPanel import VerticalPanel
+from pyjamas.ui.HTML import HTML
+from pyjamas.ui.Button import Button
+from pyjamas import Window
 
 class DialogBoxDemo(SimplePanel):
     def __init__(self):

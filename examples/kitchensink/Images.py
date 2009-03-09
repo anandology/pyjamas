@@ -1,8 +1,13 @@
 from Sink import Sink, SinkInfo
-from pyjamas.ui import DockPanel, Image, VerticalPanel, HasAlignment, HTML
+from pyjamas.ui.DockPanel import DockPanel
+from pyjamas.ui.Image import Image
+from pyjamas.ui.VerticalPanel import VerticalPanel
+from pyjamas.ui import HasAlignment
+from pyjamas.ui.HTML import HTML
 
 class Images(Sink):
     def __init__(self):
+        Sink.__init__(self)
         self.curImage=0
         self.image=Image()
         self.loadingImage = Image(self.baseURL() + "images/blanksearching.gif")

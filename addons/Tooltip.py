@@ -1,9 +1,12 @@
 # Tooltip component for Pyjamas
 # Ported by Willie Gollino from Tooltip component for GWT - Originally by Alexei Sokolov http://gwt.components.googlepages.com/
 
-from ui import PopupPanel, HTML, RootPanel
-from Timer import Timer
+from pyjamas.ui.PopupPanel import PopupPanel
+from pyjamas.ui.HTML import HTML, RootPanel
+from pyjamas.ui.RootPanel import RootPanel
+from pyjamas.Timer import Timer
 
+global tooltip_hide_timer 
 tooltip_hide_timer = None
 
 class Tooltip(PopupPanel):

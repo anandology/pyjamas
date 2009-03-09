@@ -15,7 +15,13 @@ The example below doesn't really work, as there is no suitable server at
 ``nonexistent.com``.  However, it does show how a file upload widget could be
 used within a FormPanel.
 """
-from ui import SimplePanel, FormPanel, VerticalPanel, HorizontalPanel, FileUpload, Label, Button
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.FormPanel import FormPanel
+from pyjamas.ui.VerticalPanel import VerticalPanel
+from pyjamas.ui.HorizontalPanel import HorizontalPanel
+from pyjamas.ui.FileUpload import FileUpload
+from pyjamas.ui.Label import Label
+from pyjamas.ui.Button import Button
 
 class FileUploadDemo(SimplePanel):
     def __init__(self):

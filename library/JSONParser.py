@@ -1,12 +1,14 @@
+import math
+
 JS("""
 /*
 JSONEncode:
     +---------------+-------------------+---------------+
     | PYGWT         | Python            | JSON          |
     +===============+===================+===============+
-    | pyjslib_Dict  | dict              | object        |
+    | pyjslib.Dict  | dict              | object        |
     +---------------+-------------------+---------------+
-    | pyjslib_List  | list, tuple       | array         |
+    | pyjslib.List  | list, tuple       | array         |
     +---------------+-------------------+---------------+
     | string        | str, unicode      | string        |
     +---------------+-------------------+---------------+
@@ -24,9 +26,9 @@ JSONDecode:
     +---------------+-------------------+--------------+
     | JSON          | Python            | PYGWT        |
     +===============+===================+==============+
-    | object        | dict              | pyjslib_Dict |
+    | object        | dict              | pyjslib.Dict |
     +---------------+-------------------+--------------+
-    | array         | list              | pyjslib_List |
+    | array         | list              | pyjslib.List |
     +---------------+-------------------+--------------+
     | string        | unicode           | string       |
     +---------------+-------------------+--------------+
@@ -57,13 +59,13 @@ class JSONParser:
 
     def jsObjectToPy(self, obj):
         JS("""
-        if (pyjslib_isArray(obj)) {
+        if (pyjslib.isArray(obj)) {
             for (var i in obj) obj[i] = this.jsObjectToPy(obj[i]);
-            obj=new pyjslib_List(obj);
+            obj=new pyjslib.List(obj);
             }
-        else if (pyjslib_isObject(obj)) {
+        else if (pyjslib.isObject(obj)) {
             for (var i in obj) obj[i]=this.jsObjectToPy(obj[i]);
-            obj=new pyjslib_Dict(obj);
+            obj=new pyjslib.Dict(obj);
             }
         
         return obj;
@@ -72,14 +74,14 @@ class JSONParser:
     # TODO: __init__ parameters
     def jsObjectToPyObject(self, obj):
         JS("""
-        if (pyjslib_isArray(obj)) {
+        if (pyjslib.isArray(obj)) {
             for (var i in obj) obj[i] = this.jsObjectToPyObject(obj[i]);
-            obj=new pyjslib_List(obj);
+            obj=new pyjslib.List(obj);
             }
-        else if (pyjslib_isObject(obj)) {
+        else if (pyjslib.isObject(obj)) {
             if (obj["__jsonclass__"]) {
                 var class_name = obj["__jsonclass__"][0];
-                class_name = class_name.replace(".", "_");
+                //class_name = class_name.replace(".", "_");
                 
                 var new_obj = eval("new " + class_name + "()");
                 delete obj["__jsonclass__"];
@@ -88,14 +90,14 @@ class JSONParser:
                 }
             else {
                 for (var i in obj) obj[i]=this.jsObjectToPyObject(obj[i]);
-                obj=new pyjslib_Dict(obj);
+                obj=new pyjslib.Dict(obj);
                 }       
             }
         
         return obj;
         """)
     
-    # modified to detect __pyjslib_List & __pyjslib_Dict
+    # modified to detect pyjslib.List & pyjslib.Dict
     def toJSONString(self, obj):
         JS(r"""
    var m = {
@@ -144,10 +146,10 @@ class JSONParser:
                     if (x instanceof Array) {
                         return s.array(x);
                     }
-                    if (x instanceof __pyjslib_List) {
+                    if (x instanceof pyjslib.__List) {
                         return s.array(x.l);
                     }
-                    if (x instanceof __pyjslib_Dict) {
+                    if (x instanceof pyjslib.__Dict) {
                         return s.object(x.d);
                     }
                     var a = ['{'], b, f, i, v;
@@ -179,7 +181,7 @@ class JSONParser:
                         }
                         c = b.charCodeAt();
                         return '\\u00' +
-                            Math.floor(c / 16).toString(16) +
+                            math.floor(c / 16).toString(16) +
                             (c % 16).toString(16);
                     });
                 }
@@ -187,9 +189,12 @@ class JSONParser:
             }
         };
 
-        f=s[typeof obj];
-        return f(obj);
+        typ = typeof obj;
+        f=s[typ];
+        o = f(obj);
         """)
+
+        return o
 
     def parseJSON(self, str):
         JS(r"""

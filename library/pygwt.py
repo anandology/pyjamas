@@ -1,3 +1,4 @@
+global sNextHashId
 sNextHashId = 0
 
 def getNextHashId():

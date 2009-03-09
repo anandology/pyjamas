@@ -7,16 +7,16 @@ class Set:
         """)
 
     def add(self, value):
-        JS("""    this.d[pyjslib_hash(value)] = value;""")
+        JS("""    this.d[pyjslib.hash(value)] = value;""")
 
     def clear(self):
         JS("""    this.d = {};""")
 
     def __contains__(self, value):
-        JS("""    return (this.d[pyjslib_hash(value)]) ? true : false;""")
+        JS("""    return (this.d[pyjslib.hash(value)]) ? true : false;""")
 
     def discard(self, value):
-        JS("""    delete this.d[pyjslib_hash(value)];""")
+        JS("""    delete this.d[pyjslib.hash(value)];""")
 
     def issubset(self, items):
         JS("""
@@ -36,7 +36,7 @@ class Set:
 
     def __iter__(self):
         JS("""
-        var items=new pyjslib_List();
+        var items=new pyjslib.List();
         for (var key in this.d) items.append(this.d[key]);
         return items.__iter__();
         """)
@@ -62,18 +62,18 @@ class Set:
 
     def update(self, data):
         JS("""
-        if (pyjslib_isArray(data)) {
+        if (pyjslib.isArray(data)) {
             for (var i in data) {
-                this.d[pyjslib_hash(data[i])]=data[i];
+                this.d[pyjslib.hash(data[i])]=data[i];
             }
         }
-        else if (pyjslib_isIteratable(data)) {
+        else if (pyjslib.isIteratable(data)) {
             var iter=data.__iter__();
             var i=0;
             try {
                 while (true) {
                     var item=iter.next();
-                    this.d[pyjslib_hash(item)]=item;
+                    this.d[pyjslib.hash(item)]=item;
                 }
             }
             catch (e) {

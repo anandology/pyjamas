@@ -12,7 +12,8 @@ Note that for some reason, the ``setVisibleLength()`` method is not defined for
 a password field.  This means that you have to specify the width of the field
 in pixels, as is shown below.
 """
-from ui import SimplePanel, PasswordTextBox
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.PasswordTextBox import PasswordTextBox
 
 class PasswordTextBoxDemo(SimplePanel):
     def __init__(self):

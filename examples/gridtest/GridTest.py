@@ -1,6 +1,11 @@
-from pyjamas.ui import Button, RootPanel
-from pyjamas.ui import Label, Grid, CellFormatter, RowFormatter
-from pyjamas.ui import HTMLTable, CheckBox
+from pyjamas.ui.Button import Button
+from pyjamas.ui.RootPanel import RootPanel
+from pyjamas.ui.Label import Label
+from pyjamas.ui.Grid import Grid
+from pyjamas.ui.CellFormatter import CellFormatter
+from pyjamas.ui.RowFormatter import RowFormatter
+from pyjamas.ui.HTMLTable import HTMLTable
+from pyjamas.ui.CheckBox import CheckBox
 from pyjamas import Window
 
 

@@ -1,11 +1,13 @@
 
-// args is a pyjslib_List
+// args is a pyjslib.List
 // str is a String
 function sprintf2(str, args)
 {
-   if(args && args.__class__ != "pyjslib_List")
-      args = new pyjslib_List([args]);
-   if (!args || pyjslib_len(args) < 1 || !RegExp)
+   if(args)
+         alert(args.__class__);
+   if(args && args.__class__ != "pyjslib.List")
+      args = new pyjslib.List([args]);
+   if (!args || pyjslib.len(args) < 1 || !RegExp)
    {
       return;
    }
@@ -65,7 +67,7 @@ function sprintf2(str, args)
 **/
 
 // str is a String
-// args is a pyjslib_List or pyjslib_Tuple
+// args is a pyjslib.List or pyjslib.Tuple
 sprintfWrapper = {
 
 	init : function (str, args) {
@@ -75,15 +77,15 @@ sprintfWrapper = {
             return null;
         }
         constructor = null;
-        if (!pyjslib_is_basetype(args))
-            constructor = pyjslib_get_pyjs_classtype(args);
+        if (!pyjslib.is_basetype(args))
+            constructor = pyjslib.get_pyjs_classtype(args);
 
-        if(constructor != "pyjslib_List" && constructor != "pyjslib_Tuple")
+        if(constructor != "pyjslib.List" && constructor != "pyjslib.Tuple")
         {
-            args = new pyjslib_List([args]);
+            args = new pyjslib.List([args]);
         }
 
-       if (pyjslib_len(args) < 1 || !RegExp)
+       if (pyjslib.len(args) < 1 || !RegExp)
        {
           return null;
        }

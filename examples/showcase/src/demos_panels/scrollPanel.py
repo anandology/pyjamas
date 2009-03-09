@@ -7,7 +7,9 @@ position programmatically by calling ``setScrollPosition(vPos)`` and
 ``setScrollHorizontalPosition(hPos)`` to change the horizontal and vertical
 scrolling position, respectively.
 """
-from ui import SimplePanel, ScrollPanel, HTML
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.ScrollPanel import ScrollPanel
+from pyjamas.ui.HTML import HTML
 
 class ScrollPanelDemo(SimplePanel):
     def __init__(self):

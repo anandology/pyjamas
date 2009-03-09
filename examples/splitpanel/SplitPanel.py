@@ -1,8 +1,12 @@
-from pyjamas.ui import RootPanel, HTML, Label, HasAlignment, Button
+from pyjamas.ui.RootPanel import RootPanel
+from pyjamas.ui.HTML import HTML
+from pyjamas.ui.Label import Label
+from pyjamas.ui import HasAlignment
+from pyjamas.ui.Button import Button
 from pyjamas import Window
 
-from pyjamas.vertsplitpanel import VerticalSplitPanel
-from pyjamas.horizsplitpanel import HorizontalSplitPanel
+from pyjamas.ui.vertsplitpanel import VerticalSplitPanel
+from pyjamas.ui.horizsplitpanel import HorizontalSplitPanel
 
 class SplitPanel:
 

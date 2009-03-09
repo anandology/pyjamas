@@ -1,4 +1,8 @@
-from pyjamas.ui import Composite, DockPanel, HTML, ScrollPanel, VerticalPanel
+from pyjamas.ui.Composite import Composite
+from pyjamas.ui.DockPanel import DockPanel
+from pyjamas.ui.HTML import HTML
+from pyjamas.ui.ScrollPanel import ScrollPanel
+from pyjamas.ui.VerticalPanel import VerticalPanel
 from Logger import Logger
 
 class MailDetail(Composite):

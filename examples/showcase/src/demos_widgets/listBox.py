@@ -13,8 +13,10 @@ returns the value associated with the given list item.  To detect when the user
 selects something from a ListBox, call ``addChangeLister()``.  And finally,
 ``ListBox.clear()`` clears the current contents of the ListBox.
 """
-from ui import SimplePanel, HorizontalPanel, ListBox
-import Window
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.HorizontalPanel import HorizontalPanel
+from pyjamas.ui.ListBox import ListBox
+from pyjamas import Window
 
 class ListBoxDemo(SimplePanel):
     def __init__(self):

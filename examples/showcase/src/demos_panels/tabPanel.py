@@ -44,7 +44,9 @@ The following stylesheet definitions are used by the example shown below:
     }
 
 """
-from ui import SimplePanel, TabPanel, HTML
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.TabPanel import TabPanel
+from pyjamas.ui.HTML import HTML
 
 class TabPanelDemo(SimplePanel):
     def __init__(self):

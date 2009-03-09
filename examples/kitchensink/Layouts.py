@@ -1,10 +1,23 @@
 from Sink import Sink, SinkInfo
-from pyjamas.ui import Button, CheckBox, VerticalPanel, HorizontalPanel, HTML, DockPanel, HasAlignment, FlowPanel, HTMLPanel, MenuBar, MenuItem, ScrollPanel
+from pyjamas.ui.Button import Button
+from pyjamas.ui.CheckBox import CheckBox
+from pyjamas.ui.VerticalPanel import VerticalPanel
+from pyjamas.ui.HorizontalPanel import HorizontalPanel
+from pyjamas.ui.HTML import HTML
+from pyjamas.ui.DockPanel import DockPanel
+from pyjamas.ui import HasAlignment
+from pyjamas.ui.FlowPanel import FlowPanel
+from pyjamas.ui.HTMLPanel import HTMLPanel
+from pyjamas.ui.MenuBar import MenuBar
+from pyjamas.ui.MenuItem import MenuItem
+from pyjamas.ui.ScrollPanel import ScrollPanel
 from Logger import Logger
 from pyjamas import DOM
 
 class Layouts(Sink):
     def __init__(self):
+        Sink.__init__(self)
+
         text="This is a <code>ScrollPanel</code> contained at "
         text+= "the center of a <code>DockPanel</code>.  "
         text+= "By putting some fairly large contents "

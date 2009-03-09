@@ -4,11 +4,11 @@
     Pass "-j fckeditor/fckeditor.js" to build.py in order to include the FCKeditor
     javascript.
 """
-import Window
-import DOM
+from pyjamas import Window
+from pyjamas import DOM
 from __pyjamas__ import console
 from BoundMethod import BoundMethod
-from ui import Widget
+from pyjamas.ui.Widget import Widget
 
 from __pyjamas__ import JS
 
@@ -128,4 +128,4 @@ class RichTextEditor(Widget):
     def getWindow(self):
         return self.fck.EditorWindow()
     
-        
+

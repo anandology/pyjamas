@@ -3,7 +3,12 @@ The ``ui.Hidden`` class represents a hidden form field.
 
 This is really only useful when the hidden field is part of a ``ui.FormPanel``.
 """
-from ui import SimplePanel, FormPanel, VerticalPanel, Hidden, Button, NamedFrame
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.FormPanel import FormPanel
+from pyjamas.ui.VerticalPanel import VerticalPanel
+from pyjamas.ui.Hidden import Hidden
+from pyjamas.ui.Button import Button
+from pyjamas.ui.NamedFrame import NamedFrame
 
 class HiddenDemo(SimplePanel):
     def __init__(self):

@@ -15,7 +15,9 @@ it will still appear on a line by itself rather than flowing with the other
 elements.  Because of this, you may want to avoid using FlowPanel unless you
 are certain that the items you are adding will flow correctly.
 """
-from ui import SimplePanel, FlowPanel, Button
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.FlowPanel import FlowPanel
+from pyjamas.ui.Button import Button
 
 class FlowPanelDemo(SimplePanel):
     def __init__(self):

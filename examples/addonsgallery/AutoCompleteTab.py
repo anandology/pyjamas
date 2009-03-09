@@ -1,5 +1,8 @@
 from Sink import Sink, SinkInfo
-from pyjamas.ui import Image, HTML, VerticalPanel, HorizontalPanel
+from pyjamas.ui.Image import Image
+from pyjamas.ui.HTML import HTML
+from pyjamas.ui.VerticalPanel import VerticalPanel
+from pyjamas.ui.HorizontalPanel import HorizontalPanel
 from AutoComplete import AutoCompleteTextBox
 
 class AutoCompleteTab(Sink):

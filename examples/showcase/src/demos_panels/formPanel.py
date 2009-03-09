@@ -25,7 +25,13 @@ form encoding and method like this:
 This will ensure that the form is submitted in a way that allows files to be
 uploaded.
 """
-from ui import SimplePanel, FormPanel, VerticalPanel, HorizontalPanel, TextBox, Label, Button
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.FormPanel import FormPanel
+from pyjamas.ui.VerticalPanel import VerticalPanel
+from pyjamas.ui.HorizontalPanel import HorizontalPanel
+from pyjamas.ui.TextBox import TextBox
+from pyjamas.ui.Label import Label
+from pyjamas.ui.Button import Button
 
 class FormPanelDemo(SimplePanel):
     def __init__(self):

@@ -7,7 +7,8 @@ Alternatively, you can call the ``Frame.setUrl()`` method to change the URL at
 any time.  You can also call ``Frame.getUrl()`` to retrieve the current URL for
 this frame.
 """
-from ui import SimplePanel, Frame
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.Frame import Frame
 
 class FrameDemo(SimplePanel):
     def __init__(self):

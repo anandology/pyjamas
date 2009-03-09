@@ -1,5 +1,9 @@
 from Sink import Sink, SinkInfo
-from pyjamas.ui import Image, HTML, VerticalPanel, HorizontalPanel, RootPanel
+from pyjamas.ui.Image import Image
+from pyjamas.ui.HTML import HTML
+from pyjamas.ui.VerticalPanel import VerticalPanel
+from pyjamas.ui.HorizontalPanel import HorizontalPanel
+from pyjamas.ui.RootPanel import RootPanel
 from Canvas import Canvas, CanvasImage, ImageLoadListener
 from pyjamas.Timer import Timer
 from math import floor, cos, sin

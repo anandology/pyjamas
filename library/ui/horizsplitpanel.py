@@ -19,7 +19,7 @@
  */
 """
 
-from pyjamas.splitpanel import SplitPanel
+from pyjamas.ui.splitpanel import SplitPanel
 from pyjamas import DOM
 from pyjamas.DeferredCommand import DeferredCommand
 from pyjamas.Timer import Timer

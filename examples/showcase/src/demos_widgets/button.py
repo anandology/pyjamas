@@ -11,8 +11,9 @@ a method called ``onClick()`` to respond to the button click.
 Another useful method is ``Button.setEnabled(enabled)``, which enables or
 disables the button depending on the value of its parameter.
 """
-from ui import SimplePanel, Button
-import Window
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.Button import Button
+from pyjamas import Window
 
 class ButtonDemo(SimplePanel):
     def __init__(self):

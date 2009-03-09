@@ -1,6 +1,10 @@
-from pyjamas.ui import Button, RootPanel
+from pyjamas.ui.Button import Button
+from pyjamas.ui.RootPanel import RootPanel
 from pyjamas import Window
-from pyjamas.ui import Image, HTML, VerticalPanel, HorizontalPanel
+from pyjamas.ui.Image import Image
+from pyjamas.ui.HTML import HTML
+from pyjamas.ui.VerticalPanel import VerticalPanel
+from pyjamas.ui.HorizontalPanel import HorizontalPanel
 from Canvas import Canvas, CanvasImage, ImageLoadListener
 from pyjamas.Timer import Timer
 from math import floor, cos, sin

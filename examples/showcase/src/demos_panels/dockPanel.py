@@ -12,7 +12,10 @@ horizontal and vertical alignment to use for new widgets by calling
 ``setHorizontalAlignment()`` and ``setVerticalAlignment()`` before the widget
 is added.
 """
-from ui import SimplePanel, DockPanel, Label, HasAlignment
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.DockPanel import DockPanel
+from pyjamas.ui.Label import Label
+from pyjamas.ui import HasAlignment
 
 class DockPanelDemo(SimplePanel):
     def __init__(self):

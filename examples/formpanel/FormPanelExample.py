@@ -1,5 +1,14 @@
-from pyjamas.ui import RootPanel, TextArea, Label, Button, HTML, VerticalPanel,\
-               HorizontalPanel, ListBox, FormPanel, FileUpload, TextBox
+from pyjamas.ui.RootPanel import RootPanel
+from pyjamas.ui.TextArea import TextArea
+from pyjamas.ui.Label import Label
+from pyjamas.ui.Button import Button
+from pyjamas.ui.HTML import HTML
+from pyjamas.ui.VerticalPanel import VerticalPanel
+from pyjamas.ui.HorizontalPanel import HorizontalPanel
+from pyjamas.ui.ListBox import ListBox
+from pyjamas.ui.FormPanel import FormPanel
+from pyjamas.ui.FileUpload import FileUpload
+from pyjamas.ui.TextBox import TextBox
 from pyjamas import Window
 
 class FormPanelExample:

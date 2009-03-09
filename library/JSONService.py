@@ -1,6 +1,6 @@
-from HTTPRequest import HTTPRequest
+from pyjamas.HTTPRequest import HTTPRequest
 import pygwt
-from JSONParser import JSONParser
+from pyjamas.JSONParser import JSONParser
 
 # no stream support
 class JSONService:
@@ -32,6 +32,7 @@ class JSONService:
     def __sendNotify(self, method, params):
         msg = {"id":None, "method":method, "params":params}
         msg_data = self.parser.encode(msg)
+        RootPanel().add(HTML(msg_data))
         if not HTTPRequest().asyncPost(self.url, msg_data, self):
             return -1
         return 1
@@ -65,7 +66,7 @@ class JSONResponseTextHandler:
             self.request.handler.onRemoteError(0, "Server Error or Invalid Response", self.request)
         elif response["error"]:
             error = response["error"]
-            self.request.handler.onRemoteError(error["code"], error["message"], self.request)
+            self.request.handler.onRemoteError(0, error, self.request)
         else:
             self.request.handler.onRemoteResponse(response["result"], self.request)
     

@@ -1,8 +1,18 @@
-from pyjamas.ui import RootPanel, HTML, Label, HasAlignment, Button
-from pyjamas.ui import HorizontalPanel, AbsolutePanel, ScrollPanel, Grid
-from pyjamas.ui import TabPanel, SimplePanel, FlexTable, Image
-from pyjamas.ui import DockPanel
-from pyjamas.ui import HasHorizontalAlignment, HasVerticalAlignment, HasAlignment
+from pyjamas.ui.RootPanel import RootPanel
+from pyjamas.ui.HTML import HTML
+from pyjamas.ui.Label import Label
+from pyjamas.ui.Button import Button
+from pyjamas.ui.HorizontalPanel import HorizontalPanel
+from pyjamas.ui.AbsolutePanel import AbsolutePanel
+from pyjamas.ui.ScrollPanel import ScrollPanel
+from pyjamas.ui.Grid import Grid
+from pyjamas.ui.TabPanel import TabPanel
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.FlexTable import FlexTable
+from pyjamas.ui.Image import Image
+from pyjamas.ui.DockPanel import DockPanel
+from pyjamas.ui import HasHorizontalAlignment
+from pyjamas.ui import HasVerticalAlignment
 from pyjamas.ui import HasAlignment
 from pyjamas import Window
 

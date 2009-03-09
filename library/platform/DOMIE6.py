@@ -4,7 +4,7 @@ def init():
     $wnd.__dispatchEvent = function() {
         if ($wnd.event.returnValue == null) {
             $wnd.event.returnValue = true;
-            if (!DOM_previewEvent($wnd.event))
+            if (!DOM.previewEvent($wnd.event))
                 return;
         }
 
@@ -13,7 +13,7 @@ def init():
             curElem = curElem.parentElement;
     
         if (listener)
-            DOM_dispatchEvent($wnd.event, curElem, listener);
+            DOM.dispatchEvent($wnd.event, curElem, listener);
     };
 
     $wnd.__dispatchDblClickEvent = function() {

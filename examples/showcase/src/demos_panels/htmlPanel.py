@@ -3,7 +3,10 @@ The ``ui.HTMLPanel`` class allows you to include HTML within your application,
 and embed other widgets inside the panel's contents by wrapping them inside a
 ``&lt;span&gt;`` tag.
 """
-from ui import SimplePanel, HTMLPanel, Button, Label
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.HTMLPanel import HTMLPanel
+from pyjamas.ui.Button import Button
+from pyjamas.ui.Label import Label
 
 class HtmlPanelDemo(SimplePanel):
     def __init__(self):

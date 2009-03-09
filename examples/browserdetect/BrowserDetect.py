@@ -1,4 +1,5 @@
-from pyjamas.ui import Label, RootPanel
+from pyjamas.ui.Label import Label
+from pyjamas.ui.RootPanel import RootPanel
 
 class BrowserDetect:
     def onModuleLoad(self):

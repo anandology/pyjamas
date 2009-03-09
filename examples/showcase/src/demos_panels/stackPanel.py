@@ -32,7 +32,9 @@ currently open, call ``getSelectedIndex()``.  To retrieve the widget at a given
 index, call ``getWidget(index)``.  Finally, you can change the label for a
 stack item by calling ``setStackText(index, text)``.
 """
-from ui import SimplePanel, StackPanel, HTML
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.StackPanel import StackPanel
+from pyjamas.ui.HTML import HTML
 
 class StackPanelDemo(SimplePanel):
     def __init__(self):

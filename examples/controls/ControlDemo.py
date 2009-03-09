@@ -1,6 +1,7 @@
 """ ControlDemo Example
 """
-from pyjamas.ui import RootPanel, Label
+from pyjamas.ui.RootPanel import RootPanel
+from pyjamas.ui.Label import Label
 from pyjamas.Controls import VerticalDemoSlider
 
 class ControlDemo:

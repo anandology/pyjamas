@@ -34,7 +34,10 @@ place cell E at (1, 2) rather than (1, 1).
 Each FlexTable also has a ``RowFormatter`` which can be used to change style
 names, attributes, and the visibility of rows in the table.
 """
-from ui import SimplePanel, FlexTable, HasAlignment, Button
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.FlexTable import FlexTable
+from pyjamas.ui import HasAlignment
+from pyjamas.ui.Button import Button
 
 class FlexTableDemo(SimplePanel):
     def __init__(self):

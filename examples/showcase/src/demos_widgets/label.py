@@ -4,7 +4,8 @@ The ``ui.Label`` class is used to display unformatted text.  Unlike the
 as the second parameter when creating your label, word wrapping will be
 disabled, forcing all the text to be on one line.
 """
-from ui import SimplePanel, Label
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.Label import Label
 
 class LabelDemo(SimplePanel):
     def __init__(self):

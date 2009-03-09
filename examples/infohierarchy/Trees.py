@@ -1,4 +1,8 @@
-from pyjamas.ui import Tree, TreeItem, Composite, RootPanel, HTML
+from pyjamas.ui.Tree import Tree
+from pyjamas.ui.TreeItem import TreeItem
+from pyjamas.ui.Composite import Composite
+from pyjamas.ui.RootPanel import RootPanel
+from pyjamas.ui.HTML import HTML
 from pyjamas import Window
 
 from pyjamas.JSONService import JSONProxy
