@@ -581,8 +581,16 @@ def make_deps(app_name, deps, mod_list):
     #print deps
 
     ordered_deps = []
+    last_len = -1
     while deps:
-        #print "deps", deps
+        l_deps = len(deps)
+        if l_deps==last_len:
+            for m, dl in deps.items():
+                for d in dl:
+                    if m in deps[d]:
+                        raise Exception('Circular Imports found: \n%s %s -> %s %s'
+                                        % (m, dl, d, deps[d]))
+        last_len = l_deps
         #print "modlist", mod_list
         nodeps = nodeps_list(mod_list, deps)
         #print "nodeps", nodeps
