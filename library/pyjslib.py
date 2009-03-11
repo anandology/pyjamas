@@ -303,7 +303,7 @@ pyjslib.String___iter__ = function() {
             if (i >= s.length) {
                 throw StopIteration;
             }
-            return s[i++];
+            return s.substring(i++, i, 1);
         },
         '__iter__': function() {
             return this;
