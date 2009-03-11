@@ -1,6 +1,8 @@
                     Changes made to Pyjamas since 0.4
                     ---------------------------------
 
+ * added string iterator (for c in "hello")
+
  * added stacktrace recording and notification when -d option is given
    to builder.  expensive but useful.
 
