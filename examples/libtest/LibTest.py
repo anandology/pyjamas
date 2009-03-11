@@ -10,23 +10,21 @@ from BoolTest import BoolTest
 from FunctionTest import FunctionTest
 from NameTest import NameTest
 
-class LibTest:
+def main(self):
 
-    def onModuleLoad(self):
-
-        BoolTest().run()
-        FunctionTest().run()
-        ExceptionTest().run()
-        ClassTest().run()
-        StringTest().run()
-        ListTest().run()
-        SetTest().run()
-        ArgsTest().run()
-        VarsTest().run()
-        AttributeTest().run()
-        NameTest().run()
-
-from pyjamas import Window
+    BoolTest().run()
+    FunctionTest().run()
+    ExceptionTest().run()
+    ClassTest().run()
+    StringTest().run()
+    ListTest().run()
+    SetTest().run()
+    ArgsTest().run()
+    VarsTest().run()
+    AttributeTest().run()
+    NameTest().run()
 
 if __name__ == '__main__':
-    Window.alert("fred")
+    main()
+
+
