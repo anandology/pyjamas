@@ -1156,6 +1156,7 @@ class Translator:
         # based on Bob Ippolito's Iteration in Javascript code
         if isinstance(node.assign, ast.AssName):
             assign_name = node.assign.name
+            self.add_local_arg(assign_name)
             if node.assign.flags == "OP_ASSIGN":
                 op = "="
         elif isinstance(node.assign, ast.AssTuple):
@@ -1165,7 +1166,7 @@ class Translator:
                 child_name = child.name
                 if assign_name == "":
                     assign_name = "temp_" + child_name
-
+                self.add_local_arg(child_name)
                 assign_tuple += """
                 var %(child_name)s %(op)s %(assign_name)s.__getitem__(%(i)i);
                 """ % locals()
@@ -1184,7 +1185,6 @@ class Translator:
 
         lhs = "var " + assign_name
         iterator_name = "__" + assign_name
-        self.add_local_arg(assign_name)
 
         print >>self.output, """
         var %(iterator_name)s = %(list_expr)s.__iter__();

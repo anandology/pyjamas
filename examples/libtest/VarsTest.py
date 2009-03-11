@@ -30,3 +30,15 @@ class VarsTest(UnitTest.UnitTest):
         VarsTest = 1
         self.assertEqual(VarsTest, 1)
 
+    def testUnpack(self):
+        l = [1, 2]
+        x, y = l
+        self.assertEqual(x, 1)
+        self.assertEqual(y, 2)
+
+    def testUnpackInLoop(self):
+        l = [[1, 2],[1, 2]]
+        for xxx, yyy in l:
+            self.assertEqual(xxx, 1)
+            self.assertEqual(yyy, 2)
+
