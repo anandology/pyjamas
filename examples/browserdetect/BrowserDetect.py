@@ -10,3 +10,8 @@ class BrowserDetect:
     def display(self):
         self.l.setText("Browser not detected/supported")
 
+
+
+if __name__ == '__main__':
+    app = BrowserDetect()
+    app.onModuleLoad()

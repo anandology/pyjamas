@@ -16,7 +16,7 @@ class Widgets:
 
         img_url = Window.getLocation().getSearchVar("img")
         if not img_url:
-            img_url = 'images/clock.png'
+            img_url = 'images/chrome_clock.png'
         self.solar = SolarCanvas(img_url)
         
         RootPanel().add(self.solar)
@@ -49,6 +49,9 @@ class SolarCanvas(Canvas):
         self.height = DOM.getIntAttribute(el, "height")
         self.setWidth("%dpx" % self.width)
         self.setHeight("%dpx" % self.height)
+ 
+    def onError(self, sender):
+        Window.alert("error of some kind (probably missing image at url)")
 
     def onTimer(self):
         if not self.isActive:
@@ -123,3 +126,8 @@ class SolarCanvas(Canvas):
         
         self.context.drawImage(self.clock,0,0)
 
+
+
+if __name__ == '__main__':
+    app = Widgets()
+    app.onModuleLoad()

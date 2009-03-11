@@ -19,3 +19,8 @@ class ControlDemo:
     def onControlValueChanged(self, slider, old_value, new_value):
         self.label.setText("Value: %d" % int(new_value))
 
+
+
+if __name__ == '__main__':
+    app = ControlDemo()
+    app.onModuleLoad()

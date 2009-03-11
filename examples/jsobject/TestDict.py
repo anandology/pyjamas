@@ -55,3 +55,8 @@ class TestDict:
 
         self.display_value()
 
+
+
+if __name__ == '__main__':
+    app = TestDict()
+    app.onModuleLoad()

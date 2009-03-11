@@ -1,6 +1,11 @@
                     Changes made to Pyjamas since 0.4
                     ---------------------------------
 
+ * convert app "loading" to require the use of "if __name__ == '__main__'"
+   bringing pyjamas into line with "standard" python.  apps can convert with
+   contrib/pyjamas_0.4-0.5_upgrade/add_name_main.py to add a small codefragment
+   at the end: "app = MyApp(); app.onModuleLoad()"
+
  * added string iterator (for c in "hello")
 
  * added stacktrace recording and notification when -d option is given

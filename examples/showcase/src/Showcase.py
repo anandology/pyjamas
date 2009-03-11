@@ -226,3 +226,8 @@ class Showcase:
         j = src.find('</body>')
         return src[i+1:j]
 
+
+
+if __name__ == '__main__':
+    app = Showcase()
+    app.onModuleLoad()

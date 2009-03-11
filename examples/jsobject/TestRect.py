@@ -63,3 +63,8 @@ class TestRect:
         RootPanel().add(HTML("New value: %d %d" % ( self.r.get_x(), self.r.get_y())))
         RootPanel().add(HTML("New Area: %d" % self.r.area()))
 
+
+
+if __name__ == '__main__':
+    app = TestRect()
+    app.onModuleLoad()

@@ -71,3 +71,8 @@ class GridEdit:
                 val = self.values[y][x]
                 self.set_grid_value(y, x, val)
 
+
+
+if __name__ == '__main__':
+    app = GridEdit()
+    app.onModuleLoad()

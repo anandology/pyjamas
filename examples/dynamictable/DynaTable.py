@@ -14,3 +14,8 @@ class DynaTable:
             if slot:
                 filterWidget = DayFilterWidget(calendar)
                 slot.add(filterWidget)
+
+
+if __name__ == '__main__':
+    app = DynaTable()
+    app.onModuleLoad()

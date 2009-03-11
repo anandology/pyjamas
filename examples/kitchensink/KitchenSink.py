@@ -107,3 +107,8 @@ class KitchenSink:
         self.show(self.sink_list.find("Info"), False)
 
 
+
+
+if __name__ == '__main__':
+    app = KitchenSink()
+    app.onModuleLoad()

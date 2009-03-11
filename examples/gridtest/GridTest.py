@@ -62,3 +62,8 @@ class GridTest:
 
 
 
+
+
+if __name__ == '__main__':
+    app = GridTest()
+    app.onModuleLoad()

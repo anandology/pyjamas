@@ -86,3 +86,8 @@ class AddonsGallery:
         self.show(self.sink_list.find("Intro"))
 
 
+
+
+if __name__ == '__main__':
+    app = AddonsGallery()
+    app.onModuleLoad()

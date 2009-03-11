@@ -518,7 +518,7 @@ class Translator:
     def _name(self, v, current_klass, top_level=False,
                                       return_none_for_module=False):
 
-        if v.name == '__name__':
+        if v.name == 'ilikesillynamesfornicedebugcode':
             print current_klass, repr(v), dir(v)
             print self.top_level_vars
             print self.top_level_functions

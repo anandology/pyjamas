@@ -50,3 +50,8 @@ class XMLload:
             firstName = firstNameNode.firstChild.nodeValue
             RootPanel().add(HTML("firstname: %s" % str(firstName)))
 
+
+
+if __name__ == '__main__':
+    app = XMLload()
+    app.onModuleLoad()

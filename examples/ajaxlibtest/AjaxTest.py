@@ -6,13 +6,14 @@ from pyjamas import DOM
 import pyjslib
 
 def greet(sender):
+
     JS("head = document.getElementsByTagName('head')[0];")
     html = DOM.getInnerHTML(head)
-    Window.alert("You should see test.cache.js in this lot:\n" + html)
+    Window.alert("You should see test.cache.js at the end:\n" + html)
 
     JS("""
        test_fn();
-        """)
+    """)
 
 class AjaxTest:
 
@@ -29,4 +30,8 @@ class AjaxTest:
         # pyjslib.import_wait for that.
 
         pyjslib.import_module(None, "test")
+
+if __name__ == '__main__':
+    x = AjaxTest()
+    x.onModuleLoad()
 

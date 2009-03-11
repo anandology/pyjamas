@@ -108,3 +108,8 @@ class Slideshow:
         self.show(self.sink_list.sinks[0], False)
 
 
+
+
+if __name__ == '__main__':
+    app = Slideshow()
+    app.onModuleLoad()

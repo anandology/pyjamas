@@ -71,3 +71,7 @@ class Tabs:
         p.add(image)
 
         return p
+
+if __name__ == '__main__':
+    app = Tabs()
+    app.onModuleLoad()

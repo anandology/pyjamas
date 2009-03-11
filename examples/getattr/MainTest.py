@@ -35,3 +35,8 @@ class StoringObject:
     def call(self):
         self.func(self.message)
 
+
+
+if __name__ == '__main__':
+    app = MainTest()
+    app.onModuleLoad()

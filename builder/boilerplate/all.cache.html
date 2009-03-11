@@ -29,12 +29,6 @@ $doc.modules = modules;
 
 var init_%(app_name)s = null;
 
-%(app_name)s_run = function() {
-    /*__%(app_name)s_initialize();*/
-    app = new %(app_name)s.%(app_name)s();
-    app.onModuleLoad();
-}
-
 var wait_count = 0;
 
 
@@ -105,8 +99,8 @@ function %(app_name)s_import_wait() {
     */
 
     //appmod = modules['%(app_name)s'];
-    var app = %(app_name)s.%(app_name)s();
-    app.onModuleLoad();
+    //var app = %(app_name)s.%(app_name)s();
+    //app.onModuleLoad();
     //%(app_name)s_run(%(app_name)s);
 }
 

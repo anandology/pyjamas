@@ -472,3 +472,8 @@ class InfoServicePython(JSONProxy):
                      "get_rightpanel_datanames",
                      "get_rightpanel_data"])
 
+
+
+if __name__ == '__main__':
+    app = InfoDirectory()
+    app.onModuleLoad()

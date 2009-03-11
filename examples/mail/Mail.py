@@ -86,3 +86,7 @@ class Mail:
     def displayItem(self, item):
         self.mailDetail.setItem(item)
 
+if __name__ == '__main__':
+    m = Mail()
+    m.onModuleLoad()
+

@@ -70,3 +70,8 @@ class FormPanelExample:
             Window.alert("The text box must not be empty")
             event.setCancelled(true)
 
+
+
+if __name__ == '__main__':
+    app = FormPanelExample()
+    app.onModuleLoad()

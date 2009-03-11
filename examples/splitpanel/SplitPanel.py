@@ -31,3 +31,8 @@ class SplitPanel:
 
         RootPanel().add(self.vertpanel)
         RootPanel().add(self.horzpanel)
+
+
+if __name__ == '__main__':
+    app = SplitPanel()
+    app.onModuleLoad()
