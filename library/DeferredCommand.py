@@ -1,7 +1,5 @@
 from Timer import Timer
 
-global deferredCommands 
-global timerIsActive
 deferredCommands = []
 timerIsActive = False
 

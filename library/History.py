@@ -32,7 +32,6 @@ def init():
     return true;
     """)
 
-global historyListeners
 historyListeners = []
 init()
 

@@ -72,6 +72,3 @@ class Hyperlink(Widget):
         DOM.setInnerText(self.anchorElem, text)
 
 
-global prefetchImages
-prefetchImages = {}
-

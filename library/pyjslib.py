@@ -491,14 +491,12 @@ class List:
         """
         return self.l
 
-global list
 list = List
 
 class Tuple(List):
     def __init__(self, data):
         List.__init__(self, data)
 
-global tuple
 tuple = Tuple
 
 
@@ -672,7 +670,6 @@ class Dict:
         else:
             return repr(key)
 
-global dict
 dict = Dict
 
 # taken from mochikit: range( [start,] stop[, step] )
@@ -993,7 +990,6 @@ def max(sequence):
     return maxValue
 
 
-global next_hash_id
 next_hash_id = 0
 
 def hash(obj):

@@ -1,5 +1,4 @@
 #Timer().hookWindowClosing()
-global timers
 timers = []
 
 class Timer:

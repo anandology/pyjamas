@@ -1,7 +1,5 @@
 import Location
 
-global closingListeners
-global resizeListeners
 closingListeners = None
 resizeListeners = None
 
@@ -55,7 +53,6 @@ def setLocation(url):
     $wnd.location = url;
     """)
  
-global location
 location = None
 
 def getLocation():

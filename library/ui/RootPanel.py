@@ -18,7 +18,6 @@ import pyjslib
 
 from pyjamas.ui.AbsolutePanel import AbsolutePanel
 
-global rootPanels
 rootPanels = {}
 
 class RootPanelCls(AbsolutePanel):

@@ -17,7 +17,6 @@ from pyjamas.ui.Widget import Widget
 from pyjamas.ui.Event import Event
 from pyjamas.ui.MouseListener import MouseListener
 
-global prefetchImages
 prefetchImages = {}
 
 class Image(Widget):

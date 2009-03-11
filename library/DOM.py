@@ -14,9 +14,6 @@
 
 from __pyjamas__ import JS
 
-global sCaptureElem
-global sEventPreviewStack 
-global currentEvent 
 sCaptureElem = None
 sEventPreviewStack = []
 currentEvent = None

@@ -15,7 +15,6 @@ from pyjamas import DOM
 
 from pyjamas.ui.ComplexPanel import ComplexPanel
 
-global HTMLPanel_sUid 
 HTMLPanel_sUid = 0
 
 class HTMLPanel(ComplexPanel):

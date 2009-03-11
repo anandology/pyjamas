@@ -36,7 +36,6 @@ class FormSubmitCompleteEvent(EventObject):
     def getResults(self):
        return self.results
 
-global FormPanel_formId
 FormPanel_formId = 0
 
 class FormPanel(SimplePanel):
