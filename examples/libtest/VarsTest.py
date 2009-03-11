@@ -24,4 +24,4 @@ class VarsTest(UnitTest.UnitTest):
         self.assertEqual(module_global_x, 1)
 
     def testImports(self):
-        self.failUnless(UnitTest())
+        self.failUnless(UnitTest.UnitTest())
