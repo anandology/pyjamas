@@ -142,6 +142,9 @@ function import_wait(proceed_fn, dynamic) {
 }
 """)
 
+class Object:
+    pass
+
 class Modload:
 
     def __init__(self, app_modlist, app_imported_fn, dynamic):
@@ -337,9 +340,6 @@ pyjslib.String_startswith = function(prefix, start) {
 pyjslib.abs = Math.abs;
 
 """)
-
-class Object:
-    pass
 
 class Class:
     def __init__(self, name):

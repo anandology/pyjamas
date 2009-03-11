@@ -163,9 +163,9 @@ class ClassTest(UnitTest):
     def testStaticMethod(self):
         self.assertEqual(ExampleClass.sampleStaticMethod("a"), "a", "Expected static method to take the parameter I give as its first parameter")
 
-    def testClassDefinitionOrder(self):
-        x = ExampleSubclassDefinedBeforeSuperclass()
-        self.assertEqual(x.someMethod(), "abc", "Expected someMethod to return 'abc'")
+    #def testClassDefinitionOrder(self):
+    #    x = ExampleSubclassDefinedBeforeSuperclass()
+    #    self.assertEqual(x.someMethod(), "abc", "Expected someMethod to return 'abc'")
 
     def testIsInstance(self):
         c = ExampleChildClass()
@@ -249,12 +249,14 @@ class ExampleChildExplicitConstructor(ExampleParentConstructor):
     def __init__(self):
         ExampleParentConstructor.__init__(self)
 
-class ExampleSubclassDefinedBeforeSuperclass(ExampleSuperclassDefinedAfterSubclass):
-    pass
+# XXX doing this should throw a "Name" exception
+#
+#class ExampleSubclassDefinedBeforeSuperclass(ExampleSuperclassDefinedAfterSubclass):
+#    pass
 
-class ExampleSuperclassDefinedAfterSubclass:
-    def someMethod(self):
-        return 'abc'
+#class ExampleSuperclassDefinedAfterSubclass:
+#    def someMethod(self):
+#        return 'abc'
 
 
 

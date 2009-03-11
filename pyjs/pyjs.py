@@ -146,7 +146,7 @@ def gen_mod_import(parentName, importName, dynamic=1):
 
 class Translator:
 
-    def __init__(self, module_name, raw_module_name, src, debug, mod, output,
+    def __init__(self, mn, module_name, raw_module_name, src, debug, mod, output,
                  dynamic=0):
 
         if module_name:
@@ -177,6 +177,8 @@ class Translator:
         else:
             vdec = 'var '
         print >>self.output, UU+"%s%s = function () {" % (vdec, module_name)
+
+        print >>self.output, UU+"%s.__name__ = '%s';" % (raw_module_name, mn)
 
         if self.debug:
             haltException = self.module_prefix + "HaltException"
@@ -261,8 +263,8 @@ class Translator:
         # Initialize all classes for this module
         #print >> self.output, "__"+self.modpfx()+\
         #          "classes_initialize = function() {\n"
-        for className in self.top_level_classes:
-            print >> self.output, "\t"+UU+self.modpfx()+"__"+className+"_initialize();"
+        #for className in self.top_level_classes:
+        #    print >> self.output, "\t"+UU+self.modpfx()+"__"+className+"_initialize();"
         #print >> self.output, "};\n"
 
         print >> self.output, "return this;\n"
@@ -372,7 +374,9 @@ class Translator:
                 print >>self.output, "    return null;"
 
         print >>self.output, "}"
+        print >>self.output, "%s.__name__ = '%s';" % (function_name, node.name)
         print >>self.output, "\n"
+
 
         self._kwargs_parser(node, function_name, normal_arg_names, None)
 
@@ -514,7 +518,7 @@ class Translator:
     def _name(self, v, current_klass, top_level=False,
                                       return_none_for_module=False):
 
-        if v.name == 'stupidnametestilikethiscodehereitshelpful':
+        if v.name == '__name__':
             print current_klass, repr(v), dir(v)
             print self.top_level_vars
             print self.top_level_functions
@@ -530,6 +534,8 @@ class Translator:
             return "false"
         elif v.name == "None":
             return "null"
+        elif v.name == '__name__' and current_klass is None:
+            return self.modpfx() + v.name
         elif v.name == self.method_self:
             return "this"
         elif v.name in self.top_level_functions:
@@ -665,10 +671,6 @@ class Translator:
         else:
             raise TranslationError("more than one base (in _class)", node)
 
-        if node.name.endswith("ExampleClass") and child.name == 'sampleStaticMethod':
-            print current_klass.name, node.name, child.name
-            print class_name_
-
         print >>self.output, UU+class_name_ + " = function () {"
         # call superconstructor
         #if base_class:
@@ -712,7 +714,7 @@ class Translator:
                 print >>self.output, "    pyjs_extend(" + UU+class_name_ + ", "+UU+"pyjslib.__Object);"
 
         print >>self.output, "    "+cls_obj+".__new__ = "+UU+class_name+";"
-        print >>self.output, "    "+cls_obj+".__name__ = '"+UU+class_name+"';"
+        print >>self.output, "    "+cls_obj+".__name__ = '"+UU+node.name+"';"
 
         for child in node.code:
             if isinstance(child, ast.Pass):
@@ -728,6 +730,7 @@ class Translator:
                 raise TranslationError("unsupported type (in _class)", child)
         print >>self.output, "}"
 
+        print >> self.output, class_name_+"_initialize();"
 
 
     def classattr(self, node, current_klass):
@@ -823,6 +826,10 @@ class Translator:
             print >>self.output, "    };"
             print >>self.output, "    "+altexpr+".unbound_method = true;"
             print >>self.output, "    "+fexpr+".instance_method = true;"
+            print >>self.output, "    "+altexpr+".__name__ = '%s';" % node.name
+
+        print >>self.output, UU + class_name_ + ".prototype.%s.__name__ = '%s';" % \
+                (node.name, node.name)
 
         if node.kwargs or len(node.defaults):
             print >>self.output, "    "+altexpr + ".parse_kwargs = " + fexpr + ".parse_kwargs;"
@@ -1403,7 +1410,7 @@ def translate(file_name, module_name, debug=False):
     f.close()
     output = cStringIO.StringIO()
     mod = compiler.parseFile(file_name)
-    t = Translator(module_name, module_name, src, debug, mod, output)
+    t = Translator(module_name, module_name, module_name, src, debug, mod, output)
     return output.getvalue()
 
 
@@ -1545,10 +1552,6 @@ class AppTranslator:
             self.library_modules.append(module_name)
 
         file_name = self.findFile(module_name + self.extension)
-        if is_app:
-            module_name_translated = ""
-        else:
-            module_name_translated = module_name
 
         output = cStringIO.StringIO()
 
@@ -1561,7 +1564,13 @@ class AppTranslator:
             self.overrides[module_name] = "%s.%s" % \
                                           (self.parser.platform.lower(),
                                            module_name)
-        t = Translator(module_name_translated, module_name, src, debug, mod, output, self.dynamic)
+        if is_app:
+            mn = '__main__'
+        else:
+            mn = module_name
+
+        t = Translator(mn, module_name, module_name,
+                       src, debug, mod, output, self.dynamic)
         module_str = output.getvalue()
         imported_js.update(set(t.imported_js))
         imported_modules_str = ""
@@ -1599,7 +1608,7 @@ class AppTranslator:
 
             print >> lib_code, '\n//\n// END LIB '+library+'\n//\n'
         print >> app_code, self._translate(
-            module_name, is_app=False, debug=debug, imported_js=imported_js)
+            module_name, is_app, debug=debug, imported_js=imported_js)
         for js in imported_js:
            path = self.findFile(js)
            if os.path.isfile(path):

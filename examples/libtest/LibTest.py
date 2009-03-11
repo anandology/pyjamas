@@ -8,6 +8,7 @@ from AttributeTest import AttributeTest
 from ExceptionTest import ExceptionTest
 from BoolTest import BoolTest
 from FunctionTest import FunctionTest
+from NameTest import NameTest
 
 class LibTest:
 
@@ -23,4 +24,9 @@ class LibTest:
         ArgsTest().run()
         VarsTest().run()
         AttributeTest().run()
+        NameTest().run()
 
+from pyjamas import Window
+
+if __name__ == '__main__':
+    Window.alert("fred")
