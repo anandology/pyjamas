@@ -3,63 +3,30 @@ from pyjamas.ui.RootPanel import RootPanel
 from pyjamas.ui.HTML import HTML
 from pyjamas import Window
 from pyjamas import DOM
-#import pyjamas.dynamicajax.js
-#import dtest.js
+import pyjslib
 
 def greet(sender):
-    body = DOM.getElementById("idbody")
-    html = DOM.getInnerHTML(body)
-    Window.alert(html)
+    JS("head = document.getElementsByTagName('head')[0];")
+    html = DOM.getInnerHTML(head)
+    Window.alert("You should see test.cache.js in this lot:\n" + html)
 
     JS("""
-       /*other.test.Fred();*/
        test_fn();
-
         """)
-
-JS("""
-// ImportListener that triggers the Examples page's initialization once all
-// required modules are ready for use.
-function isPageReady(moduleName)
-{  
-  if(  "undefined" == typeof other.test)
-     return;
-
-  Ajile.RemoveImportListener(isPageReady);
-  isPageReady = true;
-  testImportListener();
-}  
-
-// Add listener to observe any import/include events.
-
-// Tests whether all imports were successful.
-function testImportListener()
-{  
-  var status = isPageReady == true ? ' ' : " NOT ";
-
-  alert( "Import Listener test was" + status +"successful! "
-       + "All required modules have"+ status +"been imported.");
-}  
-""")
 
 class AjaxTest:
 
     ClickMe = "Click me"
 
     def onModuleLoad(self):
+
         b = Button(ClickMe, greet)
         RootPanel().add(b)
-        #pyjs_ajax_dlink(None, "test.js", "test_fn()")
-        pyjs_ajax_eval("test.js", "test_fn()")
-        JS("""
-        /*
-            other = function() {};
-            other.test = function() {};
 
-            Namespace("other.test");
+        # dynamically loads public/test.cache.js.
+        # note that this does NOT check that the module
+        # has actually loaded.  you will need to see e.g.
+        # pyjslib.import_wait for that.
 
-           Include("other.test.Fred.js");
-           Import("other.test");
-           Ajile.AddImportListener(isPageReady);
-        */
-            """)
+        pyjslib.import_module(None, "test")
+

@@ -19,3 +19,4 @@
 (cd splitpanel; ./build.sh)
 (cd tabpanelwidget; ./build.sh)
 (cd widgets; ./build.sh)
+(cd ajaxlibtest; ./build.sh)
