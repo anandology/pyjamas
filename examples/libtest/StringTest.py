@@ -97,3 +97,11 @@ class StringTest(UnitTest):
         self.assertEqual("1a".isdigit(), False)
 
         self.assertEqual("   ".isdigit(), False)
+
+    def testStringIterate(self):
+        text=" this is  a rather long string  "
+        t = ''
+        for x in text:
+            t += x
+        self.assertEqual(text, t)
+

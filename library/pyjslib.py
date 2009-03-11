@@ -295,6 +295,22 @@ pyjslib.String_split = function(sep, maxsplit) {
     return items;
 }
 
+pyjslib.String___iter__ = function() {
+    var i = 0;
+    var s = this;
+    return {
+        'next': function() {
+            if (i >= s.length) {
+                throw StopIteration;
+            }
+            return s[i++];
+        },
+        '__iter__': function() {
+            return this;
+        }
+    };
+}
+
 pyjslib.String_strip = function(chars) {
     return this.lstrip(chars).rstrip(chars);
 }

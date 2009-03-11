@@ -42,6 +42,7 @@ String.prototype.lower = String.prototype.toLowerCase;
 String.prototype.find=pyjslib.String_find;
 String.prototype.join=pyjslib.String_join;
 String.prototype.isdigit=pyjslib.String_isdigit;
+String.prototype.__iter__=pyjslib.String___iter__;
 
 String.prototype.__replace=String.prototype.replace;
 String.prototype.replace=pyjslib.String_replace;
