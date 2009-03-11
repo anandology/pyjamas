@@ -174,7 +174,7 @@ class Translator:
 
         if self.debug:
             haltException = self.module_prefix + "HaltException"
-            print >>self.output, 'function ' + haltException + '() {'
+            print >>self.output, haltException + ' = function () {'
             print >>self.output, '  this.message = "Program Halted";'
             print >>self.output, '  this.name = "' + haltException + '";'
             print >>self.output, '}'
@@ -185,7 +185,7 @@ class Translator:
             print >>self.output, '}'
 
             isHaltFunction = self.module_prefix + "IsHaltException"
-            print >>self.output, 'function ' + isHaltFunction + '(s) {'
+            print >>self.output, isHaltFunction + ' = function (s) {'
             print >>self.output, '  var suffix="HaltException";'
             print >>self.output, '  if (s.length < suffix.length) {'
             print >>self.output, '    return false;'
