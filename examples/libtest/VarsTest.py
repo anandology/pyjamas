@@ -25,3 +25,8 @@ class VarsTest(UnitTest.UnitTest):
 
     def testImports(self):
         self.failUnless(UnitTest.UnitTest())
+
+    def testLocalVar(self):
+        VarsTest = 1
+        self.assertEqual(VarsTest, 1)
+

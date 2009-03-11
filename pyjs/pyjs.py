@@ -514,7 +514,7 @@ class Translator:
     def _name(self, v, current_klass, top_level=False,
                                       return_none_for_module=False):
 
-        if v.name == 'testmenameblahblah':
+        if v.name == 'stupidnametestilikethiscodehereitshelpful':
             print current_klass, repr(v), dir(v)
             print self.top_level_vars
             print self.top_level_functions
@@ -536,6 +536,8 @@ class Translator:
             return UU+self.modpfx() + v.name
         elif v.name in self.method_imported_globals:
             return UU+self.modpfx() + v.name
+        elif v.name in local_var_names:
+            return v.name
         elif self.imported_classes.has_key(v.name):
             return UU+self.imported_classes[v.name] + '.__' + v.name + ".prototype.__class__"
         elif v.name in self.top_level_classes:
