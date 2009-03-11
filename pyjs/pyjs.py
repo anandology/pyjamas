@@ -910,6 +910,7 @@ class Translator:
                 srcLine = self.src[min(lineNum, len(self.src))-1]
                 srcLine = srcLine.replace('\\', '\\\\')
                 srcLine = srcLine.replace('"', '\\"')
+                srcLine = srcLine.replace("'", "\\'")
 
         return self.raw_module_name + ".py, line " \
                + str(lineNum) + ":"\
