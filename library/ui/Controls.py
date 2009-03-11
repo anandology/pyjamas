@@ -99,7 +99,7 @@ class VerticalDemoSlider2(VerticalDemoSlider):
         if type == "mousedown" or type == "mouseup" or type == "mousemove" or type == "mouseover" or type == "mouseout":
             MouseListener().fireMouseEvent(self.mouseListeners, self, event)
         else:
-            VerticalSliderDemo.onBrowserEvent(self, event)
+            VerticaDemoSlider.onBrowserEvent(self, event)
 
     def onEventPreview(self, event):
         # preventDefault on mousedown events, outside of the
