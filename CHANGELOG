@@ -1,6 +1,9 @@
                     Changes made to Pyjamas since 0.4
                     ---------------------------------
 
+ * added stacktrace recording and notification when -d option is given
+   to builder.  expensive but useful.
+
  * added a helper tool (in contrib) called replacer.py which helps convert
    apps: "from pyjamas.ui import X,Y" is converted to
    "from pyjamas.ui.X import X; from pyjamas.ui.Y import Y"

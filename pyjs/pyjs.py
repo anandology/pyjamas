@@ -172,6 +172,12 @@ class Translator:
         self.nextTupleAssignID = 1
         self.dynamic = dynamic
 
+        if module_name.find(".") >= 0:
+            vdec = ''
+        else:
+            vdec = 'var '
+        print >>self.output, UU+"%s%s = function () {" % (vdec, module_name)
+
         if self.debug:
             haltException = self.module_prefix + "HaltException"
             print >>self.output, haltException + ' = function () {'
@@ -185,21 +191,19 @@ class Translator:
             print >>self.output, '}'
 
             isHaltFunction = self.module_prefix + "IsHaltException"
-            print >>self.output, isHaltFunction + ' = function (s) {'
-            print >>self.output, '  var suffix="HaltException";'
-            print >>self.output, '  if (s.length < suffix.length) {'
-            print >>self.output, '    return false;'
-            print >>self.output, '  } else {'
-            print >>self.output, '    return s.substring(suffix.length, (s.length - suffix.length)) == suffix;'
-            print >>self.output, '  }'
-            print >>self.output, '}'
-
-        if module_name.find(".") >= 0:
-            vdec = ''
-        else:
-            vdec = 'var '
-        print >>self.output, UU+"%s%s = function () {" % (vdec, module_name)
-
+            print >>self.output, """
+    %s = function (s) {
+      var suffix="HaltException";
+      if (s.length < suffix.length) {
+        //alert(s + " " + suffix);
+        return false;
+      } else {
+        var ss = s.substring(s.length, (s.length - suffix.length));
+        //alert(s + " " + suffix + " " + ss);
+        return ss == suffix;
+      }
+    }
+                """ % isHaltFunction
         for child in mod.node:
             if isinstance(child, ast.Function):
                 self.top_level_functions.add(child.name)
@@ -874,20 +878,8 @@ class Translator:
             raise TranslationError("unsupported type (in _stmt)", node)
 
         if debugStmt:
-            lineNum = "Unknown"
-            srcLine = ""
-            if hasattr(node, "lineno"):
-                if node.lineno != None:
-                    lineNum = node.lineno
-                    srcLine = self.src[lineNum-1]
-                    srcLine = srcLine.replace('\\', '\\\\')
-                    srcLine = srcLine.replace('"', '\\"')
 
-            errMsg = "Error in " + self.raw_module_name + ".py, line " \
-                   + str(lineNum) + ":"\
-                   + "\\n\\n" \
-                   + "    " + srcLine \
-                   + "\\n\\n"
+            errMsg = "Error in " + self.get_line_trace(node)
 
             haltException = self.module_prefix + "HaltException"
             isHaltFunction = self.module_prefix + "IsHaltException"
@@ -896,7 +888,10 @@ class Translator:
             print >>self.output, '      if (' + isHaltFunction + '(err.name)) {'
             print >>self.output, '          throw err;'
             print >>self.output, '      } else {'
+            print >>self.output, '          st = sys.printstack();'
             print >>self.output, '          alert("' + errMsg + '"' \
+                                                + '+"stack trace:\\n"' \
+                                                + '+st+"\\n"' \
                                                 + '+err.name+": "+err.message'\
                                                 + ');'
             print >>self.output, '          debugger;'
@@ -905,6 +900,22 @@ class Translator:
             print >>self.output, '      }'
             print >>self.output, '  }'
 
+
+    def get_line_trace(self, node):
+        lineNum = "Unknown"
+        srcLine = ""
+        if hasattr(node, "lineno"):
+            if node.lineno != None:
+                lineNum = node.lineno
+                srcLine = self.src[min(lineNum, len(self.src))-1]
+                srcLine = srcLine.replace('\\', '\\\\')
+                srcLine = srcLine.replace('"', '\\"')
+
+        return self.raw_module_name + ".py, line " \
+               + str(lineNum) + ":"\
+               + "\\n" \
+               + "    " + srcLine \
+               + "\\n"
 
     def _augassign(self, node, current_klass):
         v = node.node
@@ -1025,6 +1036,13 @@ class Translator:
     def _discard(self, node, current_klass):
         
         if isinstance(node.expr, ast.CallFunc):
+            debugStmt = self.debug and not self._isNativeFunc(node)
+            if debugStmt and isinstance(node.expr.node, ast.Name) and \
+               node.expr.node.name == 'import_wait':
+               debugStmt = False
+            if debugStmt:
+                st = self.get_line_trace(node)
+                print >>self.output, "sys.addstack('%s');\n" % st
             if isinstance(node.expr.node, ast.Name) and node.expr.node.name == NATIVE_JS_FUNC_NAME:
                 if len(node.expr.args) != 1:
                     raise TranslationError("native javascript function %s must have one arg" % NATIVE_JS_FUNC_NAME, node.expr)
@@ -1035,6 +1053,10 @@ class Translator:
             else:
                 expr = self._callfunc(node.expr, current_klass)
                 print >>self.output, "    " + expr + ";"
+
+            if debugStmt:
+                print >>self.output, "sys.popstack();\n"
+
         elif isinstance(node.expr, ast.Const):
             if node.expr.value is not None: # Empty statements generate ignore None
                 print >>self.output, self._const(node.expr)
