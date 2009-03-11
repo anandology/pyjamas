@@ -110,8 +110,7 @@ class VerticalDemoSlider2(VerticalDemoSlider):
             event_targets_control = target and DOM.isOrHasChild(self.getElement(), target)
             if event_targets_control:
                 DOM.eventPreventDefault(event)
-                return True
-        return False
+        return True
 
     def onMouseMove(self, sender, x, y):
         if not self.dragging:
