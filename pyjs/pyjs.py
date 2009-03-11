@@ -631,7 +631,6 @@ class Translator:
         class_name = self.modpfx() + uuprefix(node.name, 1)
         class_name_ = self.modpfx() + uuprefix(node.name)
         current_klass = Klass(class_name, class_name_)
-
         init_method = None
         for child in node.code:
             if isinstance(child, ast.Function):
@@ -651,9 +650,11 @@ class Translator:
                     base_class_ = self.modpfx() + "__" + node.bases[0].name
                     base_class = self.modpfx() + node.bases[0].name
             elif isinstance(node.bases[0], ast.Getattr):
-                base_class_ = self._name(node.bases[0].expr, current_klass) + \
+                # the bases are not in scope of the class so do not
+                # pass our class to self._name
+                base_class_ = self._name(node.bases[0].expr, None) + \
                              ".__" + node.bases[0].attrname
-                base_class = self._name(node.bases[0].expr, current_klass) + \
+                base_class = self._name(node.bases[0].expr, None) + \
                              "." + node.bases[0].attrname
             else:
                 raise TranslationError("unsupported type (in _class)", node.bases[0])
@@ -960,7 +961,8 @@ class Translator:
                 else:
                     self.top_level_vars.add(v.name)
                     vname = self.modpfx() + v.name
-                    if v.name not in self.method_imported_globals:
+                    if not self.modpfx() and v.name not in\
+                           self.method_imported_globals:
                         lhs = "var " + vname
                     else:
                         lhs = UU + vname
