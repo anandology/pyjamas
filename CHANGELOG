@@ -71,7 +71,7 @@
    catching of class based Exceptions is now possible. String based
    Exceptions also work.
 
- * implemented the 'isinstance' builtin function, currently onnly
+ * implemented the 'isinstance' builtin function, currently only
    works on normal class instances.
 
  * implemented the 'raise' statement. it only works with a single expression.
