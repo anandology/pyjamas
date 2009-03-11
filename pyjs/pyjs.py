@@ -500,7 +500,7 @@ class Translator:
         if isinstance(v.expr, ast.Name):
             obj = self._name(v.expr, current_klass, return_none_for_module=True)
             if obj == None and v.expr.name in self.imported_modules:
-                return "__"+v.expr.name+'.__'+attr_name+'.prototype.__class__'
+                return v.expr.name+'.__'+attr_name+'.prototype.__class__'
             return obj + "." + attr_name
         elif isinstance(v.expr, ast.Getattr):
             return self._getattr(v.expr, current_klass) + "." + attr_name

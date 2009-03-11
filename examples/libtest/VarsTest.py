@@ -1,4 +1,5 @@
 import UnitTest
+import foo
 
 module_global_x = 1
 
@@ -42,3 +43,8 @@ class VarsTest(UnitTest.UnitTest):
             self.assertEqual(xxx, 1)
             self.assertEqual(yyy, 2)
 
+    def testImportedNamespace(self):
+        self.assertEqual(foo.Bar.X, 1)
+        # XXX: the next line does not work because we assume that we
+        # import classes, which is wrong.
+        #self.assertEqual(foo.bar.X, 1)
