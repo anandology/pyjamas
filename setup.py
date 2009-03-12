@@ -18,6 +18,7 @@ keyw = """\
 """
 
 lib_data_files = glob.glob("library/*.py")
+lib_ui_data_files = glob.glob("library/ui/*.py")
 bp_data_files = glob.glob("builder/boilerplate/*")
 test_files = glob.glob("pyjs/tests/*")
 stub_files = glob.glob("stubs/*")
@@ -29,6 +30,7 @@ addons_data_files = glob.glob("addons/*.py")
 
 data_files = [("/usr/share/pyjamas/library", lib_data_files),
               ("/usr/share/pyjamas/library/builtins", builtin_data_files),
+              ("/usr/share/pyjamas/library/ui", lib_ui_data_files),
               ("/usr/share/pyjamas/builder/boilerplate", bp_data_files),
               ("/usr/share/pyjamas/pyjs/tests", test_files),
               ("/usr/share/pyjamas/stubs", stub_files),
