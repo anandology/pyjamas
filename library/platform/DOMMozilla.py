@@ -127,11 +127,18 @@ def isOrHasChild(parent, child):
 		else if (parent.isSameNode(child)) {
             return true;
         }
-        child = child.parentNode;
-        if (child.nodeType != 1) {
-            child = null;
+        try {
+            child = child.parentNode;
+        } catch(e) {
+          // Give up on 'Permission denied to get property
+          // HTMLDivElement.parentNode'
+          // See https://bugzilla.mozilla.org/show_bug.cgi?id=208427
+          return false;
         }
-    }
+        if (child && (child.nodeType != 1)) {
+          child = null;
+        }
+      }
     return false;
     """)
 

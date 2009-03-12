@@ -1,6 +1,8 @@
                     Changes made to Pyjamas since 0.5
                     ---------------------------------
 
+ * fixed Mozilla "Permission Denied" bug in DOM.isOrHasChild
+
  * pyjslib.Dcit now use the hash method to generate keys internally,
    so it si possible to use objects as keys like in python. For
    limitations on dicts read examples/libtest/DictTest.py
