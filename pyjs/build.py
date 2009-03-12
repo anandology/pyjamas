@@ -574,6 +574,7 @@ def nodeps_list(mod_list, deps):
 
 
 def make_deps(app_name, deps, mod_list):
+    print "Calculating Dependencies ..."
     mod_list = filter_mods(app_name, mod_list)
     deps = filter_deps(app_name, deps)
 
@@ -584,12 +585,14 @@ def make_deps(app_name, deps, mod_list):
     last_len = -1
     while deps:
         l_deps = len(deps)
+        print l_deps
         if l_deps==last_len:
             for m, dl in deps.items():
                 for d in dl:
                     if m in deps[d]:
                         raise Exception('Circular Imports found: \n%s %s -> %s %s'
                                         % (m, dl, d, deps[d]))
+            raise Exception('Could not calculate dependencies: \n%s' % deps)
         last_len = l_deps
         #print "modlist", mod_list
         nodeps = nodeps_list(mod_list, deps)
