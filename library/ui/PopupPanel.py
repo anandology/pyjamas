@@ -58,36 +58,37 @@ class PopupPanel(SimplePanel):
     def isModal(self):
         return self.modal
 
-    def onEventPreview(self, event):
+    def _event_targets_popup(self, event):
         target = DOM.eventGetTarget(event)
-        event_targets_popup = target and DOM.isOrHasChild(self.getElement(), target)
+        return target and DOM.isOrHasChild(self.getElement(), target)
+
+    def onEventPreview(self, event):
         type = DOM.eventGetType(event)
-        #print "onEventPreview popup", type, event_targets_popup
         if type == "keydown":
             return (    self.onKeyDownPreview(
                             DOM.eventGetKeyCode(event),
                             KeyboardListener.getKeyboardModifiers(self, event)
                             )
-                    and (event_targets_popup or not self.modal)
+                    and (not self.modal or self._event_targets_popup(event))
                    )
         elif type == "keyup":
             return (    self.onKeyUpPreview(
                             DOM.eventGetKeyCode(event),
                             KeyboardListener.getKeyboardModifiers(self, event)
                             )
-                    and (event_targets_popup or not self.modal)
+                    and (not self.modal or self._event_targets_popup(event))
                    )
         elif type == "keypress":
             return (    self.onKeyPressPreview(
                             DOM.eventGetKeyCode(event),
                             KeyboardListener.getKeyboardModifiers(self, event)
                             )
-                    and (event_targets_popup or not self.modal)
+                    and (not self.modal or self._event_targets_popup(event))
                    )
         elif type == "mousedown":
             if DOM.getCaptureElement() != None:
                 return True
-            if not event_targets_popup and self.autoHide:
+            if self.autoHide and not self._event_targets_popup(event):
                 self.hide(True)
                 return True
         elif (   type == "mouseup"
@@ -97,7 +98,7 @@ class PopupPanel(SimplePanel):
              ):
             if DOM.getCaptureElement() != None:
                 return True
-        return not self.modal or event_targets_popup
+        return not self.modal or self._event_targets_popup(event)
 
     def onKeyDownPreview(self, key, modifiers):
         return True
