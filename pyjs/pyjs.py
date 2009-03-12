@@ -148,7 +148,7 @@ def gen_mod_import(parentName, importName, dynamic=1):
 class Translator:
 
     def __init__(self, mn, module_name, raw_module_name, src, debug, mod, output,
-                 dynamic=0):
+                 dynamic=0, optimize=False):
 
         if module_name:
             self.module_prefix = module_name + "."
@@ -172,6 +172,7 @@ class Translator:
         self.method_self = None
         self.nextTupleAssignID = 1
         self.dynamic = dynamic
+        self.optimize = optimize
 
         if module_name.find(".") >= 0:
             vdec = ''
@@ -462,6 +463,8 @@ class Translator:
             return call_name + "(" + ", ".join(call_args) + ")"
 
     def _print(self, node, current_klass):
+        if self.optimize:
+            return
         call_args = []
         for ch4 in node.nodes:
             arg = self.expr(ch4, current_klass)
@@ -1508,9 +1511,10 @@ def dotreplace(fname):
 
 class AppTranslator:
 
-    def __init__(self, library_dirs=[], parser=None, dynamic=False):
+    def __init__(self, library_dirs=[], parser=None, dynamic=False,
+                 optimize=False):
         self.extension = ".py"
-
+        self.optimize = optimize
         self.library_modules = []
         self.overrides = {}
         self.library_dirs = path + library_dirs
@@ -1569,9 +1573,8 @@ class AppTranslator:
             mn = '__main__'
         else:
             mn = module_name
-
         t = Translator(mn, module_name, module_name,
-                       src, debug, mod, output, self.dynamic)
+                       src, debug, mod, output, self.dynamic, self.optimize)
         module_str = output.getvalue()
         imported_js.update(set(t.imported_js))
         imported_modules_str = ""

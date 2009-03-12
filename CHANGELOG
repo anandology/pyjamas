@@ -1,6 +1,10 @@
                     Changes made to Pyjamas since 0.5
                     ---------------------------------
 
+ * added an --optimize option to which results in removing print
+   statements. this could be further improved. e.g. when assert is
+   implemented
+
  * fixed Mozilla "Permission Denied" bug in DOM.isOrHasChild
 
  * pyjslib.Dcit now use the hash method to generate keys internally,

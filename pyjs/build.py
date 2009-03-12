@@ -162,8 +162,7 @@ def check_html_file(source_file, dest_path):
 
 
 def build(app_name, output, js_includes=(), debug=False, dynamic=0,
-                                            data_dir=None,
-                                            cache_buster=False):
+          data_dir=None, cache_buster=False, optimize=False):
 
     # make sure the output directory is always created in the current working
     # directory or at the place given if it is an absolute path.
@@ -240,7 +239,7 @@ def build(app_name, output, js_includes=(), debug=False, dynamic=0,
 
     ## all.cache.html
     app_files = generateAppFiles(data_dir, js_includes, app_name, debug,
-                                 output, dynamic, cache_buster)
+                                 output, dynamic, cache_buster, optimize)
 
     ## AppName.nocache.html
 
@@ -268,7 +267,7 @@ def build(app_name, output, js_includes=(), debug=False, dynamic=0,
 
 
 def generateAppFiles(data_dir, js_includes, app_name, debug, output, dynamic,
-                     cache_buster):
+                     cache_buster, optimize):
 
     all_cache_html_template = read_boilerplate(data_dir, "all.cache.html")
     mod_cache_html_template = read_boilerplate(data_dir, "mod.cache.html")
@@ -314,7 +313,8 @@ def generateAppFiles(data_dir, js_includes, app_name, debug, output, dynamic,
         # Application.Platform.cache.html
 
         parser.setPlatform(platform)
-        app_translator = pyjs.AppTranslator(parser=parser, dynamic=dynamic)
+        app_translator = pyjs.AppTranslator(
+            parser=parser, dynamic=dynamic, optimize=optimize)
         app_libs[platform], app_code[platform] = \
                      app_translator.translate(app_name, #is_app=True,
                                               debug=debug,
@@ -358,7 +358,7 @@ def generateAppFiles(data_dir, js_includes, app_name, debug, output, dynamic,
             mod_cache_name = "%s.%s.cache.js" % (platform.lower(), mod_name)
 
             parser.setPlatform(platform)
-            mod_translator = pyjs.AppTranslator(parser=parser)
+            mod_translator = pyjs.AppTranslator(parser=parser, optimize=optimize)
             mod_code[platform][mod_name] = mod_translator._translate(mod_name,
                                                   #is_app=mod_name==app_name,
                                                   is_app=False,
@@ -629,6 +629,10 @@ def main():
     parser.add_option("-P", "--platforms", dest="platforms",
         help="platforms to build for, comma-separated")
     parser.add_option("-d", "--debug", action="store_true", dest="debug")
+    parser.add_option("-O", "--optimize", action="store_true",
+                      dest="optimize", default=False,
+                      help="Optimize generated code (removes all print statements)",
+                      )
     parser.add_option("-c", "--cache_buster", action="store_true",
                   dest="cache_buster",
         help="Enable browser cache-busting (MD5 hash added to output filenames)")
@@ -669,7 +673,7 @@ def main():
 
     build(app_name, options.output, options.js_includes,
           options.debug, options.dynamic, data_dir,
-          options.cache_buster)
+          options.cache_buster, options.optimize)
 
 if __name__ == "__main__":
     main()
