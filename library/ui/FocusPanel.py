@@ -14,6 +14,8 @@
 from pyjamas import DOM
 
 from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.Focus import Focus
+from pyjamas.ui.Event import Event
 
 class FocusPanel(SimplePanel):
     def __init__(self, child=None):
