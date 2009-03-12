@@ -16,6 +16,9 @@ from pyjamas import DOM
 from pyjamas.ui.SimplePanel import SimplePanel
 from pyjamas.ui.Focus import Focus
 from pyjamas.ui.Event import Event
+from pyjamas.ui.FocusListener import FocusListener
+from pyjamas.ui.MouseListener import MouseListener
+from pyjamas.ui.KeyboardListener import KeyboardListener
 
 class FocusPanel(SimplePanel):
     def __init__(self, child=None):
