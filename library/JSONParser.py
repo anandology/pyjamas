@@ -150,7 +150,7 @@ class JSONParser:
                         return s.array(x.l);
                     }
                     if (x instanceof pyjslib.__Dict) {
-                        return s.object(x.d);
+                        return s.object(pyjslib.toJSObjects(x));
                     }
                     var a = ['{'], b, f, i, v;
                     for (i in x) {

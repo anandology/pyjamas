@@ -1037,34 +1037,42 @@ def toJSObjects(x):
        Convert the pyjs pythonic List and Dict objects into javascript Object and Array
        objects, recursively.
     """
-    result = x
-
-    if isObject(x) and x.__class__:
-        if x.__class__ == 'pyjslib.Dict':
-            return toJSObjects(x.d)
-        elif x.__class__ == 'pyjslib.List':
-            return toJSObjects(x.l)
-
-    if isObject(x):
-        JS("""
-        result = {};
-        for(var k in x) {
-           var v = x[k];
-           var tv = pyjslib.toJSObjects(v)
-           result[k] = tv;
-        }
-        """)
     if isArray(x):
         JS("""
-        result = [];
+        var result = [];
         for(var k=0; k < x.length; k++) {
            var v = x[k];
            var tv = pyjslib.toJSObjects(v);
            result.push(tv);
         }
+        return result;
         """)
-
-    return result
+    if isObject(x):
+        if isinstance(x, Dict):
+            JS("""
+            var o = x.getObject();
+            var result = {};
+            for (var i in o) {
+               console.log(o[i][0].toString());
+               result[o[i][0].toString()] = o[i][1];
+            }
+            return pyjslib.toJSObjects(result)
+            """)
+        elif isinstance(x, List):
+            return toJSObjects(x.l)
+        else:
+            JS("""
+            var result = {};
+            for(var k in x) {
+            var v = x[k];
+            console.log(k + ":" + v);
+            var tv = pyjslib.toJSObjects(v)
+            console.log(k + "::" + tv);
+            result[k] = tv;
+            }
+            return result;
+            """)
+    return x
 
 def printFunc(objs):
     JS("""
