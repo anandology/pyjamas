@@ -1053,7 +1053,6 @@ def toJSObjects(x):
             var o = x.getObject();
             var result = {};
             for (var i in o) {
-               console.log(o[i][0].toString());
                result[o[i][0].toString()] = o[i][1];
             }
             return pyjslib.toJSObjects(result)
@@ -1065,9 +1064,7 @@ def toJSObjects(x):
             var result = {};
             for(var k in x) {
             var v = x[k];
-            console.log(k + ":" + v);
             var tv = pyjslib.toJSObjects(v)
-            console.log(k + "::" + tv);
             result[k] = tv;
             }
             return result;
