@@ -524,8 +524,9 @@ class Dict:
         if (pyjslib.isArray(data)) {
             for (var i in data) {
                 var item=data[i];
-                var sKey=this._keyToStr(item[0]);
-                this.d[sKey]=item[1];
+                this.__setitem__(item[0], item[1]);
+                //var sKey=this._keyToStr(item[0]);
+                //this.d[sKey]=item[1];
                 }
             }
         else if (pyjslib.isIteratable(data)) {
@@ -533,8 +534,9 @@ class Dict:
             try {
                 while (true) {
                     var item=iter.next();
-                    var sKey=this._keyToStr(item.__getitem__(0));
-                    this.d[sKey]=item.__getitem__(1);
+                    this.__setitem__(item.__getitem__(0), item.__getitem__(1));
+                    //var sKey=this._keyToStr(item.__getitem__(0));
+                    //this.d[sKey]=item.__getitem__(1);
                     }
                 }
             catch (e) {
@@ -543,7 +545,8 @@ class Dict:
             }
         else if (pyjslib.isObject(data)) {
             for (var key in data) {
-                this.d[key]=data[key];
+                this.__setitem__(key, data[key]);
+                //this.d[key]=data[key];
                 }
             }
         """)
@@ -551,7 +554,7 @@ class Dict:
     def __setitem__(self, key, value):
         JS("""
         var sKey = this._keyToStr(key);
-        this.d[sKey]=value;
+        this.d[sKey]=[key, value];
         """)
 
     def __getitem__(self, key):
@@ -559,7 +562,7 @@ class Dict:
         var sKey = this._keyToStr(key);
         var value=this.d[sKey];
         // if (pyjslib.isUndefined(value)) throw KeyError;
-        return value;
+        return value[1];
         """)
 
     def __nonzero__(self):
@@ -578,11 +581,7 @@ class Dict:
         """)
 
     def has_key(self, key):
-        JS("""
-        var sKey = this._keyToStr(key);
-        if (pyjslib.isUndefined(this.d[sKey])) return false;
-        return true;
-        """)
+        return self.__contains__(key)
 
     def __delitem__(self, key):
         JS("""
@@ -599,74 +598,49 @@ class Dict:
     def keys(self):
         JS("""
         var keys=new pyjslib.List();
-        for (var key in this.d) keys.append(key);
+        for (var key in this.d) {
+            keys.append(this.d[key][0]);
+        }
         return keys;
         """)
 
     def values(self):
         JS("""
-        var keys=new pyjslib.List();
-        for (var key in this.d) keys.append(this.d[key]);
-        return keys;
+        var values=new pyjslib.List();
+        for (var key in this.d) values.append(this.d[key][1]);
+        return values;
         """)
 
     def items(self):
         JS("""
         var items = new pyjslib.List();
         for (var key in this.d) {
-          var value = this.d[key];
-          items.append(new pyjslib.List([key, value]))
+          var kv = this.d[key];
+          items.append(new pyjslib.List(kv))
           }
           return items;
         """)
 
     def __iter__(self):
-        JS("""
-        return this.keys().__iter__();
-        """)
+        return self.keys().__iter__()
 
     def iterkeys(self):
-        JS("""
-        return this.keys().__iter__();
-        """)
+        return self.__iter__()
 
     def itervalues(self):
-        JS("""
-        return this.values().__iter__();
-        """)
+        return self.values().__iter__();
 
     def iteritems(self):
-        JS("""
-        var d = this.d;
-        var iter=this.keys().__iter__();
-
-        return {
-            '__iter__': function() {
-                return this;
-            },
-
-            'next': function() {
-                var key;
-                while (key=iter.next()) {
-                    var item=new pyjslib.List();
-                    item.append(key);
-                    item.append(d[key]);
-                    return item;
-                }
-            }
-        };
-        """)
+        return self.items().__iter__();
 
     def setdefault(self, key, default_value):
-        sKey = self._keyToStr(key)
-        if not self.has_key(sKey):
-            self[sKey] = default_value
+        if not self.has_key(key):
+            self[key] = default_value
 
-    def get(self, key, default_value=None):
-        sKey = self._keyToStr(key)
-        value = self[sKey]
-        JS("if(pyjslib.isUndefined(value)) { value = default_value; }")
-        return value;
+    def get(self, key, default_=None):
+        if not self.has_key(key):
+            return default_
+        return self[key]
 
     def update(self, d):
         for k,v in d.iteritems():
@@ -681,10 +655,10 @@ class Dict:
     def _keyToStr(self, key):
         """ Convert the given object to a string we can safely use as a key.
         """
-        if isString(key) or isNumber(key):
-            return key
-        else:
-            return repr(key)
+        return hash(key)
+
+    def copy(self):
+        return Dict(self.items())
 
 dict = Dict
 

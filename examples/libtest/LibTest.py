@@ -9,6 +9,7 @@ from ExceptionTest import ExceptionTest
 from BoolTest import BoolTest
 from FunctionTest import FunctionTest
 from NameTest import NameTest
+from DictTest import DictTest
 
 def main(self):
 
@@ -23,6 +24,7 @@ def main(self):
     VarsTest().run()
     AttributeTest().run()
     NameTest().run()
+    DictTest().run()
 
 if __name__ == '__main__':
     main()
