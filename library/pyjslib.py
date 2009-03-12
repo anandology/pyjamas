@@ -189,6 +189,12 @@ class Exception(BaseException):
 class StandardError(Exception):
     name = "StandardError"
 
+class KeyError(StandardError):
+    name = "KeyError"
+
+    def toString(self):
+        return "KeyError: %s" % (self.args[0])
+
 class AttributeError(StandardError):
 
     name = "AttributeError"
@@ -201,11 +207,6 @@ StopIteration = function () {};
 StopIteration.prototype = new Error();
 StopIteration.name = 'StopIteration';
 StopIteration.message = 'StopIteration';
-
-KeyError = function () {};
-KeyError.prototype = new Error();
-KeyError.name = 'KeyError';
-KeyError.message = 'KeyError';
 
 TypeError = function () {};
 TypeError.prototype = new Error();
@@ -525,7 +526,7 @@ class Dict:
             for (var i in data) {
                 var item=data[i];
                 this.__setitem__(item[0], item[1]);
-                //var sKey=this._keyToStr(item[0]);
+                //var sKey=pyjslib.hash(item[0]);
                 //this.d[sKey]=item[1];
                 }
             }
@@ -535,8 +536,6 @@ class Dict:
                 while (true) {
                     var item=iter.next();
                     this.__setitem__(item.__getitem__(0), item.__getitem__(1));
-                    //var sKey=this._keyToStr(item.__getitem__(0));
-                    //this.d[sKey]=item.__getitem__(1);
                     }
                 }
             catch (e) {
@@ -546,22 +545,23 @@ class Dict:
         else if (pyjslib.isObject(data)) {
             for (var key in data) {
                 this.__setitem__(key, data[key]);
-                //this.d[key]=data[key];
                 }
             }
         """)
 
     def __setitem__(self, key, value):
         JS("""
-        var sKey = this._keyToStr(key);
+        var sKey = pyjslib.hash(key);
         this.d[sKey]=[key, value];
         """)
 
     def __getitem__(self, key):
         JS("""
-        var sKey = this._keyToStr(key);
+        var sKey = pyjslib.hash(key);
         var value=this.d[sKey];
-        // if (pyjslib.isUndefined(value)) throw KeyError;
+        if (pyjslib.isUndefined(value)){
+            throw pyjslib.KeyError(key);
+        }
         return value[1];
         """)
 
@@ -585,13 +585,13 @@ class Dict:
 
     def __delitem__(self, key):
         JS("""
-        var sKey = this._keyToStr(key);
+        var sKey = pyjslib.hash(key);
         delete this.d[sKey];
         """)
 
     def __contains__(self, key):
         JS("""
-        var sKey = this._keyToStr(key);
+        var sKey = pyjslib.hash(key);
         return (pyjslib.isUndefined(this.d[sKey])) ? false : true;
         """)
 
@@ -648,14 +648,10 @@ class Dict:
 
     def getObject(self):
         """
-        Return the javascript Object which this class uses to store dictionary keys and values
+        Return the javascript Object which this class uses to store
+        dictionary keys and values
         """
         return self.d
-
-    def _keyToStr(self, key):
-        """ Convert the given object to a string we can safely use as a key.
-        """
-        return hash(key)
 
     def copy(self):
         return Dict(self.items())

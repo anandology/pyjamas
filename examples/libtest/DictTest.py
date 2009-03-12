@@ -26,6 +26,14 @@ class DictTest(UnitTest):
         #self.assertEqual(d['3'], 3)
         #self.assertEqual(d[3], 4)
 
+        try:
+            x = d['notthere']
+        except KeyError, e:
+            self.assertEqual(e.name, 'KeyError')
+            self.assertEqual(e.toString(), 'KeyError: notthere')
+            return
+        self.fail('__getitem__ must raise KeyError')
+
     def testObjectKeys(self):
         f1 = Foo()
         f2 = Foo()
