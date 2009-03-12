@@ -10,6 +10,7 @@ from BoolTest import BoolTest
 from FunctionTest import FunctionTest
 from NameTest import NameTest
 from DictTest import DictTest
+from JSOTest import JSOTest
 
 def main(self):
 
@@ -25,6 +26,7 @@ def main(self):
     AttributeTest().run()
     NameTest().run()
     DictTest().run()
+    JSOTest().run()
 
 if __name__ == '__main__':
     main()

@@ -1059,16 +1059,20 @@ def toJSObjects(x):
             """)
         elif isinstance(x, List):
             return toJSObjects(x.l)
-        else:
-            JS("""
-            var result = {};
-            for(var k in x) {
+        elif hasattr(x, '__class__'):
+            # we do not have a special implementation for custom
+            # classes, just pass it on
+            return x
+    if isObject(x):
+        JS("""
+        var result = {};
+        for(var k in x) {
             var v = x[k];
             var tv = pyjslib.toJSObjects(v)
             result[k] = tv;
             }
             return result;
-            """)
+         """)
     return x
 
 def printFunc(objs):
