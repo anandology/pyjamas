@@ -101,3 +101,7 @@ class EchoServicePHP(JSONProxy):
 class EchoServicePython(JSONProxy):
     def __init__(self):
         JSONProxy.__init__(self, "/services/EchoService.py", ["echo", "reverse", "uppercase", "lowercase"])
+
+if __name__ == '__main__':
+    JSONRPCExample().onModuleLoad()
+
