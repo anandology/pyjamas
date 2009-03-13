@@ -409,10 +409,12 @@ class Translator:
                 call_name = self.modpfx() + v.node.name
             elif self.imported_classes.has_key(v.node.name):
                 call_name = self.imported_classes[v.node.name] + '.' + v.node.name
-            elif v.node.name == "callable":
-                call_name = "pyjslib.isFunction"
             elif v.node.name in PYJSLIB_BUILTIN_FUNCTIONS:
                 call_name = 'pyjslib.' + v.node.name
+            elif v.node.name in PYJSLIB_BUILTIN_CLASSES:
+                call_name = 'pyjslib.' + v.node.name
+            elif v.node.name == "callable":
+                call_name = "pyjslib.isFunction"
             else:
                 call_name = v.node.name
             call_args = []
