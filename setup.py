@@ -8,6 +8,7 @@
 import glob
 from setuptools import setup, find_packages
 from setuptools.command import test
+from setuptools.command.install import install
 
 import sys
 import os
@@ -16,6 +17,16 @@ install_requires = []
 
 keyw = """\
 """
+
+# yuk, spew, hurl.  but it works.  anyone got any better ideas?
+if sys.platform == "win32":
+    datadir = "share/pyjamas"
+else:
+    # last thing we want on unix systems is the data files ending
+    # up in a random egg subdirectory, where no-one can find them.
+    # windows platform, i couldn't care less where they end up but
+    # it musn't be a fixed path, it must be a relative path.
+    datadir = "/usr/share/pyjamas"
 
 lib_data_files = glob.glob("library/*.py")
 lib_ui_data_files = glob.glob("library/ui/*.py")
@@ -28,15 +39,15 @@ platform_data_files = glob.glob("library/platform/*.py")
 pyjamas_data_files = glob.glob("library/pyjamas/*.py")
 addons_data_files = glob.glob("addons/*.py")
 
-data_files = [("/usr/share/pyjamas/library", lib_data_files),
-              ("/usr/share/pyjamas/library/builtins", builtin_data_files),
-              ("/usr/share/pyjamas/library/ui", lib_ui_data_files),
-              ("/usr/share/pyjamas/builder/boilerplate", bp_data_files),
-              ("/usr/share/pyjamas/pyjs/tests", test_files),
-              ("/usr/share/pyjamas/stubs", stub_files),
-              ("/usr/share/pyjamas/library/platform", platform_data_files),
-              ("/usr/share/pyjamas/library/pyjamas", pyjamas_data_files),
-              ("/usr/share/pyjamas/addons", addons_data_files)
+data_files = [(os.path.join(datadir, "library"), lib_data_files),
+              (os.path.join(datadir, "library/builtins"), builtin_data_files),
+              (os.path.join(datadir, "library/ui"), lib_ui_data_files),
+              (os.path.join(datadir, "builder/boilerplate"), bp_data_files),
+              (os.path.join(datadir, "pyjs/tests"), test_files),
+              (os.path.join(datadir, "stubs"), stub_files),
+              (os.path.join(datadir, "library/platform"), platform_data_files),
+              (os.path.join(datadir, "library/pyjamas"), pyjamas_data_files),
+              (os.path.join(datadir, "addons"), addons_data_files)
               ]
 
 # main purpose of this function is to exclude "output" which
@@ -62,11 +73,11 @@ for d in glob.glob("examples/*"):
     if os.path.isdir(d):
         (pth, fname) = os.path.split(d)
         expath = get_files(d)
-        pth = os.path.join("/usr/share/pyjamas/examples", fname)
+        pth = os.path.join(os.path.join(datadir, "examples"), fname)
         #print pth, expath
         data_files.append((pth, expath))
     else:
-        data_files.append(("/usr/share/pyjamas/examples", [d]))
+        data_files.append((os.path.join(datadir, "examples"), [d]))
 
 if __name__ == '__main__':
     setup(name = "Pyjamas",
@@ -77,7 +88,6 @@ if __name__ == '__main__':
         author = "The Pyjamas Project",
         author_email = "lkcl@lkcl.net",
         keywords = keyw,
-        #scripts = ["bin/pyjscompile", "bin/pyjsbuild"],
         entry_points = {'console_scripts':[
                        'pyjsbuild=pyjs.build:main',
                        'pyjscompile=pyjs:main',
