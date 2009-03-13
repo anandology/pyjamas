@@ -1,6 +1,9 @@
                     Changes made to Pyjamas since 0.5
                     ---------------------------------
 
+ * registered builtin function 'cmp'. was already implemented but not
+   registered in pyjs.py
+
  * added an --optimize option to which results in removing print
    statements. this could be further improved. e.g. when assert is
    implemented

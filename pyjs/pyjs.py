@@ -52,7 +52,8 @@ NATIVE_JS_FUNC_NAME = "JS"
 
 UU = ""
 
-PYJSLIB_BUILTIN_FUNCTIONS=("map",
+PYJSLIB_BUILTIN_FUNCTIONS=("cmp",
+                           "map",
                            "filter",
                            "dir",
                            "getattr",
