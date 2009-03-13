@@ -22,8 +22,10 @@ app_library_dirs = [
  
 
 class Global:
-    def print_fn(self, arg):
+    def pyv8_print_fn(self, arg):
         print arg
+    def pyv8_import_module(self, parent_name, module_name):
+        pass
 
 def main():
 
@@ -42,8 +44,8 @@ def main():
             file_name = file_name[:-3]
 
     app_translator = pyjs.AppTranslator(app_library_dirs, parser)
-    app_libs = app_translator.translateLibraries(['pyjslib'], debug)
-    txt      = app_translator.translate(file_name, debug=debug)
+    app_libs, txt = app_translator.translate(file_name, debug=debug,
+                                  library_modules=['_pyjs.js', 'sys', 'pyjslib'])
 
     #txt = pyjs.translate(file_name, module_name)
 
@@ -55,13 +57,15 @@ def main():
 %(app_libs)s
 
 
-var __name__ = '__main__';
-
 %(module)s
 
 """
 
-    txt = template % {'app_libs': app_libs, 'module': txt}
+    txt = template % {'app_libs': app_libs, 'module_name': file_name,
+                      'module': txt}
+
+    for mod_name in app_translator.library_modules:
+        txt += "%s();\n" % mod_name
 
     x = e.eval(txt)
 
