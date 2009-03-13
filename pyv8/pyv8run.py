@@ -37,13 +37,13 @@ def main():
 
     debug = 0
 
-    parser = pyjs.PlatformParser("platform")
+    parser = pyjs.PlatformParser("platform", verbose=False)
     parser.setPlatform("PyV8")
 
     if file_name[-3:] == ".py":
             file_name = file_name[:-3]
 
-    app_translator = pyjs.AppTranslator(app_library_dirs, parser)
+    app_translator = pyjs.AppTranslator(app_library_dirs, parser, verbose=False)
     app_libs, txt = app_translator.translate(file_name, debug=debug,
                                   library_modules=['_pyjs.js', 'sys', 'pyjslib'])
 

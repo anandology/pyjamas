@@ -1421,10 +1421,11 @@ def translate(file_name, module_name, debug=False):
 
 
 class PlatformParser:
-    def __init__(self, platform_dir = ""):
+    def __init__(self, platform_dir = "", verbose=True):
         self.platform_dir = platform_dir
         self.parse_cache = {}
         self.platform = ""
+        self.verbose = verbose
 
     def setPlatform(self, platform):
         self.platform = platform
@@ -1447,10 +1448,11 @@ class PlatformParser:
             self.merge(mod, mod_override)
             override = True
 
-        if override:
-            print "Importing %s (Platform %s)" % (module_name, self.platform)
-        elif importing:
-            print "Importing %s" % (module_name)
+        if self.verbose:
+            if override:
+                print "Importing %s (Platform %s)" % (module_name, self.platform)
+            elif importing:
+                print "Importing %s" % (module_name)
 
         return mod, override
 
@@ -1514,13 +1516,14 @@ def dotreplace(fname):
 class AppTranslator:
 
     def __init__(self, library_dirs=[], parser=None, dynamic=False,
-                 optimize=False):
+                 optimize=False, verbose=True):
         self.extension = ".py"
         self.optimize = optimize
         self.library_modules = []
         self.overrides = {}
         self.library_dirs = path + library_dirs
         self.dynamic = dynamic
+        self.verbose = verbose
 
         if not parser:
             self.parser = PlatformParser()
@@ -1604,7 +1607,8 @@ class AppTranslator:
                 imported_js.add(library)
                 continue
             self.library_modules.append(library)
-            print 'Including LIB', library
+            if self.verbose:
+                print 'Including LIB', library
             print >> lib_code, '\n//\n// BEGIN LIB '+library+'\n//\n'
             print >> lib_code, self._translate(
                 library, False, debug=debug, imported_js=imported_js)
@@ -1618,7 +1622,8 @@ class AppTranslator:
         for js in imported_js:
            path = self.findFile(js)
            if os.path.isfile(path):
-              print 'Including JS', js
+              if self.verbose:
+                  print 'Including JS', js
               print >> lib_code,  '\n//\n// BEGIN JS '+js+'\n//\n'
               print >> lib_code, file(path).read()
               print >> lib_code,  '\n//\n// END JS '+js+'\n//\n'
