@@ -189,11 +189,14 @@ class Exception(BaseException):
 class StandardError(Exception):
     name = "StandardError"
 
-class KeyError(StandardError):
-    name = "KeyError"
+class LookupError(StandardError):
+    name = "LookupError"
 
     def toString(self):
-        return "KeyError: %s" % (self.args[0])
+        return self.name + ": " + self.args[0]
+
+class KeyError(LookupError):
+    name = "KeyError"
 
 class AttributeError(StandardError):
 

@@ -77,7 +77,9 @@ PYJSLIB_BUILTIN_CLASSES=("BaseException",
                          "Exception",
                          "StandardError",
                          "AttributeError",
-                         "KeyError")
+                         "KeyError",
+                         "LookupError",
+                        )
 
 # XXX: this is a hack: these should be dealt with another way
 # however, console is currently the only global name which is causing
