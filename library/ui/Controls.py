@@ -8,18 +8,27 @@ from pyjamas import DOM
 from pyjamas.ui.FocusWidget import FocusWidget
 from pyjamas.ui.MouseListener import MouseListener
 from pyjamas.ui.Event import Event
+from pyjamas.ui.Focus import Focus
+from pyjamas.ui.KeyboardListener import KeyboardListener
+from pyjamas.ui.RootPanel import RootPanel
+from pyjamas.ui.HTML import HTML
 
 class VerticalDemoSlider(FocusWidget):
 
-    def __init__(self, min_value, max_value, start_value=None):
+    def __init__(self, min_value, max_value, start_value=None, step=None):
 
         element = DOM.createDiv()
         FocusWidget.__init__(self, element)
+
+        self.setStyleName("gwt-VerticalSlider")
 
         self.min_value = min_value
         self.max_value = max_value
         if start_value is None:
             start_value = min_value
+        if step is None:
+            step = (self.max_value - self.min_value) / 20
+        self.step = step
         self.value = start_value
         self.valuechange_listeners = []
         
@@ -35,33 +44,60 @@ class VerticalDemoSlider(FocusWidget):
         DOM.setStyleAttribute(self.handle, "backgroundColor", "#808080")
 
         self.addClickListener(self)
+        self.addFocusListener(self)
+
+        self.setTabIndex(0)
+
+    def onFocus(self, sender):
+        RootPanel().add(HTML("focus"))
+        self.addStyleName("gwt-VerticalSlider-focussed")
+
+    def onLostFocus(self, sender):
+        self.removeStyleName("gwt-VerticalSlider-focussed")
 
     def onClick(self, sender, event):
 
         # work out the relative position of cursor
-        mouse_y = DOM.eventGetClientY(event) - \
-                   DOM.getAbsoluteTop(sender.getElement())
-        self.moveSlider(mouse_y)
+        mouse_y = DOM.eventGetClientY(event) 
+        self.moveSlider(mouse_y - self.getAbsoluteTop())
 
     def moveSlider(self, mouse_y):
 
-        relative_y = mouse_y - DOM.getAbsoluteTop(self.getElement())
+        handle_height = DOM.getIntAttribute(self.handle, "offsetHeight")
         widget_height = self.getOffsetHeight()
+        height_range = widget_height - 10 # handle height is hard-coded
+        relative_y = mouse_y - (handle_height / 2)
+        if relative_y < 0:
+            relative_y = 0
+        if relative_y >= height_range:
+            relative_y = height_range
+
+        relative_y = height_range - relative_y # turn round (bottom to top)
+
+        val_diff = self.max_value - self.min_value
+        new_value = ((val_diff * relative_y) / height_range) + self.min_value
+
+        self.setSliderPos(new_value)
+        self.setValue(new_value)
+
+    def setSliderPos(self, value):
+
+        widget_height = self.getOffsetHeight()
+        height_range = widget_height - 10 # handle height is hard-coded
+        val_diff = self.max_value - self.min_value
+        relative_y = height_range * (value - self.min_value) / val_diff
 
         # limit the position to be in the widget!
         if relative_y < 0:
             relative_y = 0
-        height_range = widget_height - 10 # handle height is hard-coded
         if relative_y >= height_range:
             relative_y = height_range
+
+        relative_y = height_range - relative_y # turn round (bottom to top)
 
         # move the handle
         DOM.setStyleAttribute(self.handle, "top", "%dpx" % relative_y)
         DOM.setStyleAttribute(self.handle, "position", "absolute")
-
-        val_diff = self.max_value - self.min_value
-        new_value = ((val_diff * relative_y) / height_range) + self.min_value
-        self.setValue(new_value)
 
     def setValue(self, new_value):
 
@@ -83,10 +119,9 @@ class VerticalDemoSlider2(VerticalDemoSlider):
         VerticalDemoSlider.__init__(self, min_value, max_value, start_value)
         self.mouseListeners = []
         self.addMouseListener(self)
-        self.sinkEvents(Event.MOUSEEVENTS)
+        self.addKeyboardListener(self)
+        self.sinkEvents( Event.FOCUSEVENTS | Event.ONCLICK | Event.MOUSEEVENTS)
         self.dragging = False
-
-        DOM.addEventPreview(self)
 
     def addMouseListener(self, listener):
         self.mouseListeners.append(listener)
@@ -99,27 +134,26 @@ class VerticalDemoSlider2(VerticalDemoSlider):
         if type == "mousedown" or type == "mouseup" or type == "mousemove" or type == "mouseover" or type == "mouseout":
             MouseListener().fireMouseEvent(self.mouseListeners, self, event)
         else:
-            VerticaDemoSlider.onBrowserEvent(self, event)
-
-    def onEventPreview(self, event):
-        # preventDefault on mousedown events, outside of the
-        # dialog, to stop text-selection on dragging
-        type = DOM.eventGetType(event)
-        if type == 'mousedown':
-            target = DOM.eventGetTarget(event)
-            event_targets_control = target and DOM.isOrHasChild(self.getElement(), target)
-            if event_targets_control:
-                DOM.eventPreventDefault(event)
-        return True
+            VerticalDemoSlider.onBrowserEvent(self, event)
 
     def onMouseMove(self, sender, x, y):
         if not self.dragging:
             return
         self.moveSlider(y)
         
+    def onFocus(self, sender):
+        VerticalDemoSlider.onFocus(self, sender)
+
+    def onLoseFocus(self, sender):
+        self.dragging = False
+        DOM.releaseCapture(self.getElement())
+        VerticalDemoSlider.onLoseFocus(self, sender)
+
     def onMouseDown(self, sender, x, y):
         self.dragging = True
         DOM.setCapture(self.getElement())
+        self.setFocus(True);
+        DOM.eventPreventDefault(DOM.eventGetCurrentEvent());
         self.moveSlider(y)
 
     def onMouseUp(self, sender, x, y):
@@ -130,4 +164,21 @@ class VerticalDemoSlider2(VerticalDemoSlider):
         pass
     def onMouseLeave(self, sender):
         pass
+
+    def onKeyDown(self, sender, keycode, modifiers):
+        pass
+
+    def onKeyUp(self, sender, keycode, modifiers):
+        pass
+
+    def onKeyPress(self, sender, keycode, modifiers):
+        if keycode == KeyboardListener.KEY_UP:
+            new_value = min(self.value + self.step, self.max_value)
+            self.setSliderPos(new_value)
+            self.setValue(new_value)
+        elif keycode == KeyboardListener.KEY_DOWN:
+            new_value = max(self.value - self.step, self.min_value)
+            self.setSliderPos(new_value)
+            self.setValue(new_value)
+
 
