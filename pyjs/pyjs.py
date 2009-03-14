@@ -134,24 +134,37 @@ class TranslationError(Exception):
         return self.message
 
 def strip_py(name):
-    if name[2:10] == 'pyjamas.':
-        return "__"+name[10:]
-    if name[2:10] == 'pyjamas_':
-        return "__"+name[10:]
-    if name[:8] == 'pyjamas.':
-        return name[8:]
     return name
+
+def mod_var_name_decl(raw_module_name):
+    """ function to get the last component of the module e.g.
+        pyjamas.ui.DOM into the "namespace".  i.e. doing
+        "import pyjamas.ui.DOM" actually ends up with _two_
+        variables - one pyjamas.ui.DOM, the other just "DOM".
+        but "DOM" is actually local, hence the "var" prefix.
+
+        for PyV8, this might end up causing problems - we'll have
+        to see: gen_mod_import and mod_var_name_decl might have
+        to end up in a library-specific module, somewhere.
+    """
+    name = raw_module_name.split(".")
+    if len(name) == 1:
+        return ''
+    child_name = name[-1]
+    return "var %s = %s;\n" % (child_name, raw_module_name)
 
 def gen_mod_import(parentName, importName, dynamic=1):
     #pyjs_ajax_eval("%(n)s.cache.js", null, true);
     return """
     pyjslib.import_module('%(p)s', '%(n)s', %(d)d, false);
-    """ % ({'p': parentName, 'd': dynamic, 'n': importName})
+    """ % ({'p': parentName, 'd': dynamic, 'n': importName}) + \
+    mod_var_name_decl(importName)
 
 class Translator:
 
     def __init__(self, mn, module_name, raw_module_name, src, debug, mod, output,
-                 dynamic=0, optimize=False):
+                 dynamic=0, optimize=False,
+                 findFile=None):
 
         if module_name:
             self.module_prefix = module_name + "."
@@ -163,7 +176,8 @@ class Translator:
         src = src.replace("\r",   "\n")
         self.src = src.split("\n")
         self.debug = debug
-        self.imported_modules = set()
+        self.imported_modules = []
+        self.imported_modules_as = []
         self.imported_js = set()
         self.top_level_functions = set()
         self.top_level_classes = set()
@@ -176,6 +190,7 @@ class Translator:
         self.nextTupleAssignID = 1
         self.dynamic = dynamic
         self.optimize = optimize
+        self.findFile = findFile
 
         if module_name.find(".") >= 0:
             vdec = ''
@@ -184,6 +199,11 @@ class Translator:
         print >>self.output, UU+"%s%s = function () {" % (vdec, module_name)
 
         print >>self.output, UU+"%s.__name__ = '%s';" % (raw_module_name, mn)
+
+        decl = mod_var_name_decl(raw_module_name)
+        if decl:
+            print >>self.output, decl
+
 
         if self.debug:
             haltException = self.module_prefix + "HaltException"
@@ -275,6 +295,9 @@ class Translator:
         print >> self.output, "return this;\n"
         print >> self.output, "}; /* end %s */ \n"  % module_name
 
+    def module_imports(self):
+        return self.imported_modules + self.imported_modules_as
+
     def add_local_arg(self, varname):
         local_vars = self.local_arg_stack[-1]
         if varname not in local_vars:
@@ -284,7 +307,16 @@ class Translator:
 
         if importName in self.imported_modules:
             return
-        self.imported_modules.add(importName)
+        self.imported_modules.append(importName)
+        name = importName.split(".")
+        if len(name) != 1:
+            # add the name of the module to the namespace,
+            # but don't add the short name to imported_modules
+            # because then the short name would be attempted to be
+            # added to the dependencies, and it's half way up the
+            # module import directory structure!
+            child_name = name[-1]
+            self.imported_modules_as.append(child_name) 
         print >> self.output, gen_mod_import(self.raw_module_name,
                                              strip_py(importName),
                                              self.dynamic)
@@ -508,7 +540,7 @@ class Translator:
         attr_name = v.attrname
         if isinstance(v.expr, ast.Name):
             obj = self._name(v.expr, current_klass, return_none_for_module=True)
-            if obj == None and v.expr.name in self.imported_modules:
+            if obj == None and v.expr.name in self.module_imports():
                 return v.expr.name+'.__'+attr_name+'.prototype.__class__'
             return obj + "." + attr_name
         elif isinstance(v.expr, ast.Getattr):
@@ -557,7 +589,7 @@ class Translator:
             return UU+self.imported_classes[v.name] + '.__' + v.name + ".prototype.__class__"
         elif v.name in self.top_level_classes:
             return UU+self.modpfx() + "__" + v.name + ".prototype.__class__"
-        elif v.name in self.imported_modules and return_none_for_module:
+        elif v.name in self.module_imports() and return_none_for_module:
             return None
         elif v.name in PYJSLIB_BUILTIN_CLASSES:
             return "pyjslib.__" + v.name +  ".prototype.__class__"
@@ -591,7 +623,7 @@ class Translator:
             #if attr_name != "__init__":
             attr_str = ".prototype.__class__." + attr_name
             call_name = UU+self.imported_classes[obj] + '.__' + obj + attr_str
-        elif obj in self.imported_modules:
+        elif obj in self.module_imports():
             call_name = obj + "." + attr_name
         elif obj[0] == obj[0].upper(): # XXX HACK ALERT
             call_name = UU + self.modpfx() + "__" + obj + ".prototype.__class__." + attr_name
@@ -604,11 +636,8 @@ class Translator:
     def _getattr2(self, v, current_klass, attr_name):
         if isinstance(v.expr, ast.Getattr):
             call_name = self._getattr2(v.expr, current_klass, v.attrname + "." + attr_name)
-        elif isinstance(v.expr, ast.Name) and v.expr.name in self.imported_modules:
-            if v.expr.name == 'pyjamas':
-                call_name = v.attrname + "." + attr_name
-            else:
-                call_name = UU+v.expr.name + '.__' +v.attrname+".prototype.__class__."+attr_name
+        elif isinstance(v.expr, ast.Name) and v.expr.name in self.module_imports():
+            call_name = UU+v.expr.name + '.__' +v.attrname+".prototype.__class__."+attr_name
         else:
             obj = self.expr(v.expr, current_klass)
             call_name = obj + "." + v.attrname + "." + attr_name
@@ -1122,10 +1151,15 @@ class Translator:
 
     def _from(self, node):
         for name in node.names:
-            if node.modname == 'pyjamas':
-                self.add_imported_module(name[0])
-            elif node.modname[:8] == 'pyjamas.':
-                self.imported_classes[name[0]] = node.modname[8:]
+            # look up "hack" in AppTranslator as to how findFile gets here
+            module_name = node.modname + "." + name[0]
+            try:
+                ff = self.findFile(module_name + ".py")
+            except Exception:
+                ff = None
+            print "searching %s: " % module_name, ff
+            if ff:
+                self.add_imported_module(module_name)
             else:
                 self.imported_classes[name[0]] = node.modname
 
@@ -1536,12 +1570,10 @@ class AppTranslator:
         self.parser.dynamic = dynamic
 
     def findFile(self, file_name):
+        print "find file", file_name
         if os.path.isfile(file_name):
             return file_name
 
-        if file_name[:8] == 'pyjamas.': # strip off library name
-            if file_name != "pyjamas.py":
-                file_name = file_name[8:]
         for library_dir in self.library_dirs:
             file_name = dotreplace(file_name)
             full_file_name = os.path.join(
@@ -1582,7 +1614,9 @@ class AppTranslator:
         else:
             mn = module_name
         t = Translator(mn, module_name, module_name,
-                       src, debug, mod, output, self.dynamic, self.optimize)
+                       src, debug, mod, output, self.dynamic, self.optimize,
+                       self.findFile)
+
         module_str = output.getvalue()
         imported_js.update(set(t.imported_js))
         imported_modules_str = ""
@@ -1593,8 +1627,6 @@ class AppTranslator:
                 #imported_modules_str += self._translate(
                 #    module, False, debug=debug, imported_js=imported_js)
 
-        if module_name == 'pyjamas':
-            return imported_modules_str
         return imported_modules_str + module_str
 
 

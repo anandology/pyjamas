@@ -1,5 +1,5 @@
-from JSONService import JSONProxy
-from HTTPRequest import HTTPRequest
+from pyjamas.JSONService import JSONProxy
+from pyjamas.HTTPRequest import HTTPRequest
 
 class PyjamasExternalProxy(JSONProxy):
     singleton = None

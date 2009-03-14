@@ -12,9 +12,7 @@
     module_load_request['%(mod_name)s'] = 2;
     //alert("module ajax loaded fn called %(mod_name)s");
 
-    if ('%(mod_name)s' != 'pyjamas') { /* XXX hack! */
-        modules['%(mod_name)s'] = %(mod_name)s();
-    }
+    modules['%(mod_name)s'] = %(mod_name)s();
     module_load_request['%(mod_name)s'] = 3;
 }
 

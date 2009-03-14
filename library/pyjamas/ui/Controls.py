@@ -10,8 +10,6 @@ from pyjamas.ui.MouseListener import MouseListener
 from pyjamas.ui.Event import Event
 from pyjamas.ui.Focus import Focus
 from pyjamas.ui.KeyboardListener import KeyboardListener
-from pyjamas.ui.RootPanel import RootPanel
-from pyjamas.ui.HTML import HTML
 
 class VerticalDemoSlider(FocusWidget):
 
@@ -49,7 +47,6 @@ class VerticalDemoSlider(FocusWidget):
         self.setTabIndex(0)
 
     def onFocus(self, sender):
-        RootPanel().add(HTML("focus"))
         self.addStyleName("gwt-VerticalSlider-focussed")
 
     def onLostFocus(self, sender):

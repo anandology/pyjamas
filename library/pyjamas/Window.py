@@ -1,4 +1,4 @@
-import Location
+from pyjamas import Location
 
 closingListeners = None
 resizeListeners = None

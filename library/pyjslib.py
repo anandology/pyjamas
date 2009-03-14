@@ -37,8 +37,7 @@ def import_module(parent_module, module_name, dynamic=1, async=False):
         /* already loaded? */
         if (module_load_request[module_name])
         {
-            if (module_load_request[module_name] >= 3 && parent_module != null
-                && module_name != 'pyjamas')
+            if (module_load_request[module_name] >= 3 && parent_module != null)
             {
                 //onload_fn = parent_module + '.' + module_name + ' = ' + module_name + ';';
                 //pyjs_eval(onload_fn); /* set up the parent-module namespace */
@@ -55,7 +54,7 @@ def import_module(parent_module, module_name, dynamic=1, async=False):
 
         onload_fn = ''; // module_name + "_loaded_fn();"
 
-        if (module_name != 'pyjamas' && parent_module != null)
+        if (parent_module != null)
         {
             //onload_fn += parent_module + '.' + module_name + ' = ' + module_name + ';';
             /*pmod = parent_module + '.' + module_name;
@@ -127,10 +126,7 @@ function import_wait(proceed_fn, dynamic) {
             {
                 //alert("waited for module " + l + ": loaded");
                 module_load_request[l] = 4;
-                if (l != 'pyjamas')
-                {
-                    mod_fn = modules[l];
-                }
+                mod_fn = modules[l];
             }
         }
         //alert("module wait done");
