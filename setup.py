@@ -20,7 +20,7 @@ keyw = """\
 
 # yuk, spew, hurl.  but it works.  anyone got any better ideas?
 if sys.platform == "win32":
-    datadir = "share/pyjamas"
+    datadir = os.path.join("share", "pyjamas")
 else:
     # last thing we want on unix systems is the data files ending
     # up in a random egg subdirectory, where no-one can find them.
@@ -28,14 +28,14 @@ else:
     # it musn't be a fixed path, it must be a relative path.
     datadir = "/usr/share/pyjamas"
 
-bp_data_files = glob.glob("builder/boilerplate/*")
-test_files = glob.glob("pyjs/tests/*")
-stub_files = glob.glob("stubs/*")
-addons_data_files = glob.glob("addons/*.py")
+bp_data_files = glob.glob(os.path.join("builder", "boilerplate", "*"))
+test_files = glob.glob(os.path.join("pyjs", "tests", "*"))
+stub_files = glob.glob(os.path.join("stubs", "*"))
+addons_data_files = glob.glob(os.path.join("addons", "*.py")
 
 data_files = [
-    (os.path.join(datadir, "builder/boilerplate"), bp_data_files),
-    (os.path.join(datadir, "pyjs/tests"), test_files),
+    (os.path.join(datadir, "builder", "boilerplate"), bp_data_files),
+    (os.path.join(datadir, "pyjs", "tests"), test_files),
     (os.path.join(datadir, "stubs"), stub_files),
     (os.path.join(datadir, "addons"), addons_data_files)
 ]
