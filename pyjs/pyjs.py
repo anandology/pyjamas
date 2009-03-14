@@ -1157,7 +1157,6 @@ class Translator:
                 ff = self.findFile(module_name + ".py")
             except Exception:
                 ff = None
-            print "searching %s: " % module_name, ff
             if ff:
                 self.add_imported_module(module_name)
             else:
@@ -1570,7 +1569,6 @@ class AppTranslator:
         self.parser.dynamic = dynamic
 
     def findFile(self, file_name):
-        print "find file", file_name
         if os.path.isfile(file_name):
             return file_name
 

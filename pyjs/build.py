@@ -372,8 +372,6 @@ def generateAppFiles(data_dir, js_includes, app_name, debug, output, dynamic,
             modules_to_do += mods
             modules[platform] += mods
 
-            print "mods", mods
-
             deps = map(pyjs.strip_py, mods)
             sd = subdeps(mod_name)
             if len(sd) > 1:
