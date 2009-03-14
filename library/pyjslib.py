@@ -959,7 +959,7 @@ def enumerate(sequence):
     return enumeration
 
 
-def min(sequence):
+def min(*sequence):
     minValue = None
     for item in sequence:
         if minValue == None:
@@ -969,7 +969,7 @@ def min(sequence):
     return minValue
 
 
-def max(sequence):
+def max(*sequence):
     maxValue = None
     for item in sequence:
         if maxValue == None:
