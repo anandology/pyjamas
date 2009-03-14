@@ -11,6 +11,7 @@ from FunctionTest import FunctionTest
 from NameTest import NameTest
 from DictTest import DictTest
 from JSOTest import JSOTest
+from BuiltinTest import BuiltinTest
 
 def main(self):
 
