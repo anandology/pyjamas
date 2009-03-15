@@ -32,3 +32,6 @@ if __name__ == '__main__':
     w = slider_app()
     a = s.add_app(w, "s", 20, 100)
     a.show()
+
+    RootPanel().add(s)
+

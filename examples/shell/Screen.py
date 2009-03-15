@@ -5,7 +5,7 @@ from pyjamas import log
 
 class Application(DialogBoxModal):
     def __init__(self, screen, title, width, height):
-        DialogBoxModal.__init__(self, title)
+        DialogBoxModal.__init__(self, title, None, False, screen)
         self.screen = screen
         self.setText(title)
         #self.setWidth(width)
@@ -100,5 +100,6 @@ class Screen(AbsolutePanel):
         t = self.window[app.identifier]
         if not self.remove(t):
             Window.alert("%s not in app" % app.identifier)
+        t.hide()
         del self.window[app.identifier]
 
