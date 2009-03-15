@@ -17,7 +17,7 @@ def writebr(text):
 
 data = ""
 element = None
-DOM.createDiv()
+
 def add_elem():
     global element
     if element is not None:

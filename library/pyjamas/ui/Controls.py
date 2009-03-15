@@ -14,8 +14,6 @@ from pyjamas.ui.KeyboardListener import KeyboardListener
 
 from pyjamas.ui.TextBox import TextBox
 
-from pyjamas.log import writebr
-
 class Control(FocusWidget):
 
     def __init__(self, element, min_value, max_value,
@@ -243,7 +241,6 @@ class InputControl(Control):
         if keycode == KeyboardListener.KEY_ENTER:
             new_value = float(self.input.getText())
             new_value = self.processValue(new_value)
-            writebr(new_value)
             self.setControlPos(new_value)
             self.setValue(new_value)
         else:
