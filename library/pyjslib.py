@@ -839,6 +839,11 @@ def repr(x):
        return "<" + s + " object>";
     """)
 
+def float(text):
+    JS("""
+    return parseFloat(text);
+    """)
+
 def int(text, radix=0):
     JS("""
     return parseInt(text, radix);
