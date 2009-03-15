@@ -12,7 +12,11 @@
     module_load_request['%(mod_name)s'] = 2;
     //alert("module ajax loaded fn called %(mod_name)s");
 
-    modules['%(mod_name)s'] = %(mod_name)s();
+    if ('%(mod_name)s' == '%(app_name)s')
+        var name = '__main__';
+    else
+        var name = null;
+    modules['%(mod_name)s'] = %(mod_name)s(name);
     module_load_request['%(mod_name)s'] = 3;
 }
 

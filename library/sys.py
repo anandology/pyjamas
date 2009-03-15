@@ -6,6 +6,10 @@ overrides = None # to be updated by app, on compile
 
 stacktrace = None 
 
+def addoverride(module_name, path):
+    global overrides
+    overrides[module_name] = path
+
 def addstack(linedebug):
     JS("""
         if (pyjslib.bool((sys.stacktrace === null))) {

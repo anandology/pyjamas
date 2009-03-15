@@ -315,8 +315,8 @@ def generateAppFiles(data_dir, js_includes, app_name, debug, output, dynamic,
         parser.setPlatform(platform)
         app_translator = pyjs.AppTranslator(
             parser=parser, dynamic=dynamic, optimize=optimize)
-        app_libs[platform], app_code[platform] = \
-                     app_translator.translate(app_name, #is_app=True,
+        app_libs[platform], appcode = \
+                     app_translator.translate(None, is_app=False,
                                               debug=debug,
                                       library_modules=['dynamicajax.js',
                                                     '_pyjs.js', 'sys',
@@ -326,11 +326,14 @@ def generateAppFiles(data_dir, js_includes, app_name, debug, output, dynamic,
             pd = overrides.setdefault(mname, {})
             pd[platform] = name
 
+        print appcode
+        #mod_code[platform][app_name] = appcode
+
         # platform.Module.cache.js 
 
-        modules_done = [app_name, 'pyjslib', 'sys', '_pyjs.js']
+        modules_done = ['pyjslib', 'sys', '_pyjs.js']
         #modules_to_do = [app_name] + app_translator.library_modules
-        modules_to_do = app_translator.library_modules
+        modules_to_do = [app_name] + app_translator.library_modules 
 
         dependencies = {}
 
@@ -339,7 +342,7 @@ def generateAppFiles(data_dir, js_includes, app_name, debug, output, dynamic,
             sublist = add_subdeps(dependencies, d)
             modules_to_do += sublist
         deps = uniquify(deps)
-        dependencies[app_name] = deps
+        #dependencies[app_name] = deps
 
         modules[platform] = modules_done + modules_to_do
 
@@ -395,7 +398,7 @@ def generateAppFiles(data_dir, js_includes, app_name, debug, output, dynamic,
             
         # work out the dependency ordering of the modules
     
-        mod_levels[platform] = make_deps(app_name, dependencies, modules_done)
+        mod_levels[platform] = make_deps(None, dependencies, modules_done)
 
     # now write everything out
 
@@ -406,7 +409,7 @@ def generateAppFiles(data_dir, js_includes, app_name, debug, output, dynamic,
         #modules_ = filter_mods(app_name, modules[platform])
         mods = flattenlist(mod_levels[platform])
         mods.reverse()
-        modules_ = filter_mods(app_name, mods)
+        modules_ = filter_mods(None, mods)
 
         for mod_name in modules_:
 
@@ -428,6 +431,7 @@ def generateAppFiles(data_dir, js_includes, app_name, debug, output, dynamic,
 
             print >>mod_cache_html_output, mod_cache_html_template % dict(
                 mod_name = mod_name,
+                app_name = app_name,
                 mod_libs = '',
                 mod_code = mod_code_,
             )
@@ -604,9 +608,13 @@ def make_deps(app_name, deps, mod_list):
             depslist = filter(lambda x: x not in nodeps, depslist)
             if depslist:
                 newdeps[k] = depslist
+        #print "newdeps", newdeps
         deps = newdeps
         ordered_deps.append(nodeps)
         #time.sleep(2)
+
+    if mod_list:
+        ordered_deps.append(mod_list) # last dependencies - usually the app(s)
 
     ordered_deps.reverse()
 

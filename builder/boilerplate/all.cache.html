@@ -23,85 +23,11 @@ $doc.modules = modules;
 
 %(app_libs)s
 
-/* app code */
-
-%(app_code)s
-
-var init_%(app_name)s = null;
-
 var wait_count = 0;
 
-
-//var %(app_name)s = null;
-
 function %(app_name)s_imported() {
-    //alert('imported %(app_name)s');
-    init_%(app_name)s = 1;
+    %(app_name)s.__name__ = '__main__';
     %(app_name)s();
-    %(app_name)s_import_wait();
-}
-
-function %(app_name)s_import_wait() {
-
-    var status = '';
-    for (l in module_load_request)
-    {
-        var m = module_load_request[l];
-        status += l + m + " ";
-    }
-
-    //alert("import wait " + wait_count + " " + status);
-    wait_count += 1;
-
-    if (/*init_%(app_name)s == null || */status == '')
-    {
-        setTimeout(%(app_name)s_import_wait, 150);
-        return;
-    }
-
-    for (l in module_load_request)
-    {
-        if (l == "sys")
-            continue
-        if (l == "pyjslib")
-            continue
-
-        var m = module_load_request[l];
-        if (m == 1 || m == 2)
-        {
-            setTimeout(%(app_name)s_import_wait, 150);
-            return;
-        }
-        if (m == 3)
-        {
-            //alert("waited for module " + l + ": loaded");
-            module_load_request[l] = 4;
-            if (l != '%(app_name)s')
-            {
-                //module_init = l + " = modules['" + l + "'];";
-                //pyjs_eval(module_init);
-                //module_init = l + "();";
-                //pyjs_eval(module_init);
-                mod_fn = modules[l];
-                //alert("module obj " + l + " " + mod_fn);
-                //mod_fn();
-            }
-        }
-    }
-    //alert("all done - running");
-
-
-    /*for (l in module_load_request)
-    {
-        module_init += l + " = new " + l + "();";
-        pyjs_eval(module_init);
-    }
-    */
-
-    //appmod = modules['%(app_name)s'];
-    //var app = %(app_name)s.%(app_name)s();
-    //app.onModuleLoad();
-    //%(app_name)s_run(%(app_name)s);
 }
 
 function prepare_app() {

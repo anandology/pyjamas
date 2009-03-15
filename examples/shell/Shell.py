@@ -4,6 +4,9 @@ from pyjamas import Window
 from textconsole import TextWindow
 from Screen import Screen
 
+import pyjslib
+import sys
+
 def slider_app():
     b = VerticalDemoSlider(0, 100)
     b.setWidth("20px")
@@ -21,7 +24,10 @@ def text_app():
             w.setText(i, j+10, ".")
     return w
 
-if __name__ == '__main__':
+s = None
+
+def setup():
+    global s
     s = Screen(Window.getClientWidth(), Window.getClientHeight())
     w = text_app()
     a = s.add_app(w, "text 1", 400, 300)
@@ -35,3 +41,16 @@ if __name__ == '__main__':
 
     RootPanel().add(s)
 
+    sys.addoverride('GridTest', '../../gridtest/output/GridTest')
+    pyjslib.preload_app_modules([['GridTest']], load_fn, 1)
+
+def load_fn():
+
+
+    w = GridTest.GridTest()
+    w.onModuleLoad()
+    a = s.add_app(w, "grid test", 400, 300)
+    a.show()
+    
+if __name__ == '__main__':
+    setup()

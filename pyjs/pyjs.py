@@ -197,9 +197,10 @@ class Translator:
             vdec = ''
         else:
             vdec = 'var '
-        print >>self.output, UU+"%s%s = function () {" % (vdec, module_name)
+        print >>self.output, UU+"%s%s = function (__name__) {" % (vdec, module_name)
 
-        print >>self.output, UU+"%s.__name__ = '%s';" % (raw_module_name, mn)
+        print >>self.output, UU+"if (__name__ == null) __name__ = '%s';" % (mn)
+        print >>self.output, UU+"%s.__name__ = __name__;" % (raw_module_name)
 
         decl = mod_var_name_decl(raw_module_name)
         if decl:
@@ -1651,8 +1652,9 @@ class AppTranslator:
             print >> lib_code, "%s%s();\n" % (UU, library)
 
             print >> lib_code, '\n//\n// END LIB '+library+'\n//\n'
-        print >> app_code, self._translate(
-            module_name, is_app, debug=debug, imported_js=imported_js)
+        if module_name:
+            print >> app_code, self._translate(
+                module_name, is_app, debug=debug, imported_js=imported_js)
         for js in imported_js:
            path = self.findFile(js)
            if os.path.isfile(path):
