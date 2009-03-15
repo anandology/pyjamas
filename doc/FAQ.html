@@ -1,0 +1,348 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="content-type">
+  <title>Pyjamas FAQ</title>
+<style type="text/css">
+<!--
+.code {
+margin-left: 50px;
+margin-right: 50px;
+background-color: #f0f0f0;
+padding: 10px;
+border: 1px solid;
+}
+
+body {
+padding: 20px;
+margin: 20px;
+}
+
+h2 {
+font-weight: bold;
+font-family: Helvetica,Arial,sans-serif;
+}
+
+p {
+    margin-left: 50px;
+}
+
+-->
+</style>
+</head>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-5168765-3");
+pageTracker._trackPageview();
+</script>
+<body>
+<div
+ style="padding: 10px; background-color: rgb(102, 0, 153); font-family: Helvetica,Arial,sans-serif;">
+<big style="font-weight: bold; color: white;"><big><big><big>pyjamas</big></big></big></big><br>
+<small><br>
+</small><big><span style="color: white;">
+Pyjamas: Write your own AJAX Framework, in Python
+</span></big>
+</div>
+<script type="text/javascript" src="http://www.ohloh.net/p/4522/widgets/project_partner_badge.js"></script>
+<h2> <span style="color: rgb(102, 0, 153);">Pyjamas</span> FAQ</h2>
+
+This is the FAQ on Pyjamas, the python-to-javascript compiler and
+Python Web Widget Toolkit.  Any questions not answered here please
+contact pyjamas-dev@groups.google.com
+
+<h3> What is <span style="color: rgb(102, 0, 153);">pyjamas</span>?</h3>
+<p>
+ <span style="color: rgb(102, 0, 153); font-weight: bold;">pyjamas</span>
+is a stand-alone python to javascript compiler, an AJAX framework / library
+and a Widget set API.  
+</p>
+<h3> Is pyjamas like "yet another AJAX framework?" </h3>
+<p>
+Nope.  "standard" AJAX frameworks and widget sets are written in javascript,
+a low-level alien language with weird complexities that is often confused
+with not only the browsers it runs on but also the DOM model set of functions
+that are provided as standard with the browsers.  When you use a "standard"
+AJAX framework, there is an expectation that you will just "use" it - never
+look at the framework, never get involved with its development or improvement,
+and if that AJAX framework doesn't do what you want, tough luck - find another
+one.
+</p>
+<p>
+Pyjamas is a totally different approach: you are given a
+comprehensive set of base classes and modules - written almost
+98.5% in python - and you can then write your own applications,
+classes and modules and call it "My Own AJAX Framework".  And, as
+you are writing in a much higher level language than Javascript,
+it's a darn sight easier.
+</p>
+
+<h3> Do I have to know any Javascript? </h3>
+<p>
+Nope.
+</p>
+
+<h3> Do I have to know any Web Programming? </h3>
+<p>
+Nope.
+</p>
+<p>
+It helps if you know a little bit about how CSS works, because
+the Pyjamas User-Interface widgets are designed around "function" and
+"purpose", not "form" or "look".
+</p>
+
+<h3> Why not? </h3>
+<p>
+Pyjamas Web development actually has more in common with Python-Qt4
+and Python-GTK2 than it does with "traditional" web development.
+The base widgets (of which there are over 50) have almost exact
+corresponding analogues in Desktop Widget sets.  The nice thing about
+Pyjamas, though, when compared to the Desktop Widget frameworks is that you
+get "true" HTML / CSS interoperability, and "true" plugin support such as
+Adobe Flash, all for free.
+</p>
+
+<h3> I've never done User-Interfaces before - how do I get started? </h3>
+<p>
+We get quite a number of people who have never done user-interface
+programming before in their lives on the pyjamas-dev mailing lists,
+let alone having done any web programming: you're in good company.
+</p>
+<p>
+Start with the <a href="./getting_started.html">"getting started"</a>
+tutorial, ignoring the first paragraphs because they don't
+apply to you!  Many web designers actually have to "unlearn"
+their expectations that this is going to be horrendously painful,
+and you are at a distinct advantage because you've not experienced
+their disillusionment and frustration of the past decade, over CSS,
+browser and AJAX incompatibilities.
+</p>
+
+<h3> I'm a bit underwhelmed by the apparent lack of documentation </h3>
+<p>
+Pyjamas is an independent free software project that is used by people
+who prefer to actually get on with the job of writing apps, rather than
+glorying or revelling in the frustration of "traditional" web development.
+Hitting your head against a wall continuously every day doesn't hurt any
+more when you stop doing it, and much of "traditional" web development -
+of dealing with all the browser incompatibilities at a low level - can be
+considered to be the same as brick-wall-nutting.
+</p>
+<p>
+In other words, you're here gaining the benefit of the experience
+of people who have spent quite some time searching out - and then
+improving - the Pyjamas Technology, to make their own lives easier.
+If there's an area which isn't clearly documented, you might like
+to consider funding them to tell you about it.
+</p>
+<p>
+That having been said, there is actually one heck of a lot of documentation:
+see the main <a href="http://pyjs.org">Pyjamas</a> site for links to the
+tutorials, the Pyjamas Book, the API reference guides, the Showcase
+example which includes source code examples for each type of Widget and
+Panel (that can be cut/pasted into your app), and much more.  If that
+wasn't enough, the GWT User-Interface modules on which the Pyjamas UI
+modules are based are so similar that even the GWT documentation is still
+relevant and useful.
+</p>
+
+<h3> My application doesn't work.  What do I do, and why isn't Pyjamas helping? </h3>
+<p>
+There are so many things you should be doing to determine the cause
+of "it ain't working" it's almost unreal.  But before answering
+in more detail, it's important that you know what pyjamas is and
+is not.  First off: pyjamas is a compiler, not a debugger.  It's the
+equivalent of "gcc".  Actually, if you know how gcc works, pyjsbuild
+is the equivalent of "gcc" and pyjscompile is the equivalent of,
+for example, "/usr/lib/gcc/x86_64-linux-gnu/4.3.3/cc1".  In other
+words, gcc and pyjsbuild are the general-purpose "front-ends",
+and cc1 and pyjscompile are the actual nitty-gritty compilers.
+</p>
+<p>
+You <i>need</i> to be aware of this because you cannot expect pyjamas,
+a specialist compiler, to also take on the task of being the debugger, or
+the virtual machine under which the javascript executes, or any other
+task <i>other</i> than actual compiling.
+</p>
+<p>
+With that in mind, here are some things that you can do:
+<ul>
+<li /> Add the -d option to the build process: pyjsbuild -d {myapp.py} 
+       as this will enable a horrendous amount of extra output in the
+       application, including actually placing the line numbers and
+       module name into the javascript output, for each and every single
+       line of code being executed (!)  Also, a stacktrace will be
+       recorded so that if there are any exceptions in your application,
+       an Alert will come up with the full stacktrace (just like in
+       "real" python applications).
+<li /> Watch the Javascript Console.
+<li /> Watch the Javascript Console.
+<li /> Watch the Javascript Console.
+<li /> Did we say, and emphasise enough, that you need to watch the Javascript
+       Console?
+<li /> You need to watch the javascript console.
+<li /> You need to watch the javascript console because that is where
+       runtime javascript errors are shown.  Most web applications are written
+       so badly that the errors are usually silently ignored by browsers,
+       so as not to frighten users.  As a developer, you cannot ignore
+       the errors (not if you expect to actually be able to write an app,
+       that is...)
+<li /> If you are using Firefox, install <i>both</i> Venkman <b>and</b>
+       Firebug.  You will need them both.  Use them.  get used to using them.
+<li /> If you are using IE, install the Script Debugger.  use it.
+<li /> If you were debugging a c or c++ application, you would be using gdb.
+       The javascript console, Firebug, Venkman, the Microsoft Script Debugger:
+       these are all the equivalent of gdb.  use them.  You will suck at
+       being a Web developer if you do not use these tools.
+<li /> Install <a href="http://pyjd.org">Pyjamas Desktop</a> and run your
+       application under that.
+</ul>
+</p>
+<p>
+Overall, then, it's important to remember that pyjamas is a compiler,
+not an interpreter, not a debugger, syntax checker or anything else other
+than a compiler.  This may be a bit of a shock if you are used to the
+python interpreter throwing helpful stack traces for you - which is what
+Pyjamas-Desktop is there for: it actually runs Pyjamas applications
+<i>as real python</i>, not as javascript.
+
+</p>
+
+<h3> I want to throw some debug output onto the screen, how do I best do that?</h3>
+
+<p>
+There are four main ways:
+</p>
+<ul>
+<li /> If you like, throw in lots of "alerts" into your application.
+<pre class="code">
+from pyjamas import Window
+Window.alert("Hello, here is an error")
+</pre>
+<li /> My favourite: add some HTML to the end of the page:
+<pre class="code">
+from pyjamas.ui.RootPanel import RootPanel
+from pyjamas.ui.HTML import HTML
+RootPanel().add(HTML("hello, here is an error")
+</pre>
+<li /> Another approach is to follow what examples/libtest/write.py does,
+which you should just consider blatantly copying:
+<pre class="code">
+from pyjamas import DOM
+
+def getBodyElement():
+    JS(""" return $doc.body; """)
+
+def write(text):
+    global data, element
+    data += text
+    DOM.setInnerHTML(element, data)
+
+def writebr(text):
+    write(text + r"&lt;br /&gt;\n")
+
+data = ""
+element = DOM.createDiv()
+DOM.appendChild(getBodyElement(), element)
+</pre>
+<li /> If you have followed the advice above of the previous question,
+and have installed Firebug, then just insert a "print" statement, exactly
+as you would in "standard" python.  All output is directed to "console.write",
+where Firebug will add an object called "console" to the global namespace
+of your browser, and will "write" anything that goes to that console.write()
+function into a special debugging window.  If you haven't installed Firebug,
+and you use "print", you will get an error (because there will be no object
+called "console") in your browser's global namespace.  So make your life
+easier, and install Firebug.  or not.
+</ul>
+<p>
+A Window.alert is the easiest but also the most annoying.  It has the
+advantage however of not disrupting the screen layout.  Perhaps
+some day someone will do something really sophisticated, like provide
+a "logger" module which throws up a nice separate window.
+</p>
+
+<h3> The output from Pyjamas is <i>really</i> verbose.  I don't like that! </h3>
+<p>
+Pyjamas is a compiler - it's a specialist tool that focusses specifically
+on the job of turning python into javascript.  It does <i>not</i>
+include "compression" technology.  That task is done by specialist
+technology such as the "YUI Javascript Compressor", the use of which
+will make it damn hard for you to debug an application as it completely
+trashes all of the names of functions and variables.  So only make use
+of compressors if you absolutely have to.
+</p>
+<p>
+HTTP 1.1 GZip Compression is usually enabled by default in both
+browsers and Web Servers, giving anywhere between an 8:1 and a 10:1
+compression ratio in network traffic of pyjamas-compiled output.
+So, although the output from pyjamas looks scarily large, it's
+actually not as bad as it looks.  500k is not uncommon: the actual
+amount of network traffic can be as little as 50k to 80k, which you
+can verify by installing a network sniffer on your network.  So,
+you actually get the best of both worlds: human-readable javascript
+and efficient transfer of your application to the users.
+</p>
+
+<h3> The output from Pyjamas is still too verbose.  What do I do? </h3>
+<p>
+If for example your app is so large that you are hitting, for example,
+the limits of GAE, you can switch on "dynamic module" compilation
+(pyjsbuild -m).  This option will split your app into several shared
+javascript files, one per python module.  It gives something like a
+65% reduction in the size of the application cache files, across the
+five supported browsers (Opera, Safari, Netscape, Old Mozilla and IE).
+It's only just been added (to Pyjamas 0.5) so a) be advised b) watch
+this space.
+</p>
+
+<h3> I'm doing JSONRPC with pyjamas, but my app isn't working.  </h3>
+<p>
+You should immediately stop trying to do too much, and eliminate pyjamas
+from the equation.  Download
+<a href="http://lkcl.net/jsonrpclib.tgz">jsonrpclib.tgz</a> and add
+some python-based client-side code to the <i>server-side</i> testing.
+As you are a good web developer, who follows good code standard practices,
+this should have already occurred to you and it just temporarily slipped
+your mind that there should be an automated test suite based on something
+like jsonrpclib.tgz which you can use to <i>prove</i> to yourself that
+the JSONRPC server-side services of your app are absolutely perfect.
+You already considered the distinct advantages of being able to do
+automated tests such as pretending to be a user, interacting with the
+server-side forms, adding and deleting of records etc., but you had
+juuust not quite got round to doing that yet.  well - now you have to.
+</p>
+<p>
+Once you have demonstrated to your satisfaction that there is nothing
+wrong with the JSONRPC services, you can then reintroduce Pyjamas,
+as a second client, into the equation.  The difference between then
+and now is that you now <i>know</i> that there is nothing wrong with
+the JSONRPC services, server-side.  So, anything that's wrong has to be
+something like you've specified the wrong URL in the use of the
+pyjamas.JSONService module.  Check that the URL is the same as the
+one that you used in the client-side usage of the python jsonrpclib.
+</p>
+<p>
+You <b>have</b> to remember that you are using AJAX, with JSONRPC. So,
+the same standard rules apply: you can <b>not</b> access AJAX URLs
+other than those which match the URL from where the web browser downloaded
+the HTML and the Javascript.  In other words, if your app is downloaded
+from http://fred.foo.com/myapp.html, then you can <b>not</b> put
+http://fred.foo.com:8080/jsonservice as the URL for the JSONRPC service,
+you can <b>not</b> put http://somewhere.else.com as the URL.  It
+<b>has</b> to be http://fred.foo.com/somewhere.
+</p>
+<p>
+Welcome to the world where people used to use AJAX to do cross-site
+scripting attacks, downloading viruses and doing phishing attacks and
+other crap, but can't any more, and you, as a developer, have to pay
+for that.
+</p>
+
+</body>
+</html>
