@@ -31,7 +31,7 @@ else:
 bp_data_files = glob.glob(os.path.join("builder", "boilerplate", "*"))
 test_files = glob.glob(os.path.join("pyjs", "tests", "*"))
 stub_files = glob.glob(os.path.join("stubs", "*"))
-addons_data_files = glob.glob(os.path.join("addons", "*.py")
+addons_data_files = glob.glob(os.path.join("addons", "*.py"))
 
 data_files = [
     (os.path.join(datadir, "builder", "boilerplate"), bp_data_files),
