@@ -1,0 +1,9 @@
+.gwt-VerticalSlider {
+    border:1px solid #aaaaaa;
+    background-color:#eeeeee;
+}
+
+.gwt-VerticalSlider-focussed {
+    border:1px solid #000000;
+    background-color:#cccccc;
+}
