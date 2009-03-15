@@ -7,3 +7,14 @@
     border:1px solid #000000;
     background-color:#cccccc;
 }
+
+.gwt-InputControl {
+    border:1px solid #aaaaaa;
+    background-color:#eeeeee;
+    width: 30px;
+}
+
+.gwt-InputControl-focussed {
+    border:1px solid #000000;
+    background-color:#cccccc;
+}
