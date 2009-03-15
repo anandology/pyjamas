@@ -1,0 +1,27 @@
+.gwt-TextWindow {
+    border:1px solid #000000;
+}
+
+.gwt-DialogBox .Close {
+    cursor: pointer;
+}
+
+.gwt-DialogBox {
+    border: 2px outset;
+    background-color: #FFFFCC ;
+}
+    
+.gwt-DialogBox .Header {
+    background-color: #DDDDCC;
+    cursor: default;
+}   
+    
+.gwt-DialogBox .Caption {
+    background-color: #DDDDCC;
+    border:1px solid #000000;
+    margin: 1px;
+    padding: 1px;
+    font-weight: bold;
+    cursor: default;
+}
+    

@@ -19,11 +19,16 @@ from pyjamas.ui.MouseListener import MouseListener
 from pyjamas.ui.KeyboardListener import KeyboardListener
 
 class PopupPanel(SimplePanel):
-    def __init__(self, autoHide=False, modal=True):
+    def __init__(self, autoHide=False, modal=True, rootpanel=None):
         self.popupListeners = []
         self.showing = False
         self.autoHide = False
         self.modal = modal
+        
+        if rootpanel is None:
+            rootpanel = RootPanel()
+
+        self.rootpanel = rootpanel
 
         SimplePanel.__init__(self, self.createElement())
         DOM.setStyleAttribute(self.getElement(), "position", "absolute")
@@ -49,7 +54,7 @@ class PopupPanel(SimplePanel):
         self.showing = False
         DOM.removeEventPreview(self)
 
-        RootPanel().get().remove(self)
+        self.rootpanel.remove(self)
         self.onHideImpl(self.getElement())
         for listener in self.popupListeners:
             if listener.onPopupClosed: listener.onPopupClosed(self, autoClosed)
@@ -137,7 +142,7 @@ class PopupPanel(SimplePanel):
         self.showing = True
         DOM.addEventPreview(self)
 
-        RootPanel().get().add(self)
+        self.rootpanel.add(self)
         self.onShowImpl(self.getElement())
 
 

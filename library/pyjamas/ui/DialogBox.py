@@ -88,6 +88,7 @@ class DialogBox(PopupPanel):
             return False
 
         self.panel.remove(widget)
+        self.child = None
         return True
 
     def setHTML(self, html):
