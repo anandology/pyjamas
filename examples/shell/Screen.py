@@ -12,20 +12,22 @@ class Application(DialogBoxModal):
         #self.setHeight(height)
 
     def onMouseDown(self, sender, x, y):
-        log.writebr("down %d %d" % (x, y))
+        #log.writebr("down %d %d" % (x, y))
         DialogBoxModal.onMouseDown(self, sender, x, y)
         self.dragged = False
         
     def onMouseMove(self, sender, x, y):
-        log.writebr("move %d %d" % (x, y))
+        #log.writebr("move %d %d" % (x, y))
         if self.dragStartX != x or self.dragStartY != y:
+            if not self.dragged:
+                self.screen.raise_app(self)
             self.dragged = True
         DialogBoxModal.onMouseMove(self, sender, x, y)
 
     def onMouseUp(self, sender, x, y):
-        log.writebr("up %d %d" % (x, y))
+        #log.writebr("up %d %d" % (x, y))
         DialogBoxModal.onMouseUp(self, sender, x, y)
-        if not dragged:
+        if not self.dragged:
             self.screen.raise_or_lower(self)
 
     def onClick(self, sender):
