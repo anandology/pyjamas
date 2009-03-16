@@ -1,4 +1,4 @@
-from popups import DialogBoxModal
+from Popups import DialogBoxModal
 from pyjamas.ui.AbsolutePanel import AbsolutePanel
 from pyjamas import Window
 from pyjamas import log
