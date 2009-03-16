@@ -19,27 +19,35 @@ $doc.modules = modules;
 
 <script><!--
 
-/* app libs */
+/* early app libs */
 
+%(early_app_libs)s
+
+
+/*
+ * prepare app system vars
+ */
+sys.overrides = %(overrides)s;
+sys.platform = '%(platform)s';
+sys.appname = '%(app_name)s';
+sys.loadpath = './';
+
+/* app libs */
 %(app_libs)s
 
 var wait_count = 0;
 
 function %(app_name)s_imported() {
-    //%(app_name)s.__name__ = '__main__';
-    //%(app_name)s('__main__');
+    %(app_name)s.__name__ = '__main__';
+    %(app_name)s('__main__');
 }
 
 function prepare_app() {
     var app_modnames = %(app_modnames)s;
-    sys.platform = '%(platform)s';
-    sys.overrides = %(overrides)s;
-    sys.appname = '%(app_name)s';
-    sys.loadpath = './';
     pyjslib.preload_app_modules(sys.loadpath,
                                 app_modnames, %(app_name)s_imported,
                                 %(dynamic)s,
-                                null);
+                                '%(app_name)s');
 }
 
 function pygwtOnLoad(onLoadError, name) {

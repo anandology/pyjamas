@@ -290,6 +290,7 @@ def generateAppFiles(data_dir, js_includes, app_name, debug, output, dynamic,
     mod_code = {}
     modules = {}
     app_libs = {}
+    early_app_libs = {}
     app_code = {}
     overrides = {}
     pover = {}
@@ -306,7 +307,8 @@ def generateAppFiles(data_dir, js_includes, app_name, debug, output, dynamic,
         mod_code[platform] = {}
         modules[platform] = []
         pover[platform] = {}
-        app_libs[platform] = {}
+        app_libs[platform] = ''
+        early_app_libs[platform] = ''
         app_code[platform] = {}
         app_modnames[platform] = {}
 
@@ -315,7 +317,7 @@ def generateAppFiles(data_dir, js_includes, app_name, debug, output, dynamic,
         parser.setPlatform(platform)
         app_translator = pyjs.AppTranslator(
             parser=parser, dynamic=dynamic, optimize=optimize)
-        app_libs[platform], appcode = \
+        early_app_libs[platform], appcode = \
                      app_translator.translate(None, is_app=False,
                                               debug=debug,
                                       library_modules=['dynamicajax.js',
@@ -404,6 +406,7 @@ def generateAppFiles(data_dir, js_includes, app_name, debug, output, dynamic,
 
     for platform in app_platforms:
 
+        early_app_libs_ = early_app_libs[platform]
         app_libs_ = app_libs[platform]
         app_code_ = app_code[platform]
         #modules_ = filter_mods(app_name, modules[platform])
@@ -481,6 +484,7 @@ def generateAppFiles(data_dir, js_includes, app_name, debug, output, dynamic,
 
         file_contents = all_cache_html_template % dict(
             app_name = app_name,
+            early_app_libs = early_app_libs_,
             app_libs = app_libs_,
             app_code = app_code_,
             app_body = app_body,

@@ -12,7 +12,8 @@
 }
 
 %(mod_name)s_prepare_mod = function() {
-    if (module_load_request['%(mod_name)s'] < 2) {
+    if ((typeof (module_load_request['%(mod_name)s']) == 'undefined') ||
+        (module_load_request['%(mod_name)s'] < 2)) {
         module_load_request['%(mod_name)s'] = 2;
     }
     var modnames = %(modnames)s;
@@ -24,13 +25,12 @@
                                             //'%(mod_name)s');
     //alert("module ajax loaded fn called %(mod_name)s");
 
-    if (sys.appname == '%(app_name)s')
-        var name = '__main__';
-    else
-        var name = null;
-    modules['%(mod_name)s'] = %(mod_name)s(name);
-    if (module_load_request['%(mod_name)s'] < 3) {
-        module_load_request['%(mod_name)s'] = 3;
+    if (sys.appname != '%(mod_name)s')
+    {
+        modules['%(mod_name)s'] = %(mod_name)s(name);
+        if (module_load_request['%(mod_name)s'] < 3) {
+            module_load_request['%(mod_name)s'] = 3;
+        }
     }
 }
 

@@ -61,7 +61,10 @@ def import_module(path, parent_module, module_name, dynamic=1, async=False):
             }
             return;
         }
-        module_load_request[module_name] = 1;
+        if (typeof (module_load_request[module_name]) == 'undefined')
+        {
+            module_load_request[module_name] = 1;
+        }
 
         /* following a load, this first executes the script 
          * "preparation" function MODULENAME_loaded_fn()
@@ -123,8 +126,6 @@ function import_wait(proceed_fn, parent_mod, dynamic) {
             var m = module_load_request[l];
             if (l == "sys" || l == 'pyjslib')
                 continue;
-            if (parent_mod != null && l == parent_mod)
-                continue;
             status += l + m + " ";
         }
 
@@ -139,14 +140,24 @@ function import_wait(proceed_fn, parent_mod, dynamic) {
 
         for (l in module_load_request)
         {
+            var m = module_load_request[l];
             if (l == "sys" || l == 'pyjslib')
             {
                 module_load_request[l] = 4;
                 continue;
             }
-            if (parent_mod != null && l == parent_mod)
+            if ((parent_mod != null) && (l == parent_mod))
             {
-                continue;
+                if (m == 1)
+                {
+                    setTimeout(wait, timeoutperiod);
+                    return;
+                }
+                if (m == 2)
+                {
+                    /* cheat and move app on to next stage */
+                    module_load_request[l] = 3;
+                }
             }
             if (m == 1 || m == 2)
             {
