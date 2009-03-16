@@ -18,7 +18,7 @@
 from pyjamas.ui.Panel import Panel
 from pyjamas.ui.Event import Event
 
-import DOM
+from pyjamas import DOM
 
 class SplitPanel(Panel):
     """ Abstract base class for {@link HorizontalSplitPanel} and

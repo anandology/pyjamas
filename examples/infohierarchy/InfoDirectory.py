@@ -22,7 +22,7 @@ from pyjamas.JSONService import JSONProxy
 
 from Trees import Trees
 
-from Timer import Timer
+from pyjamas.Timer import Timer
 
 class CollapserPanel(SimplePanel):
     def __init__(self, sink):
