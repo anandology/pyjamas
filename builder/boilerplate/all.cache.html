@@ -26,16 +26,20 @@ $doc.modules = modules;
 var wait_count = 0;
 
 function %(app_name)s_imported() {
-    %(app_name)s.__name__ = '__main__';
-    %(app_name)s();
+    //%(app_name)s.__name__ = '__main__';
+    //%(app_name)s('__main__');
 }
 
 function prepare_app() {
     var app_modnames = %(app_modnames)s;
     sys.platform = '%(platform)s';
     sys.overrides = %(overrides)s;
-    pyjslib.preload_app_modules(app_modnames, %(app_name)s_imported,
-                                %(dynamic)s);
+    sys.appname = '%(app_name)s';
+    sys.loadpath = './';
+    pyjslib.preload_app_modules(sys.loadpath,
+                                app_modnames, %(app_name)s_imported,
+                                %(dynamic)s,
+                                null);
 }
 
 function pygwtOnLoad(onLoadError, name) {

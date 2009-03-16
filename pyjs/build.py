@@ -424,6 +424,17 @@ def generateAppFiles(data_dir, js_includes, app_name, debug, output, dynamic,
 
             print "Creating: " + mod_cache_name
 
+            mnames = map(lambda x: "'%s'" % x, uniquify(dependencies[mod_name]))
+            mnames = "new pyjslib.List([\n\t\t\t%s])" % ',\n\t\t\t'.join(mnames)
+            modnames = [mnames]
+
+            modnames = "new pyjslib.List([\n\t\t%s\n\t])" % ',\n\t\t'.join(modnames)
+
+            # convert the overrides
+
+            overnames = map(lambda x: "'%s': '%s'" % x, pover[platform].items())
+            overnames = "new pyjslib.Dict({\n\t\t%s\n\t})" % ',\n\t\t'.join(overnames)
+
             if dynamic:
                 mod_cache_html_output = open(join(output, mod_cache_name), "w")
             else:
@@ -432,7 +443,10 @@ def generateAppFiles(data_dir, js_includes, app_name, debug, output, dynamic,
             print >>mod_cache_html_output, mod_cache_html_template % dict(
                 mod_name = mod_name,
                 app_name = app_name,
+                modnames = modnames,
+                overrides = overnames,
                 mod_libs = '',
+                dynamic = dynamic,
                 mod_code = mod_code_,
             )
 

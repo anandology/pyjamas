@@ -19,20 +19,37 @@ from __pyjamas__ import JS
 
 # must declare import _before_ importing sys
 
-def import_module(parent_module, module_name, dynamic=1, async=False):
+def import_module(path, parent_module, module_name, dynamic=1, async=False):
     """ 
     """
 
     JS("""
+        var cache_file;
+
+        if (module_name == "sys" || module_name == 'pyjslib')
+        {
+            /*module_load_request[module_name] = 1;*/
+            return;
+        }
+
+        if (path == null)
+        {
+            path = './';
+        }
+
         if (((sys.overrides != null) && 
              (sys.overrides.has_key(module_name))))
         {
-            var cache_file =  ( sys.overrides.__getitem__(module_name) + '.cache.js' ) ;
+            cache_file =  sys.overrides.__getitem__(module_name) ;
         }
         else
         {
-            var cache_file =  ( module_name + '.cache.js' ) ;
+            cache_file =  module_name ;
         }
+
+        cache_file = (path + cache_file + '.cache.js' ) ;
+
+        //alert("cache " + cache_file + " " + module_name + " " + parent_module);
 
         /* already loaded? */
         if (module_load_request[module_name])
@@ -85,11 +102,18 @@ def import_module(parent_module, module_name, dynamic=1, async=False):
     """)
 
 JS("""
-function import_wait(proceed_fn, dynamic) {
+var data = '';
+var element = $doc.createElement("div");
+$doc.body.appendChild(element);
+function write_dom(txt) {
+    element.innerHTML = txt + '<br />';
+}
+
+function import_wait(proceed_fn, parent_mod, dynamic) {
 
     var timeoutperiod = 100;
     if (dynamic)
-        var timeoutperiod = 1;
+        var timeoutperiod = 100;
 
     var wait = function() {
 
@@ -97,10 +121,14 @@ function import_wait(proceed_fn, dynamic) {
         for (l in module_load_request)
         {
             var m = module_load_request[l];
+            if (l == "sys" || l == 'pyjslib')
+                continue;
+            if (parent_mod != null && l == parent_mod)
+                continue;
             status += l + m + " ";
         }
 
-        //alert("import wait " + wait_count + " " + status);
+        //write_dom( " import wait " + wait_count + " " + status + " parent_mod " + parent_mod);
         wait_count += 1;
 
         if (status == '')
@@ -111,12 +139,15 @@ function import_wait(proceed_fn, dynamic) {
 
         for (l in module_load_request)
         {
-            if (l == "sys")
-                continue
-            if (l == "pyjslib")
-                continue
-
-            var m = module_load_request[l];
+            if (l == "sys" || l == 'pyjslib')
+            {
+                module_load_request[l] = 4;
+                continue;
+            }
+            if (parent_mod != null && l == parent_mod)
+            {
+                continue;
+            }
             if (m == 1 || m == 2)
             {
                 setTimeout(wait, timeoutperiod);
@@ -131,7 +162,10 @@ function import_wait(proceed_fn, dynamic) {
         }
         //alert("module wait done");
 
-        proceed_fn();
+        if (proceed_fn.importDone)
+            proceed_fn.importDone(proceed_fn);
+        else
+            proceed_fn();
     }
 
     wait();
@@ -143,27 +177,36 @@ class Object:
 
 class Modload:
 
-    def __init__(self, app_modlist, app_imported_fn, dynamic):
+    def __init__(self, path, app_modlist, app_imported_fn, dynamic,
+                 parent_mod):
         self.app_modlist = app_modlist
         self.app_imported_fn = app_imported_fn
+        self.path = path
         self.idx = 0;
         self.dynamic = dynamic
+        self.parent_mod = parent_mod
 
     def next(self):
         
         for i in range(len(self.app_modlist[self.idx])):
             app = self.app_modlist[self.idx][i]
-            import_module(None, app, self.dynamic, True);
+            import_module(self.path, self.parent_mod, app, self.dynamic, True);
         self.idx += 1
 
-        if self.idx == len(self.app_modlist):
-            import_wait(self.app_imported_fn, self.dynamic)
+        if self.idx >= len(self.app_modlist):
+            import_wait(self.app_imported_fn, self.parent_mod, self.dynamic)
         else:
-            import_wait(getattr(self, "next"), self.dynamic)
+            import_wait(getattr(self, "next"), self.parent_mod, self.dynamic)
 
-def preload_app_modules(app_modnames, app_imported_fn, dynamic):
+def get_module(module_name):
+    ev = "__mod = %s;" % module_name
+    JS("pyjs_eval(ev);")
+    return __mod
 
-    loader = Modload(app_modnames, app_imported_fn, dynamic)
+def preload_app_modules(path, app_modnames, app_imported_fn, dynamic,
+                        parent_mod=None):
+
+    loader = Modload(path, app_modnames, app_imported_fn, dynamic, parent_mod)
     loader.next()
 
 import sys

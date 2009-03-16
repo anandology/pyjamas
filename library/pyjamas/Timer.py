@@ -46,7 +46,6 @@ class Timer:
         timers.remove(self)
 
     def run(self):
-        if self.listener:
             self.listener.onTimer(self.timerId)
     
     def schedule(self, delayMillis):
