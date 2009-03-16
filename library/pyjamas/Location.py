@@ -70,7 +70,7 @@ class Location:
 
     def getSearchVar(self, key):
         searchDict = self.getSearchDict()
-        return searchDict[key]
+        return searchDict.get(key)
     
     def reload(self):
         self.location.reload()

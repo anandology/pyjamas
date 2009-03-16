@@ -1,4 +1,4 @@
-import DOM
+from pyjamas import DOM
 from pyjamas.ui.SimplePanel import SimplePanel
 from pyjamas.ui.TabPanel import TabPanel
 from pyjamas.ui.TabBar import TabBar

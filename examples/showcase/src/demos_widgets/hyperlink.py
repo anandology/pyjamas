@@ -15,7 +15,7 @@ from pyjamas.ui.VerticalPanel import VerticalPanel
 from pyjamas.ui.HorizontalPanel import HorizontalPanel
 from pyjamas.ui.Hyperlink import Hyperlink
 from pyjamas.ui.Label import Label
-from History import History
+from pyjamas.History import History
 
 
 class HyperlinkDemo(SimplePanel):
