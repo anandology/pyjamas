@@ -49,20 +49,17 @@ class ShellApp():
                                     self, 1,
                                     'GridTest')
 
+    def importDone(self):
 
-    def onTimer(self, timer_id):
-        self.GridTest = pyjslib.get_module('GridTest')
-        if self.GridTest is None:
+        grid_test = pyjslib.get_module('GridTest')
+        if grid_test is None:
             Timer(500, self.wait_app_load)
             return
 
-        g = self.GridTest.GridWidget()
+        g = grid_test.GridWidget()
         a = self.screen.add_app(g, "grid test", 400, 300)
         a.show()
     
-    def importDone(self):
-        Timer(500, self)
-
 app = None
 if __name__ == '__main__':
     global app
