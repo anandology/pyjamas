@@ -197,10 +197,12 @@ class Translator:
             vdec = ''
         else:
             vdec = 'var '
-        print >>self.output, UU+"%s%s = function (__name__) {" % (vdec, module_name)
+        print >>self.output, UU+"%s%s = function (__mod_name__) {" % (vdec, module_name)
 
-        print >>self.output, UU+"if (__name__ == null) __name__ = '%s';" % (mn)
-        print >>self.output, UU+"%s.__name__ = __name__;" % (raw_module_name)
+        print >>self.output, "    if("+module_name+".__was_initialized__) return;"
+        print >>self.output, "    "+UU+module_name+".__was_initialized__ = true;"
+        print >>self.output, UU+"if (__mod_name__ == null) __mod_name__ = '%s';" % (mn)
+        print >>self.output, UU+"%s.__name__ = __mod_name__;" % (raw_module_name)
 
         decl = mod_var_name_decl(raw_module_name)
         if decl:
@@ -398,6 +400,7 @@ class Translator:
 
         function_args = "(" + ", ".join(declared_arg_names) + ")"
         print >>self.output, "%s = function%s {" % (function_name, function_args)
+        print >>self.output, "\tthis.__name__ = '%s';" % (node.name)
         self._default_args_handler(node, normal_arg_names, None)
 
         if node.varargs:
@@ -412,9 +415,7 @@ class Translator:
             if not self._isNativeFunc(lastStmt):
                 print >>self.output, "    return null;"
 
-        print >>self.output, "}"
-        print >>self.output, "%s.__name__ = '%s';" % (function_name, node.name)
-        print >>self.output, "\n"
+        print >>self.output, "};"
 
 
         self._kwargs_parser(node, function_name, normal_arg_names, None)
@@ -1606,9 +1607,9 @@ class AppTranslator:
 
         mod, override = self.parser.parseModule(module_name, file_name)
         if override:
-            self.overrides[module_name] = "%s.%s" % \
-                                          (self.parser.platform.lower(),
+            override_name = "%s.%s" % (self.parser.platform.lower(),
                                            module_name)
+            self.overrides[override_name] = override_name
         if is_app:
             mn = '__main__'
         else:

@@ -37,10 +37,11 @@ def import_module(path, parent_module, module_name, dynamic=1, async=False):
             path = './';
         }
 
+        var override_name = sys.platform + "." + module_name;
         if (((sys.overrides != null) && 
-             (sys.overrides.has_key(module_name))))
+             (sys.overrides.has_key(override_name))))
         {
-            cache_file =  sys.overrides.__getitem__(module_name) ;
+            cache_file =  sys.overrides.__getitem__(override_name) ;
         }
         else
         {

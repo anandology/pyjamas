@@ -420,8 +420,9 @@ def generateAppFiles(data_dir, js_includes, app_name, debug, output, dynamic,
 
             mod_name = pyjs.strip_py(mod_name)
 
-            if pover[platform].has_key(mod_name):
-                mod_cache_name = "%s.%s.cache.js" % (platform.lower(), mod_name)
+            override_name = "%s.%s" % (platform.lower(), mod_name)
+            if pover[platform].has_key(override_name):
+                mod_cache_name = "%s.cache.js" % (override_name)
             else:
                 mod_cache_name = "%s.cache.js" % (mod_name)
 
