@@ -1,6 +1,8 @@
                     Changes made to Pyjamas since 0.5
                     ---------------------------------
 
+ * add method extend to pyjslib.List
+
  * add float to builtins
 
  * add pyjamas.log based on examples/libtest/write.py

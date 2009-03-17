@@ -1,5 +1,6 @@
 from UnitTest import UnitTest
 from __pyjamas__ import String
+import pyjslib
 
 class ListTest(UnitTest):
     def __init__(self):
@@ -123,6 +124,54 @@ class ListTest(UnitTest):
         l.reverse()
         self.assertEqual(l[0], 3)
         self.assertEqual(l[2], 1)
+
+    def testConstructor(self):
+        l1 = pyjslib.List()
+        self.assertEqual(len(l1),0)
+
+        # only accept list or iterator
+        l2 = pyjslib.List(None)
+        self.assertEqual(len(l2),0)
+
+        l3 = pyjslib.List([])
+        self.assertEqual(len(l3),0)
+
+        l4 = pyjslib.List([10,])
+        self.assertEqual(len(l4),1)
+        self.assertEqual(l4[0],10)
+
+        l5 = pyjslib.List(range(10,40,10))
+        self.assertEqual(len(l5),3)
+        self.assertEqual(l5[0],10)
+        self.assertEqual(l5[1],20)
+        self.assertEqual(l5[2],30)
+
+        l6 = pyjslib.List(l4)
+        self.assertEqual(len(l6),1)
+        self.assertEqual(l6[0],10)
+
+    def testExtend(self):
+        l = [10,20]
+        l.extend([30,40])
+        self.assertEqual(len(l),4)
+        self.assertEqual(l[0], 10)
+        self.assertEqual(l[1], 20)
+        self.assertEqual(l[2], 30)
+        self.assertEqual(l[3], 40)
+
+        l2 = [10,20]
+        l2.extend([])
+        self.assertEqual(len(l2),2)
+
+        l3 = []
+        l3.extend([10,20])
+        self.assertEqual(len(l3),2)
+        self.assertEqual(l3[0],10)
+        self.assertEqual(l3[1],20)
+
+        l4 = []
+        l4.extend([])
+        self.assertEqual(len(l4),0)
 
 class A:
 

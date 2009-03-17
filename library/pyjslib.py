@@ -439,15 +439,23 @@ class List:
     def __init__(self, data=None):
         JS("""
         this.l = [];
+        this.extend(data);
+        """)
 
+    def append(self, item):
+        JS("""    this.l[this.l.length] = item;""")
+
+    def extend(self, data):
+        JS("""
         if (pyjslib.isArray(data)) {
+            n = this.l.length;
             for (var i=0; i < data.length; i++) {
-                this.l[i]=data[i];
+                this.l[n+i]=data[i];
                 }
             }
         else if (pyjslib.isIteratable(data)) {
             var iter=data.__iter__();
-            var i=0;
+            var i=this.l.length;
             try {
                 while (true) {
                     var item=iter.next();
@@ -459,9 +467,6 @@ class List:
                 }
             }
         """)
-
-    def append(self, item):
-        JS("""    this.l[this.l.length] = item;""")
 
     def remove(self, value):
         JS("""
