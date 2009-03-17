@@ -44,24 +44,49 @@ class ShellApp():
 
         RootPanel().add(self.screen)
 
-        sys.setloadpath('../../gridtest/output/')
-        pyjslib.preload_app_modules(sys.getloadpath(), [['GridTest']],
-                                    self, 1,
-                                    'GridTest')
+        self.loading_apps = []
+        self.loading_app = None
+        self.loading_desc = None
+
+        self.load_app('../../gridtest/output/', 'GridTest', 'grid test')
+        self.load_app('../../widgets/output/', 'Widgets', 'clock')
+
+    def load_app(self, path, appname, description):
+        if self.loading_app is None:
+            self.add_app(path, appname, description)
+        else:
+            self.loading_apps.append((path, appname, description))
+
+    def add_app(self, path, appname, description):
+
+        self.loading_app = appname
+        self.loading_desc = description
+
+        sys.setloadpath(path)
+        pyjslib.preload_app_modules(sys.getloadpath(), [[appname]],
+                                    self, 1, None)
+
+    def onTimer(self, timerid):
+        self.importDone()
 
     def importDone(self):
 
-        grid_test = pyjslib.get_module('GridTest')
-        if grid_test is None:
-            Timer(500, self.wait_app_load)
+        mod = pyjslib.get_module(self.loading_app)
+        if mod is None:
+            Timer(500, self)
             return
 
-        g = grid_test.GridWidget()
-        a = self.screen.add_app(g, "grid test", 400, 300)
+        g = mod.AppInit()
+        a = self.screen.add_app(g, self.loading_desc, 400, 300)
         a.show()
     
-app = None
+        self.loading_desc = None
+        self.loading_app = None
+
+        if self.loading_apps:
+            path, appname, description = self.loading_apps.pop()
+            self.add_app(path, appname, description )
+
 if __name__ == '__main__':
-    global app
     app = ShellApp()
 

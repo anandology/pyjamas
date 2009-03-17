@@ -9,7 +9,6 @@ from pyjamas.ui.CheckBox import CheckBox
 from pyjamas.ui.AbsolutePanel import AbsolutePanel
 from pyjamas import Window
 
-
 class GridWidget(AbsolutePanel):
 
     def __init__(self):
@@ -64,7 +63,10 @@ class GridWidget(AbsolutePanel):
             for x in range(5):
                 self.g.setText(y, x, self.page + ' (' + y + ',' + x + ')')
 
+def AppInit():
+    return GridWidget()
 
 if __name__ == '__main__':
     g = GridWidget()
     RootPanel().add(g)
+

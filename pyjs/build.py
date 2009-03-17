@@ -428,10 +428,16 @@ def generateAppFiles(data_dir, js_includes, app_name, debug, output, dynamic,
 
             print "Creating: " + mod_cache_name
 
-            mnames = map(lambda x: "'%s'" % x, uniquify(dependencies[mod_name]))
-            mnames = "new pyjslib.List([\n\t\t\t%s])" % ',\n\t\t\t'.join(mnames)
-            modnames = [mnames]
+            modlevels = make_deps(None, dependencies, dependencies[mod_name])
 
+            modnames = []
+
+            for md in modlevels:
+                mnames = map(lambda x: "'%s'" % x, md)
+                mnames = "new pyjslib.List([\n\t\t\t%s])" % ',\n\t\t\t'.join(mnames)
+                modnames.append(mnames)
+
+            modnames.reverse()
             modnames = "new pyjslib.List([\n\t\t%s\n\t])" % ',\n\t\t'.join(modnames)
 
             # convert the overrides
@@ -601,6 +607,9 @@ def make_deps(app_name, deps, mod_list):
     mod_list = filter_mods(app_name, mod_list)
     deps = filter_deps(app_name, deps)
 
+    if not mod_list:
+        return []
+
     #print mod_list
     #print deps
 
@@ -608,14 +617,15 @@ def make_deps(app_name, deps, mod_list):
     last_len = -1
     while deps:
         l_deps = len(deps)
-        print l_deps
+        #print l_deps
         if l_deps==last_len:
             for m, dl in deps.items():
                 for d in dl:
-                    if m in deps[d]:
+                    if m in deps.get(d, []):
                         raise Exception('Circular Imports found: \n%s %s -> %s %s'
                                         % (m, dl, d, deps[d]))
-            raise Exception('Could not calculate dependencies: \n%s' % deps)
+            #raise Exception('Could not calculate dependencies: \n%s' % deps)
+            break
         last_len = l_deps
         #print "modlist", mod_list
         nodeps = nodeps_list(mod_list, deps)
@@ -630,7 +640,7 @@ def make_deps(app_name, deps, mod_list):
         #print "newdeps", newdeps
         deps = newdeps
         ordered_deps.append(nodeps)
-        #time.sleep(2)
+        #time.sleep(0)
 
     if mod_list:
         ordered_deps.append(mod_list) # last dependencies - usually the app(s)

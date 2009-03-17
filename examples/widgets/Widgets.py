@@ -3,13 +3,9 @@ from pyjamas.ui.RootPanel import RootPanel
 from pyjamas import Window
 from pyjamas.ui.Image import Image
 from pyjamas.ui.HTML import HTML
-from pyjamas.ui.VerticalPanel import VerticalPanel
-from pyjamas.ui.HorizontalPanel import HorizontalPanel
-from Canvas import Canvas, CanvasImage, ImageLoadListener
+from pyjamas.Canvas2D import Canvas, CanvasImage, ImageLoadListener
 from pyjamas.Timer import Timer
-from math import floor, cos, sin
 from pyjamas import DOM
-
 
 class Widgets:
     def onModuleLoad(self):
@@ -31,6 +27,7 @@ class Widgets:
 
 
 class SolarCanvas(Canvas):
+
     def __init__(self, img_url):
         Canvas.__init__(self, 300, 300)
         self.clock = CanvasImage(img_url)
@@ -127,7 +124,20 @@ class SolarCanvas(Canvas):
         self.context.drawImage(self.clock,0,0)
 
 
+def AppInit():
+
+    img_url = Window.getLocation().getSearchVar("img")
+    if not img_url:
+        img_url = 'images/chrome_clock.png'
+    solar = SolarCanvas(img_url)
+    
+    solar.isActive = True
+    solar.onTimer()
+
+    return solar
+
 
 if __name__ == '__main__':
     app = Widgets()
     app.onModuleLoad()
+
