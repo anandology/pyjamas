@@ -12,6 +12,7 @@ from NameTest import NameTest
 from DictTest import DictTest
 from JSOTest import JSOTest
 from BuiltinTest import BuiltinTest
+from MD5Test import MD5Test
 
 def main(self):
 
@@ -28,6 +29,7 @@ def main(self):
     NameTest().run()
     DictTest().run()
     JSOTest().run()
+    MD5Test().run()
 
 if __name__ == '__main__':
     main()
