@@ -1,4 +1,5 @@
 from write import write, writebr
+import sys
 
 class UnitTest:
     def __init__(self):
@@ -61,10 +62,11 @@ class UnitTest:
 
         title="<b>" + self.getNameFmt("Test failed") + "</b>"
         writebr(title + msg)
-        JS("""if (typeof console != 'undefined') {
-            console.error(msg)
-            console.trace()
-        }""")
+        if sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
+            JS("""if (typeof console != 'undefined') {
+                console.error(msg)
+                console.trace()
+            }""")
         return False
 
     def startTest(self):

@@ -35,7 +35,7 @@ class AttributeTest(UnitTest):
         try:
             self.assertEqual(1, getattr(foo, "vv"))
         except AttributeError, e:
-            self.assertEqual(e.name, 'AttributeError')
+            self.assertEqual(e.__class__.__name__, 'AttributeError')
             return
         self.fail("No AttributeError raised")
 

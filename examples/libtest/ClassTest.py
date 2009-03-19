@@ -88,7 +88,7 @@ class ClassTest(UnitTest):
 
         # verify that parent.__init__ is NOT called (child.__init__() is defined)
         obj2 = ExampleChildConstructor()
-        self.assertNotEqual(obj2.x, expected_result1, "ExampleParentConstructor.__init__() was called for ExampleChildConstructor")
+        self.assertNotEqual(getattr(obj2, "x", None), expected_result1, "ExampleParentConstructor.__init__() was called for ExampleChildConstructor")
 
         # verify that parent.__init__ is explicitly called
         obj3 = ExampleChildExplicitConstructor()
@@ -100,8 +100,8 @@ class ClassTest(UnitTest):
         self.assertEquals(obj1.z, expected_result3, "Did not inherit property from grandparent")
         self.assertEquals(obj2.z, expected_result3, "Did not inherit property from grandparent")
 
-        self.assertNotEqual(obj1.r, expected_result4, "ExampleGrandParentConstructor.__init__() was called")
-        self.assertNotEqual(obj2.r, expected_result4, "ExampleGrandParentConstructor.__init__() was called")
+        self.assertNotEqual(getattr(obj1, "r", None), expected_result4, "ExampleGrandParentConstructor.__init__() was called")
+        self.assertNotEqual(getattr(obj2, "r", None), expected_result4, "ExampleGrandParentConstructor.__init__() was called")
 
         # check inherited class vars (from parent)
         self.assertEqual(ExampleChildConstructor.y, expected_result2, "Did not inherit class var from parent")

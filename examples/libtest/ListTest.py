@@ -128,7 +128,7 @@ class ListTest(UnitTest):
         self.assertEqual(len(l1),0)
 
         # only accept list or iterator
-        l2 = list(None)
+        l2 = list()
         self.assertEqual(len(l2),0)
 
         l3 = list([])
