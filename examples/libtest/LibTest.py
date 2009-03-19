@@ -1,3 +1,5 @@
+import sys
+
 from StringTest import StringTest
 from ListTest import ListTest
 from ClassTest import ClassTest
@@ -10,11 +12,12 @@ from BoolTest import BoolTest
 from FunctionTest import FunctionTest
 from NameTest import NameTest
 from DictTest import DictTest
-from JSOTest import JSOTest
+if sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
+    from JSOTest import JSOTest
 from BuiltinTest import BuiltinTest
 from MD5Test import MD5Test
 
-def main(self):
+def main():
 
     BoolTest().run()
     FunctionTest().run()
@@ -28,7 +31,8 @@ def main(self):
     AttributeTest().run()
     NameTest().run()
     DictTest().run()
-    JSOTest().run()
+    if sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
+        JSOTest().run()
     MD5Test().run()
 
 if __name__ == '__main__':

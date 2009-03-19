@@ -1,6 +1,4 @@
 from UnitTest import UnitTest
-from __pyjamas__ import String
-import pyjslib
 
 class ListTest(UnitTest):
     def __init__(self):
@@ -126,27 +124,27 @@ class ListTest(UnitTest):
         self.assertEqual(l[2], 1)
 
     def testConstructor(self):
-        l1 = pyjslib.List()
+        l1 = list()
         self.assertEqual(len(l1),0)
 
         # only accept list or iterator
-        l2 = pyjslib.List(None)
+        l2 = list(None)
         self.assertEqual(len(l2),0)
 
-        l3 = pyjslib.List([])
+        l3 = list([])
         self.assertEqual(len(l3),0)
 
-        l4 = pyjslib.List([10,])
+        l4 = list([10,])
         self.assertEqual(len(l4),1)
         self.assertEqual(l4[0],10)
 
-        l5 = pyjslib.List(range(10,40,10))
+        l5 = list(range(10,40,10))
         self.assertEqual(len(l5),3)
         self.assertEqual(l5[0],10)
         self.assertEqual(l5[1],20)
         self.assertEqual(l5[2],30)
 
-        l6 = pyjslib.List(l4)
+        l6 = list(l4)
         self.assertEqual(len(l6),1)
         self.assertEqual(l6[0],10)
 

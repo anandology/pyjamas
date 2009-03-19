@@ -1,5 +1,4 @@
 from write import write, writebr
-import pyjslib
 
 class UnitTest:
     def __init__(self):
@@ -43,7 +42,10 @@ class UnitTest:
         return ""
 
     def getTestMethods(self):
-        self.test_methods=filter(self, self.isTestMethod, dir(self))
+        self.test_methods=[]
+        for m in dir(self):
+            if self.isTestMethod(m):
+                self.test_methods.append(m)
 
     def isTestMethod(self, method):
         if callable(getattr(self, method)):
@@ -117,10 +119,10 @@ class UnitTest:
         tests_passed=self.tests_completed - self.tests_failed
 
         output="<table cellpadding=4 width=100%><tr><td bgcolor='" + bg_colour + "'><font face='arial' size=4 color='" + fg_colour + "'><b>"
-        output+=self.getNameFmt() + "Passed " + tests_passed + "/" + self.tests_completed + " tests"
+        output+=self.getNameFmt() + "Passed %d " % tests_passed + "/ %d" % self.tests_completed + " tests"
 
         if self.tests_failed:
-            output+=" (" + self.tests_failed + " failed)"
+            output+=" ( %d failed)" % self.tests_failed 
 
         output+="</b></font></td></tr></table>"
 

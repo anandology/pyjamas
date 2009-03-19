@@ -1,5 +1,4 @@
 from UnitTest import UnitTest
-import pyjslib
 
 class Foo:
     pass
@@ -68,10 +67,10 @@ class DictTest(UnitTest):
         self.failIf(dd is d)
 
     def testConstructor(self):
-        d = pyjslib.Dict(([1, 1], [2,2]))
+        d = dict(([1, 1], [2,2]))
         self.assertEqual(d[1], 1)
         self.assertEqual(d[2], 2)
         # XXX: the other constructors handle javascript objets only,
         # we need the other constructors too, like:
-        # d = pyjslib.Dict({1:1, 2:2})
+        # d = dict({1:1, 2:2})
 

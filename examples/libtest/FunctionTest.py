@@ -39,7 +39,7 @@ class FunctionTest(UnitTest):
         self.assertEqual(f(2,3), 6)
         f = lambda x, y=4: x*y
         self.assertEqual(f(2), 8)
-        h = Handler(5, self)
+        h = Handler(5)
         f = lambda x: h.handle(x)
         self.assertTrue(f(5))
         self.assertFalse(f(4))

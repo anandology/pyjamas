@@ -48,7 +48,7 @@ class ExceptionTest(UnitTest):
             self.assertEqual(e.toString(), 'MyException',
                              "Catched exception does not match")
             return
-        self.fail('MyException was not catched or raised')
+        self.fail('MyException was not caught or raised')
 
     def testCatchMultiClassException(self):
         try:
@@ -57,19 +57,19 @@ class ExceptionTest(UnitTest):
             self.assertEqual(e.toString(), 'MyException',
                              "Catched exception does not match")
             return
-        self.fail('MyException was not catched or raised')
+        self.fail('MyException was not caught or raised')
 
     def testCatchStringException(self):
         try:
             raise "test"
         except "test":
             return
-        self.fail('"test" was not catched or raised')
+        self.fail('"test" was not caught or raised')
 
     def testBuiltInException(self):
         try:
             raise LookupError('hoschi')
         except LookupError, e:
-            self.assertEqual(e.name, 'LookupError')
+            self.assertEqual(e.__class__.__name__, 'LookupError')
             return
-        self.fail("LookupError should be catched")
+        self.fail("LookupError should be caught")

@@ -1,5 +1,4 @@
 from UnitTest import UnitTest
-import pyjslib
 
 class Foo:
     pass
