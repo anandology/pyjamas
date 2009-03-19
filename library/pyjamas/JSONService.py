@@ -60,11 +60,11 @@ class JSONResponseTextHandler:
         self.request = request
 
     def onCompletion(self, json_str):
-        response=JSONParser().decodeAsObject(json_str)
-        
+        response = JSONParser().decodeAsObject(json_str)
+
         if not response:
             self.request.handler.onRemoteError(0, "Server Error or Invalid Response", self.request)
-        elif response["error"]:
+        elif response.has_key("error") and response['error']:
             error = response["error"]
             self.request.handler.onRemoteError(0, error, self.request)
         else:
