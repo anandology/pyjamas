@@ -12,8 +12,9 @@ from BoolTest import BoolTest
 from FunctionTest import FunctionTest
 from NameTest import NameTest
 from DictTest import DictTest
-if sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
-    from JSOTest import JSOTest
+# TODO: add import into pyjs.py _stmt
+#if sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
+#    from JSOTest import JSOTest
 from BuiltinTest import BuiltinTest
 from MD5Test import MD5Test
 
@@ -31,8 +32,8 @@ def main():
     AttributeTest().run()
     NameTest().run()
     DictTest().run()
-    if sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
-        JSOTest().run()
+#    if sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
+#        JSOTest().run()
     MD5Test().run()
 
 if __name__ == '__main__':

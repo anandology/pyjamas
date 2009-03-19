@@ -3,13 +3,27 @@
 import UnitTest
 from md5 import md5
 
-def hexstr(s):
-    h = '0123456789abcdef'
-    r = ''
-    for x in range(16):
-        JS("var i = s[x];")
-        r = r + h[(i >> 4) & 0xF] + h[i & 0xF]
-    return r
+import sys
+
+if sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
+
+    def hexstr(s):
+        h = '0123456789abcdef'
+        r = ''
+        for x in range(16):
+            JS("var i = s[x];")
+            r = r + h[(i >> 4) & 0xF] + h[i & 0xF]
+        return r
+
+else:
+
+    def hexstr(s):
+        h = '0123456789abcdef'
+        r = ''
+        for c in s:
+            i = ord(c)
+            r = r + h[(i >> 4) & 0xF] + h[i & 0xF]
+        return r
 
 class MD5Test(UnitTest.UnitTest):
     def __init__(self):

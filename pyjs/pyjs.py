@@ -81,6 +81,9 @@ PYJSLIB_BUILTIN_CLASSES=("BaseException",
                          "AttributeError",
                          "KeyError",
                          "LookupError",
+                         "list",
+                         "dict",
+                         "tuple",
                         )
 
 # XXX: this is a hack: these should be dealt with another way
@@ -448,7 +451,15 @@ class Translator:
             elif v.node.name in PYJSLIB_BUILTIN_FUNCTIONS:
                 call_name = 'pyjslib.' + v.node.name
             elif v.node.name in PYJSLIB_BUILTIN_CLASSES:
-                call_name = 'pyjslib.' + v.node.name
+                name = v.node.name
+                # XXX HACK!
+                if name == 'list':
+                    name = 'List'
+                if name == 'dict':
+                    name = 'Dict'
+                if name == 'tuple':
+                    name = 'Tuple'
+                call_name = 'pyjslib.' + name
             elif v.node.name == "callable":
                 call_name = "pyjslib.isFunction"
             else:
@@ -544,6 +555,11 @@ class Translator:
         if isinstance(v.expr, ast.Name):
             obj = self._name(v.expr, current_klass, return_none_for_module=True)
             if obj == None and v.expr.name in self.module_imports():
+                # XXX TODO: distinguish between module import classes
+                # and variables.  right now, this is a hack to get
+                # the sys module working.
+                if v.expr.name == 'sys':
+                    return v.expr.name+'.'+attr_name
                 return v.expr.name+'.__'+attr_name+'.prototype.__class__'
             return obj + "." + attr_name
         elif isinstance(v.expr, ast.Getattr):

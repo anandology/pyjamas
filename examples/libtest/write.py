@@ -1,25 +1,41 @@
 import sys
 
+def write(text):
+    pass
+def writebr(text):
+    pass
+
+data = ""
+
+def write_web(text):
+    global data
+    data += text
+    JS(" write.element.innerHTML = write.data; ")
+
+def writebr_web(text):
+    write(text + r"<br />\n")
+
+def init_web():
+    JS(""" write.element = $doc.createElement("div");
+           $doc.body.appendChild(write. element); """)
+
+def write_std(text):
+    sys.stdout.write(text)
+
+def writebr_std(text):
+    sys.stdout.write(text + "\n")
+
 if sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
-    from pyjamas import DOM
-    def getBodyElement():
-        JS(" return $doc.body; ")
 
-    def write(text):
-        global data, element
-        data += text
-        DOM.setInnerHTML(element, data)
-
-    def writebr(text):
-        write(text + r"<br />\n")
-
-    data = ""
-    element = DOM.createDiv()
-    DOM.appendChild(getBodyElement(), element)
+    init_web()
+    global write
+    global writebr
+    write = write_web
+    writebr = writebr_web
 
 else:
-    def write(text):
-        sys.stdout.write(text)
-    def writebr(text):
-        sys.stdout.write(text + "\n")
+    global write
+    global writebr
+    write = write_std
+    writebr = writebr_std
 

@@ -1,0 +1,22 @@
+These are unit tests for the pyjamas libraries.  Compile them as usual
+with ./build.sh:
+
+    ../../bin/pyjsbuild LibTest.py
+
+The tests can _also_ be executed using standard python:
+
+    python LibTest.py
+
+Priority should be given to getting the test correct using standard
+python.  For example, at the time of writing, when the ability to run
+LibTest.py with standard python was added, four basic tests failed:
+
+    <b>String Test failed (testSplit) : </b>' this is  a rather long string  ' 
+                                            != ' this is  a rather long string '
+    <b>List Test failed (testSortCmp) : </b>assertion failed
+    <b>Attribute Test failed (testSetAttr) : </b>2 != 1
+    <b>Dict Test failed (testStringKeys) : </b>"'notthere'" != 
+                                                'KeyError: notthere'
+
+Yet - these tests are successful in pyjamas!
+
