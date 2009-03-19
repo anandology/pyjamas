@@ -1,6 +1,10 @@
                     Changes made to Pyjamas since 0.5
                     ---------------------------------
 
+ * rewrote the examples/libtest so that they can be run under standard
+   python (python ./LibTest.py).  this allows for a comparison of pyjs
+   against standard python.
+
  * add method extend to pyjslib.List
 
  * add float to builtins
