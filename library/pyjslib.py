@@ -819,6 +819,8 @@ def repr(x):
 
        var t = typeof(x);
 
+        //alert("repr typeof " + t + " : " + x);
+
        if (t == "boolean")
            return x.toString();
 
@@ -851,7 +853,9 @@ def repr(x):
 
        constructor = pyjslib.get_pyjs_classtype(x);
 
-       if (constructor == "pyjslib.Tuple") {
+        //alert("repr constructor: " + constructor);
+
+       if (constructor == "Tuple") {
            var contents = x.getArray();
            var s = "(";
            for (var i=0; i < contents.length; i++) {
@@ -863,7 +867,7 @@ def repr(x):
            return s;
        };
 
-       if (constructor == "pyjslib.List") {
+       if (constructor == "List") {
            var contents = x.getArray();
            var s = "[";
            for (var i=0; i < contents.length; i++) {
@@ -875,7 +879,7 @@ def repr(x):
            return s;
        };
 
-       if (constructor == "pyjslib.Dict") {
+       if (constructor == "Dict") {
            var keys = new Array();
            for (var key in x.d)
                keys.push(key);
@@ -895,8 +899,8 @@ def repr(x):
        // Note that we replace underscores with dots so that the name will
        // (hopefully!) look like the original Python name.
 
-       var s = constructor.replace(new RegExp('_', "g"), '.');
-       return "<" + s + " object>";
+       //var s = constructor.replace(new RegExp('_', "g"), '.');
+       return "<" + constructor + " object>";
     """)
 
 def float(text):
