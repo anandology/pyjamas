@@ -288,6 +288,7 @@ def generateAppFiles(data_dir, js_includes, app_name, debug, output, dynamic,
     app_body = '\n'.join(scripts)
 
     mod_code = {}
+    mod_libs = {}
     modules = {}
     app_libs = {}
     early_app_libs = {}
@@ -305,6 +306,7 @@ def generateAppFiles(data_dir, js_includes, app_name, debug, output, dynamic,
     for platform in app_platforms:
 
         mod_code[platform] = {}
+        mod_libs[platform] = {}
         modules[platform] = []
         pover[platform] = {}
         app_libs[platform] = ''
@@ -364,8 +366,8 @@ def generateAppFiles(data_dir, js_includes, app_name, debug, output, dynamic,
 
             parser.setPlatform(platform)
             mod_translator = pyjs.AppTranslator(parser=parser, optimize=optimize)
-            mod_code[platform][mod_name] = mod_translator._translate(mod_name,
-                                                  #is_app=mod_name==app_name,
+            mod_libs[platform][mod_name], mod_code[platform][mod_name] = \
+                              mod_translator.translate(mod_name,
                                                   is_app=False,
                                                   debug=debug)
             pover[platform].update(mod_translator.overrides.items())
@@ -455,7 +457,7 @@ def generateAppFiles(data_dir, js_includes, app_name, debug, output, dynamic,
                 app_name = app_name,
                 modnames = modnames,
                 overrides = overnames,
-                mod_libs = '',
+                mod_libs = mod_libs[platform][mod_name],
                 dynamic = dynamic,
                 mod_code = mod_code_,
             )

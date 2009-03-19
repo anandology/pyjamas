@@ -60,6 +60,8 @@ class TestRect:
 
         self.r.add(r)
 
+        RootPanel().add(HTML("New value: %d" % ( self.r.get_x())))
+        RootPanel().add(HTML("New value: %d" % ( self.r.get_y())))
         RootPanel().add(HTML("New value: %d %d" % ( self.r.get_x(), self.r.get_y())))
         RootPanel().add(HTML("New Area: %d" % self.r.area()))
 
