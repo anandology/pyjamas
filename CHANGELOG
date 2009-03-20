@@ -1,6 +1,26 @@
                     Changes made to Pyjamas since 0.5
                     ---------------------------------
 
+ * String constants are now returned as instances of String()
+   which results in them having the __iter__ method that has
+   been added to the proto of the javascript base String type.
+
+ * made TypeError inherit from BaseException rather than being a
+   javascript proto from Error().  TypeError can now be raised
+   as an Exception, with a message.
+
+ * made == comparison use __eq__, which conditionally uses __cmp__
+   if it is available: this fixes bugs in comparison of lists in the
+   LibTest.  replaced a large number of numerical "==" comparisons
+   with "is", so that __eq__ doesn't get called (efficiency).
+
+ * added support for calling *args on functions: previously, a call
+   function(*args) would result in the args being thrown away!
+
+ * made Tuple its own class, rather than inheriting from List, in order
+   that it can be distinguished from List.  __cmp__ of a List with a
+   Tuple now correctly fails.
+
  * rewrote the examples/libtest so that they can be run under standard
    python (python ./LibTest.py).  this allows for a comparison of pyjs
    against standard python.

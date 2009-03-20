@@ -6,17 +6,14 @@ class Handler:
         self._x = x
 
     def handle(self, y):
-        return self._x == y
+        return self._x is y
 
 def aProcedure():
     x = 1
-    if x == 2:
+    if x is 2:
         # a return statement which is not reached
         return "something"
     #this is a comment
-
-def aArgs(*args):
-    return args
 
 def aFunctionReturningNone():
     return None
@@ -52,29 +49,4 @@ class FunctionTest(UnitTest):
                         "Function should return None")
         self.assertTrue(aProcedure() is None,
                         "Procedures should always return None")
-
-    def testArgs(self):
-
-        args = (1,2)
-        res = aArgs(*args)
-        self.assertEqual(args, res)
-
-        args = 1
-        try:
-            res = aArgs(*args)
-            called = True
-        except TypeError:
-            called = False
-
-        self.assertFalse(called,
-                    "exception expected but not raised - TypeError: aArgs() argument after * must be a sequence")
-
-
-        args = (1,)
-        res = aArgs(*args)
-        self.assertEqual(args, res)
-
-        args = (1,)
-        res = aArgs(args)
-        self.assertEqual(args, (res,))
 

@@ -1,5 +1,9 @@
 from UnitTest import UnitTest
 
+def aArgs(*args):
+    return args
+
+
 class ArgsTest(UnitTest):
     def __init__(self):
         UnitTest.__init__(self)
@@ -18,27 +22,76 @@ class ArgsTest(UnitTest):
         self.assertEquals(values[1], 2)
         self.assertEquals(values[2], 3)
 
-    def testKeywordCall(self):
+    def testKeywordCall1(self):
         values = foo2(c=3, b=2, a=1)
         self.assertEquals(values[0], 1)
         self.assertEquals(values[1], 2)
         self.assertEquals(values[2], 3)
         
+    def testKeywordCall2(self):
         values = foo2(b=2, a=1, c=3)
         self.assertEquals(values[0], 1)
         self.assertEquals(values[1], 2)
         self.assertEquals(values[2], 3)
         
+    def testKeywordCall3(self):
+        values = foo2(1, c=3)
+        self.assertEquals(values[0], 1)
+        self.assertEquals(values[1], None)
+        self.assertEquals(values[2], 3)
+
+    def testKeywordCall4(self):
         values = foo2()
         self.assertEquals(values[0], None)
         self.assertEquals(values[1], None)
         self.assertEquals(values[2], None)
 
+    def testKeywordCall5(self):
         values = foo2(c=True)
         self.assertEquals(values[0], None)
         self.assertEquals(values[1], None)
         self.assertEquals(values[2], True)
         
+    def testStarArgs(self):
+        args = (1,2)
+        res = aArgs(*args)
+        self.assertEquals(args, res)
+
+        args = "123"
+        try:
+            res = aArgs(*args)
+            called = True
+            exc = None
+        except TypeError, e:
+            called = False
+            exc = e
+
+        # weird one: a string is a sequence, so it gets away with being
+        # called on its own as *args! eeugh.
+        self.assertTrue(called,
+                    "exception not expected but function called:" + repr(res) + repr(exc))
+        self.assertEquals(res, ("1", "2", "3"))
+
+
+        args = 1
+        try:
+            res = aArgs(*args)
+            called = True
+        except TypeError:
+            called = False
+
+        self.assertFalse(called,
+                    "exception expected but not raised - TypeError: aArgs() argument after * must be a sequence")
+
+
+        args = (1,)
+        res = aArgs(*args)
+        self.assertEquals(args, res)
+
+        args = (1,)
+        res = aArgs(args)
+        self.assertEquals((args,), res)
+
         
     def testDefaultValuesCall(self):
         values = foo3(b=7)

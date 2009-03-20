@@ -17,6 +17,14 @@ class ExceptionTest(UnitTest):
     def getName(self):
         return "Exception"
 
+    def testTypeError(self):
+        try:
+            raise TypeError("fred")
+        except:
+            self.assertTrue(True, "the exception should have happened")
+            return
+        self.assertTrue(False, "the exception should have happened")
+            
     def testExceptionOrdTrigger(self):
         try:
             x = ord(5) # shouldn't be a number
@@ -46,7 +54,7 @@ class ExceptionTest(UnitTest):
             raise MyException()
         except MyException, e:
             self.assertEqual(e.toString(), 'MyException',
-                             "Catched exception does not match")
+                             "Caught exception does not match")
             return
         self.fail('MyException was not caught or raised')
 
@@ -55,7 +63,7 @@ class ExceptionTest(UnitTest):
             raise MyException()
         except (MyException, MyException2), e:
             self.assertEqual(e.toString(), 'MyException',
-                             "Catched exception does not match")
+                             "Caught exception does not match")
             return
         self.fail('MyException was not caught or raised')
 

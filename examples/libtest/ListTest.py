@@ -10,47 +10,47 @@ class ListTest(UnitTest):
     def testSliceGet(self):
         value = [0, 1, 2, 3, 4]
 
-        self.assertTrue(value[-1]==4)
-        self.assertTrue(value[1]==1)
-        self.assertTrue(value[4]==4)
-        self.assertTrue(value[-3]==2)
+        self.assertTrue(value[-1] is 4)
+        self.assertTrue(value[1] is 1)
+        self.assertTrue(value[4] is 4)
+        self.assertTrue(value[-3] is 2)
 
     def testSliceRange(self):
         value = [0, 1, 2, 3, 4]
 
-        self.assertTrue(value[1:3][0]==1)
-        self.assertTrue(value[1:3][1]==2)
-        self.assertTrue(len(value[1:2])==1)
-        self.assertTrue(len(value[1:3])==2)
+        self.assertTrue(value[1:3][0] is 1)
+        self.assertTrue(value[1:3][1] is 2)
+        self.assertTrue(len(value[1:2]) is 1)
+        self.assertTrue(len(value[1:3]) is 2)
 
-        self.assertTrue(value[:2][0]==0)
-        self.assertTrue(value[:2][1]==1)
-        self.assertTrue(len(value[:2])==2)
-        self.assertTrue(len(value[:1])==1)
+        self.assertTrue(value[:2][0] is 0)
+        self.assertTrue(value[:2][1] is 1)
+        self.assertTrue(len(value[:2]) is 2)
+        self.assertTrue(len(value[:1]) is 1)
 
-        self.assertTrue(value[:-1][0]==0)
-        self.assertTrue(value[:-1][3]==3)
-        self.assertTrue(len(value[:-1])==4)
+        self.assertTrue(value[:-1][0] is 0)
+        self.assertTrue(value[:-1][3] is 3)
+        self.assertTrue(len(value[:-1]) is 4)
 
-        self.assertTrue(value[:][3]==3)
-        self.assertTrue(len(value[:])==5)
+        self.assertTrue(value[:][3] is 3)
+        self.assertTrue(len(value[:]) is 5)
 
-        self.assertTrue(value[0:][3]==3)
-        self.assertTrue(value[1:][0]==1)
-        self.assertTrue(len(value[1:])==4)
+        self.assertTrue(value[0:][3] is 3)
+        self.assertTrue(value[1:][0] is 1)
+        self.assertTrue(len(value[1:]) is 4)
 
-        self.assertTrue(value[-1:][0]==4)
-        self.assertTrue(len(value[-1:3])==0)
+        self.assertTrue(value[-1:][0] is 4)
+        self.assertTrue(len(value[-1:3]) is 0)
 
     def testDelete(self):
         value = [0, 1, 2, 3, 4]
         del value[4]
-        self.assertTrue(len(value)==4)
-        self.assertTrue(value[3]==3)
+        self.assertTrue(len(value) is 4)
+        self.assertTrue(value[3] is 3)
 
         del value[-1]
-        self.assertTrue(len(value)==3)
-        self.assertTrue(value[2]==2)
+        self.assertTrue(len(value) is 3)
+        self.assertTrue(value[2] is 2)
 
     def testPop(self):
         a = ['a']
@@ -63,19 +63,19 @@ class ListTest(UnitTest):
 
         x = value.pop(4)
         self.assertTrue(x==e)
-        self.assertTrue(len(value)==4)
+        self.assertTrue(len(value) is 4)
 
         x = value.pop(-1)
         self.assertTrue(x==d)
-        self.assertTrue(len(value)==3)
+        self.assertTrue(len(value) is 3)
 
         x = value.pop()
         self.assertTrue(x==c)
-        self.assertTrue(len(value)==2)
+        self.assertTrue(len(value) is 2)
 
         x = value.pop(0)
         self.assertTrue(x==a)
-        self.assertTrue(len(value)==1)
+        self.assertTrue(len(value) is 1)
 
     def testSort(self):
         l1 = ['c', 'd', 'a', 'b']
@@ -107,6 +107,28 @@ class ListTest(UnitTest):
         self.assertTrue(l4[1] == 'c')
         self.assertTrue(l4[2] == 'b')
         self.assertTrue(l4[3] == 'a')
+
+    def testCmp(self):
+
+        l1 = [1,2,3]
+        l2 = [1,2]
+        l3 = [1,2,3]
+        l4 = [1,2,4]
+
+        t1 = (1,2,3)
+
+        self.assertTrue(cmp(l1, l2) == 1)
+        self.assertTrue(cmp(l2, l1) == -1)
+        self.assertTrue(cmp(l3, l4) == -1)
+        self.assertTrue(cmp(l4, l3) == 1)
+
+    def testCmpListTuple(self):
+
+        t1 = (1,2,3)
+        l1 = [1,2,3]
+
+        self.assertFalse(l1 == t1)
+        self.assertTrue(cmp(l1, t1) == -1)
 
     def testSortCmp(self):
         a = A()

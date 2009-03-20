@@ -25,15 +25,58 @@ function pyjs_extend(klass, base) {
     }
 }
 
-function pyjs_kwargs_function_call(func, args)
+function pyjs_kwargs_call(obj, func, star_args, args)
 {
-    return func.apply(null, func.parse_kwargs.apply(null, args));
+    var call_args;
+
+    if (star_args)
+    {
+        if (!pyjslib.isIteratable(star_args))
+        {
+            throw (pyjslib.TypeError(func.__name__ + "() arguments after * must be a sequence" + pyjslib.repr(star_args)));
+        }
+        call_args = Array();
+        var __i = star_args.__iter__();
+        var i = 0;
+        try {
+            while (true) {
+                call_args[i]=__i.next();
+                i++;
+            }
+        } catch (e) {
+            if (e != StopIteration) {
+                throw e;
+            }
+        }
+
+        if (args)
+        {
+            var n = star_args.length;
+            for (var i=0; i < args.length; i++) {
+                call_args[n+i]=args[i];
+            }
+        }
+    }
+    else
+    {
+        call_args = args;
+    }
+    return func.apply(obj, call_args);
 }
 
-function pyjs_kwargs_method_call(obj, method_name, args)
+function pyjs_kwargs_function_call(func, star_args, args)
+{
+    return pyjs_kwargs_call(null, func, star_args, args);
+}
+
+function pyjs_kwargs_method_call(obj, method_name, star_args, args)
 {
     var method = obj[method_name];
-    return method.apply(obj, method.parse_kwargs.apply(null, args));
+    if (method.parse_kwargs)
+    {
+        args = method.parse_kwargs.apply(null, args);
+    }
+    return pyjs_kwargs_call(obj, method, star_args, args);
 }
 
 String.prototype.__getitem__ = String.prototype.charAt;

@@ -79,6 +79,7 @@ PYJSLIB_BUILTIN_CLASSES=("BaseException",
                          "Exception",
                          "StandardError",
                          "AttributeError",
+                         "TypeError",
                          "KeyError",
                          "LookupError",
                          "list",
@@ -355,7 +356,7 @@ class Translator:
                 print >> output, "    if (typeof %s == 'undefined') %s=%s;" % (default_name, default_name, default_value)
 
     def _varargs_handler(self, node, varargname, arg_names, current_klass):
-        print >>self.output, "    var", varargname, '= new pyjslib.List([]);'
+        print >>self.output, "    var", varargname, '= new pyjslib.Tuple();'
         print >>self.output, "    for(var __va_arg="+str(len(arg_names))+"; __va_arg < arguments.length; __va_arg++) {"
         print >>self.output, "        var __arg = arguments[__va_arg];"
         print >>self.output, "        "+varargname+".append(__arg);"
@@ -496,6 +497,10 @@ class Translator:
         call_name = strip_py(call_name)
 
         kwargs = []
+        star_arg_name = None
+        if v.star_args:
+            star_arg_name = self.expr(v.star_args, current_klass)
+
         for ch4 in v.args:
             if isinstance(ch4, ast.Keyword):
                 kwarg = ch4.name + ":" + self.expr(ch4.expr, current_klass)
@@ -505,15 +510,24 @@ class Translator:
                 call_args.append(arg)
 
         if kwargs:
+            fn_args = ", ".join(['{' + ', '.join(kwargs) + '}']+call_args)
+        else:
+            fn_args = ", ".join(call_args)
+
+        if kwargs or star_arg_name:
+            if not star_arg_name:
+                star_arg_name = 'null'
             try: call_this, method_name = call_name.rsplit(".", 1)
             except ValueError:
                 # Must be a function call ...
                 return ("pyjs_kwargs_function_call("+call_name+", "
-                                  + "["+", ".join(['{' + ', '.join(kwargs) + '}']+call_args)+"]"
+                                  + star_arg_name 
+                                  + ", ["+fn_args+"]"
                                   + ")" )
             else:
                 return ("pyjs_kwargs_method_call("+call_this+", '"+method_name+"', "
-                                  + "["+", ".join(['{' + ', '.join(kwargs) + '}']+call_args)+"]"
+                                  + star_arg_name 
+                                  + ", ["+fn_args+"]"
                                   + ")")
         else:
             return call_name + "(" + ", ".join(call_args) + ")"
@@ -1197,6 +1211,8 @@ class Translator:
         rhs_node = node.ops[0][1]
         rhs = self.expr(rhs_node, current_klass)
 
+        if op == "==":
+            return "pyjslib.eq(%s, %s)" % (lhs, rhs)
         if op == "in":
             return rhs + ".__contains__(" + lhs + ")"
         elif op == "not in":
@@ -1298,7 +1314,7 @@ class Translator:
             v = node.value
             if isinstance(node.value, unicode):
                 v = v.encode('utf-8')
-            return  "'%s'" % escapejs(v)
+            return  "String('%s')" % escapejs(v)
         elif node.value is None:
             return "null"
         else:

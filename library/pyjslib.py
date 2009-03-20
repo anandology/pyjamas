@@ -231,9 +231,9 @@ class BaseException:
         self.args = args
 
     def __str__(self):
-        if len(self.args) == 0:
+        if len(self.args) is 0:
             return ''
-        elif len(self.args) == 1:
+        elif len(self.args) is 1:
             return repr(self.args[0])
         return repr(self.args)
 
@@ -244,7 +244,7 @@ class Exception(BaseException):
 
     name = "Exception"
 
-class TypeError(Exception):
+class TypeError(BaseException):
     name = "TypeError"
 
 class StandardError(Exception):
@@ -412,6 +412,16 @@ class Class:
     def __str___(self):
         return self.name
 
+def eq(a,b):
+    JS("""
+    if (pyjslib.hasattr(a, "__cmp__")) {
+        return a.__cmp__(b) == 0;
+    } else if (pyjslib.hasattr(b, "__cmp__")) {
+        return b.__cmp__(a) == 0;
+    }
+    return a == b;
+    """)
+
 def cmp(a,b):
     if hasattr(a, "__cmp__"):
         return a.__cmp__(b)
@@ -507,6 +517,18 @@ class List:
         return a;
         """)
 
+    def __cmp__(self, l):
+        if not isinstance(l, List):
+            return -1
+        ll = len(self) - len(l)
+        if ll != 0:
+            return ll
+        for x in range(len(l)):
+            ll = cmp(self.__getitem__(x), l[x])
+            if ll != 0:
+                return ll
+        return 0
+
     def slice(self, lower, upper):
         JS("""
         if (upper==null) return pyjslib.List(this.l.slice(lower));
@@ -581,9 +603,152 @@ class List:
 
 list = List
 
-class Tuple(List):
-    def __init__(self, data):
-        List.__init__(self, data)
+class Tuple:
+    def __init__(self, data=None):
+        JS("""
+        this.l = [];
+        this.extend(data);
+        """)
+
+    def append(self, item):
+        JS("""    this.l[this.l.length] = item;""")
+
+    def extend(self, data):
+        JS("""
+        if (pyjslib.isArray(data)) {
+            n = this.l.length;
+            for (var i=0; i < data.length; i++) {
+                this.l[n+i]=data[i];
+                }
+            }
+        else if (pyjslib.isIteratable(data)) {
+            var iter=data.__iter__();
+            var i=this.l.length;
+            try {
+                while (true) {
+                    var item=iter.next();
+                    this.l[i++]=item;
+                    }
+                }
+            catch (e) {
+                if (e != StopIteration) throw e;
+                }
+            }
+        """)
+
+    def remove(self, value):
+        JS("""
+        var index=this.index(value);
+        if (index<0) return false;
+        this.l.splice(index, 1);
+        return true;
+        """)
+
+    def index(self, value, start=0):
+        JS("""
+        var length=this.l.length;
+        for (var i=start; i<length; i++) {
+            if (this.l[i]==value) {
+                return i;
+                }
+            }
+        return -1;
+        """)
+
+    def insert(self, index, value):
+        JS("""    var a = this.l; this.l=a.slice(0, index).concat(value, a.slice(index));""")
+
+    def pop(self, index = -1):
+        JS("""
+        if (index<0) index = this.l.length + index;
+        var a = this.l[index];
+        this.l.splice(index, 1);
+        return a;
+        """)
+
+    def __cmp__(self, l):
+        if not isinstance(l, Tuple):
+            return -1
+        ll = len(self) - len(l)
+        if ll != 0:
+            return ll
+        for x in range(len(l)):
+            ll = cmp(self.__getitem__(x), l[x])
+            if ll != 0:
+                return ll
+        return 0
+
+    def slice(self, lower, upper):
+        JS("""
+        if (upper==null) return pyjslib.Tuple(this.l.slice(lower));
+        return pyjslib.Tuple(this.l.slice(lower, upper));
+        """)
+
+    def __getitem__(self, index):
+        JS("""
+        if (index<0) index = this.l.length + index;
+        return this.l[index];
+        """)
+
+    def __setitem__(self, index, value):
+        JS("""    this.l[index]=value;""")
+
+    def __delitem__(self, index):
+        JS("""    this.l.splice(index, 1);""")
+
+    def __len__(self):
+        JS("""    return this.l.length;""")
+
+    def __contains__(self, value):
+        return self.index(value) >= 0
+
+    def __iter__(self):
+        JS("""
+        var i = 0;
+        var l = this.l;
+        return {
+            'next': function() {
+                if (i >= l.length) {
+                    throw StopIteration;
+                }
+                return l[i++];
+            },
+            '__iter__': function() {
+                return this;
+            }
+        };
+        """)
+
+    def reverse(self):
+        JS("""    this.l.reverse();""")
+
+    def sort(self, compareFunc=None, keyFunc=None, reverse=False):
+        if not compareFunc:
+            global cmp
+            compareFunc = cmp
+        if keyFunc and reverse:
+            def thisSort1(a,b):
+                return -compareFunc(keyFunc(a), keyFunc(b))
+            self.l.sort(thisSort1)
+        elif keyFunc:
+            def thisSort2(a,b):
+                return compareFunc(keyFunc(a), keyFunc(b))
+            self.l.sort(thisSort2)
+        elif reverse:
+            def thisSort3(a,b):
+                return -compareFunc(a, b)
+            self.l.sort(thisSort3)
+        else:
+            self.l.sort(compareFunc)
+
+    def getArray(self):
+        """
+        Access the javascript Array that is used internally by this list
+        """
+        return self.l
+
+    def __str__(self):
+        return repr(self)
 
 tuple = Tuple
 
@@ -783,20 +948,20 @@ def slice(object, lower, upper):
 
 def str(text):
     JS("""
-    if (text.__str__) {
+    if (pyjslib.hasattr(text,"__str__")) {
         return text.__str__();
     }
     return String(text);
     """)
 
 def ord(x):
-    if(isString(x) and len(x) == 1):
+    if(isString(x) and len(x) is 1):
         JS("""
             return x.charCodeAt(0);
         """)
     else:
         JS("""
-            throw TypeError;
+            throw pyjslib.TypeError();
         """)
     return None
 
@@ -939,6 +1104,11 @@ def len(object):
     """)
 
 def isinstance(object_, classinfo):
+    if pyjslib.isUndefined(object_):
+        return False
+    if not pyjslib.isObject(object_):
+        
+        return False
     if _isinstance(classinfo, Tuple):
         for ci in classinfo:
             if isinstance(object_, ci):
@@ -948,6 +1118,8 @@ def isinstance(object_, classinfo):
         return _isinstance(object_, classinfo)
 
 def _isinstance(object_, classinfo):
+    if not pyjslib.isObject(object_):
+        return False
     JS("""
     if (object_.__class__){
         var res =  object_ instanceof classinfo.constructor;
@@ -1002,7 +1174,7 @@ def filter(obj, method, sequence=None):
     # object context is LOST when a method is passed, hence object must be passed separately
     # to emulate python behaviour, should generate this code inline rather than as a function call
     items = []
-    if sequence == None:
+    if sequence is None:
         sequence = method
         method = obj
 
@@ -1020,7 +1192,7 @@ def filter(obj, method, sequence=None):
 def map(obj, method, sequence=None):
     items = []
 
-    if sequence == None:
+    if sequence is None:
         sequence = method
         method = obj
 
@@ -1045,7 +1217,7 @@ def enumerate(sequence):
 def min(*sequence):
     minValue = None
     for item in sequence:
-        if minValue == None:
+        if minValue is None:
             minValue = item
         elif item < minValue:
             minValue = item
@@ -1055,7 +1227,7 @@ def min(*sequence):
 def max(*sequence):
     maxValue = None
     for item in sequence:
-        if maxValue == None:
+        if maxValue is None:
             maxValue = item
         elif item > maxValue:
             maxValue = item
@@ -1080,7 +1252,7 @@ def hash(obj):
 # type functions from Douglas Crockford's Remedial Javascript: http://www.crockford.com/javascript/remedial.html
 def isObject(a):
     JS("""
-    return (a && typeof a == 'object') || pyjslib.isFunction(a);
+    return (a != null && (typeof a == 'object')) || pyjslib.isFunction(a);
     """)
 
 def isFunction(a):
@@ -1110,7 +1282,7 @@ def isUndefined(a):
 
 def isIteratable(a):
     JS("""
-    return pyjslib.isObject(a) && a.__iter__;
+    return pyjslib.isString(a) || (pyjslib.isObject(a) && a.__iter__);
     """)
 
 def isNumber(a):

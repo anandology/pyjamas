@@ -100,7 +100,8 @@ class ClassTest(UnitTest):
         self.assertEquals(obj1.z, expected_result3, "Did not inherit property from grandparent")
         self.assertEquals(obj2.z, expected_result3, "Did not inherit property from grandparent")
 
-        self.assertNotEqual(getattr(obj1, "r", None), expected_result4, "ExampleGrandParentConstructor.__init__() was called")
+        res = getattr(obj1, "r", None)
+        self.assertNotEqual(res, expected_result4, "ExampleGrandParentConstructor.__init__() was called (%s)" % res)
         self.assertNotEqual(getattr(obj2, "r", None), expected_result4, "ExampleGrandParentConstructor.__init__() was called")
 
         # check inherited class vars (from parent)

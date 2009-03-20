@@ -22,7 +22,7 @@ class SetTest(UnitTest):
 		
 		self.assertTrue('a' in value)
 		self.assertTrue('c' not in value)
-		self.assertTrue(len(value)==2)
+		self.assertTrue(len(value) is 2)
 
 	def testRemove(self):
 		value = Set(['a', 'b', 'c'])
@@ -38,7 +38,7 @@ class SetTest(UnitTest):
 		for i in value:
 			items.remove(i)			
 
-		self.assertTrue(len(items)==0)
+		self.assertTrue(len(items) is 0)
 
 	def testAddObject(self):
 		v1 = DummyClass('a')
@@ -57,7 +57,7 @@ class SetTest(UnitTest):
 		self.assertTrue(v2 in value)
 		self.assertTrue(v3 in value)
 		self.assertTrue(v4 not in value)
-		self.assertTrue(len(value)==3)
+		self.assertTrue(len(value) is 3)
 		
 		i = 0
 		for v in value:
