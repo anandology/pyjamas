@@ -244,6 +244,9 @@ class Exception(BaseException):
 
     name = "Exception"
 
+class TypeError(Exception):
+    name = "TypeError"
+
 class StandardError(Exception):
     name = "StandardError"
 
@@ -264,15 +267,10 @@ class AttributeError(StandardError):
         return "AttributeError: %s of %s" % (self.args[1], self.args[0])
 
 JS("""
-StopIteration = function () {};
+StopIteration = function () { };
 StopIteration.prototype = new Error();
 StopIteration.name = 'StopIteration';
 StopIteration.message = 'StopIteration';
-
-TypeError = function () {};
-TypeError.prototype = new Error();
-TypeError.name = "TypeError";
-TypeError.message = "TypeError";
 
 pyjslib.String_find = function(sub, start, end) {
     var pos=this.indexOf(sub, start);

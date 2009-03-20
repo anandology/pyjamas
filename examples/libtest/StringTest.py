@@ -113,3 +113,9 @@ class StringTest(UnitTest):
             t += x
         self.assertEqual(text, t)
 
+    def testStrTuple(self):
+        self.assertEqual(str((5,6)), "(5, 6)")
+
+    def testStrList(self):
+        self.assertEqual(str([5,6]), "[5, 6]")
+
