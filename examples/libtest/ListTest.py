@@ -114,8 +114,9 @@ class ListTest(UnitTest):
         l1.sort()
         l2 = [1, a]
         l2.sort()
-        self.assertTrue(l1[0] == a)
-        self.assertTrue(l2[0] == a)
+        self.assertTrue(l1[0] is a) # don't use == it will call A.__cmp__!
+        self.assertTrue(l2[0] is a) # don't use == it will call A.__cmp__!
+        self.assertFalse(l1[0] == a) # use == A.__cmp__ always fails
 
     def testReverse(self):
         l = [1,2,3]
