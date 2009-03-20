@@ -408,7 +408,6 @@ class Translator:
 
         function_args = "(" + ", ".join(declared_arg_names) + ")"
         print >>self.output, "%s = function%s {" % (function_name, function_args)
-        print >>self.output, "\tthis.__name__ = '%s';" % (node.name)
         self._default_args_handler(node, normal_arg_names, None)
 
         if node.varargs:
@@ -424,6 +423,7 @@ class Translator:
                 print >>self.output, "    return null;"
 
         print >>self.output, "};"
+        print >>self.output, "%s.__name__ = '%s';\n" % (function_name, node.name)
 
 
         self._kwargs_parser(node, function_name, normal_arg_names, None)
