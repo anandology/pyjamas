@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from UnitTest import UnitTest
+import write
 
 class StringTest(UnitTest):
     def __init__(self):
@@ -56,11 +57,18 @@ class StringTest(UnitTest):
         text=" this is  a rather long string  "
         space=" "
         empty=""
-        expected_result1=" this is  a rather long string "
+        expected_result1=" this is  a rather long string  "
         expected_result2="thisis  a rather long string  "
         expected_result3="this is a rather long string"
 
-        result=space.join(text.split(space))
+        t = text.split(space)
+        self.assertEquals(t[0], '')
+        self.assertEquals(t[1], 'this')
+        self.assertEquals(t[2], 'is')
+        self.assertEquals(t[3], '')
+        self.assertEquals(t[4], 'a')
+
+        result=space.join(t)
         self.assertEquals(result, expected_result1)
 
         result=empty.join(text.split(space, 2))

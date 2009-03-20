@@ -346,6 +346,10 @@ pyjslib.String_split = function(sep, maxsplit) {
     }
     else if (!pyjslib.isUndefined(maxsplit)) do_max=true;
 
+    if (subject.length == 0) {
+        return items;
+    }
+
     while (start<subject.length) {
         if (do_max && !maxsplit--) break;
 
@@ -355,7 +359,7 @@ pyjslib.String_split = function(sep, maxsplit) {
         items.append(subject.substring(start, pos));
         start=pos+sep.length;
     }
-    if (start<subject.length) items.append(subject.substring(start));
+    if (start<=subject.length) items.append(subject.substring(start));
 
     return items;
 }
