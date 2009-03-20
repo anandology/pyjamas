@@ -230,6 +230,13 @@ class BaseException:
     def __init__(self, *args):
         self.args = args
 
+    def __str__(self):
+        if len(self.args) == 0:
+            return ''
+        elif len(self.args) == 1:
+            return str(self.args[0])
+        return str(self.args)
+
     def toString(self):
         return str(self)
 
@@ -567,6 +574,9 @@ class List:
         """
         return self.l
 
+    def __str__(self):
+        return repr(self)
+
 list = List
 
 class Tuple(List):
@@ -715,6 +725,9 @@ class Dict:
     def copy(self):
         return Dict(self.items())
 
+    def __str__(self):
+        return repr(self)
+
 dict = Dict
 
 # taken from mochikit: range( [start,] stop[, step] )
@@ -768,6 +781,9 @@ def slice(object, lower, upper):
 
 def str(text):
     JS("""
+    if (text.__str__) {
+        return text.__str__();
+    }
     return String(text);
     """)
 

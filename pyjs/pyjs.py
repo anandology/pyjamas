@@ -219,6 +219,11 @@ class Translator:
             print >>self.output, '  this.name = "' + haltException + '";'
             print >>self.output, '}'
             print >>self.output, ''
+            print >>self.output, haltException + ".prototype.__str__ = function()"
+            print >>self.output, '{'
+            print >>self.output, 'return this.message ;'
+            print >>self.output, '}'
+
             print >>self.output, haltException + ".prototype.toString = function()"
             print >>self.output, '{'
             print >>self.output, 'return this.name + ": \\"" + this.message + "\\"";'
