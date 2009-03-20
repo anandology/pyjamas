@@ -47,11 +47,14 @@ class AttributeTest(UnitTest):
         f2 = Foo(2)
         self.assertEqual(f2.getV(), 2)
 
+        f3 = Foo(3)
+        self.assertEqual(f3.getV(), 3)
+
         # bound method
         setattr(f1, "getV", getattr(f2, "getV"))
         self.assertEqual(f1.getV(), 2)
 
         # unbound method
-        setattr(f1, "getV", f2.getV)
-        self.assertEqual(f1.getV(), 1)
+        setattr(f1, "getV", f3.getV) # reeallly need to have __getattr__
+        self.assertEqual(f1.getV(), 3)
 
