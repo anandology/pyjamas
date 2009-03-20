@@ -234,8 +234,8 @@ class BaseException:
         if len(self.args) == 0:
             return ''
         elif len(self.args) == 1:
-            return str(self.args[0])
-        return str(self.args)
+            return repr(self.args[0])
+        return repr(self.args)
 
     def toString(self):
         return str(self)
@@ -847,10 +847,10 @@ def repr(x):
            return x.toString();
 
        if (t == "string") {
-           if (x.indexOf('"') == -1)
-               return '"' + x + '"';
            if (x.indexOf("'") == -1)
                return "'" + x + "'";
+           if (x.indexOf('"') == -1)
+               return '"' + x + '"';
            var s = x.replace(new RegExp('"', "g"), '\\\\"');
            return '"' + s + '"';
        };
