@@ -15,6 +15,9 @@ def aProcedure():
         return "something"
     #this is a comment
 
+def aArgs(*args):
+    return args
+
 def aFunctionReturningNone():
     return None
 
@@ -49,3 +52,29 @@ class FunctionTest(UnitTest):
                         "Function should return None")
         self.assertTrue(aProcedure() is None,
                         "Procedures should always return None")
+
+    def testArgs(self):
+
+        args = (1,2)
+        res = aArgs(*args)
+        self.assertEqual(args, res)
+
+        args = 1
+        try:
+            res = aArgs(*args)
+            called = True
+        except TypeError:
+            called = False
+
+        self.assertFalse(called,
+                    "exception expected but not raised - TypeError: aArgs() argument after * must be a sequence")
+
+
+        args = (1,)
+        res = aArgs(*args)
+        self.assertEqual(args, res)
+
+        args = (1,)
+        res = aArgs(args)
+        self.assertEqual(args, (res,))
+
