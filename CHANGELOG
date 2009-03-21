@@ -1,6 +1,9 @@
                     Changes made to Pyjamas since 0.5
                     ---------------------------------
 
+ * Top-level global variables, and top-level functions, now
+   correctly scope in a module (thanks to Jose for raising this one)
+
  * String constants are now returned as instances of String()
    which results in them having the __iter__ method that has
    been added to the proto of the javascript base String type.

@@ -411,11 +411,20 @@ class Translator:
         print >>self.output, "%s = function%s {" % (function_name, function_args)
         self._default_args_handler(node, normal_arg_names, None)
 
+        local_arg_names = normal_arg_names + declared_arg_names 
+
         if node.varargs:
             self._varargs_handler(node, varargname, declared_arg_names, None)
+            local_arg_names.append(varargname)
+
+        # stack of local variable names for this function call
+        self.local_arg_stack.append(local_arg_names)
 
         for child in node.code:
             self._stmt(child, None)
+
+        # remove the top local arg names
+        self.local_arg_stack.pop()
 
         # we need to return null always, so it is not undefined
         lastStmt = [p for p in node.code][-1]
@@ -598,13 +607,15 @@ class Translator:
                                       return_none_for_module=False):
 
         if v.name == 'ilikesillynamesfornicedebugcode':
-            print current_klass, repr(v), dir(v)
+            print top_level, current_klass, repr(v)
             print self.top_level_vars
             print self.top_level_functions
             print self.local_arg_stack
+            print "error..."
 
         local_var_names = None
-        if len(self.local_arg_stack) > 0:
+        las = len(self.local_arg_stack)
+        if las > 0:
             local_var_names = self.local_arg_stack[-1]
 
         if v.name == "True":
@@ -620,6 +631,8 @@ class Translator:
         elif v.name in self.top_level_functions:
             return UU+self.modpfx() + v.name
         elif v.name in self.method_imported_globals:
+            return UU+self.modpfx() + v.name
+        elif not current_klass and las == 1 and v.name in self.top_level_vars:
             return UU+self.modpfx() + v.name
         elif v.name in local_var_names:
             return v.name
@@ -1025,6 +1038,10 @@ class Translator:
                self._assign(tnode2, current_klass, top_level)
             return
 
+        local_var_names = None
+        if len(self.local_arg_stack) > 0:
+            local_var_names = self.local_arg_stack[-1]
+
         def _lhsFromAttr(v, current_klass):
             attr_name = v.attrname
             if isinstance(v.expr, ast.Name):
@@ -1053,7 +1070,9 @@ class Translator:
                         lhs = UU + vname
                     self.add_local_arg(v.name)
             else:
-                if v.name in self.method_imported_globals:
+                if v.name in local_var_names:
+                    lhs = v.name
+                elif v.name in self.method_imported_globals:
                     lhs = self.modpfx() + v.name
                 else:
                     lhs = "var " + v.name

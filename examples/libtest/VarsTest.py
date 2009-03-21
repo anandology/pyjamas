@@ -3,6 +3,15 @@ import foo
 
 module_global_x = 1
 
+data = []
+data.append(5)
+data.append(6)
+
+data_test = cmp(data, [1,2,3])
+
+def changeme(lst):
+    lst[0] = 5
+
 # setting the bases as a GetAttr expression here is by intent to test
 # GetAttr nodes in Class bases
 class VarsTest(UnitTest.UnitTest):
@@ -11,6 +20,18 @@ class VarsTest(UnitTest.UnitTest):
 
     def getName(self):
         return "Vars"
+
+    def testGlobalListData(self):
+        global data
+        global data_test
+
+        self.assertTrue(cmp(data, [1,2,3]), "global list should be [1,2,3]")
+        self.assertTrue(data_test, "global test of list should be True")
+
+    def testChangeUsingTopLevelFunction(self):
+        l = [1,2,3]
+        changeme(l)
+        self.assertEqual(l[0], 5)
 
     def testChangeVarInInnerScope(self):
         x = 5
