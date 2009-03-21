@@ -8,7 +8,11 @@ from os.path import join, dirname, basename, abspath, split, isfile, isdir
 from optparse import OptionParser
 import pyjs
 from cStringIO import StringIO
-import md5
+try:
+    # Python 2.5 and above
+    from hashlib import md5
+except:
+    import md5
 import re
 
 usage = """
