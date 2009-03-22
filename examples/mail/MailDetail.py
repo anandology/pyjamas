@@ -7,6 +7,8 @@ from Logger import Logger
 
 class MailDetail(Composite):
     def __init__(self):
+        Composite.__init__(self)
+
         panel = VerticalPanel()
         headerPanel = VerticalPanel()
         self.subject = HTML()

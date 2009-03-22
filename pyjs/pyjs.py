@@ -579,7 +579,9 @@ class Translator:
                 self._stmt(stmt, current_klass)
         print >>self.output, "    }"
 
-    def _getattr(self, v, current_klass):
+    # XXX: change use_getattr to True to enable "strict" compilation
+    # but incurring a 100% performance penalty. oops.
+    def _getattr(self, v, current_klass, use_getattr=False):
         attr_name = v.attrname
         if isinstance(v.expr, ast.Name):
             obj = self._name(v.expr, current_klass, return_none_for_module=True)
@@ -590,7 +592,10 @@ class Translator:
                 if v.expr.name == 'sys':
                     return v.expr.name+'.'+attr_name
                 return v.expr.name+'.__'+attr_name+'.prototype.__class__'
-            return obj + "." + attr_name
+            if not use_getattr or attr_name == '__class__' or \
+                    attr_name == '__name__':
+                return obj + "." + attr_name
+            return "pyjslib.getattr(%s, '%s')" % (obj, attr_name)
         elif isinstance(v.expr, ast.Getattr):
             return self._getattr(v.expr, current_klass) + "." + attr_name
         elif isinstance(v.expr, ast.Subscript):
@@ -979,7 +984,7 @@ class Translator:
 
         if debugStmt:
 
-            errMsg = "Error in " + self.get_line_trace(node)
+            lt = self.get_line_trace(node)
 
             haltException = self.module_prefix + "HaltException"
             isHaltFunction = self.module_prefix + "IsHaltException"
@@ -988,11 +993,13 @@ class Translator:
             print >>self.output, '      if (' + isHaltFunction + '(err.name)) {'
             print >>self.output, '          throw err;'
             print >>self.output, '      } else {'
-            print >>self.output, '          st = sys.printstack();'
-            print >>self.output, '          alert("' + errMsg + '"' \
-                                                + '+"stack trace:\\n"' \
-                                                + '+st+"\\n"' \
-                                                + '+err.name+": "+err.message'\
+            print >>self.output, "          st = sys.printstack() + "\
+                                                + '"%s"' % lt + "+ '\\n' ;"
+            print >>self.output, '          alert("' + "Error in " \
+                                                + lt + '"' \
+                                                + '+"\\n"+err.name+": "+err.message'\
+                                                + '+"\\n\\nStack trace:\\n"' \
+                                                + '+st' \
                                                 + ');'
             print >>self.output, '          debugger;'
 
@@ -1015,13 +1022,14 @@ class Translator:
         return self.raw_module_name + ".py, line " \
                + str(lineNum) + ":"\
                + "\\n" \
-               + "    " + srcLine \
-               + "\\n"
+               + "    " + srcLine
 
     def _augassign(self, node, current_klass):
         v = node.node
         if isinstance(v, ast.Getattr):
-            lhs = self._getattr(v, current_klass)
+            # XXX HACK!  don't allow += on return result of getattr.
+            # TODO: create a temporary variable or something.
+            lhs = self._getattr(v, current_klass, False)
         else:
             lhs = self._name(node.node, current_klass)
         op = node.op

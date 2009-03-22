@@ -38,7 +38,12 @@ sys.loadpath = './';
 var wait_count = 0;
 
 var onExecutionError = function (exception, name) {
-   alert( "In application " + name + " - " + exception.name + ': '  + exception.message );
+    var extra = '';
+    if (exception.name.indexOf('HaltException', 0) < 0) { 
+        extra = "\n.  Rebuild with pyjsbuild -d for more information.";
+    }
+   alert( "In application " + name + " - " + 
+          exception.name + ': '  + exception.message + extra);
 };
 
 function %(app_name)s_imported() {

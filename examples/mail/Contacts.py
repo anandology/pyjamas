@@ -40,6 +40,8 @@ class ContactPopup(PopupPanel):
 
 class Contacts(Composite):
     def __init__(self):
+        Composite.__init__(self)
+
         self.contacts = []
         self.contacts.append(Contact("Benoit Mandelbrot", "benoit@example.com"))
         self.contacts.append(Contact("Albert Einstein", "albert@example.com"))

@@ -36,8 +36,8 @@ class DeckPanel(ComplexPanel):
     def getWidgetIndex(self, child):
         return self.children.index(child)
 
-    def insert(self, widget, beforeIndex):
-        if (self.beforeIndex < 0) or (self.beforeIndex > self.getWidgetCount()):
+    def insert(self, widget, beforeIndex=None):
+        if (beforeIndex < 0) or (beforeIndex > self.getWidgetCount()):
             # throw new IndexOutOfBoundsException();
             return
 

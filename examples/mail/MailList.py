@@ -13,6 +13,8 @@ class MailList(Composite):
     VISIBLE_EMAIL_COUNT = 10
 
     def __init__(self, mailObject):
+        Composite.__init__(self)
+
         self.countLabel = HTML()
         self.newerButton = HTML("<a href='javascript:;'>&lt; newer</a>", True)
         self.olderButton = HTML("<a href='javascript:;'>older &gt;</a>", True)

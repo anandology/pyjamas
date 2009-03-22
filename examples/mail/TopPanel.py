@@ -11,6 +11,9 @@ from Logger import Logger
 class TopPanel(Composite):
 
     def __init__(self):
+
+        Composite.__init__(self)
+
         self.signOutLink = HTML("<a href='javascript:;'>Sign Out</a>")
         self.aboutLink = HTML("<a href='javascript:;'>About</a>")
 

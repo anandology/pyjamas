@@ -8,6 +8,8 @@ from Contacts import Contacts
 class Shortcuts(Composite):
 
     def __init__(self):
+        Composite.__init__(self)
+
         stackPanel = StackPanel()
         stackPanel.add(Mailboxes(), self.createHeaderHTML("mailgroup.gif", "Mail"), True)
         stackPanel.add(Tasks(), self.createHeaderHTML("tasksgroup.gif", "Tasks"), True)

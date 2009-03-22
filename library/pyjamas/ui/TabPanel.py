@@ -68,8 +68,8 @@ class TabPanel(Composite):
     def getWidgetIndex(self, child):
         return self.tab_children.index(child)
 
-    def insert(self, widget, tabText, asHTML, beforeIndex=None):
-        if beforeIndex == None:
+    def insert(self, widget, tabText, asHTML=False, beforeIndex=None):
+        if beforeIndex is None:
             beforeIndex = asHTML
             asHTML = False
 

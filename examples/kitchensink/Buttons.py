@@ -7,6 +7,9 @@ from pyjamas.ui.RadioButton import RadioButton
 
 class Buttons(Sink):
     def __init__(self):
+
+        Sink.__init__(self)
+
         disabledButton = Button("Disabled Button")
         disabledCheck = CheckBox("Disabled Check")
         normalButton = Button("Normal Button")
