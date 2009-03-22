@@ -65,6 +65,26 @@ AJAX apps in Python (like Google did for Java)</span></big>
     Web that pyjamas - and incidentally GWT - really are.
 </p>
 <h2>
+        Setting up
+</h2>
+<p>
+    First, download Pyjamas 0.5 or above, and unpack it.  Or, preferably,
+    obtain the latest subversion code from following the instructions
+    at the
+    <a href="https://sourceforge.net/scm/?type=svn&group_id=239074">pyjamas
+    sourceforge page</a>.
+</p>
+<p>
+    In the main
+    subdirectory, run "python bootstrap.py" to create the "buildout"
+    application, which you will find has been created in the bin/
+    subdirectory.  Run buildout, and it will create bin/pyjsbuild
+    and bin/pyjscompile.  You now have a development environment
+    that is tailored specifically to your system (known as a developer
+    sandbox).
+</p>
+
+<h2>
         Examples
 </h2>
 <p>
@@ -80,31 +100,33 @@ AJAX apps in Python (like Google did for Java)</span></big>
 <p>
     Once you have played with the example, online, try it on your local
     machine.  Remember to run the "build.sh" script (if you have linux
-    or MacOS, or execute python.exe ../../build/build.py Hello.py if
+    or MacOS, or execute python.exe ../../bin/pyjsbuild Hello.py if
     you have windows).  Then, take a look at the source code
     that generated it, which is shown here:
 </p>
 <pre class="code">
 from pyjamas import Window
-from pyjamas.ui import RootPanel, Button
+from pyjamas.ui.RootPanel import RootPanel
+from pyjamas.ui.Button import Button
 
 def greet(sender):
     Window.alert("Hello, AJAX!")
 
-class Hello:
-    def onModuleLoad(self):
-        b = Button("Click me", greet)
-        RootPanel().add(b)
+if __name__ == '__main__':
+    b = Button("Click me", greet)
+    RootPanel().add(b)
 </pre>
 <p>
-    The most important thing to note is that, firstly, you're declaring
-    a class (Hello), which <i>must</i> match the name of the HTML file
-    in the same subdirectory (in this case, Hello.html), and the second
-    thing to note is that it has an "onModuleLoad()" function.  This
-    is the function which gets called, indirectly, via the browser's
+    Pyjamas "emulates" the standard python convention of apps having
+    an "__name__" variable which you can - and should always - detect in
+    any python app that you write.
+    The whole application is called, indirectly, via the browser's
     <i>body.onload</i> javascript system (Pyjamas provides a convenience
     library including an onload function which goes hunting, automatically,
-    for your module).
+    for your module).  This is purely mentioned to illustrate to you that
+    you do not need to care about the "usual" javascript "stuff", you can
+    just get on with developing as if it was a real python application
+    environment.
 </p>
 <p>
     The second important thing to note is that everything gets added to
@@ -113,7 +135,7 @@ class Hello:
     try adding this, and see what happens:
 </p>
 <pre class="code">
-        RootPanel().add(HTML("Hello &lt;b&gt;World&lt;/b&gt;"))
+    RootPanel().add(HTML("Hello &lt;b&gt;World&lt;/b&gt;"))
 </pre>
 <p>
     You <i>should</i> get nothing - and if you look in your Javascript
@@ -122,7 +144,7 @@ class Hello:
     add this to the top of the module, along with the other imports:
 </p>
 <pre class="code">
-from pyjamas.ui import HTML
+from pyjamas.ui.HTML import HTML
 </pre>
 <p>
     Now if you re-run build.sh, you should see both a button and next
