@@ -37,9 +37,17 @@ sys.loadpath = './';
 
 var wait_count = 0;
 
+var onExecutionError = function (exception, name) {
+   alert( "In application " + name + " - " + exception.name + ': '  + exception.message );
+};
+
 function %(app_name)s_imported() {
     %(app_name)s.__name__ = '__main__';
-    %(app_name)s('__main__');
+    try {
+        %(app_name)s('__main__');
+    } catch (exception) {
+        onExecutionError(exception, '%(app_name)s');
+    }
 }
 
 function prepare_app() {
@@ -51,11 +59,11 @@ function prepare_app() {
 }
 
 function pygwtOnLoad(onLoadError, name) {
-    if (onLoadError)
+    if (onLoadError != null)
         try {
             prepare_app();
         } catch (exception) {
-            onLoadError(name);
+            onLoadError(exception, name);
         }
     else {
         prepare_app();
