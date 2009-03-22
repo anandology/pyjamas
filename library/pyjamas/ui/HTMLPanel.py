@@ -34,7 +34,7 @@ class HTMLPanel(ComplexPanel):
         global HTMLPanel_sUid
 
         HTMLPanel_sUid += 1
-        return "HTMLPanel_" + HTMLPanel_sUid
+        return "HTMLPanel_%d" % HTMLPanel_sUid
 
     def getElementById(self, element, id):
         element_id = DOM.getAttribute(element, "id")
