@@ -16,8 +16,8 @@ from pyjamas.ui.FocusWidget import FocusWidget
 
 class ButtonBase(FocusWidget):
 
-    def __init__(self, element):
-        FocusWidget.__init__(self, element)
+    def __init__(self, element, **kwargs):
+        FocusWidget.__init__(self, element, **kwargs)
 
     def getHTML(self):
         return DOM.getInnerHTML(self.getElement())

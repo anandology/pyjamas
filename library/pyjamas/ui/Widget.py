@@ -21,10 +21,12 @@ class Widget(UIObject):
         used by any Widget, including management of parents and adding/removing the
         event handler association with the DOM.
     """
-    def __init__(self):
+    def __init__(self, **kwargs):
         self.attached = False
         self.parent = None
         self.layoutData = None
+
+        UIObject.__init__(**kwargs)
 
     def getLayoutData(self):
         return self.layoutData

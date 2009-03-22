@@ -522,6 +522,65 @@ class ArgsTest(UnitTest):
         self.assertEquals(values[1]["x"], 4)
         self.assertEquals(values[1]["y"], 5)
        
+    def testKwArgsRecurse(self):
+        kwa = kw_args(x=5, y=6)
+        if kwa:
+            self.assertEquals(kwa.get('x'), 5)
+            self.assertEquals(kwa.get('y'), 6)
+
+        kwa = kw_args2(x=5, y=6)
+        if kwa:
+            self.assertEquals(kwa.get('x'), 5)
+            self.assertEquals(kwa.get('y'), 6)
+
+    def testKwArgsInherit(self):
+
+        c = KwArgs(x=5, y=6)
+        self.assertTrue(hasattr(c, 'kwargs'))
+        kwa = getattr(c, 'kwargs', None)
+        if kwa:
+            self.assertEquals(kwa.get('x'), 5)
+            self.assertEquals(kwa.get('y'), 6)
+            self.assertEquals(kwa.get('z'), 7)
+
+        try:
+            c = Kwargs2(x=5, y=6)
+            self.assertTrue(hasattr(c, 'kwargs'))
+            kwa = getattr(c, 'kwargs', None)
+            if kwa:
+                self.assertEquals(kwa.get('x'), 5)
+                self.assertEquals(kwa.get('y'), 6)
+                self.assertEquals(kwa.get('z'), 7)
+        except:
+            self.assertTrue(False, "runtime error in kwargs, needs investigating")
+
+        c.set_kwargs(x=5, y=6)
+        self.assertTrue(hasattr(c, 'kwargs'))
+        kwa = getattr(c, 'kwargs', None)
+        if kwa:
+            self.assertEquals(kwa.get('x'), 5)
+            self.assertEquals(kwa.get('y'), 6)
+            self.assertEquals(kwa.get('z'), 8)
+
+
+        c.set_kwargs2(x=5, y=6)
+        self.assertTrue(hasattr(c, 'kwargs'))
+        kwa = getattr(c, 'kwargs', None)
+        if kwa:
+            self.assertEquals(kwa.get('x'), 5)
+            self.assertEquals(kwa.get('y'), 6)
+            self.assertEquals(kwa.get('z'), 8)
+
+
+        c.set_kwargs3(x=5, y=6)
+        self.assertTrue(hasattr(c, 'kwargs'))
+        kwa = getattr(c, 'kwargs', None)
+        if kwa:
+            self.assertEquals(kwa.get('x'), 5)
+            self.assertEquals(kwa.get('y'), 6)
+            self.assertEquals(kwa.get('z'), 8)
+
+
 def foo(a, b, c):
     return [a, b, c]
 
@@ -634,4 +693,31 @@ class ArgsTestClass3:
     def foo6(self, *args, **kwargs):
         return (args, kwargs)
 
+
+class KwArgs:
+    def __init__(self, z=7, **kwargs):
+        self.kwargs = kwargs
+        self.kwargs['z'] = z # XXX this causes problems: kwargs is undefined
+
+    def set_kwargs(self, z=8, **kwargs):
+        self.kwargs = kwargs
+        self.kwargs['z'] = z
+
+class Kwargs2(KwArgs):
+
+    def __init__(self, **kwargs):
+        KwArgs.__init__(self, **kwargs)
+
+    def set_kwargs2(self, **kwargs):
+        KwArgs.set_kwargs(self, **kwargs)
+
+    def set_kwargs3(self, **kwargs):
+        skw = getattr(self, "set_kwargs")
+        skw(**kwargs)
+
+def kw_args(**kwargs):
+    return kwargs
+
+def kw_args2(**kwargs):
+    return kw_args(**kwargs)
 

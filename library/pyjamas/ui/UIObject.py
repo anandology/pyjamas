@@ -12,8 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from pyjamas import DOM
+from pyjamas import Window
 
 class UIObject:
+
+    def __init__(self, **kwargs):
+        """ apply properties as a dictionary, e.g.
+            x = UIObject(StyleName='class-name')
+        """
+        if kwargs:
+            Window.alert(self.__name__ + repr(kwargs))
+            for prop in kwargs.keys():
+                fn = getattr(self, "set%s" % prop, None)
+                if fn:
+                    fn(keys[prop])
 
     def getAbsoluteLeft(self):
         return DOM.getAbsoluteLeft(self.getElement())

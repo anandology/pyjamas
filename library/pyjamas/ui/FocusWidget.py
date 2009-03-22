@@ -22,8 +22,8 @@ from pyjamas.ui.KeyboardListener import KeyboardListener
 
 class FocusWidget(Widget):
 
-    def __init__(self, element):
-        Widget.__init__(self)
+    def __init__(self, element, **kwargs):
+        Widget.__init__(self, **kwargs)
         self.clickListeners = []
         self.focusListeners = []
         self.keyboardListeners = []
