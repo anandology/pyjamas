@@ -3,6 +3,8 @@ from UnitTest import UnitTest
 def aArgs(*args):
     return args
 
+def ftest(a, b):
+    return [a, b]
 
 class ArgsTest(UnitTest):
     def __init__(self):
@@ -11,6 +13,29 @@ class ArgsTest(UnitTest):
     def getName(self):
         return "Args"
  
+    def testNaming1(self):
+        values = ftest(1, 2)
+        self.assertEquals(values[0], 1)
+        self.assertEquals(values[1], 2)
+
+    def testNaming2(self):
+        values = ftest(a=1, b=2)
+        self.assertEquals(values[0], 1)
+        self.assertEquals(values[1], 2)
+
+    def testNaming3(self):
+        values = ftest(1, b=2)
+        self.assertEquals(values[0], 1)
+        self.assertEquals(values[1], 2)
+
+    def testNaming4(self):
+        exc_raised = False
+        try:
+            values = ftest(1, c=2)
+        except TypeError, t:
+            exc_raised = True
+        self.assertTrue(exc_raised, "TypeError 'c' unexpected arg not raised")
+
     def testSimpleCall(self):
         values = foo(1, 2, 3)
         self.assertEquals(values[0], 1)
