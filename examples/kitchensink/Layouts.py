@@ -18,16 +18,16 @@ class Layouts(Sink):
     def __init__(self):
         Sink.__init__(self)
 
-        text="This is a <code>ScrollPanel</code> contained at "
-        text+= "the center of a <code>DockPanel</code>.  "
-        text+= "By putting some fairly large contents "
-        text+= "in the middle and setting its size explicitly, it becomes a "
-        text+= "scrollable area within the page, but without requiring the use of "
-        text+= "an IFRAME."
-        text+= "Here's quite a bit more meaningless text that will serve primarily "
-        text+= "to make this thing scroll off the bottom of its visible area.  "
-        text+= "Otherwise, you might have to make it really, really small in order "
-        text+= "to see the nifty scroll bars!"
+        text="""This is a <code>ScrollPanel</code> contained at 
+        the center of a <code>DockPanel</code>. 
+        By putting some fairly large contents 
+        in the middle and setting its size explicitly, it becomes a 
+        scrollable area within the page, but without requiring the use of 
+        an IFRAME.
+        Here's quite a bit more meaningless text that will serve primarily 
+        to make this thing scroll off the bottom of its visible area.  
+        Otherwise, you might have to make it really, really small in order 
+        to see the nifty scroll bars!"""
         
         contents = HTML(text)
         scroller = ScrollPanel(contents)
@@ -78,9 +78,9 @@ class Layouts(Sink):
 
         Logger.write("Layouts", "TODO: htmlpanel")
         id = HTMLPanel.createUniqueId()
-        text="This is an <code>HTMLPanel</code>.  It allows you to add "
-        text+="components inside existing HTML, like this:" + "<span id='" + id
-        text+="'></span>" + "Notice how the menu just fits snugly in there?  Cute."
+        text="""This is an <code>HTMLPanel</code>.  It allows you to add 
+            components inside existing HTML, like this: <span id='%s' />
+            Notice how the menu just fits snugly in there?  Cute.""" % id
         html = HTMLPanel(text)
         
         DOM.setStyleAttribute(menu.getElement(), "display", "inline")
@@ -114,12 +114,12 @@ class Layouts(Sink):
 
 
 def init():
-    text="This page demonstrates some of the basic GWT panels, each of which"
-    text+="arranges its contained widgets differently.  "
-    text+="These panels are designed to take advantage of the browser's "
-    text+="built-in layout mechanics, which keeps the user interface snappy "
-    text+="and helps your AJAX code play nicely with existing HTML.  "
-    text+="On the other hand, if you need pixel-perfect control, "
-    text+="you can tweak things at a low level using the "
-    text+="<code>DOM</code> class."
+    text="""This page demonstrates some of the basic GWT panels, each of which
+        arranges its contained widgets differently.  
+        These panels are designed to take advantage of the browser's 
+        built-in layout mechanics, which keeps the user interface snappy 
+        and helps your AJAX code play nicely with existing HTML.  
+        On the other hand, if you need pixel-perfect control, 
+        you can tweak things at a low level using the 
+        <code>DOM</code> class."""
     return SinkInfo("Layouts", text, Layouts)
