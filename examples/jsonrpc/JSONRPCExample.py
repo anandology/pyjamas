@@ -23,7 +23,13 @@ class JSONRPCExample:
 
         self.status=Label()
         self.text_area = TextArea()
-        self.text_area.setText(r"{'Test'} [\"String\"]")
+        self.text_area.setText("""{'Test'} [\"String\"]
+\tTest Tab
+Test Newline\n
+after newline
+""" + r"""Literal String:
+{'Test'} [\"String\"]
+""")
         self.text_area.setCharacterWidth(80)
         self.text_area.setVisibleLines(8)
         
