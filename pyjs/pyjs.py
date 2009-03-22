@@ -95,6 +95,7 @@ PYJS_GLOBAL_VARS=("console")
 # This is taken from the django project.
 # Escape every ASCII character with a value less than 32.
 JS_ESCAPES = (
+    ('\\', r'\x5C'),
     ('\'', r'\x27'),
     ('"', r'\x22'),
     ('>', r'\x3E'),
