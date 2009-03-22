@@ -53,8 +53,13 @@ after newline
         buttons.add(self.button_py)
         buttons.setSpacing(8)
         
-        info = r"<h2>JSON-RPC Example</h2><p>This example demonstrates the calling of server services with <a href=\"http://json-rpc.org/\">JSON-RPC</a>."
-        info += "<p>Enter some text below, and press a button to send the text to an Echo service on your server. An echo service simply sends the exact same text back that it receives."
+        info = """<h2>JSON-RPC Example</h2>
+        <p>This example demonstrates the calling of server services with
+           <a href="http://json-rpc.org/">JSON-RPC</a>.
+        </p>
+        <p>Enter some text below, and press a button to send the text
+           to an Echo service on your server. An echo service simply sends the exact same text back that it receives.
+           </p>"""
         
         panel = VerticalPanel()
         panel.add(HTML(info))
