@@ -106,14 +106,14 @@ def import_module(path, parent_module, module_name, dynamic=1, async=False):
     """)
 
 JS("""
-var data = '';
-var element = $doc.createElement("div");
-$doc.body.appendChild(element);
-function write_dom(txt) {
-    element.innerHTML = txt + '<br />';
-}
-
 function import_wait(proceed_fn, parent_mod, dynamic) {
+
+    var data = '';
+    var element = $doc.createElement("div");
+    $doc.body.appendChild(element);
+    function write_dom(txt) {
+        element.innerHTML = txt + '<br />';
+    }
 
     var timeoutperiod = 100;
     if (dynamic)

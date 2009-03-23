@@ -1,6 +1,9 @@
                     Changes made to Pyjamas since 0.5
                     ---------------------------------
 
+ * Added python-spidermonkey as an experimental platform, exactly like
+   pyv8run.py now there is pysmrun.py
+
  * Top-level global variables, and top-level functions, now
    correctly scope in a module (thanks to Jose for raising this one)
 
