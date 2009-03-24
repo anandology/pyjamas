@@ -18,15 +18,7 @@ install_requires = []
 keyw = """\
 """
 
-# yuk, spew, hurl.  but it works.  anyone got any better ideas?
-if sys.platform == "win32":
-    datadir = os.path.join("share", "pyjamas")
-else:
-    # last thing we want on unix systems is the data files ending
-    # up in a random egg subdirectory, where no-one can find them.
-    # windows platform, i couldn't care less where they end up but
-    # it musn't be a fixed path, it must be a relative path.
-    datadir = "/usr/share/pyjamas"
+datadir = os.path.join("share", "pyjamas")
 
 bp_data_files = glob.glob(os.path.join("builder", "boilerplate", "*"))
 test_files = glob.glob(os.path.join("pyjs", "tests", "*"))
@@ -77,7 +69,7 @@ pprint(data_files)
 
 if __name__ == '__main__':
     setup(name = "Pyjamas",
-        version = "0.5",
+        version = "0.5p1",
         description = "Pyjamas Widget API for Web applications, in Python",
         long_description = open('README', 'rt').read(),
         url = "http://pyjs.org",
