@@ -1,0 +1,34 @@
+Source: python-pyjamas
+Section: python
+Priority: extra
+Maintainer: Luke Kenneth Casson Leighton <lkcl@lkcl.net>
+Build-Depends: debhelper (>= 7)
+Standards-Version: 3.7.3
+Homepage: http://pyjs.org
+
+Package: python-pyjamas
+Architecture: all
+Depends: python (>= 2.4), python-central (>= 0.5.7)
+Description: Python Web Widget Toolkit and Python-to-Javascript Compiler
+  Pyjamas is a stand-alone python to javascript compiler, an AJAX
+  framework / library and a Desktop-like Widget set API.
+  .
+  Pyjamas is typically used for the development of "Web 2.0"
+  RIAs, where the application can be almost exclusively written
+  in Python, instead of Javascript, yet compiled to run in the
+  user's browser.
+  .
+  Pyjamas does not do the "usual" static AJAX javascript framework
+  paradigm but instead provides the developer with the tools and
+  the libraries to write their own Web 2.0 AJAX Framework, as if
+  they were programming and working with a standard Desktop Widget
+  Set.
+  .
+  The Pyjamas User-Interface Widget Set is very very similar to that
+  of Python-Qt4 and Python-Gtk2, with the distinct advantage that
+  applications run in all major web browsers, with absolutely no plugins
+  required (only javascript need be enabled).  Additional advantages
+  over the use of standard Desktop Widget sets are that Pyjamas provides
+  direct access to the full set of HTML features - CSS, NPAPI Plugins
+  such as Adobe Flash, and SVG 2D Canvas.  Are all directly available.
+
