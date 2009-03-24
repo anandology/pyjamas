@@ -20,9 +20,6 @@ from pyjs.jsonrpc import JSONRPCServiceBase
 
 class JSONRPCService(JSONRPCServiceBase):
     
-    def add_method(self, name, method):
-        self.methods[name] = method
-        
     def __call__(self, request, extra=None):
         return self.process(request.raw_post_data)
 

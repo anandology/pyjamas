@@ -19,6 +19,9 @@ class JSONRPCServiceBase:
                                            }
                                      })
 
+    def add_method(self, name, method):
+        self.methods[name] = method
+
     def process(self, data):
         data = simplejson.loads(data)
         id, method, params = data["id"], data["method"], data["params"]
