@@ -1,42 +1,36 @@
-This package was debianized by Luke Kenneth Casson Leighton <lkcl@lkcl.net> on
-Tue, 24 Mar 2009 19:26:53 +0000.
+This package was debianized by Luke Kenneth Casson Leighton <lkcl@lkcl.net>
+on Tue, 24 Mar 2009 19:26:53 +0000.
 
-It was downloaded from <url://example.com>
+It was downloaded from http://pyjs.org
 
 Upstream Author(s):
 
-    <put author's name and email here>
-    <likewise for another author>
+    Luke Kenneth Casson Leighton <lkcl@lkcl.net>
+    James Tauber
+    Google, Inc.
 
 Copyright:
 
-    <Copyright (C) YYYY Name OfAuthor>
-    <likewise for another author>
+    Copyright (C) 2008, 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
+    Copyright (C) 2006 James Tauber
 
 License:
 
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted under the terms of the BSD License.
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
 
-    THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
-    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-    ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
-    FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-    DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
-    OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-    HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-    LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
-    OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-    SUCH DAMAGE.
+        http://www.apache.org/licenses/LICENSE-2.0
 
-On Debian systems, the complete text of the BSD License can be
-found in `/usr/share/common-licenses/BSD'.
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 
 
-The Debian packaging is (C) 2009, Luke Kenneth Casson Leighton <lkcl@lkcl.net> and
-is licensed under the GPL, see `/usr/share/common-licenses/GPL'.
+
+The Debian packaging is (C) 2009, Luke Kenneth Casson Leighton <lkcl@lkcl.net>
+and is licensed under the GPL, see `/usr/share/common-licenses/GPL'.
 
 
-# Please also look if there are files or directories which have a
-# different copyright/license attached and list them here.
