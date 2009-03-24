@@ -19,12 +19,18 @@ app_library_dirs = [
     join(builddir, "library/builtins"),
     join(builddir, "library"),
     join(builddir, "addons")]
- 
+
+cx = None
 
 def pysm_print_fn(arg):
     print arg
 def pysm_import_module(parent_name, module_name):
-    pass
+    if module_name == 'sys':
+        return
+    print module_name
+    exec "import %s as _module" % module_name
+    print _module, dir(_module)
+    cx.add_global(module_name, _module)
 
 def main():
 
@@ -49,6 +55,7 @@ def main():
     #txt = pyjs.translate(file_name, module_name)
 
     rt = spidermonkey.Runtime()
+    global cx
     cx = rt.new_context()
     cx.add_global("pysm_print_fn", pysm_print_fn)
     cx.add_global("pysm_import_module", pysm_import_module)
@@ -64,8 +71,11 @@ def main():
     txt = template % {'app_libs': app_libs, 'module_name': file_name,
                       'module': txt}
 
-    for mod_name in app_translator.library_modules:
-        txt += "%s();\n" % mod_name
+    txt += "sys();\n" 
+    txt += "pyjslib();\n" 
+    txt += "%s();\n" % file_name
+
+    print txt
 
     cx.execute(txt)
 

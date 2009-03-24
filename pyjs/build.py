@@ -18,9 +18,9 @@ import re
 usage = """
   usage: %prog [options] <application module name or path>
 
-This is the command line builder for the pyjamas project, which can be used to
-build Ajax applications from Python.
-For more information, see the website at http://pyjamas.pyworks.org/
+This is the command line builder for the pyjamas project, which can
+be used to build Ajax applications from Python.
+For more information, see the website at http://pyjs.org/
 """
 
 # GWT1.2 Impl  | GWT1.2 Output         | Pyjamas 0.2 Platform | Pyjamas 0.2 Output
