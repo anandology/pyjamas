@@ -5,9 +5,13 @@ Installing Pyjamas
 System Installation
 ===================
 
-As usual, run::
+If you are installing pyjamas system-wide, for use by MORE THAN ONE
+developer of the same multi-user system, run the following command.
+Otherwise DO NOT run setup.py, see below (bootstrap.py).
 
  python setup.py install
+
+You *may* need to specify --install-data={pickasuitablelocation}
 
 The commands pyjscompile and pyjsbuild will be installed;
 the boilerplate web templates, the pyjamas "builtin" libraries
@@ -26,11 +30,11 @@ Developer Sandbox Setup
 In this directory run::
 
  python bootstrap.py
- ./bin/buildout
 
-The files ``./bin/pyjsbuild`` and ``./bin/pyjscompile`` will be created.
+The files ``./bin/pyjsbuild`` and ``./bin/pyjscompile`` will be created,
+custom-tailored with hard-coded paths specific to the exact absolute
+location that the bootstrap.py command is run from.
 
-To build pyjama apps see ``./bin/pyjsbuild --help``
-
+To build pyjamas apps see ``./bin/pyjsbuild --help``
 
 

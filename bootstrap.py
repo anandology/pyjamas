@@ -1,52 +1,91 @@
-##############################################################################
-#
-# Copyright (c) 2006 Zope Corporation and Contributors.
-# All Rights Reserved.
-#
-# This software is subject to the provisions of the Zope Public License,
-# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
-# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
-# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE.
-#
-##############################################################################
-"""Bootstrap a buildout-based project
+#!/usr/bin/python
 
-Simply run this script in a directory containing a buildout.cfg.
-The script accepts buildout command-line options, so you can
-use the -c option to specify an alternate configuration file.
+""" simple creation of two commands, customised for your specific system.
+    windows users get a corresponding batch file.  yippeeyaiyay.
+"""
+pyjsbuild = """#!/usr/bin/python
 
-$Id$
+pth = '%s'
+
+import os
+import sys
+sys.path[0:0] = [
+  pth,
+  ]
+
+import pyjs, sys
+pyjs.path += [os.path.join(pth, 'library'),
+os.path.join(pth, 'library', 'builtins'),
+os.path.join(pth, 'addons'),
+]
+sys.argv.extend(['-D', pth])
+
+import pyjs.build
+
+if __name__ == '__main__':
+    pyjs.build.main()
 """
 
-import os, shutil, sys, tempfile, urllib2
+pyjscompile = """
+#!/usr/bin/python
 
-tmpeggs = tempfile.mkdtemp()
+pth = '%s'
 
-ez = {}
-exec urllib2.urlopen('http://peak.telecommunity.com/dist/ez_setup.py'
-                     ).read() in ez
-ez['use_setuptools'](to_dir=tmpeggs, download_delay=0)
+import os
+import sys
+sys.path[0:0] = [
+  pth,
+  ]
 
-import pkg_resources
+import pyjs
+pyjs.path += [os.path.join(pth, 'library')]
 
-cmd = 'from setuptools.command.easy_install import main; main()'
-if sys.platform == 'win32':
-    cmd = '"%s"' % cmd # work around spawn lamosity on windows
+import pyjs
 
-ws = pkg_resources.working_set
-assert os.spawnle(
-    os.P_WAIT, sys.executable, sys.executable,
-    '-c', cmd, '-mqNxd', tmpeggs, 'zc.buildout',
-    dict(os.environ,
-         PYTHONPATH=
-         ws.find(pkg_resources.Requirement.parse('setuptools')).location
-         ),
-    ) == 0
+if __name__ == '__main__':
+    pyjs.main()
+"""
 
-ws.add_entry(tmpeggs)
-ws.require('zc.buildout')
-import zc.buildout.buildout
-zc.buildout.buildout.main(sys.argv[1:] + ['bootstrap'])
-shutil.rmtree(tmpeggs)
+batcmdtxt = '''@echo off
+set CMD_LINE_ARGS=
+:setArgs
+if ""%%1""=="""" goto doneSetArgs
+set CMD_LINE_ARGS=%%CMD_LINE_ARGS%% %%1
+shift
+goto setArgs
+:doneSetArgs
+
+python %s %%CMD_LINE_ARGS%%
+'''
+
+import os
+import sys
+
+def make_cmd(pth, cmdname, txt):
+
+    if sys.platform == 'win32':
+        cmd_name = cmdname + ".py"
+
+    cmd = os.path.join("bin", cmd_name)
+    if os.path.exists(cmd):
+        os.unlink(cmd)
+    f = open(cmd, "w")
+    f.write(txt % pth)
+    f.close()
+
+    if hasattr(os, "chmod"):
+        os.chmod(cmd, 0555)
+
+    if sys.platform == 'win32':
+
+        cmd = os.path.join("bin", cmdname)
+        batcmd = "%s.bat" % cmd
+        f = open(batcmd, "w")
+        f.write(batcmdtxt % cmd_name)
+        f.close()
+
+pth = os.path.abspath(os.getcwd())
+
+make_cmd(pth, "pyjsbuild", pyjsbuild)
+make_cmd(pth, "pyjscompile", pyjscompile)
+
