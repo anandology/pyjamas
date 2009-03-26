@@ -49,7 +49,7 @@ var onExecutionError = function (exception, name) {
 function %(app_name)s_imported() {
     %(app_name)s.__name__ = '__main__';
     try {
-        %(app_name)s('__main__');
+        modules['%(app_name)s'] = %(app_name)s('__main__');
     } catch (exception) {
         onExecutionError(exception, '%(app_name)s');
     }
