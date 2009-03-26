@@ -61,7 +61,7 @@ python %s %%CMD_LINE_ARGS%%
 import os
 import sys
 
-def make_cmd(pth, cmdname, txt):
+def make_cmd(pth, cmd_name, txt):
 
     if sys.platform == 'win32':
         cmd_name = cmdname + ".py"
