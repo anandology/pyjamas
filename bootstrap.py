@@ -65,6 +65,8 @@ def make_cmd(pth, cmd_name, txt):
 
     if sys.platform == 'win32':
         cmd_name = cmdname + ".py"
+    else:
+        cmd_name = cmdname
 
     cmd = os.path.join("bin", cmd_name)
     if os.path.exists(cmd):
