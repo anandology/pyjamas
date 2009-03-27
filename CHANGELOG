@@ -1,6 +1,9 @@
                     Changes made to Pyjamas since 0.5
                     ---------------------------------
 
+ * Added Right-clickable Context Menus, and added an example in KitchenSink
+   Menus.py to show how to set them up.
+
  * Added python-spidermonkey as an experimental platform, exactly like
    pyv8run.py now there is pysmrun.py
 
