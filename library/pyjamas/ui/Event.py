@@ -25,6 +25,7 @@ class Event:
     ONBLUR        = 0x01000
     ONCHANGE      = 0x00400
     ONCLICK       = 0x00001
+    ONCONTEXTMENU = 0x20000
     ONDBLCLICK    = 0x00002
     ONERROR       = 0x10000
     ONFOCUS       = 0x00800

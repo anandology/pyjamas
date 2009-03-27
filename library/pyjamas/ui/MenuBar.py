@@ -83,15 +83,18 @@ class MenuBar(Widget):
 
         item = self.findItem(DOM.eventGetTarget(event))
         if item == None:
-            return
+            return False
 
         type = DOM.eventGetType(event)
         if type == "click":
             self.doItemAction(item, True)
+            return True
         elif type == "mouseover":
             self.itemOver(item)
         elif type == "mouseout":
             self.itemOver(None)
+
+        return False
 
     def onPopupClosed(self, sender, autoClosed):
         if autoClosed:

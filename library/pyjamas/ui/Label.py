@@ -57,6 +57,8 @@ class Label(Widget):
                 else: listener(self, event)
         elif type == "mousedown" or type == "mouseup" or type == "mousemove" or type == "mouseover" or type == "mouseout":
             MouseListener.fireMouseEvent(self, self.mouseListeners, self, event)
+        else:
+            Widget.onBrowserEvent(self, event)
 
     def removeClickListener(self, listener):
         self.clickListeners.remove(listener)

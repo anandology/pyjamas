@@ -281,6 +281,7 @@ def eventGetTypeInt(event):
       case "mouseup": return 0x00008;
       case "scroll": return 0x04000;
       case "error": return 0x10000;
+      case "contextmenu": return 0x20000;
     }
     """)
 
@@ -750,6 +751,7 @@ def sinkEvents(element, bits):
     element.onscroll      = (bits & 0x04000) ? $wnd.__dispatchEvent : null;
     element.onload      = (bits & 0x08000) ? $wnd.__dispatchEvent : null;
     element.onerror    = (bits & 0x10000) ? $wnd.__dispatchEvent : null;
+    element.oncontextmenu = (bits & 0x20000) ? $wnd.__dispatchEvent : null;
     """)
 
 def toString(elem):

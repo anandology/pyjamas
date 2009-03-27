@@ -2,6 +2,10 @@ from Sink import Sink, SinkInfo
 from pyjamas.ui.MenuBar import MenuBar
 from pyjamas.ui.MenuItem import MenuItem
 from pyjamas import Window
+from pyjamas.ui.HTML import HTML
+from pyjamas.ui.VerticalPanel import VerticalPanel
+from pyjamas import DOM
+from pyjamas.ui.ContextMenuPopupPanel import ContextMenuPopupPanel
 
 class Menus(Sink):
     def __init__(self):
@@ -33,7 +37,31 @@ class Menus(Sink):
         
         self.menu.setWidth("100%")
         
-        self.initWidget(self.menu)
+        self.panel = VerticalPanel()
+        self.context = HTML("""Right-Click me<br/>to show a context menu.<br />
+                               Left-click me<br />to do absolutely nothing.""")
+
+        self.panel.add(self.menu)
+        self.panel.add(self.context)
+
+        self.initWidget(self.panel)
+
+        self.context.setContextMenu(self)
+
+    def onContextMenu(self, sender):
+
+        event = DOM.eventGetCurrentEvent()
+
+        subMenu = MenuBar(True)
+        subMenu.addItem("<code>Code</code>", True, self)
+        subMenu.addItem("<strike>Strikethrough</strike>", True, self)
+        subMenu.addItem("<u>Underlined</u>", True, self)
+
+        x = DOM.eventGetClientX(event) + 2
+        y = DOM.eventGetClientY(event) + 2
+        
+        popup = ContextMenuPopupPanel(subMenu)
+        popup.showAt(x, y)
 
 
     def execute(self):

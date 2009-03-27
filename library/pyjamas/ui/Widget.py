@@ -12,8 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from pyjamas import DOM
+from pyjamas import log
 
 from pyjamas.ui.UIObject import UIObject
+from pyjamas.ui.Event import Event
 
 class Widget(UIObject):
     """
@@ -25,6 +27,7 @@ class Widget(UIObject):
         self.attached = False
         self.parent = None
         self.layoutData = None
+        self.contextMenu = None
 
         UIObject.__init__(**kwargs)
 
@@ -41,8 +44,26 @@ class Widget(UIObject):
         """Return whether or not this widget has been attached to the document."""
         return self.attached
 
+    def setContextMenu(self, menu):
+        self.contextMenu = menu
+        if menu:
+            self.sinkEvents(Event.ONCONTEXTMENU)
+        else:
+            self.unsinkEvents(Event.ONCONTEXTMENU)
+
     def onBrowserEvent(self, event):
-        pass
+
+        if self.contextMenu is None:
+            return True
+
+        type = DOM.eventGetType(event)
+        if type == "contextmenu":
+            DOM.eventCancelBubble(event, True)
+            DOM.eventPreventDefault(event)
+            self.contextMenu.onContextMenu(self)
+            return False
+
+        return True
 
     def onLoad(self):
         pass
