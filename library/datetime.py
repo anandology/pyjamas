@@ -1,18 +1,24 @@
 class Datetime:
-    def __init__(self, year=None, month=None, date=None, hours=None, minutes=None, seconds=None):
+    def __init__(self, year=None, month=None, day=None, hours=None, minutes=None, seconds=None):
         JS("""	
 	if (seconds != null)
-	    this.date = new Date(year, month, date, hours, minutes, seconds);
+	    this.date = new Date(year, month, day, hours, minutes, seconds);
 	else if (minutes != null)
-	    this.date = new Date(year, month, date, hours, minutes);
+	    this.date = new Date(year, month, day, hours, minutes);
 	else if (hours != null)
-	    this.date = new Date(year, month, date, hours);
+	    this.date = new Date(year, month, day, hours);
 	else if (date != null)
-	    this.date = new Date(year, month, date);
+	    this.date = new Date(year, month, day);
 	else if (month != null)
 	    this.date = new Date(year, month);
-	else if (year != null)
-	    this.date = new Date(year);
+	else if (year != null) {
+        if pyjslib.isNumber(year) {
+            this.date = new Date(year);
+        }
+        else if pyjslib.isinstance(year, Date.DateTime) {
+            this.date = new Date();
+            this.date.setDate(year.date.getDate());
+        }
 	else
 	    this.date = new Date();
         """)
