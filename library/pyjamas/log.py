@@ -13,7 +13,7 @@ def write(text):
     DOM.setInnerHTML(element, data)
 
 def writebr(text):
-    write(text + r"\n")
+    write(text + "\n")
 
 data = ""
 element = None
