@@ -33,6 +33,15 @@ def enableScrolling(enable):
    $doc.body.style.overflow = enable ? 'auto' : 'hidden';
    """)
 
+def scrollBy(x, y):
+    JS("""
+    $wnd.scrollBy(x, y);
+    """)
+
+def scroll(x, y):
+    JS("""
+    $wnd.scroll(x, y);
+    """)
 
 def getClientHeight():
     JS("""
