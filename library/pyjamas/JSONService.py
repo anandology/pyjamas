@@ -32,7 +32,6 @@ class JSONService:
     def __sendNotify(self, method, params):
         msg = {"id":None, "method":method, "params":params}
         msg_data = self.parser.encode(msg)
-        RootPanel().add(HTML(msg_data))
         if not HTTPRequest().asyncPost(self.url, msg_data, self):
             return -1
         return 1
