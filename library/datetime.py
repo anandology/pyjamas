@@ -7,21 +7,31 @@ class Datetime:
 	    this.date = new Date(year, month, day, hours, minutes);
 	else if (hours != null)
 	    this.date = new Date(year, month, day, hours);
-	else if (date != null)
+	else if (day != null)
 	    this.date = new Date(year, month, day);
 	else if (month != null)
 	    this.date = new Date(year, month);
-	else if (year != null) {
-        if pyjslib.isNumber(year) {
+	else if (year != null)
+    {
+        if (pyjslib.isNumber(year))
+        {
+            /* a number on its own is a "value" */
             this.date = new Date(year);
         }
-        else if pyjslib.isinstance(year, Date.DateTime) {
-            this.date = new Date();
-            this.date.setDate(year.date.getDate());
+        else if (pyjslib.isinstance(year, Date.DateTime))
+        {
+            /* Datetime object */
+            this.date = new Date(year.date.valueOf());
         }
+    }
 	else
 	    this.date = new Date();
         """)
+
+    def getValue(self):
+        JS("""
+	return this.date.valueOf();
+	""")
 
     def getDate(self):
         JS("""
