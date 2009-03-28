@@ -34,7 +34,8 @@ with the simplest example, the Slideshow Loader.
 Here is the basis of the Slideshow example, which you should save as
 Slideshow.py:
 {{
-from pyjamas.ui import HTML, RootPanel
+from pyjamas.ui.HTML import HTML
+from pyjamas.ui.RootPanel import RootPanel
 from pyjamas.HTTPRequest import HTTPRequest
 
 class SlideLoader:
@@ -63,6 +64,10 @@ class Slideshow:
         
     def onError(self, text, code):
         self.slide.setHTML(text + "<br />" + code)
+
+if __name__ == '__main__:
+    app = Slideshow()
+    app.onModuleLoad()
 }}
 
 Create a matching Slideshow.html, saving it in a folder called public:
@@ -97,7 +102,7 @@ public/test_slide.txt
 
 Compile this example to javascript, by running the following command:
 {{
-   python ../../builder/build.py Slideshow.py
+   python ../../bin/pyjsbuild Slideshow.py
 }}
 
 You will now need to use a Web browser to access the output, but it is
@@ -807,7 +812,7 @@ First, compile the jsonrpc pyjamas example, by changing directory
 to examples/jsonrpc/ and either running <tt>build.sh</tt> or executing
 the following command:
 {{
-   python ../../builder/build.py JSONRPCExample.py
+   python ../../bin/pyjsbuild JSONRPCExample.py
 }}
 Then, point a browser
 at <tt>http://localhost/examples/jsonrpc/output/JSONRPCExample.html</tt>

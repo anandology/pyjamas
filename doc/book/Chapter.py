@@ -1,5 +1,8 @@
 from Sink import Sink, SinkInfo
-from pyjamas.ui import HTML, VerticalPanel, HTMLPanel, Hyperlink
+from pyjamas.ui.HTML import HTML
+from pyjamas.ui.VerticalPanel import VerticalPanel
+from pyjamas.ui.HTMLPanel import HTMLPanel
+from pyjamas.ui.Hyperlink import Hyperlink
 from BookLoader import ChapterLoader
 from pyjamas.HTTPRequest import HTTPRequest
 from pyjamas import Window

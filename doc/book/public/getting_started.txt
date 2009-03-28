@@ -3,16 +3,24 @@
 Not only for the impatient, but also getting right to the point, start
 by downloading the Pyjamas source code, from either http://pyjs.org
 or http://code.google.com/p/pyjamas and, if you already have the standard
-Python 2.5 interpreter installed, you can begin immediately.  Pyjamas
-is self-contained and does not even require to be "installed".
+Python 2.4 or above interpreter installed, you can begin almost immediately.
+Pyjamas is self-contained and does not even require to be "installed".
 
-Unpack the downloaded archive, and browse to the examples directory.
+However, from Version 0.5 you will need to pre-prepare the archive by
+running "bootstrap.py".  First, unpack the downloaded archive.  Next,
+in the main subdirectory, run "python bootstrap.py" to create the
+"buildout" application, which you will find has been created in the
+bin/ subdirectory.  Run buildout, and it will create bin/pyjsbuild
+and bin/pyjscompile.  You now have a development environment that is
+tailored specifically to your system (known as a developer sandbox).
+
+Mext, browse to the examples directory.
 You will find a script called "buildall.sh".  If you just want to
 compile the "helloworld" example, browse to the examples/helloworld
 directory, and you will see a "build.sh" file and a README.  Follow
 the instructions, there, which instruct you to run the following command:
 {{
-    python ../../builder/build.py Hello.py
+    python ../../bin/pyjsbuild Hello.py
 }}
 You will then be able to open your web browser, browsing to the
 examples/helloworld/output/Hello.html file, and, assuming that you have
@@ -46,6 +54,16 @@ with Office or Visual Studio if you prefer.  The key tool that is
 absolutely essential is to be able to see a stack trace (Opera will
 display a stack trace, by default).
 
+Additionally, since Pyjamas 0.5, a "-d" option is available, which adds
+monstrous amounts of code to the javascript output (quadrupling the number
+of lines, at least) and in particular it adds code which keeps track of
+the function stack for you.  When an error occurs, a popup alert will
+appear, with the stack trace and the exception that occurred.  Recompile
+as follows:
+{{
+    python ../../bin/pyjsbuild -d Hello.py
+}}
+
 The alternative is to run your application under Pyjamas-Desktop, and
 you will then get a standard python stack trace error printed on the
 console output.  So, if you get absolutely stuck, running the code in
@@ -58,18 +76,19 @@ More advice on debugging applications will be given later.
 Lovely as it is to run, it's more useful to be able to add things, so
 start by modifying Hello.py so that it looks like this:
 {{
-from pyjamas.ui import Button, RootPanel, HTML
+from pyjamas.ui.Button import Button
+from pyjamas.ui.RootPanel import RootPanel
+from pyjamas.ui.HTML import HTML
 from pyjamas import Window
 
 def greet(sender):
     Window.alert("Hello, AJAX!")
 
-class Hello:
-    def onModuleLoad(self):
-        b = Button("Click me", greet)
-        RootPanel().add(b)
-        hw = HTML("Hello <b>World</b>")
-        RootPanel().add(hw)
+if __name__ == '__main__':
+    b = Button("Click me", greet)
+    RootPanel().add(b)
+    hw = HTML("Hello <b>World</b>")
+    RootPanel().add(hw)
 }}
 
 The changes made are the addition of the import of HTML, from pyjamas.ui;
@@ -78,12 +97,15 @@ Re-run the build command, refresh the browser window, and, underneath
 the Button there should now be the words "Hello World", with "World"
 being in bold.  Again, if it doesn't appear, double-check the Javascript
 Console for error messages - for example, if you see "HTML is undefined",
-it'll be because you missed out the line "from pyjamas.ui import HTML".
+it'll be because you missed out the line "from pyjamas.ui.HTML import HTML".
 {{-info
 if you are unfamiliar with Python, and you get a build error, read up on
 Python application editing: double-check that you have used the same
 "indent" level of whitespace, when you added the two extra lines in the
-onModuleLoad() function.
+onModuleLoad() function.  One trick is to use pylint, and another is to
+actually execute the script with the python interpreter.  If you get
+syntax errors, correct them; if you get an "import" error, that's good:
+at least there are no syntax errors.
 }}
 
 == Horizontal Layout ==
@@ -91,23 +113,24 @@ onModuleLoad() function.
 Next, let's try editing the application so that the Button and the HTML
 are laid out horizontally, rather than vertically.  Try this:
 {{
-from pyjamas.ui import Button, RootPanel, HTML
-from pyjamas.ui import HorizontalPanel
+from pyjamas.ui.Button import Button
+from pyjamas.ui.RootPanel import RootPanel
+from pyjamas.ui.HTML import HTML
+from pyjamas.ui.HorizontalPanel import HorizontalPanel
 from pyjamas import Window
 
 def greet(sender):
     Window.alert("Hello, AJAX!")
 
-class Hello:
-    def onModuleLoad(self):
-        b = Button("Click me", greet)
-        hw = HTML("Hello <b>World</b>")
+if __name__ == '__main__':
+    b = Button("Click me", greet)
+    hw = HTML("Hello <b>World</b>")
 
-        p = HorizontalPanel()
-        p.add(b)
-        p.add(hw)
+    p = HorizontalPanel()
+    p.add(b)
+    p.add(hw)
 
-        RootPanel().add(p)
+    RootPanel().add(p)
 }}
 
 Here, we have imported HorizontalPanel, then we have declared an instance
@@ -167,13 +190,13 @@ tell the HorizontalPanel instance and the HTML instance that they should
 be using the two CSS style classes we've created.  Add the two lines,
 shown, to the Hello.py file:
 {{
-        p.add(b)
-        p.add(hw)
+    p.add(b)
+    p.add(hw)
 
-        p.setStyleName("panel") # same name as in Hello.css
-        hw.setStyleName("helloworldwords") # style declared in Hello.css
+    p.setStyleName("panel") # same name as in Hello.css
+    hw.setStyleName("helloworldwords") # style declared in Hello.css
 
-        RootPanel().add(p)
+    RootPanel().add(p)
 }}
 
 The HorizontalPanel gets a CSS style class name of "panel", and the HTML
@@ -194,7 +217,7 @@ Also, it's highly illustrative to add things to the RootPanel from the
 greet() function, as this will definitely emphasise that this is not
 "static HTML".
 {{
-from pyjamas.ui import CheckBox
+from pyjamas.ui.CheckBox import CheckBox
 def greet(sender):
     RootPanel().add(HTML("Not in Kansas no more"))
     y = CheckBox("yellow road")

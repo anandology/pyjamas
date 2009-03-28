@@ -52,7 +52,10 @@ to the AbsolutePanel.
 
 Source Code:
 {{
-from pyjamas.ui import SimplePanel, AbsolutePanel, VerticalPanel, HTML
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.AbsolutePanel import AbsolutePanel
+from pyjamas.ui.VerticalPanel import VerticalPanel
+from pyjamas.ui.HTML import HTML
 from pyjamas import DOM
 
 
@@ -120,7 +123,11 @@ the user can click on.
 
 Source Code:
 {{
-from pyjamas.ui import SimplePanel, DialogBox, VerticalPanel, HTML, Button
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.DialogBox import DialogBox
+from pyjamas.ui.VerticalPanel import VerticalPanel
+from pyjamas.ui.HTML import HTML
+from pyjamas.ui.Button import Button
 from pyjamas import Window
 
 class DialogBoxDemo(SimplePanel):
@@ -167,7 +174,10 @@ widget is added.
 
 Source Code:
 {{
-from pyjamas.ui import SimplePanel, DockPanel, Label, HasAlignment
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.DockPanel import DockPanel
+from pyjamas.ui.Label import Label
+from pyjamas.ui import HasAlignment
 
 class DockPanelDemo(SimplePanel):
 
@@ -254,7 +264,10 @@ complex layout, to encounter this particular bug.
 
 Source Code:
 {{
-from pyjamas.ui import SimplePanel, FlexTable, HasAlignment, Button
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.FlexTable import FlexTable
+from pyjamas.ui import HasAlignment
+from pyjamas.ui.Button import Button
 
 class FlexTableDemo(SimplePanel):
 
@@ -331,7 +344,9 @@ to a SimplePanel, and adding the float-left style to the SimplePanel.
 
 Source Code:
 {{
-from pyjamas.ui import SimplePanel, FlowPanel, Button
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.FlowPanel import FlowPanel
+from pyjamas.ui.Button import Button
 
 class FlowPanelDemo(SimplePanel):
 
@@ -384,8 +399,13 @@ form is submitted in a way that Web servers expect files to be uploaded.
 
 Source Code:
 {{
-from pyjamas.ui import SimplePanel, FormPanel, VerticalPanel, HorizontalPanel
-from pyjamas.ui import TextBox, Label, Button
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.FormPanel import FormPanel
+from pyjamas.ui.VerticalPanel import VerticalPanel
+from pyjamas.ui.HorizontalPanel import HorizontalPanel
+from pyjamas.ui.TextBox import TextBox
+from pyjamas.ui.Label import Label
+from pyjamas.ui.Button import Button
 
 class FormPanelDemo(SimplePanel):
 
@@ -433,7 +453,9 @@ at the given row and column within the grid.
 
 Source Code:
 {{
-from pyjamas.ui import SimplePanel, Grid, Button
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.Grid import Grid
+from pyjamas.ui.Button import Button
 
 class GridDemo(SimplePanel):
 
@@ -485,7 +507,10 @@ panel.setCellHeight(widget, height).
 
 Source Code:
 {{
-from pyjamas.ui import SimplePanel, HorizontalPanel, Label, HasAlignment
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.HorizontalPanel import HorizontalPanel
+from pyjamas.ui.Label import Label
+from pyjamas.ui import HasAlignment
 
 class HorizontalPanelDemo(SimplePanel):
 
@@ -529,7 +554,10 @@ by wrapping them inside a <span> tag.
 
 Source Code:
 {{
-from pyjamas.ui import SimplePanel, HTMLPanel, Button, Label
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.HTMLPanel import HTMLPanel
+from pyjamas.ui.Button import Button
+from pyjamas.ui.Label import Label
 
 class HtmlPanelDemo(SimplePanel):
 
@@ -573,7 +601,11 @@ itself to close it.
 
 Source Code:
 {{
-from pyjamas.ui import SimplePanel, VerticalPanel, HTML, Button, PopupPanel
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.VerticalPanel import VerticalPanel
+from pyjamas.ui.HTML import HTML
+from pyjamas.ui.Button import Button
+from pyjamas.ui.PopupPanel import PopupPanel
 
 class PopupPanelDemo(SimplePanel):
 
@@ -620,7 +652,9 @@ change the horizontal and vertical scrolling position, respectively.
 
 Source Code:
 {{
-from pyjamas.ui import SimplePanel, ScrollPanel, HTML
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.ScrollPanel import ScrollPanel
+from pyjamas.ui.HTML import HTML
 
 class ScrollPanelDemo(SimplePanel):
 
@@ -681,7 +715,9 @@ stack item can be changed, by calling setStackText(index, text).
 
 Source Code:
 {{
-from pyjamas.ui import SimplePanel, StackPanel, HTML
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.StackPanel import StackPanel
+from pyjamas.ui.HTML import HTML
 
 class StackPanelDemo(SimplePanel):
 
@@ -751,7 +787,9 @@ example shown below:
 
 Source Code:
 {{
-from pyjamas.ui import SimplePanel, TabPanel, HTML
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.TabPanel import TabPanel
+from pyjamas.ui.HTML import HTML
 
 class TabPanelDemo(SimplePanel):
 
@@ -793,7 +831,10 @@ panel.setCellHeight(widget, height).
 
 Source Code:
 {{
-from pyjamas.ui import SimplePanel, VerticalPanel, Label, HasAlignment
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.VerticalPanel import VerticalPanel
+from pyjamas.ui.Label import Label
+from pyjamas.ui import HasAlignment
 
 class VerticalPanelDemo(SimplePanel):
 
@@ -885,7 +926,8 @@ for the application, after the response has been processed.
 
 Source Code:
 {{
-from pyjamas.ui import SimplePanel, Button
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.Button import Button
 from pyjamas import Window
 
 class ButtonDemo(SimplePanel):
@@ -934,7 +976,8 @@ call isChecked() to determine its value at the time.
 
 Source Code:
 {{
-from pyjamas.ui import SimplePanel, CheckBox
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.CheckBox import CheckBox
 from pyjamas import Window
 
 class CheckBoxDemo(SimplePanel):
@@ -971,8 +1014,13 @@ widget could be used within a FormPanel.
 
 Source Code:
 {{
-from pyjamas.ui import SimplePanel, FormPanel, VerticalPanel, HorizontalPanel
-from pyjamas.ui import FileUpload, Label, Button
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.FormPanel import FormPanel
+from pyjamas.ui.VerticalPanel import VerticalPanel
+from pyjamas.ui.HorizontalPanel import HorizontalPanel
+from pyjamas.ui.FileUpload import FileUpload
+from pyjamas.ui.Label import Label
+from pyjamas.ui.Button import Button
 
 class FileUploadDemo(SimplePanel):
 
@@ -1021,7 +1069,8 @@ to retrieve the current URL for the frame.
 
 Source Code:
 {{
-from pyjamas.ui import SimplePanel, Frame
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.Frame import Frame
 
 class FrameDemo(SimplePanel):
 
@@ -1043,8 +1092,12 @@ ui.FormPanel.
 
 Source Code:
 {{
-from pyjamas.ui import SimplePanel, FormPanel, VerticalPanel
-from pyjamas.ui import Hidden, Button, NamedFrame
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.FormPanel import FormPanel
+from pyjamas.ui.VerticalPanel import VerticalPanel
+from pyjamas.ui.Hidden import Hidden
+from pyjamas.ui.Button import Button
+from pyjamas.ui.NamedFrame import NamedFrame
 
 class HiddenDemo(SimplePanel):
 
@@ -1081,7 +1134,8 @@ word wrapping will be disabled, forcing all the text to be on one line.
 
 Source Code:
 {{
-from pyjamas.ui import SimplePanel, HTML
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.HTML import HTML
 
 class HtmlDemo(SimplePanel):
 
@@ -1130,8 +1184,11 @@ Here is the pyjamas "Kitchen Sink" html file, as an example:
 
 Source Code:
 {{
-from pyjamas.ui import SimplePanel, VerticalPanel, HorizontalPanel
-from pyjamas.ui import Hyperlink, Label
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.VerticalPanel import VerticalPanel
+from pyjamas.ui.HorizontalPanel import HorizontalPanel
+from pyjamas.ui.Hyperlink import Hyperlink
+from pyjamas.ui.Label import Label
 from History import History
 
 
@@ -1180,7 +1237,8 @@ when the user clicks on the image.
 
 Source Code:
 {{
-from pyjamas.ui import SimplePanel, Image
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.Image import Image
 from pyjamas import Window
 
 class ImageDemo(SimplePanel):
@@ -1208,7 +1266,8 @@ wrapping will be disabled, forcing all the text to be on one line.
 
 Source Code:
 {{
-from pyjamas.ui import SimplePanel, Label
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.Label import Label
 
 class LabelDemo(SimplePanel):
 
@@ -1238,7 +1297,9 @@ Finally, ListBox.clear() clears the current contents of the ListBox.
 
 Source Code:
 {{
-from pyjamas.ui import SimplePanel, HorizontalPanel, ListBox
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.HorizontalPanel import HorizontalPanel
+from pyjamas.ui.ListBox import ListBox
 from pyjamas import Window
 
 class ListBoxDemo(SimplePanel):
@@ -1308,7 +1369,9 @@ to an application:
 
 Source Code:
 {{
-from pyjamas.ui import SimplePanel, MenuBar, MenuItem
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.MenuBar import MenuBar
+from pyjamas.ui.MenuItem import MenuItem
 from pyjamas import Window
 
 class MenubarDemo(SimplePanel):
@@ -1362,7 +1425,10 @@ target for a hyperlink.
 
 Source Code:
 {{
-from pyjamas.ui import SimplePanel, VerticalPanel, NamedFrame, HTML
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.VerticalPanel import VerticalPanel
+from pyjamas.ui.NamedFrame import NamedFrame
+from pyjamas.ui.HTML import HTML
 
 class NamedFrameDemo(SimplePanel):
 
@@ -1403,7 +1469,8 @@ the width of the field in pixels, as shown below.
 
 Source Code:
 {{
-from pyjamas.ui import SimplePanel, PasswordTextBox
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.PasswordTextBox import PasswordTextBox
 
 class PasswordTextBoxDemo(SimplePanel):
 
@@ -1431,7 +1498,10 @@ radio button.
 
 Source Code:
 {{
-from pyjamas.ui import SimplePanel, HorizontalPanel, VerticalPanel, RadioButton
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.HorizontalPanel import HorizontalPanel
+from pyjamas.ui.VerticalPanel import VerticalPanel
+from pyjamas.ui.RadioButton import RadioButton
 
 class RadioButtonDemo(SimplePanel):
 
@@ -1474,7 +1544,8 @@ for more details.
 
 Source Code:
 {{
-from pyjamas.ui import SimplePanel, TextArea
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.TextArea import TextArea
 
 class TextAreaDemo(SimplePanel):
 
@@ -1502,7 +1573,8 @@ number of characters the user can enter into the field.
 
 Source Code:
 {{
-from pyjamas.ui import SimplePanel, TextBox
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.TextBox import TextBox
 
 class TextBoxDemo(SimplePanel):
 
@@ -1535,7 +1607,9 @@ if it is False, the branch of the tree will be closed.
 
 Source Code:
 {{
-from pyjamas.ui import SimplePanel, Tree, TreeItem
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.Tree import Tree
+from pyjamas.ui.TreeItem import TreeItem
 from pyjamas import DOM
 from pyjamas import Window
 
