@@ -14,7 +14,7 @@
 from pyjamas import DOM
 
 from pyjamas.ui.SimplePanel import SimplePanel
-from pyjamas.ui.Event import Event
+from pyjamas.ui import Event
 
 class ClickableHeader(SimplePanel):
     def __init__(self, disclosurePanel):

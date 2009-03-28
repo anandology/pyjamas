@@ -18,7 +18,7 @@ import pygwt
 import pyjslib
 
 from pyjamas.ui.Widget import Widget
-from pyjamas.ui.Event import Event
+from pyjamas.ui import Event
 from pyjamas.ui.Focus import Focus
 from pyjamas.ui.TreeItem import RootTreeItem, TreeItem
 from pyjamas.ui import MouseListener

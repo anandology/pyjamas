@@ -8,7 +8,7 @@ from pyjamas.ui.HTML import HTML
 from pyjamas.ui.Composite import Composite
 #from pyjamas.ui import DecoratorPanel
 from pyjamas.ui import MouseListener
-from pyjamas.ui.Event import Event
+from pyjamas.ui import Event
 from pyjamas import Window
 from pyjamas.ui.decoratorpanel import DecoratedTabPanel, DecoratorPanel
 from pyjamas.ui.decoratorpanel import DecoratorTitledPanel

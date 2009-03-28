@@ -15,7 +15,7 @@ from pyjamas import DOM
 from pyjamas import log
 
 from pyjamas.ui.UIObject import UIObject
-from pyjamas.ui.Event import Event
+from pyjamas.ui import Event
 
 class Widget(UIObject):
     """

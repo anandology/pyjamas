@@ -15,7 +15,7 @@ from __pyjamas__ import JS
 from pyjamas import DOM
 
 from pyjamas.ui.FocusWidget import FocusWidget
-from pyjamas.ui.Event import Event
+from pyjamas.ui import Event
 
 class TextBoxBase(FocusWidget):
     ALIGN_CENTER = "center"

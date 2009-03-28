@@ -15,7 +15,7 @@ from pyjamas import DOM
 from pyjamas.History import History
 
 from pyjamas.ui.Widget import Widget
-from pyjamas.ui.Event import Event
+from pyjamas.ui import Event
 
 class Hyperlink(Widget):
 

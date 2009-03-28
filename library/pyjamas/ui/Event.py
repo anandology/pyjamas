@@ -12,37 +12,35 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-class Event:
-    """
-    This class contains flags and integer values used by the event system.
+"""
+    This module contains flags and integer values used by the event system.
+"""
 
-    It is not meant to be subclassed or instantiated.
-    """
-    BUTTON_LEFT   = 1
-    BUTTON_MIDDLE = 4
-    BUTTON_RIGHT  = 2
+BUTTON_LEFT   = 1
+BUTTON_MIDDLE = 4
+BUTTON_RIGHT  = 2
 
-    ONBLUR        = 0x01000
-    ONCHANGE      = 0x00400
-    ONCLICK       = 0x00001
-    ONCONTEXTMENU = 0x20000
-    ONDBLCLICK    = 0x00002
-    ONERROR       = 0x10000
-    ONFOCUS       = 0x00800
-    ONKEYDOWN     = 0x00080
-    ONKEYPRESS    = 0x00100
-    ONKEYUP       = 0x00200
-    ONLOAD        = 0x08000
-    ONLOSECAPTURE = 0x02000
-    ONMOUSEDOWN   = 0x00004
-    ONMOUSEMOVE   = 0x00040
-    ONMOUSEOUT    = 0x00020
-    ONMOUSEOVER   = 0x00010
-    ONMOUSEUP     = 0x00008
-    ONSCROLL      = 0x04000
+ONBLUR        = 0x01000
+ONCHANGE      = 0x00400
+ONCLICK       = 0x00001
+ONCONTEXTMENU = 0x20000
+ONDBLCLICK    = 0x00002
+ONERROR       = 0x10000
+ONFOCUS       = 0x00800
+ONKEYDOWN     = 0x00080
+ONKEYPRESS    = 0x00100
+ONKEYUP       = 0x00200
+ONLOAD        = 0x08000
+ONLOSECAPTURE = 0x02000
+ONMOUSEDOWN   = 0x00004
+ONMOUSEMOVE   = 0x00040
+ONMOUSEOUT    = 0x00020
+ONMOUSEOVER   = 0x00010
+ONMOUSEUP     = 0x00008
+ONSCROLL      = 0x04000
 
-    FOCUSEVENTS   = 0x01800 # ONFOCUS | ONBLUR
-    KEYEVENTS     = 0x00380 # ONKEYDOWN | ONKEYPRESS | ONKEYUP
-    MOUSEEVENTS   = 0x0007C # ONMOUSEDOWN | ONMOUSEUP | ONMOUSEMOVE | ONMOUSEOVER | ONMOUSEOUT
+FOCUSEVENTS   = 0x01800 # ONFOCUS | ONBLUR
+KEYEVENTS     = 0x00380 # ONKEYDOWN | ONKEYPRESS | ONKEYUP
+MOUSEEVENTS   = 0x0007C # ONMOUSEDOWN | ONMOUSEUP | ONMOUSEMOVE | ONMOUSEOVER | ONMOUSEOUT
 
 

@@ -13,7 +13,7 @@
 # limitations under the License.
 from pyjamas import DOM
 from pyjamas.ui.Composite import Composite
-from pyjamas.ui.Event import Event
+from pyjamas.ui import Event
 from pyjamas.ui.HTML import HTML
 from pyjamas.ui.Label import Label
 from pyjamas.ui.HorizontalPanel import HorizontalPanel

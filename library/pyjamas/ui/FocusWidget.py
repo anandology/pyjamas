@@ -16,7 +16,7 @@ from pyjamas import DOM
 
 from pyjamas.ui.Widget import Widget
 from pyjamas.ui.Focus import Focus
-from pyjamas.ui.Event import Event
+from pyjamas.ui import Event
 from pyjamas.ui.FocusListener import FocusListener
 from pyjamas.ui import KeyboardListener
 

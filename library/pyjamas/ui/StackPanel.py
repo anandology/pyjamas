@@ -14,7 +14,7 @@
 from pyjamas import DOM
 
 from pyjamas.ui.ComplexPanel import ComplexPanel
-from pyjamas.ui.Event import Event
+from pyjamas.ui import Event
 
 class StackPanel(ComplexPanel):
 

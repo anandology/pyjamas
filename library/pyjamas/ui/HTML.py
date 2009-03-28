@@ -14,7 +14,7 @@
 from pyjamas import DOM
 
 from pyjamas.ui.Label import Label
-from pyjamas.ui.Event import Event
+from pyjamas.ui import Event
 
 class HTML(Label):
 

@@ -8,7 +8,7 @@ import math
 from pyjamas import DOM
 from pyjamas.ui.FocusWidget import FocusWidget
 from pyjamas.ui import MouseListener
-from pyjamas.ui.Event import Event
+from pyjamas.ui import Event
 from pyjamas.ui.Focus import Focus
 from pyjamas.ui import KeyboardListener
 

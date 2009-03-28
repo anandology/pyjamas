@@ -14,7 +14,7 @@
 from pyjamas import DOM
 
 from pyjamas.ui.UIObject import UIObject
-from pyjamas.ui.Event import Event
+from pyjamas.ui import Event
 
 class MenuItem(UIObject):
     # also callable as:
