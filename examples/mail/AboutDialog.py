@@ -4,7 +4,7 @@ from pyjamas.ui.DockPanel import DockPanel
 from pyjamas.ui.HorizontalPanel import HorizontalPanel
 from pyjamas.ui.HTML import HTML
 from pyjamas.ui.Image import Image
-from pyjamas.ui.KeyboardListener import KeyboardListener
+from pyjamas.ui import KeyboardListener
 from pyjamas.ui.Widget import Widget
 from pyjamas.ui import HasAlignment
 
