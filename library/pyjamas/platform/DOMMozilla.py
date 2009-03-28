@@ -47,7 +47,12 @@ def eventGetButton(evt):
 """
 def getAbsoluteLeft(elem):
     JS("""
-    var left = $doc.getBoxObjectFor(elem).x;
+    try {
+        // Firefox 3 expects getBoundingClientRect
+        var left = elem.getBoundingClientRect().left;
+    } catch (e) {
+        var left = $doc.getBoxObjectFor(elem).x;
+    }
     var parent = elem.parentNode;
 
     while (parent) {
@@ -84,7 +89,12 @@ def getAbsoluteLeft(elem):
 """
 def getAbsoluteTop(elem):
     JS("""
-    var top = $doc.getBoxObjectFor(elem).y;
+    try {
+        // Firefox 3 expects getBoundingClientRect
+        var top = elem.getBoundingClientRect().top;
+    } catch (e) {
+        var top = $doc.getBoxObjectFor(elem).y;
+    }
     var parent = elem.parentNode;
     while (parent) {
         if (parent.scrollTop > 0) {
