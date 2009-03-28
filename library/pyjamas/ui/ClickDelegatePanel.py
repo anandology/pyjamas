@@ -18,7 +18,7 @@ from pyjamas.ui.Composite import Composite
 from pyjamas.ui.Event import Event
 from pyjamas.ui.Focus import Focus
 from pyjamas.ui.SimplePanel import SimplePanel
-from pyjamas.ui.KeyboardListener import KeyboardListener
+from pyjamas.ui import KeyboardListener
 
 class ClickDelegatePanel(Composite):
 
@@ -58,7 +58,7 @@ class ClickDelegatePanel(Composite):
             self.onClick(self, event)
 
         elif type == "keydown":
-            modifiers = KeyboardListener().getKeyboardModifiers(event)
+            modifiers = KeyboardListener.getKeyboardModifiers(event)
             if hasattr(self.keyDelegate, "onKeyDown"):
                 self.keyDelegate.onKeyDown(self, DOM.eventGetKeyCode(event),
                                        modifiers)

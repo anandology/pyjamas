@@ -16,7 +16,7 @@ from pyjamas import DOM
 from pyjamas.ui.SimplePanel import SimplePanel
 from pyjamas.ui.RootPanel import RootPanel
 from pyjamas.ui.MouseListener import MouseListener
-from pyjamas.ui.KeyboardListener import KeyboardListener
+from pyjamas.ui import KeyboardListener
 
 class PopupPanel(SimplePanel):
     def __init__(self, autoHide=False, modal=True, rootpanel=None):
@@ -72,21 +72,21 @@ class PopupPanel(SimplePanel):
         if type == "keydown":
             return (    self.onKeyDownPreview(
                             DOM.eventGetKeyCode(event),
-                            KeyboardListener.getKeyboardModifiers(self, event)
+                            KeyboardListener.getKeyboardModifiers(event)
                             )
                     and (not self.modal or self._event_targets_popup(event))
                    )
         elif type == "keyup":
             return (    self.onKeyUpPreview(
                             DOM.eventGetKeyCode(event),
-                            KeyboardListener.getKeyboardModifiers(self, event)
+                            KeyboardListener.getKeyboardModifiers(event)
                             )
                     and (not self.modal or self._event_targets_popup(event))
                    )
         elif type == "keypress":
             return (    self.onKeyPressPreview(
                             DOM.eventGetKeyCode(event),
-                            KeyboardListener.getKeyboardModifiers(self, event)
+                            KeyboardListener.getKeyboardModifiers(event)
                             )
                     and (not self.modal or self._event_targets_popup(event))
                    )

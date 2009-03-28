@@ -589,9 +589,9 @@ class Translator:
                 # XXX TODO: distinguish between module import classes
                 # and variables.  right now, this is a hack to get
                 # the sys module working.
-                if v.expr.name == 'sys':
-                    return v.expr.name+'.'+attr_name
-                return v.expr.name+'.__'+attr_name+'.prototype.__class__'
+                #if v.expr.name == 'sys':
+                return v.expr.name+'.'+attr_name
+                #return v.expr.name+'.__'+attr_name+'.prototype.__class__'
             if not use_getattr or attr_name == '__class__' or \
                     attr_name == '__name__':
                 return obj + "." + attr_name

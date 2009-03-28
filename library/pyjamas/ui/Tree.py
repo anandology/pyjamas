@@ -22,7 +22,7 @@ from pyjamas.ui.Event import Event
 from pyjamas.ui.Focus import Focus
 from pyjamas.ui.TreeItem import RootTreeItem, TreeItem
 from pyjamas.ui.MouseListener import MouseListener
-from pyjamas.ui.KeyboardListener import KeyboardListener
+from pyjamas.ui import KeyboardListener
 from pyjamas.ui.FocusListener import FocusListener
 
 class Tree(Widget):
@@ -158,7 +158,7 @@ class Tree(Widget):
                 if item != self.getSelectedItem():
                     self.setSelectedItem(item, True)
         elif type == "keypress":
-            KeyboardListener.fireKeyboardEvent(self, self.keyboardListeners, self, event)
+            KeyboardListener.fireKeyboardEvent(self.keyboardListeners, self, event)
 
         Widget.onBrowserEvent(self, event)
         self.lastEventType = type

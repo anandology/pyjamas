@@ -6,7 +6,7 @@ from pyjamas.ui.CellFormatter import CellFormatter
 from pyjamas.ui.RowFormatter import RowFormatter
 from pyjamas.ui.HTMLTable import HTMLTable
 from pyjamas.ui.TextBox import TextBox
-from pyjamas.ui.KeyboardListener import KeyboardListener
+from pyjamas.ui import KeyboardListener
 from pyjamas import Window
 
 

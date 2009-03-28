@@ -27,7 +27,6 @@ class TextBoxBase(FocusWidget):
         self.changeListeners = []
         self.clickListeners = []
         self.currentEvent = None
-        self.keyboardListeners = []
 
         FocusWidget.__init__(self, element)
         self.sinkEvents(Event.ONCHANGE)
@@ -37,9 +36,6 @@ class TextBoxBase(FocusWidget):
 
     def addClickListener(self, listener):
         self.clickListeners.append(listener)
-
-    def addKeyboardListener(self, listener):
-        self.keyboardListeners.append(listener)
 
     def cancelKey(self):
         if self.currentEvent != None:
@@ -77,23 +73,10 @@ class TextBoxBase(FocusWidget):
     def getText(self):
         return DOM.getAttribute(self.getElement(), "value")
 
-    # BUG: keyboard & click events already fired in FocusWidget.onBrowserEvent
     def onBrowserEvent(self, event):
         FocusWidget.onBrowserEvent(self, event)
 
         type = DOM.eventGetType(event)
-        #if DOM.eventGetTypeInt(event) & Event.KEYEVENTS:
-            #self.currentEvent = event
-            #KeyboardListener.fireKeyboardEvent(self.keyboardListeners, self, event)
-            #self.currentEvent = None
-        #elif type == "click":
-            #for listener in self.clickListeners:
-                #if listener.onClick: listener.onClick(self, event)
-                #else: listener(self)
-        #elif type == "change":
-            #for listener in self.changeListeners:
-                #if listener.onChange: listener.onChange(self, event)
-                #else: listener(self)
         if type == "change":
             for listener in self.changeListeners:
                 if listener.onChange: listener.onChange(self)
@@ -104,9 +87,6 @@ class TextBoxBase(FocusWidget):
 
     def removeClickListener(self, listener):
         self.clickListeners.remove(listener)
-
-    def removeKeyboardListener(self, listener):
-        self.keyboardListeners.remove(listener)
 
     def selectAll(self):
         length = len(self.getText())

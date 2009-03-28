@@ -10,7 +10,7 @@ from pyjamas.ui.FocusWidget import FocusWidget
 from pyjamas.ui.MouseListener import MouseListener
 from pyjamas.ui.Event import Event
 from pyjamas.ui.Focus import Focus
-from pyjamas.ui.KeyboardListener import KeyboardListener
+from pyjamas.ui import KeyboardListener
 
 from pyjamas.ui.TextBox import TextBox
 
