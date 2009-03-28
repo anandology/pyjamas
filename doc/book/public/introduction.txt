@@ -64,9 +64,10 @@ such as Adobe Flash.
 The future of Pyjamas on Desktops includes, using Webkit, the tantalising
 possibility of supporting other languages, such as c++ (Pyjamas++)
 and even Java.  It would be very interesting to see Google's Web Tookit
-ported to the Desktop, for example.  And it would be as equally interesting
-to see Pyjamas ported to Ruby, by using rb2js (http://rb2js.rubyforge.org/),
-as well as other languages.  So, although this book covers the Python
+ported to the Desktop, for example.  A project to port GWT to Ruby is
+partially complete, called RubyJS (http://rubyforge.org/projects/rubyjs) and
+there is a second Ruby-to-Javascript compiler, rb2js
+(http://rb2js.rubyforge.org/), So, although this book covers the Python
 programming language, it's definitely worthwhile raising these future
 language possibilities, as it would make the Pyjamas API a truly
 cross-language, cross-platform, cross-desktop and cross-widget-set
@@ -77,8 +78,8 @@ Free Software Applications Development API.
 The purpose of this book is to assist Python developers who are either
 Web developers, PyQt4 or PyGtk2 Desktop developers to write applications
 that will run both on the Desktop and in a Web browser, depending on
-whether they choose to run the application using Pyjamas-Desktop or
-to compile it to AJAX, using the Pyjamas Javascript compiler.
+whether they choose to run the application using Pyjamas-Desktop, or
+to compile it to AJAX using the Pyjamas Javascript compiler.
 
 The book will introduce the beginner to the alien concept of
 "easy web application development"; it will serve as a reference
