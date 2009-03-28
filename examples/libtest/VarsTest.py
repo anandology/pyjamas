@@ -65,7 +65,7 @@ class VarsTest(UnitTest.UnitTest):
             self.assertEqual(yyy, 2)
 
     def testImportedNamespace(self):
-        self.assertEqual(foo.Bar.X, 1)
-        # XXX: the next line does not work because we assume that we
-        # import classes, which is wrong.
-        #self.assertEqual(foo.bar.X, 1)
+        b = foo.Bar()
+        self.assertEqual(b.X, 1) # declared instance works
+        self.assertEqual(foo.Bar.X, 1) # XXX due to __Bar, this fails.  hmmm...
+        self.assertEqual(foo.bar.X, 1)

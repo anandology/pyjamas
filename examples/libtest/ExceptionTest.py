@@ -77,7 +77,7 @@ class ExceptionTest(UnitTest):
     def testBuiltInException(self):
         try:
             raise LookupError('hoschi')
-        except LookupError, e:
-            self.assertEqual(e.__class__.__name__, 'LookupError')
+        except LookupError, err:
+            self.assertEqual(err.__class__.__name__, 'LookupError')
             return
         self.fail("LookupError should be caught")

@@ -564,15 +564,27 @@ class Translator:
             errName = as_.name
         else:
             errName = 'err'
+
+        # XXX TODO: check that this should instead be added as a _separate_
+        # local scope, temporary to the function.  oh dearie me.
+        self.add_local_arg(errName)
+
         print >>self.output, "    try {"
         for stmt in node.body.nodes:
             self._stmt(stmt, current_klass)
         print >> self.output, "    } catch(%s) {" % errName
         if expr:
-            print >> self.output, "   if((%(err)s === %(expr)s)||(pyjslib.isinstance(%(err)s, %(expr)s))){" % dict (err=errName, expr=self.expr(expr, current_klass))
+            l = []
+            if isinstance(expr, ast.Tuple):
+                for x in expr.nodes:
+                    l.append("(%(err)s.__name__ == %(expr)s.__name__)" % dict (err=errName, expr=self.expr(x, current_klass)))
+            else:
+                l = [ " (%(err)s.__name__ == %(expr)s.__name__) " % dict (err=errName, expr=self.expr(expr, current_klass)) ]
+            print >> self.output, "   if(%s) {" % '||\n\t\t'.join(l)
         for stmt in node.handlers[0][2]:
             self._stmt(stmt, current_klass)
         if expr:
+            #print >> self.output, "} else { throw(%s); } " % errName
             print >> self.output, "}"
         if node.else_ != None:
             print >>self.output, "    } finally {"
@@ -990,15 +1002,15 @@ class Translator:
             haltException = self.module_prefix + "HaltException"
             isHaltFunction = self.module_prefix + "IsHaltException"
 
-            print >>self.output, '  } catch (err) {'
-            print >>self.output, '      if (' + isHaltFunction + '(err.name)) {'
-            print >>self.output, '          throw err;'
+            print >>self.output, '  } catch (__err) {'
+            print >>self.output, '      if (' + isHaltFunction + '(__err.name)) {'
+            print >>self.output, '          throw __err;'
             print >>self.output, '      } else {'
             print >>self.output, "          st = sys.printstack() + "\
                                                 + '"%s"' % lt + "+ '\\n' ;"
             print >>self.output, '          alert("' + "Error in " \
                                                 + lt + '"' \
-                                                + '+"\\n"+err.name+": "+err.message'\
+                                                + '+"\\n"+__err.name+": "+__err.message'\
                                                 + '+"\\n\\nStack trace:\\n"' \
                                                 + '+st' \
                                                 + ');'
@@ -1316,7 +1328,7 @@ class Translator:
         print >>self.output, """
             }
         } catch (e) {
-            if (e != StopIteration) {
+            if (e != pyjslib.StopIteration) {
                 throw e;
             }
         }

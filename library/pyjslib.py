@@ -267,10 +267,10 @@ class AttributeError(StandardError):
         return "AttributeError: %s of %s" % (self.args[1], self.args[0])
 
 JS("""
-StopIteration = function () { };
-StopIteration.prototype = new Error();
-StopIteration.name = 'StopIteration';
-StopIteration.message = 'StopIteration';
+pyjslib.StopIteration = function () { };
+pyjslib.StopIteration.prototype = new Error();
+pyjslib.StopIteration.name = 'StopIteration';
+pyjslib.StopIteration.message = 'StopIteration';
 
 pyjslib.String_find = function(sub, start, end) {
     var pos=this.indexOf(sub, start);
@@ -296,7 +296,7 @@ pyjslib.String_join = function(data) {
             }
         }
         catch (e) {
-            if (e != StopIteration) throw e;
+            if (e != pyjslib.StopIteration) throw e;
         }
     }
 
@@ -368,7 +368,7 @@ pyjslib.String___iter__ = function() {
     return {
         'next': function() {
             if (i >= s.length) {
-                throw StopIteration;
+                throw pyjslib.StopIteration;
             }
             return s.substring(i++, i, 1);
         },
@@ -482,7 +482,7 @@ class List:
                     }
                 }
             catch (e) {
-                if (e != StopIteration) throw e;
+                if (e != pyjslib.StopIteration) throw e;
                 }
             }
         """)
@@ -560,7 +560,7 @@ class List:
         return {
             'next': function() {
                 if (i >= l.length) {
-                    throw StopIteration;
+                    throw pyjslib.StopIteration;
                 }
                 return l[i++];
             },
@@ -631,7 +631,7 @@ class Tuple:
                     }
                 }
             catch (e) {
-                if (e != StopIteration) throw e;
+                if (e != pyjslib.StopIteration) throw e;
                 }
             }
         """)
@@ -709,7 +709,7 @@ class Tuple:
         return {
             'next': function() {
                 if (i >= l.length) {
-                    throw StopIteration;
+                    throw pyjslib.StopIteration;
                 }
                 return l[i++];
             },
@@ -775,7 +775,7 @@ class Dict:
                     }
                 }
             catch (e) {
-                if (e != StopIteration) throw e;
+                if (e != pyjslib.StopIteration) throw e;
                 }
             }
         else if (pyjslib.isObject(data)) {
@@ -917,7 +917,7 @@ def range():
 
     return {
         'next': function() {
-            if ((step > 0 && start >= stop) || (step < 0 && start <= stop)) throw StopIteration;
+            if ((step > 0 && start >= stop) || (step < 0 && start <= stop)) throw pyjslib.StopIteration;
             var rval = start;
             start += step;
             return rval;

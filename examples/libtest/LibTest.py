@@ -21,11 +21,11 @@ from MD5Test import MD5Test
 def main():
 
     BoolTest().run()
+    ListTest().run()
     FunctionTest().run()
     ExceptionTest().run()
     ClassTest().run()
     StringTest().run()
-    ListTest().run()
     SetTest().run()
     ArgsTest().run()
     VarsTest().run()

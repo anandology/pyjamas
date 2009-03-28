@@ -522,7 +522,7 @@ def iterChildren(elem):
     return {
         'next': function() {
             if (child == null) {
-                throw StopIteration;
+                throw pyjslib.StopIteration;
             }
             lastChild = child;
             child = DOM.getNextSibling(child);
@@ -552,7 +552,7 @@ def walkChildren(elem):
     return {
         'next': function() {
             if (child == null) {
-                throw StopIteration;
+                throw pyjslib.StopIteration;
             }
             lastChild = child;
             var firstChild = DOM.getFirstChild(child);

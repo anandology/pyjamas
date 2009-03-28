@@ -194,6 +194,20 @@ class ListTest(UnitTest):
         l4.extend([])
         self.assertEqual(len(l4),0)
 
+    def testIter(self):
+
+        l = [0,1,2,3]
+        i = 0
+
+        it = l.__iter__()
+        while True:
+            try:
+                item = it.next()
+            except StopIteration:
+                break
+            self.assertEqual(item, l[i])
+            i += 1
+
 class A:
 
     def __cmp__(self, other):
