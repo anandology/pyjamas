@@ -50,7 +50,7 @@ def printstack():
                 res +=  ( l + '\\n' ) ;
             }
         } catch (e) {
-            if (e != StopIteration) {
+            if (e != pyjslib.StopIteration) {
                 throw e;
             }
         }

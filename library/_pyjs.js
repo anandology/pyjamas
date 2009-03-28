@@ -44,7 +44,7 @@ function pyjs_kwargs_call(obj, func, star_args, args)
                 i++;
             }
         } catch (e) {
-            if (e != StopIteration) {
+            if (e != pyjslib.StopIteration) {
                 throw e;
             }
         }

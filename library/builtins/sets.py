@@ -77,7 +77,7 @@ class Set:
                 }
             }
             catch (e) {
-                if (e != StopIteration) throw e;
+                if (e != pyjslib.StopIteration) throw e;
             }
         }
         """)
