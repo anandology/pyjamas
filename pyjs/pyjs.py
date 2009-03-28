@@ -78,6 +78,7 @@ PYJSLIB_BUILTIN_FUNCTIONS=("cmp",
 PYJSLIB_BUILTIN_CLASSES=("BaseException",
                          "Exception",
                          "StandardError",
+                         "StopIteration",
                          "AttributeError",
                          "TypeError",
                          "KeyError",
@@ -649,7 +650,7 @@ class Translator:
         elif v.name in self.module_imports() and return_none_for_module:
             return None
         elif v.name in PYJSLIB_BUILTIN_CLASSES:
-            return "pyjslib.__" + v.name +  ".prototype.__class__"
+            return "pyjslib." + v.name 
         elif current_klass:
             if v.name not in local_var_names and \
                v.name not in self.top_level_vars and \

@@ -11,5 +11,5 @@ def printFunc(objs):
     """)
 
 # pyv8_import_module is actually in pyv8run.py and has been added to Globals.
-def import_module(parent_name, module_name, dynamic_load, async):
+def import_module(syspath, parent_name, module_name, dynamic_load, async):
     pyv8_import_module(parent_name, module_name)

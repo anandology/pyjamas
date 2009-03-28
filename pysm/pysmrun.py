@@ -13,6 +13,7 @@ sys.path.append(join(builddir, "pyjs"))
 
 import pyjs
 
+file_name = None
 
 app_library_dirs = [
     currentdir,
@@ -24,15 +25,18 @@ cx = None
 
 def pysm_print_fn(arg):
     print arg
+
 def pysm_import_module(parent_name, module_name):
-    if module_name == 'sys':
+    if module_name == 'sys' or module_name == 'pyjslib':
         return
-    print module_name
+    if module_name == file_name: # HACK!  imported already
+        return
     exec "import %s as _module" % module_name
-    print _module, dir(_module)
     cx.add_global(module_name, _module)
 
 def main():
+
+    global file_name
 
     file_name = sys.argv[1]
     if len(sys.argv) > 2:
@@ -45,8 +49,8 @@ def main():
     parser = pyjs.PlatformParser("platform", verbose=False)
     parser.setPlatform("pysm")
 
-    if file_name[-3:] == ".py":
-            file_name = file_name[:-3]
+    if file_name.endswith(".py"):
+        file_name = file_name[:-3]
 
     app_translator = pyjs.AppTranslator(app_library_dirs, parser, verbose=False)
     app_libs, txt = app_translator.translate(file_name, debug=debug,
