@@ -54,7 +54,7 @@ class KeyboardListener:
 
 
     def fireKeyboardEvent(self, listeners, sender, event):
-        modifiers = KeyboardListener.getKeyboardModifiers(self, event)
+        modifiers = self.getKeyboardModifiers(event)
 
         type = DOM.eventGetType(event)
         if type == "keydown":
