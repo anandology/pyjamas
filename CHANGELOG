@@ -1,6 +1,9 @@
                     Changes made to Pyjamas since 0.5
                     ---------------------------------
 
+ * Made KeyboardListener a singleton module rather than have a class
+   named the same as the module.
+
  * Added Right-clickable Context Menus, and added an example in KitchenSink
    Menus.py to show how to set them up.
 
