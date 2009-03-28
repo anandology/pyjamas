@@ -16,7 +16,7 @@ from pyjamas import DOM
 
 from pyjamas.ui.Composite import Composite
 from pyjamas.ui import Event
-from pyjamas.ui.Focus import Focus
+from pyjamas.ui import Focus
 from pyjamas.ui.SimplePanel import SimplePanel
 from pyjamas.ui import KeyboardListener
 
@@ -29,7 +29,7 @@ class ClickDelegatePanel(Composite):
         self.clickDelegate = cDelegate
         self.keyDelegate = kDelegate
 
-        self.focusablePanel = SimplePanel(Focus().createFocusable())
+        self.focusablePanel = SimplePanel(Focus.createFocusable())
         self.focusablePanel.setWidget(child)
         wrapperWidget = p.createTabTextWrapper()
         if wrapperWidget == None:

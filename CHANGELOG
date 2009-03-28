@@ -2,7 +2,8 @@
                     ---------------------------------
 
  * Made KeyboardListener a singleton module rather than have a class
-   named the same as the module.  Likewise with MouseListener, Event.
+   named the same as the module.  Likewise with MouseListener, Event
+   and Focus.
 
  * Added Right-clickable Context Menus, and added an example in KitchenSink
    Menus.py to show how to set them up.

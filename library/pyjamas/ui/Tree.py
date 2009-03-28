@@ -19,11 +19,11 @@ import pyjslib
 
 from pyjamas.ui.Widget import Widget
 from pyjamas.ui import Event
-from pyjamas.ui.Focus import Focus
+from pyjamas.ui import Focus
 from pyjamas.ui.TreeItem import RootTreeItem, TreeItem
 from pyjamas.ui import MouseListener
 from pyjamas.ui import KeyboardListener
-from pyjamas.ui.FocusListener import FocusListener
+from pyjamas.ui import FocusListener
 
 class Tree(Widget):
     def __init__(self):
@@ -106,7 +106,7 @@ class Tree(Widget):
         return self.curSelection
 
     def getTabIndex(self):
-        return Focus.getTabIndex(self, self.focusable)
+        return Focus.getTabIndex(self.focusable)
 
     def __iter__(self):
         return self.childWidgets.__iter__()
@@ -124,7 +124,7 @@ class Tree(Widget):
         elif type == "mouseup" or type == "mousemove" or type == "mouseover" or type == "mouseout":
             MouseListener.fireMouseEvent(self.mouseListeners, self, event)
         elif type == "blur" or type == "focus":
-            FocusListener.fireFocusEvent(self, self.focusListeners, self, event)
+            FocusListener.fireFocusEvent(self.focusListeners, self, event)
         elif type == "keydown":
             if self.curSelection == None:
                 if self.root.getChildCount() > 0:
@@ -185,13 +185,13 @@ class Tree(Widget):
         self.listeners.remove(listener)
 
     def setAccessKey(self, key):
-        Focus.setAccessKey(self, self.focusable, key)
+        Focus.setAccessKey(self.focusable, key)
 
     def setFocus(self, focus):
         if focus:
-            Focus.focus(self, self.focusable)
+            Focus.focus(self.focusable)
         else:
-            Focus.blur(self, self.focusable)
+            Focus.blur(self.focusable)
 
     def setImageBase(self, baseUrl):
         self.imageBase = baseUrl
@@ -208,7 +208,7 @@ class Tree(Widget):
         self.onSelection(item, fireEvents)
 
     def setTabIndex(self, index):
-        Focus.setTabIndex(self, self.focusable, index)
+        Focus.setTabIndex(self.focusable, index)
 
     def treeItemIterator(self):
         accum = []
@@ -278,7 +278,7 @@ class Tree(Widget):
             DOM.setIntStyleAttribute(self.focusable, "height", height)
 
             DOM.scrollIntoView(self.focusable)
-            Focus.focus(self, self.focusable)
+            Focus.focus(self.focusable)
 
     def moveSelectionDown(self, sel, dig):
         if sel == self.root:

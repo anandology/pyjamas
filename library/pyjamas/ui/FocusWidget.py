@@ -15,9 +15,9 @@ from __pyjamas__ import JS, console
 from pyjamas import DOM
 
 from pyjamas.ui.Widget import Widget
-from pyjamas.ui.Focus import Focus
+from pyjamas.ui import Focus
 from pyjamas.ui import Event
-from pyjamas.ui.FocusListener import FocusListener
+from pyjamas.ui import FocusListener
 from pyjamas.ui import KeyboardListener
 
 class FocusWidget(Widget):
@@ -41,7 +41,7 @@ class FocusWidget(Widget):
         self.keyboardListeners.append(listener)
 
     def getTabIndex(self):
-        return Focus.getTabIndex(self, self.getElement())
+        return Focus.getTabIndex(self.getElement())
 
     def isEnabled(self):
         return not DOM.getBooleanAttribute(self.getElement(), "disabled")
@@ -53,7 +53,7 @@ class FocusWidget(Widget):
                 if hasattr(listener, "onClick"): listener.onClick(self, event)
                 else: listener(self, event)
         elif type == "blur" or type == "focus":
-            FocusListener.fireFocusEvent(self, self.focusListeners, self, event)
+            FocusListener.fireFocusEvent(self.focusListeners, self, event)
         elif type == "keydown" or type == "keypress" or type == "keyup":
             KeyboardListener.fireKeyboardEvent(self.keyboardListeners, self, event)
 
@@ -74,11 +74,11 @@ class FocusWidget(Widget):
 
     def setFocus(self, focused):
         if (focused):
-            Focus.focus(self, self.getElement())
+            Focus.focus(self.getElement())
         else:
-            Focus.blur(self, self.getElement())
+            Focus.blur(self.getElement())
 
     def setTabIndex(self, index):
-        Focus.setTabIndex(self, self.getElement(), index)
+        Focus.setTabIndex(self.getElement(), index)
 
 

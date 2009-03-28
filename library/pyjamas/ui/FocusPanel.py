@@ -14,9 +14,9 @@
 from pyjamas import DOM
 
 from pyjamas.ui.SimplePanel import SimplePanel
-from pyjamas.ui.Focus import Focus
+from pyjamas.ui import Focus
 from pyjamas.ui import Event
-from pyjamas.ui.FocusListener import FocusListener
+from pyjamas.ui import FocusListener
 from pyjamas.ui import MouseListener
 from pyjamas.ui import KeyboardListener
 
@@ -27,7 +27,7 @@ class FocusPanel(SimplePanel):
         self.keyboardListeners = []
         self.mouseListeners = []
 
-        SimplePanel.__init__(self, Focus.createFocusable(self))
+        SimplePanel.__init__(self, Focus.createFocusable())
         self.sinkEvents(Event.FOCUSEVENTS | Event.KEYEVENTS | Event.ONCLICK | Event.MOUSEEVENTS)
 
         if child:
@@ -46,7 +46,7 @@ class FocusPanel(SimplePanel):
         self.mouseListeners.append(listener)
 
     def getTabIndex(self):
-        return Focus.getTabIndex(self, self.getElement())
+        return Focus.getTabIndex(self.getElement())
 
     def onBrowserEvent(self, event):
         type = DOM.eventGetType(event)
@@ -58,7 +58,7 @@ class FocusPanel(SimplePanel):
         elif type == "mousedown" or type == "mouseup" or type == "mousemove" or type == "mouseover" or type == "mouseout":
             MouseListener.fireMouseEvent(self.mouseListeners, self, event)
         elif type == "blur" or type == "focus":
-            FocusListener.fireFocusEvent(self, self.focusListeners, self, event)
+            FocusListener.fireFocusEvent(self.focusListeners, self, event)
         elif type == "keydown" or type == "keypress" or type == "keyup":
             KeyboardListener.fireKeyboardEvent(self.keyboardListeners, self, event)
 
@@ -75,15 +75,15 @@ class FocusPanel(SimplePanel):
         self.mouseListeners.remove(listener)
 
     def setAccessKey(self, key):
-        Focus.setAccessKey(self, self.getElement(), key)
+        Focus.setAccessKey(self.getElement(), key)
 
     def setFocus(self, focused):
         if (focused):
-            Focus.focus(self, self.getElement())
+            Focus.focus(self.getElement())
         else:
-            Focus.blur(self, self.getElement())
+            Focus.blur(self.getElement())
 
     def setTabIndex(self, index):
-        Focus.setTabIndex(self, self.getElement(), index)
+        Focus.setTabIndex(self.getElement(), index)
 
 

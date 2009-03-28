@@ -14,38 +14,36 @@
 from __pyjamas__ import JS
 from pyjamas import DOM
 
-class Focus:
+def blur(elem):
+    JS("""
+    elem.blur();
+    """)
 
-    def blur(self, elem):
-        JS("""
-        elem.blur();
-        """)
+def createFocusable():
+    JS("""
+    var e = $doc.createElement("DIV");
+    e.tabIndex = 0;
+    return e;
+    """)
 
-    def createFocusable(self):
-        JS("""
-        var e = $doc.createElement("DIV");
-        e.tabIndex = 0;
-        return e;
-        """)
+def focus(elem):
+    JS("""
+    elem.focus();
+    """)
 
-    def focus(self, elem):
-        JS("""
-        elem.focus();
-        """)
+def getTabIndex(elem):
+    JS("""
+    return elem.tabIndex;
+    """)
 
-    def getTabIndex(self, elem):
-        JS("""
-        return elem.tabIndex;
-        """)
+def setAccessKey(elem, key):
+    JS("""
+    elem.accessKey = key;
+    """)
 
-    def setAccessKey(self, elem, key):
-        JS("""
-        elem.accessKey = key;
-        """)
-
-    def setTabIndex(self, elem, index):
-        JS("""
-        elem.tabIndex = index;
-        """)
+def setTabIndex(elem, index):
+    JS("""
+    elem.tabIndex = index;
+    """)
 
 

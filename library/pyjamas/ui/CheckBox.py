@@ -81,11 +81,11 @@ class CheckBox(ButtonBase):
     def setEnabled(self, enabled):
         DOM.setBooleanAttribute(self.inputElem, "disabled", not enabled)
 
-    def setFocus(self, focused):
+    def setFocus(focused):
         if focused:
-            Focus.focus(self, self.inputElem)
+            Focus.focus(self.inputElem)
         else:
-            Focus.blur(self, self.inputElem)
+            Focus.blur(self.inputElem)
 
     def setHTML(self, html):
         DOM.setInnerHTML(self.labelElem, html)
@@ -94,7 +94,7 @@ class CheckBox(ButtonBase):
         DOM.setAttribute(self.inputElem, "name", name)
 
     def setTabIndex(self, index):
-        Focus.setTabIndex(self, self.inputElem, index)
+        Focus.setTabIndex(self.inputElem, index)
 
     def setText(self, text):
         DOM.setInnerText(self.labelElem, text)

@@ -13,14 +13,13 @@
 # limitations under the License.
 from pyjamas import DOM
 
-class FocusListener:
-    def fireFocusEvent(self, listeners, sender, event):
-        type = DOM.eventGetType(event)
-        if type == "focus":
-            for listener in listeners:
-                listener.onFocus(sender)
-        elif type == "blur":
-            for listener in listeners:
-                listener.onLostFocus(sender)
+def fireFocusEvent(listeners, sender, event):
+    type = DOM.eventGetType(event)
+    if type == "focus":
+        for listener in listeners:
+            listener.onFocus(sender)
+    elif type == "blur":
+        for listener in listeners:
+            listener.onLostFocus(sender)
 
 
