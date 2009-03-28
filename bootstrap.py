@@ -3,7 +3,7 @@
 """ simple creation of two commands, customised for your specific system.
     windows users get a corresponding batch file.  yippeeyaiyay.
 """
-pyjsbuild = """#!/usr/bin/python
+pyjsbuild = """#!%s
 
 pth = '%s'
 
@@ -27,7 +27,7 @@ if __name__ == '__main__':
 """
 
 pyjscompile = """
-#!/usr/bin/python
+#%s
 
 pth = '%s'
 
@@ -61,18 +61,24 @@ python %s %%CMD_LINE_ARGS%%
 import os
 import sys
 
-def make_cmd(pth, cmdname, txt):
+def make_cmd(prefix, pth, cmdname, txt):
 
     if sys.platform == 'win32':
         cmd_name = cmdname + ".py"
     else:
         cmd_name = cmdname
 
+    p = os.path.join(prefix, "bin")
+    if not os.path.exists(p):
+        os.makedirs(p)
+
     cmd = os.path.join("bin", cmd_name)
+    cmd = os.path.join(prefix, cmd)
+
     if os.path.exists(cmd):
         os.unlink(cmd)
     f = open(cmd, "w")
-    f.write(txt % pth)
+    f.write(txt % (sys.executable, pth))
     f.close()
 
     if hasattr(os, "chmod"):
@@ -81,13 +87,23 @@ def make_cmd(pth, cmdname, txt):
     if sys.platform == 'win32':
 
         cmd = os.path.join("bin", cmdname)
+        cmd = os.path.join(prefix, cmd)
         batcmd = "%s.bat" % cmd
         f = open(batcmd, "w")
         f.write(batcmdtxt % cmd_name)
         f.close()
 
-pth = os.path.abspath(os.getcwd())
+if __name__ == '__main__':
+    if len(sys.argv) >= 2:
+        pth = sys.argv[1]
+    else:
+        pth = os.path.abspath(os.getcwd())
 
-make_cmd(pth, "pyjsbuild", pyjsbuild)
-make_cmd(pth, "pyjscompile", pyjscompile)
+    if len(sys.argv) == 3:
+        prefix = sys.argv[2]
+    else:
+        prefix = "."
+
+    make_cmd(prefix, pth, "pyjsbuild", pyjsbuild)
+    make_cmd(prefix, pth, "pyjscompile", pyjscompile)
 

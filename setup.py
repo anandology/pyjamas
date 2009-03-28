@@ -6,14 +6,14 @@
 #use_setuptools()
 
 import glob
-from setuptools import setup, find_packages
-from setuptools.command import test
-from setuptools.command.install import install
+from distutils.core import setup , run_setup
+
+#from setuptools import setup, find_packages
+#from setuptools.command import test
+#from setuptools.command.install import install
 
 import sys
 import os
-
-install_requires = []
 
 keyw = """\
 """
@@ -64,10 +64,23 @@ def get_dir(dirname):
 get_dir("library")
 get_dir("examples")
 
-from pprint import pprint
-pprint(data_files)
+#from pprint import pprint
+#pprint(data_files)
+
+import distutils.core
+print dir(distutils.core)
 
 if __name__ == '__main__':
+
+    print >> sys.stderr, """
+    Have you run bootstrap.py to create bin/pyjsbuild
+    and bin/pyjscompile?
+
+    e.g. on Unix systems:
+
+        python bootstrap.py /usr/share/pyjamas /usr
+    """
+
     setup(name = "Pyjamas",
         version = "0.5p1",
         description = "Pyjamas Widget API for Web applications, in Python",
@@ -76,14 +89,9 @@ if __name__ == '__main__':
         author = "The Pyjamas Project",
         author_email = "lkcl@lkcl.net",
         keywords = keyw,
-        entry_points = {'console_scripts':[
-                       'pyjsbuild=pyjs.build:main',
-                       'pyjscompile=pyjs:main',
-                       ]},
         packages=["pyjs"],
-        install_requires = install_requires,
+        #scripts = ["bin/pyjsbuild", "bin/pyjscompile"],
         data_files = data_files,
-        zip_safe=False,
         license = "Apache Software License",
         platforms = ["any"],
         classifiers = [
