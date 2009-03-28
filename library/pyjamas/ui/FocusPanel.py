@@ -17,7 +17,7 @@ from pyjamas.ui.SimplePanel import SimplePanel
 from pyjamas.ui.Focus import Focus
 from pyjamas.ui.Event import Event
 from pyjamas.ui.FocusListener import FocusListener
-from pyjamas.ui.MouseListener import MouseListener
+from pyjamas.ui import MouseListener
 from pyjamas.ui import KeyboardListener
 
 class FocusPanel(SimplePanel):
@@ -56,7 +56,7 @@ class FocusPanel(SimplePanel):
                 if listener.onClick: listener.onClick(self, event)
                 else: listener(self, event)
         elif type == "mousedown" or type == "mouseup" or type == "mousemove" or type == "mouseover" or type == "mouseout":
-            MouseListener.fireMouseEvent(self, self.mouseListeners, self, event)
+            MouseListener.fireMouseEvent(self.mouseListeners, self, event)
         elif type == "blur" or type == "focus":
             FocusListener.fireFocusEvent(self, self.focusListeners, self, event)
         elif type == "keydown" or type == "keypress" or type == "keyup":

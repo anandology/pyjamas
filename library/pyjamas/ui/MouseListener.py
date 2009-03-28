@@ -13,30 +13,29 @@
 # limitations under the License.
 from pyjamas import DOM
 
-class MouseListener:
-    def fireMouseEvent(self, listeners, sender, event):
-        x = DOM.eventGetClientX(event) - DOM.getAbsoluteLeft(sender.getElement())
-        y = DOM.eventGetClientY(event) - DOM.getAbsoluteTop(sender.getElement())
+def fireMouseEvent(listeners, sender, event):
+    x = DOM.eventGetClientX(event) - DOM.getAbsoluteLeft(sender.getElement())
+    y = DOM.eventGetClientY(event) - DOM.getAbsoluteTop(sender.getElement())
 
-        type = DOM.eventGetType(event)
-        if type == "mousedown":
+    type = DOM.eventGetType(event)
+    if type == "mousedown":
+        for listener in listeners:
+            listener.onMouseDown(sender, x, y)
+    elif type == "mouseup":
+        for listener in listeners:
+            listener.onMouseUp(sender, x, y)
+    elif type == "mousemove":
+        for listener in listeners:
+            listener.onMouseMove(sender, x, y)
+    elif type == "mouseover":
+        from_element = DOM.eventGetFromElement(event)
+        if not DOM.isOrHasChild(sender.getElement(), from_element):
             for listener in listeners:
-                listener.onMouseDown(sender, x, y)
-        elif type == "mouseup":
+                listener.onMouseEnter(sender)
+    elif type == "mouseout":
+        to_element = DOM.eventGetToElement(event)
+        if not DOM.isOrHasChild(sender.getElement(), to_element):
             for listener in listeners:
-                listener.onMouseUp(sender, x, y)
-        elif type == "mousemove":
-            for listener in listeners:
-                listener.onMouseMove(sender, x, y)
-        elif type == "mouseover":
-            from_element = DOM.eventGetFromElement(event)
-            if not DOM.isOrHasChild(sender.getElement(), from_element):
-                for listener in listeners:
-                    listener.onMouseEnter(sender)
-        elif type == "mouseout":
-            to_element = DOM.eventGetToElement(event)
-            if not DOM.isOrHasChild(sender.getElement(), to_element):
-                for listener in listeners:
-                    listener.onMouseLeave(sender)
+                listener.onMouseLeave(sender)
 
 

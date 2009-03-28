@@ -15,7 +15,7 @@ from pyjamas import DOM
 
 from pyjamas.ui.SimplePanel import SimplePanel
 from pyjamas.ui.RootPanel import RootPanel
-from pyjamas.ui.MouseListener import MouseListener
+from pyjamas.ui import MouseListener
 from pyjamas.ui import KeyboardListener
 
 class PopupPanel(SimplePanel):

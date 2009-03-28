@@ -15,7 +15,7 @@ from pyjamas import DOM
 
 from pyjamas.ui.Widget import Widget
 from pyjamas.ui.Event import Event
-from pyjamas.ui.MouseListener import MouseListener
+from pyjamas.ui import MouseListener
 
 class Label(Widget):
 
@@ -56,7 +56,7 @@ class Label(Widget):
                 if listener.onClick: listener.onClick(self, event)
                 else: listener(self, event)
         elif type == "mousedown" or type == "mouseup" or type == "mousemove" or type == "mouseover" or type == "mouseout":
-            MouseListener.fireMouseEvent(self, self.mouseListeners, self, event)
+            MouseListener.fireMouseEvent(self.mouseListeners, self, event)
         else:
             Widget.onBrowserEvent(self, event)
 

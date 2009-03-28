@@ -21,7 +21,7 @@ from pyjamas.ui.Widget import Widget
 from pyjamas.ui.Event import Event
 from pyjamas.ui.Focus import Focus
 from pyjamas.ui.TreeItem import RootTreeItem, TreeItem
-from pyjamas.ui.MouseListener import MouseListener
+from pyjamas.ui import MouseListener
 from pyjamas.ui import KeyboardListener
 from pyjamas.ui.FocusListener import FocusListener
 
@@ -119,10 +119,10 @@ class Tree(Widget):
             if not self.shouldTreeDelegateFocusToElement(e):
                 self.setFocus(True)
         elif type == "mousedown":
-            MouseListener.fireMouseEvent(self, self.mouseListeners, self, event)
+            MouseListener.fireMouseEvent(self.mouseListeners, self, event)
             self.elementClicked(self.root, DOM.eventGetTarget(event))
         elif type == "mouseup" or type == "mousemove" or type == "mouseover" or type == "mouseout":
-            MouseListener.fireMouseEvent(self, self.mouseListeners, self, event)
+            MouseListener.fireMouseEvent(self.mouseListeners, self, event)
         elif type == "blur" or type == "focus":
             FocusListener.fireFocusEvent(self, self.focusListeners, self, event)
         elif type == "keydown":

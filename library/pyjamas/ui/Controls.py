@@ -7,7 +7,7 @@
 import math
 from pyjamas import DOM
 from pyjamas.ui.FocusWidget import FocusWidget
-from pyjamas.ui.MouseListener import MouseListener
+from pyjamas.ui import MouseListener
 from pyjamas.ui.Event import Event
 from pyjamas.ui.Focus import Focus
 from pyjamas.ui import KeyboardListener
@@ -39,7 +39,7 @@ class Control(FocusWidget):
     def onBrowserEvent(self, event):
         type = DOM.eventGetType(event)
         if type == "mousedown" or type == "mouseup" or type == "mousemove" or type == "mouseover" or type == "mouseout":
-            MouseListener().fireMouseEvent(self.mouseListeners, self, event)
+            MouseListener.fireMouseEvent(self.mouseListeners, self, event)
         else:
             FocusWidget.onBrowserEvent(self, event)
 
