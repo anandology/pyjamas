@@ -13,7 +13,7 @@ from pyjamas.History import History
 import Chapter
 from pyjamas.HTTPRequest import HTTPRequest
 from BookLoader import ChapterListLoader
-from pyjamas.vertsplitpanel import VerticalSplitPanel
+from pyjamas.ui.vertsplitpanel import VerticalSplitPanel
 
 class Bookreader:
 
@@ -134,4 +134,8 @@ class Bookreader:
     def showInfo(self):
         self.show(self.sink_list.sinks[0], False)
 
+
+if __name__ == '__main__':
+    app = Bookreader()
+    app.onModuleLoad()
 
