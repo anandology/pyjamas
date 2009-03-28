@@ -1,8 +1,7 @@
-from pyjamas.ui.Button import Button
 from pyjamas.ui.RootPanel import RootPanel
 from pyjamas.ui.HTML import HTML
-from pyjamas.ui.NamedFrame import NamedFrame
-from pyjamas.ui.Hyperlink import Hyperlink
+#from pyjamas.ui.NamedFrame import NamedFrame
+#from pyjamas.ui.Hyperlink import Hyperlink
 from pyjamas.ui.DockPanel import DockPanel
 from pyjamas.ui import HasAlignment
 from pyjamas.ui.VerticalPanel import VerticalPanel
@@ -13,7 +12,15 @@ from pyjamas.History import History
 import Chapter
 from pyjamas.HTTPRequest import HTTPRequest
 from BookLoader import ChapterListLoader
-from pyjamas.ui.vertsplitpanel import VerticalSplitPanel
+#from pyjamas.ui.vertsplitpanel import VerticalSplitPanel
+
+def loadSection(section):
+
+    chapter = Chapter.Chapter()
+    chapter.setStyleName("ks-Sink")
+    chapter.name = section
+    RootPanel().add(chapter)
+    chapter.onShow()
 
 class Bookreader:
 
@@ -29,23 +36,15 @@ class Bookreader:
         if not section:
             self.loadChapters()
         else:
-            self.loadSection(section)
-
-    def loadSection(self, section):
-
-        chapter = Chapter.Chapter()
-        chapter.setStyleName("ks-Sink")
-        chapter.name = section
-        RootPanel().add(chapter)
-        chapter.onShow()
+            loadSection(section)
 
     def loadChapters(self):
 
-        self.curInfo=''
-        self.curSink=None
-        self.description=HTML()
-        self.sink_list=SinkList()
-        self.panel=DockPanel()
+        self.curInfo = ''
+        self.curSink = None
+        self.description = HTML()
+        self.sink_list = SinkList()
+        self.panel = DockPanel()
         
         self.loadSinks()
         self.sinkContainer = DockPanel()
@@ -66,7 +65,7 @@ class Bookreader:
         #self.sp.setBottomWidget(self.nf)
         #self.sp.setSplitPosition(10000) # deliberately high - max out.
 
-        vp=VerticalPanel()
+        vp = VerticalPanel()
         vp.setWidth("100%")
         vp.setHeight("100%")
         vp.add(self.description)
@@ -77,7 +76,8 @@ class Bookreader:
         self.panel.add(self.sink_list, DockPanel.WEST)
         self.panel.add(vp, DockPanel.CENTER)
 
-        self.panel.setCellVerticalAlignment(self.sink_list, HasAlignment.ALIGN_TOP)
+        self.panel.setCellVerticalAlignment(self.sink_list,
+                                            HasAlignment.ALIGN_TOP)
         self.panel.setCellWidth(vp, "100%")
         self.panel.setCellHeight(vp, "100%")
 
@@ -92,11 +92,12 @@ class Bookreader:
         self.sp.setHeight("%dpx" % (height-110))
 
     def show(self, info, affectHistory):
-        if info == self.curInfo: return
+        if info == self.curInfo:
+            return
         self.curInfo = info
 
         #Logger.write("showing " + info.getName())
-        if self.curSink <> None:
+        if self.curSink is not None:
             self.curSink.onHide()
             #Logger.write("removing " + self.curSink)
             self.sinkContainer.remove(self.curSink)
@@ -111,7 +112,8 @@ class Bookreader:
         self.sinkContainer.add(self.curSink, DockPanel.CENTER)
         self.sinkContainer.setCellWidth(self.curSink, "100%")
         self.sinkContainer.setCellHeight(self.curSink, "100%")
-        self.sinkContainer.setCellVerticalAlignment(self.curSink, HasAlignment.ALIGN_TOP)
+        self.sinkContainer.setCellVerticalAlignment(self.curSink,
+                                                    HasAlignment.ALIGN_TOP)
         self.curSink.onShow()
         
     def loadSinks(self):
