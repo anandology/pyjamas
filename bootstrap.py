@@ -13,7 +13,7 @@ sys.path[0:0] = [
   pth,
   ]
 
-import pyjs, sys
+import pyjs
 pyjs.path += [os.path.join(pth, 'library'),
 os.path.join(pth, 'library', 'builtins'),
 os.path.join(pth, 'addons'),
@@ -26,8 +26,7 @@ if __name__ == '__main__':
     pyjs.build.main()
 """
 
-pyjscompile = """
-#%s
+pyjscompile = """#!%s
 
 pth = '%s'
 
@@ -39,8 +38,6 @@ sys.path[0:0] = [
 
 import pyjs
 pyjs.path += [os.path.join(pth, 'library')]
-
-import pyjs
 
 if __name__ == '__main__':
     pyjs.main()
