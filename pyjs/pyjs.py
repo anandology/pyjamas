@@ -1328,7 +1328,7 @@ class Translator:
         print >>self.output, """
             }
         } catch (e) {
-            if (e != pyjslib.StopIteration) {
+            if (e.__name__ != pyjslib.StopIteration.__name__) {
                 throw e;
             }
         }
