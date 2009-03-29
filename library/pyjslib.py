@@ -115,9 +115,9 @@ function import_wait(proceed_fn, parent_mod, dynamic) {
         element.innerHTML = txt + '<br />';
     }
 
-    var timeoutperiod = 100;
+    var timeoutperiod = 1;
     if (dynamic)
-        var timeoutperiod = 100;
+        var timeoutperiod = 1;
 
     var wait = function() {
 
