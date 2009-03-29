@@ -87,13 +87,20 @@ class FormProcessor(JSONRPCService):
 
     def __process(self, request, params, command=None):
 
-        f = self.formcls(params)
+        f = self.formcls(params) # create instance of form, with input params
 
         if command is None: # just validate
             if not f.is_valid():
                 return {'success':False, 'errors': builderrors(f)}
             return {'success':True}
-        if command.has_key('html'):
+
+        elif command.has_key('save'):
+            if not f.is_valid():
+                return {'success':False, 'errors': builderrors(f)}
+            instance = f.save() # XXX: if you want more, over-ride save.
+            return {'success': True, 'instance': json_convert(instance) }
+
+        elif command.has_key('html'):
             return {'success': True, 'html': f.as_table()}
         return "unrecognised command"
 
