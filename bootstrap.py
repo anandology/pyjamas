@@ -5,7 +5,7 @@
 """
 pyjsbuild = """#!%s
 
-pth = '%s'
+pth = r'%s'
 
 import os
 import sys
@@ -28,7 +28,7 @@ if __name__ == '__main__':
 
 pyjscompile = """#!%s
 
-pth = '%s'
+pth = r'%s'
 
 import os
 import sys
