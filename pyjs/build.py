@@ -668,7 +668,7 @@ def main():
     parser.add_option("-D", "--data_dir", dest="data_dir",
         help="path for data directory")
     parser.add_option("-m", "--dynamic-modules", action="store_true",
-        dest="dynamic", default=True,
+        dest="dynamic", default=False,
         help="Split output into separate dynamically-loaded modules (experimental)")
     parser.add_option("-P", "--platforms", dest="platforms",
         help="platforms to build for, comma-separated")
@@ -684,7 +684,7 @@ def main():
     parser.set_defaults(output = "output", js_includes=[], library_dirs=[],
                         platforms=(','.join(app_platforms)),
                         data_dir=os.path.join(sys.prefix, "share/pyjamas"),
-                        dynamic=True,
+                        dynamic=False,
                         cache_buster=False,
                         debug=False)
     (options, args) = parser.parse_args()
