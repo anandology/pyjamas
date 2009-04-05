@@ -73,6 +73,63 @@ def builderrors(form):
             d[error].append(unicode(errorval))
     return d
 
+
+# contains the list of arguments in each field
+field_names = {
+ 'CharField': ['max_length', 'min_length'],
+ 'IntegerField': ['max_value', 'min_value'],
+ 'FloatField': ['max_value', 'min_value'],
+ 'DecimalField': ['max_value', 'min_value', 'max_digits', 'decimal_places'],
+ 'DateField': ['input_formats'],
+ 'DateTimeField': ['input_formats'],
+ 'TimeField': ['input_formats'],
+ 'RegexField': ['max_length', 'min_length'], # sadly we can't get the expr
+ 'EmailField': ['max_length', 'min_length'],
+ 'URLField': ['max_length', 'min_length', 'verify_exists', 'user_agent'],
+ 'ChoiceField': ['choices'],
+ 'FilePathField': ['path', 'match', 'recursive', 'choices'],
+ 'IPAddressField': ['max_length', 'min_length'],
+ }
+
+def describe_field_errors(field):
+    res = {}
+    field_type = field.__class__.__name__
+    msgs = {}
+    for n, m in field.error_messages.items():
+        msgs[n] = unicode(m)
+    res['error_messages'] = msgs
+    if field_type in ['ComboField', 'MultiValueField', 'SplitDateTimeField']:
+        res['fields'] = map(describe_field, field.fields)
+    return res
+
+def describe_fields_errors(fields, field_names):
+    res = {}
+    if not field_names:
+        field_names = fields.keys()
+    for name in field_names:
+        field = fields[name]
+        res[name] = describe_field_errors(field)
+    return res
+
+def describe_field(field):
+    res = {}
+    field_type = field.__class__.__name__
+    for fname in field_names.get(field_type, []) + \
+          ['help_text', 'label', 'initial', 'required']:
+        res[fname] = getattr(field, fname)
+    if field_type in ['ComboField', 'MultiValueField', 'SplitDateTimeField']:
+        res['fields'] = map(describe_field, field.fields)
+    return res
+
+def describe_fields(fields, field_names):
+    res = {}
+    if not field_names:
+        field_names = fields.keys()
+    for name in field_names:
+        field = fields[name]
+        res[name] = describe_field(field)
+    return res
+
 class FormProcessor(JSONRPCService):
     def __init__(self, forms, _formcls=None):
 
@@ -87,12 +144,20 @@ class FormProcessor(JSONRPCService):
 
     def __process(self, request, params, command=None):
 
-        f = self.formcls(params) # create instance of form, with input params
+        f = self.formcls(params)
 
         if command is None: # just validate
             if not f.is_valid():
                 return {'success':False, 'errors': builderrors(f)}
             return {'success':True}
+
+        elif command.has_key('describe_errors'):
+            field_names = command['describe_errors']
+            return describe_fields_errors(f.fields, field_names)
+
+        elif command.has_key('describe'):
+            field_names = command['describe']
+            return describe_fields(f.fields, field_names)
 
         elif command.has_key('save'):
             if not f.is_valid():
@@ -102,7 +167,9 @@ class FormProcessor(JSONRPCService):
 
         elif command.has_key('html'):
             return {'success': True, 'html': f.as_table()}
+
         return "unrecognised command"
+
 
 
 
