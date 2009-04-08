@@ -1,6 +1,8 @@
                     Changes made to Pyjamas since 0.5
                     ---------------------------------
 
+ * Added implementation of metaclass "type" function
+
  * Made KeyboardListener a singleton module rather than have a class
    named the same as the module.  Likewise with MouseListener, Event
    and Focus.
