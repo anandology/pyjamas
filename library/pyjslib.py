@@ -187,6 +187,8 @@ function import_wait(proceed_fn, parent_mod, dynamic) {
 class Object:
     pass
 
+object = Object
+
 class Modload:
 
     def __init__(self, path, app_modlist, app_imported_fn, dynamic,
@@ -1345,4 +1347,19 @@ def printFunc(objs):
     }
     console.debug(s)
     """)
+
+def type(clsname, bases=None, methods=None):
+    """ creates a class, derived from bases, with methods and variables
+    """
+
+    JS(" var mths = {}; ")
+    if methods:
+        for k in methods.keys():
+            mth = methods[k]
+            JS(" mths[k] = mth; ")
+
+    JS(" var bss = null; ")
+    if bases:
+        JS("bss = bases.l;")
+    JS(" return pyjs_type(clsname, bss, mths); ")
 

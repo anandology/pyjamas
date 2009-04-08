@@ -180,6 +180,16 @@ class ClassTest(UnitTest):
         self.failIf(isinstance(c, (ExampleClass, ExampleParentObject)))
         self.failUnless(isinstance(c, (ExampleClass, (ExampleChildClass,))))
 
+    def testMetaClass(self):
+        Klass = type('MyClass', (object,), {'method': method, 'x': 5})
+        instance = Klass()
+        self.assertEqual(instance.method(), 1)
+        self.assertEqual(instance.x, 5)
+
+# testMetaClass
+def method(self):
+    return 1
+
 # testClassVars
 class ExampleClass:
     x = "test"

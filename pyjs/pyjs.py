@@ -73,6 +73,7 @@ PYJSLIB_BUILTIN_FUNCTIONS=("cmp",
                            "min",
                            "max",
                            "bool",
+                           "type",
                            "isinstance")
 
 PYJSLIB_BUILTIN_CLASSES=("BaseException",
@@ -85,8 +86,21 @@ PYJSLIB_BUILTIN_CLASSES=("BaseException",
                          "LookupError",
                          "list",
                          "dict",
+                         "object",
                          "tuple",
                         )
+
+def pyjs_builtin_remap(name):
+    # XXX HACK!
+    if name == 'list':
+        name = 'List'
+    if name == 'object':
+        name = '__Object'
+    if name == 'dict':
+        name = 'Dict'
+    if name == 'tuple':
+        name = 'Tuple'
+    return name
 
 # XXX: this is a hack: these should be dealt with another way
 # however, console is currently the only global name which is causing
@@ -468,14 +482,7 @@ class Translator:
             elif v.node.name in PYJSLIB_BUILTIN_FUNCTIONS:
                 call_name = 'pyjslib.' + v.node.name
             elif v.node.name in PYJSLIB_BUILTIN_CLASSES:
-                name = v.node.name
-                # XXX HACK!
-                if name == 'list':
-                    name = 'List'
-                if name == 'dict':
-                    name = 'Dict'
-                if name == 'tuple':
-                    name = 'Tuple'
+                name = pyjs_builtin_remap(v.node.name)
                 call_name = 'pyjslib.' + name
             elif v.node.name == "callable":
                 call_name = "pyjslib.isFunction"
@@ -662,7 +669,7 @@ class Translator:
         elif v.name in self.module_imports() and return_none_for_module:
             return None
         elif v.name in PYJSLIB_BUILTIN_CLASSES:
-            return "pyjslib." + v.name 
+            return "pyjslib." + pyjs_builtin_remap( v.name )
         elif current_klass:
             if v.name not in local_var_names and \
                v.name not in self.top_level_vars and \
@@ -806,7 +813,7 @@ class Translator:
             )]))])
 
         self._function(clsfunc, False)
-        print >>self.output, UU+class_name_ + "_initialize = function () {"
+        print >>self.output, UU+class_name_ + ".__initialize__ = function () {"
         print >>self.output, "    if("+UU+class_name_+".__was_initialized__) return;"
         print >>self.output, "    "+UU+class_name_+".__was_initialized__ = true;"
         cls_obj = UU+class_name_ + '.prototype.__class__'
@@ -816,7 +823,7 @@ class Translator:
         else:
             if base_class and base_class not in ("object", "pyjslib.__Object"):
                 print >>self.output, "    if(!"+UU+base_class_+".__was_initialized__)"
-                print >>self.output, "        "+UU+base_class_+"_initialize();"
+                print >>self.output, "        "+UU+base_class_+".__initialize__();"
                 print >>self.output, "    pyjs_extend(" + UU+class_name_ + ", "+UU+base_class_+");"
             else:
                 print >>self.output, "    pyjs_extend(" + UU+class_name_ + ", "+UU+"pyjslib.__Object);"
@@ -838,7 +845,7 @@ class Translator:
                 raise TranslationError("unsupported type (in _class)", child)
         print >>self.output, "}"
 
-        print >> self.output, class_name_+"_initialize();"
+        print >> self.output, class_name_+".__initialize__();"
 
 
     def classattr(self, node, current_klass):

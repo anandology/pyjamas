@@ -1,10 +1,5 @@
 import sys
 
-def write(text):
-    pass
-def writebr(text):
-    pass
-
 data = ""
 
 def write_web(text):
@@ -28,10 +23,10 @@ def writebr_std(text):
 if sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
 
     init_web()
-    global write
-    global writebr
     write = write_web
     writebr = writebr_web
+    global write
+    global writebr
 
 else:
     global write

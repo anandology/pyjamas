@@ -25,6 +25,66 @@ function pyjs_extend(klass, base) {
     }
 }
 
+/* creates a class, derived from bases, with methods and variables */
+function pyjs_type(clsname, bases, methods)
+{
+    var fn_cls = function() {};
+    fn_cls.__name__ = clsname;
+    var fn = function() {
+        var instance = new fn_cls();
+        if(instance.__init__) instance.__init__.apply(instance, arguments);
+        return instance;
+    }
+    fn_cls.__initialize__ = function() {
+        if (fn_cls.__was_initialized__) return;
+        fn_cls.__was_initialized__ = true;
+        fn_cls.__extend_baseclasses();
+        fn_cls.prototype.__class__.__new__ = fn;
+        fn_cls.prototype.__class__.__name__ = clsname;
+    }
+    fn_cls.__extend_baseclasses = function() {
+        var bi;
+        for (bi in fn_cls.__baseclasses)
+        {
+            var b = fn_cls.__baseclasses[bi];
+            if (b.__was_initialized__)
+            {
+                continue;
+            }
+            b.__initialize__();
+        }
+        for (bi in fn_cls.__baseclasses)
+        {
+            var b = fn_cls.__baseclasses[bi];
+            pyjs_extend(fn_cls, b);
+        }
+    }
+    if (!bases) {
+        bases = [pyjslib.__Object];
+    }
+    fn_cls.__baseclasses = bases;
+
+    fn_cls.__initialize__();
+
+    for (k in methods) {
+        var mth = methods[k];
+        var mtype = typeof mth;
+        if (mtype == "function" ) {
+            fn_cls.prototype[k] = mth;
+            fn_cls.prototype.__class__[k] = function () {
+                return fn_cls.prototype[k].call.apply(
+                       fn_cls.prototype[k], arguments);
+            };
+            fn_cls.prototype.__class__[k].unbound_method = true;
+            fn_cls.prototype.instance_method = true;
+            fn_cls.prototype.__class__[k].__name__ = k;
+            fn_cls.prototype[k].__name__ = k;
+        } else {
+            fn_cls.prototype.__class__[k] = mth;
+        }
+    }
+    return fn;
+}
 function pyjs_kwargs_call(obj, func, star_args, args)
 {
     var call_args;
