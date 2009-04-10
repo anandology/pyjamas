@@ -21,8 +21,14 @@ def java2pythonlinebyline(txt):
         txt = txt.replace('!', 'not ')
         txt = txt.replace('not =', '!=') # whoops
         txt = txt.replace(') {', ':')
+    elif txt.endswith("else {"):
+        txt = txt.replace('else {', 'else:')
     elif txt.find('class ') >= 0 and txt.endswith("{"):
         txt = txt.replace('{', ':')
+    elif txt.find('try {') >= 0:
+        txt = txt.replace('try {', 'try:')
+    elif txt.find('} catch') >= 0:
+        txt = txt.replace('} catch', 'except')
     elif txt.find('while (') >= 0:
         txt = txt.replace('while (', 'while ')
         txt = txt.replace(') {', ':')
@@ -64,17 +70,24 @@ def redofunctions(txt):
     rbr = txt.find(") {")
     if lbr == -1 or rbr == -1 or lbr > rbr:
         return txt
+    lbr2 = txt.find("(", lbr+1)
+    if lbr2 > 0:
+        return txt
     count = countspaces(txt)
     pre = txt[count:lbr]
     args = txt[lbr+1:rbr]
 
-    pre = map(string.strip, pre.split(' '))
-    if len(pre) == 1: # assume it's a constructor
-        pre = '__init__'
-    elif len(pre) == 2:
-        pre = pre[-1] # drop the first word (return type)
+    is_exception = 0
+    if pre.find("except") >= 0:
+        is_exception = 1
     else:
-        error # deliberately cause error - investigate 3-word thingies!
+        pre = map(string.strip, pre.split(' '))
+        if len(pre) == 1: # assume it's a constructor
+            pre = '__init__'
+        elif len(pre) == 2:
+            pre = pre[-1] # drop the first word (return type)
+        else:
+            error # deliberately cause error - investigate 3-word thingies!
 
     args = map(string.strip, args.split(','))
     newargs = []
@@ -87,10 +100,12 @@ def redofunctions(txt):
         else:
             print pre, args, arg
             error # deliberately cause error - find out why arg no type
-    if count != 0:
+    if count != 0 and not is_exception:
         # assume class not global function - add self
         newargs = ['self'] + newargs
     newargs = ', '.join(newargs)
+    if is_exception:
+        return "%s%s%s:" % (count*' ', pre, newargs)
     return "%sdef %s(%s):" % (count*' ', pre, newargs)
 
 def reindent(txt):
@@ -113,6 +128,8 @@ def java2python(txt):
     txt = txt.replace("/*", '"""')
     txt = txt.replace("*/", '"""')
     txt = txt.replace("<>", '!=')
+    txt = txt.replace("&&", ' and ')
+    txt = txt.replace("||", ' or ')
     txt = txt.replace("null", 'None')
     txt = txt.replace("!= None", 'is not None')
     txt = txt.replace("== None", 'is None')
