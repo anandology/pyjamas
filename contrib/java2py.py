@@ -9,6 +9,54 @@
 import sys
 import string
 
+def import_gwt_to_pyjamas(txt):
+    """ this bit is specifically hard-coded to deal with gwt-dnd
+        conversion.  almost everything else is "generic" java-to-python
+    """
+    if txt.startswith("package "):
+        return ''
+    if not txt.startswith('import '):
+        return txt
+    if txt == 'import com.google.gwt.dom.client.NativeEvent;':
+        return 'from pyjamas.ui import Event'
+    if txt.startswith('import com.google.gwt.user.client.ui.'):
+        module = txt[37:-1]
+        return "from pyjamas.ui.%s import %s" % (module, module)
+    if txt.startswith('import com.google.gwt.user.client.'):
+        module = txt[34:-1]
+        if module == 'Element':
+            return ''
+        return "from pyjamas import %s" % module
+    if txt.startswith('import com.allen_sauer.gwt.dnd.client.drop.'):
+        module = txt[43:-1]
+        return "from pyjamas.dnd.drop import %s" % module
+    if txt.startswith('import com.allen_sauer.gwt.dnd.client.util.'):
+        module = txt[43:-1]
+        return "from pyjamas.dnd.util import %s" % module
+    if txt.startswith('import com.allen_sauer.gwt.dnd.client.'):
+        module = txt[38:-1]
+        return "from pyjamas.dnd import %s" % module
+    return ''
+
+def convert_stupid_js_import_to_stupid_js_import(txt):
+    """ this is GWT-to-PyJS-specific conversion: support of assembly-like
+        direct insertion of javascript.  again, it's one of the few bits
+        of non-generic java-to-python
+    """
+    txt = txt.replace("/*-{", '{\nJS("""')
+    txt = txt.replace("}-*/", '""")\n}')
+    return txt
+
+def join_single_open_brace_to_previous_line(txt):
+    res = []
+    for l in txt.split("\n"):
+        x = l.strip()
+        if x == '{':
+            res[-1] += (' {')
+        else:
+            res.append(l)
+    return '\n'.join(res)
+
 def countspaces(txt):
     count = 0
     while count < len(txt) and txt[count] == ' ':
@@ -54,6 +102,8 @@ def java2pythonlinebyline(txt):
         txt = txt.replace("private ", "")
     if txt[count:].startswith("static ") >= 0:
         txt = txt.replace("static ", "")
+    if txt[count:].startswith("native ") >= 0:
+        txt = txt.replace("native ", "")
     if txt[count:].startswith("final ") >= 0:
         txt = txt.replace("final ", "")
     if txt.endswith(";"):
@@ -87,6 +137,7 @@ def redofunctions(txt):
         elif len(pre) == 2:
             pre = pre[-1] # drop the first word (return type)
         else:
+            print txt
             error # deliberately cause error - investigate 3-word thingies!
 
     args = map(string.strip, args.split(','))
@@ -123,27 +174,66 @@ def reindent(txt):
             indent += 1
     return res
 
+def java_replace(txt, rep, repwith):
+    res = ''
+    while txt:
+        i = txt.find('JS("""')
+        if i == -1:
+            return res + txt.replace(rep, repwith)
+        j = txt.find('""")', i)
+        if (j == -1):
+            error # whoops
+        res += txt[:i].replace(rep, repwith) + txt[i:j]
+        txt = txt[j:]
+    return txt
+
+def java_linemap(fn, lines):
+
+    res = []
+    in_stupid_js = False
+
+    for l in lines:
+
+        if in_stupid_js:
+            res.append(l)
+            if l.find('""")') >= 0:
+                in_stupid_js = False
+            continue
+
+        if l.find('JS("""') >= 0:
+            in_stupid_js = True
+            res.append(l)
+            continue
+    
+        res.append(fn(l))
+
+    return res
+
 def java2python(txt):
+    txt = txt.replace("\r\n", '\n') # yuk dos files.
+    txt = convert_stupid_js_import_to_stupid_js_import(txt)
+    txt = join_single_open_brace_to_previous_line(txt)
     txt = reindent(txt)
-    txt = txt.replace("/*", '"""')
-    txt = txt.replace("*/", '"""')
-    txt = txt.replace("<>", '!=')
-    txt = txt.replace("&&", ' and ')
-    txt = txt.replace("||", ' or ')
-    txt = txt.replace("null", 'None')
-    txt = txt.replace("!= None", 'is not None')
-    txt = txt.replace("== None", 'is None')
-    txt = txt.replace("throw ", 'raise ')
-    txt = txt.replace("true", 'True')
-    txt = txt.replace("false", 'False')
-    txt = txt.replace("//", '#')
-    txt = txt.replace("this.", 'self.')
-    txt = txt.replace("else if", 'elif')
-    txt = txt.replace("new ", '')
+    txt = java_replace(txt, "/*", '"""')
+    txt = java_replace(txt, "*/", '"""')
+    txt = java_replace(txt, "<>", '!=')
+    txt = java_replace(txt, "&&", ' and ')
+    txt = java_replace(txt, "||", ' or ')
+    txt = java_replace(txt, "null", 'None')
+    txt = java_replace(txt, "!= None", 'is not None')
+    txt = java_replace(txt, "== None", 'is None')
+    txt = java_replace(txt, "throw ", 'raise ')
+    txt = java_replace(txt, "true", 'True')
+    txt = java_replace(txt, "false", 'False')
+    txt = java_replace(txt, "//", '#')
+    txt = java_replace(txt, "this.", 'self.')
+    txt = java_replace(txt, "else if", 'elif')
+    txt = java_replace(txt, "new ", '')
     l = txt.split("\n")
-    l = map(java2pythonlinebyline, l)
-    l = map(redofunctions, l)
-    txt = txt.replace("}", '')
+    l = java_linemap(import_gwt_to_pyjamas, l)
+    l = java_linemap(java2pythonlinebyline, l)
+    l = java_linemap(redofunctions, l)
+    txt = java_replace(txt, "}", '')
     return '\n'.join(l)
 
 if __name__ == "__main__":
