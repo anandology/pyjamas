@@ -85,12 +85,12 @@ and if that AJAX framework doesn't do what you want, tough luck - find another
 one.
 </p>
 <p>
-Pyjamas is a totally different approach: you are given a
-comprehensive set of base classes and modules - written almost
-98.5% in python - and you can then write your own applications,
-classes and modules and call it "My Own AJAX Framework".  And, as
-you are writing in a much higher level language than Javascript,
-it's a darn sight easier.
+Pyjamas is a totally different approach: it brings "Declarative
+Programming" (in python) to the Web.  You are given a comprehensive set of
+base classes and modules - written almost 98.5% in python - and you can
+then write your own applications, classes and modules and call it
+"My Own AJAX Framework".  And, as you are writing in a much higher
+level language than Javascript, it's a darn sight easier.
 </p>
 
 <h3> Do I have to know any Javascript? </h3>
@@ -104,8 +104,11 @@ Nope.
 </p>
 <p>
 It helps if you know a little bit about how CSS works, because
-the Pyjamas User-Interface widgets are designed around "function" and
-"purpose", not "form" or "look".
+the Pyjamas User-Interface widgets, like all Widget Sets, are designed
+around "function" and "purpose", not "form" or "look".  It would also help
+if you had a basic grasp of a tiny bit of HTML, such as what &lt;b&gt; etc.
+does.  For everything else, such as tables, there are Widgets such as Grid
+that are much more practical to use.
 </p>
 
 <h3> Why not? </h3>
@@ -133,6 +136,37 @@ their expectations that this is going to be horrendously painful,
 and you are at a distinct advantage because you've not experienced
 their disillusionment and frustration of the past decade, over CSS,
 browser and AJAX incompatibilities.
+</p>
+
+<h3> What server-side web framework should I use? </h3>
+<p>
+Absolutely anything you like.  Literally anything.  CGI-Scripts,
+ASP/.NET, PHP, Apache, WSGI - you name it, you can use it.  The
+reason is simple: the Pyjamas python code gets compiled to some
+HTML and some Javascript - that's it.  So, just like <i>any</i>
+web pages, you simply need something that will load ... web pages.
+duh.
+</p>
+
+<h3> Ok - what's the <i>best</i> server-side web framework I should use? </h3>
+<p>
+This is a highly subjective question, but if you are new to web development,
+you will be asking these kinds of questions.  Given that you're considering
+python, logically it makes sense to pick a python-based web framework.
+If you're going to do AJAX, you should really use JSONRPC.  If you're
+using JSONRPC, you should pick a framework that is known to have mature
+JSONRPC server-side support, and that means
+<a href="http://djangoproject.org">Django</a>,
+<a href="http://web2py.com">Web2Py</a>, and many more.  See the
+<a href="http://code.google.com/p/pyjamas/w/list">Pyjamas Wiki</a>
+for links to various JSONRPC integration HOWTOs.
+</p>
+<p>
+That having been said: if you're starting entirely from scratch,
+Django has to come out overall on top, even though you will not be
+using all of its features.  The SQL ORM in Django is excellent;
+the tutorials to get started are excellent; the developers and users
+on the (busy) IRC channel are very helpful and responsive.
 </p>
 
 <h3> I'm a bit underwhelmed by the apparent lack of documentation </h3>
@@ -188,15 +222,17 @@ and cc1 and pyjscompile are the actual nitty-gritty compilers.
 </p>
 <p>
 You <i>need</i> to be aware of this because you cannot expect pyjamas,
-a specialist compiler, to also take on the task of being the debugger, or
-the virtual machine under which the javascript executes, or any other
+a specialist compiler, to also take on the task of being the debugger, 
+or to incorporate the tasks performed by tools such as pylint, or to be
+the virtual machine under which the javascript executes, or to do any other
 task <i>other</i> than actual compiling.
 </p>
 <p>
 With that in mind, here are some things that you can do:
 <ul>
-<li /> Add the -d option to the build process: pyjsbuild -d {myapp.py} 
-       as this will enable a horrendous amount of extra output in the
+<li /> Add the -d option to the build process: pyjsbuild -d {myapp.py}.
+       It's the equivalent of adding "-g" to gcc.
+       -d will enable a horrendous amount of extra output in the
        application, including actually placing the line numbers and
        module name into the javascript output, for each and every single
        line of code being executed (!)  Also, a stacktrace will be
@@ -387,7 +423,8 @@ that is much more akin to how a "standard" desktop python app would work.
 <p>
 The consequences are that your apps will, if you don't explicitly do anything,
 do absolutely nothing.  So, when you get a blank screen, that is actually
-technically correct!  Declare an instance of your app's class and call its
+technically correct, as exactly the same thing would happen with a standard
+python app!  Declare an instance of your app's class and call its
 onModuleLoad() function.
 </p>
 
