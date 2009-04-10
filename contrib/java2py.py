@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 """ Use this to help speed up manual conversion of e.g. GWT Java to e.g.
     Pyjamas python
+
+    TODO: in java2pythonlinebyline and redofunctions, identify a list
+    of variables and functions, and do replace "variable" with "self.variable"
 """
 
 import sys
@@ -31,10 +34,17 @@ def java2pythonlinebyline(txt):
         txt = count * ' ' + txt[count+1:]
 
     if txt[count:].startswith("protected ") >= 0:
+        # TODO: check if "class" in current line, add class name
+        # otherwise assume last word of line is variable
         txt = txt.replace("protected ", "")
     if txt[count:].startswith("public ") >= 0:
+        # TODO: check if "class" in current line, add class name
+        # otherwise assume last word of line is variable
         txt = txt.replace("public ", "")
     if txt[count:].startswith("private ") >= 0:
+        # TODO: check if "class" in current line, add class name
+        # otherwise assume last word of line is variable e.g.
+        # private final Area >>>targetArea<<<;
         txt = txt.replace("private ", "")
     if txt[count:].startswith("static ") >= 0:
         txt = txt.replace("static ", "")
