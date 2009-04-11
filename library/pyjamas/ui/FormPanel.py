@@ -16,7 +16,7 @@ from pyjamas import DOM
 
 from pyjamas.ui.SimplePanel import SimplePanel
 from pyjamas.ui import Event
-from pyjamas.uiObject import EventObject
+from pyjamas.ui.EventObject import EventObject
 
 class FormSubmitEvent(EventObject):
     def __init__(self, source):
