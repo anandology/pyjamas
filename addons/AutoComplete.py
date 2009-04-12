@@ -1,5 +1,11 @@
 # Autocomplete component for Pyjamas
-# Ported by Willie Gollino from Autocomplete component for GWT - Originally by Oliver Albers http://gwt.components.googlepages.com/
+# Ported by Willie Gollino from Autocomplete component for GWT -
+# Originally by Oliver Albers http://gwt.components.googlepages.com/
+#
+# Licensed under the LGPL 2.1
+#
+# TODO: textarea autocomplete
+# http://gwt.components.googlepages.com/auto-completiontextbox
 
 from pyjamas.ui.TextBox import TextBox
 from pyjamas.ui.PopupPanel import PopupPanel

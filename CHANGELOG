@@ -1,6 +1,10 @@
                     Changes made to Pyjamas since 0.5
                     ---------------------------------
 
+ * Fixed Autocompletion which just needed non-modal on PopupPanel
+   (thanks to lovelysystems for implementing non-modal dialogs
+    otherwise it wouldn't be possible to fix Autocompletion)
+
  * Added implementation of metaclass "type" function
 
  * Made KeyboardListener a singleton module rather than have a class
