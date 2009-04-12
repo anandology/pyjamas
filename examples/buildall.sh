@@ -20,3 +20,4 @@
 (cd tabpanelwidget; ./build.sh)
 (cd widgets; ./build.sh)
 (cd ajaxlibtest; ./build.sh)
+(cd xmldoc; ./build.sh)
