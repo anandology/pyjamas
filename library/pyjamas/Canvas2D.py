@@ -12,11 +12,11 @@
 from pyjamas import DOM
 from pyjamas.ui.Image import Image
 from pyjamas.ui.Widget import Widget
-from pyjamas.ui.Event import Event
-from pyjamas.ui.MouseListener import MouseListener
-from pyjamas.ui.KeyboardListener import KeyboardListener
-from pyjamas.ui.Focus import Focus
-from pyjamas.ui.FocusListener import FocusListener
+from pyjamas.ui import Event
+from pyjamas.ui import MouseListener
+from pyjamas.ui import KeyboardListener
+from pyjamas.ui import Focus
+from pyjamas.ui import FocusListener
 
 class Canvas(Widget):
     def __init__(self, width, height):
@@ -70,11 +70,9 @@ class Canvas(Widget):
                 if listener.onClick: listener.onClick(self, event)
                 else: listener(self, event)
         elif type == "blur" or type == "focus":
-            FocusListener.fireFocusEvent(self, self.focusListeners, self, event)
+            FocusListener.fireFocusEvent(self.focusListeners, self, event)
         elif type == "keydown" or type == "keypress" or type == "keyup":
-            KeyboardListener.fireKeyboardEvent(self, self.keyboardListeners, self, event)
-        elif type == "mousedown" or type == "mouseup" or type == "mousemove" or type == "mouseover" or type == "mouseout":
-            MouseListener.fireMouseEvent(self, self.mouseListeners, self, event)
+            MouseListener.fireMouseEvent(self.mouseListeners, self, event)
 
     def removeClickListener(self, listener):
         self.clickListeners.remove(listener)
@@ -90,9 +88,9 @@ class Canvas(Widget):
 
     def setFocus(self, focused):
         if (focused):
-            Focus.focus(self, self.focusable)
+            Focus.focus(self.focusable)
         else:
-            Focus.blur(self, self.focusable)
+            Focus.blur(self.focusable)
 
     def getContext(self):
         return self.context

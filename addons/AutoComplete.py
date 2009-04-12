@@ -4,12 +4,12 @@
 from pyjamas.ui.TextBox import TextBox
 from pyjamas.ui.PopupPanel import PopupPanel
 from pyjamas.ui.ListBox import ListBox
-from pyjamas.ui.KeyboardListener import KeyboardListener
+from pyjamas.ui import KeyboardListener
 from pyjamas.ui.RootPanel import RootPanel
 
 class AutoCompleteTextBox(TextBox):
     def __init__(self):
-        self.choicesPopup = PopupPanel(True)
+        self.choicesPopup = PopupPanel(True, False)
         self.choices = ListBox()
         self.items = SimpleAutoCompletionItems()
         self.popupAdded = False
