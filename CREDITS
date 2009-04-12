@@ -10,6 +10,7 @@ Willie Gollino - wgollino@yahoo.com
 Dobes Vandermeer - dobesv@gmail.com
 Bernd Dorn - <bernd.dorn@lovelysystems.com>
 Luis Pamirez
+Erik Westra - ewestra [at] gmail [dot] com
 
 Other Contributors
 
@@ -18,6 +19,17 @@ Gerard Labadie - gerard.labadie@gmail.com
 Stephan Diehl - stephan.diehl@gmx.net
 John Lehman - j1o1h1n@gmail.com
 Jürgen Kartnaller - <kartnaller@lovelysystems.com>
+
+
+Erik gets a special mention for the contribution of the "Showcase".
+
+Luis did the porting of gtk to pyjamas: I'm sorry we haven't had time
+to reincorporate it into pyjamas 0.4 or above yet, Luis!  It'll happen
+eventually.
+
+Bernd's work on the core python compiler has been absolutely invaluable.
+
+James - thank you for kick-starting this project.
 
 
 And of course, a huge amount of thanks goes to Google and the engineers
