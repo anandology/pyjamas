@@ -11,6 +11,7 @@ from pyjamas.ui.HTMLPanel import HTMLPanel
 from pyjamas.ui.MenuBar import MenuBar
 from pyjamas.ui.MenuItem import MenuItem
 from pyjamas.ui.ScrollPanel import ScrollPanel
+from pyjamas.ui.DisclosurePanel import DisclosurePanel 
 from Logger import Logger
 from pyjamas import DOM
 
@@ -86,6 +87,10 @@ class Layouts(Sink):
         DOM.setStyleAttribute(menu.getElement(), "display", "inline")
         html.add(menu, id)
 
+        disclose = DisclosurePanel("Click to disclose")
+        disclose.add(HTML("""<b>Ta-daaaaa!</b><br />Ok - it could have
+                             been<br />more of a surprise."""))
+
         panel = VerticalPanel()
         panel.setSpacing(8)
         panel.setHorizontalAlignment(HasAlignment.ALIGN_CENTER)
@@ -100,6 +105,8 @@ class Layouts(Sink):
         panel.add(vert)
         panel.add(self.makeLabel("HTML Panel"))
         panel.add(html)
+        panel.add(self.makeLabel("Disclosure Panel"))
+        panel.add(disclose)
         
         self.initWidget(panel)
         self.setStyleName("ks-layouts")

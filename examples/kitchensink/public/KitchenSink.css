@@ -242,3 +242,33 @@ a:visited {
 .infoProse {
   margin: 8px;
 }
+
+/******************************************************
+*						DisclosurePanel		
+******************************************************/
+.gwt-DisclosurePanel
+{
+	background-color			:	#ddf;
+	border						:	1px solid #009;
+}
+.gwt-DisclosurePanel .header
+{
+	font-size					:	70%;
+	cursor						:	pointer;
+	cursor						:	hand;
+}
+.gwt-DisclosurePanel-closed
+{
+}
+.gwt-DisclosurePanel-closed .header
+{
+}
+.gwt-DisclosurePanel-open
+{
+}
+.gwt-DisclosurePanel-open .header
+{
+}
+.gwt-DisclosurePanel-open .content
+{
+}

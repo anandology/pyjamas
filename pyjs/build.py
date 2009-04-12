@@ -225,6 +225,8 @@ def build(app_name, output, js_includes=(), debug=False, dynamic=0,
     ## Images
 
     print "Copying: Images and History"
+    copy_boilerplate(data_dir, "disclosurePanelOpen.png", output)
+    copy_boilerplate(data_dir, "disclosurePanelClosed.png", output)
     copy_boilerplate(data_dir, "corner_dialog_topleft_black.png", output)
     copy_boilerplate(data_dir, "corner_dialog_topright_black.png", output)
     copy_boilerplate(data_dir, "corner_dialog_bottomright_black.png", output)
