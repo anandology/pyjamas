@@ -8,7 +8,7 @@ def getBodyElement():
 def write(text):
     add_elem()
     global data, element
-    text = text.replace("\n", r"<br />\n")
+    text = text.replace("\n", "<br />\n")
     data += text
     DOM.setInnerHTML(element, data)
 

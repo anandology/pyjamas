@@ -19,7 +19,7 @@ Gerard Labadie - gerard.labadie@gmail.com
 Stephan Diehl - stephan.diehl@gmx.net
 John Lehman - j1o1h1n@gmail.com
 Jürgen Kartnaller - <kartnaller@lovelysystems.com>
-
+G Clinch
 
 Erik gets a special mention for the contribution of the "Showcase".
 
@@ -28,6 +28,8 @@ to reincorporate it into pyjamas 0.4 or above yet, Luis!  It'll happen
 eventually.
 
 Bernd's work on the core python compiler has been absolutely invaluable.
+
+G Clinch ported the DisclosurePanel from GWT
 
 James - thank you for kick-starting this project.
 
