@@ -80,7 +80,7 @@ sprintfWrapper = {
         if (!pyjslib.is_basetype(args))
             constructor = pyjslib.get_pyjs_classtype(args);
 
-        if(constructor != "pyjslib.List" && constructor != "pyjslib.Tuple")
+        if(constructor != "List" && constructor != "Tuple")
         {
             args = new pyjslib.List([args]);
         }
