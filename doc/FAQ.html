@@ -93,6 +93,43 @@ then write your own applications, classes and modules and call it
 level language than Javascript, it's a darn sight easier.
 </p>
 
+<h3> Is Pyjamas a server-side web framework? </h3>
+<p>
+No.
+</p>
+
+<h3> Is Pyjamas a client-side browser plugin? </h3>
+<p>
+No.
+</p>
+
+<h3> Is Pyjamas a firefox extension (like pyxpcomext)? </h3>
+<p>
+No.
+</p>
+
+<h3> Does it fly? </h3>
+<p>
+No.
+</p>
+
+<h3> Is Pyjamas a bird or a plane? </h3>
+<p>
+No.
+</p>
+
+<h3> How come you can run python, then? </h3>
+<p>
+You can't: browsers only support javascript.  So, all source code - libraries
+and applications - are translated into pure javascript.  No python is left. 
+at all.  Otherwise, it wouldn't work, would it?
+</p>
+
+<h3> How does it work, then? </h3>
+<p>
+It's magic.  smoke.  mirrors.  the usual stuff.
+</p>
+
 <h3> Do I have to know any Javascript? </h3>
 <p>
 Nope.
@@ -207,6 +244,12 @@ Use a google search for "W3C DOM XML", "W3C DOM", "W3C DOM Javascript"
 and other such searches to find so much documentation and help on the
 subject that you'll be staring at it for days.
 </p>
+<p>
+Then, start by looking at pyjamas/DOM.py and you will notice that there
+is a massive prevalance of javascript snippets (way more than any other
+pyjamas module).  It should be plain as day that DOM.py is a way to make
+the W3C DOM model of web browsers appear to be easily accessible, in python.
+</p>
 
 <h3> My application doesn't work.  What do I do, and why isn't Pyjamas helping? </h3>
 <p>
@@ -224,8 +267,9 @@ and cc1 and pyjscompile are the actual nitty-gritty compilers.
 You <i>need</i> to be aware of this because you cannot expect pyjamas,
 a specialist compiler, to also take on the task of being the debugger, 
 or to incorporate the tasks performed by tools such as pylint, or to be
-the virtual machine under which the javascript executes, or to do any other
-task <i>other</i> than actual compiling.
+the virtual machine under which the javascript executes, or to be
+a javascript code-compressor, or to do any other task <i>other</i> than
+actual compiling.
 </p>
 <p>
 With that in mind, here are some things that you can do:
@@ -303,7 +347,7 @@ def write(text):
     DOM.setInnerHTML(element, data)
 
 def writebr(text):
-    write(text + r"&lt;br /&gt;\n")
+    write(text + "&lt;br /&gt;\n")
 
 data = ""
 element = DOM.createDiv()
