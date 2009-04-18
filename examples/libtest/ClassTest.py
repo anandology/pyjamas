@@ -186,6 +186,37 @@ class ClassTest(UnitTest):
         self.assertEqual(instance.method(), 1)
         self.assertEqual(instance.x, 5)
 
+    def testMultiSuperclass(self):
+        new_value = 'New value'
+        c = ExampleMultiSuperclassNoConstructor(new_value)
+        # Verify that the __init__ of ExampleMultiSuperclassParent1 is used
+        self.assertEqual(c.x, new_value)
+        # Verify that the ExampleMultiSuperclassParent2.y is there
+        self.assertEqual(c.y, ExampleMultiSuperclassParent2.y)
+        # Verify that the get_value() of ExampleMultiSuperclassParent1 is used
+        self.assertEqual(c.get_value(), new_value)
+
+        c = ExampleMultiSuperclassExplicitConstructor(new_value)
+        # Verify that the ExampleMultiSuperclassParent1.x is there
+        self.assertEqual(c.x, ExampleMultiSuperclassParent1.x)
+        # Verify that the ExampleMultiSuperclassParent2.y is there
+        self.assertEqual(c.y, ExampleMultiSuperclassParent2.y)
+        # Verify that the __init__ of ExampleMultiSuperclassExplicitConstructor is used
+        self.assertEqual(c.z, new_value)
+        # Verify that the get_value() of ExampleMultiSuperclassExplicitConstructor is used
+        self.assertEqual(c.get_value(), new_value)
+        # Verify that the combination of the variables is correct
+        self.assertEqual(c.get_values(), ':'.join([ExampleMultiSuperclassParent1.x, ExampleMultiSuperclassParent2.y, new_value]))
+
+    def testMultiDoubleInherit(self):
+        i = DoubleInherit(1,2,3)
+        self.assertEqual(i.get_x(), 1)
+        self.assertEqual(i.get_y(), 2)
+        self.assertEqual(i.get_z(), 3)
+
+        MultiInherit2.set_x(i, 5)
+        self.assertEqual(MultiInherit1.get_x(i), 5)
+
 # testMetaClass
 def method(self):
     return 1
@@ -269,5 +300,67 @@ class ExampleChildExplicitConstructor(ExampleParentConstructor):
 #    def someMethod(self):
 #        return 'abc'
 
+class ObjectClass(object):
+    pass
 
+class ExampleMultiSuperclassParent1:
+    x = 'Initial X'
+
+    def __init__(self, x):
+        self.x = x
+    def get_value(self):
+        return self.x
+
+class ExampleMultiSuperclassParent2:
+    y = 'Initial Y'
+
+    def __init__(self, y):
+        self.y = y
+    def get_value(self):
+        return self.y
+
+class ExampleMultiSuperclassNoConstructor(ExampleMultiSuperclassParent1, ExampleMultiSuperclassParent2):
+    z = 'Initial Z'
+
+class ExampleMultiSuperclassExplicitConstructor(ExampleMultiSuperclassParent1, ExampleMultiSuperclassParent2):
+    z = 'Initial Z'
+
+    def __init__(self, z):
+        self.z = z
+    def get_value(self):
+        return self.z
+    def get_values(self):
+        return ':'.join([self.x, self.y, self.z])
+
+
+class MultiBase:
+    def __init__(self, x):
+        self.x = x
+
+    def get_x(self):
+        return self.x
+
+    def set_x(self,x ):
+        self.x = x
+
+class MultiInherit1(MultiBase):
+    def __init__(self, x, y):
+        self.y = y
+        MultiBase.__init__(self, x) # yes it gets called twice
+
+    def get_y(self):
+        return self.y
+
+class MultiInherit2(MultiBase):
+    def __init__(self, x, z):
+        self.z = z
+        MultiBase.__init__(self, x) # yes it gets called twice
+
+    def get_z(self):
+        return self.z
+
+class DoubleInherit(MultiInherit1, MultiInherit2):
+    def __init__(self, x, y, z):
+        MultiInherit1.__init__(self, x, y) # MultiBase __init__ called once
+        MultiInherit2.__init__(self, x, z) # MultiBase __init__ called twice
 

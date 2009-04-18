@@ -1,10 +1,15 @@
 function pyjs_extend(klass, base) {
     function klass_object_inherit() {}
-    klass_object_inherit.prototype = base.prototype;
+    if (klass.prototype.__class__ == null) {
+        klass_object_inherit.prototype = base.prototype;
+    } else {
+        klass_object_inherit.prototype = klass.prototype;
+    }
     klass_object = new klass_object_inherit();
     for (var i in base.prototype.__class__) {
         v = base.prototype.__class__[i];
-        if (typeof v == "function" && (v.class_method || v.static_method || v.unbound_method))
+        if ( (typeof v == "function" && (v.class_method || v.static_method || v.unbound_method))
+             || (typeof v == "string"))
         {
             klass_object[i] = v;
         }

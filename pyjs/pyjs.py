@@ -763,28 +763,30 @@ class Translator:
 
 
         if len(node.bases) == 0:
-            base_class = "pyjslib.__Object"
-        elif len(node.bases) == 1:
-            if isinstance(node.bases[0], ast.Name):
-                if self.imported_classes.has_key(node.bases[0].name):
-                    base_class_ = self.imported_classes[node.bases[0].name] + '.__' + node.bases[0].name
-                    base_class = self.imported_classes[node.bases[0].name] + '.' + node.bases[0].name
+            base_classes = [("object", "pyjslib.__Object", "pyjslib.__Object")]
+        elif len(node.bases) >= 1:
+            base_classes = []
+            for node_base in node.bases:
+                if isinstance(node_base, ast.Name):
+                    node_base_name = node_base.name
+                    if self.imported_classes.has_key(node_base.name):
+                        base_class_ = self.imported_classes[node_base.name] + '.__' + node_base.name
+                        base_class = self.imported_classes[node_base.name] + '.' + node_base.name
+                    else:
+                        base_class_ = self.modpfx() + "__" + node_base.name
+                        base_class = self.modpfx() + node_base.name
+                elif isinstance(node_base, ast.Getattr):
+                    # the bases are not in scope of the class so do not
+                    # pass our class to self._name
+                    node_base_name = node_base.attrname
+                    base_class_ = self._name(node_base.expr, None) + \
+                                 ".__" + node_base.attrname
+                    base_class = self._name(node_base.expr, None) + \
+                                 "." + node_base.attrname
                 else:
-                    base_class_ = self.modpfx() + "__" + node.bases[0].name
-                    base_class = self.modpfx() + node.bases[0].name
-            elif isinstance(node.bases[0], ast.Getattr):
-                # the bases are not in scope of the class so do not
-                # pass our class to self._name
-                base_class_ = self._name(node.bases[0].expr, None) + \
-                             ".__" + node.bases[0].attrname
-                base_class = self._name(node.bases[0].expr, None) + \
-                             "." + node.bases[0].attrname
-            else:
-                raise TranslationError("unsupported type (in _class)", node.bases[0])
-
-            current_klass.set_base(base_class)
-        else:
-            raise TranslationError("more than one base (in _class)", node)
+                    raise TranslationError("unsupported type (in _class)", node_base)
+                base_classes.append((node_base_name, base_class, base_class_))
+            current_klass.set_base(base_classes[0][1])
 
         print >>self.output, UU+class_name_ + " = function () {"
         # call superconstructor
@@ -818,15 +820,17 @@ class Translator:
         print >>self.output, "    "+UU+class_name_+".__was_initialized__ = true;"
         cls_obj = UU+class_name_ + '.prototype.__class__'
 
+        base_classes.reverse()
         if class_name == "pyjslib.__Object":
             print >>self.output, "    "+cls_obj+" = {};"
         else:
-            if base_class and base_class not in ("object", "pyjslib.__Object"):
-                print >>self.output, "    if(!"+UU+base_class_+".__was_initialized__)"
-                print >>self.output, "        "+UU+base_class_+".__initialize__();"
-                print >>self.output, "    pyjs_extend(" + UU+class_name_ + ", "+UU+base_class_+");"
-            else:
-                print >>self.output, "    pyjs_extend(" + UU+class_name_ + ", "+UU+"pyjslib.__Object);"
+            for node_base_name, node_base_class, node_base_class_ in base_classes:
+                if node_base_name == 'object':
+                    print >>self.output, "    pyjs_extend(" + UU+class_name_ + ", "+UU+"pyjslib.__Object);"
+                else:
+                    print >>self.output, "    if(!"+UU+node_base_class_+".__was_initialized__)"
+                    print >>self.output, "        "+UU+node_base_class_+".__initialize__();"
+                    print >>self.output, "    pyjs_extend(" + UU+class_name_ + ", "+UU+node_base_class_+");"
 
         print >>self.output, "    "+cls_obj+".__new__ = "+UU+class_name+";"
         print >>self.output, "    "+cls_obj+".__name__ = '"+UU+node.name+"';"
