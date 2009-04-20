@@ -632,7 +632,11 @@ class Translator:
     def _name(self, v, current_klass, top_level=False,
                                       return_none_for_module=False):
 
-        if v.name == 'ilikesillynamesfornicedebugcode':
+        if not hasattr(v, 'name'):
+            name = v.attrname
+        else:
+            name = v.name
+        if name == 'ilikesillynamesfornicedebugcode':
             print top_level, current_klass, repr(v)
             print self.top_level_vars
             print self.top_level_functions
@@ -644,37 +648,37 @@ class Translator:
         if las > 0:
             local_var_names = self.local_arg_stack[-1]
 
-        if v.name == "True":
+        if name == "True":
             return "true"
-        elif v.name == "False":
+        elif name == "False":
             return "false"
-        elif v.name == "None":
+        elif name == "None":
             return "null"
-        elif v.name == '__name__' and current_klass is None:
-            return self.modpfx() + v.name
-        elif v.name == self.method_self:
+        elif name == '__name__' and current_klass is None:
+            return self.modpfx() + name
+        elif name == self.method_self:
             return "this"
-        elif v.name in self.top_level_functions:
-            return UU+self.modpfx() + v.name
-        elif v.name in self.method_imported_globals:
-            return UU+self.modpfx() + v.name
-        elif not current_klass and las == 1 and v.name in self.top_level_vars:
-            return UU+self.modpfx() + v.name
-        elif v.name in local_var_names:
-            return v.name
-        elif self.imported_classes.has_key(v.name):
-            return UU+self.imported_classes[v.name] + '.__' + v.name + ".prototype.__class__"
-        elif v.name in self.top_level_classes:
-            return UU+self.modpfx() + "__" + v.name + ".prototype.__class__"
-        elif v.name in self.module_imports() and return_none_for_module:
+        elif name in self.top_level_functions:
+            return UU+self.modpfx() + name
+        elif name in self.method_imported_globals:
+            return UU+self.modpfx() + name
+        elif not current_klass and las == 1 and name in self.top_level_vars:
+            return UU+self.modpfx() + name
+        elif name in local_var_names:
+            return name
+        elif self.imported_classes.has_key(name):
+            return UU+self.imported_classes[name] + '.__' + name + ".prototype.__class__"
+        elif name in self.top_level_classes:
+            return UU+self.modpfx() + "__" + name + ".prototype.__class__"
+        elif name in self.module_imports() and return_none_for_module:
             return None
-        elif v.name in PYJSLIB_BUILTIN_CLASSES:
-            return "pyjslib." + pyjs_builtin_remap( v.name )
+        elif name in PYJSLIB_BUILTIN_CLASSES:
+            return "pyjslib." + pyjs_builtin_remap( name )
         elif current_klass:
-            if v.name not in local_var_names and \
-               v.name not in self.top_level_vars and \
-               v.name not in PYJS_GLOBAL_VARS and \
-               v.name not in self.top_level_functions:
+            if name not in local_var_names and \
+               name not in self.top_level_vars and \
+               name not in PYJS_GLOBAL_VARS and \
+               name not in self.top_level_functions:
 
                 cls_name = current_klass
                 if hasattr(cls_name, "name"):
@@ -683,12 +687,12 @@ class Translator:
                 else:
                     cls_name_ = current_klass + "_" # XXX ???
                 name = UU+cls_name_ + ".prototype.__class__." \
-                                   + v.name
-                if v.name == 'listener':
+                                   + name
+                if name == 'listener':
                     name = 'listener+' + name
                 return name
 
-        return v.name
+        return name
 
     def _name2(self, v, current_klass, attr_name):
         obj = v.name

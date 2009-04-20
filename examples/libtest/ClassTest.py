@@ -1,5 +1,7 @@
 from UnitTest import UnitTest
 
+import imports.child
+
 class ClassTest(UnitTest):
     def __init__(self):
         UnitTest.__init__(self)
@@ -238,6 +240,12 @@ class ClassTest(UnitTest):
             self.fail("Exception should be raised on 'c.two_args()'")
         except TypeError, e:
             self.assertEqual(e.message,  "two_args() takes exactly 2 arguments (1 given)")
+
+    def testImportTest(self):
+        # import imports.child # FIXME: if the import statement is here in stead of at the top, this fails on compiling
+        teststring = 'import test'
+        c = imports.child.Child()
+        self.assertEqual(c.value(teststring), teststring)
 
 # testMetaClass
 def method(self):
