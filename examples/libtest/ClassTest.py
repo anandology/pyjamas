@@ -217,6 +217,28 @@ class ClassTest(UnitTest):
         MultiInherit2.set_x(i, 5)
         self.assertEqual(MultiInherit1.get_x(i), 5)
 
+    def testClassArguments(self):
+        c = ClassArguments()
+        try:
+            # FIXME: This should raise:
+            # TypeError: no_args() takes no arguments (1 given)
+            c.no_args()
+            self.fail("Exception should be raised on 'c.no_args()'")
+        except TypeError, e:
+            self.assertEqual(e.message,  "no_args() takes no arguments (1 given)")
+            print 
+            pass
+
+        self.assertEqual(c.self_arg(), True)
+        self.assertEqual(c.two_args(1), 1)
+        try:
+            # FIXME: This should raise:
+            # 'TypeError: two_args() takes exactly 2 arguments (1 given)
+            c.two_args()
+            self.fail("Exception should be raised on 'c.two_args()'")
+        except TypeError, e:
+            self.assertEqual(e.message,  "two_args() takes exactly 2 arguments (1 given)")
+
 # testMetaClass
 def method(self):
     return 1
@@ -332,6 +354,13 @@ class ExampleMultiSuperclassExplicitConstructor(ExampleMultiSuperclassParent1, E
     def get_values(self):
         return ':'.join([self.x, self.y, self.z])
 
+class ClassArguments:
+    def no_args( ):
+        return False
+    def self_arg(self):
+        return True
+    def two_args(self, arg1):
+        return arg1
 
 class MultiBase:
     def __init__(self, x):

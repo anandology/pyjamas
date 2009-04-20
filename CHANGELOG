@@ -1,7 +1,11 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
- * Added Multiple Inheritance (thanks to Kees Boss)
+ * Added class "Zero args" support (thanks to Kees Bos).
+   TODO: support runtime exceptions when number of function
+   call arguments is wrong, as illustrated in the new LibTest.
+
+ * Added Multiple Inheritance (thanks to Kees Bos)
 
  * Add support for Google Gears (Database)
 

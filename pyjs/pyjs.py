@@ -884,9 +884,10 @@ class Translator:
             print >>self.output, "    " + UU+class_name_ + ".prototype.__class__." + node.name + ".static_method = true;";
             return
         else:
-            if len(arg_names) == 0:
-                raise TranslationError("methods must take an argument 'self' (in _method)", node)
-            self.method_self = arg_names[0]
+            if len(arg_names) > 0:
+                self.method_self = arg_names[0]
+            else:
+                self.method_self = None
 
             #if not classmethod and arg_names[0] != "self":
             #    raise TranslationError("first arg not 'self' (in _method)", node)
