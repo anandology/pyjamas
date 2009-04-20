@@ -36,13 +36,13 @@ class GearsDatabase:
 
         self.db = db
 
-    def close(self):
     """*
     * Closes the database connection, if any, currently associated with this
     * Database instance. Calling Database.close() is not required.
     *
     * @throws DatabaseException if an error occurs
     """
+    def close(self):
         #try:
             self.uncheckedClose()
         #except ex:

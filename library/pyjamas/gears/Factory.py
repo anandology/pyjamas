@@ -16,8 +16,8 @@
 
 
 from pyjamas.gears.database.Database import GearsDatabase
-from pyjamas.gears.localserver import LocalServer
-from pyjamas.gears.workerpool import WorkerPool
+#from pyjamas.gears.localserver import LocalServer
+#from pyjamas.gears.workerpool import WorkerPool
 
 JS("""
 // Copyright 2007 Google Inc. All Rights Reserved.
