@@ -18,6 +18,12 @@ def aProcedure():
 def aFunctionReturningNone():
     return None
 
+def aFunctionReturningParam(param):
+    return param
+
+def aFunctionReturningFunction():
+    return aFunctionReturningParam
+
 class FunctionTest(UnitTest):
 
     def __init__(self):
@@ -49,4 +55,8 @@ class FunctionTest(UnitTest):
                         "Function should return None")
         self.assertTrue(aProcedure() is None,
                         "Procedures should always return None")
+
+    def testVariableFunction(self):
+        self.assertEqual((aFunctionReturningParam)("foo"), "foo")
+        self.assertEqual(aFunctionReturningFunction()("foo"), "foo")
 

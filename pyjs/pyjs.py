@@ -509,6 +509,9 @@ class Translator:
                 call_args = []
             else:
                 raise TranslationError("unsupported type (in _callfunc)", v.node.expr)
+        elif isinstance(v.node, ast.CallFunc):
+            call_name = self._callfunc(v.node, current_klass)
+            call_args = []
         else:
             raise TranslationError("unsupported type (in _callfunc)", v.node)
 
