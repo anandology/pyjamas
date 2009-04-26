@@ -131,7 +131,7 @@ class UIObject:
                 DOM.setAttribute(element, "className", oldStyle + " " + style)
         else:
             if idx != -1:
-                begin = oldStyle[:idx]
+                begin = oldStyle[:idx-1]
                 end = oldStyle[idx + len(style):]
                 DOM.setAttribute(element, "className", begin + end)
 
