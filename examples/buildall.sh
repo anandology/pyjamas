@@ -22,3 +22,4 @@
 (cd ajaxlibtest; ./build.sh)
 (cd xmldoc; ./build.sh)
 (cd gears; ./build.sh)
+(cd toggle; ./build.sh)

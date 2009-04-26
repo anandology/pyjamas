@@ -1,6 +1,8 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
+ * Added ToggleButton and CustomButton (thanks to khiraly)
+
  * Added means to return and call functions from another function call
    (added by Kees)
 
