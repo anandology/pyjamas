@@ -46,6 +46,11 @@ class UIObject:
     def getStyleName(self):
         return DOM.getAttribute(self.element, "className")
 
+    def getStylePrimaryName(self):
+        """Return with the first className if there are multiples"""
+        fullClassName = self.getStyleName()
+        if fullClassName: return fullClassName.split()[0]
+
     def getTitle(self):
         return DOM.getAttribute(self.element, "title")
 
@@ -81,10 +86,20 @@ class UIObject:
         the element."""
         self.setStyleName(self.element, style, True)
 
+    def addStyleDependentName(self, styleSuffix):
+        """Adds a secondary or dependent style name to this element.
+        For example if the primary stylename is gwt-TextBox, 
+        self.addStyleDependentName("readonly") will return gwt-TextBox-readonly."""
+        self.addStyleName(self.getStylePrimaryName()+"-"+styleSuffix)
+
     def removeStyleName(self, style):
         """Remove a style from the element associated with this UIObject.  This is
         a CSS class name."""
         self.setStyleName(self.element, style, False)
+    
+    def removeStyleDependentName(self, styleSuffix):
+        """Remove a dependent style name by specifying the style name's suffix."""
+        self.removeStyleName(self.getStylePrimaryName()+"-"+styleSuffix)
 
     # also callable as: setStyleName(self, style)
     def setStyleName(self, element, style=None, add=True):
