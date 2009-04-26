@@ -132,7 +132,7 @@ class Face:
                 self.face = DOM.createDiv()
                 return self.face
             else:
-                return delegateTo.getFace()
+                return self.delegateTo.getFace()
             
         else:
             return self.face
@@ -197,11 +197,11 @@ class CustomButton (ButtonBase):
                                  # propagate up to the superclass or container elements.
     
         self.sinkEvents(Event.ONCLICK | Event.MOUSEEVENTS | Event.FOCUSEVENTS
-        | Event.KEYEVENTS)
+                        | Event.KEYEVENTS)
         self.setUpFace(self.createFace(None, "up", self.UP))
-        self.getUpFace().setText("Not initialized yet:)")
-        self.curFace = self.getUpFace()
-        self.updateButtonFace()
+        #self.getUpFace().setText("Not initialized yet:)")
+        #self.setCurrentFace(self.getUpFace())
+
         self.setStyleName(self.STYLENAME_DEFAULT)
         
         # Add a11y role "button"
@@ -226,17 +226,24 @@ class CustomButton (ButtonBase):
            downImage = downImageText
            downText = None
 
-        self.getUpFace().setText("faszomat yol")
-        if upImage:   self.getUpFace().setImage(upImage)
-        if upText:    self.getUpFace().setText(upText)
+        #self.getUpFace().setText("Just a test")
+        if upImage: self.getUpFace().setImage(upImage)
+        if upText: self.getUpFace().setText(upText)
         if downImage: self.getDownFace().setImage(downImage)
-        if downText:  self.getDownFace().setText(downText)
-        if listener:  self.addClickListener(listener)
+        if downText: self.getDownFace().setText(downText)
+        if listener: self.addClickListener(listener)
+        
+        # set the face DOWN
+        self.setCurrentFace(self.getDownFace())
+        
+        # set the face UP
+        self.setCurrentFace(self.getUpFace())
     
     
     def updateButtonFace(self):
-        if self.curFace is not None: # and self.curFace.getFace() == self.getFace():
-            self.setCurrentFaceElement(self.curFace)
+        if self.curFace is not None and \
+           self.curFace.getFace() == self.getFace():
+            self.setCurrentFaceElement(self.face)
     
     
     def getDownDisabledFace(self):
@@ -270,7 +277,7 @@ class CustomButton (ButtonBase):
     
     
     def getTabIndex(self):
-        return FocusPanel.getTabIndex(self.getElement())
+        return Focus.getTabIndex(self.getElement())
     
     
     def getText(self):
@@ -317,7 +324,7 @@ class CustomButton (ButtonBase):
             if event.getButton() == Event.BUTTON_LEFT:
                 self.setFocus(True)
                 self.onClickStart()
-                DOM.setCapture(self.getElement())
+                DOM.setCapture(getElement())
                 self.isCapturing = True
                 # Prevent dragging (on some browsers)
                 DOM.eventPreventDefault(event)
@@ -360,7 +367,7 @@ class CustomButton (ButtonBase):
                 self.onClickCancel()
             
 
-        ButtonBase.onBrowserEvent(self,event)
+        ButtonBase.onBrowserEvent(self, event)
         
         # Synthesize clicks based on keyboard events AFTER the normal key handling.
         if (DOM.eventGetTypeInt(event) & Event.KEYEVENTS) != 0:
@@ -384,7 +391,7 @@ class CustomButton (ButtonBase):
 
     def setAccessKey(self, key):
         # TODO: accessibility 
-        # FocusPanel.setAccessKey(self.getElement(), key)
+        # Focus.setAccessKey(self.getElement(), key)
         pass
     
     def setEnabled(self, enabled):
@@ -401,9 +408,9 @@ class CustomButton (ButtonBase):
 
     def setFocus(self, focused):
         if focused:
-            FocusPanel.focus(self.getElement())
+            Focus.focus(self.getElement())
         else:
-            FocusPanel.blur(self.getElement())
+            Focus.blur(self.getElement())
         
     
     def setHTML(self, html):
@@ -412,7 +419,7 @@ class CustomButton (ButtonBase):
     
     
     def setTabIndex(self, index):
-        FocusPanel.setTabIndex(self.getElement(), index)
+        Focus.setTabIndex(self.getElement(), index)
     
     
     def setText(self, text):
@@ -487,7 +494,7 @@ class CustomButton (ButtonBase):
     
     def setDown(self, down):
         """Sets whether this button is down."""
-        if self.down != self.isDown():
+        if down != self.isDown():
             self.toggleDown()
         
     
@@ -532,7 +539,7 @@ class CustomButton (ButtonBase):
         """Toggle the up/down attribute."""
         newFaceID = self.getCurrentFace().getFaceID() ^ self.DOWN_ATTRIBUTE
         self.setCurrentFaceFromID(newFaceID) # newFaceId: 0,1,2,3,4,5
-    
+
     
     def cleanupCaptureState(self):
         """
@@ -587,10 +594,15 @@ class CustomButton (ButtonBase):
                 self.removeStyleDependentName(self.curFace.getName())
             
             self.curFace = newFace
+            self.setCurrentFaceElement(newFace.getFace());
+            log.write("\n-----\nself.curFace "+self.curFace+"self.curface.getName()"+self.curFace.getName())
             self.addStyleDependentName(self.curFace.getName())
+            log.write("\nafter: self.getStyleName()+getName"+self.getStylePrimaryName()+"-"+self.curFace.getName())
             
             if self.isEnabled:
                 self.setAriaPressed(newFace)    
+            #self.updateButtonFace()
+            self.style_name = self.getStyleName()
 
     
     def setCurrentFaceFromID(self, faceID):
@@ -604,12 +616,12 @@ class CustomButton (ButtonBase):
         # XXX: TODO
         if self.curFaceElement != newFaceElement:
             if self.curFaceElement is not None:
-                log.write("curface:"+self.curFaceElement+repr(self.curFaceElement))
+                log.write("\n \n curface:"+self.curFaceElement)
                 DOM.removeChild(self.getElement(), self.curFaceElement)
             
             self.curFaceElement = newFaceElement
             log.write("we didnt failed (yet)"+repr(self.getElement())+"curface: "+self.curFaceElement)
-            DOM.appendChild(self.getElement(), self.curFaceElement.getFace())
+            DOM.appendChild(self.getElement(), self.curFaceElement)
             log.write("do we survived the appendchild call? YES!")
         
     
