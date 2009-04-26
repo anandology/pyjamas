@@ -308,41 +308,44 @@ class CustomButton (ButtonBase):
 
     def onBrowserEvent(self, event):
         # Should not act on button if disabled.
-        if self.isEnabled() == False:
+        if not self.isEnabled():
             # This can happen when events are bubbled up from non-disabled children
             return
         
         event_type = DOM.eventGetType(event)
-        if event_type == Event.ONCLICK:
+        
+        if event_type == "click":
             # If clicks are currently disallowed, keep it from bubbling or being
             # passed to the superclass.
             if not self.allowClick:
                 event.stopPropagation()
                 return
             
-        elif event_type == Event.ONMOUSEDOWN:
-            if event.getButton() == Event.BUTTON_LEFT:
+        elif event_type == "mousedown":
+            #log.write("  event_type: "+event_type+"  event.onclick:"+Event.ONCLICK)            
+            #log.write("\nDOM: "+DOM.eventGetButton(event))
+            if DOM.eventGetButton(event) == Event.BUTTON_LEFT:
                 self.setFocus(True)
                 self.onClickStart()
-                DOM.setCapture(getElement())
+                DOM.setCapture(self.getElement())
                 self.isCapturing = True
                 # Prevent dragging (on some browsers)
                 DOM.eventPreventDefault(event)
             
-        elif event_type == Event.ONMOUSEUP:
+        elif event_type == "mouseup":
             if self.isCapturing:
                 self.isCapturing = False
                 DOM.releaseCapture(self.getElement())
-                if self.isHovering()  and  event.getButton() == Event.BUTTON_LEFT:
+                if self.isHovering()  and  DOM.eventGetButton(event) == Event.BUTTON_LEFT:
                     self.onClick()
                 
             
-        elif event_type == Event.ONMOUSEMOVE:
+        elif event_type == "mousemove":
             if self.isCapturing:
                 # Prevent dragging (on other browsers)
                 DOM.eventPreventDefault(event)
             
-        elif event_type == Event.ONMOUSEOUT:
+        elif event_type == "mouseout":
             to = DOM.eventGetToElement(event)
             if (DOM.isOrHasChild(self.getElement(), DOM.eventGetTarget(event))
                and (to is None or not DOM.isOrHasChild(self.getElement(), to))):
@@ -350,18 +353,18 @@ class CustomButton (ButtonBase):
                     self.onClickCancel()
                 self.setHovering(False)
             
-        elif event_type == Event.ONMOUSEOVER:
+        elif event_type == "mouseover":
             if DOM.isOrHasChild(self.getElement(), DOM.eventGetTarget(event)):
                 self.setHovering(True)
                 if self.isCapturing:
                     self.onClickStart()
             
-        elif event_type == Event.ONBLUR:
+        elif event_type == "blur":
             if self.isFocusing:
                 self.isFocusing = False
                 self.onClickCancel()
             
-        elif event_type == Event.ONLOSECAPTURE:
+        elif event_type == "losecapture":
             if self.isCapturing:
                 self.isCapturing = False
                 self.onClickCancel()
@@ -457,8 +460,8 @@ class CustomButton (ButtonBase):
         # Mouse coordinates are not always available (e.g., when the click is
         # caused by a keyboard event).
         JS("""
-        var evt = $doc.createClickEvent(1, 0, 0, 0, 0, False, False, False, 
-                  False); 
+        // lolza
+        var evt = $doc.createClickEvent(1, 0, 0, 0, 0, false, false, false, false); 
         """)
         self.getElement().dispatchEvent(evt)
         
@@ -595,9 +598,9 @@ class CustomButton (ButtonBase):
             
             self.curFace = newFace
             self.setCurrentFaceElement(newFace.getFace());
-            log.write("\n-----\nself.curFace "+self.curFace+"self.curface.getName()"+self.curFace.getName())
+            #log.write("\n-----\nself.curFace "+self.curFace+"self.curface.getName()"+self.curFace.getName())
             self.addStyleDependentName(self.curFace.getName())
-            log.write("\nafter: self.getStyleName()+getName"+self.getStylePrimaryName()+"-"+self.curFace.getName())
+            #log.write("\nafter: self.getStyleName()+getName"+self.getStylePrimaryName()+"-"+self.curFace.getName())
             
             if self.isEnabled:
                 self.setAriaPressed(newFace)    
@@ -616,13 +619,13 @@ class CustomButton (ButtonBase):
         # XXX: TODO
         if self.curFaceElement != newFaceElement:
             if self.curFaceElement is not None:
-                log.write("\n \n curface:"+self.curFaceElement)
+                #log.write("\n \n curface:"+self.curFaceElement)
                 DOM.removeChild(self.getElement(), self.curFaceElement)
             
             self.curFaceElement = newFaceElement
-            log.write("we didnt failed (yet)"+repr(self.getElement())+"curface: "+self.curFaceElement)
+            #log.write("we didnt failed (yet)"+repr(self.getElement())+"curface: "+self.curFaceElement)
             DOM.appendChild(self.getElement(), self.curFaceElement)
-            log.write("do we survived the appendchild call? YES!")
+            #log.write("do we survived the appendchild call? YES!")
         
     
     def setDownDisabledFace(self, downDisabled):
