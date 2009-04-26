@@ -17,6 +17,8 @@ from pyjamas.ui import Event
 from pyjamas.ui.ButtonBase import ButtonBase
 from pyjamas.ui import Focus
 from pyjamas.ui.UIObject import UIObject
+from pyjamas import Window
+from pyjamas import log
 import pyjslib
 
 """
@@ -93,9 +95,9 @@ class Face:
     
     def setHTML(self, html):
         """Set the face's contents as html."""
-        face = DOM.createDiv()
-        UIObject.setStyleName(face, self.STYLENAME_HTML_FACE, True)
-        DOM.setInnerHTML(face, html)
+        self.face = DOM.createDiv()
+        UIObject.setStyleName(self.face, self.STYLENAME_HTML_FACE, True)
+        DOM.setInnerHTML(self.face, html)
         self.button.updateButtonFace()
     
     
@@ -104,7 +106,7 @@ class Face:
         Set the face's contents as an image.
         @param image image to set as face contents
         """
-        face = image.getElement()
+        self.face = image.getElement()
         self.button.updateButtonFace()
     
     
@@ -113,9 +115,9 @@ class Face:
         Sets the face's contents as text.
         @param text text to set as face's contents
         """
-        face = DOM.createDiv()
-        UIObject.setStyleName(face, self.STYLENAME_HTML_FACE, True)
-        DOM.setInnerText(face, text)
+        self.face = DOM.createDiv()
+        UIObject.setStyleName(self.face, self.STYLENAME_HTML_FACE, True)
+        DOM.setInnerText(self.face, text)
         self.button.updateButtonFace()
         
     
@@ -127,8 +129,8 @@ class Face:
         if self.face is None:
             if self.delegateTo is None:
                 # provide a default face as none was supplied.
-                face = DOM.createDiv()
-                return face
+                self.face = DOM.createDiv()
+                return self.face
             else:
                 return delegateTo.getFace()
             
@@ -136,9 +138,7 @@ class Face:
             return self.face
     
     
-
-
-
+    
 
 class CustomButton (ButtonBase):
     """
@@ -183,6 +183,7 @@ class CustomButton (ButtonBase):
         ButtonBase.__init__(self, Focus.createFocusable())
         
         self.curFace      = None # The button's current face.
+        self.curFaceElement = None # No "undefined" anymore
         self.up           = None # Face for up.
         self.down         = None # Face for down.
         self.downHovering = None # Face for downHover.
@@ -198,6 +199,9 @@ class CustomButton (ButtonBase):
         self.sinkEvents(Event.ONCLICK | Event.MOUSEEVENTS | Event.FOCUSEVENTS
         | Event.KEYEVENTS)
         self.setUpFace(self.createFace(None, "up", self.UP))
+        self.getUpFace().setText("Not initialized yet:)")
+        self.curFace = self.getUpFace()
+        self.updateButtonFace()
         self.setStyleName(self.STYLENAME_DEFAULT)
         
         # Add a11y role "button"
@@ -222,6 +226,7 @@ class CustomButton (ButtonBase):
            downImage = downImageText
            downText = None
 
+        self.getUpFace().setText("faszomat yol")
         if upImage:   self.getUpFace().setImage(upImage)
         if upText:    self.getUpFace().setText(upText)
         if downImage: self.getDownFace().setImage(downImage)
@@ -312,7 +317,7 @@ class CustomButton (ButtonBase):
             if event.getButton() == Event.BUTTON_LEFT:
                 self.setFocus(True)
                 self.onClickStart()
-                DOM.setCapture(getElement())
+                DOM.setCapture(self.getElement())
                 self.isCapturing = True
                 # Prevent dragging (on some browsers)
                 DOM.eventPreventDefault(event)
@@ -355,7 +360,7 @@ class CustomButton (ButtonBase):
                 self.onClickCancel()
             
 
-        ButtonBase.onBrowserEvent(self, event)
+        ButtonBase.onBrowserEvent(self,event)
         
         # Synthesize clicks based on keyboard events AFTER the normal key handling.
         if (DOM.eventGetTypeInt(event) & Event.KEYEVENTS) != 0:
@@ -386,7 +391,7 @@ class CustomButton (ButtonBase):
         """Sets whether this button is enabled."""
         if self.isEnabled() != enabled:
             self.toggleDisabled()
-            ButtonBase.setEnabled(enabled)
+            ButtonBase.setEnabled(self, enabled)
             if not enabled:
                 self.cleanupCaptureState()
                 # XXX - TODO: Accessibility
@@ -476,7 +481,7 @@ class CustomButton (ButtonBase):
     
     
     def onDetach(self):
-        ButtonBase.onDetach()
+        ButtonBase.onDetach(self)
         self.cleanupCaptureState()
     
     
@@ -597,12 +602,15 @@ class CustomButton (ButtonBase):
     
     def setCurrentFaceElement(self, newFaceElement):
         # XXX: TODO
-        if curFaceElement != newFaceElement:
-            if curFaceElement is not None:
-                DOM.removeChild(getElement(), curFaceElement)
+        if self.curFaceElement != newFaceElement:
+            if self.curFaceElement is not None:
+                log.write("curface:"+self.curFaceElement+repr(self.curFaceElement))
+                DOM.removeChild(self.getElement(), self.curFaceElement)
             
-            curFaceElement = newFaceElement
-            DOM.appendChild(getElement(), curFaceElement)
+            self.curFaceElement = newFaceElement
+            log.write("we didnt failed (yet)"+repr(self.getElement())+"curface: "+self.curFaceElement)
+            DOM.appendChild(self.getElement(), self.curFaceElement.getFace())
+            log.write("do we survived the appendchild call? YES!")
         
     
     def setDownDisabledFace(self, downDisabled):
