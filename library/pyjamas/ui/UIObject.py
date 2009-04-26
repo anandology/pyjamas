@@ -14,6 +14,31 @@
 from pyjamas import DOM
 from pyjamas import Window
 
+def setStyleName(element, style, add):
+
+    oldStyle = DOM.getAttribute(element, "className")
+    if oldStyle == None:
+        oldStyle = ""
+    idx = oldStyle.find(style)
+
+    # Calculate matching index
+    lastPos = len(oldStyle)
+    while idx != -1:
+        if idx == 0 or (oldStyle[idx - 1] == " "):
+            last = idx + len(style)
+            if (last == lastPos) or ((last < lastPos) and (oldStyle[last] == " ")):
+                break
+        idx = oldStyle.find(style, idx + 1)
+
+    if add:
+        if idx == -1:
+            DOM.setAttribute(element, "className", oldStyle + " " + style)
+    else:
+        if idx != -1:
+            begin = oldStyle[:idx-1]
+            end = oldStyle[idx + len(style):]
+            DOM.setAttribute(element, "className", begin + end)
+
 class UIObject:
 
     def __init__(self, **kwargs):
@@ -111,29 +136,7 @@ class UIObject:
             style = element
             DOM.setAttribute(self.element, "className", style)
             return
-
-        oldStyle = DOM.getAttribute(element, "className")
-        if oldStyle == None:
-            oldStyle = ""
-        idx = oldStyle.find(style)
-
-        # Calculate matching index
-        lastPos = len(oldStyle)
-        while idx != -1:
-            if idx == 0 or (oldStyle[idx - 1] == " "):
-                last = idx + len(style)
-                if (last == lastPos) or ((last < lastPos) and (oldStyle[last] == " ")):
-                    break
-            idx = oldStyle.find(style, idx + 1)
-
-        if add:
-            if idx == -1:
-                DOM.setAttribute(element, "className", oldStyle + " " + style)
-        else:
-            if idx != -1:
-                begin = oldStyle[:idx-1]
-                end = oldStyle[idx + len(style):]
-                DOM.setAttribute(element, "className", begin + end)
+        setStyleName(element, style, add)
 
     def setTitle(self, title):
         DOM.setAttribute(self.element, "title", title)
