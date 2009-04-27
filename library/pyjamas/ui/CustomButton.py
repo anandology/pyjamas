@@ -306,15 +306,16 @@ class CustomButton (ButtonBase):
 
     def onBrowserEvent(self, event):
         # Should not act on button if disabled.
-        if self.isEnabled() == False:
-            # This can happen when events are bubbled up from non-disabled children
+        if not self.isEnabled():
+            # This can happen when events are bubbled up from
+            # non-disabled children
             return
         
         event_type = DOM.eventGetType(event)
         
         if event_type == "click":
-            # If clicks are currently disallowed, keep it from bubbling or being
-            # passed to the superclass.
+            # If clicks are currently disallowed, keep it from bubbling or
+            # being passed to the superclass.
             if not self.allowClick:
                 event.stopPropagation()
                 return
@@ -332,7 +333,8 @@ class CustomButton (ButtonBase):
             if self.isCapturing:
                 self.isCapturing = False
                 DOM.releaseCapture(self.getElement())
-                if self.isHovering()  and  DOM.eventGetButton(event) == Event.BUTTON_LEFT:
+                if self.isHovering()  and  \
+                   DOM.eventGetButton(event) == Event.BUTTON_LEFT:
                     self.onClick()
                 
             
@@ -368,7 +370,8 @@ class CustomButton (ButtonBase):
 
         ButtonBase.onBrowserEvent(self, event)
         
-        # Synthesize clicks based on keyboard events AFTER the normal key handling.
+        # Synthesize clicks based on keyboard events AFTER the normal
+        # key handling.
         if (DOM.eventGetTypeInt(event) & Event.KEYEVENTS) != 0:
             keyCode = DOM.eventGetKeyCode(event)
             if event_type == Event.ONKEYDOWN:
@@ -443,10 +446,10 @@ class CustomButton (ButtonBase):
     
     def onClick(self):
         """
-        Called when the user finishes clicking on this button. The default behavior
-        is to fire the click event to listeners. Subclasses that override
-        onClickStart() should override this method to restore the normal
-        widget display.
+        Called when the user finishes clicking on this button.
+        The default behavior is to fire the click event to
+        listeners. Subclasses that override onClickStart() should
+        override this method to restore the normal widget display.
         """
         # Allow the click we're about to synthesize to pass through to the
         # superclass and containing elements. Element.dispatchEvent() is
@@ -487,10 +490,10 @@ class CustomButton (ButtonBase):
         """
         Called when the user begins to click on this button. Subclasses may
         override this method to display the start of the click visually; such
-        subclasses should also override onClick() and onClickCancel() to restore 
-        normal visual state. Each onClickStart will eventually be followed by 
-        either onClick or onClickCancel, depending on whether the click is 
-        completed.
+        subclasses should also override onClick() and onClickCancel() to
+        restore normal visual state. Each onClickStart will eventually be
+        followed by either onClick or onClickCancel, depending on whether
+        the click is completed.
         """
         pass
     
@@ -514,7 +517,8 @@ class CustomButton (ButtonBase):
     
     
     def fireClickListeners(self, nativeEvent):
-        # TODO(ecc) Once event triggering is committed, should fire a click event instead.
+        # TODO(ecc) Once event triggering is committed, should fire a
+        # click event instead.
         self.fireEvent(ClickEvent()) # TODO: ???
         
     def fireEvent(self):
@@ -551,8 +555,8 @@ class CustomButton (ButtonBase):
     
     def cleanupCaptureState(self):
         """
-        Resets internal state if this button can no longer service events. This can
-        occur when the widget becomes detached or disabled.
+        Resets internal state if this button can no longer service events.
+        This can occur when the widget becomes detached or disabled.
         """
         if self.isCapturing or self.isFocusing:
             DOM.releaseCapture(self.getElement())
