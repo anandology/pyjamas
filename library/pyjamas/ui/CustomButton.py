@@ -17,8 +17,6 @@ from pyjamas.ui import Event
 from pyjamas.ui.ButtonBase import ButtonBase
 from pyjamas.ui import Focus
 from pyjamas.ui.UIObject import UIObject
-from pyjamas import Window
-from pyjamas import log
 import pyjslib
 
 """
@@ -234,10 +232,10 @@ class CustomButton (ButtonBase):
         if listener: self.addClickListener(listener)
         
         # set the face DOWN
-        self.setCurrentFace(self.getDownFace())
+        #self.setCurrentFace(self.getDownFace())
         
         # set the face UP
-        self.setCurrentFace(self.getUpFace())
+        #self.setCurrentFace(self.getUpFace())
     
     
     def updateButtonFace(self):
@@ -308,7 +306,7 @@ class CustomButton (ButtonBase):
 
     def onBrowserEvent(self, event):
         # Should not act on button if disabled.
-        if not self.isEnabled():
+        if self.isEnabled() == False:
             # This can happen when events are bubbled up from non-disabled children
             return
         
@@ -322,8 +320,6 @@ class CustomButton (ButtonBase):
                 return
             
         elif event_type == "mousedown":
-            #log.write("  event_type: "+event_type+"  event.onclick:"+Event.ONCLICK)            
-            #log.write("\nDOM: "+DOM.eventGetButton(event))
             if DOM.eventGetButton(event) == Event.BUTTON_LEFT:
                 self.setFocus(True)
                 self.onClickStart()
@@ -459,12 +455,21 @@ class CustomButton (ButtonBase):
         
         # Mouse coordinates are not always available (e.g., when the click is
         # caused by a keyboard event).
+        evt = None # we NEED to initialize evt, to be in the same namespace 
+                   # as the evt *inside* of JS block
         JS("""
-        // lolza
-        var evt = $doc.createClickEvent(1, 0, 0, 0, 0, false, false, false, false); 
-        """)
-        self.getElement().dispatchEvent(evt)
+        // We disallow setting the button here, because IE doesn't provide the
+        // button property for click events.
         
+        // there is a good explanation about all the arguments of initMouseEvent
+        // at: https://developer.mozilla.org/En/DOM:event.initMouseEvent
+        
+        evt = $doc.createEvent('MouseEvents');
+        evt.initMouseEvent("click", true, true, $wnd, 1, 0, 0, 0, 0, false, 
+                           false, false, false, 0, null);
+        """)
+        
+        self.getElement().dispatchEvent(evt)
         self.allowClick = False
     
     
@@ -598,13 +603,11 @@ class CustomButton (ButtonBase):
             
             self.curFace = newFace
             self.setCurrentFaceElement(newFace.getFace());
-            #log.write("\n-----\nself.curFace "+self.curFace+"self.curface.getName()"+self.curFace.getName())
             self.addStyleDependentName(self.curFace.getName())
-            #log.write("\nafter: self.getStyleName()+getName"+self.getStylePrimaryName()+"-"+self.curFace.getName())
             
             if self.isEnabled:
                 self.setAriaPressed(newFace)    
-            #self.updateButtonFace()
+            #self.updateButtonFace() # TODO: should we comment out?
             self.style_name = self.getStyleName()
 
     
@@ -619,13 +622,10 @@ class CustomButton (ButtonBase):
         # XXX: TODO
         if self.curFaceElement != newFaceElement:
             if self.curFaceElement is not None:
-                #log.write("\n \n curface:"+self.curFaceElement)
                 DOM.removeChild(self.getElement(), self.curFaceElement)
             
             self.curFaceElement = newFaceElement
-            #log.write("we didnt failed (yet)"+repr(self.getElement())+"curface: "+self.curFaceElement)
             DOM.appendChild(self.getElement(), self.curFaceElement)
-            #log.write("do we survived the appendchild call? YES!")
         
     
     def setDownDisabledFace(self, downDisabled):
