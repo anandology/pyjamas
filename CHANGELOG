@@ -1,6 +1,9 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
+ * Fixed getBoundingClientRect off-by-one bug (firefox 3 returns an
+   inaccurate float, not an int)  thanks to khiraly
+
  * Added ToggleButton, PushButton and CustomButton (thanks to khiraly)
 
  * Added means to return and call functions from another function call

@@ -49,7 +49,11 @@ def getAbsoluteLeft(elem):
     JS("""
     try {
         // Firefox 3 expects getBoundingClientRect
-        var left = elem.getBoundingClientRect().left;
+        // getBoundingClientRect can be float: 73.1 instead of 74, see
+        // gwt's workaround at user/src/com/google/gwt/dom/client/DOMImplMozilla.java:47
+        // Please note, their implementation has 1px offset.
+
+        var left = Math.ceil(elem.getBoundingClientRect().left);
     } catch (e) {
         var left = $doc.getBoxObjectFor(elem).x;
     }
@@ -91,7 +95,7 @@ def getAbsoluteTop(elem):
     JS("""
     try {
         // Firefox 3 expects getBoundingClientRect
-        var top = elem.getBoundingClientRect().top;
+        var top = Math.ceil(elem.getBoundingClientRect().top);
     } catch (e) {
         var top = $doc.getBoxObjectFor(elem).y;
     }
