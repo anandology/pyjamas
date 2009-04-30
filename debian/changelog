@@ -1,4 +1,4 @@
-python-pyjamas (0.5p1-1) unstable; urgency=low
+pyjamas (0.5p1-1) unstable; urgency=low
 
   * Initial release (Closes: #501744)
 

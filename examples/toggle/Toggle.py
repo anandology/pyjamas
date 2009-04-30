@@ -7,6 +7,7 @@ from pyjamas.ui.ButtonBase import ButtonBase
 from pyjamas.ui.RootPanel  import RootPanel
 from pyjamas.ui.CustomButton import CustomButtom
 from pyjamas.ui.ToggleButton import ToggleButton
+from pyjamas.ui.PushButton import PushButton
 from pyjamas               import DOM
 
 

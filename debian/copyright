@@ -3,16 +3,32 @@ on Tue, 24 Mar 2009 19:26:53 +0000.
 
 It was downloaded from http://pyjs.org
 
-Upstream Author(s):
+Upstream Authors:
 
     Luke Kenneth Casson Leighton <lkcl@lkcl.net>
     James Tauber
     Google, Inc.
+    Willie Gollino - wgollino@yahoo.com
+    Dobes Vandermeer - dobesv@gmail.com
+    Bernd Dorn - <bernd.dorn@lovelysystems.com>
+    Luis Pamirez
+    Erik Westra - ewestra [at] gmail [dot] com
+
+Other Contributors:
+
+    Vicente J. Ruiz Jurado - vjrj@ourproject.org
+    Gerard Labadie - gerard.labadie@gmail.com
+    Stephan Diehl - stephan.diehl@gmx.net
+    John Lehman - j1o1h1n@gmail.com
+    Jürgen Kartnaller - <kartnaller@lovelysystems.com>
+    G Clinch
+    Kees Boss
 
 Copyright:
 
     Copyright (C) 2008, 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
-    Copyright (C) 2006 James Tauber
+    Copyright (C) 2006, 2007 James Tauber
+    Copyright (C) 2006 Google, Inc.
 
 License:
 

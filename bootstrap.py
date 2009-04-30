@@ -5,20 +5,20 @@
 """
 pyjsbuild = """#!%s
 
-pth = r'%s'
+pyjspth = r'%s'
 
 import os
 import sys
 sys.path[0:0] = [
-  pth,
+  r'%s',
   ]
 
 import pyjs
-pyjs.path += [os.path.join(pth, 'library'),
-os.path.join(pth, 'library', 'builtins'),
-os.path.join(pth, 'addons'),
+pyjs.path += [os.path.join(pyjspth, 'library'),
+os.path.join(pyjspth, 'library', 'builtins'),
+os.path.join(pyjspth, 'addons'),
 ]
-sys.argv.extend(['-D', pth])
+sys.argv.extend(['-D', pyjspth])
 
 import pyjs.build
 
@@ -28,16 +28,16 @@ if __name__ == '__main__':
 
 pyjscompile = """#!%s
 
-pth = r'%s'
+pyjspth = r'%s'
 
 import os
 import sys
 sys.path[0:0] = [
-  pth,
+  r'%s',
   ]
 
 import pyjs
-pyjs.path += [os.path.join(pth, 'library')]
+pyjs.path += [os.path.join(pyjspth, 'library')]
 
 if __name__ == '__main__':
     pyjs.main()
@@ -58,7 +58,7 @@ python %s %%CMD_LINE_ARGS%%
 import os
 import sys
 
-def make_cmd(prefix, pth, cmdname, txt):
+def make_cmd(prefix, pth, pyjspth, cmdname, txt):
 
     if sys.platform == 'win32':
         cmd_name = cmdname + ".py"
@@ -75,7 +75,7 @@ def make_cmd(prefix, pth, cmdname, txt):
     if os.path.exists(cmd):
         os.unlink(cmd)
     f = open(cmd, "w")
-    f.write(txt % (sys.executable, pth))
+    f.write(txt % (sys.executable, pyjspth, pth))
     f.close()
 
     if hasattr(os, "chmod"):
@@ -96,11 +96,15 @@ if __name__ == '__main__':
     else:
         pth = os.path.abspath(os.getcwd())
 
+    pyjspth = pth
     if len(sys.argv) == 3:
         prefix = sys.argv[2]
+    elif len(sys.argv) == 4:
+        prefix = sys.argv[3]
+        pyjspth = sys.argv[2]
     else:
         prefix = "."
 
-    make_cmd(prefix, pth, "pyjsbuild", pyjsbuild)
-    make_cmd(prefix, pth, "pyjscompile", pyjscompile)
+    make_cmd(prefix, pth, pyjspth, "pyjsbuild", pyjsbuild)
+    make_cmd(prefix, pth, pyjspth, "pyjscompile", pyjscompile)
 
