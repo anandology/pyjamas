@@ -25,7 +25,7 @@ class Toggle:
         self.image_down3 = Image("./images/logo.png")
         self.toggle = ToggleButton(self.image_up, self.image_down, self)
         self.toggle2 = ToggleButton("up", "down")
-        self.toggle3 = ToggleButton(self.image_up3, self.image_down3)
+        self.push = PushButton(self.image_up3, self.image_down3)
         
         self.vpanel = VerticalPanel()
         self.togglePanel = HorizontalPanel()
@@ -33,7 +33,7 @@ class Toggle:
         
         self.togglePanel.add(self.toggle)
         self.togglePanel.add(self.toggle2)
-        self.togglePanel.add(self.toggle3)
+        self.togglePanel.add(self.push)
         
         self.vpanel.add(self.label)
         self.vpanel.add(self.button)
