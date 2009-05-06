@@ -34,6 +34,7 @@ def main():
     DictTest().run()
 #    if sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
 #        JSOTest().run()
+    BuiltinTest().run()
     MD5Test().run()
 
 if __name__ == '__main__':

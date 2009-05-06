@@ -21,4 +21,8 @@ class BuiltinTest(UnitTest):
         for i in range(256):
             self.assertEqual(ord(chr(i)), i)
 
+    def testMod(self):
+        self.assertEqual(12 % 5, 2)
 
+    def testPower(self):
+        self.assertEqual(3 ** 4, 81)

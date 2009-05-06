@@ -1,6 +1,8 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
+ * Added support for x ** y syntax (thanks to Kees).
+
  * Fixed getBoundingClientRect off-by-one bug (firefox 3 returns an
    inaccurate float, not an int)  thanks to khiraly
 

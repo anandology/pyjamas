@@ -1404,6 +1404,9 @@ class Translator:
            return "sprintf("+self.expr(node.left, current_klass) + ", " + self.expr(node.right, current_klass)+")"
         return self.expr(node.left, current_klass) + " % " + self.expr(node.right, current_klass)
 
+    def _power(self, node, current_klass):
+        return "Math.pow("+self.expr(node.left, current_klass) + "," + self.expr(node.right, current_klass) + ")"
+
     def _invert(self, node, current_klass):
         return "~" + self.expr(node.expr, current_klass)
 
@@ -1497,6 +1500,8 @@ class Translator:
             return " ( " + self._div(node, current_klass) + " ) "
         elif isinstance(node, ast.Mod):
             return self._mod(node, current_klass)
+        elif isinstance(node, ast.Power):
+            return self._power(node, current_klass)
         elif isinstance(node, ast.UnaryAdd):
             return self._unaryadd(node, current_klass)
         elif isinstance(node, ast.UnarySub):
