@@ -6,7 +6,7 @@
 """
 from pyjamas import Window
 from pyjamas import DOM
-from __pyjamas__ import console
+from pyjamas import log
 from BoundMethod import BoundMethod
 from pyjamas.ui.Widget import Widget
 
@@ -21,7 +21,7 @@ JS("""
     $wnd.FCKeditor_OnComplete = function(editorInstance )
     {
         pyjsObject = $doc.getElementById(editorInstance.Name.substr(3)).__listener;
-        console.log("pyjsObject is %o", pyjsObject);
+        log.writebr("pyjsObject is %o", pyjsObject);
         if(pyjsObject)
             pyjsObject.onFCKLoaded(editorInstance);
     }
@@ -52,7 +52,7 @@ class RichTextEditor(Widget):
         self.saveListeners = []
         self.pendingHTML = None
         html = fck.CreateHtml()
-        #console.log("fck html = %s", html)
+        #log.writebr("fck html = %s", html)
         html = html
         DOM.setInnerHTML(self.getElement(), html)
     
@@ -86,22 +86,22 @@ class RichTextEditor(Widget):
             self.pendingHTML = None
             
     def onSelectionChange(self, sender):
-        pass#console.log("onSelectionChange!")
+        pass#log.writebr("onSelectionChange!")
         
     def onBlur(self, sender):
-        pass#console.log("onBlur!")
+        pass#log.writebr("onBlur!")
         
     def onFocus(self, sender):
-        pass#console.log("onFocus!")
+        pass#log.writebr("onFocus!")
         
     def onPaste(self, sender):
-        pass#console.log("onPaste!")
+        pass#log.writebr("onPaste!")
         
     def onSave(self):
         """
         Handle the save click and pass it onto the listeners
         """
-        console.log("onSave() in %s", Window.getLocation().getHref())
+        log.writebr("onSave() in %s", Window.getLocation().getHref())
         for listener in self.saveListeners:
             if listener.onSave: listener.onSave(self)
             else: listener(self)

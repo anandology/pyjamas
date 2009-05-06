@@ -37,6 +37,8 @@ clean:
 	dh_testroot
 	rm -f build-stamp configure-stamp
 
+	rm -fr tmp # remove examples
+
 	# Add here commands to clean up after the build process.
 	python run_bootstrap_first_then_setup.py clean
 
@@ -45,16 +47,18 @@ clean:
 install: build
 	dh_testdir
 	dh_testroot
-	dh_clean -k 
+	dh_prep
 	dh_installdirs
 
 	# Add here commands to install the package into debian/pyjamas.
 	python run_bootstrap_first_then_setup.py install --root=debian/pyjamas
+
+	# move examples out way.
+	mkdir -p tmp
 	mv  debian/pyjamas/usr/share/pyjamas/examples \
-	    debian/pyjamas/usr/share/doc/pyjamas/examples
-	cp -aux doc/* debian/pyjamas/usr/share/doc/pyjamas/
-	cp bin/pyjsbuild debian/pyjamas/usr/bin
-	cp bin/pyjscompile debian/pyjamas/usr/bin
+	    tmp
+	# replace ../../bin/pyjsbuild with pyjsbuild
+	sed -i -e's/..\/..\/bin\///' tmp/examples/*/build.sh
 
 
 # Build architecture-independent files here.
@@ -63,12 +67,13 @@ binary-indep: build install
 	dh_testdir 
 	dh_testroot 
 	dh_installchangelogs  CHANGELOG
-	dh_installdocs 
-	dh_installexamples 
-	dh_installman
+	dh_installdocs doc/*
+	dh_installexamples tmp/examples/*
+	dh_install bin/pyjsbuild /usr/bin
+	dh_installman debian/pyjsbuild.1
 	dh_pysupport
 	dh_link 
-	dh_compress 
+	dh_compress -Xexamples
 	dh_fixperms 
 	dh_installdeb 
 	dh_shlibdeps 

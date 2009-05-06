@@ -1,3 +1,4 @@
+#!/bin/sh
 echo test001; ../pyjs.py test001.py ui | diff - test001.js
 echo test002; ../pyjs.py test002.py ui | diff - test002.js
 echo test003; ../pyjs.py test003.py ui | diff - test003.js

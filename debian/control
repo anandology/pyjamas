@@ -2,13 +2,13 @@ Source: pyjamas
 Section: python
 Priority: extra
 Maintainer: Luke Kenneth Casson Leighton <lkcl@lkcl.net>
-Build-Depends: debhelper (>= 7), python-support, python (>= 2.4)
+Build-Depends: debhelper (>= 7), python-support (>= 0.5.3), python, sed (>= 4.1.5)
 Standards-Version: 3.8.0
 Homepage: http://pyjs.org
 
 Package: pyjamas
 Architecture: all
-Depends: python (>= 2.4), python-central (>= 0.5.7)
+Depends: python, ${misc:Depends}, ${python:Depends}
 Description: Python web widget toolkit and Python-to-Javascript compiler
  Pyjamas is a stand-alone Python to Javascript compiler, an AJAX
  framework / library and a Desktop-like Widget set.
@@ -29,7 +29,6 @@ Description: Python web widget toolkit and Python-to-Javascript compiler
  that applications run in all major web browsers, with absolutely
  no plugins required (only Javascript need be enabled).  Additional
  advantages over the use of standard Desktop Widget sets are that
- Pyjamas provides direct access to the full set of HTML features
- - CSS, NPAPI Plugins such as Adobe Flash, and SVG 2D Canvas.
+ Pyjamas provides direct access to the full set of HTML features -
+ CSS, NPAPI Plugins such as Adobe Flash, and SVG 2D Canvas.
  All these are directly available.
-

@@ -1,3 +1,4 @@
+#!/bin/sh
 (cd browserdetect; ./build.sh)
 (cd dynamictable; ./build.sh)
 (cd gridtest; ./build.sh)
@@ -21,5 +22,3 @@
 (cd widgets; ./build.sh)
 (cd ajaxlibtest; ./build.sh)
 (cd xmldoc; ./build.sh)
-(cd gears; ./build.sh)
-(cd toggle; ./build.sh)
