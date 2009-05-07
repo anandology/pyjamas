@@ -1097,6 +1097,7 @@ class OptionMenu(Button):
         self.widget_int.append(self.ico)
         self.connect('clicked', self._clicked, None)
         self.menu = None
+        self.menu_open = False
         self.label = Label('')
         self.label.set_alignment(0, 0.5)
         self.add(self.label)

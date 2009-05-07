@@ -106,11 +106,12 @@ class Element:
 	        else if (e.srcElement) targ = e.srcElement;
 	        if (targ.nodeType == 3) targ = targ.parentNode;
             if (targ.__ref)
-                object.dom_event([e, targ.__ref],{});
+                object.dom_event(e, targ.__ref);
             else
-                object.dom_event([e, null],{});
+                object.dom_event(e, null);
         };
         ''')
+        name = name[0]
         self.activeEvents.append((name, object))
         JS('''
         var old_callback = this.element['on'+name];
