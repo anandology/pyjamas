@@ -198,9 +198,17 @@ class Table(Container):
         self.vert_inc = 100.0/rows
         self.horitz_inc = 100.0/columns
 
-    def attach(self, child, left_attach, right_attach,\
-               top_attach, bottom_attach, xoptions=EXPAND|FILL,\
-               yoptions=EXPAND|FILL, xpadding=0, ypadding=0):
+    def attach(self, child, left_attach, right_attach,
+               top_attach, bottom_attach, xoptions=None,
+               yoptions=None, xpadding=0, ypadding=0):
+
+        global EXPAND
+        global FILL
+
+        if xoptions is None:
+            xoptions = EXPAND|FILL
+        if yoptions is None:
+            yoptions = EXPAND|FILL
 
         Container.add(self, child)
         child.widget_cont.setStyle('left',str(left_attach*self.horitz_inc)+'%')
@@ -644,6 +652,7 @@ class Range(Widget):
 class Scale(Range):
 
     def __init__(self, adjustment=None):
+        global POS_TOP
         Range.__init__(self, adjustment)
         self.line = browser.Element('div')
         self.line.setStyle('position','absolute')
@@ -710,6 +719,9 @@ class VScale(Scale):
         self.minheight = 60
 
     def _redraw(self):
+        global POS_TOP
+        global POS_LEFT
+        global POS_RIGHT
         Scale._redraw(self)
         if not self.draw_value:
             self.line.setStyle('left',
@@ -777,6 +789,8 @@ class VScale(Scale):
             self.adjustment.set_value(value)
 
     def _adjustment_value_changed(self):
+        global POS_LEFT
+        global POS_RIGHT
         Scale._adjustment_value_changed(self)
         value = self.adjustment.get_value()
         if self.draw_value:
@@ -800,6 +814,9 @@ class HScale(Scale):
         self.minheight = 37
 
     def _redraw(self):
+        global POS_TOP
+        global POS_LEFT
+        global POS_RIGHT
         Scale._redraw(self)
         if not self.draw_value:
             self.line.setStyle('top',
@@ -869,6 +886,8 @@ class HScale(Scale):
             self.adjustment.set_value(value)
 
     def _adjustment_value_changed(self):
+        global POS_TOP
+        global POS_BOTTOM
         Scale._adjustment_value_changed(self)
         value = self.adjustment.get_value()
         if self.draw_value:
