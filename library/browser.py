@@ -1,8 +1,10 @@
+from __pyjamas__ import JS
+
 class Element:
     def __init__(self, tag=None, element=None):
         if tag != None:
-            ___tojs___('''
-            self.element = __document.createElement(tag);
+            JS('''
+            this.element = $doc.createElement(tag);
             ''')
         elif element != None:
             self.element = element
@@ -13,17 +15,17 @@ class Element:
         self.activeEvents = []
 
     def append(self, element):
-        ___tojs___('''
-        self.element.appendChild(element.element);
+        JS('''
+        this.element.appendChild(element.element);
         ''')
 
     def prepend(self, element):
-        ___tojs___('''
-        self.element.insertBefore(element.element, self.element.firstChild);
+        JS('''
+        this.element.insertBefore(element.element, self.element.firstChild);
         ''')
 
     def getX(self):
-        ___tojs___('''
+        JS('''
         var obj = self.element;
 	    var curleft = 0;
     	if (obj.offsetParent) {
@@ -36,8 +38,8 @@ class Element:
         ''')
 
     def getY(self):
-        ___tojs___('''
-        var obj = self.element;
+        JS('''
+        var obj = this.element;
 	    var curtop = 0;
     	if (obj.offsetParent) {
 	    	curtop = obj.offsetTop
@@ -49,13 +51,13 @@ class Element:
         ''')
 
     def getWidth(self):
-        ___tojs___('''
-        return self.element.offsetWidth;
+        JS('''
+        return this.element.offsetWidth;
         ''')
 
     def getHeight(self):
-        ___tojs___('''
-        return self.element.offsetHeight;
+        JS('''
+        return this.element.offsetHeight;
         ''')
 
     def setWidth(self, width):
@@ -65,41 +67,41 @@ class Element:
         self.setStyle('height',height)
 
     def setStyle(self, property, value):
-        ___tojs___('''
-        self.element.style[property] = value;
+        JS('''
+        this.element.style[property] = value;
         ''')
 
     def getStyle(self, property):
-        ___tojs___('''
-        return self.element.style[property];
+        JS('''
+        return this.element.style[property];
         ''')
 
     def setProperty(self, property, value):
-        ___tojs___('''
-        //self.element.setAttribute(property,value);
-        self.element[property] = value;
+        JS('''
+        //this.element.setAttribute(property,value);
+        this.element[property] = value;
         ''')
 
     def getProperty(self, property):
-        ___tojs___('''
-        //return self.element.getAttribute(property);
-        return self.element[property];
+        JS('''
+        //return this.element.getAttribute(property);
+        return this.element[property];
         ''')
 
     def setHTML(self, content):
-        ___tojs___('''
-        self.element.innerHTML = content;
+        JS('''
+        this.element.innerHTML = content;
         ''')
 
     def getHTML(self):
-        ___tojs___('''
-        return self.element.innerHTML;
+        JS('''
+        return this.element.innerHTML;
         ''')
 
     def catchEvents(self, name, object):
-        ___tojs___('''
+        JS('''
         var tmp = function(e) {
-            if (!e) var e = __window.event;
+            if (!e) var e = $wnd.event;
         	if (e.target) targ = e.target;
 	        else if (e.srcElement) targ = e.srcElement;
 	        if (targ.nodeType == 3) targ = targ.parentNode;
@@ -110,15 +112,15 @@ class Element:
         };
         ''')
         self.activeEvents.append((name, object))
-        ___tojs___('''
-        var old_callback = self.element['on'+name];
-        self.element['on'+name] = function(e){if(old_callback){old_callback(e);}tmp(e);};
+        JS('''
+        var old_callback = this.element['on'+name];
+        this.element['on'+name] = function(e){if(old_callback){old_callback(e);}tmp(e);};
         ''')
 
 class Document:
-    window = Element(element= ___tojs___('__window'))
-    document = Element(element= ___tojs___('__document'))
-    body = Element(element= ___tojs___('__document.body'))
+    window = Element(element= JS('$wnd'))
+    document = Element(element= JS('$doc'))
+    body = Element(element= JS('$doc.body'))
 
     @staticmethod
     def createElement(tag):
@@ -126,18 +128,18 @@ class Document:
     
     @staticmethod
     def append(element):
-        ___tojs___('''
-        __document.body.appendChild(element.element);
+        JS('''
+        $doc.body.appendChild(element.element);
         ''')
 
     @staticmethod
     def setContent(message):
-        ___tojs___('''
-        __document.body.innerHTML = message;
+        JS('''
+        $doc.body.innerHTML = message;
         ''')
 
     @staticmethod
     def setTitle(title):
-        ___tojs___('''
-        __document.title = title;
+        JS('''
+        $doc.title = title;
         ''')

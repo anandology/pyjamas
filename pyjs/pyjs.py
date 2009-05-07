@@ -358,15 +358,7 @@ class Translator:
             if arg_names and arg_names[0] == self.method_self:
                 default_pos -= 1
             for default_node in node.defaults:
-                if isinstance(default_node, ast.Const):
-                    default_value = self._const(default_node)
-                elif isinstance(default_node, ast.Name):
-                    default_value = self._name(default_node, current_klass)
-                elif isinstance(default_node, ast.UnarySub):
-                    default_value = self._unarysub(default_node, current_klass)
-                else:
-                    raise TranslationError("unsupported type (in _method)", default_node)
-
+                default_value = self.expr(default_node, current_klass)
                 default_name = arg_names[default_pos]
                 default_pos += 1
                 print >> output, "    if (typeof %s == 'undefined') %s=%s;" % (default_name, default_name, default_value)
@@ -473,7 +465,12 @@ class Translator:
     def _callfunc(self, v, current_klass):
 
         if isinstance(v.node, ast.Name):
-            if v.node.name in self.top_level_functions:
+            if v.node.name == NATIVE_JS_FUNC_NAME:
+                if isinstance(v.args[0], ast.Const):
+                    return v.args[0].value
+                else:
+                    raise TranslationError("native js functions only support constant strings",v.node)
+            elif v.node.name in self.top_level_functions:
                 call_name = self.modpfx() + v.node.name
             elif v.node.name in self.top_level_classes:
                 call_name = self.modpfx() + v.node.name
@@ -511,6 +508,9 @@ class Translator:
                 raise TranslationError("unsupported type (in _callfunc)", v.node.expr)
         elif isinstance(v.node, ast.CallFunc):
             call_name = self._callfunc(v.node, current_klass)
+            call_args = []
+        elif isinstance(v.node, ast.Subscript):
+            call_name = self._subscript(v.node, current_klass)
             call_args = []
         else:
             raise TranslationError("unsupported type (in _callfunc)", v.node)
@@ -1329,6 +1329,8 @@ class Translator:
             list_expr = self._getattr(node.list, current_klass)
         elif isinstance(node.list, ast.CallFunc):
             list_expr = self._callfunc(node.list, current_klass)
+        elif isinstance(node.list, ast.Subscript):
+            list_expr = self._subscript(node.list, current_klass)
         else:
             raise TranslationError("unsupported type (in _for)", node.list)
 

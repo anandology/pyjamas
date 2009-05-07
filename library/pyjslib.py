@@ -887,6 +887,7 @@ class Dict:
     def setdefault(self, key, default_value):
         if not self.has_key(key):
             self[key] = default_value
+        return self[key]
 
     def get(self, key, default_=None):
         if not self.has_key(key):

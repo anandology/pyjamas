@@ -1,3 +1,5 @@
+from __pyjamas__ import JS
+
 import browser
 import gdk
 
@@ -46,8 +48,8 @@ class GObject:
 
     def connect(self, detailed_signal, handler, data=None):
         detailed_signal = detailed_signal.replace('_', '-')
-        list = self.callbacks.setdefault(detailed_signal,[])
-        list.append((handler, data))
+        l = self.callbacks.setdefault(detailed_signal,[])
+        l.append((handler, data))
         self.connections += 1
         return self.connections
 
@@ -329,9 +331,9 @@ class VBox(Box):
                     str(bottom + self.spacing / 2 + child.padding / 2) + 'px')
             child._redraw()
 
-
 class Window(Bin):
     def __init__(self, type=WINDOW_TOPLEVEL):
+        global WINDOW_TOPLEVEL
         Bin.__init__(self)
         browser.Document.window.catchEvents(['resize'], self)
 
@@ -354,6 +356,7 @@ class Window(Bin):
         self.child = child
 
     def set_title(self, title):
+        global WINDOW_TOPLEVEL
         self.title = title
         if self.type == WINDOW_TOPLEVEL:
             browser.Document.setTitle(title)
@@ -678,7 +681,7 @@ class Scale(Range):
 
     def _adjustment_value_changed(self):
         value = self.adjustment.get_value()
-        ___tojs___('''
+        JS('''
         value = value.toFixed(self.digits);
         ''')
         self.value.setHTML(str(value))
