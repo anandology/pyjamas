@@ -1169,6 +1169,17 @@ def getattr(obj, name, default_):
     return fnwrap;
     """)
 
+def delattr(obj, name):
+    JS("""
+    if (!pyjslib.isObject(obj)) {
+       throw pyjslib.AttributeError("'"+typeof(obj)+"' object has no attribute '"+name+"%s'")
+    }
+    if ((pyjslib.isUndefined(obj[name])) ||(typeof(obj[name]) == "function") ){
+        throw pyjslib.AttributeError(obj.__name__+" instance has no attribute '"+ name+"'");
+    }
+    delete obj[name];
+    """)
+
 def setattr(obj, name, value):
     JS("""
     if (!pyjslib.isObject(obj)) return null;
@@ -1380,4 +1391,46 @@ def type(clsname, bases=None, methods=None):
     if bases:
         JS("bss = bases.l;")
     JS(" return pyjs_type(clsname, bss, mths); ")
+
+def pow(x, y, z = None):
+    JS("p = Math.pow(x, y);")
+    if z is None:
+        return float(p)
+    return float(p % z)
+
+def hex(x):
+    if int(x) != x:
+        raise TypeError("hex() argument can't be converted to hex")
+    JS("r = '0x'+x.toString(16);")
+    return str(r)
+
+def oct(x):
+    if int(x) != x:
+        raise TypeError("oct() argument can't be converted to oct")
+    JS("r = '0'+x.toString(8);")
+    return str(r)
+
+def round(x, n = 0):
+    n = pow(10, n)
+    JS("r = Math.round(n*x)/n;")
+    return float(r)
+
+def divmod(x, y):
+    if int(x) == x and int(y) == y:
+        return (int(x / y), int(x % y))
+    JS("f = Math.floor(x / y);")
+    f = float(f)
+    return (f, x - f * y)
+
+def all(iterable):
+    for element in iterable:
+        if not element:
+            return False
+    return True
+
+def any(iterable):
+    for element in iterable:
+        if element:
+            return True
+    return False
 

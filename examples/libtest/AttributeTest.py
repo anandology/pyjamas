@@ -58,3 +58,16 @@ class AttributeTest(UnitTest):
         setattr(f1, "getV", f3.getV) # reeallly need to have __getattr__
         self.assertEqual(f1.getV(), 3)
 
+    def testDelAttr(self):
+
+        foo = Foo(1)
+        self.assertEqual(hasattr(foo, "v"), True)
+        delattr(foo, "v")
+        self.assertEqual(hasattr(foo, "v"), False)
+        
+        self.assertEqual(hasattr(foo, "getV"), True)
+        try:
+            delattr(foo, "getV")
+            self.fail("No AttributeError raised")
+        except AttributeError, e:
+            self.assertEqual(str(e), "Foo instance has no attribute 'getV'")

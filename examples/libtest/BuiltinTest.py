@@ -26,3 +26,51 @@ class BuiltinTest(UnitTest):
 
     def testPower(self):
         self.assertEqual(3 ** 4, 81)
+
+    def testPowerfunc(self):
+        self.assertEqual(pow(10, 3), 1000)
+        self.assertEqual(pow(10, 3, 7), 6)
+
+    def testHex(self):
+        self.assertEqual(hex(23), '0x17')
+        try:
+            h = hex(23.2)
+            self.fail("No hex() argument error raised")
+        except TypeError, why:
+            self.assertEqual(why.message, "hex() argument can't be converted to hex")
+
+    def testOct(self):
+        self.assertEqual(oct(23), '027')
+        try:
+            o = oct(23.2)
+            self.fail("No oct() argument error raised")
+        except TypeError, why:
+            self.assertEqual(str(why), "oct() argument can't be converted to oct")
+
+    def testRound(self):
+        self.assertEqual(round(13.12345), 13.0)
+        self.assertEqual(round(13.12345, 3), 13.123)
+
+    def testDivmod(self):
+        test_set = [(14, 3, 4, 2),
+                    (14.1, 3, 4.0, 2.1),
+                    (14.1, 3.1, 4.0, 1.7),
+                   ]
+        for x, y, p, q in test_set:
+            d = divmod(x,y)
+            self.assertEqual(d[0], p)
+            self.assertEqual(abs(d[1] - q) < 0.00001, True)
+
+    def testAll(self):
+        self.assertEqual(all([True, 1, 'a']), True)
+        self.assertEqual(all([True, 1, None, 'a']), False)
+        self.assertEqual(all([True, 1, '', 'a']), False)
+        self.assertEqual(all([True, 1, False, 'a']), False)
+
+    def testAny(self):
+        self.assertEqual(any([True, 1, 'a']), True)
+        self.assertEqual(any([True, 1, None, 'a']), True)
+        self.assertEqual(any([True, 1, '', 'a']), True)
+        self.assertEqual(any([True, 1, False, 'a']), True)
+        self.assertEqual(any([False, '', None]), False)
+

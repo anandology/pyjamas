@@ -1,6 +1,12 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
+ * Added "pow", "hex", "oct", "round", "divmod", "all", "any" and "delattr".
+   (thanks to Kees).
+
+ * Added subscript support and more, from the llpamies branch (lkcl), to
+   get pygtk working.
+
  * Added support for x ** y syntax (thanks to Kees).
 
  * Fixed getBoundingClientRect off-by-one bug (firefox 3 returns an
