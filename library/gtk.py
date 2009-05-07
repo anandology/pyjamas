@@ -79,6 +79,7 @@ class Object(GObject):
 class Widget(Object):
     def __init__(self):
         Object.__init__(self)
+        self._visible = False
         self.widget_cont = browser.Element('div')
         self.widget_cont.setStyle('visibility', 'hidden')
         self.widget_cont.setStyle('position', 'absolute')

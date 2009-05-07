@@ -26,7 +26,7 @@ class Element:
 
     def getX(self):
         JS('''
-        var obj = self.element;
+        var obj = this.element;
 	    var curleft = 0;
     	if (obj.offsetParent) {
 	    	curleft = obj.offsetLeft
