@@ -995,6 +995,8 @@ def get_pyjs_classtype(x):
 def repr(x):
     """ Return the string representation of 'x'.
     """
+    if hasattr(x, '__repr__'):
+        return x.__repr__()
     JS("""
        if (x === null)
            return "null";
@@ -1048,6 +1050,8 @@ def repr(x):
                if (i < contents.length - 1)
                    s += ", ";
            };
+           if (contents.length == 1)
+               s += ",";
            s += ")"
            return s;
        };
