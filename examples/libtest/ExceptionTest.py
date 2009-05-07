@@ -81,3 +81,37 @@ class ExceptionTest(UnitTest):
             self.assertEqual(err.__class__.__name__, 'LookupError')
             return
         self.fail("LookupError should be caught")
+
+    def testStrReprSingleArg(self):
+        args = ('test',)
+
+        e = BaseException(*args)
+        self.assertEqual(e.args[0], args[0])
+        self.assertEqual(str(e), args[0])
+        self.assertEqual(repr(e), "BaseException('test',)")
+
+        e = Exception(*args)
+        self.assertEqual(str(e), args[0])
+        self.assertEqual(repr(e), "Exception('test',)")
+
+        e = TypeError(*args)
+        self.assertEqual(str(e), args[0])
+        self.assertEqual(repr(e), "TypeError('test',)")
+
+        e = StandardError(*args)
+        self.assertEqual(str(e), args[0])
+        self.assertEqual(repr(e), "StandardError('test',)")
+
+        e = LookupError(*args)
+        self.assertEqual(str(e), args[0])
+        self.assertEqual(repr(e), "LookupError('test',)")
+
+        e = KeyError(*args)
+        self.assertEqual(str(e), "'%s'" % args[0])
+        self.assertEqual(repr(e), "KeyError('test',)")
+
+        e = AttributeError(*args)
+        self.assertEqual(str(e), args[0])
+        self.assertEqual(repr(e), "AttributeError('test',)")
+
+

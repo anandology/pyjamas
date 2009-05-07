@@ -228,16 +228,22 @@ import sys
 class BaseException:
 
     name = "BaseException"
+    message = ''
 
     def __init__(self, *args):
         self.args = args
+        if len(args) == 1:
+            self.message = args[0]
 
     def __str__(self):
         if len(self.args) is 0:
             return ''
         elif len(self.args) is 1:
-            return repr(self.args[0])
+            return str(self.message)
         return repr(self.args)
+
+    def __repr__(self):
+        return self.name + repr(self.args)
 
     def toString(self):
         return str(self)
@@ -246,11 +252,11 @@ class Exception(BaseException):
 
     name = "Exception"
 
-class TypeError(BaseException):
-    name = "TypeError"
-
 class StandardError(Exception):
     name = "StandardError"
+
+class TypeError(StandardError):
+    name = "TypeError"
 
 class LookupError(StandardError):
     name = "LookupError"
@@ -260,6 +266,13 @@ class LookupError(StandardError):
 
 class KeyError(LookupError):
     name = "KeyError"
+
+    def __str__(self):
+        if len(self.args) is 0:
+            return ''
+        elif len(self.args) is 1:
+            return repr(self.message)
+        return repr(self.args)
 
 class AttributeError(StandardError):
 
