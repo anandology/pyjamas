@@ -119,3 +119,33 @@ class StringTest(UnitTest):
     def testStrList(self):
         self.assertEqual(str([5,6]), "[5, 6]")
 
+    def testStartsWith(self):
+        s = 'abcd'
+        self.assertEqual(s.startswith('ab'), True)
+        self.assertEqual(s.startswith('ab', 0), True)
+        self.assertEqual(s.startswith('ab', 1), False)
+        self.assertEqual(s.startswith('bc', 1), True)
+        self.assertEqual(s.startswith('ab', 0, 8), True)
+        self.assertEqual(s.startswith('ab', 0, 3), True)
+        self.assertEqual(s.startswith('ab', 0, 2), True)
+        self.assertEqual(s.startswith('ab', 0, 1), False)
+
+    def testEndsWith(self):
+        s = 'abcd'
+        self.assertEqual(s.endswith('cd'), True)
+        self.assertEqual(s.endswith('cd', 0), True)
+        self.assertEqual(s.endswith('cd', 2), True)
+        self.assertEqual(s.endswith('cd', 3), False)
+        self.assertEqual(s.endswith('cd', 0, 3), False)
+        self.assertEqual(s.endswith('bc', 0, 3), True)
+
+    def testLjust(self):
+        self.assertEqual('a'.ljust(0), 'a')
+        self.assertEqual('a'.ljust(4), 'a   ')
+        self.assertEqual('a'.ljust(4, 'b'), 'abbb')
+
+    def testRjust(self):
+        self.assertEqual('a'.rjust(4, 'b'), 'bbba')
+
+    def testCenter(self):
+        self.assertEqual('a'.center(4, '1'), '1a11')

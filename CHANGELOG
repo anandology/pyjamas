@@ -1,6 +1,9 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
+ * Extended string startswith, endswith, added ljust, rjust and center
+   (thanks to Kees).
+
  * Added "pow", "hex", "oct", "round", "divmod", "all", "any" and "delattr".
    (thanks to Kees).
 

@@ -409,11 +409,69 @@ pyjslib.String_rstrip = function(chars) {
     return this.replace(new RegExp("[" + chars + "]+$"), "");
 }
 
-pyjslib.String_startswith = function(prefix, start) {
+pyjslib.String_startswith = function(prefix, start, end) {
+    // FIXME: accept tuples as suffix (since 2.5)
     if (pyjslib.isUndefined(start)) start = 0;
+    if (pyjslib.isUndefined(end)) end = this.length;
 
-    if (this.substring(start, prefix.length) == prefix) return true;
+    if ((end - start) < prefix.length) return false
+    if (this.substr(start, prefix.length) == prefix) return true;
     return false;
+}
+
+pyjslib.String_endswith = function(suffix, start, end) {
+    // FIXME: accept tuples as suffix (since 2.5)
+    if (pyjslib.isUndefined(start)) start = 0;
+    if (pyjslib.isUndefined(end)) end = this.length;
+
+    if ((end - start) < suffix.length) return false
+    if (this.substr(end - suffix.length, suffix.length) == suffix) return true;
+    return false;
+}
+
+pyjslib.String_ljust = function(width, fillchar) {
+    if (typeof(width) != 'number' ||
+        parseInt(width) != width) {
+        throw (pyjslib.TypeError("an integer is required"));
+    }
+    if (pyjslib.isUndefined(fillchar)) fillchar = ' ';
+    if (typeof(fillchar) != 'string' ||
+        fillchar.length != 1) {
+        throw (pyjslib.TypeError("rjust() argument 2 must be char, not " + typeof(fillchar)));
+    }
+    if (this.length >= width) return this;
+    return this + new Array(width+1 - this.length).join(fillchar);
+}
+
+pyjslib.String_rjust = function(width, fillchar) {
+    if (typeof(width) != 'number' ||
+        parseInt(width) != width) {
+        throw (pyjslib.TypeError("an integer is required"));
+    }
+    if (pyjslib.isUndefined(fillchar)) fillchar = ' ';
+    if (typeof(fillchar) != 'string' ||
+        fillchar.length != 1) {
+        throw (pyjslib.TypeError("rjust() argument 2 must be char, not " + typeof(fillchar)));
+    }
+    if (this.length >= width) return this;
+    return new Array(width + 1 - this.length).join(fillchar) + this;
+}
+
+pyjslib.String_center = function(width, fillchar) {
+    if (typeof(width) != 'number' ||
+        parseInt(width) != width) {
+        throw (pyjslib.TypeError("an integer is required"));
+    }
+    if (pyjslib.isUndefined(fillchar)) fillchar = ' ';
+    if (typeof(fillchar) != 'string' ||
+        fillchar.length != 1) {
+        throw (pyjslib.TypeError("rjust() argument 2 must be char, not " + typeof(fillchar)));
+    }
+    if (this.length >= width) return this;
+    padlen = width - this.length
+    right = Math.ceil(padlen / 2);
+    left = padlen - right;
+    return new Array(left+1).join(fillchar) + this + new Array(right+1).join(fillchar);
 }
 
 pyjslib.abs = Math.abs;

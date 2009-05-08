@@ -160,6 +160,10 @@ String.prototype.strip=pyjslib.String_strip;
 String.prototype.lstrip=pyjslib.String_lstrip;
 String.prototype.rstrip=pyjslib.String_rstrip;
 String.prototype.startswith=pyjslib.String_startswith;
+String.prototype.endswith=pyjslib.String_endswith;
+String.prototype.ljust=pyjslib.String_ljust;
+String.prototype.rjust=pyjslib.String_rjust;
+String.prototype.center=pyjslib.String_center;
 
 var str = String;
 
