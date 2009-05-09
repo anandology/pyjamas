@@ -1,6 +1,8 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
+ * Added NameError, ValueError and IndexError exceptions (thanks to Kees)
+
  * Extended string startswith, endswith, added ljust, rjust and center
    (thanks to Kees).
 

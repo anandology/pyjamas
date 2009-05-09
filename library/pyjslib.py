@@ -281,6 +281,15 @@ class AttributeError(StandardError):
     def toString(self):
         return "AttributeError: %s of %s" % (self.args[1], self.args[0])
 
+class NameError(StandardError):
+    name = "NameError"
+
+class ValueError(StandardError):
+    name = "ValueError"
+
+class IndexError(LookupError):
+    name = "IndexError"
+
 JS("""
 pyjslib.StopIteration = function () { };
 pyjslib.StopIteration.prototype = new Error();

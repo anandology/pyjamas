@@ -114,4 +114,16 @@ class ExceptionTest(UnitTest):
         self.assertEqual(str(e), args[0])
         self.assertEqual(repr(e), "AttributeError('test',)")
 
+        e = NameError(*args)
+        self.assertEqual(str(e), args[0])
+        self.assertEqual(repr(e), "NameError('test',)")
+
+        e = ValueError(*args)
+        self.assertEqual(str(e), args[0])
+        self.assertEqual(repr(e), "ValueError('test',)")
+
+        e = IndexError(*args)
+        self.assertEqual(str(e), args[0])
+        self.assertEqual(repr(e), "IndexError('test',)")
+
 
