@@ -494,6 +494,9 @@ class Translator:
                 call_name = 'pyjslib.' + name
             elif v.node.name == "callable":
                 call_name = "pyjslib.isFunction"
+            elif v.node.name in self.local_arg_stack[-1] and \
+                 len(self.local_arg_stack) == 1:
+                call_name = self.modpfx() + v.node.name
             else:
                 call_name = v.node.name
             call_args = []
