@@ -446,7 +446,7 @@ pyjslib.String_ljust = function(width, fillchar) {
     if (pyjslib.isUndefined(fillchar)) fillchar = ' ';
     if (typeof(fillchar) != 'string' ||
         fillchar.length != 1) {
-        throw (pyjslib.TypeError("rjust() argument 2 must be char, not " + typeof(fillchar)));
+        throw (pyjslib.TypeError("ljust() argument 2 must be char, not " + typeof(fillchar)));
     }
     if (this.length >= width) return this;
     return this + new Array(width+1 - this.length).join(fillchar);
@@ -474,7 +474,7 @@ pyjslib.String_center = function(width, fillchar) {
     if (pyjslib.isUndefined(fillchar)) fillchar = ' ';
     if (typeof(fillchar) != 'string' ||
         fillchar.length != 1) {
-        throw (pyjslib.TypeError("rjust() argument 2 must be char, not " + typeof(fillchar)));
+        throw (pyjslib.TypeError("center() argument 2 must be char, not " + typeof(fillchar)));
     }
     if (this.length >= width) return this;
     padlen = width - this.length
