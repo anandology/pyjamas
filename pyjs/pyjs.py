@@ -1416,8 +1416,9 @@ class Translator:
 
     def _mod(self, node, current_klass):
         if isinstance(node.left, ast.Const) and isinstance(node.left.value, StringType):
-           self.imported_js.add("sprintf.js") # Include the sprintf functionality if it is used
-           return "sprintf("+self.expr(node.left, current_klass) + ", " + self.expr(node.right, current_klass)+")"
+           #self.imported_js.add("sprintf.js") # Include the sprintf functionality if it is used
+           #return "sprintf("+self.expr(node.left, current_klass) + ", " + self.expr(node.right, current_klass)+")"
+           return "pyjslib.sprintf("+self.expr(node.left, current_klass) + ", " + self.expr(node.right, current_klass)+")"
         return self.expr(node.left, current_klass) + " % " + self.expr(node.right, current_klass)
 
     def _power(self, node, current_klass):

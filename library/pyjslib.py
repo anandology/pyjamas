@@ -1433,6 +1433,215 @@ def toJSObjects(x):
          """)
     return x
 
+def sprintf(strng, args):
+    # See http://docs.python.org/library/stdtypes.html
+    JS("""
+    var re_dict = /([^%]*)%[(]([^)]+)[)]([#0\x20\0x2B-]*)(\d+)?(\.\d+)?[hlL]?(.)(.*)/;
+    var re_list = /([^%]*)%([#0\x20\x2B-]*)(\*|(\d+))?(\.\d+)?[hlL]?(.)(.*)/;
+    var re_exp = /(.*)([+-])(.*)/;
+    var constructor = pyjslib.get_pyjs_classtype(args);
+""")
+    strlen = len(strng)
+    argidx = 0
+    nargs = 0
+    result = []
+    remainder = strng
+
+    def next_arg():
+        if argidx == nargs:
+            raise TypeError("not enough arguments for format string")
+        arg = args[argidx]
+        argidx += 1
+        return arg
+
+    def formatarg(flags, minlen, precision, conversion, param):
+            numeric = True
+            if isUndefined(minlen):
+                minlen=0
+            else:
+                minlen = int(minlen)
+            if isUndefined(precision):
+                precision = None
+            else:
+                precision = int(precision)
+            left_padding = 1
+            if flags.find('-') >= 0:
+                left_padding = 0
+            if conversion == '%':
+                numeric = False
+                subst = '%'
+            elif conversion == 'c':
+                numeric = False
+                subst = chr(int(param))
+            elif conversion == 'd' or conversion == 'i' or conversion == 'u':
+                subst = str(int(param))
+            elif conversion == 'e':
+                if precision is None:
+                    precision = 6
+                JS("""
+                subst = re_exp.exec(String(param.toExponential(precision)));
+                if (subst[3].length == 1) {
+        	    subst = subst[1] + subst[2] + '0' + subst[3];
+		} else {
+        	    subst = subst[1] + subst[2] + subst[3];
+		}""")
+            elif conversion == 'E':
+                if precision is None:
+                    precision = 6
+                JS("""
+                subst = re_exp.exec(String(param.toExponential(precision)).toUpperCase());
+                if (subst[3].length == 1) {
+        	    subst = subst[1] + subst[2] + '0' + subst[3];
+		} else {
+        	    subst = subst[1] + subst[2] + subst[3];
+		}""")
+            elif conversion == 'f':
+                if precision is None:
+                    precision = 6
+                JS("""
+                subst = String(parseFloat(param).toFixed(precision));""")
+            elif conversion == 'F':
+                if precision is None:
+                    precision = 6
+                JS("""
+                subst = String(parseFloat(param).toFixed(precision)).toUpperCase();""")
+            elif conversion == 'g':
+                if flags.find('#') >= 0:
+                    if precision is None:
+                        precision = 6
+                if param >= 1E6 or param < 1E-5:
+                    JS("""
+                    subst = String(precision == null ? param.toExponential() : param.toExponential().toPrecision(precision));""")
+                else:
+                    JS("""
+                    subst = String(precision == null ? parseFloat(param) : parseFloat(param).toPrecision(precision));""")
+            elif conversion == 'G':
+                if flags.find('#') >= 0:
+                    if precision is None:
+                        precision = 6
+                if param >= 1E6 or param < 1E-5:
+                    JS("""
+                    subst = String(precision == null ? param.toExponential() : param.toExponential().toPrecision(precision)).toUpperCase();""")
+                else:
+                    JS("""
+                    subst = String(precision == null ? parseFloat(param) : parseFloat(param).toPrecision(precision)).toUpperCase().toUpperCase();""")
+            elif conversion == 'r':
+                numeric = False
+                subst = repr(param)
+            elif conversion == 's':
+                numeric = False
+                subst = str(param)
+            elif conversion == 'o':
+                param = int(param)
+                JS("""
+                subst = param.toString(8);""")
+                if flags.find('#') >= 0 and subst != '0':
+                    subst = '0' + subst
+            elif conversion == 'x':
+                param = int(param)
+                JS("""
+                subst = param.toString(16);""")
+                if flags.find('#') >= 0:
+                    if left_padding:
+                        subst = subst.rjust(minlen - 2, '0')
+                    subst = '0x' + subst
+            elif conversion == 'X':
+                param = int(param)
+                JS("""
+                subst = param.toString(16).toUpperCase();""")
+                if flags.find('#') >= 0:
+                    if left_padding:
+                        subst = subst.rjust(minlen - 2, '0')
+                    subst = '0X' + subst
+            else:
+                raise ValueError("unsupported format character '" + conversion + "' ("+hex(ord(conversion))+") at index " + (strlen - len(remainder) - 1))
+            if len(subst) < minlen:
+                padchar = ' '
+                if numeric and left_padding and flags.find('0') >= 0:
+                    padchar = '0'
+                if left_padding:
+                    subst = subst.rjust(minlen, padchar)
+                else:
+                    subst = subst.ljust(minlen, padchar)
+            return subst
+
+    def sprintf_list(strng, args):
+        while remainder:
+            JS("""
+            a = re_list.exec(remainder);""")
+            if a is None:
+                result.append(remainder)
+                break;
+            JS("""
+            var left = a[1], flags = a[2];
+            var minlen = a[3], precision = a[5], conversion = a[6];
+            remainder = a[7];
+/*
+            alert("left: " + left + ", " +
+                  "flags: " + flags + ", " +
+                  "minlen: " + minlen + ", " +
+                  "precision: " + precision + ", " +
+                  "conversion: " + conversion + ", " +
+                  "remainder: " + remainder);
+*/
+""")
+            result.append(left)
+            if minlen == '*':
+                minlen = next_arg()
+                JS("var minlen_type = typeof(minlen);")
+                if minlen_type != 'number' or \
+                   int(minlen) != minlen:
+                    raise TypeError('* wants int')
+            if conversion != '%':
+                param = next_arg()
+            result.append(formatarg(flags, minlen, precision, conversion, param))
+
+    def sprintf_dict(strng, args):
+        arg = args
+        argidx += 1
+        while remainder:
+            JS("""
+            a = re_dict.exec(remainder);""")
+            if a is None:
+                result.append(remainder)
+                break;
+            JS("""
+            var left = a[1], key = a[2], flags = a[3];
+            var minlen = a[4], precision = a[5], conversion = a[6];
+            remainder = a[7];
+/*
+            alert("left: " + left + ", " +
+                  "key: " + key + ", " +
+                  "flags: " + flags + ", " +
+                  "minlen: " + minlen + ", " +
+                  "precision: " + precision + ", " +
+                  "conversion: " + conversion + ", " +
+                  "remainder: " + remainder);
+*/
+""")
+            result.append(left)
+            if not arg.has_key(key):
+                raise KeyError(key)
+            else:
+                param = arg[key]
+            result.append(formatarg(flags, minlen, precision, conversion, param))
+
+    JS("""
+    a = re_dict.exec(strng);
+""")
+    if a is None:
+        if constructor != "Tuple":
+            args = (args,)
+        nargs = len(args)
+        sprintf_list(strng, args)
+        if argidx != nargs:
+            raise TypeError('not all arguments converted during string formatting')
+    else:
+        if constructor != "Dict":
+            raise TypeError("format requires a mapping")
+        sprintf_dict(strng, args)
+    return ''.join(result)
+
 def printFunc(objs):
     JS("""
     if ($wnd.console==undefined)  return;
