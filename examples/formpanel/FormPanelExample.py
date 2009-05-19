@@ -68,7 +68,7 @@ class FormPanelExample:
         # this opportunity to perform validation.
         if (self.tb.getText().length == 0):
             Window.alert("The text box must not be empty")
-            event.setCancelled(true)
+            event.setCancelled(True)
 
 
 
