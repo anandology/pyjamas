@@ -1345,6 +1345,12 @@ class Translator:
             list_expr = self._callfunc(node.list, current_klass)
         elif isinstance(node.list, ast.Subscript):
             list_expr = self._subscript(node.list, current_klass)
+        elif isinstance(node.list, ast.Const):
+            list_expr = self._const(node.list)
+        elif isinstance(node.list, ast.Const):
+            list_expr = self._const(node.list)
+        elif isinstance(node.list, ast.List):
+            list_expr = self._list(node.list, current_klass)
         else:
             raise TranslationError("unsupported type (in _for)", node.list)
 

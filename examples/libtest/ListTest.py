@@ -194,6 +194,14 @@ class ListTest(UnitTest):
         l4.extend([])
         self.assertEqual(len(l4),0)
 
+    def testIter2(self):
+
+        i = 0
+
+        for item in [0,1,2,3]:
+            self.assertEqual(item, i)
+            i += 1
+
     def testIter(self):
 
         l = [0,1,2,3]
