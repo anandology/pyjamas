@@ -336,25 +336,42 @@ a:visited {
 
 .gwt-DecoratedTabBar-wrapper .tabTopLeftInner /* { the inner element of the cell } */
 {
+   width: 5px;
+   height: 10px;
+   margin-top: -5px;
+   overflow: hidden;
+} 
+.gwt-DecoratedTabBar-wrapper .tabTopLeft
+{
     height: 5px;
     width: 5px;
     background-image: url('corner_dialog_topleft.png');
 }
-.gwt-DecoratedTabBar-wrapper .tabTopCenterInner 
+.gwt-DecoratedTabBar-wrapper .tabTopCenter 
 {
     height: 5px;
     background-image: url('corner_dialog_edge.png');
 }
 .gwt-DecoratedTabBar-wrapper .tabTopRightInner /* { the inner element of the cell } */
 {
+   width: 5px;
+   height: 10px;
+   margin-top: -5px;
+   overflow: hidden;
+} 
+.gwt-DecoratedTabBar-wrapper .tabTopRight
+{
     height: 5px;
     width: 5px;
     background-image: url('corner_dialog_topright.png');
+    background-repeat: no-repeat;
 }
 .gwt-DecoratedTabBar-wrapper .tabMiddleCenter /* { the middle row } */
 {
     background-image: url('corner_dialog_edge.png');
     background-repeat: repeat;
+    cursor: pointer;
+    cursor: hand;
 }
 .gwt-DecoratedTabBar-wrapper .tabMiddleLeft /* { the middle left cell } */
 {
@@ -373,18 +390,18 @@ a:visited {
     padding-right: 5px;
 }
 
-.gwt-DecoratedTabBar-wrapper .gwt-TabBarItem-selected .tabTopLeftInner /* { the inner element of the cell } */
+.gwt-DecoratedTabBar-wrapper .gwt-TabBarItem-selected .tabTopLeft
 {
     height: 5px;
     width: 5px;
     background-image: url('corner_dialog_topleft_black.png');
 }
-.gwt-DecoratedTabBar-wrapper .gwt-TabBarItem-selected .tabTopCenterInner 
+.gwt-DecoratedTabBar-wrapper .gwt-TabBarItem-selected .tabTopCenter 
 {
     height: 5px;
     background-image: url('corner_dialog_edge_black.png');
 }
-.gwt-DecoratedTabBar-wrapper .gwt-TabBarItem-selected .tabTopRightInner /* { the inner element of the cell } */
+.gwt-DecoratedTabBar-wrapper .gwt-TabBarItem-selected .tabTopRight
 {
     height: 5px;
     width: 5px;
@@ -446,9 +463,6 @@ a:visited {
 
 .gwt-DecoratorPanel .bluetopLeft /* { the top left cell } */
 {
-}
-.gwt-DecoratorPanel .bluetopLeftInner /* { the inner element of the cell } */
-{
     width: 6px;
     height: 5px;
     background-image: url('images/blue_arrow_top_left.png');
@@ -463,9 +477,6 @@ a:visited {
 {
 }
 .gwt-DecoratorPanel .bluetopRight /* { the top right cell } */
-{
-}
-.gwt-DecoratorPanel .bluetopRightInner /* { the inner element of the cell } */
 {
     width: 6px;
     height: 5px;
