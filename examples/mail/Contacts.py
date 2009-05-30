@@ -76,7 +76,7 @@ class ContactListener:
         self.cont = contact
         self.link = link
         
-    def onClick(self, sender=None):
+    def onClick(self, sender):
         if (sender == self.link):
             popup = ContactPopup(self.cont)
             left = self.link.getAbsoluteLeft() + 32

@@ -30,7 +30,7 @@ class DbTest():
         except ex:
             log("could not create database" + str(ex))
 
-    def onClick(self, sender=None):
+    def onClick(self, sender):
         phrase = self.tb.getText()
         currTime = Datetime().getTime()
         self.db.execute('insert into Demo values (?, ?)', phrase, currTime);

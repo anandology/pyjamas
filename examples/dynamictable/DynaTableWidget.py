@@ -37,7 +37,7 @@ class NavBar(Composite):
         self.gotoPrev.setEnabled(False)
         self.gotoFirst.setEnabled(False)
         
-    def onClick(self, sender=None):
+    def onClick(self, sender):
         if sender == self.gotoNext:
             self.owner.startRow += self.owner.getDataRowCount()
             self.owner.refresh()

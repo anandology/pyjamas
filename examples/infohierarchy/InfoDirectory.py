@@ -80,7 +80,7 @@ class CollapserPanel(SimplePanel):
     def setHeight(self, height):
         SimplePanel.setHeight(self, height)
 
-    def onClick(self, sender=None):
+    def onClick(self, sender):
         if self.collapsed == False:
             self.collapse.setUrl("./tree_closed.gif")
             self.collapsed = True

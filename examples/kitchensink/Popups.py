@@ -33,7 +33,7 @@ class Popups(Sink):
     def onShow(self):
         pass
 
-    def onClick(self, sender=None):
+    def onClick(self, sender):
         if sender == self.fPopupButton:
             p = MyPopup()
             left = sender.getAbsoluteLeft() + 10
@@ -86,7 +86,7 @@ class MyDialog(DialogBox):
         iframe.setHeight("20em")
         self.setWidget(dock)
 
-    def onClick(self, sender=None):
+    def onClick(self, sender):
         self.hide()
 
 

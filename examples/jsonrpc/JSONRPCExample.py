@@ -70,7 +70,7 @@ after newline
         
         RootPanel().add(panel)
 
-    def onClick(self, sender=None):
+    def onClick(self, sender):
         self.status.setText(self.TEXT_WAITING)
         method = self.methods[self.method_list.getSelectedIndex()]
         text = self.text_area.getText()

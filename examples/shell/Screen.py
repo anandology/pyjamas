@@ -30,7 +30,7 @@ class Application(DialogBoxModal):
         if not self.dragged:
             self.screen.raise_or_lower(self)
 
-    def onClick(self, sender=None):
+    def onClick(self, sender):
         if sender == self.closeButton:
             self.screen.close_app(self)
 

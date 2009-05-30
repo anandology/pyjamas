@@ -155,7 +155,7 @@ class PatternCanvas(Canvas):
         Canvas.__init__(self, 150, 150)
         self.img = CanvasImage('images/wallpaper.png', self)
 
-    def onLoad(self, sender=None):
+    def onLoad(self, sender):
         if sender==self.img:
             self.draw()
     

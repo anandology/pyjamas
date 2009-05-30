@@ -57,7 +57,7 @@ class MailList(Composite):
         if (row > 0):
             self.selectRow(row - 1)
 
-    def onClick(self, sender=None):
+    def onClick(self, sender):
         if (sender == self.olderButton):
             # Move forward a page.
             self.startIndex = self.startIndex + MailList.VISIBLE_EMAIL_COUNT
