@@ -25,6 +25,6 @@ class CheckBoxDemo(SimplePanel):
         self.add(self.box)
 
 
-    def onClick(self):
+    def onClick(self, sender=None):
         Window.alert("checkbox status: " + self.box.isChecked())
 

@@ -58,7 +58,7 @@ class TextBoxListener:
         self.parent=parent
         self.select_all=select_all
         
-    def onClick(self, sender):
+    def onClick(self, sender=None):
         if sender == self.select_all:
             self.textBox.selectAll()
             self.textBox.setFocus(True)

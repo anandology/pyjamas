@@ -33,7 +33,7 @@ class TodayListener:
     def __init__(self, proxy):
         self.proxy = proxy
 
-    def onClick(self, sender):
+    def onClick(self, sender=None):
         strDate = "%d%s%d%s%d" % (self.proxy.todayYear,
                                   self.proxy.dateSep,
                                   self.proxy.todayMonth + 1,
@@ -207,8 +207,8 @@ class Calendar(FocusPanel):
         def autoCerrar(self, sender):
             proxy.setVisible(False)
             
-        id1 = HTMLPanel.createUniqueId()
-        id2 = HTMLPanel.createUniqueId()
+        id1 = HTMLPanel.createUniqueId(None)
+        id2 = HTMLPanel.createUniqueId(None)
         self.bottomPanel = HTMLPanel("<div style='text-align: right;'><span id=" + id2 + "><span id=" + id1 + "></div>")            
         self.btnToday = Button(self.otherLabels['lblToday'], TodayListener(self))
         self.bottomPanel.add(self.btnToday, id1)

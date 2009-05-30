@@ -40,7 +40,7 @@ class SolarCanvas(Canvas):
         self.isActive = True
         self.onTimer()
 
-    def onLoad(self):
+    def onLoad(self, sender=None):
         el = self.clock.getElement()
         self.width = DOM.getAttribute(el, "width")
         self.height = DOM.getIntAttribute(el, "height")
@@ -50,7 +50,7 @@ class SolarCanvas(Canvas):
     def onError(self, sender):
         Window.alert("error of some kind (probably missing image at url)")
 
-    def onTimer(self):
+    def onTimer(self, sender=None):
         if not self.isActive:
             return
         

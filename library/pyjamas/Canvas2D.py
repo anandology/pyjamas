@@ -46,7 +46,7 @@ class Canvas(Widget):
         self.mouseListeners = []
         self.keyboardListeners = []
         
-        DOM.appendChild(self.getElement(canvas), self.focusable)
+        DOM.appendChild(self.getElement(), self.focusable)
         DOM.sinkEvents(canvas, Event.ONCLICK | Event.MOUSEEVENTS | DOM.getEventsSunk(canvas))
         DOM.sinkEvents(self.focusable, Event.FOCUSEVENTS | Event.KEYEVENTS)
 
@@ -67,7 +67,7 @@ class Canvas(Widget):
         #print "Label onBrowserEvent", type, self.clickListeners
         if type == "click":
             for listener in self.clickListeners:
-                if listener.onClick: listener.onClick(self, event)
+                if listener.onClick: listener.onClick(self)
                 else: listener(self, event)
         elif type == "blur" or type == "focus":
             FocusListener.fireFocusEvent(self.focusListeners, self, event)

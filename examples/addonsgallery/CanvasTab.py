@@ -155,7 +155,7 @@ class PatternCanvas(Canvas):
         Canvas.__init__(self, 150, 150)
         self.img = CanvasImage('images/wallpaper.png', self)
 
-    def onLoad(self, sender):
+    def onLoad(self, sender=None):
         if sender==self.img:
             self.draw()
     
@@ -217,7 +217,7 @@ class SolarCanvas(Canvas):
         self.isActive = True
         self.onTimer()
 
-    def onTimer(self):
+    def onTimer(self, t=None):
         if not self.isActive:
             return
         

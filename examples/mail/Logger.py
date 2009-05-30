@@ -1,12 +1,15 @@
 from pyjamas.ui.Grid import Grid
 
+_logger = None
+
 class Logger(Grid):
     def __init__(self, target="", message=""):
+        global _logger
         if message:
             return Logger().write(target, message)
             
         # make sure there is only one instance of this class
-        if _logger: return _logger
+        if _logger: return None
         self.setSingleton()
 
         Grid.__init__(self)
@@ -25,12 +28,8 @@ class Logger(Grid):
             self.setText(i+1, 0, target)
 
     def setSingleton(self):
-        JS("""
-        _logger=this;
-        };
-        var _logger=null;
-        {
-        """)
+        global _logger
+        _logger = self
     
     def addTarget(self, target):
         self.targets.append(target)

@@ -1,2 +1,2 @@
 #!/bin/sh
-../../bin/pyjsbuild KitchenSink.py
+../../bin/pyjsbuild $* KitchenSink.py

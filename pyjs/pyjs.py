@@ -74,6 +74,7 @@ PYJSLIB_BUILTIN_FUNCTIONS=("cmp",
                            "min",
                            "max",
                            "bool",
+                           "super",
                            "type",
                            "pow",
                            "hex",
@@ -101,17 +102,13 @@ PYJSLIB_BUILTIN_CLASSES=("BaseException",
                          "tuple",
                         )
 
-def pyjs_builtin_remap(name):
-    # XXX HACK!
-    if name == 'list':
-        name = 'List'
-    if name == 'object':
-        name = '__Object'
-    if name == 'dict':
-        name = 'Dict'
-    if name == 'tuple':
-        name = 'Tuple'
-    return name
+# XXX HACK!
+pyjs_builtin_remap = { \
+    'list': 'List',
+    'dict': 'Dict',
+    'tuple': 'Tuple',
+    'super': '_super',
+}
 
 # XXX: this is a hack: these should be dealt with another way
 # however, console is currently the only global name which is causing
@@ -195,8 +192,8 @@ def gen_mod_import(parentName, importName, dynamic=1):
 class Translator:
 
     def __init__(self, mn, module_name, raw_module_name, src, debug, mod, output,
-                 dynamic=0, optimize=False,
-                 findFile=None):
+                 dynamic=0, optimize=False, findFile=None,
+                 function_argument_checking=True):
 
         if module_name:
             self.module_prefix = module_name + "."
@@ -223,6 +220,8 @@ class Translator:
         self.dynamic = dynamic
         self.optimize = optimize
         self.findFile = findFile
+        self.function_argument_checking = function_argument_checking
+        self.local_prefix = None
 
         if module_name.find(".") >= 0:
             vdec = ''
@@ -361,56 +360,272 @@ class Translator:
                                              strip_py(importName),
                                              self.dynamic)
 
-    def _default_args_handler(self, node, arg_names, current_klass,
+    def _instance_method_init(self, node, arg_names, varargname, kwargname,
+                              current_klass, output=None):
+        output = output or self.output
+        maxargs1 = len(arg_names) - 1
+        maxargs2 = len(arg_names)
+        minargs1 = maxargs1 - len(node.defaults)
+        minargs2 = maxargs2 - len(node.defaults)
+        if node.kwargs:
+            maxargs1 += 1
+            maxargs2 += 1
+        maxargs1str = "%d" % maxargs1
+        maxargs2str = "%d" % maxargs2
+        if node.varargs:
+            argcount1 = "arguments.length < %d" % minargs1
+            maxargs1str = "null"
+        elif minargs1 == maxargs1:
+            argcount1 = "arguments.length != %d" % minargs1
+        else:
+            argcount1 = "(arguments.length < %d || arguments.length > %d)" % (minargs1, maxargs1)
+        if node.varargs:
+            argcount2 = "arguments.length < %d" % minargs2
+            maxargs2str = "null"
+        elif minargs2 == maxargs2:
+            argcount2 = "arguments.length != %d" % minargs2
+        else:
+            argcount2 = "(arguments.length < %d || arguments.length > %d)" % (minargs2, maxargs2)
+
+        print >> output, """\
+    if (this.__is_instance__ === true) {\
+"""
+        #var %s = (arguments.callee.instance == null ? this : arguments.callee.instance);
+        if arg_names:
+            print >> output, """\
+        var %s = this;\
+""" % arg_names[0]
+
+        if node.kwargs:
+            print >> output, """\
+        var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[arguments.length];\
+""" % (kwargname, maxargs1)
+
+        if node.varargs:
+            self._varargs_handler(node, varargname, maxargs1)
+
+        if self.function_argument_checking:
+            print >> output, """\
+        if (pyjs_options.arg_count && %s) pyjs__exception_func_param(arguments.callee.__name__, %d, %s, arguments.length+1);\
+""" % (argcount1, minargs2, maxargs2str)
+
+        print >> output, """\
+    } else {\
+"""
+        if arg_names:
+            print >> output, """\
+        var %s = arguments[0];\
+""" % arg_names[0]
+        arg_idx = 0
+        for arg_name in arg_names[1:]:
+            arg_idx += 1
+            print >> output, """\
+        %s = arguments[%d];\
+""" % (arg_name, arg_idx)
+
+        if node.kwargs:
+            print >> output, """\
+        var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[arguments.length];\
+""" % (kwargname, maxargs2)
+
+        if node.varargs:
+            self._varargs_handler(node, varargname, maxargs2)
+
+        if self.function_argument_checking:
+            print >> output, """\
+        if (pyjs_options.arg_is_instance && self.__is_instance__ !== true) pyjs__exception_func_instance_expected(arguments.callee.__name__, arguments.callee.__class__.__name__, self);
+        if (pyjs_options.arg_count && %s) pyjs__exception_func_param(arguments.callee.__name__, %d, %s, arguments.length);\
+""" % (argcount2, minargs2, maxargs2str)
+
+        print >> output, """\
+    }\
+"""
+        if self.function_argument_checking:
+            print >> output, """\
+    if (pyjs_options.arg_instance_type) {
+        if (arguments.callee !== arguments.callee.__class__[arguments.callee.__name__]) {
+            if (!pyjs___isinstance(self, arguments.callee.__class__.slice(1))) {
+                pyjs__exception_func_instance_expected(arguments.callee.__name__, arguments.callee.__class__.__name__, self);
+            }
+        }
+    }\
+"""
+
+    def _static_method_init(self, node, arg_names, varargname, kwargname,
+                            current_klass, output=None):
+        output = output or self.output
+        maxargs = len(arg_names)
+        minargs = maxargs - len(node.defaults)
+        maxargsstr = "%d" % maxargs
+        if node.kwargs:
+            maxargs += 1
+        if node.varargs:
+            argcount = "arguments.length < %d" % minargs
+            maxargsstr = "null"
+        elif minargs == maxargs:
+            argcount = "arguments.length != %d" % minargs
+        else:
+            argcount = "(arguments.length < %d || arguments.length > %d)" % (minargs, maxargs)
+        if self.function_argument_checking:
+            print >> output, """\
+    if (pyjs_options.arg_count && %s) pyjs__exception_func_param(arguments.callee.__name__, %d, %s, arguments.length);\
+""" % (argcount, minargs, maxargsstr)
+
+        if node.kwargs:
+            print >> output, """\
+        var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[arguments.length];\
+""" % (kwargname, maxargs)
+
+        if node.varargs:
+            self._varargs_handler(node, varargname, maxargs)
+
+    def _class_method_init(self, node, arg_names, varargname, kwargname,
+                           current_klass, output=None):
+        output = output or self.output
+        maxargs = max(0, len(arg_names) -1)
+        minargs = max(0, maxargs - len(node.defaults))
+        maxargsstr = "%d" % (maxargs+1)
+        if node.kwargs:
+            maxargs += 1
+        if node.varargs:
+            argcount = "arguments.length < %d" % minargs
+            maxargsstr = "null"
+        elif minargs == maxargs:
+            argcount = "arguments.length != %d" % minargs
+            maxargsstr = "%d" % (maxargs)
+        else:
+            argcount = "(arguments.length < %d || arguments.length > %d)" % (minargs, maxargs)
+        if self.function_argument_checking:
+            print >> output, """\
+    if (pyjs_options.arg_is_instance && this.__is_instance__ !== true && this.__is_instance__ !== false) pyjs__exception_func_class_expected(arguments.callee.__name__, arguments.callee.__class__.__name__);
+    if (pyjs_options.arg_count && %s) pyjs__exception_func_param(arguments.callee.__name__, %d, %s, arguments.length);\
+""" % (argcount, minargs+1, maxargsstr)
+
+        print >> output, """\
+    var %s = this.prototype;\
+""" % (arg_names[0],)
+
+        if node.kwargs:
+            print >> output, """\
+        var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[arguments.length];\
+""" % (kwargname, maxargs)
+
+        if node.varargs:
+            self._varargs_handler(node, varargname, maxargs)
+
+    def _default_args_handler(self, node, arg_names, current_klass, kwargname,
                               output=None):
+        output = output or self.output
+        if node.kwargs and (len(arg_names) > 0):
+            # This is necessary when **kwargs in function definition
+            # and the call didn't pass the parse_kwargs() of this function.
+            # See libtest testKwArgsInherit
+            # This is not completely safe: if the last element in arguments 
+            # is an dict and the corresponding argument shoud be a dict and 
+            # the kwargs should be empty, the kwars gets incorrectly the 
+            # dict and the argument becomes undefined.
+            # E.g.
+            # def fn(a = {}, **kwargs): pass
+            # fn({'a':1}) -> a gets undefined and kwargs gets {'a':1}
+            revargs = arg_names[0:]
+            revargs.reverse()
+            print >> output, """\
+    if (typeof %s == 'undefined') {
+        %s = pyjslib.Dict({});
+       \
+""" % (kwargname, kwargname),
+            for v in revargs:
+                print >> output, """\
+if (typeof %s != 'undefined') {
+            if (pyjslib.get_pyjs_classtype(%s) == 'Dict') {
+                %s = %s;
+                %s = arguments[%d];
+            }
+        } else\
+""" % (v, v, kwargname, v, v, len(arg_names)),
+            print >> output, """\
+{
+        }
+    }\
+"""
         if len(node.defaults):
-            output = output or self.output
             default_pos = len(arg_names) - len(node.defaults)
-            if arg_names and arg_names[0] == self.method_self:
-                default_pos -= 1
             for default_node in node.defaults:
                 default_value = self.expr(default_node, current_klass)
                 default_name = arg_names[default_pos]
                 default_pos += 1
                 print >> output, "    if (typeof %s == 'undefined') %s=%s;" % (default_name, default_name, default_value)
 
-    def _varargs_handler(self, node, varargname, arg_names, current_klass):
+    def _varargs_handler(self, node, varargname, start):
+        if node.kwargs:
+            end = "arguments.length-1"
+            start -= 1
+        else:
+            end = "arguments.length"
+        print >> self.output, """\
+        var %s = pyjslib.Tuple();
+        for (var pyjs__va_arg = %d; pyjs__va_arg < %s; pyjs__va_arg++) {
+            var pyjs__arg = arguments[pyjs__va_arg];
+            %s.append(pyjs__arg);
+        }\
+""" % (varargname, start, end, varargname)
+
+    def __varargs_handler(self, node, varargname, arg_names, current_klass, loop_var = None):
         print >>self.output, "    var", varargname, '= new pyjslib.Tuple();'
-        print >>self.output, "    for(var __va_arg="+str(len(arg_names))+"; __va_arg < arguments.length; __va_arg++) {"
-        print >>self.output, "        var __arg = arguments[__va_arg];"
-        print >>self.output, "        "+varargname+".append(__arg);"
-        print >>self.output, "    }"
+        print >>self.output, "    for(",
+        if loop_var is None:
+            loop_var = "pyjs__va_arg"
+            print >>self.output, "var "+loop_var+"="+str(len(arg_names)),
+        print >>self.output, """\
+; %(loop_var)s < arguments.length; %(loop_var)s++) {
+        var pyjs__arg = arguments[%(loop_var)s];
+        %(varargname)s.append(pyjs__arg);
+    }\
+""" % {'varargname': varargname, 'loop_var': loop_var}
 
-    def _kwargs_parser(self, node, function_name, arg_names, current_klass):
-        if len(node.defaults) or node.kwargs:
-            default_pos = len(arg_names) - len(node.defaults)
-            if arg_names and arg_names[0] == self.method_self:
-                default_pos -= 1
+    def _kwargs_parser(self, node, function_name, arg_names, current_klass, method_ = False):
+        default_pos = len(arg_names) - len(node.defaults)
+        if not method_:
             print >>self.output, function_name+'.parse_kwargs = function (', ", ".join(["__kwargs"]+arg_names), ") {"
-            for default_node in node.defaults:
-                default_value = self.expr(default_node, current_klass)
-#                if isinstance(default_node, ast.Const):
-#                    default_value = self._const(default_node)
-#                elif isinstance(default_node, ast.Name):
-#                    default_value = self._name(default_node)
-#                elif isinstance(default_node, ast.UnarySub):
-#                    default_value = self._unarysub(default_node, current_klass)
-#                else:
-#                    raise TranslationError("unsupported type (in _method)", default_node)
+        else:
+            print >>self.output, ", function (", ", ".join(["__kwargs"]+arg_names), ") {"
+        for arg_name in arg_names:
+            if self.function_argument_checking:
+                print >>self.output, """\
+    if (typeof %(arg_name)s == 'undefined') {
+        %(arg_name)s=__kwargs.%(arg_name)s;
+        delete __kwargs.%(arg_name)s;
+    } else if (pyjs_options.arg_kwarg_multiple_values && typeof __kwargs.%(arg_name)s != 'undefined') {
+        pyjs__exception_func_multiple_values('%(function_name)s', '%(arg_name)s');
+    }\
+""" % {'arg_name': arg_name, 'function_name': function_name}
+            else:
+                print >>self.output, "    if (typeof %s == 'undefined')"%(arg_name)
+                print >>self.output, "        %s=__kwargs.%s;"% (arg_name, arg_name)
 
-                default_name = arg_names[default_pos]
-                print >>self.output, "    if (typeof %s == 'undefined')"%(default_name)
-                print >>self.output, "        %s=__kwargs.%s;"% (default_name, default_name)
-                default_pos += 1
+        if self.function_argument_checking and not node.kwargs:
+            print >>self.output, """\
+    if (pyjs_options.arg_kwarg_unexpected_keyword) {
+        for (var i in __kwargs) {
+            pyjs__exception_func_unexpected_keyword('%(function_name)s', i);
+        }
+    }\
+""" % {'function_name': function_name}
 
-            #self._default_args_handler(node, arg_names, current_klass)
-            if node.kwargs: arg_names += ["pyjslib.Dict(__kwargs)"]
-            print >>self.output, "    var __r = "+"".join(["[", ", ".join(arg_names), "]"])+";"
-            if node.varargs:
-                self._varargs_handler(node, "__args", arg_names, current_klass)
-                print >>self.output, "    __r.push.apply(__r, __args.getArray())"
-            print >>self.output, "    return __r;"
+        # Always add all remaining arguments. Needed for argument checking _and_ if self != this;
+        print >>self.output, "    var __r = "+"".join(["[", ", ".join(arg_names), "]"])+";"
+        print >>self.output, """\
+    for (var pyjs__va_arg = %d;pyjs__va_arg < arguments.length;pyjs__va_arg++) {
+        __r.push(arguments[pyjs__va_arg]);
+    }
+""" % (len(arg_names)+1,)
+        if node.kwargs:
+            print >>self.output, "    __r.push(pyjslib.Dict(__kwargs));"
+        print >>self.output, "    return __r;"
+        if not method_:
             print >>self.output, "};"
+        else:
+            print >>self.output, "});"
 
     def _function(self, node, local=False):
         if local:
@@ -421,19 +636,27 @@ class Translator:
 
         arg_names = list(node.argnames)
         normal_arg_names = list(arg_names)
-        if node.kwargs: kwargname = normal_arg_names.pop()
-        if node.varargs: varargname = normal_arg_names.pop()
+        if node.kwargs:
+            kwargname = normal_arg_names.pop()
+        else:
+            kwargname = None
+        if node.varargs:
+            varargname = normal_arg_names.pop()
+        else:
+            varargname = None
         declared_arg_names = list(normal_arg_names)
-        if node.kwargs: declared_arg_names.append(kwargname)
+        #if node.kwargs: declared_arg_names.append(kwargname)
 
         function_args = "(" + ", ".join(declared_arg_names) + ")"
         print >>self.output, "%s = function%s {" % (function_name, function_args)
-        self._default_args_handler(node, normal_arg_names, None)
+        self._static_method_init(node, declared_arg_names, varargname, kwargname, None)
+        self._default_args_handler(node, declared_arg_names, None, kwargname)
 
-        local_arg_names = normal_arg_names + declared_arg_names 
+        local_arg_names = normal_arg_names + declared_arg_names
 
+        if node.kwargs:
+            local_arg_names.append(kwargname)
         if node.varargs:
-            self._varargs_handler(node, varargname, declared_arg_names, None)
             local_arg_names.append(varargname)
 
         # stack of local variable names for this function call
@@ -488,9 +711,10 @@ class Translator:
             elif self.imported_classes.has_key(v.node.name):
                 call_name = self.imported_classes[v.node.name] + '.' + v.node.name
             elif v.node.name in PYJSLIB_BUILTIN_FUNCTIONS:
-                call_name = 'pyjslib.' + v.node.name
+                name = pyjs_builtin_remap.get(v.node.name, v.node.name)
+                call_name = 'pyjslib.' + name
             elif v.node.name in PYJSLIB_BUILTIN_CLASSES:
-                name = pyjs_builtin_remap(v.node.name)
+                name = pyjs_builtin_remap.get(v.node.name, v.node.name)
                 call_name = 'pyjslib.' + name
             elif v.node.name == "callable":
                 call_name = "pyjslib.isFunction"
@@ -535,6 +759,9 @@ class Translator:
         star_arg_name = None
         if v.star_args:
             star_arg_name = self.expr(v.star_args, current_klass)
+        dstar_arg_name = None
+        if v.dstar_args:
+            dstar_arg_name = self.expr(v.dstar_args, current_klass)
 
         for ch4 in v.args:
             if isinstance(ch4, ast.Keyword):
@@ -547,21 +774,25 @@ class Translator:
         if kwargs:
             fn_args = ", ".join(['{' + ', '.join(kwargs) + '}']+call_args)
         else:
-            fn_args = ", ".join(call_args)
+            fn_args = ", ".join(['{}']+call_args)
 
-        if kwargs or star_arg_name:
+        if kwargs or star_arg_name or dstar_arg_name:
             if not star_arg_name:
                 star_arg_name = 'null'
+            if not dstar_arg_name:
+                dstar_arg_name = 'null'
             try: call_this, method_name = call_name.rsplit(".", 1)
             except ValueError:
                 # Must be a function call ...
                 return ("pyjs_kwargs_function_call("+call_name+", "
                                   + star_arg_name 
+                                  + ", " + dstar_arg_name
                                   + ", ["+fn_args+"]"
                                   + ")" )
             else:
                 return ("pyjs_kwargs_method_call("+call_this+", '"+method_name+"', "
                                   + star_arg_name 
+                                  + ", " + dstar_arg_name
                                   + ", ["+fn_args+"]"
                                   + ")")
         else:
@@ -628,7 +859,6 @@ class Translator:
                 # the sys module working.
                 #if v.expr.name == 'sys':
                 return v.expr.name+'.'+attr_name
-                #return v.expr.name+'.__'+attr_name+'.prototype.__class__'
             if not use_getattr or attr_name == '__class__' or \
                     attr_name == '__name__':
                 return obj + "." + attr_name
@@ -647,7 +877,7 @@ class Translator:
         return strip_py(self.module_prefix)
         
     def _name(self, v, current_klass, top_level=False,
-                                      return_none_for_module=False):
+              return_none_for_module=False):
 
         if not hasattr(v, 'name'):
             name = v.attrname
@@ -682,15 +912,18 @@ class Translator:
         elif not current_klass and las == 1 and name in self.top_level_vars:
             return UU+self.modpfx() + name
         elif name in local_var_names:
-            return name
+            if self.local_prefix:
+                return self.local_prefix + "." + name
+            else:
+                return name
         elif self.imported_classes.has_key(name):
-            return UU+self.imported_classes[name] + '.__' + name + ".prototype.__class__"
+            return UU+self.imported_classes[name] + '.' + name
         elif name in self.top_level_classes:
-            return UU+self.modpfx() + "__" + name + ".prototype.__class__"
+            return UU+self.modpfx() + name
         elif name in self.module_imports() and return_none_for_module:
             return None
         elif name in PYJSLIB_BUILTIN_CLASSES:
-            return "pyjslib." + pyjs_builtin_remap( name )
+            return "pyjslib." + pyjs_builtin_remap.get( name, name )
         elif current_klass:
             if name not in local_var_names and \
                name not in self.top_level_vars and \
@@ -703,8 +936,7 @@ class Translator:
                     cls_name = cls_name.name
                 else:
                     cls_name_ = current_klass + "_" # XXX ???
-                name = UU+cls_name_ + ".prototype.__class__." \
-                                   + name
+                name = UU+cls_name_ + "." + name
                 if name == 'listener':
                     name = 'listener+' + name
                 return name
@@ -717,14 +949,9 @@ class Translator:
         if obj in self.method_imported_globals:
             call_name = UU+self.modpfx() + obj + "." + attr_name
         elif self.imported_classes.has_key(obj):
-            #attr_str = ""
-            #if attr_name != "__init__":
-            attr_str = ".prototype.__class__." + attr_name
-            call_name = UU+self.imported_classes[obj] + '.__' + obj + attr_str
+            call_name = UU+self.imported_classes[obj] + "." + obj + "." + attr_name
         elif obj in self.module_imports():
             call_name = obj + "." + attr_name
-        elif obj[0] == obj[0].upper(): # XXX HACK ALERT
-            call_name = UU + self.modpfx() + "__" + obj + ".prototype.__class__." + attr_name
         else:
             call_name = UU+self._name(v, current_klass) + "." + attr_name
 
@@ -735,143 +962,75 @@ class Translator:
         if isinstance(v.expr, ast.Getattr):
             call_name = self._getattr2(v.expr, current_klass, v.attrname + "." + attr_name)
         elif isinstance(v.expr, ast.Name) and v.expr.name in self.module_imports():
-            call_name = UU+v.expr.name + '.__' +v.attrname+".prototype.__class__."+attr_name
+            call_name = UU+v.expr.name + '.' +v.attrname+"."+attr_name
         else:
             obj = self.expr(v.expr, current_klass)
             call_name = obj + "." + v.attrname + "." + attr_name
 
         return call_name
 
-
     def _class(self, node):
-        """
-        Handle a class definition.
-
-        In order to translate python semantics reasonably well, the following
-        structure is used:
-
-        A special object is created for the class, which inherits attributes
-        from the superclass, or Object if there's no superclass.  This is the
-        class object; the object which you refer to when specifying the
-        class by name.  Static, class, and unbound methods are copied
-        from the superclass object.
-
-        A special constructor function is created with the same name as the
-        class, which is used to create instances of that class.
-
-        A javascript class (e.g. a function with a prototype attribute) is
-        created which is the javascript class of created instances, and
-        which inherits attributes from the class object. Bound methods are
-        copied from the superclass into this class rather than inherited,
-        because the class object contains unbound, class, and static methods
-        that we don't necessarily want to inherit.
-
-        The type of a method can now be determined by inspecting its
-        static_method, unbound_method, class_method, or instance_method
-        attribute; only one of these should be true.
-
-        Much of this work is done in pyjs_extend, is pyjslib.py
-        """
         class_name = self.modpfx() + uuprefix(node.name, 1)
-        class_name_ = self.modpfx() + uuprefix(node.name)
-        current_klass = Klass(class_name, class_name_)
+        current_klass = Klass(class_name, class_name)
         init_method = None
         for child in node.code:
             if isinstance(child, ast.Function):
                 current_klass.add_function(child.name)
                 if child.name == "__init__":
                     init_method = child
-
-
         if len(node.bases) == 0:
-            base_classes = [("object", "pyjslib.__Object", "pyjslib.__Object")]
-        elif len(node.bases) >= 1:
+            base_classes = [("object", "pyjslib.object")]
+        else:
             base_classes = []
             for node_base in node.bases:
                 if isinstance(node_base, ast.Name):
                     node_base_name = node_base.name
                     if self.imported_classes.has_key(node_base.name):
-                        base_class_ = self.imported_classes[node_base.name] + '.__' + node_base.name
                         base_class = self.imported_classes[node_base.name] + '.' + node_base.name
                     else:
-                        base_class_ = self.modpfx() + "__" + node_base.name
-                        base_class = self.modpfx() + node_base.name
+                        #base_class = self.modpfx() + node_base.name
+                        base_class = self._name(node_base, None)
                 elif isinstance(node_base, ast.Getattr):
                     # the bases are not in scope of the class so do not
                     # pass our class to self._name
                     node_base_name = node_base.attrname
-                    base_class_ = self._name(node_base.expr, None) + \
-                                 ".__" + node_base.attrname
                     base_class = self._name(node_base.expr, None) + \
                                  "." + node_base.attrname
                 else:
                     raise TranslationError("unsupported type (in _class)", node_base)
-                base_classes.append((node_base_name, base_class, base_class_))
+                base_classes.append((node_base_name, base_class))
             current_klass.set_base(base_classes[0][1])
-
-        print >>self.output, UU+class_name_ + " = function () {"
-        # call superconstructor
-        #if base_class:
-        #    print >>self.output, "    __" + base_class + ".call(this);"
-        print >>self.output, "}"
 
         if not init_method:
             init_method = ast.Function([], "__init__", ["self"], [], 0, None, [])
-            #self._method(init_method, current_klass, class_name)
 
-        # Generate a function which constructs the object
-        clsfunc = ast.Function([],
-           node.name,
-           init_method.argnames[1:],
-           init_method.defaults,
-           init_method.flags,
-           None,
-           [ast.Discard(ast.CallFunc(ast.Name("JS"), [ast.Const(
-#            I attempted lazy initialization, but then you can't access static class members
-#            "    if(!__"+base_class+".__was_initialized__)"+
-#            "        __" + class_name + "_initialize();\n" +
-            "    var instance = new " + UU + class_name_ + "();\n" +
-            "    if(instance.__init__) instance.__init__.apply(instance, arguments);\n" +
-            "    return instance;"
-            )]))])
-
-        self._function(clsfunc, False)
-        print >>self.output, UU+class_name_ + ".__initialize__ = function () {"
-        print >>self.output, "    if("+UU+class_name_+".__was_initialized__) return;"
-        print >>self.output, "    "+UU+class_name_+".__was_initialized__ = true;"
-        cls_obj = UU+class_name_ + '.prototype.__class__'
-
-        base_classes.reverse()
-        if class_name == "pyjslib.__Object":
-            print >>self.output, "    "+cls_obj+" = {};"
-        else:
-            for node_base_name, node_base_class, node_base_class_ in base_classes:
-                if node_base_name == 'object':
-                    print >>self.output, "    pyjs_extend(" + UU+class_name_ + ", "+UU+"pyjslib.__Object);"
-                else:
-                    print >>self.output, "    if(!"+UU+node_base_class_+".__was_initialized__)"
-                    print >>self.output, "        "+UU+node_base_class_+".__initialize__();"
-                    print >>self.output, "    pyjs_extend(" + UU+class_name_ + ", "+UU+node_base_class_+");"
-
-        print >>self.output, "    "+cls_obj+".__new__ = "+UU+class_name+";"
-        print >>self.output, "    "+cls_obj+".__name__ = '"+UU+node.name+"';"
+        if node.name in ['object', 'pyjslib.Object', 'pyjslib.object']:
+            base_classes = []
+        local_prefix = 'cls_definition'
+        self.local_prefix = None
+        print >>self.output, UU+class_name + """ = (function(){
+    var cls_instance = pyjs__class_instance('%s');
+    var %s = new Object();""" % (node.name, local_prefix,)
 
         for child in node.code:
             if isinstance(child, ast.Pass):
                 pass
             elif isinstance(child, ast.Function):
-                self._method(child, current_klass, class_name, class_name_)
+                self.local_prefix = None
+                self._method(child, current_klass, class_name, class_name, local_prefix)
             elif isinstance(child, ast.Assign):
-                self.classattr(child, current_klass)
+                self.local_prefix = local_prefix
+                self.add_local_arg(child.nodes[0].name)
+                print >>self.output, "    %s.%s = %s" % (local_prefix, child.nodes[0].name, self.expr(child.expr, current_klass))
             elif isinstance(child, ast.Discard) and isinstance(child.expr, ast.Const):
                 # Probably a docstring, turf it
                 pass
             else:
                 raise TranslationError("unsupported type (in _class)", child)
-        print >>self.output, "}"
-
-        print >> self.output, class_name_+".__initialize__();"
-
+        print >>self.output, """\
+    return pyjs__class_function(cls_instance, cls_definition, 
+                                new Array(""" + ",".join(map(lambda x: x[1], base_classes)) + """));
+})();"""
 
     def classattr(self, node, current_klass):
         self._assign(node, current_klass, True)
@@ -883,7 +1042,7 @@ class Translator:
         print >> self.output, "throw (%s);" % self.expr(
             node.expr1, current_klass)
 
-    def _method(self, node, current_klass, class_name, class_name_):
+    def _method(self, node, current_klass, class_name, class_name_, local_prefix):
         # reset global var scope
         self.method_imported_globals = set()
 
@@ -897,43 +1056,49 @@ class Translator:
                     classmethod = True
                 elif d.name == "staticmethod":
                     staticmethod = True
+        elif node.name == '__new__':
+            classmethod = True
+
+        if (classmethod or staticmethod) and len(arg_names) > 0:
+            self.method_self = arg_names[0]
+        else:
+            self.method_self = None
+        self.method_self = None
+
+        normal_arg_names = arg_names[0:]
+        if node.kwargs:
+            kwargname = normal_arg_names.pop()
+        else:
+            kwargname = None
+        if node.varargs:
+            varargname = normal_arg_names.pop()
+        else:
+            varargname = None
+        declared_arg_names = list(normal_arg_names)
+        #if node.kwargs: declared_arg_names.append(kwargname)
 
         if staticmethod:
-            staticfunc = ast.Function([], class_name_+"."+node.name, node.argnames, node.defaults, node.flags, node.doc, node.code, node.lineno)
-            self._function(staticfunc, True)
-            print >>self.output, "    " + UU+class_name_ + ".prototype.__class__." + node.name + " = " + class_name_+"."+node.name+";";
-            print >>self.output, "    " + UU+class_name_ + ".prototype.__class__." + node.name + ".static_method = true;";
-            return
+            function_args = "(" + ", ".join(declared_arg_names) + ")"
         else:
-            if len(arg_names) > 0:
-                self.method_self = arg_names[0]
-            else:
-                self.method_self = None
+            function_args = "(" + ", ".join(declared_arg_names[1:]) + ")"
 
-            #if not classmethod and arg_names[0] != "self":
-            #    raise TranslationError("first arg not 'self' (in _method)", node)
-
-        normal_arg_names = arg_names[1:]
-        if node.kwargs: kwargname = normal_arg_names.pop()
-        if node.varargs: varargname = normal_arg_names.pop()
-        declared_arg_names = list(normal_arg_names)
-        if node.kwargs: declared_arg_names.append(kwargname)
-
-        function_args = "(" + ", ".join(declared_arg_names) + ")"
-
-        if classmethod:
-            fexpr = UU + class_name_ + ".prototype.__class__." + node.name
+        fexpr = node.name
+        print >>self.output, "    "+local_prefix + '.' + node.name + " = pyjs__bind_method(cls_instance, '"+node.name+"', function" + function_args + " {"
+        if staticmethod:
+            self._static_method_init(node, declared_arg_names, varargname, kwargname, current_klass)
+        elif classmethod:
+            self._class_method_init(node, declared_arg_names, varargname, kwargname, current_klass)
         else:
-            fexpr = UU + class_name_ + ".prototype." + node.name
-        print >>self.output, "    "+fexpr + " = function" + function_args + " {"
+            self._instance_method_init(node, declared_arg_names, varargname, kwargname, current_klass)
 
         # default arguments
-        self._default_args_handler(node, normal_arg_names, current_klass)
+        self._default_args_handler(node, declared_arg_names, current_klass, kwargname)
 
-        local_arg_names = normal_arg_names + declared_arg_names 
+        local_arg_names = normal_arg_names + declared_arg_names
 
+        if node.kwargs:
+            local_arg_names.append(kwargname)
         if node.varargs:
-            self._varargs_handler(node, varargname, declared_arg_names, current_klass)
             local_arg_names.append(varargname)
 
 
@@ -946,34 +1111,12 @@ class Translator:
         # remove the top local arg names
         self.local_arg_stack.pop()
 
-        print >>self.output, "    };"
+        print >>self.output, "}"
 
-        self._kwargs_parser(node, fexpr, normal_arg_names, current_klass)
-
-        if classmethod:
-            # Have to create a version on the instances which automatically passes the
-            # class as "self"
-            altexpr = UU + class_name_ + ".prototype." + node.name
-            print >>self.output, "    "+altexpr + " = function() {"
-            print >>self.output, "        return " + fexpr + ".apply(this.__class__, arguments);"
-            print >>self.output, "    };"
-            print >>self.output, "    "+fexpr+".class_method = true;"
-            print >>self.output, "    "+altexpr+".instance_method = true;"
+        if staticmethod:
+            self._kwargs_parser(node, fexpr, normal_arg_names, current_klass, True)
         else:
-            # For instance methods, we need an unbound version in the class object
-            altexpr = UU + class_name_ + ".prototype.__class__." + node.name
-            print >>self.output, "    "+altexpr + " = function() {"
-            print >>self.output, "        return " + fexpr + ".call.apply("+fexpr+", arguments);"
-            print >>self.output, "    };"
-            print >>self.output, "    "+altexpr+".unbound_method = true;"
-            print >>self.output, "    "+fexpr+".instance_method = true;"
-            print >>self.output, "    "+altexpr+".__name__ = '%s';" % node.name
-
-        print >>self.output, UU + class_name_ + ".prototype.%s.__name__ = '%s';" % \
-                (node.name, node.name)
-
-        if node.kwargs or len(node.defaults):
-            print >>self.output, "    "+altexpr + ".parse_kwargs = " + fexpr + ".parse_kwargs;"
+            self._kwargs_parser(node, fexpr, normal_arg_names[1:], current_klass, True)
 
         self.method_self = None
         self.method_imported_globals = set()
@@ -1037,6 +1180,8 @@ class Translator:
 
             print >>self.output, '  } catch (__err) {'
             print >>self.output, '      if (' + isHaltFunction + '(__err.name)) {'
+            print >>self.output, '          throw __err;'
+            print >>self.output, '      } else if (__err == pyjslib.StopIteration) {'
             print >>self.output, '          throw __err;'
             print >>self.output, '      } else {'
             print >>self.output, "          st = sys.printstack() + "\
@@ -1113,8 +1258,7 @@ class Translator:
         def _lhsFromName(v, top_level, current_klass):
             if top_level:
                 if current_klass:
-                    lhs = UU+current_klass.name_ + ".prototype.__class__." \
-                               + v.name
+                    lhs = UU+current_klass.name_ + "." + v.name
                 else:
                     self.top_level_vars.add(v.name)
                     vname = self.modpfx() + v.name
@@ -1488,7 +1632,7 @@ class Translator:
         for child in node.getChildNodes():
             expr = self.expr(child, None)
         print >> res, "function (%s){" % function_args
-        self._default_args_handler(node, arg_names, None,
+        self._default_args_handler(node, arg_names, None, None,
                                    output=res)
         print >> res, 'return %s;}' % expr
         return res.getvalue()
@@ -1574,13 +1718,13 @@ class Translator:
 
 import cStringIO
 
-def translate(file_name, module_name, debug=False):
+def translate(file_name, module_name, debug=False, function_argument_checking=True):
     f = file(file_name, "r")
     src = f.read()
     f.close()
     output = cStringIO.StringIO()
     mod = compiler.parseFile(file_name)
-    t = Translator(module_name, module_name, module_name, src, debug, mod, output)
+    t = Translator(module_name, module_name, module_name, src, debug, mod, output, function_argument_checking=function_argument_checking)
     return output.getvalue()
 
 
@@ -1680,7 +1824,7 @@ def dotreplace(fname):
 class AppTranslator:
 
     def __init__(self, library_dirs=[], parser=None, dynamic=False,
-                 optimize=False, verbose=True):
+                 optimize=False, verbose=True, function_argument_checking=True):
         self.extension = ".py"
         self.optimize = optimize
         self.library_modules = []
@@ -1688,6 +1832,7 @@ class AppTranslator:
         self.library_dirs = path + library_dirs
         self.dynamic = dynamic
         self.verbose = verbose
+	self.function_argument_checking = function_argument_checking
 
         if not parser:
             self.parser = PlatformParser()
@@ -1741,7 +1886,7 @@ class AppTranslator:
             mn = module_name
         t = Translator(mn, module_name, module_name,
                        src, debug, mod, output, self.dynamic, self.optimize,
-                       self.findFile)
+                       self.findFile, function_argument_checking=self.function_argument_checking)
 
         module_str = output.getvalue()
         imported_js.update(set(t.imported_js))

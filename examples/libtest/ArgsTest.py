@@ -36,6 +36,14 @@ class ArgsTest(UnitTest):
             exc_raised = True
         self.assertTrue(exc_raised, "TypeError 'c' unexpected arg not raised")
 
+    def testNaming5(self):
+        exc_raised = False
+        try:
+            values = ftest()
+        except TypeError, t:
+            exc_raised = True
+        self.assertTrue(exc_raised, "TypeError 'ftest() takes exactly 2 arguments (0 given)' not raised")
+
     def testSimpleCall(self):
         values = foo(1, 2, 3)
         self.assertEquals(values[0], 1)
@@ -558,6 +566,31 @@ class ArgsTest(UnitTest):
             self.assertEquals(kwa.get('x'), 5)
             self.assertEquals(kwa.get('y'), 6)
 
+        values = varargs_kwargs(1,2,3,4,c=3)
+        self.assertEquals(values[0], 1)
+        self.assertEquals(values[1], 2)
+        self.assertEquals(values[2], (3,4))
+        self.assertEquals(values[3]['c'], 3)
+
+        values = varargs_kwargs2(1,2,3,4,c=3)
+        self.assertEquals(values[0], 1)
+        self.assertEquals(values[1], 2)
+        self.assertEquals(values[2], (3,4))
+        self.assertEquals(values[3]['c'], 3)
+
+        values = varargs_kwargs2(1)
+        self.assertEquals(values[0], 1)
+        self.assertEquals(values[1], 3)
+
+        values = varargs_kwargs2(1, {'a':1}, {})
+        self.assertEquals(values[0], 1)
+        self.assertEquals(values[1]['a'], 1)
+
+        # This fails...
+        values = varargs_kwargs2(1, {'a':1})
+        self.assertEquals(values[0], 1)
+        self.assertEquals(values[1], {'a':1})
+
     def testKwArgsInherit(self):
 
         c = KwArgs(x=5, y=6)
@@ -720,7 +753,7 @@ class ArgsTestClass3:
 
 
 class KwArgs:
-    def __init__(self, z=7, **kwargs):
+    def __init__(self, z=7, zz=77, **kwargs):
         self.kwargs = kwargs
         self.kwargs['z'] = z # XXX this causes problems: kwargs is undefined
 
@@ -746,3 +779,8 @@ def kw_args(**kwargs):
 def kw_args2(**kwargs):
     return kw_args(**kwargs)
 
+def varargs_kwargs(arg1, arg2=2, *args, **kwargs):
+    return (arg1, arg2, args, kwargs)
+
+def varargs_kwargs2(arg1, arg2=3, *args, **kwargs):
+    return varargs_kwargs(arg1, arg2, *args, **kwargs)

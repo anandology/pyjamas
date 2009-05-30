@@ -49,8 +49,8 @@ class Image(Widget):
         type = DOM.eventGetType(event)
         if type == "click":
             for listener in self.clickListeners:
-                if listener.onClick: listener.onClick(self, event)
-                else: listener(self, event)
+                if listener.onClick: listener.onClick(self)
+                else: listener(self)
         elif type == "mousedown" or type == "mouseup" or type == "mousemove" or type == "mouseover" or type == "mouseout":
             MouseListener.fireMouseEvent(self.mouseListeners, self, event)
         elif type == "load":

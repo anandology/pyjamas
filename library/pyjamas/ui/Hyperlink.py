@@ -53,8 +53,8 @@ class Hyperlink(Widget):
     def onBrowserEvent(self, event):
         if DOM.eventGetType(event) == "click":
             for listener in self.clickListeners:
-                if listener.onClick: listener.onClick(self, event)
-                else: listener(self, event)
+                if listener.onClick: listener.onClick(self)
+                else: listener(self)
             History().newItem(self.targetHistoryToken)
             DOM.eventPreventDefault(event)
 

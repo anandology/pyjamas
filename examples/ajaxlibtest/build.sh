@@ -1,2 +1,2 @@
 #!/bin/sh
-../../bin/pyjsbuild AjaxTest.py
+../../bin/pyjsbuild $* AjaxTest.py

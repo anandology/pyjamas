@@ -94,7 +94,7 @@ class Face:
     def setHTML(self, html):
         """Set the face's contents as html."""
         self.face = DOM.createDiv()
-        UIObject.setStyleName(self.face, self.STYLENAME_HTML_FACE, True)
+        UIObject.setStyleName(self, self.face, self.STYLENAME_HTML_FACE, True)
         DOM.setInnerHTML(self.face, html)
         self.button.updateButtonFace()
     
@@ -114,7 +114,7 @@ class Face:
         @param text text to set as face's contents
         """
         self.face = DOM.createDiv()
-        UIObject.setStyleName(self.face, self.STYLENAME_HTML_FACE, True)
+        UIObject.setStyleName(self, self.face, self.STYLENAME_HTML_FACE, True)
         DOM.setInnerText(self.face, text)
         self.button.updateButtonFace()
         
@@ -444,7 +444,7 @@ class CustomButton (ButtonBase):
         ButtonBase.onAttach(self)
     
     
-    def onClick(self):
+    def onClick(self, sender=None):
         """
         Called when the user finishes clicking on this button.
         The default behavior is to fire the click event to

@@ -53,7 +53,7 @@ class FormPanelExample:
 
         RootPanel().add(self.form)
 
-    def onClick(self, sender):
+    def onClick(self, sender=None):
         self.form.submit()
 
     def onSubmitComplete(self, event):

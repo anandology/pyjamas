@@ -184,10 +184,10 @@ function import_wait(proceed_fn, parent_mod, dynamic) {
 }
 """)
 
-class Object:
+class object:
     pass
 
-object = Object
+Object = object
 
 class Modload:
 
@@ -980,9 +980,41 @@ class Dict:
 
 dict = Dict
 
-# taken from mochikit: range( [start,] stop[, step] )
-def range():
+# IE6 doesn't like pyjslib.super
+def _super(type_, object_or_type = None):
+    # This is a partially implementation: only super(type, object)
+    if not isinstance(object_or_type, type_):
+        raise TypeError("super(type, obj): obj must be an instance or subtype of type")
     JS("""
+    var fn = pyjs_type('super', type_.__mro__.slice(1), {})
+    var obj = new Object();
+    function wrapper(obj, name) {
+        var fnwrap = function() {
+            var args = [];
+            for (var i = 0; i < arguments.length; i++) {
+              args.push(arguments[i]);
+            }
+            return obj[name].apply(object_or_type,args);
+        }
+        fnwrap.__name__ = name;
+        fnwrap.parse_kwargs = obj.parse_kwargs;
+        return fnwrap;
+    }
+    for (var m in fn) {
+        if (typeof fn[m] == 'function') {
+            obj[m] = wrapper(fn, m);
+        }
+    }
+    return obj;
+    """)
+
+# taken from mochikit: range( [start,] stop[, step] )
+def range(start, stop = None, step = 1):
+    if stop is None:
+        stop = start
+        start = 0
+    JS("""
+/*
     var start = 0;
     var stop = 0;
     var step = 1;
@@ -997,7 +1029,7 @@ def range():
         step = arguments[2];
         }
     else if (arguments.length>0) stop = arguments[0];
-
+*/
     return {
         'next': function() {
             if ((step > 0 && start >= stop) || (step < 0 && start <= stop)) throw pyjslib.StopIteration;
@@ -1066,11 +1098,11 @@ def is_basetype(x):
 
 def get_pyjs_classtype(x):
     JS("""
-       if (pyjslib.hasattr(x, "__class__"))
-           if (pyjslib.hasattr(x.__class__, "__new__"))
-               var src = x.__class__.__name__;
-               return src;
-       return null;
+        if (pyjslib.hasattr(x, "__is_instance__")) {
+            var src = x.__name__;
+            return src;
+        }
+        return null;
     """)
 
 def repr(x):
@@ -1205,20 +1237,20 @@ def isinstance(object_, classinfo):
         return _isinstance(object_, classinfo)
 
 def _isinstance(object_, classinfo):
-    if not pyjslib.isObject(object_):
-        return False
     JS("""
-    if (object_.__class__){
-        var res =  object_ instanceof classinfo.constructor;
-        return res;
+    if (object_.__is_instance__ !== true) {
+        return false;
+    }
+    for (var c in object_.__mro__) {
+        if (object_.__mro__[c] == classinfo.prototype) return true;
     }
     return false;
     """)
 
-def getattr(obj, name, default_):
+def getattr(obj, name, default_=None):
     JS("""
     if ((!pyjslib.isObject(obj))||(pyjslib.isUndefined(obj[name]))){
-        if (pyjslib.isUndefined(default_)){
+        if (arguments.length != 3){
             throw pyjslib.AttributeError(obj, name);
         }else{
         return default_;
@@ -1233,6 +1265,7 @@ def getattr(obj, name, default_):
         return obj[name].apply(obj,args);
         }
     fnwrap.__name__ = name;
+    fnwrap.parse_kwargs = obj.parse_kwargs;
     return fnwrap;
     """)
 
@@ -1642,7 +1675,7 @@ def sprintf(strng, args):
         sprintf_dict(strng, args)
     return ''.join(result)
 
-def printFunc(objs):
+def printFunc(objs, newline):
     JS("""
     if ($wnd.console==undefined)  return;
     var s = "";

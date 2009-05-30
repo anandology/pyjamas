@@ -146,10 +146,10 @@ class JSONParser:
                     if (x instanceof Array) {
                         return s.array(x);
                     }
-                    if (x instanceof pyjslib.__List) {
+                    if (x instanceof pyjslib.List) {
                         return s.array(x.l);
                     }
-                    if (x instanceof pyjslib.__Dict) {
+                    if (x instanceof pyjslib.Dict) {
                         return s.object(pyjslib.toJSObjects(x));
                     }
                     var a = ['{'], b, f, i, v;

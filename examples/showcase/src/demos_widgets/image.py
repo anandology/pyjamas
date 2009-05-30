@@ -31,6 +31,6 @@ class ImageDemo(SimplePanel):
         self.add(img)
 
 
-    def onImageClicked(self):
+    def onImageClicked(self, sender=None):
         Window.alert("Stop that!")
 

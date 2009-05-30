@@ -1,2 +1,2 @@
 #!/bin/sh
-../../bin/pyjsbuild BrowserDetect.py
+../../bin/pyjsbuild $* BrowserDetect.py

@@ -37,7 +37,7 @@ class PopupPanelDemo(SimplePanel):
         self.add(vPanel)
 
 
-    def showPopup(self):
+    def showPopup(self, event):
         contents = HTML("Hello, World!")
         contents.addClickListener(getattr(self, "onClick"))
 
@@ -51,6 +51,6 @@ class PopupPanelDemo(SimplePanel):
         self._popup.show()
 
 
-    def onClick(self):
+    def onClick(self, sender=None):
         self._popup.hide()
 

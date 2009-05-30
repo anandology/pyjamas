@@ -242,7 +242,7 @@ class SplitPanel(Panel):
             DOM.appendChild(self.elements[index], w.getElement())
 
             # Adopt new.
-            self.adopt(w)
+            self.adopt(w, None)
 
     def onSplitterResize(self, x, y):
         """ Called on each mouse drag event as the user is dragging

@@ -29,7 +29,7 @@ class AjaxTest:
         # has actually loaded.  you will need to see e.g.
         # pyjslib.import_wait for that.
 
-        pyjslib.import_module(None, "test")
+        pyjslib.import_module(None, None, "test")
 
 if __name__ == '__main__':
     x = AjaxTest()

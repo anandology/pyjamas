@@ -1,2 +1,2 @@
 #!/bin/sh
-../../bin/pyjsbuild Scope.py
+../../bin/pyjsbuild $* Scope.py

@@ -46,8 +46,8 @@ class ClickDelegatePanel(Composite):
         self.sinkEvents(Event.ONCLICK | Event.ONKEYDOWN)
 
     # receive Label's onClick and pass it through, pretending it came from us
-    def onClick(self, sender, event):
-        self.clickDelegate.onClick(self, event)
+    def onClick(self, sender=None):
+        self.clickDelegate.onClick(sender)
 
     def getFocusablePanel(self):
         return self.focusablePanel
@@ -55,7 +55,7 @@ class ClickDelegatePanel(Composite):
     def onBrowserEvent(self, event) :
         type = DOM.eventGetType(event)
         if type == "click":
-            self.onClick(self, event)
+            self.onClick(self)
 
         elif type == "keydown":
             modifiers = KeyboardListener.getKeyboardModifiers(event)

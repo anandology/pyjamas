@@ -42,7 +42,7 @@ class Toggle:
         RootPanel().add(self.vpanel)
         self.i = False
         
-    def onClick(self, sender):
+    def onClick(self, sender=None):
         if sender == self.button:
             if self.i: 
                 self.i = False

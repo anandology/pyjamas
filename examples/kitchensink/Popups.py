@@ -33,7 +33,7 @@ class Popups(Sink):
     def onShow(self):
         pass
 
-    def onClick(self, sender):
+    def onClick(self, sender=None):
         if sender == self.fPopupButton:
             p = MyPopup()
             left = sender.getAbsoluteLeft() + 10
@@ -68,7 +68,7 @@ class MyDialog(DialogBox):
         DialogBox.__init__(self)
         self.setText("Sample DialogBox with embedded Frame")
         
-        iframe = Frame(Popups.baseURL() + "rembrandt/LaMarcheNocturne.html")
+        iframe = Frame(Popups.baseURL(self) + "rembrandt/LaMarcheNocturne.html")
         closeButton = Button("Close", self)
         msg = HTML("<center>This is an example of a standard dialog box component.<br>  You can put pretty much anything you like into it,<br>such as the following IFRAME:</center>", True)
         
@@ -86,7 +86,7 @@ class MyDialog(DialogBox):
         iframe.setHeight("20em")
         self.setWidget(dock)
 
-    def onClick(self, sender):
+    def onClick(self, sender=None):
         self.hide()
 
 

@@ -44,7 +44,7 @@ def init():
 
             // TODO - move init back into History
             // this.onHistoryChanged(token);
-            var h = new History.__History();
+            var h = new History.History();
             h.onHistoryChanged(token);
         }
     };

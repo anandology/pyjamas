@@ -166,7 +166,8 @@ def check_html_file(source_file, dest_path):
 
 
 def build(app_name, output, js_includes=(), debug=False, dynamic=0,
-          data_dir=None, cache_buster=False, optimize=False):
+          data_dir=None, cache_buster=False, optimize=False,
+          function_argument_checking=True):
 
     # make sure the output directory is always created in the current working
     # directory or at the place given if it is an absolute path.
@@ -245,7 +246,8 @@ def build(app_name, output, js_includes=(), debug=False, dynamic=0,
 
     ## all.cache.html
     app_files = generateAppFiles(data_dir, js_includes, app_name, debug,
-                                 output, dynamic, cache_buster, optimize)
+                                 output, dynamic, cache_buster, optimize,
+                                 function_argument_checking)
 
     ## AppName.nocache.html
 
@@ -273,7 +275,7 @@ def build(app_name, output, js_includes=(), debug=False, dynamic=0,
 
 
 def generateAppFiles(data_dir, js_includes, app_name, debug, output, dynamic,
-                     cache_buster, optimize):
+                     cache_buster, optimize, function_argument_checking):
 
     all_cache_html_template = read_boilerplate(data_dir, "all.cache.html")
     mod_cache_html_template = read_boilerplate(data_dir, "mod.cache.html")
@@ -324,7 +326,8 @@ def generateAppFiles(data_dir, js_includes, app_name, debug, output, dynamic,
 
         parser.setPlatform(platform)
         app_translator = pyjs.AppTranslator(
-            parser=parser, dynamic=dynamic, optimize=optimize)
+            parser=parser, dynamic=dynamic, optimize=optimize,
+            function_argument_checking = function_argument_checking)
         early_app_libs[platform], appcode = \
                      app_translator.translate(None, is_app=False,
                                               debug=debug,
@@ -371,7 +374,8 @@ def generateAppFiles(data_dir, js_includes, app_name, debug, output, dynamic,
             mod_cache_name = "%s.%s.cache.js" % (platform.lower(), mod_name)
 
             parser.setPlatform(platform)
-            mod_translator = pyjs.AppTranslator(parser=parser, optimize=optimize)
+            mod_translator = pyjs.AppTranslator(parser=parser, optimize=optimize,
+                    function_argument_checking=function_argument_checking)
             mod_libs[platform][mod_name], mod_code[platform][mod_name] = \
                               mod_translator.translate(mod_name,
                                                   is_app=False,
@@ -676,19 +680,27 @@ def main():
         help="platforms to build for, comma-separated")
     parser.add_option("-d", "--debug", action="store_true", dest="debug")
     parser.add_option("-O", "--optimize", action="store_true",
-                      dest="optimize", default=False,
-                      help="Optimize generated code (removes all print statements)",
-                      )
+        dest="optimize", default=False,
+        help="Optimize generated code (removes all print statements)",
+    )
     parser.add_option("-c", "--cache_buster", action="store_true",
-                  dest="cache_buster",
-        help="Enable browser cache-busting (MD5 hash added to output filenames)")
+        dest="cache_buster",
+        help="Enable browser cache-busting (MD5 hash added to output filenames)",
+    )
+    parser.add_option("--disable-function-argument-checking",
+        dest = "function_argument_checking",
+        action="store_false",
+        help = "disable code generation for function argument checking",
+    )
 
     parser.set_defaults(output = "output", js_includes=[], library_dirs=[],
                         platforms=(','.join(app_platforms)),
                         data_dir=os.path.join(sys.prefix, "share/pyjamas"),
                         dynamic=False,
                         cache_buster=False,
-                        debug=False)
+                        debug=False,
+                        function_argument_checking = True,
+                        )
     (options, args) = parser.parse_args()
     if len(args) != 1:
         parser.error("incorrect number of arguments")
@@ -719,7 +731,7 @@ def main():
 
     build(app_name, options.output, options.js_includes,
           options.debug, options.dynamic and 1 or 0, data_dir,
-          options.cache_buster, options.optimize)
+          options.cache_buster, options.optimize, options.function_argument_checking)
 
 if __name__ == "__main__":
     main()

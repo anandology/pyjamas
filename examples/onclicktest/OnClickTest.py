@@ -14,7 +14,7 @@ class OnClickTest:
 		RootPanel().add(self.b)
 		RootPanel().add(self.b2)
 
-	def onClick(self, sender):
+	def onClick(self, sender=None):
 		Window.alert("object called")
 
 

@@ -95,7 +95,7 @@ class Showcase:
 
             We insert the demos into self._demos.
         """
-        self._demos = demoInfo.getDemos(name)
+        self._demos = demoInfo.getDemos()
 
 
     def buildTree(self):
@@ -165,7 +165,7 @@ class Showcase:
                 break
 
         if demo != None:
-            exampleID = HTMLPanel.createUniqueId()
+            exampleID = HTMLPanel.createUniqueId(self)
 
             html = []
             html.append('<div style="padding:20px">')

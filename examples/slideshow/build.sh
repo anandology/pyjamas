@@ -1,2 +1,2 @@
 #!/bin/sh
-../../bin/pyjsbuild Slideshow.py
+../../bin/pyjsbuild $* Slideshow.py

@@ -1,2 +1,2 @@
 #!/bin/sh
-../../bin/pyjsbuild SplitPanel.py
+../../bin/pyjsbuild $* SplitPanel.py

@@ -78,7 +78,7 @@ class Layouts(Sink):
         menu1.addItem("child12")
 
         Logger.write("Layouts", "TODO: htmlpanel")
-        id = HTMLPanel.createUniqueId()
+        id = HTMLPanel.createUniqueId(self)
         text="""This is an <code>HTMLPanel</code>.  It allows you to add 
             components inside existing HTML, like this: <span id='%s' />
             Notice how the menu just fits snugly in there?  Cute.""" % id

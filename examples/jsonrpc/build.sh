@@ -1,2 +1,2 @@
 #!/bin/sh
-../../bin/pyjsbuild JSONRPCExample.py
+../../bin/pyjsbuild $* JSONRPCExample.py

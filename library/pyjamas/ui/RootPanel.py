@@ -72,7 +72,7 @@ class RootPanelCls(AbsolutePanel):
     def onWindowClosing(cls):
         return None
 
-def RootPanel(element):
+def RootPanel(element=None):
     if pyjslib.isString(element):
         return RootPanelCls().get(element)
     return RootPanelCls(element)

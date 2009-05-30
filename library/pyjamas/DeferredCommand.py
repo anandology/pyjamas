@@ -29,7 +29,7 @@ class DeferredCommand:
             Timer(1, self)
             timerIsActive = True
             
-    def onTimer(self):
+    def onTimer(self, t):
         global timerIsActive
 
         self.flushDeferredCommands()

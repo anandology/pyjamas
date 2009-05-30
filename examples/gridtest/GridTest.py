@@ -34,7 +34,8 @@ class GridWidget(AbsolutePanel):
         self.add(self.addb)
         self.add(self.g)
 
-    def onClick(self, sender):
+    def onClick(self, sender=None):
+	print sender
         if sender==self.addb:
             self.page+=1
         elif sender==self.subb:

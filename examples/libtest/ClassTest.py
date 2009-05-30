@@ -33,6 +33,9 @@ class ClassTest(UnitTest):
         # verify that class var changed for EXISTING instances
         self.assertEquals(y.x, expected_result2)
 
+	# verify that the initiation of ExampleClass.c is correct
+	self.assertEquals(ExampleClass.c, 1|2)
+
     # test Class().x
     def testInheritedProperties(self):
         expected_result1="test"
@@ -166,6 +169,14 @@ class ClassTest(UnitTest):
     def testStaticMethod(self):
         self.assertEqual(ExampleClass.sampleStaticMethod("a"), "a", "Expected static method to take the parameter I give as its first parameter")
 
+    def test__new__Method(self):
+        c = OtherClass1()
+        self.assertEqual(c.__name__, 'ObjectClass')
+        self.assertEqual(c.prop, 1)
+        c = OtherClass2()
+        self.assertEqual(c.__name__, 'ObjectClass')
+        self.assertEqual(c.prop, 1)
+
     #def testClassDefinitionOrder(self):
     #    x = ExampleSubclassDefinedBeforeSuperclass()
     #    self.assertEqual(x.someMethod(), "abc", "Expected someMethod to return 'abc'")
@@ -241,6 +252,12 @@ class ClassTest(UnitTest):
         except TypeError, e:
             self.assertEqual(e.message,  "two_args() takes exactly 2 arguments (1 given)")
 
+    def testSuperTest(self):
+        c = DoubleInherit(1,2,3)
+        self.assertEqual(super(DoubleInherit, c).get_y(), 2)
+        c.y = 4
+        self.assertEqual(super(DoubleInherit, c).get_y(), 4)
+
     def testImportTest(self):
         # import imports.child # FIXME: if the import statement is here in stead of at the top, this fails on compiling
         teststring = 'import test'
@@ -254,6 +271,9 @@ def method(self):
 # testClassVars
 class ExampleClass:
     x = "test"
+    a = 1
+    b = 2
+    c = a|b
 
     @classmethod
     def sampleClassMethod(cls, arg):
@@ -331,7 +351,16 @@ class ExampleChildExplicitConstructor(ExampleParentConstructor):
 #        return 'abc'
 
 class ObjectClass(object):
-    pass
+    def __init__(self):
+        self.prop = 1
+
+class OtherClass1(object):
+    def __new__(cls):
+        return ObjectClass()
+
+class OtherClass2(object):
+    def __new__(cls):
+        return ObjectClass.__new__()
 
 class ExampleMultiSuperclassParent1:
     x = 'Initial X'
@@ -370,7 +399,7 @@ class ClassArguments:
     def two_args(self, arg1):
         return arg1
 
-class MultiBase:
+class MultiBase(object):
     def __init__(self, x):
         self.x = x
 

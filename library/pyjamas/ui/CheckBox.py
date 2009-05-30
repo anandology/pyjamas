@@ -17,6 +17,8 @@ from pyjamas import DOM
 from pyjamas.ui.ButtonBase import ButtonBase
 from pyjamas.ui import Event
 
+_CheckBox_unique_id=0;
+
 class CheckBox(ButtonBase):
 
     def __init__(self, label=None, asHTML=False):
@@ -46,13 +48,9 @@ class CheckBox(ButtonBase):
 
     # emulate static
     def getUniqueID(self):
-        JS("""
-        _CheckBox_unique_id++;
+        global _CheckBox_unique_id
+        _CheckBox_unique_id += 1
         return _CheckBox_unique_id;
-        };
-        var _CheckBox_unique_id=0;
-        {
-        """)
 
     def getHTML(self):
         return DOM.getInnerHTML(self.labelElem)

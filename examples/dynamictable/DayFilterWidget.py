@@ -19,7 +19,7 @@ class DayCheckBoxListener:
     def __init__(self, calendar):
         self.calendar = calendar
         
-    def onClick(self, sender):
+    def onClick(self, sender=None):
         self.calendar.setDayIncluded(sender.day, sender.isChecked())
 
 
@@ -59,7 +59,7 @@ class DayFilterWidget(Composite):
                 widget.setChecked(checked)
                 self.dayCheckBoxListener.onClick(widget)
     
-    def onClick(self, sender):
+    def onClick(self, sender=None):
         if self.buttonAll == sender:
             self.setAllCheckBoxes(True)
         elif self.buttonNone == sender:

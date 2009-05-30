@@ -23,6 +23,6 @@ class ButtonDemo(SimplePanel):
         self.add(btn)
 
 
-    def onButtonClick(self):
+    def onButtonClick(self, event):
         Window.alert("Ouch!")
 

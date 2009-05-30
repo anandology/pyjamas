@@ -1,2 +1,2 @@
 #!/bin/sh
-../../bin/pyjsbuild Widgets
+../../bin/pyjsbuild $* Widgets

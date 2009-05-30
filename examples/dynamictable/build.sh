@@ -1,2 +1,2 @@
 #!/bin/sh
-../../bin/pyjsbuild DynaTable.py
+../../bin/pyjsbuild $* DynaTable.py

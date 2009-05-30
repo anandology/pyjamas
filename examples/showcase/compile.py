@@ -13,6 +13,7 @@
 import cStringIO
 import os
 import os.path
+import sys
 import webbrowser
 
 import pyColourize
@@ -108,6 +109,7 @@ def main():
 
     # Compile the application using Pyjamas.
     stmt = (os.path.join(PATH_TO_PYJAMAS, 'bin', 'pyjsbuild') +
+                 " " + " ".join(sys.argv[1:]) +
                  " -o " + os.path.join(here,'build') + " " +
                  os.path.join(here, 'src', 'Showcase.py') +
                  " > /dev/null")

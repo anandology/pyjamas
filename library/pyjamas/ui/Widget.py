@@ -29,7 +29,7 @@ class Widget(UIObject):
         self.layoutData = None
         self.contextMenu = None
 
-        UIObject.__init__(**kwargs)
+        UIObject.__init__(self, **kwargs)
 
     def getLayoutData(self):
         return self.layoutData

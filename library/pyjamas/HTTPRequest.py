@@ -57,7 +57,7 @@ class HTTPRequest:
             var localHandler = handler;
             handler = null;
             xmlHttp = null;
-            localHandler.onError(String(e));
+            localHandler.onError(String(e), "");
             return false;
         }
         """)
@@ -95,7 +95,7 @@ class HTTPRequest:
             var localHandler = handler;
             handler = null;
             xmlHttp = null;
-            localHandler.onError(String(e));
+            localHandler.onError(String(e), "");
             return false;
         }
         """)

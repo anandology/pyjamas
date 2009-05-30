@@ -1,2 +1,2 @@
 #!/bin/sh
-../../bin/pyjsbuild OnClickTest.py
+../../bin/pyjsbuild $* OnClickTest.py

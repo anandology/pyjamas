@@ -1,2 +1,2 @@
 #!/bin/sh
-../../bin/pyjsbuild MainTest.py
+../../bin/pyjsbuild $* MainTest.py

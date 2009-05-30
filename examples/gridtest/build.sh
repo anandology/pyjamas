@@ -1,2 +1,2 @@
 #!/bin/sh
-../../bin/pyjsbuild GridTest.py
+../../bin/pyjsbuild $* GridTest.py

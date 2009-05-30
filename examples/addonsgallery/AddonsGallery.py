@@ -55,7 +55,7 @@ class AddonsGallery:
         else:
             self.showIntro()
     
-    def show(self, info, affectHistory):
+    def show(self, info, affectHistory=None):
         if info == self.curInfo: return
         self.curInfo = info
 

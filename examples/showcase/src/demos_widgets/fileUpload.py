@@ -54,6 +54,6 @@ class FileUploadDemo(SimplePanel):
         self.add(self.form)
 
 
-    def onBtnClick(self):
+    def onBtnClick(self, event):
         self.form.submit()
 

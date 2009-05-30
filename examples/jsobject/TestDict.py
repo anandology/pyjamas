@@ -51,7 +51,7 @@ class TestDict:
         RootPanel().add(HTML("Value using javascript:" ))
         RootPanel().add(HTML(self.r.javascript_get_value(key)))
 
-    def onClick(self, sender):
+    def onClick(self, sender=None):
 
         self.display_value()
 

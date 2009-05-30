@@ -44,12 +44,12 @@ class ListBoxDemo(SimplePanel):
         self.add(hPanel)
 
 
-    def onList1ItemSelected(self):
+    def onList1ItemSelected(self, event):
         item = self.list1.getItemText(self.list1.getSelectedIndex())
         Window.alert("You selected " + item + " from list 1")
 
 
-    def onList2ItemSelected(self):
+    def onList2ItemSelected(self, event):
         item = self.list2.getItemText(self.list2.getSelectedIndex())
         Window.alert("You selected " + item + " from list 2")
 

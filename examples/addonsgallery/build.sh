@@ -1,2 +1,2 @@
 #!/bin/sh
-../../bin/pyjsbuild AddonsGallery.py
+../../bin/pyjsbuild $* AddonsGallery.py

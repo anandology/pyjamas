@@ -1,2 +1,2 @@
 #!/bin/sh
-../../bin/pyjsbuild Mail.py
+../../bin/pyjsbuild $* Mail.py

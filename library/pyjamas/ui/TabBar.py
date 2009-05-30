@@ -118,7 +118,7 @@ class TabBar(Composite):
         #print "insertTabWidget", DOM.getParent(delWidget.getElement()), DOM.getAttribute(DOM.getParent(delWidget.getElement()), "className")
 
 
-    def onClick(self, sender):
+    def onClick(self, sender=None):
         for i in range(1, self.panel.getWidgetCount() - 1):
             if self.panel.getWidget(i) == sender:
                 return self.selectTab(i - 1)

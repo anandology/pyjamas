@@ -50,7 +50,7 @@ class AboutDialog(DialogBox):
 
       self.setWidget(outer)
 
-  def onClick(self, sender):
+  def onClick(self, sender=None):
       self.hide()
       
   def onKeyDownPreview(self, key, modifiers):

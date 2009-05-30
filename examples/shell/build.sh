@@ -1,2 +1,2 @@
 #!/bin/sh
-../../bin/pyjsbuild Shell.py
+../../bin/pyjsbuild $* Shell.py

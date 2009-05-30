@@ -1,2 +1,2 @@
 #!/bin/sh
-../../bin/pyjsbuild InfoDirectory.py
+../../bin/pyjsbuild $* InfoDirectory.py

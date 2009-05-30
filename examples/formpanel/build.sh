@@ -1,2 +1,2 @@
 #!/bin/sh
-../../bin/pyjsbuild FormPanelExample.py
+../../bin/pyjsbuild $* FormPanelExample.py

@@ -32,9 +32,9 @@ class PushButton (CustomButton):
         self.setStyleName(self.STYLENAME_DEFAULT)
     
     
-    def onClick(self):
+    def onClick(self, sender=None):
         self.setDown(False)
-        CustomButton.onClick()
+        CustomButton.onClick(self)
     
 
     def onClickCancel(self):

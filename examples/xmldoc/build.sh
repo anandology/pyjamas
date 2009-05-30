@@ -1,2 +1,2 @@
 #!/bin/sh
-../../bin/pyjsbuild XMLload.py
+../../bin/pyjsbuild $* XMLload.py

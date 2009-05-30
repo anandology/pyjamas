@@ -51,7 +51,7 @@ class TestRect:
 
         RootPanel().add(HTML("Current value: %d %d" % ( self.r.get_x(), self.r.get_y())))
 
-    def onClick(self, sender):
+    def onClick(self, sender=None):
 
         x = int(self.xbox.getText())
         y = int(self.ybox.getText())

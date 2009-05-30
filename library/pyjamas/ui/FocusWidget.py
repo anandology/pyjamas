@@ -50,8 +50,8 @@ class FocusWidget(Widget):
         type = DOM.eventGetType(event)
         if type == "click":
             for listener in self.clickListeners:
-                if hasattr(listener, "onClick"): listener.onClick(self, event)
-                else: listener(self, event)
+                if hasattr(listener, "onClick"): listener.onClick(self)
+                else: listener(self)
         elif type == "blur" or type == "focus":
             FocusListener.fireFocusEvent(self.focusListeners, self, event)
         elif type == "keydown" or type == "keypress" or type == "keyup":

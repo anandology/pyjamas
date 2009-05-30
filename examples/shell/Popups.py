@@ -213,7 +213,7 @@ class PopupFrame(DialogBoxModal):
     def setUrl(self, url):
         self.iframe.setUrl(url)
 
-    def onClick(self, sender):
+    def onClick(self, sender=None):
         self.hide()
 
     def set_width(self, width):

@@ -39,7 +39,7 @@ class TopPanel(Composite):
         inner.setStyleName("mail-TopPanel")
         links.setStyleName("mail-TopPanelLinks")
 
-    def onClick(self, sender):
+    def onClick(self, sender=None):
         if (sender == self.signOutLink):
             Window.alert("If this were implemented, you would be signed out now.")
         elif (sender == self.aboutLink):

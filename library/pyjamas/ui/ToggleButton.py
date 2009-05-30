@@ -33,7 +33,7 @@ class ToggleButton (CustomButton):
         self.setStyleName(self.STYLENAME_DEFAULT)
 
     
-    def onClick(self):
+    def onClick(self, sender=None):
         self.toggleDown()
         CustomButton.onClick(self)
     

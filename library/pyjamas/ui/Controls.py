@@ -49,7 +49,7 @@ class Control(FocusWidget):
     def onLostFocus(self, sender):
         pass
 
-    def onClick(self, sender, event):
+    def onClick(self, sender=None):
         pass
 
     def processValue(self, value):
@@ -87,8 +87,9 @@ class Control(FocusWidget):
     def moveControl(self, x, y):
         pass
 
-    def onClick(self, sender, event):
+    def onClick(self, sender=None):
         # work out the relative position of cursor
+        event = DOM.eventGetCurrentEvent()
         mouse_x = DOM.eventGetClientX(event) 
         mouse_y = DOM.eventGetClientY(event) 
         self.moveControl(mouse_x - self.getAbsoluteLeft(),

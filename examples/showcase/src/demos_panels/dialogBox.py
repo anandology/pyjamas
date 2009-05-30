@@ -45,7 +45,7 @@ class DialogBoxDemo(SimplePanel):
         self.add(Button("Show Dialog", getattr(self, "showDialog")))
 
 
-    def showDialog(self):
+    def showDialog(self, event):
         contents = VerticalPanel()
         contents.setSpacing(4)
         contents.add(HTML('You can place any contents you like in a dialog box.'))
@@ -62,6 +62,6 @@ class DialogBoxDemo(SimplePanel):
         self._dialog.show()
 
 
-    def onClose(self):
+    def onClose(self, event):
         self._dialog.hide()
 
