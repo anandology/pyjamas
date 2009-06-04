@@ -1512,11 +1512,11 @@ def sprintf(strng, args):
 
     def formatarg(flags, minlen, precision, conversion, param):
             numeric = True
-            if isUndefined(minlen):
+            if isUndefined(minlen) or minlen == '':
                 minlen=0
             else:
                 minlen = int(minlen)
-            if isUndefined(precision):
+            if isUndefined(precision) or precision == '':
                 precision = None
             else:
                 precision = int(precision)
@@ -1611,7 +1611,7 @@ def sprintf(strng, args):
                     subst = '0X' + subst
             else:
                 raise ValueError("unsupported format character '" + conversion + "' ("+hex(ord(conversion))+") at index " + (strlen - len(remainder) - 1))
-            if len(subst) < minlen:
+            if minlen and len(subst) < minlen:
                 padchar = ' '
                 if numeric and left_padding and flags.find('0') >= 0:
                     padchar = '0'
