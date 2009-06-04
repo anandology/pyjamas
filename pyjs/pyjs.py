@@ -1057,7 +1057,7 @@ if (typeof %s != 'undefined') {
                 elif d.name == "staticmethod":
                     staticmethod = True
         elif node.name == '__new__':
-            classmethod = True
+            staticmethod = True
 
         if (classmethod or staticmethod) and len(arg_names) > 0:
             self.method_self = arg_names[0]

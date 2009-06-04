@@ -264,15 +264,17 @@ function pyjs__mro_merge(seqs) {
 function pyjs__class_instance(class_name, module_name) {
     if (typeof module_name == 'undefined') module_name = typeof __mod_name__ == 'undefined' ? '__main__' : __mod_name__;
     var cls_fn = function(){
-        var instance = function () {};
-        instance.prototype = cls_fn;
-        instance = new instance();
-        if (typeof instance.__new__ != 'undefined' && instance.__new__ != cls_fn) {
-            instance = instance.__new__.apply(cls_fn, []);
+        if (typeof arguments[0] == 'function'
+            && arguments[0].__is_instance__ === false) {
+            var instance = function () {};
+            instance.prototype = arguments[0].prototype;
+            instance = new instance();
+            instance.__dict__ = instance.__class__ = instance;
+            instance.__is_instance__ = true;
+            return instance;
         }
-        instance.__dict__ = instance.__class__ = instance;
-        instance.__is_instance__ = true;
-        if(instance.__init__) {
+        var instance = cls_fn.__new__.apply(null, [cls_fn]);
+        if (instance.__init__) {
             if (instance.__init__.apply(instance, arguments) != null) {
                 //throw '__init__() should return None';
                 throw pyjslib.TypeError('__init__() should return None');

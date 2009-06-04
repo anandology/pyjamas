@@ -171,11 +171,20 @@ class ClassTest(UnitTest):
 
     def test__new__Method(self):
         c = OtherClass1()
-        self.assertEqual(c.__name__, 'ObjectClass')
+        self.assertEqual(c.__class__.__name__, 'ObjectClass')
         self.assertEqual(c.prop, 1)
         c = OtherClass2()
-        self.assertEqual(c.__name__, 'ObjectClass')
-        self.assertEqual(c.prop, 1)
+        self.assertEqual(c.__class__.__name__, 'OtherClass2')
+        try:
+            prop = c.prop
+            self.fail("failed to raise an error on c.prop")
+        except:
+            self.assertTrue(True)
+
+        instance = MultiBase.__new__(MultiInherit1)
+        self.assertEqual(instance.name, 'MultiInherit1')
+        instance = MultiInherit1.__new__(MultiBase)
+        self.assertEqual(instance.name, 'MultiBase')
 
     #def testClassDefinitionOrder(self):
     #    x = ExampleSubclassDefinedBeforeSuperclass()
@@ -239,8 +248,6 @@ class ClassTest(UnitTest):
             self.fail("Exception should be raised on 'c.no_args()'")
         except TypeError, e:
             self.assertEqual(e.message,  "no_args() takes no arguments (1 given)")
-            print 
-            pass
 
         self.assertEqual(c.self_arg(), True)
         self.assertEqual(c.two_args(1), 1)
@@ -360,7 +367,7 @@ class OtherClass1(object):
 
 class OtherClass2(object):
     def __new__(cls):
-        return ObjectClass.__new__()
+        return ObjectClass.__new__(cls)
 
 class ExampleMultiSuperclassParent1:
     x = 'Initial X'
@@ -400,6 +407,7 @@ class ClassArguments:
         return arg1
 
 class MultiBase(object):
+    name = 'MultiBase'
     def __init__(self, x):
         self.x = x
 
@@ -410,6 +418,7 @@ class MultiBase(object):
         self.x = x
 
 class MultiInherit1(MultiBase):
+    name = 'MultiInherit1'
     def __init__(self, x, y):
         self.y = y
         MultiBase.__init__(self, x) # yes it gets called twice
