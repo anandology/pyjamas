@@ -7,6 +7,7 @@ from Tooltip import TooltipListener
 
 class TooltipTab(Sink):
     def __init__(self):
+        Sink.__init__(self)
         img = Image("images/num1.png")
         img.addMouseListener(TooltipListener("An image: " + img.getUrl()))
         

@@ -5,6 +5,7 @@ class IntroTab(Sink):
     def __init__(self):
         text="<div class='infoProse'>Welcome to the Addons Gallery.  "
         text+="This app shows off the addon components for Pyjamas.</div>"
+        Sink.__init__(self)
         self.setWidget(HTML(text, True))
 
     def onShow(self):

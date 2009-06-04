@@ -38,6 +38,7 @@ class ClickableHeader(SimplePanel):
 
 class DefaultHeader(Widget):
     def __init__(self, text, disclosurePanel):
+        Widget.__init__(self)
         self.disclosurePanel = disclosurePanel
         self.imageBase = pygwt.getModuleBaseURL()
 

@@ -10,6 +10,7 @@ from math import floor, cos, sin
 
 class CanvasTab(Sink):
     def __init__(self):
+        Sink.__init__(self)
         colour_grid = ColourGridCanvas()
         rotated = RotatedCanvas()       
         spheres = SpheresCanvas()
@@ -155,7 +156,7 @@ class PatternCanvas(Canvas):
         Canvas.__init__(self, 150, 150)
         self.img = CanvasImage('images/wallpaper.png', self)
 
-    def onLoad(self, sender):
+    def onLoad(self, sender=None):
         if sender==self.img:
             self.draw()
     

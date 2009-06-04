@@ -8,7 +8,7 @@ from AutoComplete import AutoCompleteTextBox
 class AutoCompleteTab(Sink):
     def __init__(self):
         colours = ['Azure', 'Red', 'Rust', 'Green', 'Beige', 'Brass', 'Brown', 'Bronze', 'Blue', 'Black', 'Burgundy', 'Pink', 'Gold', 'Gray', 'Purple', 'Yellow', 'White']
-        
+        Sink.__init__(self)
         self.colour_input = AutoCompleteTextBox()
         self.colour_input.setCompletionItems(colours)
         

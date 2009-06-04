@@ -64,7 +64,7 @@ class Location:
         return ""+self.location.search
     
     def getSearchDict(self):
-        if not self.searchDict:
+        if not hasattr(self, 'searchDict'):
             self.searchDict = makeUrlDict(self.getSearch().slice(1))
         return self.searchDict
 

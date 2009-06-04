@@ -3,13 +3,21 @@ from pyjamas.ui.Grid import Grid
 _logger = None
 
 class Logger(Grid):
-    def __init__(self, target="", message=""):
+    def __new__(cls):
         global _logger
+        # make sure there is only one instance of this class
+        if _logger:
+            return _logger
+        _logger = Grid.__new__(cls)
+        return _logger
+
+    def __init__(self, target="", message=""):
+        #global _logger
         if message:
             return Logger().write(target, message)
             
         # make sure there is only one instance of this class
-        if _logger: return None
+        if hasattr(self, target): return None
         self.setSingleton()
 
         Grid.__init__(self)

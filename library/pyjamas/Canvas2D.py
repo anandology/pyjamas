@@ -20,6 +20,7 @@ from pyjamas.ui import FocusListener
 
 class Canvas(Widget):
     def __init__(self, width, height):
+        Widget.__init__(self)
         self.context = None
         
         self.setElement(DOM.createDiv())

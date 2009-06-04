@@ -32,7 +32,7 @@ class AutoCompleteTextBox(TextBox):
         self.choices.setStyleName("list")
 
     def setCompletionItems(self, items):
-        if not items.getCompletionItems:
+        if not hasattr(items, 'getCompletionItems'):
             items = SimpleAutoCompletionItems(items)
         
         self.items = items

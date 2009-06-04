@@ -2,7 +2,7 @@ from pyjamas.ui.Composite import Composite
 
 class Sink(Composite):
     def __init__(self):
-        pass
+        Composite.__init__(self)
     
     def onHide(self):
         pass
