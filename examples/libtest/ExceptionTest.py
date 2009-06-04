@@ -1,4 +1,5 @@
 from UnitTest import UnitTest
+import sys
 
 class MyException:
 
@@ -142,6 +143,8 @@ class ExceptionTest(UnitTest):
                 raised_errors.append(e2)
                 self.assertTrue(e2.message == 'AttributeError')
             except:
-                pass
-        self.assertEqual(len(raised_errors), 3)
+                e3 = sys.exc_info()[1]
+		raised_errors.append(e3)
+                self.assertTrue(e3.message == 'LookupError')
+        self.assertEqual(len(raised_errors), len(raise_errors))
 

@@ -57,3 +57,10 @@ def printstack():
 
         return res;
     """)
+
+__last_exception__ = None
+def exc_info():
+    global __last_exception__
+    if not __last_exception__:
+        return (None, None, None)
+    return (__last_exception__.error.__class__, __last_exception__.error, None)
