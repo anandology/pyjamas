@@ -265,6 +265,21 @@ class ClassTest(UnitTest):
         c.y = 4
         self.assertEqual(super(DoubleInherit, c).get_y(), 4)
 
+        instance = super(MultiBase, MultiInherit1).__new__(MultiInherit1)
+        self.assertEqual(instance.name, 'MultiInherit1')
+        instance = super(MultiBase, MultiInherit1).__new__(MultiBase)
+        self.assertEqual(instance.name, 'MultiBase')
+
+        instance = super(MultiBase, MultiInherit1).__new__(MultiInherit1)
+        instance.__init__(1,2)
+        self.assertEqual(instance.x, 1)
+        self.assertEqual(instance.y, 2)
+        try:
+            z = instance.z
+            self.fail("failed to raise error for instance.z")
+        except AttributeError, e:
+            self.assertTrue(True)
+
     def testImportTest(self):
         # import imports.child # FIXME: if the import statement is here in stead of at the top, this fails on compiling
         teststring = 'import test'

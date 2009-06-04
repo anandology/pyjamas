@@ -983,10 +983,13 @@ dict = Dict
 # IE6 doesn't like pyjslib.super
 def _super(type_, object_or_type = None):
     # This is a partially implementation: only super(type, object)
-    if not isinstance(object_or_type, type_):
+    if not _issubtype(object_or_type, type_):
         raise TypeError("super(type, obj): obj must be an instance or subtype of type")
     JS("""
     var fn = pyjs_type('super', type_.__mro__.slice(1), {})
+    if (object_or_type.__is_instance__ === false) {
+        return fn;
+    }
     var obj = new Object();
     function wrapper(obj, name) {
         var fnwrap = function() {
@@ -1239,6 +1242,17 @@ def isinstance(object_, classinfo):
 def _isinstance(object_, classinfo):
     JS("""
     if (object_.__is_instance__ !== true) {
+        return false;
+    }
+    for (var c in object_.__mro__) {
+        if (object_.__mro__[c] == classinfo.prototype) return true;
+    }
+    return false;
+    """)
+
+def _issubtype(object_, classinfo):
+    JS("""
+    if (object_.__is_instance__ == null || classinfo.__is_instance__ == null) {
         return false;
     }
     for (var c in object_.__mro__) {
