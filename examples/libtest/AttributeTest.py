@@ -71,3 +71,11 @@ class AttributeTest(UnitTest):
             self.fail("No AttributeError raised")
         except AttributeError, e:
             self.assertEqual(str(e), "Foo instance has no attribute 'getV'")
+
+    def testAttrErr(self):
+        foo = Foo(1)
+        try:
+            v = foo.bar
+            self.fail("No Error raised on foo.bar")
+        except:
+            self.assertTrue(True, "Exception raised")

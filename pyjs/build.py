@@ -167,7 +167,8 @@ def check_html_file(source_file, dest_path):
 
 def build(app_name, output, js_includes=(), debug=False, dynamic=0,
           data_dir=None, cache_buster=False, optimize=False,
-          function_argument_checking=True):
+          function_argument_checking=True,
+          attribute_checking=True):
 
     # make sure the output directory is always created in the current working
     # directory or at the place given if it is an absolute path.
@@ -247,7 +248,8 @@ def build(app_name, output, js_includes=(), debug=False, dynamic=0,
     ## all.cache.html
     app_files = generateAppFiles(data_dir, js_includes, app_name, debug,
                                  output, dynamic, cache_buster, optimize,
-                                 function_argument_checking)
+                                 function_argument_checking,
+                                 attribute_checking)
 
     ## AppName.nocache.html
 
@@ -275,7 +277,8 @@ def build(app_name, output, js_includes=(), debug=False, dynamic=0,
 
 
 def generateAppFiles(data_dir, js_includes, app_name, debug, output, dynamic,
-                     cache_buster, optimize, function_argument_checking):
+                     cache_buster, optimize, function_argument_checking,
+                     attribute_checking):
 
     all_cache_html_template = read_boilerplate(data_dir, "all.cache.html")
     mod_cache_html_template = read_boilerplate(data_dir, "mod.cache.html")
@@ -327,7 +330,8 @@ def generateAppFiles(data_dir, js_includes, app_name, debug, output, dynamic,
         parser.setPlatform(platform)
         app_translator = pyjs.AppTranslator(
             parser=parser, dynamic=dynamic, optimize=optimize,
-            function_argument_checking = function_argument_checking)
+            function_argument_checking = function_argument_checking,
+            attribute_checking = attribute_checking)
         early_app_libs[platform], appcode = \
                      app_translator.translate(None, is_app=False,
                                               debug=debug,
@@ -375,7 +379,8 @@ def generateAppFiles(data_dir, js_includes, app_name, debug, output, dynamic,
 
             parser.setPlatform(platform)
             mod_translator = pyjs.AppTranslator(parser=parser, optimize=optimize,
-                    function_argument_checking=function_argument_checking)
+                    function_argument_checking=function_argument_checking,
+                    attribute_checking=attribute_checking)
             mod_libs[platform][mod_name], mod_code[platform][mod_name] = \
                               mod_translator.translate(mod_name,
                                                   is_app=False,
@@ -692,6 +697,11 @@ def main():
         action="store_false",
         help = "disable code generation for function argument checking",
     )
+    parser.add_option("--disable-attribute-checking",
+        dest = "attribute_checking",
+        action="store_false",
+        help = "disable code generation for attribute checking",
+    )
 
     parser.set_defaults(output = "output", js_includes=[], library_dirs=[],
                         platforms=(','.join(app_platforms)),
@@ -700,6 +710,7 @@ def main():
                         cache_buster=False,
                         debug=False,
                         function_argument_checking = True,
+                        attribute_checking = True,
                         )
     (options, args) = parser.parse_args()
     if len(args) != 1:
@@ -731,7 +742,8 @@ def main():
 
     build(app_name, options.output, options.js_includes,
           options.debug, options.dynamic and 1 or 0, data_dir,
-          options.cache_buster, options.optimize, options.function_argument_checking)
+          options.cache_buster, options.optimize, options.function_argument_checking,
+          options.attribute_checking)
 
 if __name__ == "__main__":
     main()

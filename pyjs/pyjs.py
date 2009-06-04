@@ -193,7 +193,7 @@ class Translator:
 
     def __init__(self, mn, module_name, raw_module_name, src, debug, mod, output,
                  dynamic=0, optimize=False, findFile=None,
-                 function_argument_checking=True):
+                 function_argument_checking=True, attribute_checking=True):
 
         if module_name:
             self.module_prefix = module_name + "."
@@ -221,6 +221,7 @@ class Translator:
         self.optimize = optimize
         self.findFile = findFile
         self.function_argument_checking = function_argument_checking
+        self.attribute_checking = attribute_checking
         self.local_prefix = None
 
         if module_name.find(".") >= 0:
@@ -270,6 +271,8 @@ class Translator:
       }
     }
                 """ % isHaltFunction
+        if self.attribute_checking:
+            print >>self.output, 'try {'
         for child in mod.node:
             if isinstance(child, ast.Function):
                 self.top_level_functions.add(child.name)
@@ -330,6 +333,8 @@ class Translator:
         #for className in self.top_level_classes:
         #    print >> self.output, "\t"+UU+self.modpfx()+"__"+className+"_initialize();"
         #print >> self.output, "};\n"
+        if self.attribute_checking:
+            print >> self.output, "} catch (pyjs_attr_err) {pyjslib._attr_err_check(pyjs_attr_err)};"
 
         print >> self.output, "return this;\n"
         print >> self.output, "}; /* end %s */ \n"  % module_name
@@ -824,10 +829,16 @@ if (typeof %s != 'undefined') {
         # local scope, temporary to the function.  oh dearie me.
         self.add_local_arg(errName)
 
-        print >>self.output, "    try {"
+        if self.attribute_checking:
+            print >>self.output, "    try {try {"
+        else:
+            print >>self.output, "    try {"
         for stmt in node.body.nodes:
             self._stmt(stmt, current_klass)
-        print >> self.output, "    } catch(%s) {" % errName
+        if self.attribute_checking:
+            print >> self.output, "    } catch (pyjs_attr_err) {pyjslib._attr_err_check(pyjs_attr_err)}} catch(%s) {" % errName
+        else:
+            print >> self.output, "    } catch(%s) {" % errName
         if expr:
             l = []
             if isinstance(expr, ast.Tuple):
@@ -1700,7 +1711,13 @@ if (typeof %s != 'undefined') {
         elif isinstance(node, ast.Subscript):
             return self._subscript(node, current_klass)
         elif isinstance(node, ast.Getattr):
-            return self._getattr(node, current_klass)
+            attr = self._getattr(node, current_klass)
+            if self.attribute_checking and attr.find('.') >= 0:
+                if attr.find('(') < 0:
+                    attr = "("+attr+"===undefined?(function(){throw new TypeError('"+attr+" is undefined')})():"+attr+")"
+                else:
+                    attr = "(function(){var pyjs__testval="+attr+";return (pyjs__testval===undefined?(function(){throw new TypeError('"+attr.replace("'", "\\'")+" is undefined')})():pyjs__testval)})()"
+            return attr
         elif isinstance(node, ast.List):
             return self._list(node, current_klass)
         elif isinstance(node, ast.Dict):
@@ -1718,13 +1735,16 @@ if (typeof %s != 'undefined') {
 
 import cStringIO
 
-def translate(file_name, module_name, debug=False, function_argument_checking=True):
+def translate(file_name, module_name, debug=False, function_argument_checking=True,
+              attribute_checking=True):
     f = file(file_name, "r")
     src = f.read()
     f.close()
     output = cStringIO.StringIO()
     mod = compiler.parseFile(file_name)
-    t = Translator(module_name, module_name, module_name, src, debug, mod, output, function_argument_checking=function_argument_checking)
+    t = Translator(module_name, module_name, module_name, src, debug, mod, output,
+                   function_argument_checking=function_argument_checking,
+                   attribute_checking=attribute_checking)
     return output.getvalue()
 
 
@@ -1824,7 +1844,8 @@ def dotreplace(fname):
 class AppTranslator:
 
     def __init__(self, library_dirs=[], parser=None, dynamic=False,
-                 optimize=False, verbose=True, function_argument_checking=True):
+                 optimize=False, verbose=True, function_argument_checking=True,
+                 attribute_checking=True):
         self.extension = ".py"
         self.optimize = optimize
         self.library_modules = []
@@ -1832,7 +1853,8 @@ class AppTranslator:
         self.library_dirs = path + library_dirs
         self.dynamic = dynamic
         self.verbose = verbose
-	self.function_argument_checking = function_argument_checking
+        self.function_argument_checking = function_argument_checking
+        self.attribute_checking = attribute_checking
 
         if not parser:
             self.parser = PlatformParser()
@@ -1886,7 +1908,8 @@ class AppTranslator:
             mn = module_name
         t = Translator(mn, module_name, module_name,
                        src, debug, mod, output, self.dynamic, self.optimize,
-                       self.findFile, function_argument_checking=self.function_argument_checking)
+                       self.findFile, function_argument_checking=self.function_argument_checking,
+                       attribute_checking = self.attribute_checking)
 
         module_str = output.getvalue()
         imported_js.update(set(t.imported_js))

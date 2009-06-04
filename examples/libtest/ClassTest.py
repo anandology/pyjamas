@@ -283,8 +283,11 @@ class ClassTest(UnitTest):
     def testImportTest(self):
         # import imports.child # FIXME: if the import statement is here in stead of at the top, this fails on compiling
         teststring = 'import test'
-        c = imports.child.Child()
-        self.assertEqual(c.value(teststring), teststring)
+        try:
+            c = imports.child.Child()
+            self.assertEqual(c.value(teststring), teststring)
+        except AttributeError, e:
+            self.fail(e.message)
 
 # testMetaClass
 def method(self):
