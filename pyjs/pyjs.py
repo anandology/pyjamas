@@ -319,7 +319,7 @@ class Translator:
             elif isinstance(child, ast.Print):
                self._print(child, None)
             elif isinstance(child, ast.TryExcept):
-                self._tryExcept(child, None)
+                self._tryExcept(child, None, True)
             elif isinstance(child, ast.Raise):
                 self._raise(child, None)
             elif isinstance(child, ast.Stmt):
@@ -813,45 +813,53 @@ if (typeof %s != 'undefined') {
 
         print >>self.output, "pyjslib.printFunc([", ', '.join(call_args), "],", int(isinstance(node, ast.Printnl)), ");"
 
-    def _tryExcept(self, node, current_klass):
-        if len(node.handlers) != 1:
-            raise TranslationError("except statements in this form are" +
-                                   " not supported", node)
+    def _tryExcept(self, node, current_klass, top_level=False):
 
-        expr = node.handlers[0][0]
-        as_ = node.handlers[0][1]
-        if as_:
-            errName = as_.name
-        else:
-            errName = 'err'
-
-        # XXX TODO: check that this should instead be added as a _separate_
-        # local scope, temporary to the function.  oh dearie me.
-        self.add_local_arg(errName)
-
+        pyjs_try_err = 'pyjs_try_err'
         if self.attribute_checking:
             print >>self.output, "    try {try {"
         else:
             print >>self.output, "    try {"
+
         for stmt in node.body.nodes:
             self._stmt(stmt, current_klass)
         if self.attribute_checking:
-            print >> self.output, "    } catch (pyjs_attr_err) {pyjslib._attr_err_check(pyjs_attr_err)}} catch(%s) {" % errName
+            print >> self.output, "    } catch (pyjs_attr_err) {pyjslib._attr_err_check(pyjs_attr_err)}} catch(%s) {" % pyjs_try_err
         else:
-            print >> self.output, "    } catch(%s) {" % errName
-        if expr:
-            l = []
-            if isinstance(expr, ast.Tuple):
-                for x in expr.nodes:
-                    l.append("(%(err)s.__name__ == %(expr)s.__name__)" % dict (err=errName, expr=self.expr(x, current_klass)))
+            print >> self.output, "    } catch(%s) {" % pyjs_try_err
+        print >> self.output, "        sys.__last_exception__ = {error: %s, module: %s, try_lineno: %s};" % (pyjs_try_err, self.raw_module_name, node.lineno)
+
+        self.add_local_arg(pyjs_try_err)
+        else_str = "        "
+        for handler in node.handlers:
+            lineno = handler[2].nodes[0].lineno
+            expr = handler[0]
+            as_ = handler[1]
+            if as_:
+                errName = as_.name
             else:
-                l = [ " (%(err)s.__name__ == %(expr)s.__name__) " % dict (err=errName, expr=self.expr(expr, current_klass)) ]
-            print >> self.output, "   if(%s) {" % '||\n\t\t'.join(l)
-        for stmt in node.handlers[0][2]:
-            self._stmt(stmt, current_klass)
-        if expr:
-            #print >> self.output, "} else { throw(%s); } " % errName
-            print >> self.output, "}"
+                errName = 'err'
+
+            if not expr:
+                print >> self.output, "%s{" % else_str
+            else:
+                if expr.lineno:
+                    lineno = expr.lineno
+                l = []
+                if isinstance(expr, ast.Tuple):
+                    for x in expr.nodes:
+                        l.append("(%s.__name__ == %s.__name__)" % (pyjs_try_err, self.expr(x, current_klass)))
+                else:
+                    l = [ "%s.__name__ == %s.__name__" % (pyjs_try_err, self.expr(expr, current_klass)) ]
+                print >> self.output, "%sif (%s) {" % (else_str, "||".join(l))
+            print >> self.output, "               sys.__last_exception__.except_lineno = %d;" % lineno
+            tnode = ast.Assign([ast.AssName(errName, "OP_ASSIGN", lineno)], ast.Name(pyjs_try_err, lineno), lineno)
+            self._assign(tnode, current_klass, top_level)
+            for stmt in handler[2]:
+                self._stmt(stmt, current_klass)
+            print >> self.output, "        }",
+            else_str = "else "
+
         if node.else_ != None:
             print >>self.output, "    } finally {"
             for stmt in node.else_:

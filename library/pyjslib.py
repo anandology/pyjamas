@@ -302,6 +302,7 @@ pyjslib._attr_err_check = function(err) {
 pyjslib.StopIteration = function () { };
 pyjslib.StopIteration.prototype = new Error();
 pyjslib.StopIteration.name = 'StopIteration';
+pyjslib.StopIteration.__name__ = 'StopIteration';
 pyjslib.StopIteration.message = 'StopIteration';
 
 pyjslib.String_find = function(sub, start, end) {

@@ -126,4 +126,22 @@ class ExceptionTest(UnitTest):
         self.assertEqual(str(e), args[0])
         self.assertEqual(repr(e), "IndexError('test',)")
 
+    def testSyntax(self):
+        raise_errors = [KeyError('KeyError'), TypeError('TypeError'),
+                        AttributeError('AttributeError'),
+                        LookupError('LookupError')]
+        raised_errors = []
+        for err in raise_errors:
+            try:
+                raise err
+                self.fail("Failed to raise exception")
+            except (KeyError, TypeError), e1:
+                raised_errors.append(e1)
+                self.assertTrue(e1.message == 'KeyError' or e1.message == 'TypeError')
+            except AttributeError, e2:
+                raised_errors.append(e2)
+                self.assertTrue(e2.message == 'AttributeError')
+            except:
+                pass
+        self.assertEqual(len(raised_errors), 3)
 
