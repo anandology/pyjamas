@@ -1,3 +1,4 @@
+from __pyjamas__ import JS
 from pyjamas import Location
 
 closingListeners = None
