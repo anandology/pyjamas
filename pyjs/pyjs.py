@@ -286,12 +286,16 @@ class Translator:
                 self._class(child)
             elif isinstance(child, ast.Import):
                 importName = child.names[0][0]
+                importAs = child.names[0][1]
                 if importName == '__pyjamas__': # special module to help make pyjamas modules loadable in the python interpreter
                     pass
                 elif importName.endswith('.js'):
-                   self.imported_js.add(importName)
+                    self.imported_js.add(importName)
                 else:
-                   self.add_imported_module(strip_py(importName))
+                    self.add_imported_module(strip_py(importName))
+                    if importAs:
+                        tnode = ast.Assign([ast.AssName(importAs, "OP_ASSIGN", child.lineno)], ast.Name(strip_py(importName), child.lineno), child.lineno)
+                        self._assign(tnode, None, True)
             elif isinstance(child, ast.From):
                 if child.modname == '__pyjamas__': # special module to help make pyjamas modules loadable in the python interpreter
                     pass
@@ -725,6 +729,8 @@ if (typeof %s != 'undefined') {
                 call_name = "pyjslib.isFunction"
             elif v.node.name in self.local_arg_stack[-1] and \
                  len(self.local_arg_stack) == 1:
+                call_name = self.modpfx() + v.node.name
+            elif v.node.name in self.top_level_vars:
                 call_name = self.modpfx() + v.node.name
             else:
                 call_name = v.node.name
@@ -1436,6 +1442,9 @@ if (typeof %s != 'undefined') {
                 self.add_imported_module(module_name)
             else:
                 self.imported_classes[name[0]] = node.modname
+            if name[1]:
+                tnode = ast.Assign([ast.AssName(name[1], "OP_ASSIGN", node.lineno)], ast.Name(module_name, node.lineno), node.lineno)
+                self._assign(tnode, None, True)
 
 
     def _compare(self, node, current_klass):

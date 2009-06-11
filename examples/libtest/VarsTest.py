@@ -1,5 +1,7 @@
 import UnitTest
 import foo
+import foo as myfoo
+from foo import foo_value as myfoo_value, get_foo_value as myget_foo_value
 
 module_global_x = 1
 
@@ -69,3 +71,13 @@ class VarsTest(UnitTest.UnitTest):
         self.assertEqual(b.X, 1) # declared instance works
         self.assertEqual(foo.Bar.X, 1) # XXX due to __Bar, this fails.  hmmm...
         self.assertEqual(foo.bar.X, 1)
+
+    def testImport(self):
+        global myfoo, myfoo_value, myget_foo_value
+        a0 = foo.foo_value
+        a1 = 2
+        self.assertEqual(myfoo_value, a0)
+        self.assertEqual(myget_foo_value(), a0)
+        myfoo.foo_value = a1
+        self.assertEqual(myfoo_value, a0)
+        self.assertEqual(myget_foo_value(), a1)
