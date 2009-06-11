@@ -113,7 +113,7 @@ class HTMLTable(Panel):
             column = DOM.getChildIndex(tr, td)
 
             for listener in self.tableListeners:
-                if listener.onCellClicked:
+                if hasattr(listener, 'onCellClicked'):
                     listener.onCellClicked(self, row, column)
                 else:
                     listener(self)

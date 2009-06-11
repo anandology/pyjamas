@@ -30,7 +30,8 @@ class HTMLPanel(ComplexPanel):
             return
         ComplexPanel.add(self, widget, element)
 
-    def createUniqueId(self):
+    @staticmethod
+    def createUniqueId():
         global HTMLPanel_sUid
 
         HTMLPanel_sUid += 1

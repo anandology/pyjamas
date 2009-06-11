@@ -68,7 +68,7 @@ class Canvas(Widget):
         #print "Label onBrowserEvent", type, self.clickListeners
         if type == "click":
             for listener in self.clickListeners:
-                if listener.onClick: listener.onClick(self)
+                if hasattr(listener, 'onClick'): listener.onClick(self)
                 else: listener(self, event)
         elif type == "blur" or type == "focus":
             FocusListener.fireFocusEvent(self.focusListeners, self, event)

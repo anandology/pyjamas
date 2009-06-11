@@ -186,4 +186,3 @@ class UIObject:
         """Reverse the operation of sinkEvents.  See L{UIObject.sinkevents}."""
         DOM.sinkEvents(self.getElement(), ~eventBitsToRemove & DOM.getEventsSunk(self.getElement()))
 
-

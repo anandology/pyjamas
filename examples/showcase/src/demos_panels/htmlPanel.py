@@ -12,8 +12,8 @@ class HtmlPanelDemo(SimplePanel):
     def __init__(self):
         SimplePanel.__init__(self)
 
-        id1 = HTMLPanel.createUniqueId(self)
-        id2 = HTMLPanel.createUniqueId(self)
+        id1 = HTMLPanel.createUniqueId()
+        id2 = HTMLPanel.createUniqueId()
 
         panel = HTMLPanel('<b>This is some HTML</b><br>' +
                           'First widget:<span id="' + id1 + '"></span><br>' +

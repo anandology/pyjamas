@@ -75,7 +75,7 @@ class ListBox(FocusWidget):
     def onBrowserEvent(self, event):
         if DOM.eventGetType(event) == "change":
             for listener in self.changeListeners:
-                if listener.onChange:
+                if hasattr(listener, 'onChange'):
                     listener.onChange(self)
                 else:
                     listener(self)

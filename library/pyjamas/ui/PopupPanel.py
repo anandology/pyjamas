@@ -57,7 +57,7 @@ class PopupPanel(SimplePanel):
         self.rootpanel.remove(self)
         self.onHideImpl(self.getElement())
         for listener in self.popupListeners:
-            if listener.onPopupClosed: listener.onPopupClosed(self, autoClosed)
+            if hasattr(listener, 'onPopupClosed'): listener.onPopupClosed(self, autoClosed)
             else: listener(self, autoClosed)
 
     def isModal(self):

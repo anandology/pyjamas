@@ -165,7 +165,7 @@ class Showcase:
                 break
 
         if demo != None:
-            exampleID = HTMLPanel.createUniqueId(self)
+            exampleID = HTMLPanel.createUniqueId()
 
             html = []
             html.append('<div style="padding:20px">')

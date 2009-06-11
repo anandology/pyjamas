@@ -51,7 +51,7 @@ class Images(Sink):
     def onError(self, sender):
         pass
 
-    def onLoad(self, sender):
+    def onLoad(self, sender=None):
         self.loadingImage.setUrl(self.baseURL() + "images/blanksearching.gif")
 
     def loadImage(self, index):

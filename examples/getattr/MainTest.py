@@ -26,7 +26,8 @@ class MainTest:
         s.message = "called from storing object using global_printable"
         s.call()
 
-    def printable(self,text):
+    @staticmethod
+    def printable(text):
         log(text)
     
 class StoringObject:

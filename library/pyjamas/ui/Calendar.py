@@ -207,8 +207,8 @@ class Calendar(FocusPanel):
         def autoCerrar(self, sender):
             proxy.setVisible(False)
             
-        id1 = HTMLPanel.createUniqueId(None)
-        id2 = HTMLPanel.createUniqueId(None)
+        id1 = HTMLPanel.createUniqueId()
+        id2 = HTMLPanel.createUniqueId()
         self.bottomPanel = HTMLPanel("<div style='text-align: right;'><span id=" + id2 + "><span id=" + id1 + "></div>")            
         self.btnToday = Button(self.otherLabels['lblToday'], TodayListener(self))
         self.bottomPanel.add(self.btnToday, id1)

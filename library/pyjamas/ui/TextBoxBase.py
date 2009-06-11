@@ -79,7 +79,7 @@ class TextBoxBase(FocusWidget):
         type = DOM.eventGetType(event)
         if type == "change":
             for listener in self.changeListeners:
-                if listener.onChange: listener.onChange(self)
+                if hasattr(listener, 'onChange'): listener.onChange(self)
                 else: listener(self)
 
     def removeChangeListener(self, listener):
