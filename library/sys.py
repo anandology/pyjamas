@@ -27,40 +27,40 @@ def addoverride(module_name, path):
     global overrides
     overrides[module_name] = path
 
-def addstack(linedebug):
-    JS("""
-        if (pyjslib.bool((sys.stacktrace === null))) {
-            sys.stacktrace = new pyjslib.List([]);
-        }
-        sys.stacktrace.append(linedebug);
-    """)
-def popstack():
-    JS("""
-        sys.stacktrace.pop()
-    """)
-
-def printstack():
-    JS("""
-        var res = '';
-
-        var __l = sys.stacktrace.__iter__();
-        try {
-            while (true) {
-                var l = __l.next();
-                res +=  ( l + '\\n' ) ;
-            }
-        } catch (e) {
-            if (e != pyjslib.StopIteration) {
-                throw e;
-            }
-        }
-
-        return res;
-    """)
-
 __last_exception__ = None
+__last_exception_stack__ = None
 def exc_info():
     global __last_exception__
     if not __last_exception__:
         return (None, None, None)
     return (__last_exception__.error.__class__, __last_exception__.error, None)
+
+# save_exception_stack is totally javascript, to prevent trackstack pollution
+JS("""sys.save_exception_stack = function () {
+    var save_stack = [];
+    for (var needle in trackstack) {
+        var t = new Object();
+        for (var p in trackstack[needle]) {
+            t[p] = trackstack[needle][p];
+        }
+        save_stack.push(t);
+        sys.__last_exception_stack__ = save_stack;
+    }
+return null;
+}""")
+
+def trackstackstr(stack=None):
+    global __last_exception_stack__
+    if stack is None:
+        stack = __last_exception_stack__
+    if not stack:
+        return ''
+    stackstrings = []
+    for s in list(stack):
+        JS("var msg = eval(s.module + '.__track_lines__[' + s.lineno + ']');")
+        if msg:
+            stackstrings.append(msg)
+        else:
+            stackstrings.append('%s.py, line %d' % (s.module, s.lineno))
+    return '\n'.join(stackstrings)
+

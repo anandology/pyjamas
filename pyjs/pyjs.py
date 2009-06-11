@@ -20,6 +20,8 @@ import compiler
 from compiler import ast
 import os
 import copy
+from cStringIO import StringIO
+import re
 
 # the standard location for builtins (e.g. pyjslib) can be
 # over-ridden by changing this.  it defaults to sys.prefix
@@ -186,6 +188,7 @@ def gen_mod_import(parentName, importName, dynamic=1):
     #pyjs_ajax_eval("%(n)s.cache.js", null, true);
     return """
     pyjslib.import_module(sys.loadpath, '%(p)s', '%(n)s', %(d)d, false);
+    track.module='%(p)s';
     """ % ({'p': parentName, 'd': dynamic, 'n': importName}) + \
     mod_var_name_decl(importName)
 
@@ -193,7 +196,8 @@ class Translator:
 
     def __init__(self, mn, module_name, raw_module_name, src, debug, mod, output,
                  dynamic=0, optimize=False, findFile=None,
-                 function_argument_checking=True, attribute_checking=True):
+                 function_argument_checking=True, attribute_checking=True,
+                 source_tracking=True, store_source=True):
 
         if module_name:
             self.module_prefix = module_name + "."
@@ -222,6 +226,8 @@ class Translator:
         self.findFile = findFile
         self.function_argument_checking = function_argument_checking
         self.attribute_checking = attribute_checking
+        self.source_tracking = source_tracking
+        self.store_source = store_source
         self.local_prefix = None
 
         if module_name.find(".") >= 0:
@@ -234,43 +240,19 @@ class Translator:
         print >>self.output, "    "+UU+module_name+".__was_initialized__ = true;"
         print >>self.output, UU+"if (__mod_name__ == null) __mod_name__ = '%s';" % (mn)
         print >>self.output, UU+"%s.__name__ = __mod_name__;" % (raw_module_name)
+        if self.source_tracking:
+            print >> self.output, UU+"%s.__track_lines__ = new Array();" % raw_module_name
 
         decl = mod_var_name_decl(raw_module_name)
         if decl:
             print >>self.output, decl
 
+        self.track_lines = {}
 
-        if self.debug:
-            haltException = self.module_prefix + "HaltException"
-            print >>self.output, haltException + ' = function () {'
-            print >>self.output, '  this.message = "Program Halted";'
-            print >>self.output, '  this.name = "' + haltException + '";'
-            print >>self.output, '}'
-            print >>self.output, ''
-            print >>self.output, haltException + ".prototype.__str__ = function()"
-            print >>self.output, '{'
-            print >>self.output, 'return this.message ;'
-            print >>self.output, '}'
-
-            print >>self.output, haltException + ".prototype.toString = function()"
-            print >>self.output, '{'
-            print >>self.output, 'return this.name + ": \\"" + this.message + "\\"";'
-            print >>self.output, '}'
-
-            isHaltFunction = self.module_prefix + "IsHaltException"
-            print >>self.output, """
-    %s = function (s) {
-      var suffix="HaltException";
-      if (s.length < suffix.length) {
-        //alert(s + " " + suffix);
-        return false;
-      } else {
-        var ss = s.substring(s.length, (s.length - suffix.length));
-        //alert(s + " " + suffix + " " + ss);
-        return ss == suffix;
-      }
-    }
-                """ % isHaltFunction
+        save_output = self.output
+        buffered_output = StringIO()
+        self.output = buffered_output
+        
         if self.attribute_checking:
             print >>self.output, 'try {'
         for child in mod.node:
@@ -279,7 +261,11 @@ class Translator:
             elif isinstance(child, ast.Class):
                 self.top_level_classes.add(child.name)
 
+        mod.lineno = 1
+        self.track_lineno(mod, True)
         for child in mod.node:
+            self.has_js_return = False
+            self.track_lineno(child)
             if isinstance(child, ast.Function):
                 self._function(child, False)
             elif isinstance(child, ast.Class):
@@ -340,6 +326,12 @@ class Translator:
         if self.attribute_checking:
             print >> self.output, "} catch (pyjs_attr_err) {pyjslib._attr_err_check(pyjs_attr_err)};"
 
+        self.output = save_output
+        if self.source_tracking and self.store_source:
+            for l in self.track_lines.keys():
+                print >> self.output, UU+'''%s.__track_lines__[%d] = "%s";''' % (raw_module_name, l, self.track_lines[l].replace('"', '\"'))
+
+        print >> self.output, buffered_output.getvalue()
         print >> self.output, "return this;\n"
         print >> self.output, "}; /* end %s */ \n"  % module_name
 
@@ -368,6 +360,34 @@ class Translator:
         print >> self.output, gen_mod_import(self.raw_module_name,
                                              strip_py(importName),
                                              self.dynamic)
+    def track_lineno(self, node, module=False):
+        if self.source_tracking and node.lineno:
+            if module:
+                print >> self.output, "track.module='%s';" % self.raw_module_name
+            print >> self.output, "track.lineno=%d;" % node.lineno
+            #print >> self.output, "if (track.module!='%s') debugger;" % self.raw_module_name
+            self.track_lines[node.lineno] = self.get_line_trace(node)
+
+    def track_call(self, call_code):
+        if self.debug:
+            call_code = """\
+(function(){\
+var pyjs_dbg_retry = 0;
+try{var pyjs_dbg_res=%s;}catch(pyjs_dbg_err){
+    if (pyjs_dbg_err.name != 'StopIteration') {
+        debugger;
+    }
+    switch (pyjs_dbg_retry) {
+        case 1:
+            pyjs_dbg_res=%s;
+            break;
+        case 2:
+            break;
+        default:
+            throw pyjs_dbg_err;
+    }
+}return pyjs_dbg_res})()""" % (call_code, call_code)
+        return call_code
 
     def _instance_method_init(self, node, arg_names, varargname, kwargname,
                               current_klass, output=None):
@@ -637,6 +657,15 @@ if (typeof %s != 'undefined') {
             print >>self.output, "});"
 
     def _function(self, node, local=False):
+        source_tracking = save_source_tracking = self.source_tracking
+        save_has_js_return = self.has_js_return
+        self.has_js_return = False
+        if node.decorators:
+            for d in node.decorators:
+                if d.name == "noSourceTracking":
+                    source_tracking = False
+        self.source_tracking = source_tracking
+
         if local:
             function_name = node.name
             self.add_local_arg(function_name)
@@ -671,8 +700,21 @@ if (typeof %s != 'undefined') {
         # stack of local variable names for this function call
         self.local_arg_stack.append(local_arg_names)
 
+        save_output = self.output
+        self.output = StringIO()
+        if self.source_tracking:
+            print >>self.output, "track={module:'%s',lineno:%d};trackstack.push(track);" % (self.raw_module_name, node.lineno)
+        self.track_lineno(node, True)
         for child in node.code:
             self._stmt(child, None)
+        if self.source_tracking and self.has_js_return:
+            self.source_tracking = False
+            self.output = StringIO()
+            for child in node.code:
+                self._stmt(child, None)
+        captured_output = self.output.getvalue()
+        self.output = save_output
+        print >>self.output, captured_output,
 
         # remove the top local arg names
         self.local_arg_stack.pop()
@@ -680,21 +722,31 @@ if (typeof %s != 'undefined') {
         # we need to return null always, so it is not undefined
         lastStmt = [p for p in node.code][-1]
         if not isinstance(lastStmt, ast.Return):
+            if self.source_tracking:
+                print >>self.output, "trackstack.pop();track=trackstack.pop();trackstack.push(track);"
+            # FIXME: check why not on on self._isNativeFunc(lastStmt)
             if not self._isNativeFunc(lastStmt):
                 print >>self.output, "    return null;"
 
         print >>self.output, "};"
         print >>self.output, "%s.__name__ = '%s';\n" % (function_name, node.name)
 
-
         self._kwargs_parser(node, function_name, normal_arg_names, None)
+        self.has_js_return = save_has_js_return
+        self.source_tracking = save_source_tracking
 
 
     def _return(self, node, current_klass):
         expr = self.expr(node.value, current_klass)
         # in python a function call always returns None, so we do it
         # here too
-        print >>self.output, "    return " + expr + ";"
+        self.track_lineno(node)
+        if self.source_tracking:
+            print >>self.output, "var pyjs__ret = " + expr + ";"
+            print >>self.output, "trackstack.pop();track=trackstack.pop();trackstack.push(track);"
+            print >>self.output, "    return pyjs__ret;"
+        else:
+            print >>self.output, "    return " + expr + ";"
 
 
     def _break(self, node, current_klass):
@@ -705,11 +757,14 @@ if (typeof %s != 'undefined') {
         print >>self.output, "    continue;"
 
 
+    re_return = re.compile(r'\breturn\b')
     def _callfunc(self, v, current_klass):
 
         if isinstance(v.node, ast.Name):
             if v.node.name == NATIVE_JS_FUNC_NAME:
                 if isinstance(v.args[0], ast.Const):
+                    if self.re_return.search(v.args[0].value):
+                        self.has_js_return = True
                     return v.args[0].value
                 else:
                     raise TranslationError("native js functions only support constant strings",v.node)
@@ -795,19 +850,20 @@ if (typeof %s != 'undefined') {
             try: call_this, method_name = call_name.rsplit(".", 1)
             except ValueError:
                 # Must be a function call ...
-                return ("pyjs_kwargs_function_call("+call_name+", "
+                call_code = ("pyjs_kwargs_function_call("+call_name+", "
                                   + star_arg_name 
                                   + ", " + dstar_arg_name
                                   + ", ["+fn_args+"]"
-                                  + ")" )
+                                  + ")")
             else:
-                return ("pyjs_kwargs_method_call("+call_this+", '"+method_name+"', "
+                call_code = ("pyjs_kwargs_method_call("+call_this+", '"+method_name+"', "
                                   + star_arg_name 
                                   + ", " + dstar_arg_name
                                   + ", ["+fn_args+"]"
                                   + ")")
         else:
-            return call_name + "(" + ", ".join(call_args) + ")"
+            call_code = call_name + "(" + ", ".join(call_args) + ")"
+        return self.track_call(call_code)
 
     def _print(self, node, current_klass):
         if self.optimize:
@@ -816,12 +872,15 @@ if (typeof %s != 'undefined') {
         for ch4 in node.nodes:
             arg = self.expr(ch4, current_klass)
             call_args.append(arg)
-
-        print >>self.output, "pyjslib.printFunc([", ', '.join(call_args), "],", int(isinstance(node, ast.Printnl)), ");"
+        print >>self.output, self.track_call("pyjslib.printFunc([%s], %d);" % (', '.join(call_args), int(isinstance(node, ast.Printnl))))
 
     def _tryExcept(self, node, current_klass, top_level=False):
 
         pyjs_try_err = 'pyjs_try_err'
+        if self.source_tracking:
+            if top_level:
+                print >>self.output, "{"
+            print >>self.output, "var pyjs__trackstack_size = trackstack.length;"
         if self.attribute_checking:
             print >>self.output, "    try {try {"
         else:
@@ -834,6 +893,17 @@ if (typeof %s != 'undefined') {
         else:
             print >> self.output, "    } catch(%s) {" % pyjs_try_err
         print >> self.output, "        sys.__last_exception__ = {error: %s, module: %s, try_lineno: %s};" % (pyjs_try_err, self.raw_module_name, node.lineno)
+        if self.source_tracking:
+            print >>self.output, """\
+sys.save_exception_stack();
+if (trackstack.length > pyjs__trackstack_size) {
+    trackstack = trackstack.slice(0,pyjs__trackstack_size);
+    track = trackstack.slice(-1)[0];
+}
+track.module='%s';""" % self.raw_module_name
+            if top_level:
+                print >>self.output, "}"
+
 
         self.add_local_arg(pyjs_try_err)
         else_str = "        "
@@ -1073,6 +1143,9 @@ if (typeof %s != 'undefined') {
 
         arg_names = list(node.argnames)
 
+        source_tracking = save_source_tracking = self.source_tracking
+        save_has_js_return = self.has_js_return
+        self.has_js_return = False
         classmethod = False
         staticmethod = False
         if node.decorators:
@@ -1081,7 +1154,10 @@ if (typeof %s != 'undefined') {
                     classmethod = True
                 elif d.name == "staticmethod":
                     staticmethod = True
-        elif node.name == '__new__':
+                elif d.name == "noSourceTracking":
+                    source_tracking = False
+        self.source_tracking = source_tracking
+        if node.name == '__new__':
             staticmethod = True
 
         if (classmethod or staticmethod) and len(arg_names) > 0:
@@ -1130,8 +1206,30 @@ if (typeof %s != 'undefined') {
         # stack of local variable names for this function call
         self.local_arg_stack.append(local_arg_names)
 
+        save_output = self.output
+        self.output = StringIO()
+        if self.source_tracking:
+            print >>self.output, "track={module:%s, lineno:%d};trackstack.push(track);" % (self.raw_module_name, node.lineno)
+        self.track_lineno(node, True)
         for child in node.code:
             self._stmt(child, current_klass)
+        if self.source_tracking and self.has_js_return:
+            self.source_tracking = False
+            self.output = StringIO()
+            for child in node.code:
+                self._stmt(child, None)
+        captured_output = self.output.getvalue()
+        self.output = save_output
+        print >>self.output, captured_output,
+
+
+        # we need to return null always, so it is not undefined
+        lastStmt = [p for p in node.code][-1]
+        if not isinstance(lastStmt, ast.Return):
+            if self.source_tracking:
+                print >>self.output, "trackstack.pop();track=trackstack.pop();trackstack.push(track);"
+            if not self._isNativeFunc(lastStmt):
+                print >>self.output, "    return null;"
 
         # remove the top local arg names
         self.local_arg_stack.pop()
@@ -1145,6 +1243,8 @@ if (typeof %s != 'undefined') {
 
         self.method_self = None
         self.method_imported_globals = set()
+        self.has_js_return = save_has_js_return
+        self.source_tracking = save_source_tracking
 
     def _isNativeFunc(self, node):
         if isinstance(node, ast.Discard):
@@ -1155,9 +1255,7 @@ if (typeof %s != 'undefined') {
         return False
 
     def _stmt(self, node, current_klass):
-        debugStmt = self.debug and not self._isNativeFunc(node)
-        if debugStmt:
-            print >>self.output, '  try {'
+        self.track_lineno(node)
 
         if isinstance(node, ast.Return):
             self._return(node, current_klass)
@@ -1196,47 +1294,32 @@ if (typeof %s != 'undefined') {
         else:
             raise TranslationError("unsupported type (in _stmt)", node)
 
-        if debugStmt:
 
-            lt = self.get_line_trace(node)
-
-            haltException = self.module_prefix + "HaltException"
-            isHaltFunction = self.module_prefix + "IsHaltException"
-
-            print >>self.output, '  } catch (__err) {'
-            print >>self.output, '      if (' + isHaltFunction + '(__err.name)) {'
-            print >>self.output, '          throw __err;'
-            print >>self.output, '      } else if (__err == pyjslib.StopIteration) {'
-            print >>self.output, '          throw __err;'
-            print >>self.output, '      } else {'
-            print >>self.output, "          st = sys.printstack() + "\
-                                                + '"%s"' % lt + "+ '\\n' ;"
-            print >>self.output, '          alert("' + "Error in " \
-                                                + lt + '"' \
-                                                + '+"\\n"+__err.name+": "+__err.message'\
-                                                + '+"\\n\\nStack trace:\\n"' \
-                                                + '+st' \
-                                                + ');'
-            print >>self.output, '          debugger;'
-
-            print >>self.output, '          throw new ' + self.module_prefix + "HaltException();"
-            print >>self.output, '      }'
-            print >>self.output, '  }'
-
+    def get_start_line(self, node, lineno):
+        if node:
+            if hasattr(node, "lineno") and node.lineno != None and node.lineno < lineno:
+                lineno = node.lineno
+            if hasattr(node, 'getChildren'):
+                for n in node.getChildren():
+                    lineno = self.get_start_line(n, lineno)
+        return lineno
 
     def get_line_trace(self, node):
-        lineNum = "Unknown"
+        lineNum1 = "Unknown"
         srcLine = ""
         if hasattr(node, "lineno"):
             if node.lineno != None:
-                lineNum = node.lineno
-                srcLine = self.src[min(lineNum, len(self.src))-1]
+                lineNum2 = node.lineno
+                lineNum1 = self.get_start_line(node, lineNum2)
+                srcLine = self.src[min(lineNum1, len(self.src))-1].strip()
+                if lineNum1 < lineNum2:
+                    srcLine += ' ... ' + self.src[min(lineNum2, len(self.src))-1].strip()
                 srcLine = srcLine.replace('\\', '\\\\')
                 srcLine = srcLine.replace('"', '\\"')
                 srcLine = srcLine.replace("'", "\\'")
 
         return self.raw_module_name + ".py, line " \
-               + str(lineNum) + ":"\
+               + str(lineNum1) + ":"\
                + "\\n" \
                + "    " + srcLine
 
@@ -1325,7 +1408,7 @@ if (typeof %s != 'undefined') {
                     raise TranslationError("must have one sub (in _assign)", v)
                 idx = self.expr(v.subs[0], current_klass)
                 value = self.expr(node.expr, current_klass)
-                print >>self.output, "    " + obj + ".__setitem__(" + idx + ", " + value + ");"
+                print >>self.output, "    " + self.track_call(obj + ".__setitem__(" + idx + ", " + value + ");")
                 return
             else:
                 raise TranslationError("unsupported flag (in _assign)", v)
@@ -1336,7 +1419,7 @@ if (typeof %s != 'undefined') {
             print >>self.output, "    var " + tempName + " = " + \
                                  self.expr(node.expr, current_klass) + ";"
             for index,child in enumerate(v.getChildNodes()):
-                rhs = tempName + ".__getitem__(" + str(index) + ")"
+                rhs = self.track_call(tempName + ".__getitem__(" + str(index) + ")")
 
                 if isinstance(child, ast.AssAttr):
                     lhs = _lhsFromAttr(child, current_klass)
@@ -1350,8 +1433,8 @@ if (typeof %s != 'undefined') {
                                                    "(in _assign)", child)
                         idx = self.expr(child.subs[0], current_klass)
                         value = self.expr(node.expr, current_klass)
-                        print >>self.output, "    " + obj + ".__setitem__(" \
-                                           + idx + ", " + rhs + ");"
+                        print >>self.output, "    " + self.track_call(obj + ".__setitem__(" \
+                                           + idx + ", " + rhs + ");")
                         continue
                 print >>self.output, "    " + lhs + " = " + rhs + ";"
             return
@@ -1367,26 +1450,18 @@ if (typeof %s != 'undefined') {
     def _discard(self, node, current_klass):
         
         if isinstance(node.expr, ast.CallFunc):
-            debugStmt = self.debug and not self._isNativeFunc(node)
-            if debugStmt and isinstance(node.expr.node, ast.Name) and \
-               node.expr.node.name == 'import_wait':
-               debugStmt = False
-            if debugStmt:
-                st = self.get_line_trace(node)
-                print >>self.output, "sys.addstack('%s');\n" % st
             if isinstance(node.expr.node, ast.Name) and node.expr.node.name == NATIVE_JS_FUNC_NAME:
                 if len(node.expr.args) != 1:
                     raise TranslationError("native javascript function %s must have one arg" % NATIVE_JS_FUNC_NAME, node.expr)
                 if not isinstance(node.expr.args[0], ast.Const):
                     raise TranslationError("native javascript function %s must have constant arg" % NATIVE_JS_FUNC_NAME, node.expr)
                 raw_js = node.expr.args[0].value
+                if self.re_return.search(raw_js):
+                    self.has_js_return = True
                 print >>self.output, raw_js
             else:
                 expr = self._callfunc(node.expr, current_klass)
                 print >>self.output, "    " + expr + ";"
-
-            if debugStmt:
-                print >>self.output, "sys.popstack();\n"
 
         elif isinstance(node.expr, ast.Const):
             if node.expr.value is not None: # Empty statements generate ignore None
@@ -1417,7 +1492,7 @@ if (typeof %s != 'undefined') {
         if test:
             expr = self.expr(test, current_klass)
 
-            print >>self.output, "    " + keyword + " (pyjslib.bool(" + expr + ")) {"
+            print >>self.output, "    " + keyword + " (" + self.track_call("pyjslib.bool(" + expr + ")")+") {"
         else:
             print >>self.output, "    " + keyword + " {"
 
@@ -1458,11 +1533,11 @@ if (typeof %s != 'undefined') {
         rhs = self.expr(rhs_node, current_klass)
 
         if op == "==":
-            return "pyjslib.eq(%s, %s)" % (lhs, rhs)
+            return self.track_call("pyjslib.eq(%s, %s)" % (lhs, rhs))
         if op == "in":
-            return rhs + ".__contains__(" + lhs + ")"
+            return self.track_call(rhs + ".__contains__(" + lhs + ")")
         elif op == "not in":
-            return "!" + rhs + ".__contains__(" + lhs + ")"
+            return "!" + self.track_call(rhs + ".__contains__(" + lhs + ")")
         elif op == "is":
             op = "==="
         elif op == "is not":
@@ -1503,8 +1578,9 @@ if (typeof %s != 'undefined') {
                     assign_name = "temp_" + child_name
                 self.add_local_arg(child_name)
                 assign_tuple += """
-                var %(child_name)s %(op)s %(assign_name)s.__getitem__(%(i)i);
-                """ % locals()
+                var %(child_name)s %(op)s """ % locals()
+                assign_tuple += self.track_call("""%(assign_name)s.__getitem__(%(i)i);
+                """ % locals())
                 i += 1
         else:
             raise TranslationError("unsupported type (in _for)", node.assign)
@@ -1531,11 +1607,15 @@ if (typeof %s != 'undefined') {
         lhs = "var " + assign_name
         iterator_name = "__" + assign_name
 
+        if self.source_tracking:
+            print >>self.output, "var pyjs__trackstack_size=trackstack.length;"
         print >>self.output, """
-        var %(iterator_name)s = %(list_expr)s.__iter__();
+        var %(iterator_name)s = """ % locals() + self.track_call("%(list_expr)s.__iter__();" % locals()) + """
         try {
             while (true) {
-                %(lhs)s %(op)s %(iterator_name)s.next();
+                %(lhs)s %(op)s""" % locals(),
+        print >>self.output, self.track_call("%(iterator_name)s.next();"% locals())
+        print >>self.output, """\
                 %(assign_tuple)s
         """ % locals()
         for node in node.body.nodes:
@@ -1548,11 +1628,17 @@ if (typeof %s != 'undefined') {
             }
         }
         """ % locals()
+        if self.source_tracking:
+            print >>self.output, """if (trackstack.length > pyjs__trackstack_size) {
+    trackstack = trackstack.slice(0,pyjs__trackstack_size);
+    track = trackstack.slice(-1)[0];
+}
+track.module='%s';""" % self.raw_module_name
 
 
     def _while(self, node, current_klass):
         test = self.expr(node.test, current_klass)
-        print >>self.output, "    while (pyjslib.bool(" + test + ")) {"
+        print >>self.output, "    while (" + self.track_call("pyjslib.bool(" + test + ")") + ") {"
         if isinstance(node.body, ast.Stmt):
             for child in node.body.nodes:
                 self._stmt(child, current_klass)
@@ -1598,7 +1684,7 @@ if (typeof %s != 'undefined') {
         if isinstance(node.left, ast.Const) and isinstance(node.left.value, StringType):
            #self.imported_js.add("sprintf.js") # Include the sprintf functionality if it is used
            #return "sprintf("+self.expr(node.left, current_klass) + ", " + self.expr(node.right, current_klass)+")"
-           return "pyjslib.sprintf("+self.expr(node.left, current_klass) + ", " + self.expr(node.right, current_klass)+")"
+           return self.track_call("pyjslib.sprintf("+self.expr(node.left, current_klass) + ", " + self.expr(node.right, current_klass)+")")
         return self.expr(node.left, current_klass) + " % " + self.expr(node.right, current_klass)
 
     def _power(self, node, current_klass):
@@ -1625,7 +1711,7 @@ if (typeof %s != 'undefined') {
     def _subscript(self, node, current_klass):
         if node.flags == "OP_APPLY":
             if len(node.subs) == 1:
-                return self.expr(node.expr, current_klass) + ".__getitem__(" + self.expr(node.subs[0], current_klass) + ")"
+                return self.track_call(self.expr(node.expr, current_klass) + ".__getitem__(" + self.expr(node.subs[0], current_klass) + ")")
             else:
                 raise TranslationError("must have one sub (in _subscript)", node)
         else:
@@ -1633,12 +1719,12 @@ if (typeof %s != 'undefined') {
 
     def _subscript_stmt(self, node, current_klass):
         if node.flags == "OP_DELETE":
-            print >>self.output, "    " + self.expr(node.expr, current_klass) + ".__delitem__(" + self.expr(node.subs[0], current_klass) + ");"
+            print >>self.output, "    " + self.track_call(self.expr(node.expr, current_klass) + ".__delitem__(" + self.expr(node.subs[0], current_klass) + ");")
         else:
             raise TranslationError("unsupported flag (in _subscript)", node)
 
     def _list(self, node, current_klass):
-        return "new pyjslib.List([" + ", ".join([self.expr(x, current_klass) for x in node.nodes]) + "])"
+        return self.track_call("new pyjslib.List([" + ", ".join([self.expr(x, current_klass) for x in node.nodes]) + "])")
 
     def _dict(self, node, current_klass):
         items = []
@@ -1646,17 +1732,17 @@ if (typeof %s != 'undefined') {
             key = self.expr(x[0], current_klass)
             value = self.expr(x[1], current_klass)
             items.append("[" + key + ", " + value + "]")
-        return "new pyjslib.Dict([" + ", ".join(items) + "])"
+        return self.track_call("new pyjslib.Dict([" + ", ".join(items) + "])")
 
     def _tuple(self, node, current_klass):
-        return "new pyjslib.Tuple([" + ", ".join([self.expr(x, current_klass) for x in node.nodes]) + "])"
+        return self.track_call("new pyjslib.Tuple([" + ", ".join([self.expr(x, current_klass) for x in node.nodes]) + "])")
 
     def _lambda(self, node, current_klass):
         if node.varargs:
             raise TranslationError("varargs are not supported in Lambdas", node)
         if node.kwargs:
             raise TranslationError("kwargs are not supported in Lambdas", node)
-        res = cStringIO.StringIO()
+        res = StringIO()
         arg_names = list(node.argnames)
         function_args = ", ".join(arg_names)
         for child in node.getChildNodes():
@@ -1732,10 +1818,18 @@ if (typeof %s != 'undefined') {
         elif isinstance(node, ast.Getattr):
             attr = self._getattr(node, current_klass)
             if self.attribute_checking and attr.find('.') >= 0:
-                if attr.find('(') < 0:
+                if attr.find('(') < 0 and not self.debug:
                     attr = "("+attr+"===undefined?(function(){throw new TypeError('"+attr+" is undefined')})():"+attr+")"
                 else:
-                    attr = "(function(){var pyjs__testval="+attr+";return (pyjs__testval===undefined?(function(){throw new TypeError('"+attr.replace("'", "\\'")+" is undefined')})():pyjs__testval)})()"
+                    attr_ = attr
+                    if self.source_tracking or self.debug:
+                        _source_tracking = self.source_tracking
+                        _debug = self.debug
+                        self.source_tracking = self.debug = False
+                        attr_ = self._getattr(node, current_klass)
+                        self.source_tracking = _source_tracking
+                        self.debug = _debug
+                    attr = "(function(){var pyjs__testval="+attr+";return (pyjs__testval===undefined?(function(){throw new TypeError('"+attr_.replace("'", "\\'")+" is undefined')})():pyjs__testval)})()"
             return attr
         elif isinstance(node, ast.List):
             return self._list(node, current_klass)
@@ -1752,18 +1846,22 @@ if (typeof %s != 'undefined') {
 
 
 
-import cStringIO
-
-def translate(file_name, module_name, debug=False, function_argument_checking=True,
-              attribute_checking=True):
+def translate(file_name, module_name, debug=False, 
+              function_argument_checking=True,
+              attribute_checking=True, source_tracking=True,
+              store_source=True,
+             ):
     f = file(file_name, "r")
     src = f.read()
     f.close()
-    output = cStringIO.StringIO()
+    output = StringIO()
     mod = compiler.parseFile(file_name)
     t = Translator(module_name, module_name, module_name, src, debug, mod, output,
                    function_argument_checking=function_argument_checking,
-                   attribute_checking=attribute_checking)
+                   attribute_checking=attribute_checking,
+                   source_tracking=source_tracking,
+                   store_source=store_source
+                  )
     return output.getvalue()
 
 
@@ -1864,7 +1962,9 @@ class AppTranslator:
 
     def __init__(self, library_dirs=[], parser=None, dynamic=False,
                  optimize=False, verbose=True, function_argument_checking=True,
-                 attribute_checking=True):
+                 attribute_checking=True, source_tracking=True,
+                 store_source=True,
+                ):
         self.extension = ".py"
         self.optimize = optimize
         self.library_modules = []
@@ -1874,6 +1974,8 @@ class AppTranslator:
         self.verbose = verbose
         self.function_argument_checking = function_argument_checking
         self.attribute_checking = attribute_checking
+        self.source_tracking = source_tracking
+        self.store_source = store_source
 
         if not parser:
             self.parser = PlatformParser()
@@ -1910,7 +2012,7 @@ class AppTranslator:
 
         file_name = self.findFile(module_name + self.extension)
 
-        output = cStringIO.StringIO()
+        output = StringIO()
 
         f = file(file_name, "r")
         src = f.read()
@@ -1928,7 +2030,10 @@ class AppTranslator:
         t = Translator(mn, module_name, module_name,
                        src, debug, mod, output, self.dynamic, self.optimize,
                        self.findFile, function_argument_checking=self.function_argument_checking,
-                       attribute_checking = self.attribute_checking)
+                       attribute_checking = self.attribute_checking,
+                       source_tracking = self.source_tracking,
+                       store_source = self.store_source,
+                      )
 
         module_str = output.getvalue()
         imported_js.update(set(t.imported_js))
@@ -1945,8 +2050,8 @@ class AppTranslator:
 
     def translate(self, module_name, is_app=True, debug=False,
                   library_modules=[]):
-        app_code = cStringIO.StringIO()
-        lib_code = cStringIO.StringIO()
+        app_code = StringIO()
+        lib_code = StringIO()
         imported_js = set()
         self.library_modules = []
         self.overrides = {}
