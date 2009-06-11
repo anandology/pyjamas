@@ -102,6 +102,27 @@ def setTitle(title):
     $doc.title = title;
     """)
 
+def setOnError(onError):
+    if (not callable(onError)):
+        raise TypeError("object is not callable")
+    JS("""\
+    $wnd.onerror=function(msg, url, linenumber){
+        return onError(msg, url, linenumber);
+    }
+    """)
+
+def onError(msg, url, linenumber):
+    dialog=JS("""$doc.createElement("div")""")
+    dialog.className='errordialog'
+    # Note: trackstackstr is a global javascript array
+    tracestr = sys.trackstackstr(trackstack.slice(0,-1))
+    tracestr = tracestr.replace("\n", "<br />\n&nbsp;&nbsp;&nbsp;")
+    dialog.innerHTML='&nbsp;<b style="color:red">JavaScript Error: </b>' + \
+        msg +' at line number ' + linenumber +'. Please inform webmaster.' + \
+        '<br />&nbsp;&nbsp;&nbsp;' + tracestr
+    JS("""$doc.body.appendChild(dialog)""")
+    return True
+
 # TODO: call fireClosedAndCatch
 def onClosed():
     fireClosedImpl()
@@ -157,6 +178,7 @@ def init_listeners():
         resizeListeners = []
 
 def init():
+    global onError
     init_listeners()
     JS("""
     $wnd.__pygwt_initHandlers(
@@ -174,6 +196,7 @@ def init():
         }
     );
     """)
+    setOnError(onError)
 
 init()
 
