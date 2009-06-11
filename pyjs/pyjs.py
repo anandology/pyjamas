@@ -908,7 +908,6 @@ track.module='%s';""" % self.raw_module_name
             if top_level:
                 print >>self.output, "}"
 
-
         self.add_local_arg(pyjs_try_err)
         else_str = "        "
         for handler in node.handlers:
@@ -939,6 +938,10 @@ track.module='%s';""" % self.raw_module_name
                 self._stmt(stmt, current_klass)
             print >> self.output, "        }",
             else_str = "else "
+
+        if node.handlers[-1][0]:
+            # No default catcher, create one to fall through
+            print >> self.output, "%s{ throw %s }" % (else_str, pyjs_try_err)
 
         if node.else_ != None:
             print >>self.output, "    } finally {"

@@ -148,3 +148,11 @@ class ExceptionTest(UnitTest):
                 self.assertTrue(e3.message == 'LookupError')
         self.assertEqual(len(raised_errors), len(raise_errors))
 
+        try:
+            try:
+                raise TypeError('TypeError')
+            except KeyError, e:
+                self.fail("Got KeyError")
+            self.fail("TypeError should not be ignored")
+        except TypeError, e:
+            self.assertEqual(e.message, 'TypeError')
