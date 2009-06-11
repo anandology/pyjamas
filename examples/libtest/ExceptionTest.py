@@ -128,6 +128,66 @@ class ExceptionTest(UnitTest):
         self.assertEqual(repr(e), "IndexError('test',)")
 
     def testSyntax(self):
+        try:
+            pass
+        except KeyError, e:
+            pass
+        except (TypeError, LookupError), e:
+            pass
+        except:
+            pass
+        finally:
+            pass
+
+        try:
+            a = 1
+        except:
+            a = 2
+        else:
+            a = 3
+        finally:
+            self.assertEqual(a, 3)
+            a = 4
+        self.assertEqual(a, 4)
+
+        try:
+            a = 11
+            raise KeyError('test')
+        except:
+            a = 12
+        else:
+            a = 13
+        finally:
+            self.assertEqual(a, 12)
+            a = 14
+        self.assertEqual(a, 14)
+
+        try:
+            a = 1
+        finally:
+            a = 2
+        self.assertEqual(a, 2)
+        try:
+            a = 1
+            try:
+                b = 1
+            except:
+                b = 2
+            else:
+                b = 3
+            finally:
+                self.assertEqual(b, 3)
+                b = 4
+        except:
+            a = 2
+        else:
+            a = 3
+        finally:
+            self.assertEqual(a, 3)
+            a = 4
+        self.assertEqual(a, 4)
+        self.assertEqual(b, 4)
+
         sys.exc_clear()
         try:
             raise

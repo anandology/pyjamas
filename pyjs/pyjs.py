@@ -253,6 +253,7 @@ class Translator:
             print >>self.output, decl
 
         self.track_lines = {}
+        self.stacksize_depth = 0
 
         save_output = self.output
         buffered_output = StringIO()
@@ -315,6 +316,8 @@ class Translator:
                self._print(child, None)
             elif isinstance(child, ast.TryExcept):
                 self._tryExcept(child, None, True)
+            elif isinstance(child, ast.TryFinally):
+                self._tryFinally(child, None, True)
             elif isinstance(child, ast.Raise):
                 self._raise(child, None)
             elif isinstance(child, ast.Stmt):
@@ -329,7 +332,7 @@ class Translator:
         #    print >> self.output, "\t"+UU+self.modpfx()+"__"+className+"_initialize();"
         #print >> self.output, "};\n"
         if self.attribute_checking:
-            print >> self.output, "} catch (pyjs_attr_err) {pyjslib._attr_err_check(pyjs_attr_err)};"
+            print >> self.output, "} catch (pyjs_attr_err) {throw pyjslib._errorMapping(pyjs_attr_err)};"
 
         self.output = save_output
         if self.source_tracking and self.store_source:
@@ -885,76 +888,90 @@ if (typeof %s != 'undefined') {
             call_args.append(arg)
         print >>self.output, self.track_call("pyjslib.printFunc([%s], %d);" % (', '.join(call_args), int(isinstance(node, ast.Printnl))))
 
+    def _tryFinally(self, node, current_klass, top_level=False):
+        body = node.body
+        if not isinstance(node.body, ast.TryExcept):
+            body = node
+        node.body.final = node.final
+        self._tryExcept(body, current_klass, top_level=top_level)
+        
     def _tryExcept(self, node, current_klass, top_level=False):
 
+        self.stacksize_depth += 1
         pyjs_try_err = 'pyjs_try_err'
         if self.source_tracking:
-            if top_level:
-                print >>self.output, "{"
-            print >>self.output, "var pyjs__trackstack_size = trackstack.length;"
-        if self.attribute_checking:
-            print >>self.output, "    try {try {"
-        else:
-            print >>self.output, "    try {"
+            print >>self.output, "var pyjs__trackstack_size_%d = trackstack.length;" % self.stacksize_depth
+        print >>self.output, "    try {"
 
         for stmt in node.body.nodes:
             self._stmt(stmt, current_klass)
+        if hasattr(node, 'else_') and node.else_:
+            print >> self.output, "        throw pyjslib.TryElse;"
+        print >> self.output, "    } catch(%s) {" % pyjs_try_err
+        if hasattr(node, 'else_') and node.else_:
+            print >> self.output, """\
+        if (pyjs_try_err.name == pyjslib.TryElse.name) {"""
+
+            for stmt in node.else_:
+                self._stmt(stmt, current_klass)
+
+            print >> self.output, """        } else {"""
         if self.attribute_checking:
-            print >> self.output, "    } catch (pyjs_attr_err) {pyjslib._attr_err_check(pyjs_attr_err)}} catch(%s) {" % pyjs_try_err
-        else:
-            print >> self.output, "    } catch(%s) {" % pyjs_try_err
+            print >> self.output, """pyjs_try_err = pyjslib._errorMapping(pyjs_try_err);"""
         print >> self.output, "        sys.__last_exception__ = {error: %s, module: %s, try_lineno: %s};" % (pyjs_try_err, self.raw_module_name, node.lineno)
         if self.source_tracking:
             print >>self.output, """\
 sys.save_exception_stack();
-if (trackstack.length > pyjs__trackstack_size) {
-    trackstack = trackstack.slice(0,pyjs__trackstack_size);
+if (trackstack.length > pyjs__trackstack_size_%d) {
+    trackstack = trackstack.slice(0,pyjs__trackstack_size_%d);
     track = trackstack.slice(-1)[0];
 }
-track.module='%s';""" % self.raw_module_name
-            if top_level:
-                print >>self.output, "}"
+track.module='%s';""" % (self.stacksize_depth, self.stacksize_depth, self.raw_module_name)
 
         self.add_local_arg(pyjs_try_err)
-        else_str = "        "
-        for handler in node.handlers:
-            lineno = handler[2].nodes[0].lineno
-            expr = handler[0]
-            as_ = handler[1]
-            if as_:
-                errName = as_.name
-            else:
-                errName = 'err'
-
-            if not expr:
-                print >> self.output, "%s{" % else_str
-            else:
-                if expr.lineno:
-                    lineno = expr.lineno
-                l = []
-                if isinstance(expr, ast.Tuple):
-                    for x in expr.nodes:
-                        l.append("(%s.__name__ == %s.__name__)" % (pyjs_try_err, self.expr(x, current_klass)))
+        if hasattr(node, 'handlers'):
+            else_str = "        "
+            for handler in node.handlers:
+                lineno = handler[2].nodes[0].lineno
+                expr = handler[0]
+                as_ = handler[1]
+                if as_:
+                    errName = as_.name
                 else:
-                    l = [ "%s.__name__ == %s.__name__" % (pyjs_try_err, self.expr(expr, current_klass)) ]
-                print >> self.output, "%sif (%s) {" % (else_str, "||".join(l))
-            print >> self.output, "               sys.__last_exception__.except_lineno = %d;" % lineno
-            tnode = ast.Assign([ast.AssName(errName, "OP_ASSIGN", lineno)], ast.Name(pyjs_try_err, lineno), lineno)
-            self._assign(tnode, current_klass, top_level)
-            for stmt in handler[2]:
-                self._stmt(stmt, current_klass)
+                    errName = 'err'
+
+                if not expr:
+                    print >> self.output, "%s{" % else_str
+                else:
+                    if expr.lineno:
+                        lineno = expr.lineno
+                    l = []
+                    if isinstance(expr, ast.Tuple):
+                        for x in expr.nodes:
+                            l.append("(%s.__name__ == %s.__name__)" % (pyjs_try_err, self.expr(x, current_klass)))
+                    else:
+                        l = [ "%s.__name__ == %s.__name__" % (pyjs_try_err, self.expr(expr, current_klass)) ]
+                    print >> self.output, "%sif (%s) {" % (else_str, "||".join(l))
+                print >> self.output, "               sys.__last_exception__.except_lineno = %d;" % lineno
+                tnode = ast.Assign([ast.AssName(errName, "OP_ASSIGN", lineno)], ast.Name(pyjs_try_err, lineno), lineno)
+                self._assign(tnode, current_klass, top_level)
+                for stmt in handler[2]:
+                    self._stmt(stmt, current_klass)
+                print >> self.output, "        }",
+                else_str = "else "
+
+            if node.handlers[-1][0]:
+                # No default catcher, create one to fall through
+                print >> self.output, "%s{ throw %s }" % (else_str, pyjs_try_err)
+        if hasattr(node, 'else_') and node.else_:
             print >> self.output, "        }",
-            else_str = "else "
 
-        if node.handlers[-1][0]:
-            # No default catcher, create one to fall through
-            print >> self.output, "%s{ throw %s }" % (else_str, pyjs_try_err)
-
-        if node.else_ != None:
+        if hasattr(node, 'final'):
             print >>self.output, "    } finally {"
-            for stmt in node.else_:
+            for stmt in node.final:
                 self._stmt(stmt, current_klass)
         print >>self.output, "    }"
+        self.stacksize_depth -= 1
 
     # XXX: change use_getattr to True to enable "strict" compilation
     # but incurring a 100% performance penalty. oops.
@@ -1327,6 +1344,8 @@ track.module='%s';""" % self.raw_module_name
            self._print(node, current_klass)
         elif isinstance(node, ast.TryExcept):
             self._tryExcept(node, current_klass)
+        elif isinstance(node, ast.TryFinally):
+            self._tryFinally(node, current_klass)
         elif isinstance(node, ast.Raise):
             self._raise(node, current_klass)
         else:
@@ -1646,7 +1665,8 @@ track.module='%s';""" % self.raw_module_name
         iterator_name = "__" + assign_name
 
         if self.source_tracking:
-            print >>self.output, "var pyjs__trackstack_size=trackstack.length;"
+            self.stacksize_depth += 1
+            print >>self.output, "var pyjs__trackstack_size_%d=trackstack.length;" % self.stacksize_depth
         print >>self.output, """
         var %(iterator_name)s = """ % locals() + self.track_call("%(list_expr)s.__iter__();" % locals()) + """
         try {
@@ -1667,12 +1687,12 @@ track.module='%s';""" % self.raw_module_name
         }
         """ % locals()
         if self.source_tracking:
-            print >>self.output, """if (trackstack.length > pyjs__trackstack_size) {
-    trackstack = trackstack.slice(0,pyjs__trackstack_size);
+            print >>self.output, """if (trackstack.length > pyjs__trackstack_size_%d) {
+    trackstack = trackstack.slice(0,pyjs__trackstack_size_%d);
     track = trackstack.slice(-1)[0];
 }
-track.module='%s';""" % self.raw_module_name
-
+track.module='%s';""" % (self.stacksize_depth, self.stacksize_depth, self.raw_module_name)
+            self.stacksize_depth -= 1
 
     def _while(self, node, current_klass):
         test = self.expr(node.test, current_klass)

@@ -292,13 +292,18 @@ class IndexError(LookupError):
     name = "IndexError"
 
 JS("""
-pyjslib._attr_err_check = function(err) {
+pyjslib._errorMapping = function(err) {
     if (err instanceof(ReferenceError) || err instanceof(TypeError)) {
-        throw pyjslib.AttributeError(err.message);
-    } else {
-        throw err;
+        return pyjslib.AttributeError(err.message);
     }
-};
+    return err
+}
+
+pyjslib.TryElse = function () { };
+pyjslib.TryElse.prototype = new Error();
+pyjslib.TryElse.name = 'TryElse';
+pyjslib.TryElse.__name__ = 'TryElse';
+pyjslib.TryElse.message = 'TryElse';
 
 pyjslib.StopIteration = function () { };
 pyjslib.StopIteration.prototype = new Error();
