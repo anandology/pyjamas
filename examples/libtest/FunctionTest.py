@@ -15,6 +15,9 @@ def aProcedure():
         return "something"
     #this is a comment
 
+def aFunctionWithOnlyDoc():
+    """Only a doc string"""
+
 def aFunctionReturningNone():
     return None
 

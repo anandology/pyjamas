@@ -724,7 +724,10 @@ if (typeof %s != 'undefined') {
         self.local_arg_stack.pop()
 
         # we need to return null always, so it is not undefined
-        lastStmt = [p for p in node.code][-1]
+        if node.code.nodes:
+            lastStmt = node.code.nodes[-1]
+        else:
+            lastStmt = None
         if not isinstance(lastStmt, ast.Return):
             if self.source_tracking:
                 print >>self.output, "trackstack.pop();track=trackstack.pop();trackstack.push(track);"
@@ -1233,7 +1236,10 @@ track.module='%s';""" % self.raw_module_name
 
 
         # we need to return null always, so it is not undefined
-        lastStmt = [p for p in node.code][-1]
+        if node.code.nodes:
+            lastStmt = node.code.nodes[-1]
+        else:
+            lastStmt = None
         if not isinstance(lastStmt, ast.Return):
             if self.source_tracking:
                 print >>self.output, "trackstack.pop();track=trackstack.pop();trackstack.push(track);"
