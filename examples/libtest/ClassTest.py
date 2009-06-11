@@ -202,6 +202,18 @@ class ClassTest(UnitTest):
         self.failIf(isinstance(c, (ExampleClass, ExampleParentObject)))
         self.failUnless(isinstance(c, (ExampleClass, (ExampleChildClass,))))
 
+    def testInstanceChecking(self):
+        try:
+            ExampleChildClass.get_x(ExampleChildClass())
+            self.assertTrue(True)
+        except TypeError, e:
+            self.fail(e)
+        try:
+            ExampleChildClass.get_x(ExampleClass())
+            self.fail('Failed to raise error for invalid instance')
+        except TypeError, e:
+            self.assertTrue(e.message.find('get_x() must be called') >= 0, e.message)
+
     def testMetaClass(self):
         Klass = type('MyClass', (object,), {'method': method, 'x': 5})
         instance = Klass()
@@ -323,6 +335,9 @@ class ExampleParentClass:
     @classmethod
     def sampleClassMethod(cls, arg):
         return cls, arg
+
+    def get_x(self):
+        return self.x
 
 class ExampleChildClass(ExampleParentClass):
     pass

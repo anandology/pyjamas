@@ -22,6 +22,7 @@ import os
 import copy
 from cStringIO import StringIO
 import re
+import md5
 
 # the standard location for builtins (e.g. pyjslib) can be
 # over-ridden by changing this.  it defaults to sys.prefix
@@ -360,6 +361,10 @@ class Translator:
         print >> self.output, gen_mod_import(self.raw_module_name,
                                              strip_py(importName),
                                              self.dynamic)
+
+    def md5(self, node):
+        return md5.new(self.raw_module_name + str(node.lineno) + repr(node)).hexdigest()
+
     def track_lineno(self, node, module=False):
         if self.source_tracking and node.lineno:
             if module:
@@ -419,7 +424,6 @@ try{var pyjs_dbg_res=%s;}catch(pyjs_dbg_err){
         print >> output, """\
     if (this.__is_instance__ === true) {\
 """
-        #var %s = (arguments.callee.instance == null ? this : arguments.callee.instance);
         if arg_names:
             print >> output, """\
         var %s = this;\
@@ -469,16 +473,16 @@ try{var pyjs_dbg_res=%s;}catch(pyjs_dbg_err){
         print >> output, """\
     }\
 """
-        if self.function_argument_checking:
+        if arg_names and self.function_argument_checking:
             print >> output, """\
     if (pyjs_options.arg_instance_type) {
-        if (arguments.callee !== arguments.callee.__class__[arguments.callee.__name__]) {
-            if (!pyjs___isinstance(self, arguments.callee.__class__.slice(1))) {
-                pyjs__exception_func_instance_expected(arguments.callee.__name__, arguments.callee.__class__.__name__, self);
+        if (%(self)s.prototype.__md5__ !== '%(__md5__)s') {
+            if (!pyjslib._isinstance(%(self)s, arguments.callee.__class__)) {
+                pyjs__exception_func_instance_expected(arguments.callee.__name__, arguments.callee.__class__.__name__, %(self)s);
             }
         }
     }\
-"""
+""" % {'self': arg_names[0], '__md5__': current_klass.__md5__}
 
     def _static_method_init(self, node, arg_names, varargname, kwargname,
                             current_klass, output=None):
@@ -1067,6 +1071,7 @@ track.module='%s';""" % self.raw_module_name
     def _class(self, node):
         class_name = self.modpfx() + uuprefix(node.name, 1)
         current_klass = Klass(class_name, class_name)
+        current_klass.__md5__ = self.md5(node)
         init_method = None
         for child in node.code:
             if isinstance(child, ast.Function):
@@ -1105,7 +1110,8 @@ track.module='%s';""" % self.raw_module_name
         self.local_prefix = None
         print >>self.output, UU+class_name + """ = (function(){
     var cls_instance = pyjs__class_instance('%s');
-    var %s = new Object();""" % (node.name, local_prefix,)
+    var %s = new Object();
+    %s.__md5__ = '%s';""" % (node.name, local_prefix, local_prefix, current_klass.__md5__)
 
         for child in node.code:
             if isinstance(child, ast.Pass):

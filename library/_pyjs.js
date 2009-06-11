@@ -207,16 +207,6 @@ function pyjs__subclasses__(cls_obj) {
     return cls_obj.__sub_classes__;
 }
 
-function pyjs___isinstance(object_, classinfo) {
-    if (object_.__is_instance__ !== true) {
-        return false;
-    }
-    for (var c in object_.__mro__) {
-        if (object_.__mro__[c] == classinfo.prototype) return true;
-    }
-    return false;
-}
-
 function pyjs__mro_merge(seqs) {
     var res = new Array();
     var i = 0;
@@ -320,7 +310,7 @@ function pyjs__class_function(cls_fn, prop, bases) {
     }
     if (pyjs_options.arg_instance_type) {
         if (arguments.callee !== arguments.callee.__class__[arguments.callee.__name__]) {
-            if (!pyjs___isinstance(self, arguments.callee.__class__.slice(1))) {
+            if (!pyjslib._isinstance(self, arguments.callee.__class__.slice(1))) {
                 pyjs__exception_func_instance_expected(arguments.callee.__name__, arguments.callee.__class__.__name__, self);
             }
         }
