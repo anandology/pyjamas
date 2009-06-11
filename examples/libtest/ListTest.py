@@ -202,6 +202,11 @@ class ListTest(UnitTest):
             self.assertEqual(item, i)
             i += 1
 
+        i = 0
+        for item in [0,1,2,3][1:-1]:
+            i += item
+        self.assertEqual(i, 3)
+
     def testIter(self):
 
         l = [0,1,2,3]
