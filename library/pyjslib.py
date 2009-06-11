@@ -1356,13 +1356,14 @@ def getattr(obj, name, default_=None):
         }
     }
     if (!pyjslib.isFunction(obj[name])) return obj[name];
+    var method = obj[name];
     var fnwrap = function() {
         var args = [];
         for (var i = 0; i < arguments.length; i++) {
           args.push(arguments[i]);
         }
-        return obj[name].apply(obj,args);
-        }
+        return method.apply(obj,args);
+    }
     fnwrap.__name__ = name;
     fnwrap.parse_kwargs = obj.parse_kwargs;
     return fnwrap;

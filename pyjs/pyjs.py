@@ -1826,9 +1826,27 @@ track.module='%s';""" % self.raw_module_name
             return self._subscript(node, current_klass)
         elif isinstance(node, ast.Getattr):
             attr = self._getattr(node, current_klass)
-            if self.attribute_checking and attr.find('.') >= 0:
+            attr_ = attr.split('.')
+            attr_left = '.'.join(attr_[:-1])
+            attr_right = attr_[-1]
+            pdict = {\
+                    'attr': attr, 
+                    'attr_left': attr_left, 
+                    'attr_right': attr_right,
+                }
+            attr_code = """\
+(typeof %(attr)s == 'function' && %(attr_left)s.__is_instance__?\
+pyjslib.getattr(%(attr_left)s, '%(attr_right)s'):\
+%(attr)s)\
+""" % {'attr': attr, 'attr_left': attr_left, 'attr_right': attr_right}
+            attr_code = attr_code % pdict
+            pdict['attr_code'] = attr_code
+
+            if not self.attribute_checking:
+                attr = attr_code
+            else:
                 if attr.find('(') < 0 and not self.debug:
-                    attr = "("+attr+"===undefined?(function(){throw new TypeError('"+attr+" is undefined')})():"+attr+")"
+                    attr = """(%(attr)s===undefined?(function(){throw new TypeError('%(attr)s is undefined')})():%(attr_code)s)""" % pdict
                 else:
                     attr_ = attr
                     if self.source_tracking or self.debug:

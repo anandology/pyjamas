@@ -1,6 +1,8 @@
 from UnitTest import UnitTest
 
 class Foo:
+    a = 1
+    b = [1,2]
 
     def __init__(self, v):
         self.v = v
@@ -79,3 +81,18 @@ class AttributeTest(UnitTest):
             self.fail("No Error raised on foo.bar")
         except:
             self.assertTrue(True, "Exception raised")
+
+    def testInstanceAttr(self):
+        foo = Foo(1)
+        foo_fn = foo.getV
+        t = foo_fn()
+        self.assertEqual(t, 1)
+        foo.getV = 2
+        t = foo_fn()
+        self.assertEqual(t, 1)
+        t = foo.a
+        foo.a = 2
+        self.assertEqual(t, 1)
+        t = foo.b
+        foo.b.append(3)
+        self.assertEqual(t[2], 3)
