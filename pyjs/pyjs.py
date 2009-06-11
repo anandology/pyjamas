@@ -160,7 +160,11 @@ class Klass:
 
 class TranslationError(Exception):
     def __init__(self, message, node):
-        self.message = "line %s:\n%s\n%s" % (node.lineno, message, node)
+        if node:
+            lineno = node.lineno
+        else:
+            lineno = "Unknown"
+        self.message = "line %s:\n%s\n%s" % (lineno, message, node)
 
     def __str__(self):
         return self.message
