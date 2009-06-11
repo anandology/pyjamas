@@ -35,6 +35,10 @@ def exc_info():
         return (None, None, None)
     return (__last_exception__.error.__class__, __last_exception__.error, None)
 
+def exc_clear():
+    global __last_exception__
+    __last_exception__ = None
+
 # save_exception_stack is totally javascript, to prevent trackstack pollution
 JS("""sys.save_exception_stack = function () {
     var save_stack = [];

@@ -1147,11 +1147,30 @@ track.module='%s';""" % self.raw_module_name
         self._assign(node, current_klass, True)
 
     def _raise(self, node, current_klass):
-        if node.expr2:
-            raise TranslationError("More than one expression unsupported",
+        if node.expr3:
+            raise TranslationError("More than two expressions unsupported",
                                    node)
-        print >> self.output, "throw (%s);" % self.expr(
-            node.expr1, current_klass)
+        if node.expr1:
+            if node.expr2:
+                print >> self.output, """
+    var pyjs__raise_expr1 = %(expr1)s;
+    var pyjs__raise_expr2 = %(expr2)s;
+    if (pyjs__raise_expr2 !== null && pyjs__raise_expr1.__is_instance__ === true) {
+        throw (pyjslib.TypeError('instance exception may not have a separate value'))
+    }
+    if (pyjslib.isinstance(pyjs__raise_expr2, pyjslib.Tuple)) {
+        throw (pyjs__raise_expr1.apply(pyjs__raise_expr1, pyjs__raise_expr2.getArray()));
+    } else {
+        throw (pyjs__raise_expr1(pyjs__raise_expr2));
+    }
+""" % {'expr1': self.expr(node.expr1, current_klass),
+        'expr2': self.expr(node.expr2, current_klass),
+       }
+            else:
+                print >> self.output, "throw (%s);" % self.expr(
+                    node.expr1, current_klass)
+        else:
+            print >> self.output, "throw (sys.__last_exception__?sys.__last_exception__.error:pyjslib.TypeError('exceptions must be classes, instances, or strings (deprecated), not NoneType'));"
 
     def _method(self, node, current_klass, class_name, class_name_, local_prefix):
         # reset global var scope

@@ -128,6 +128,32 @@ class ExceptionTest(UnitTest):
         self.assertEqual(repr(e), "IndexError('test',)")
 
     def testSyntax(self):
+        sys.exc_clear()
+        try:
+            raise
+            self.fail("No error raised on 'raise' after 'sys.exc_clear()'")
+        except TypeError, e:
+            self.assertEqual(e.message, 'exceptions must be classes, instances, or strings (deprecated), not NoneType')
+        except:
+            e = sys.exc_info()
+            self.fail('TypeError expected, got %s' % e[0])
+
+        try:
+            raise KeyError, 'test'
+            self.fail('No error raised')
+        except KeyError, e:
+            self.assertEqual(e.message, 'test')
+        except:
+            e = sys.exc_info()
+            self.fail('KeyError expected, got %s' % e[0])
+            e = e[1]
+
+        try:
+            raise
+        except:
+            err = sys.exc_info()
+            self.assertEqual(e.message, err[1].message)
+
         raise_errors = [KeyError('KeyError'), TypeError('TypeError'),
                         AttributeError('AttributeError'),
                         LookupError('LookupError')]
@@ -144,7 +170,7 @@ class ExceptionTest(UnitTest):
                 self.assertTrue(e2.message == 'AttributeError')
             except:
                 e3 = sys.exc_info()[1]
-		raised_errors.append(e3)
+                raised_errors.append(e3)
                 self.assertTrue(e3.message == 'LookupError')
         self.assertEqual(len(raised_errors), len(raise_errors))
 
