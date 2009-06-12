@@ -651,9 +651,7 @@ def make_deps(app_name, deps, mod_list):
             for m, dl in deps.items():
                 for d in dl:
                     if m in deps.get(d, []):
-                        raise Exception('Circular Imports found: \n%s %s -> %s %s'
-                                        % (m, dl, d, deps[d]))
-            #raise Exception('Could not calculate dependencies: \n%s' % deps)
+                        deps[m] = []
             break
         last_len = l_deps
         #print "modlist", mod_list

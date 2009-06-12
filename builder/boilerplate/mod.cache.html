@@ -29,7 +29,6 @@
 
     if (sys.appname != '%(mod_name)s')
     {
-        modules['%(mod_name)s'] = %(mod_name)s(name);
         if (module_load_request['%(mod_name)s'] < 3) {
             module_load_request['%(mod_name)s'] = 3;
         }

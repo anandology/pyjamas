@@ -1,6 +1,7 @@
 from UnitTest import UnitTest
 
 import imports.child
+import imports.circ1
 
 class ClassTest(UnitTest):
     def __init__(self):
@@ -295,6 +296,11 @@ class ClassTest(UnitTest):
             self.assertTrue(True)
 
     def testImportTest(self):
+        self.assertEqual(imports.exec_order[0], 'circ1-1')
+        self.assertEqual(imports.exec_order[1], 'circ2-1')
+        self.assertEqual(imports.exec_order[2], 'circ2-2')
+        self.assertEqual(imports.exec_order[3], 'circ1-2')
+
         # import imports.child # FIXME: if the import statement is here in stead of at the top, this fails on compiling
         teststring = 'import test'
         try:

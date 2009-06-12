@@ -192,10 +192,10 @@ def mod_var_name_decl(raw_module_name):
 def gen_mod_import(parentName, importName, dynamic=1):
     #pyjs_ajax_eval("%(n)s.cache.js", null, true);
     return """
+    modules['%(n)s'] = %(n)s();
     pyjslib.import_module(sys.loadpath, '%(p)s', '%(n)s', %(d)d, false);
     track.module='%(p)s';
-    """ % ({'p': parentName, 'd': dynamic, 'n': importName}) + \
-    mod_var_name_decl(importName)
+    """ % ({'p': parentName, 'd': dynamic, 'n': importName})
 
 class Translator:
 
@@ -353,21 +353,19 @@ class Translator:
 
     def add_imported_module(self, importName):
 
-        if importName in self.imported_modules:
-            return
-        self.imported_modules.append(importName)
-        name = importName.split(".")
-        if len(name) != 1:
-            # add the name of the module to the namespace,
-            # but don't add the short name to imported_modules
-            # because then the short name would be attempted to be
-            # added to the dependencies, and it's half way up the
-            # module import directory structure!
-            child_name = name[-1]
-            self.imported_modules_as.append(child_name) 
-        print >> self.output, gen_mod_import(self.raw_module_name,
-                                             strip_py(importName),
-                                             self.dynamic)
+        names = importName.split(".")
+        if not importName in self.imported_modules:
+            self.imported_modules.append(importName)
+        _importName = ''
+        for name in names:
+            _importName += name
+            if not _importName in self.imported_modules:
+                self.imported_modules.append(_importName)
+            print >> self.output, gen_mod_import(self.raw_module_name,
+                                                 strip_py(_importName),
+                                                 self.dynamic)
+            _importName += '.'
+        print >> self.output, UU+'''%s.%s = %s;''' % (self.raw_module_name, names[0], names[0])
 
     def md5(self, node):
         return md5.new(self.raw_module_name + str(node.lineno) + repr(node)).hexdigest()
@@ -1121,8 +1119,7 @@ track.module='%s';""" % (self.stacksize_depth, self.stacksize_depth, self.raw_mo
                     # the bases are not in scope of the class so do not
                     # pass our class to self._name
                     node_base_name = node_base.attrname
-                    base_class = self._name(node_base.expr, None) + \
-                                 "." + node_base.attrname
+                    base_class = self.expr(node_base, None)
                 else:
                     raise TranslationError("unsupported type (in _class)", node_base)
                 base_classes.append((node_base_name, base_class))
