@@ -94,7 +94,7 @@ class Face:
     def setHTML(self, html):
         """Set the face's contents as html."""
         self.face = DOM.createDiv()
-        UIObject.setStyleName(self, self.face, self.STYLENAME_HTML_FACE, True)
+        UIObject.setStyleName(self.button, self.face, self.STYLENAME_HTML_FACE, True)
         DOM.setInnerHTML(self.face, html)
         self.button.updateButtonFace()
     
@@ -114,7 +114,7 @@ class Face:
         @param text text to set as face's contents
         """
         self.face = DOM.createDiv()
-        UIObject.setStyleName(self, self.face, self.STYLENAME_HTML_FACE, True)
+        UIObject.setStyleName(self.button, self.face, self.STYLENAME_HTML_FACE, True)
         DOM.setInnerText(self.face, text)
         self.button.updateButtonFace()
         

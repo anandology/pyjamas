@@ -67,11 +67,11 @@ location = None
 
 def getLocation():
     global location
-    JS("""
-    if(!Window.location)
-       Window.location = Location.Location($wnd.location);
-    return Window.location;
-    """)
+    wnd_location = None
+    if not location:
+        JS("""wnd_location = $wnd.location;""")
+        location = Location.Location(wnd_location)
+    return location
  
  
 def getTitle():

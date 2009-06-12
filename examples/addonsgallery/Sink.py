@@ -21,8 +21,6 @@ class SinkInfo:
         self.instance=None
 
     def createInstance(self):
-        if self.object_type.__new__:
-            return self.object_type.__new__()
         return self.object_type()
 
     def getDescription(self):
