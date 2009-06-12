@@ -254,15 +254,6 @@ function pyjs__mro_merge(seqs) {
 function pyjs__class_instance(class_name, module_name) {
     if (typeof module_name == 'undefined') module_name = typeof __mod_name__ == 'undefined' ? '__main__' : __mod_name__;
     var cls_fn = function(){
-        if (typeof arguments[0] == 'function'
-            && arguments[0].__is_instance__ === false) {
-            var instance = function () {};
-            instance.prototype = arguments[0].prototype;
-            instance = new instance();
-            instance.__dict__ = instance.__class__ = instance;
-            instance.__is_instance__ = true;
-            return instance;
-        }
         var instance = cls_fn.__new__.apply(null, [cls_fn]);
         if (instance.__init__) {
             if (instance.__init__.apply(instance, arguments) != null) {
@@ -295,8 +286,35 @@ function pyjs__class_function(cls_fn, prop, bases) {
         for (var p in base) cls_fn[p] = base[p];
     }
     for (var p in prop) cls_fn[p] = prop[p];
-    if (typeof prop.__new__ == 'undefined') {
-        cls_fn.__new__ = cls_fn;
+
+    if (prop.__new__ == null) {
+        cls_fn.__new__ = pyjs__bind_method(cls_fn, '__new__', function(cls) {
+    var instance = function () {};
+    instance.prototype = arguments[0].prototype;
+    instance = new instance();
+    instance.__dict__ = instance.__class__ = instance;
+    instance.__is_instance__ = true;
+    return instance;
+}, function (__kwargs, cls) {
+    if (typeof cls == 'undefined') {
+        cls=__kwargs.cls;
+        delete __kwargs.cls;
+    } else if (pyjs_options.arg_kwarg_multiple_values && typeof __kwargs.cls != 'undefined') {
+        pyjs__exception_func_multiple_values('__new__', 'cls');
+    }
+    if (pyjs_options.arg_kwarg_unexpected_keyword) {
+        for (var i in __kwargs) {
+            pyjs__exception_func_unexpected_keyword('__new__', i);
+        }
+    }
+    var __r = [cls];
+    for (var pyjs__va_arg = 2;pyjs__va_arg < arguments.length;pyjs__va_arg++) {
+        __r.push(arguments[pyjs__va_arg]);
+    }
+
+    return __r;
+});
+
     }
     if (cls_fn['__init__'] == null) {
         cls_fn['__init__'] = pyjs__bind_method(cls_fn, '__init__', function () {

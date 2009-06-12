@@ -185,6 +185,8 @@ class ClassTest(UnitTest):
         self.assertEqual(instance.name, 'MultiInherit1')
         instance = MultiInherit1.__new__(MultiBase)
         self.assertEqual(instance.name, 'MultiBase')
+        instance = object.__new__(MultiInherit1, **{})
+        self.assertEqual(instance.name, 'MultiInherit1')
 
     #def testClassDefinitionOrder(self):
     #    x = ExampleSubclassDefinedBeforeSuperclass()
@@ -460,6 +462,7 @@ class MultiInherit1(MultiBase):
         return self.y
 
 class MultiInherit2(MultiBase):
+    name = 'MultiInherit2'
     def __init__(self, x, z):
         self.z = z
         MultiBase.__init__(self, x) # yes it gets called twice
@@ -468,6 +471,7 @@ class MultiInherit2(MultiBase):
         return self.z
 
 class DoubleInherit(MultiInherit1, MultiInherit2):
+    name = 'DoubleInherit'
     def __init__(self, x, y, z):
         MultiInherit1.__init__(self, x, y) # MultiBase __init__ called once
         MultiInherit2.__init__(self, x, z) # MultiBase __init__ called twice

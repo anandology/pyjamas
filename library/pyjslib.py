@@ -1062,6 +1062,8 @@ def _super(type_, object_or_type = None):
         raise TypeError("super(type, obj): obj must be an instance or subtype of type")
     JS("""
     var fn = pyjs_type('super', type_.__mro__.slice(1), {})
+    fn.__new__ = fn.__mro__[1].__new__;
+    fn.__init__ = fn.__mro__[1].__init__;
     if (object_or_type.__is_instance__ === false) {
         return fn;
     }
