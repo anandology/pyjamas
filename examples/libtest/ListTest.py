@@ -121,6 +121,11 @@ class ListTest(UnitTest):
         self.assertTrue(cmp(l2, l1) == -1)
         self.assertTrue(cmp(l3, l4) == -1)
         self.assertTrue(cmp(l4, l3) == 1)
+        self.assertTrue(l1 == l3, "l1 == l3")
+        self.assertTrue(l1 > l2, "l1 > l2")
+        self.assertTrue(l1 >= l2, "l1 >= l2")
+        self.assertTrue(l2 < l1, "l2 < l1")
+        self.assertTrue(l2 <= l1, "l2 <= l1")
 
     def testCmpListTuple(self):
 
@@ -129,6 +134,8 @@ class ListTest(UnitTest):
 
         self.assertFalse(l1 == t1)
         self.assertTrue(cmp(l1, t1) == -1)
+        self.assertTrue(cmp(t1, l1) == 1)
+        self.assertTrue(l1 != t1, "l1 != t1")
 
     def testSortCmp(self):
         a = A()

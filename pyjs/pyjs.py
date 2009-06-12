@@ -1592,13 +1592,21 @@ track.module='%s';""" % (self.stacksize_depth, self.stacksize_depth, self.raw_mo
 
         if op == "==":
             return self.track_call("pyjslib.eq(%s, %s)" % (lhs, rhs))
+        if op == "<":
+            return self.track_call("(pyjslib.cmp(%s, %s) == -1)" % (lhs, rhs))
+        if op == "<=":
+            return self.track_call("(pyjslib.cmp(%s, %s) != 1)" % (lhs, rhs))
+        if op == ">":
+            return self.track_call("(pyjslib.cmp(%s, %s) == 1)" % (lhs, rhs))
+        if op == ">=":
+            return self.track_call("(pyjslib.cmp(%s, %s) != -1)" % (lhs, rhs))
         if op == "in":
             return self.track_call(rhs + ".__contains__(" + lhs + ")")
         elif op == "not in":
             return "!" + self.track_call(rhs + ".__contains__(" + lhs + ")")
-        elif op == "is":
+        if op == "is":
             op = "==="
-        elif op == "is not":
+        if op == "is not":
             op = "!=="
 
         return "(" + lhs + " " + op + " " + rhs + ")"
