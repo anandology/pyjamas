@@ -1617,11 +1617,11 @@ def sprintf(strng, args):
 
     def formatarg(flags, minlen, precision, conversion, param):
             numeric = True
-            if isUndefined(minlen) or minlen == '':
+            if not minlen:
                 minlen=0
             else:
                 minlen = int(minlen)
-            if isUndefined(precision) or precision == '':
+            if not precision:
                 precision = None
             else:
                 precision = int(precision)
@@ -1737,14 +1737,9 @@ def sprintf(strng, args):
             var left = a[1], flags = a[2];
             var minlen = a[3], precision = a[5], conversion = a[6];
             remainder = a[7];
-/*
-            alert("left: " + left + ", " +
-                  "flags: " + flags + ", " +
-                  "minlen: " + minlen + ", " +
-                  "precision: " + precision + ", " +
-                  "conversion: " + conversion + ", " +
-                  "remainder: " + remainder);
-*/
+            if (typeof minlen == 'undefined') minlen = null;
+            if (typeof precision == 'undefined') precision = null;
+            if (typeof conversion == 'undefined') conversion = null;
 """)
             result.append(left)
             if minlen == '*':
@@ -1770,15 +1765,9 @@ def sprintf(strng, args):
             var left = a[1], key = a[2], flags = a[3];
             var minlen = a[4], precision = a[5], conversion = a[6];
             remainder = a[7];
-/*
-            alert("left: " + left + ", " +
-                  "key: " + key + ", " +
-                  "flags: " + flags + ", " +
-                  "minlen: " + minlen + ", " +
-                  "precision: " + precision + ", " +
-                  "conversion: " + conversion + ", " +
-                  "remainder: " + remainder);
-*/
+            if (typeof minlen == 'undefined') minlen = null;
+            if (typeof precision == 'undefined') precision = null;
+            if (typeof conversion == 'undefined') conversion = null;
 """)
             result.append(left)
             if not arg.has_key(key):
