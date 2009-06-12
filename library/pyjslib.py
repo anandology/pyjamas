@@ -511,26 +511,44 @@ class Class:
 
 @noSourceTracking
 def eq(a,b):
+    # All 'python' classes and types are implemented as objects/functions.
+    # So, for speed, do a typeof X / X.__cmp__  on a/b.
+    # Checking for the existance of .__cmp__ is expensive...
     JS("""
-    if (pyjslib.hasattr(a, "__cmp__")) {
+    if (a === null) {
+        if (b === null) return true;
+        return false;
+    }
+    if (b === null) {
+        return false;
+    }
+    if ((typeof a == 'object' || typeof a == 'function') && typeof a.__cmp__ == 'function') {
         return a.__cmp__(b) == 0;
-    } else if (pyjslib.hasattr(b, "__cmp__")) {
+    } else if ((typeof b == 'object' || typeof b == 'function') && typeof b.__cmp__ == 'function') {
         return b.__cmp__(a) == 0;
     }
     return a == b;
     """)
 
+@noSourceTracking
 def cmp(a,b):
-    if hasattr(a, "__cmp__"):
-        return a.__cmp__(b)
-    elif hasattr(b, "__cmp__"):
-        return -b.__cmp__(a)
-    if a > b:
-        return 1
-    elif b > a:
-        return -1
-    else:
-        return 0
+    JS("""
+    if (a === null) {
+        if (b === null) return 0;
+        return -1;
+    }
+    if (b === null) {
+        return 1;
+    }
+    if ((typeof a == 'object' || typeof a == 'function') && typeof a.__cmp__ == 'function') {
+        return a.__cmp__(b);
+    } else if ((typeof b == 'object' || typeof b == 'function') && typeof b.__cmp__ == 'function') {
+        return -b.__cmp__(a);
+    }
+    if (a > b) return 1;
+    if (b > a) return -1;
+    return 0;
+    """)
 
 @noSourceTracking
 def bool(v):
