@@ -1461,21 +1461,25 @@ def enumerate(sequence):
 
 
 def min(*sequence):
+    if len(sequence) == 1:
+        sequence = sequence[0]
     minValue = None
     for item in sequence:
         if minValue is None:
             minValue = item
-        elif item < minValue:
+        elif cmp(item, minValue) == -1:
             minValue = item
     return minValue
 
 
 def max(*sequence):
+    if len(sequence) == 1:
+        sequence = sequence[0]
     maxValue = None
     for item in sequence:
         if maxValue is None:
             maxValue = item
-        elif item > maxValue:
+        elif cmp(item, maxValue) == 1:
             maxValue = item
     return maxValue
 

@@ -13,6 +13,10 @@ class BuiltinTest(UnitTest):
     def testMinMax(self):
         self.assertEqual(max(1,2,3,4), 4)
         self.assertEqual(min(1,2,3,4), 1)
+        self.assertEqual(max([1,2,3,4]), 4)
+        self.assertEqual(min([1,2,3,4]), 1)
+        self.assertTrue(max([5,3,4],[6,1,2]) == [6,1,2] , "max([5,3,4],[6,1,2])")
+        self.assertTrue(min([5,3,4],[6,1,2]) == [5,3,4] , "min([5,3,4],[6,1,2])")
 
     def testInt(self):
         self.assertEqual(int("5"), 5)
