@@ -192,6 +192,7 @@ Object = object
 
 class Modload:
 
+    @noSourceTracking
     def __init__(self, path, app_modlist, app_imported_fn, dynamic,
                  parent_mod):
         self.app_modlist = app_modlist
@@ -201,6 +202,7 @@ class Modload:
         self.dynamic = dynamic
         self.parent_mod = parent_mod
 
+    @noSourceTracking
     def next(self):
         
         for i in range(len(self.app_modlist[self.idx])):
@@ -811,7 +813,7 @@ class Tuple:
     @noSourceTracking
     def __cmp__(self, l):
         if not isinstance(l, Tuple):
-            return -1
+            return 1
         ll = len(self) - len(l)
         if ll != 0:
             return ll

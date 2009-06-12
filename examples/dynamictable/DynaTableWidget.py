@@ -11,7 +11,7 @@ from pyjamas.ui.RootPanel import RootPanel
 class NavBar(Composite):
 
     def __init__(self, owner):
-	Composite.__init__(self)
+        Composite.__init__(self)
         self.owner = owner
         self.bar = DockPanel()
         self.gotoFirst = Button("&lt;&lt;", self)
