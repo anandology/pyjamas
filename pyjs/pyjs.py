@@ -277,22 +277,11 @@ class Translator:
             elif isinstance(child, ast.Class):
                 self._class(child)
             elif isinstance(child, ast.Import):
-                importName = child.names[0][0]
-                importAs = child.names[0][1]
-                if importName == '__pyjamas__': # special module to help make pyjamas modules loadable in the python interpreter
-                    pass
-                elif importName.endswith('.js'):
-                    self.imported_js.add(importName)
-                else:
-                    self.add_imported_module(strip_py(importName))
-                    if importAs:
-                        tnode = ast.Assign([ast.AssName(importAs, "OP_ASSIGN", child.lineno)], ast.Name(strip_py(importName), child.lineno), child.lineno)
-                        self._assign(tnode, None, True)
+                self._import(child)
             elif isinstance(child, ast.From):
                 if child.modname == '__pyjamas__': # special module to help make pyjamas modules loadable in the python interpreter
                     pass
                 else:
-                    self.add_imported_module(child.modname)
                     self._from(child)
             elif isinstance(child, ast.Discard):
                 self._discard(child, None)
@@ -665,6 +654,18 @@ if (typeof %s != 'undefined') {
         else:
             print >>self.output, "});"
 
+    def _import(self, node):
+        for importName, importAs in node.names:
+            if importName == '__pyjamas__': # special module to help make pyjamas modules loadable in the python interpreter
+                pass
+            elif importName.endswith('.js'):
+                self.imported_js.add(importName)
+            else:
+                self.add_imported_module(strip_py(importName))
+                if importAs:
+                    tnode = ast.Assign([ast.AssName(importAs, "OP_ASSIGN", node.lineno)], ast.Name(strip_py(importName), node.lineno), node.lineno)
+                    self._assign(tnode, None, True)
+
     def _function(self, node, local=False):
         source_tracking = save_source_tracking = self.source_tracking
         save_has_js_return = self.has_js_return
@@ -785,7 +786,7 @@ if (typeof %s != 'undefined') {
             elif v.node.name in self.top_level_classes:
                 call_name = self.modpfx() + v.node.name
             elif self.imported_classes.has_key(v.node.name):
-                call_name = self.imported_classes[v.node.name] + '.' + v.node.name
+                call_name = self.imported_classes[v.node.name]
             elif v.node.name in PYJSLIB_BUILTIN_FUNCTIONS:
                 name = pyjs_builtin_remap.get(v.node.name, v.node.name)
                 call_name = 'pyjslib.' + name
@@ -1041,7 +1042,7 @@ track.module='%s';""" % (self.stacksize_depth, self.stacksize_depth, self.raw_mo
             else:
                 return name
         elif self.imported_classes.has_key(name):
-            return UU+self.imported_classes[name] + '.' + name
+            return UU+self.imported_classes[name]
         elif name in self.top_level_classes:
             return UU+self.modpfx() + name
         elif name in self.module_imports() and return_none_for_module:
@@ -1073,7 +1074,7 @@ track.module='%s';""" % (self.stacksize_depth, self.stacksize_depth, self.raw_mo
         if obj in self.method_imported_globals:
             call_name = UU+self.modpfx() + obj + "." + attr_name
         elif self.imported_classes.has_key(obj):
-            call_name = UU+self.imported_classes[obj] + "." + obj + "." + attr_name
+            call_name = UU+self.imported_classes[obj] + "." + attr_name
         elif obj in self.module_imports():
             call_name = obj + "." + attr_name
         else:
@@ -1111,7 +1112,7 @@ track.module='%s';""" % (self.stacksize_depth, self.stacksize_depth, self.raw_mo
                 if isinstance(node_base, ast.Name):
                     node_base_name = node_base.name
                     if self.imported_classes.has_key(node_base.name):
-                        base_class = self.imported_classes[node_base.name] + '.' + node_base.name
+                        base_class = self.imported_classes[node_base.name]
                     else:
                         #base_class = self.modpfx() + node_base.name
                         base_class = self._name(node_base, None)
@@ -1560,21 +1561,24 @@ track.module='%s';""" % (self.stacksize_depth, self.stacksize_depth, self.raw_mo
 
 
     def _from(self, node):
+        self.add_imported_module(node.modname)
         for name in node.names:
             # look up "hack" in AppTranslator as to how findFile gets here
             module_name = node.modname + "." + name[0]
+            if name[1]:
+                assignName = name[1]
+            else:
+                assignName = name[0]
             try:
                 ff = self.findFile(module_name + ".py")
             except Exception:
                 ff = None
             if ff:
                 self.add_imported_module(module_name)
-            else:
-                self.imported_classes[name[0]] = node.modname
-            if name[1]:
-                tnode = ast.Assign([ast.AssName(name[1], "OP_ASSIGN", node.lineno)], ast.Name(module_name, node.lineno), node.lineno)
-                self._assign(tnode, None, True)
 
+            self.imported_classes[assignName] = node.modname + '.' + name[0]
+            tnode = ast.Assign([ast.AssName(assignName, "OP_ASSIGN", node.lineno)], ast.Name(module_name, node.lineno), node.lineno)
+            self._assign(tnode, None, True)
 
     def _compare(self, node, current_klass):
         lhs = self.expr(node.expr, current_klass)
