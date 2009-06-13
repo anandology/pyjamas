@@ -736,7 +736,27 @@ class List:
 
     @noSourceTracking
     def __str__(self):
-        return repr(self)
+        return self.__repr__()
+
+    @noSourceTracking
+    def toString(self):
+        return self.__repr__()
+
+    def __repr__(self):
+        #r = []
+        #for item in self:
+        #    r.append(repr(item))
+        #return '[' + ', '.join(r) + ']'
+        JS("""
+        var s = "[";
+        for (var i=0; i < self.l.length; i++) {
+            s += pyjslib.repr(self.l[i]);
+            if (i < self.l.length - 1)
+                s += ", ";
+        };
+        s += "]"
+        return s;
+        """)
 
 list = List
 
@@ -903,7 +923,31 @@ class Tuple:
 
     @noSourceTracking
     def __str__(self):
-        return repr(self)
+        return self.__repr__()
+
+    @noSourceTracking
+    def toString(self):
+        return self.__repr__()
+
+    def __repr__(self):
+        #r = []
+        #for item in self:
+        #    r.append(repr(item))
+        #if len(r) == 1:
+        #    return '(' + ', '.join(r) + ',)'
+        #return '(' + ', '.join(r) + ')'
+        JS("""
+        var s = "(";
+        for (var i=0; i < self.l.length; i++) {
+            s += pyjslib.repr(self.l[i]);
+            if (i < self.l.length - 1)
+                s += ", ";
+        };
+        if (self.l.length == 1)
+            s += ",";
+        s += ")"
+        return s;
+        """)
 
 tuple = Tuple
 
@@ -1070,7 +1114,32 @@ class Dict:
 
     @noSourceTracking
     def __str__(self):
-        return repr(self)
+        return self.__repr__()
+
+    @noSourceTracking
+    def toString(self):
+        return self.__repr__()
+
+    def __repr__(self):
+        #r = []
+        #for item in self:
+        #    r.append(repr(item) + ': ' + repr(self[item]))
+        #return '{' + ', '.join(r) + '}'
+        JS("""
+        var keys = new Array();
+        for (var key in self.d)
+            keys.push(key);
+
+        var s = "{";
+        for (var i=0; i<keys.length; i++) {
+            var v = self.d[keys[i]]
+            s += pyjslib.repr(v[0]) + ": " + pyjslib.repr(v[1]);
+            if (i < keys.length-1)
+                s += ", "
+        };
+        s += "}";
+        return s;
+        """)
 
 dict = Dict
 
@@ -1262,48 +1331,6 @@ def repr(x):
        constructor = pyjslib.get_pyjs_classtype(x);
 
         //alert("repr constructor: " + constructor);
-
-       if (constructor == "Tuple") {
-           var contents = x.getArray();
-           var s = "(";
-           for (var i=0; i < contents.length; i++) {
-               s += pyjslib.repr(contents[i]);
-               if (i < contents.length - 1)
-                   s += ", ";
-           };
-           if (contents.length == 1)
-               s += ",";
-           s += ")"
-           return s;
-       };
-
-       if (constructor == "List") {
-           var contents = x.getArray();
-           var s = "[";
-           for (var i=0; i < contents.length; i++) {
-               s += pyjslib.repr(contents[i]);
-               if (i < contents.length - 1)
-                   s += ", ";
-           };
-           s += "]"
-           return s;
-       };
-
-       if (constructor == "Dict") {
-           var keys = new Array();
-           for (var key in x.d)
-               keys.push(key);
-
-           var s = "{";
-           for (var i=0; i<keys.length; i++) {
-               var key = keys[i]
-               s += pyjslib.repr(key) + ": " + pyjslib.repr(x.d[key]);
-               if (i < keys.length-1)
-                   s += ", "
-           };
-           s += "}";
-           return s;
-       };
 
        // If we get here, the class isn't one we know -> return the class name.
        // Note that we replace underscores with dots so that the name will

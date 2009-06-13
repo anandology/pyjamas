@@ -78,3 +78,16 @@ class BuiltinTest(UnitTest):
         self.assertEqual(any([True, 1, False, 'a']), True)
         self.assertEqual(any([False, '', None]), False)
 
+    def testRepr(self):
+        l1 = [1,2,3]
+        l2 = ["a", "b", "c"]
+        t1 = (4,5,6,7)
+        t2 = ("aa", "bb")
+        d1 = {'a': 1, "b": "B"}
+        d2 = {1: l1, 2: l2, 3: t1, 4: t2, 5:d1}
+        self.assertEqual(repr(l1), '[1, 2, 3]')
+        self.assertEqual(repr(l2), "['a', 'b', 'c']")
+        self.assertEqual(repr(t1), '(4, 5, 6, 7)')
+        self.assertEqual(repr(t2), "('aa', 'bb')")
+        self.assertEqual(repr(d1), "{'a': 1, 'b': 'B'}")
+        self.assertEqual(repr(d2), "{1: [1, 2, 3], 2: ['a', 'b', 'c'], 3: (4, 5, 6, 7), 4: ('aa', 'bb'), 5: {'a': 1, 'b': 'B'}}")

@@ -1,6 +1,82 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
+ * Added __repr__() and toString() to list/tuple/dict
+
+ * Disable source-tracking on Modload for better trace dumps
+
+ * Use pyjslib.cmp() for <, <=, >, >= to enable type comparing (tuple/list/dict)
+
+ * Performance improvement pyjslib.eq / pyjslib.cmp
+
+ * Added support for iterable single argument in min()/max()
+
+ * Circular imports permitted
+
+ * Extended try-except support
+
+ * Extended raise statement support
+
+ * Added support for assigning instance methods to variables
+
+ * Bugfix/performance enhancement method argument checking
+
+ * Added Window.setOnError() and Window.onError()
+
+ * Changed compiler flag -d behavior (wrap function calls in switch)
+
+ * Added compiler flag --disable-store-source
+
+ * Added compiler flag --disable-source-tracking
+
+ * Modified debug and tracing
+
+ * Added support for 'for' iteration over slice
+
+ * Added support for function call in global variable
+
+ * Enhancement of import and from statement
+
+ * Added missing imports (bernd)
+
+ * use getattr for listener check in Image implementation (bernd)
+
+ * Bugfix for sprintf (in IE6)
+
+ * Added partial implementation for sys.exc_info()
+
+ * Added extended support for try...except...else
+
+ * Added support for attribute checking, with compiler flag
+
+ * Added support for super(type, type)
+
+ * Bugfixes in libraries and example
+
+ * Added compile option to disable argument checking
+
+ * Added argument checking on all functions/methods
+
+ * Added kwarg parsing on all generated functions
+ 
+ * Added parital implementation of super() function
+
+ * Changed Javascript backend for generating classes
+
+ * Added missing import in library/pyjamas/ui/TreeItem.py
+
+ * Improved the tab panel corners example (thanks to daryl daly)
+
+ * Added gmap example (Thanks to Greg)
+
+ * Added support for  x in [1,2,3]
+
+ * Added bit about css tables to faq
+
+ * Added buildall.py alternative to buildall.sh, thanks to delaney
+
+ * Added missing imports in library (thanks to jukart)
+
  * Added much better sprintf which has dict support (Yaay!  thank you kees)
 
  * Added NameError, ValueError and IndexError exceptions (thanks to Kees)
