@@ -315,6 +315,20 @@ class ClassTest(UnitTest):
     #    except AttributeError, e:
     #        self.fail(e.message)
 
+    def testPassMeAClass(self):
+        res = PassMeAClassFunction(PassMeAClass)
+        self.assertEqual(res, "foo in PassMeAClass")
+        
+class PassMeAClass(object):
+    def __init__(self):
+        pass
+    def foo(self):
+        return "foo in PassMeAClass"
+
+def PassMeAClassFunction(klass):
+    c = klass()
+    return c.foo() 
+
 # testMetaClass
 def method(self):
     return 1
