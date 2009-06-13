@@ -55,7 +55,7 @@ class DayFilterWidget(Composite):
         
     def setAllCheckBoxes(self, checked):
         for widget in self.outer:
-            if widget.setChecked:
+            if hasattr(widget, "setChecked"):
                 widget.setChecked(checked)
                 self.dayCheckBoxListener.onClick(widget)
     
