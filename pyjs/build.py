@@ -288,7 +288,8 @@ def build(app_name, output, js_includes=(), dynamic=0,
     print "Done. You can run your app by opening '%(html_output_filename)s' in a browser" % locals()
 
 
-def generateAppFiles(data_dir, js_includes, app_name, output, dynamic, cache_buster, 
+def generateAppFiles(data_dir, js_includes, app_name, output, dynamic,
+                     cache_buster, 
                      debug,
                      print_statements,
                      function_argument_checking,
@@ -481,16 +482,19 @@ def generateAppFiles(data_dir, js_includes, app_name, output, dynamic, cache_bus
 
             for md in modlevels:
                 mnames = map(lambda x: "'%s'" % x, md)
-                mnames = "new pyjslib.List([\n\t\t\t%s])" % ',\n\t\t\t'.join(mnames)
+                mnames = "new pyjslib.List([\n\t\t\t%s])" % \
+                          ',\n\t\t\t'.join(mnames)
                 modnames.append(mnames)
 
             modnames.reverse()
-            modnames = "new pyjslib.List([\n\t\t%s\n\t])" % ',\n\t\t'.join(modnames)
+            modnames = "new pyjslib.List([\n\t\t%s\n\t])" % \
+                      ',\n\t\t'.join(modnames)
 
             # convert the overrides
 
             overnames = map(lambda x: "'%s': '%s'" % x, pover[platform].items())
-            overnames = "new pyjslib.Dict({\n\t\t%s\n\t})" % ',\n\t\t'.join(overnames)
+            overnames = "new pyjslib.Dict({\n\t\t%s\n\t})" % \
+                      ',\n\t\t'.join(overnames)
 
             if dynamic:
                 mod_cache_html_output = open(join(output, mod_cache_name), "w")
@@ -523,12 +527,14 @@ def generateAppFiles(data_dir, js_includes, app_name, output, dynamic, cache_bus
             app_modnames.append(mnames)
 
         app_modnames.reverse()
-        app_modnames = "new pyjslib.List([\n\t\t%s\n\t])" % ',\n\t\t'.join(app_modnames)
+        app_modnames = "new pyjslib.List([\n\t\t%s\n\t])" % \
+                  ',\n\t\t'.join(app_modnames)
 
         # convert the overrides
 
         overnames = map(lambda x: "'%s': '%s'" % x, pover[platform].items())
-        overnames = "new pyjslib.Dict({\n\t\t%s\n\t})" % ',\n\t\t'.join(overnames)
+        overnames = "new pyjslib.Dict({\n\t\t%s\n\t})" % \
+                  ',\n\t\t'.join(overnames)
 
         #print "platform names", platform, overnames
         #print pover
