@@ -199,10 +199,33 @@ def gen_mod_import(parentName, importName, dynamic=1):
 
 class Translator:
 
-    def __init__(self, mn, module_name, raw_module_name, src, debug, mod, output,
-                 dynamic=0, optimize=False, findFile=None,
-                 function_argument_checking=True, attribute_checking=True,
-                 source_tracking=True, store_source=True):
+    decorator_options = {\
+        'Debug': ('debug', True),
+        'noDebug': ('debug', False),
+        'PrintStatements': ('print_statements', True),
+        'noPrintStatements': ('print_statements', False),
+        'FunctionArgumentChecking': ('function_argument_checking', True),
+        'noFunctionArgumentChecking': ('function_argument_checking', False),
+        'AttributeChecking': ('attribute_checking', True),
+        'noAttributeChecking': ('attribute_checking', False),
+        'SourceTracking': ('source_tracking', True),
+        'noSourceTracking': ('source_tracking', False),
+        'LineTracking': ('line_tracking', True),
+        'noLineTracking': ('line_tracking', False),
+        'StoreSource': ('store_source', True),
+        'noStoreSource': ('store_source', False),
+    }
+
+    def __init__(self, mn, module_name, raw_module_name, src, mod, output,
+                 dynamic=0, findFile=None,
+                 debug = False,
+                 print_statements=True,
+                 function_argument_checking=True,
+                 attribute_checking=True,
+                 source_tracking=True,
+                 line_tracking=True,
+                 store_source=True,
+                ):
 
         if module_name:
             self.module_prefix = module_name + "."
@@ -213,7 +236,6 @@ class Translator:
         src = src.replace("\n\r", "\n")
         src = src.replace("\r",   "\n")
         self.src = src.split("\n")
-        self.debug = debug
         self.imported_modules = []
         self.imported_modules_as = []
         self.imported_js = set()
@@ -227,13 +249,20 @@ class Translator:
         self.method_self = None
         self.nextTupleAssignID = 1
         self.dynamic = dynamic
-        self.optimize = optimize
         self.findFile = findFile
+        # compile options
+        self.debug = debug
+        self.print_statements = print_statements
         self.function_argument_checking = function_argument_checking
         self.attribute_checking = attribute_checking
         self.source_tracking = source_tracking
+        self.line_tracking = line_tracking
         self.store_source = store_source
+
         self.local_prefix = None
+        self.track_lines = {}
+        self.stacksize_depth = 0
+        self.optionstack = []
 
         if module_name.find(".") >= 0:
             vdec = ''
@@ -251,9 +280,6 @@ class Translator:
         decl = mod_var_name_decl(raw_module_name)
         if decl:
             print >>self.output, decl
-
-        self.track_lines = {}
-        self.stacksize_depth = 0
 
         save_output = self.output
         buffered_output = StringIO()
@@ -332,6 +358,33 @@ class Translator:
         print >> self.output, "return this;\n"
         print >> self.output, "}; /* end %s */ \n"  % module_name
 
+    def push_options(self):
+	    self.optionstack.append((\
+            self.debug, self.print_statements, self.function_argument_checking,
+            self.attribute_checking, self.source_tracking,
+            self.line_tracking, self.store_source,
+        ))
+    def pop_options(self):
+        (\
+            self.debug, self.print_statements, self.function_argument_checking,
+            self.attribute_checking, self.source_tracking,
+            self.line_tracking, self.store_source,
+        ) = self.optionstack.pop()
+
+    def parse_decorators(self, node):
+        staticmethod = False
+        classmethod = False
+        for d in node.decorators:
+            if self.decorator_options.has_key(d.name):
+                setattr(self, self.decorator_options[d.name][0], self.decorator_options[d.name][1])
+            elif d.name == 'staticmethod':
+                staticmethod = True
+            elif d.name == 'classmethod':
+                classmethod = True
+            else:
+                raise TranslationError("Unknown decorator '%s'" % d.name, node)
+        return (staticmethod, classmethod)
+
     def module_imports(self):
         return self.imported_modules + self.imported_modules_as
 
@@ -363,9 +416,11 @@ class Translator:
         if self.source_tracking and node.lineno:
             if module:
                 print >> self.output, "track.module='%s';" % self.raw_module_name
-            print >> self.output, "track.lineno=%d;" % node.lineno
-            #print >> self.output, "if (track.module!='%s') debugger;" % self.raw_module_name
-            self.track_lines[node.lineno] = self.get_line_trace(node)
+            if self.line_tracking:
+                print >> self.output, "track.lineno=%d;" % node.lineno
+                #print >> self.output, "if (track.module!='%s') debugger;" % self.raw_module_name
+            if self.store_source:
+                self.track_lines[node.lineno] = self.get_line_trace(node)
 
     def track_call(self, call_code):
         if self.debug:
@@ -667,14 +722,11 @@ if (typeof %s != 'undefined') {
                     self._assign(tnode, None, True)
 
     def _function(self, node, local=False):
-        source_tracking = save_source_tracking = self.source_tracking
+        self.push_options()
         save_has_js_return = self.has_js_return
         self.has_js_return = False
         if node.decorators:
-            for d in node.decorators:
-                if d.name == "noSourceTracking":
-                    source_tracking = False
-        self.source_tracking = source_tracking
+            self.parse_decorators(node)
 
         if local:
             function_name = node.name
@@ -746,7 +798,7 @@ if (typeof %s != 'undefined') {
 
         self._kwargs_parser(node, function_name, normal_arg_names, None)
         self.has_js_return = save_has_js_return
-        self.source_tracking = save_source_tracking
+        self.pop_options()
 
 
     def _return(self, node, current_klass):
@@ -879,7 +931,7 @@ if (typeof %s != 'undefined') {
         return self.track_call(call_code)
 
     def _print(self, node, current_klass):
-        if self.optimize:
+        if not self.print_statements:
             return
         call_args = []
         for ch4 in node.nodes:
@@ -1193,20 +1245,14 @@ track.module='%s';""" % (self.stacksize_depth, self.stacksize_depth, self.raw_mo
 
         arg_names = list(node.argnames)
 
-        source_tracking = save_source_tracking = self.source_tracking
+        self.push_options()
         save_has_js_return = self.has_js_return
         self.has_js_return = False
-        classmethod = False
-        staticmethod = False
         if node.decorators:
-            for d in node.decorators:
-                if d.name == "classmethod":
-                    classmethod = True
-                elif d.name == "staticmethod":
-                    staticmethod = True
-                elif d.name == "noSourceTracking":
-                    source_tracking = False
-        self.source_tracking = source_tracking
+            staticmethod, classmethod = self.parse_decorators(node)
+        else:
+            staticmethod = classmethod = False
+
         if node.name == '__new__':
             staticmethod = True
 
@@ -1297,7 +1343,7 @@ track.module='%s';""" % (self.stacksize_depth, self.stacksize_depth, self.raw_mo
         self.method_self = None
         self.method_imported_globals = set()
         self.has_js_return = save_has_js_return
-        self.source_tracking = save_source_tracking
+        self.pop_options()
 
     def _isNativeFunc(self, node):
         if isinstance(node, ast.Discard):
@@ -1931,9 +1977,13 @@ pyjslib.getattr(%(attr_left)s, '%(attr_right)s'):\
 
 
 
-def translate(file_name, module_name, debug=False, 
+def translate(file_name, module_name,
+              debug=False, 
+              print_statements = True,
               function_argument_checking=True,
-              attribute_checking=True, source_tracking=True,
+              attribute_checking=True,
+              source_tracking=True,
+              line_tracking=True,
               store_source=True,
              ):
     f = file(file_name, "r")
@@ -1941,11 +1991,14 @@ def translate(file_name, module_name, debug=False,
     f.close()
     output = StringIO()
     mod = compiler.parseFile(file_name)
-    t = Translator(module_name, module_name, module_name, src, debug, mod, output,
-                   function_argument_checking=function_argument_checking,
-                   attribute_checking=attribute_checking,
-                   source_tracking=source_tracking,
-                   store_source=store_source
+    t = Translator(module_name, module_name, module_name, src, mod, output,
+                   debug = debug,
+                   print_statements = print_statements,
+                   function_argument_checking = function_argument_checking,
+                   attribute_checking = attribute_checking,
+                   source_tracking = source_tracking,
+                   line_tracking = line_tracking,
+                   store_source = store_source,
                   )
     return output.getvalue()
 
@@ -2046,20 +2099,28 @@ def dotreplace(fname):
 class AppTranslator:
 
     def __init__(self, library_dirs=[], parser=None, dynamic=False,
-                 optimize=False, verbose=True, function_argument_checking=True,
-                 attribute_checking=True, source_tracking=True,
+                 verbose=True,
+                 debug=False,
+                 print_statements=True,
+                 function_argument_checking=True,
+                 attribute_checking=True,
+                 source_tracking=True,
+                 line_tracking=True,
                  store_source=True,
                 ):
         self.extension = ".py"
-        self.optimize = optimize
+        self.print_statements = print_statements
         self.library_modules = []
         self.overrides = {}
         self.library_dirs = path + library_dirs
         self.dynamic = dynamic
         self.verbose = verbose
+        self.debug = debug
+        self.print_statements = print_statements
         self.function_argument_checking = function_argument_checking
         self.attribute_checking = attribute_checking
         self.source_tracking = source_tracking
+        self.line_tracking = line_tracking
         self.store_source = store_source
 
         if not parser:
@@ -2112,11 +2173,14 @@ class AppTranslator:
             mn = '__main__'
         else:
             mn = module_name
-        t = Translator(mn, module_name, module_name,
-                       src, debug, mod, output, self.dynamic, self.optimize,
-                       self.findFile, function_argument_checking=self.function_argument_checking,
+        t = Translator(mn, module_name, module_name, src, mod, output, 
+                       self.dynamic, self.findFile, 
+                       debug = self.debug,
+                       print_statements = self.print_statements,
+                       function_argument_checking = self.function_argument_checking,
                        attribute_checking = self.attribute_checking,
                        source_tracking = self.source_tracking,
+                       line_tracking = self.line_tracking,
                        store_source = self.store_source,
                       )
 
@@ -2170,24 +2234,143 @@ class AppTranslator:
               print >>sys.stderr, 'Warning: Unable to find imported javascript:', js
         return lib_code.getvalue(), app_code.getvalue()
 
+def add_compile_options(parser):
+    speed_options = {}
+
+    parser.add_option("-d", "--debug",
+        dest="debug",
+        action="store_true",
+        help="Wrap function calls with javascript debug code",
+    )
+    parser.add_option("--no-debug",
+        dest="debug",
+        action="store_false",
+    )
+    speed_options['debug'] = False
+
+    parser.add_option("--no-print-statements",
+        dest="print_statments",
+        action="store_false",
+        help="Remove all print statements",
+    )
+    parser.add_option("--print-statements",
+        dest="print_statements",
+        action="store_true",
+        help="Generate code for print statements",
+    )
+    speed_options['print_statements'] = False
+
+    parser.add_option("--no-function-argument-checking",
+        dest = "function_argument_checking",
+        action="store_false",
+        help = "Do not generate code for function argument checking",
+    )
+    parser.add_option("--function-argument-checking",
+        dest = "function_argument_checking",
+        action="store_true",
+        help = "Generate code for function argument checking",
+    )
+    speed_options['function_argument_checking'] = False
+
+    parser.add_option("--no-attribute-checking",
+        dest = "attribute_checking",
+        action="store_false",
+        help = "Do not generate code for attribute checking",
+    )
+    parser.add_option("--attribute-checking",
+        dest = "attribute_checking",
+        action="store_true",
+        help = "Generate code for attribute checking",
+    )
+    speed_options['attribute_checking'] = False
+
+    parser.add_option("--no-source-tracking",
+        dest = "source_tracking",
+        action="store_false",
+        help = "Do not generate code for source tracking",
+    )
+    parser.add_option("--source-tracking",
+        dest = "source_tracking",
+        action="store_true",
+        help = "Generate code for source tracking",
+    )
+    speed_options['source_tracking'] = False
+
+    parser.add_option("--no-line-tracking",
+        dest = "line_tracking",
+        action="store_true",
+        help = "Do not generate code for source tracking on every line",
+    )
+    parser.add_option("--line-tracking",
+        dest = "line_tracking",
+        action="store_true",
+        help = "Generate code for source tracking on every line",
+    )
+
+    parser.add_option("--no-store-source",
+        dest = "store_source",
+        action="store_false",
+        help = "Do not store python code line in javascript",
+    )
+    parser.add_option("--store-source",
+        dest = "store_source",
+        action="store_true",
+        help = "Store python code line in javascript",
+    )
+
+
+    def set_multiple(option, opt_str, value, parser, **kwargs):
+        for k in kwargs.keys():
+            setattr(parser.values, k, kwargs[k])
+
+    parser.add_option("-O",
+        action="callback",
+        callback = set_multiple,
+        callback_kwargs = speed_options,
+        help="Set all options that maximize speed",
+    )
+    parser.set_defaults(\
+                        debug=False,
+                        print_statements=True,
+                        function_argument_checking = True,
+                        attribute_checking = True,
+                        source_tracking = True,
+                        line_tracking = True,
+                        store_source = True,
+                        )
+
 usage = """
-  usage: %s file_name [module_name]
+  usage: %prog [options] file_name [module_name]
 """
 
 def main():
     import sys
-    if len(sys.argv)<2:
-        print >> sys.stderr, usage % sys.argv[0]
+    from optparse import OptionParser
+
+    parser = OptionParser(usage = usage)
+    add_compile_options(parser)
+    (options, args) = parser.parse_args()
+
+    if len(args)<1:
+        print >> sys.stderr, parser.get_usage()
         sys.exit(1)
-    file_name = os.path.abspath(sys.argv[1])
+    file_name = os.path.abspath(args[0])
     if not os.path.isfile(file_name):
         print >> sys.stderr, "File not found %s" % file_name
         sys.exit(1)
-    if len(sys.argv) > 2:
-        module_name = sys.argv[2]
+    if len(args) > 1:
+        module_name = args[1]
     else:
-        module_name = None
-    print translate(file_name, module_name),
+        module_name = '__main__'
+    print translate(file_name, module_name,
+          debug = options.debug,
+          print_statements = options.print_statements,
+          function_argument_checking = options.function_argument_checking,
+          attribute_checking = options.attribute_checking,
+          source_tracking = options.source_tracking,
+          line_tracking = options.line_tracking,
+          store_source = options.store_source,
+    ),
 
 if __name__ == "__main__":
     main()

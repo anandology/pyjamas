@@ -107,9 +107,12 @@ def main():
     f.write("\n".join(s))
     f.close()
 
+    options = " ".join(sys.argv[1:])
+    if not options:
+        options = "-O"
     # Compile the application using Pyjamas.
     stmt = (os.path.join(PATH_TO_PYJAMAS, 'bin', 'pyjsbuild') +
-                 " " + " ".join(sys.argv[1:]) +
+                 " " + options +
                  " -o " + os.path.join(here,'build') + " " +
                  os.path.join(here, 'src', 'Showcase.py') +
                  " > /dev/null")

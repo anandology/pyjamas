@@ -1,6 +1,9 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
+ * Extended compile option support for commandline building and 
+   compiling and for function / method decorators
+
  * Added __repr__() and toString() to list/tuple/dict
 
  * Disable source-tracking on Modload for better trace dumps

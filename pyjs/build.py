@@ -165,11 +165,14 @@ def check_html_file(source_file, dest_path):
     return 1
 
 
-def build(app_name, output, js_includes=(), debug=False, dynamic=0,
-          data_dir=None, cache_buster=False, optimize=False,
+def build(app_name, output, js_includes=(), dynamic=0,
+          data_dir=None, cache_buster=False,
+          debug=False,
+          print_statements=True,
           function_argument_checking=True,
           attribute_checking=True,
           source_tracking=True,
+          line_tracking=True,
           store_source=True,
          ):
 
@@ -249,10 +252,14 @@ def build(app_name, output, js_includes=(), debug=False, dynamic=0,
 
 
     ## all.cache.html
-    app_files = generateAppFiles(data_dir, js_includes, app_name, debug,
-                                 output, dynamic, cache_buster, optimize,
+    app_files = generateAppFiles(data_dir, js_includes, app_name, 
+                                 output, dynamic, cache_buster,
+                                 debug,
+                                 print_statements,
                                  function_argument_checking,
-                                 attribute_checking, source_tracking,
+                                 attribute_checking,
+                                 source_tracking,
+                                 line_tracking,
                                  store_source
                                 )
 
@@ -281,9 +288,14 @@ def build(app_name, output, js_includes=(), debug=False, dynamic=0,
     print "Done. You can run your app by opening '%(html_output_filename)s' in a browser" % locals()
 
 
-def generateAppFiles(data_dir, js_includes, app_name, debug, output, dynamic,
-                     cache_buster, optimize, function_argument_checking,
-                     attribute_checking, source_tracking, store_source,
+def generateAppFiles(data_dir, js_includes, app_name, output, dynamic, cache_buster, 
+                     debug,
+                     print_statements,
+                     function_argument_checking,
+                     attribute_checking,
+                     source_tracking,
+                     line_tracking,
+                     store_source,
                     ):
 
     all_cache_html_template = read_boilerplate(data_dir, "all.cache.html")
@@ -335,10 +347,13 @@ def generateAppFiles(data_dir, js_includes, app_name, debug, output, dynamic,
 
         parser.setPlatform(platform)
         app_translator = pyjs.AppTranslator(
-            parser=parser, dynamic=dynamic, optimize=optimize,
+            parser=parser, dynamic=dynamic,
+            debug = debug,
+            print_statements = print_statements,
             function_argument_checking = function_argument_checking,
             attribute_checking = attribute_checking,
             source_tracking = source_tracking,
+            line_tracking = line_tracking,
             store_source = store_source,
             )
         early_app_libs[platform], appcode = \
@@ -387,11 +402,14 @@ def generateAppFiles(data_dir, js_includes, app_name, debug, output, dynamic,
             mod_cache_name = "%s.%s.cache.js" % (platform.lower(), mod_name)
 
             parser.setPlatform(platform)
-            mod_translator = pyjs.AppTranslator(parser=parser, optimize=optimize,
-                    function_argument_checking=function_argument_checking,
-                    attribute_checking=attribute_checking,
-                    source_tracking=source_tracking,
-                    store_source=store_source,
+            mod_translator = pyjs.AppTranslator(parser=parser,
+                    debug = debug,
+                    print_statements = print_statements,
+                    function_argument_checking = function_argument_checking,
+                    attribute_checking = attribute_checking,
+                    source_tracking = source_tracking,
+                    line_tracking = line_tracking,
+                    store_source = store_source,
                     )
             mod_libs[platform][mod_name], mod_code[platform][mod_name] = \
                               mod_translator.translate(mod_name,
@@ -680,6 +698,8 @@ def main():
     global app_platforms
 
     parser = OptionParser(usage = usage, version = version)
+    pyjs.add_compile_options(parser)
+
     parser.add_option("-o", "--output", dest="output",
         help="directory to which the webapp should be written")
     parser.add_option("-j", "--include-js", dest="js_includes", action="append",
@@ -689,38 +709,13 @@ def main():
     parser.add_option("-D", "--data_dir", dest="data_dir",
         help="path for data directory")
     parser.add_option("-m", "--dynamic-modules", action="store_true",
-        dest="dynamic", default=False,
+        dest="dynamic",
         help="Split output into separate dynamically-loaded modules (experimental)")
     parser.add_option("-P", "--platforms", dest="platforms",
         help="platforms to build for, comma-separated")
-    parser.add_option("-d", "--debug", action="store_true", dest="debug")
-    parser.add_option("-O", "--optimize", action="store_true",
-        dest="optimize", default=False,
-        help="Optimize generated code (removes all print statements)",
-    )
     parser.add_option("-c", "--cache_buster", action="store_true",
         dest="cache_buster",
         help="Enable browser cache-busting (MD5 hash added to output filenames)",
-    )
-    parser.add_option("--disable-function-argument-checking",
-        dest = "function_argument_checking",
-        action="store_false",
-        help = "disable code generation for function argument checking",
-    )
-    parser.add_option("--disable-attribute-checking",
-        dest = "attribute_checking",
-        action="store_false",
-        help = "disable code generation for attribute checking",
-    )
-    parser.add_option("--disable-source-tracking",
-        dest = "source_tracking",
-        action="store_false",
-        help = "disable code generation for source tracking",
-    )
-    parser.add_option("--disable-store-source",
-        dest = "store_source",
-        action="store_false",
-        help = "do not store python code line in javascript",
     )
 
     parser.set_defaults(output = "output", js_includes=[], library_dirs=[],
@@ -728,11 +723,6 @@ def main():
                         data_dir=os.path.join(sys.prefix, "share/pyjamas"),
                         dynamic=False,
                         cache_buster=False,
-                        debug=False,
-                        function_argument_checking = True,
-                        attribute_checking = True,
-                        source_tracking = True,
-                        store_source = True,
                         )
     (options, args) = parser.parse_args()
     if len(args) != 1:
@@ -763,10 +753,14 @@ def main():
     data_dir = os.path.abspath(options.data_dir)
 
     build(app_name, options.output, options.js_includes,
-          options.debug, options.dynamic and 1 or 0, data_dir,
-          options.cache_buster, options.optimize, options.function_argument_checking,
-          options.attribute_checking, options.source_tracking,
-          options.store_source,
+          options.dynamic and 1 or 0, data_dir, options.cache_buster, 
+          debug = options.debug,
+          print_statements = options.print_statements,
+          function_argument_checking = options.function_argument_checking,
+          attribute_checking = options.attribute_checking,
+          source_tracking = options.source_tracking,
+          line_tracking = options.line_tracking,
+          store_source = options.store_source,
          )
 
 if __name__ == "__main__":
