@@ -285,8 +285,11 @@ class Translator:
         buffered_output = StringIO()
         self.output = buffered_output
         
-        if self.attribute_checking:
+        if self.attribute_checking and not raw_module_name in ['sys', 'pyjslib']:
+            attribute_checking = True
             print >>self.output, 'try {'
+        else:
+            attribute_checking = False
         for child in mod.node:
             if isinstance(child, ast.Function):
                 self.top_level_functions.add(child.name)
@@ -346,7 +349,7 @@ class Translator:
         #for className in self.top_level_classes:
         #    print >> self.output, "\t"+UU+self.modpfx()+"__"+className+"_initialize();"
         #print >> self.output, "};\n"
-        if self.attribute_checking:
+        if attribute_checking:
             print >> self.output, "} catch (pyjs_attr_err) {throw pyjslib._errorMapping(pyjs_attr_err)};"
 
         self.output = save_output
