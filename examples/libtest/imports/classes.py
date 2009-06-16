@@ -1,0 +1,4 @@
+
+class WithAttribute():
+    ATTR = 'attr'
+
