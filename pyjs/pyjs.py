@@ -1088,13 +1088,13 @@ track.module='%s';""" % (self.stacksize_depth, self.stacksize_depth, self.raw_mo
             return UU+self.modpfx() + name
         elif not current_klass and las == 1 and name in self.top_level_vars:
             return UU+self.modpfx() + name
+        elif self.imported_classes.has_key(name):
+            return UU+self.imported_classes[name]
         elif name in local_var_names:
             if self.local_prefix:
                 return self.local_prefix + "." + name
             else:
                 return name
-        elif self.imported_classes.has_key(name):
-            return UU+self.imported_classes[name]
         elif name in self.top_level_classes:
             return UU+self.modpfx() + name
         elif name in self.module_imports() and return_none_for_module:

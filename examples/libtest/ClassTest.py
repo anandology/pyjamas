@@ -6,6 +6,14 @@ import imports.child, imports.circ1
 from imports import exec_order
 from imports import exec_order as EXEC_ORDER
 
+
+from imports.classes import WithAttribute
+
+class GetAttribute():
+    # This class definition fails at startup
+    getIt = WithAttribute.ATTR
+
+
 class ClassTest(UnitTest):
     def __init__(self):
         UnitTest.__init__(self)
@@ -315,7 +323,10 @@ class ClassTest(UnitTest):
     def testPassMeAClass(self):
         res = PassMeAClassFunction(PassMeAClass)
         self.assertEqual(res, "foo in PassMeAClass")
-        
+
+    def testClassAttributeAccess(self):
+        self.assertEqual(GetAttribute.getIt, WithAttribute.ATTR)
+
 class PassMeAClass(object):
     def __init__(self):
         pass
