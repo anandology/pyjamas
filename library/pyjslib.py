@@ -106,8 +106,9 @@ def import_module(path, parent_module, module_name, dynamic=1, async=False):
 
     """)
 
-JS("""
-function import_wait(proceed_fn, parent_mod, dynamic) {
+@noSourceTracking
+def import_wait(proceed_fn, parent_mod, dynamic):
+    JS("""
 
     var data = '';
     var element = $doc.createElement("div");
@@ -182,7 +183,6 @@ function import_wait(proceed_fn, parent_mod, dynamic) {
     }
 
     wait();
-}
 """)
 
 class object:
@@ -1559,6 +1559,7 @@ def isFunction(a):
     JS("""
     return typeof a == 'function';
     """)
+callable = isFunction
 
 @noSourceTracking
 def isString(a):
