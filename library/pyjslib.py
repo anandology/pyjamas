@@ -1643,11 +1643,11 @@ def toJSObjects(x):
 @noSourceTracking
 def sprintf(strng, args):
     # See http://docs.python.org/library/stdtypes.html
+    constructor = get_pyjs_classtype(args)
     JS("""
     var re_dict = /([^%]*)%[(]([^)]+)[)]([#0\x20\0x2B-]*)(\d+)?(\.\d+)?[hlL]?(.)(.*)/;
     var re_list = /([^%]*)%([#0\x20\x2B-]*)(\*|(\d+))?(\.\d+)?[hlL]?(.)(.*)/;
     var re_exp = /(.*)([+-])(.*)/;
-    var constructor = pyjslib.get_pyjs_classtype(args);
 """)
     strlen = len(strng)
     argidx = 0
@@ -1663,6 +1663,7 @@ def sprintf(strng, args):
         return arg
 
     def formatarg(flags, minlen, precision, conversion, param):
+            subst = ''
             numeric = True
             if not minlen:
                 minlen=0
@@ -1776,7 +1777,7 @@ def sprintf(strng, args):
     def sprintf_list(strng, args):
         while remainder:
             JS("""
-            a = re_list.exec(remainder);""")
+            var a = re_list.exec(remainder);""")
             if a is None:
                 result.append(remainder)
                 break;
@@ -1804,7 +1805,7 @@ def sprintf(strng, args):
         argidx += 1
         while remainder:
             JS("""
-            a = re_dict.exec(remainder);""")
+            var a = re_dict.exec(remainder);""")
             if a is None:
                 result.append(remainder)
                 break;
@@ -1824,7 +1825,7 @@ def sprintf(strng, args):
             result.append(formatarg(flags, minlen, precision, conversion, param))
 
     JS("""
-    a = re_dict.exec(strng);
+    var a = re_dict.exec(strng);
 """)
     if a is None:
         if constructor != "Tuple":
