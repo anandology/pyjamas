@@ -1,4 +1,4 @@
 #!/bin/sh
 options="$*"
 if [ -z $options ] ; then options="-O";fi
-../../bin/pyjsbuild $* GridEdit.py
+../../bin/pyjsbuild $options GridEdit.py

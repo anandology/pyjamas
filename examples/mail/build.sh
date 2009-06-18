@@ -1,4 +1,4 @@
 #!/bin/sh
 options="$*"
 if [ -z $options ] ; then options="-O";fi
-../../bin/pyjsbuild $* Mail.py
+../../bin/pyjsbuild $options Mail.py

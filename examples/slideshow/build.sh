@@ -1,4 +1,4 @@
 #!/bin/sh
 options="$*"
 if [ -z $options ] ; then options="-O";fi
-../../bin/pyjsbuild $* Slideshow.py
+../../bin/pyjsbuild $options Slideshow.py

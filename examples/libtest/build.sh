@@ -1,2 +1,2 @@
 #!/bin/sh
-../../bin/pyjsbuild $* LibTest.py
+../../bin/pyjsbuild $options LibTest.py

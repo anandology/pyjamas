@@ -1,7 +1,7 @@
 #!/bin/sh
 options="$*"
 if [ -z $options ] ; then options="-O";fi
-../../bin/pyjsbuild $* TestRect.py
+../../bin/pyjsbuild $options TestRect.py
 options="$*"
 if [ -z $options ] ; then options="-O";fi
-../../bin/pyjsbuild $* TestDict.py
+../../bin/pyjsbuild $options TestDict.py

@@ -1,4 +1,4 @@
 #!/bin/sh
 options="$*"
 if [ -z $options ] ; then options="-O";fi
-../../bin/pyjsbuild $* FormPanelExample.py
+../../bin/pyjsbuild $options FormPanelExample.py

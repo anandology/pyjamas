@@ -4,4 +4,4 @@
 
 options="$*"
 if [ -z $options ] ; then options="-O";fi
-../../bin/pyjsbuild $* Hello.py
+../../bin/pyjsbuild $options Hello.py

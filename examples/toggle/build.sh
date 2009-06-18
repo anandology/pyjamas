@@ -3,4 +3,4 @@
 
 options="$*"
 if [ -z $options ] ; then options="-O";fi
-../../bin/pyjsbuild $* Toggle.py
+../../bin/pyjsbuild $options Toggle.py

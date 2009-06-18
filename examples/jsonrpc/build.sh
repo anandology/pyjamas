@@ -1,4 +1,4 @@
 #!/bin/sh
 options="$*"
 if [ -z $options ] ; then options="-O";fi
-../../bin/pyjsbuild $* JSONRPCExample.py
+../../bin/pyjsbuild $options JSONRPCExample.py
