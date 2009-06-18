@@ -21,7 +21,7 @@ class AjaxTest:
 
     def onModuleLoad(self):
 
-        b = Button(ClickMe, greet)
+        b = Button(self.ClickMe, greet)
         RootPanel().add(b)
 
         # dynamically loads public/test.cache.js.
