@@ -45,8 +45,15 @@ class ClassTest(UnitTest):
         # verify that class var changed for EXISTING instances
         self.assertEquals(y.x, expected_result2)
 
-	# verify that the initiation of ExampleClass.c is correct
-	self.assertEquals(ExampleClass.c, 1|2)
+        # verify that the initiation of ExampleClass.c is correct
+        self.assertEquals(ExampleClass.c, 1|2)
+
+        # verify that class properties can only be reached via instance
+        try:
+            x = ExampleClass().fail_a()
+            self.fail("Failed to raise error on ExampleClass().fail_a()")
+        except (NameError, AttributeError), e:
+            self.assertTrue(True)
 
     # test Class().x
     def testInheritedProperties(self):
@@ -177,6 +184,11 @@ class ClassTest(UnitTest):
         self.assertEqual(results[1][0], "a")
         self.assertEqual(results[1][1], "b")
         self.assertEqual(results[1][2], "c")
+
+        # Test argument passing
+        self.assertEqual(ExampleParentClass().inert('inert'), 'inert')
+        self.assertEqual(ExampleParentClass().global_x1(), 'global test')
+        self.assertEqual(ExampleParentClass().global_x2(), 'global test')
 
     def testStaticMethod(self):
         self.assertEqual(ExampleClass.sampleStaticMethod("a"), "a", "Expected static method to take the parameter I give as its first parameter")
@@ -341,6 +353,7 @@ def PassMeAClassFunction(klass):
 def method(self):
     return 1
 
+
 # testClassVars
 class ExampleClass:
     x = "test"
@@ -364,6 +377,11 @@ class ExampleClass:
     def sampleStaticMethod(arg):
         return arg
 
+    def fail_a(self):
+        return a
+
+# Global variable to test variable selection order
+x = 'global test'
 # testInheritedProperties
 class ExampleParentClass:
     x = "test"
@@ -374,6 +392,16 @@ class ExampleParentClass:
 
     def get_x(self):
         return self.x
+
+    def inert(self, x):
+        return x
+
+    def global_x1(self):
+        global x
+        return x
+
+    def global_x2(self):
+        return x
 
 class ExampleChildClass(ExampleParentClass):
     pass

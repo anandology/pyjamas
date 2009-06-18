@@ -27,6 +27,27 @@ def aFunctionReturningParam(param):
 def aFunctionReturningFunction():
     return aFunctionReturningParam
 
+def aFunctionReturningGlobalX1():
+    global x
+    return x
+
+def aFunctionReturningGlobalX2():
+    global x
+    return x
+
+def aFunctionReturningGlobalX3():
+    a = x
+    return a
+
+def aFunctionReturningLocalX():
+    x = 'local test'
+    return x
+
+def aFunctionReturningArgX(x):
+    return x
+
+x = 'global test'
+
 class FunctionTest(UnitTest):
 
     def __init__(self):
@@ -62,4 +83,13 @@ class FunctionTest(UnitTest):
     def testVariableFunction(self):
         self.assertEqual((aFunctionReturningParam)("foo"), "foo")
         self.assertEqual(aFunctionReturningFunction()("foo"), "foo")
+
+    def testLookup(self):
+        expected_result1 = 'global test'
+        expected_result2 = 'local test'
+        self.assertEqual(aFunctionReturningGlobalX1(), expected_result1)
+        self.assertEqual(aFunctionReturningGlobalX2(), expected_result1)
+        self.assertEqual(aFunctionReturningGlobalX3(), expected_result1)
+        self.assertEqual(aFunctionReturningLocalX(), expected_result2)
+        self.assertEqual(aFunctionReturningArgX('test'), 'test')
 
