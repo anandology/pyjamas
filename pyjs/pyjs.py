@@ -332,10 +332,7 @@ class Translator:
                 elif isinstance(child, ast.Import):
                     self._import(child)
                 elif isinstance(child, ast.From):
-                    if child.modname == '__pyjamas__': # special module to help make pyjamas modules loadable in the python interpreter
-                        pass
-                    else:
-                        self._from(child)
+                    self._from(child)
                 elif isinstance(child, ast.Discard):
                     self._discard(child, None)
                 elif isinstance(child, ast.Assign):
@@ -1430,6 +1427,16 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             self._tryFinally(node, current_klass)
         elif isinstance(node, ast.Raise):
             self._raise(node, current_klass)
+        elif isinstance(node, ast.Import):
+            if len(self.lookup_stack) == 1:
+                self._import(node)
+                return
+            raise TranslationError("unsupported type (in _stmt)", node)
+        elif isinstance(node, ast.From):
+            if len(self.lookup_stack) == 1:
+                self._from(node)
+                return
+            raise TranslationError("unsupported type (in _stmt)", node)
         else:
             raise TranslationError("unsupported type (in _stmt)", node)
 
@@ -1634,6 +1641,10 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
 
     def _from(self, node):
+        if node.modname == '__pyjamas__':
+            # special module to help make pyjamas modules loadable in 
+            # the python interpreter
+            return
         self.add_imported_module(node.modname)
         for name in node.names:
             # look up "hack" in AppTranslator as to how findFile gets here

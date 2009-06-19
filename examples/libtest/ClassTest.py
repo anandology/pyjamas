@@ -2,7 +2,8 @@ from UnitTest import UnitTest
 
 # syntax check
 # import a, b, c
-import imports.child, imports.circ1
+if True:
+    import imports.child, imports.circ1
 from imports import exec_order
 from imports import exec_order as EXEC_ORDER
 

@@ -1,6 +1,8 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
+ * Added support for toplevel conditional import/from-import
+
  * Added name mapping to protect javascript reserved function methods 
    and reserved local variables (e.g. .name/.prototype, this/arguments)
 
