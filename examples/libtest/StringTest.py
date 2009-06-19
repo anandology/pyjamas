@@ -187,6 +187,9 @@ class StringTest(UnitTest):
         except TypeError, e:
             self.assertEqual(str(e), "not all arguments converted during string formatting")
 
+        # Check for handling of newlines in format string
+        self.assertEqual("\n%s\n%s\n" % ('s1', 's2'), '\ns1\ns2\n')
+
     def testSprintfDict(self):
         testdict = {'s1': 'string',
                     's2': 'another string',
@@ -209,3 +212,6 @@ class StringTest(UnitTest):
             self.fail('Failed to raise error for "%(not-there)s" % testdict')
         except KeyError, e:
             self.assertEqual(str(e), "'not-there'")
+
+        # Check for handling of newlines in format string
+        self.assertEqual("\n%(s1)s\n%(s1)s\n" % testdict, '\nstring\nstring\n')

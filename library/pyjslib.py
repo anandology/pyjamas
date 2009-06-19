@@ -1646,8 +1646,8 @@ def sprintf(strng, args):
     # See http://docs.python.org/library/stdtypes.html
     constructor = get_pyjs_classtype(args)
     JS("""
-    var re_dict = /([^%]*)%[(]([^)]+)[)]([#0\x20\0x2B-]*)(\d+)?(\.\d+)?[hlL]?(.)(.*)/;
-    var re_list = /([^%]*)%([#0\x20\x2B-]*)(\*|(\d+))?(\.\d+)?[hlL]?(.)(.*)/;
+    var re_dict = /([^%]*)%[(]([^)]+)[)]([#0\x20\0x2B-]*)(\d+)?(\.\d+)?[hlL]?(.)((.|\\n)*)/;
+    var re_list = /([^%]*)%([#0\x20\x2B-]*)(\*|(\d+))?(\.\d+)?[hlL]?(.)((.|\\n)*)/;
     var re_exp = /(.*)([+-])(.*)/;
 """)
     strlen = len(strng)
