@@ -471,7 +471,7 @@ class Translator:
     def pop_lookup(self):
         return self.lookup_stack.pop()
 
-    def add_lookup(self, name_type, pyname, jsname):
+    def add_lookup(self, name_type, pyname, jsname, depth = -1):
         if name_type == 'variable':
             if jsname.find('.') >= 0:
                 jsname = self.attrib_remap(jsname)
@@ -479,7 +479,7 @@ class Translator:
                 jsname = self.vars_remap(jsname)
         else:
             jsname = self.attrib_remap(jsname)
-        self.lookup_stack[-1][pyname] = (name_type, pyname, jsname)
+        self.lookup_stack[depth][pyname] = (name_type, pyname, jsname)
         return jsname
 
     def lookup(self, name):
@@ -521,9 +521,8 @@ class Translator:
                                                  strip_py(_importName),
                                                  self.dynamic)
             _importName += '.'
-        lhs = UU+"%s.%s" % (self.raw_module_name, names[0])
-        lhs = self.add_lookup('import', names[0], lhs)
-        print >> self.output, self.spacing() + "%s = %s;" % (lhs, names[0])
+        # FIXME: Modules should be mapped to a secure module name
+        return
 
     def md5(self, node):
         return md5.new(self.raw_module_name + str(node.lineno) + repr(node)).hexdigest()
@@ -834,9 +833,14 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                 self.imported_js.add(importName)
             else:
                 self.add_imported_module(strip_py(importName))
+                rhs = strip_py(importName).split('.')[0]
                 if importAs:
-                    tnode = ast.Assign([ast.AssName(importAs, "OP_ASSIGN", node.lineno)], ast.Name(strip_py(importName), node.lineno), node.lineno)
-                    self._assign(tnode, None, True)
+                    assignName = importAs
+                else:
+                    assignName = rhs
+                lhs = UU+"%s.%s" % (self.raw_module_name, assignName)
+                lhs = self.add_lookup('import', assignName, lhs)
+                print >> self.output, self.spacing() + "%s = %s;" % (lhs, rhs)
 
     def _function(self, node, local=False):
         self.push_options()
@@ -1428,15 +1432,9 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         elif isinstance(node, ast.Raise):
             self._raise(node, current_klass)
         elif isinstance(node, ast.Import):
-            if len(self.lookup_stack) == 1:
-                self._import(node)
-                return
-            raise TranslationError("unsupported type (in _stmt)", node)
+            self._import(node)
         elif isinstance(node, ast.From):
-            if len(self.lookup_stack) == 1:
-                self._from(node)
-                return
-            raise TranslationError("unsupported type (in _stmt)", node)
+            self._from(node)
         else:
             raise TranslationError("unsupported type (in _stmt)", node)
 
@@ -1526,6 +1524,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         dbg = 0
         v = node.nodes[0]
         if isinstance(v, ast.AssAttr):
+            rhs = self.expr(node.expr, current_klass)
             lhs = _lhsFromAttr(v, current_klass)
             if v.flags == "OP_ASSIGN":
                 op = "="
@@ -1533,6 +1532,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 raise TranslationError("unsupported flag (in _assign)", v)
 
         elif isinstance(v, ast.AssName):
+            rhs = self.expr(node.expr, current_klass)
             lhs = _lhsFromName(v, top_level, current_klass)
             if v.flags == "OP_ASSIGN":
                 op = "="
@@ -1576,7 +1576,6 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         else:
             raise TranslationError("unsupported type (in _assign)", v)
 
-        rhs = self.expr(node.expr, current_klass)
         if dbg:
             print "b", repr(node.expr), rhs
         print >>self.output, self.spacing() + lhs + " " + op + " " + rhs + ";"
@@ -1660,8 +1659,9 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             if ff:
                 self.add_imported_module(module_name)
 
-            tnode = ast.Assign([ast.AssName(assignName, "OP_ASSIGN", node.lineno)], ast.Name(module_name, node.lineno), node.lineno)
-            self._assign(tnode, None, True)
+            if assignName != module_name:
+                tnode = ast.Assign([ast.AssName(assignName, "OP_ASSIGN", node.lineno)], ast.Name(module_name, node.lineno), node.lineno)
+                self._assign(tnode, None, True)
 
     def _compare(self, node, current_klass):
         lhs = self.expr(node.expr, current_klass)

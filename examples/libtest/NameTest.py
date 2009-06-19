@@ -33,3 +33,12 @@ class NameTest(UnitTest):
     def testModuleName(self):
         self.assertEqual(__name__, "NameTest")
 
+    def testImportName(self):
+        import foo as a
+        self.assertEqual(a.__name__, 'foo')
+
+        # This test fails, but even the declaration of foo 
+        #(foo = object()) makes the test above fail too
+        #foo = object()
+        #import foo
+        #self.assertEqual(foo.__name__, 'foo')
