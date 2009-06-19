@@ -1,0 +1,27 @@
+A very brief walk through of how to get this running:
+
+Create the db:
+
+    * mysql -u root
+    * > CREATE DATABASE todo;
+    * > grant all privilages to todo.* to 'todo'@'localhost'; (or possibly > grant all on todo.* to 'todo'@'localhost';)
+    * > exit;
+
+Create the tables:
+
+    * cd pyjsDemo
+    * python manage.py syncdb
+
+Build the javascript:
+
+    * vim media/build.sh
+    * (edit this so that it points to the build.py of pyjamas)
+    * media/build.sh
+
+Run the server:
+
+    * python manage.py runserver
+
+Test it out:
+
+    * In your browser, goto: http://127.0.0.1:8000/site_media/output/TodoApp.html
