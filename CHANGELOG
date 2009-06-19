@@ -1,6 +1,11 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
+ * Added name mapping to protect javascript reserved function methods 
+   and reserved local variables (e.g. .name/.prototype, this/arguments)
+
+ * Revised name (variable/class/function/...) lookup
+
  * Extended compile option support for commandline building and 
    compiling and for function / method decorators
 

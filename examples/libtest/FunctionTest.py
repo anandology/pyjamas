@@ -48,6 +48,10 @@ def aFunctionReturningArgX(x):
 
 x = 'global test'
 
+name = 'mapping-test'
+def call(default, arguments, this):
+    return (name, default, arguments, this)
+
 class FunctionTest(UnitTest):
 
     def __init__(self):
@@ -93,3 +97,9 @@ class FunctionTest(UnitTest):
         self.assertEqual(aFunctionReturningLocalX(), expected_result2)
         self.assertEqual(aFunctionReturningArgX('test'), 'test')
 
+    def testNameMapping(self):
+        r = call(1, 2, 3)
+        self.assertEqual(r[0], 'mapping-test')
+        self.assertEqual(r[1], 1)
+        self.assertEqual(r[2], 2)
+        self.assertEqual(r[3], 3)

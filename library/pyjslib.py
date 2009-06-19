@@ -230,7 +230,6 @@ import sys
 
 class BaseException:
 
-    name = "BaseException"
     message = ''
 
     def __init__(self, *args):
@@ -246,29 +245,26 @@ class BaseException:
         return repr(self.args)
 
     def __repr__(self):
-        return self.name + repr(self.args)
+        return self.__name__ + repr(self.args)
 
     def toString(self):
         return str(self)
 
 class Exception(BaseException):
-
-    name = "Exception"
+    pass
 
 class StandardError(Exception):
-    name = "StandardError"
+    pass
 
 class TypeError(StandardError):
-    name = "TypeError"
+    pass
 
 class LookupError(StandardError):
-    name = "LookupError"
 
     def toString(self):
-        return self.name + ": " + self.args[0]
+        return self.__name__ + ": " + self.args[0]
 
 class KeyError(LookupError):
-    name = "KeyError"
 
     def __str__(self):
         if len(self.args) is 0:
@@ -279,37 +275,41 @@ class KeyError(LookupError):
 
 class AttributeError(StandardError):
 
-    name = "AttributeError"
-
     def toString(self):
         return "AttributeError: %s of %s" % (self.args[1], self.args[0])
 
 class NameError(StandardError):
-    name = "NameError"
+    pass
 
 class ValueError(StandardError):
-    name = "ValueError"
+    pass
 
 class IndexError(LookupError):
-    name = "IndexError"
+    pass
 
+# There seems to be an bug in Chrome with accessing the message
+# property, on which an error is thrown
+# Hence the declaration of 'var message' and the wrapping in try..catch
 JS("""
 pyjslib._errorMapping = function(err) {
     if (err instanceof(ReferenceError) || err instanceof(TypeError)) {
-        return pyjslib.AttributeError(err.message);
+        var message = ''
+        try {
+            message = err.message;
+        } catch ( e) {
+        }
+        return pyjslib.AttributeError(message);
     }
     return err
 }
 
 pyjslib.TryElse = function () { };
 pyjslib.TryElse.prototype = new Error();
-pyjslib.TryElse.name = 'TryElse';
 pyjslib.TryElse.__name__ = 'TryElse';
 pyjslib.TryElse.message = 'TryElse';
 
 pyjslib.StopIteration = function () { };
 pyjslib.StopIteration.prototype = new Error();
-pyjslib.StopIteration.name = 'StopIteration';
 pyjslib.StopIteration.__name__ = 'StopIteration';
 pyjslib.StopIteration.message = 'StopIteration';
 
@@ -337,7 +337,7 @@ pyjslib.String_join = function(data) {
             }
         }
         catch (e) {
-            if (e != pyjslib.StopIteration) throw e;
+            if (e.__name__ != 'StopIteration') throw e;
         }
     }
 
@@ -604,7 +604,7 @@ class List:
                     }
                 }
             catch (e) {
-                if (e != pyjslib.StopIteration) throw e;
+                if (e.__name__ != 'StopIteration') throw e;
                 }
             }
         """)
@@ -791,7 +791,7 @@ class Tuple:
                     }
                 }
             catch (e) {
-                if (e != pyjslib.StopIteration) throw e;
+                if (e.__name__ != 'StopIteration') throw e;
                 }
             }
         """)
@@ -975,7 +975,7 @@ class Dict:
                     }
                 }
             catch (e) {
-                if (e != pyjslib.StopIteration) throw e;
+                if (e.__name__ != 'StopIteration') throw e;
                 }
             }
         else if (pyjslib.isObject(data)) {
@@ -1090,9 +1090,9 @@ class Dict:
         return self[key]
 
     @noSourceTracking
-    def get(self, key, default_=None):
+    def get(self, key, default=None):
         if not self.has_key(key):
-            return default_
+            return default
         return self[key]
 
     @noSourceTracking
@@ -1400,7 +1400,7 @@ def _issubtype(object_, classinfo):
     """)
 
 @noSourceTracking
-def getattr(obj, name, default_=None):
+def getattr(obj, name, default=None):
     JS("""
     if ((!pyjslib.isObject(obj))||(pyjslib.isUndefined(obj[name]))){
         if (arguments.length != 3){

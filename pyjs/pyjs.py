@@ -111,13 +111,25 @@ PYJSLIB_BUILTIN_MAPPING = {\
     'None': 'null',
     'super': 'pyjslib._super',
 }
-# XXX HACK!
-pyjs_builtin_remap = { \
-    'list': 'List',
-    'dict': 'Dict',
-    'tuple': 'Tuple',
-    'super': '_super',
-}
+
+# Variable names that should be remapped in functions/methods
+# arguments -> arguments_
+# arguments_ -> arguments__
+# etc.
+pyjs_vars_remap_names = [\
+    'arguments', 'default', 'this',
+]
+pyjs_vars_remap = []
+for a in pyjs_vars_remap_names:
+    pyjs_vars_remap.append(re.compile('^%s$' % a))
+
+# Attributes that should be remapped in classes
+pyjs_attrib_remap_names = [\
+    'name', 'prototype', 'call', 'apply', 'constructor', 
+]
+pyjs_attrib_remap = []
+for a in pyjs_attrib_remap_names:
+    pyjs_attrib_remap.append(re.compile('(.*(^|[.]))(%s_*)(([.].*)|$)' % a))
 
 # XXX: this is a hack: these should be dealt with another way
 # however, console is currently the only global name which is causing
@@ -415,6 +427,45 @@ class Translator:
                 raise TranslationError("Unknown decorator '%s'" % d.name, node)
         return (staticmethod, classmethod)
 
+    def remap_regex(self, re_list, *words):
+        dbg = 0
+        if words[0] == 'name': dbg = 1
+        if dbg: print 'remap_regex words:', words
+        mapped = []
+        single_word = False
+        if len(words) == 1:
+            if isinstance(words[0], list) or \
+               isinstance(words[0], tuple):
+                words = words[0]
+            else:
+                single_word = True
+        for word in words:
+            if dbg: print 'remap_regex word:', word
+            for r in re_list:
+                if dbg: print 'remap_regex r:', r
+                if r.match(word):
+                    word = word + '_'
+                    break
+            mapped.append(word)
+        if dbg: print 'remap_regex mapped:', mapped
+        if single_word:
+            return mapped[0]
+        return mapped
+
+    def vars_remap(self, word):
+        for r in pyjs_vars_remap:
+            if r.match(word):
+                return word + "_"
+        return word
+
+    def attrib_remap(self, word):
+        for r in pyjs_attrib_remap:
+            m = r.match(word)
+            if m:
+                m = m.groups()
+                word = m[0] + m[2] + '_' + m[3]
+        return word
+
     def push_lookup(self, scope = None):
         if not scope:
             scope = {}
@@ -424,7 +475,15 @@ class Translator:
         return self.lookup_stack.pop()
 
     def add_lookup(self, name_type, pyname, jsname):
+        if name_type == 'variable':
+            if jsname.find('.') >= 0:
+                jsname = self.attrib_remap(jsname)
+            else:
+                jsname = self.vars_remap(jsname)
+        else:
+            jsname = self.attrib_remap(jsname)
         self.lookup_stack[-1][pyname] = (name_type, pyname, jsname)
+        return jsname
 
     def lookup(self, name):
         # builtin
@@ -466,7 +525,7 @@ class Translator:
                                                  self.dynamic)
             _importName += '.'
         lhs = UU+"%s.%s" % (self.raw_module_name, names[0])
-        self.add_lookup('import', names[0], lhs)
+        lhs = self.add_lookup('import', names[0], lhs)
         print >> self.output, self.spacing() + "%s = %s;" % (lhs, names[0])
 
     def md5(self, node):
@@ -488,7 +547,7 @@ class Translator:
 (function(){\
 var pyjs_dbg_retry = 0;
 try{var pyjs_dbg_res=%s;}catch(pyjs_dbg_err){
-    if (pyjs_dbg_err.name != 'StopIteration') {
+    if (pyjs_dbg_err.__name__ != 'StopIteration') {
         debugger;
     }
     switch (pyjs_dbg_retry) {
@@ -793,12 +852,12 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             function_name = node.name
         else:
             function_name = UU + self.modpfx() + node.name
-        self.add_lookup('function', node.name, function_name)
+        function_name = self.add_lookup('function', node.name, function_name)
         self.push_lookup()
 
-        arg_names = list(node.argnames)
-        for arg in arg_names:
-            self.add_lookup('variable', arg, arg)
+        arg_names = []
+        for arg in node.argnames:
+            arg_names.append(self.add_lookup('variable', arg, arg))
         normal_arg_names = list(arg_names)
         if node.kwargs:
             kwargname = normal_arg_names.pop()
@@ -907,7 +966,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                     call_name = jsname
             call_args = []
         elif isinstance(v.node, ast.Getattr):
-            attr_name = v.node.attrname
+            attr_name = self.attrib_remap(v.node.attrname)
 
             if isinstance(v.node.expr, ast.Name):
                 call_name = self._name2(v.node.expr, current_klass, attr_name)
@@ -1011,9 +1070,10 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             print >> self.output, self.spacing() + "throw pyjslib.TryElse;"
         print >> self.output, self.dedent() + "} catch(%s) {" % pyjs_try_err
         self.indent()
+
         if hasattr(node, 'else_') and node.else_:
             print >> self.output, self.indent() + """\
-if (pyjs_try_err.name == pyjslib.TryElse.name) {"""
+if (%(e)s.__name__ == 'TryElse') {""" % {'e': pyjs_try_err}
 
             for stmt in node.else_:
                 self._stmt(stmt, current_klass)
@@ -1022,6 +1082,9 @@ if (pyjs_try_err.name == pyjslib.TryElse.name) {"""
             self.indent()
         if self.attribute_checking:
             print >> self.output, self.spacing() + """pyjs_try_err = pyjslib._errorMapping(pyjs_try_err);"""
+        print >> self.output, self.spacing() + """\
+var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__name__ );\
+""" % {'e': pyjs_try_err}
         print >> self.output, self.spacing() + "sys.__last_exception__ = {error: %s, module: %s, try_lineno: %s};" % (pyjs_try_err, self.raw_module_name, node.lineno)
         if self.source_tracking:
             print >>self.output, """\
@@ -1032,7 +1095,7 @@ if (pyjs_try_err.name == pyjslib.TryElse.name) {"""
 %(s)s}
 %(s)strack.module='%(m)s';""" % {'s': self.spacing(), 'd': self.stacksize_depth, 'm': self.raw_module_name}
 
-        self.add_lookup('variable', pyjs_try_err, pyjs_try_err)
+        pyjs_try_err = self.add_lookup('variable', pyjs_try_err, pyjs_try_err)
         if hasattr(node, 'handlers'):
             else_str = self.spacing()
             for handler in node.handlers:
@@ -1052,9 +1115,9 @@ if (pyjs_try_err.name == pyjslib.TryElse.name) {"""
                     l = []
                     if isinstance(expr, ast.Tuple):
                         for x in expr.nodes:
-                            l.append("(%s.__name__ == %s.__name__)" % (pyjs_try_err, self.expr(x, current_klass)))
+                            l.append("(%s_name == %s.__name__)" % (pyjs_try_err, self.expr(x, current_klass)))
                     else:
-                        l = [ "%s.__name__ == %s.__name__" % (pyjs_try_err, self.expr(expr, current_klass)) ]
+                        l = [ "%s_name == %s.__name__" % (pyjs_try_err, self.expr(expr, current_klass)) ]
                     print >> self.output, "%sif (%s) {" % (else_str, "||".join(l))
                 self.indent()
                 print >> self.output, self.spacing() + "sys.__last_exception__.except_lineno = %d;" % lineno
@@ -1082,7 +1145,7 @@ if (pyjs_try_err.name == pyjslib.TryElse.name) {"""
     # XXX: change use_getattr to True to enable "strict" compilation
     # but incurring a 100% performance penalty. oops.
     def _getattr(self, v, current_klass, use_getattr=False):
-        attr_name = v.attrname
+        attr_name = self.attrib_remap(v.attrname)
         if isinstance(v.expr, ast.Name):
             obj = self._name(v.expr, current_klass, return_none_for_module=True)
             if not use_getattr or attr_name == '__class__' or \
@@ -1168,8 +1231,8 @@ if (pyjs_try_err.name == pyjslib.TryElse.name) {"""
             base_classes = []
         local_prefix = 'cls_definition'
         self.local_prefix = None
-        self.add_lookup('class', node.name, UU+class_name)
-        print >>self.output, self.indent() + UU+class_name + """ = (function(){
+        class_name = self.add_lookup('class', node.name, UU+class_name)
+        print >>self.output, self.indent() + class_name + """ = (function(){
 %(s)svar cls_instance = pyjs__class_instance('%(n)s');
 %(s)svar %(p)s = new Object();
 %(s)s%(p)s.__md5__ = '%(m)s';""" % {'s': self.spacing(), 'n': node.name, 'p': local_prefix, 'm': current_klass.__md5__}
@@ -1185,7 +1248,7 @@ if (pyjs_try_err.name == pyjslib.TryElse.name) {"""
                 self.local_prefix = local_prefix
                 self.push_lookup(private_scope)
                 lhs = "%s.%s" % (local_prefix, child.nodes[0].name)
-                self.add_lookup('variable', child.nodes[0].name, lhs)
+                lhs = self.add_lookup('attribute', child.nodes[0].name, lhs)
                 print >>self.output, self.spacing() + "%s = %s" % (lhs, self.expr(child.expr, current_klass))
                 private_scope = self.pop_lookup()
             elif isinstance(child, ast.Discard) and isinstance(child.expr, ast.Const):
@@ -1241,9 +1304,9 @@ if (pyjs_try_err.name == pyjslib.TryElse.name) {"""
             staticmethod = True
 
         self.push_lookup()
-        arg_names = list(node.argnames)
-        for arg in arg_names:
-            self.add_lookup('variable', arg, arg)
+        arg_names = []
+        for arg in node.argnames:
+            arg_names.append(self.add_lookup('variable', arg, arg))
 
         normal_arg_names = arg_names[0:]
         if node.kwargs:
@@ -1262,8 +1325,8 @@ if (pyjs_try_err.name == pyjslib.TryElse.name) {"""
         else:
             function_args = "(" + ", ".join(declared_arg_names[1:]) + ")"
 
-        fexpr = node.name
-        print >>self.output, self.indent() + local_prefix + '.' + node.name + " = pyjs__bind_method(cls_instance, '"+node.name+"', function" + function_args + " {"
+        method_name = self.attrib_remap(node.name)
+        print >>self.output, self.indent() + local_prefix + '.' + method_name + " = pyjs__bind_method(cls_instance, '"+method_name+"', function" + function_args + " {"
         if staticmethod:
             self._static_method_init(node, declared_arg_names, varargname, kwargname, current_klass)
         elif classmethod:
@@ -1312,9 +1375,9 @@ if (pyjs_try_err.name == pyjslib.TryElse.name) {"""
         print >>self.output, self.dedent() + "}"
 
         if staticmethod:
-            self._kwargs_parser(node, fexpr, normal_arg_names, current_klass, True)
+            self._kwargs_parser(node, method_name, normal_arg_names, current_klass, True)
         else:
-            self._kwargs_parser(node, fexpr, normal_arg_names[1:], current_klass, True)
+            self._kwargs_parser(node, method_name, normal_arg_names[1:], current_klass, True)
 
         self.has_js_return = save_has_js_return
         self.pop_options()
@@ -1423,7 +1486,7 @@ if (pyjs_try_err.name == pyjslib.TryElse.name) {"""
             return
 
         def _lhsFromAttr(v, current_klass):
-            attr_name = v.attrname
+            attr_name = self.attrib_remap(v.attrname)
             if isinstance(v.expr, ast.Name):
                 obj = v.expr.name
                 lhs = self._name(v.expr, current_klass) + "." + attr_name
@@ -1445,12 +1508,12 @@ if (pyjs_try_err.name == pyjslib.TryElse.name) {"""
                     lhs = UU+current_klass.name_ + "." + v.name
                 else:
                     vname = UU + self.modpfx() + v.name
-                    self.add_lookup('variable', v.name, vname)
+                    vname = self.add_lookup('variable', v.name, vname)
                     #lhs = "var " + v.name + " = " + vname
                     lhs = vname
             else:
-                lhs = "var " + v.name
-                self.add_lookup("variable", v.name, v.name)
+                vname = self.add_lookup("variable", v.name, v.name)
+                lhs = "var " + vname
             return lhs
 
         dbg = 0
@@ -1640,8 +1703,7 @@ if (pyjs_try_err.name == pyjslib.TryElse.name) {"""
 
         # based on Bob Ippolito's Iteration in Javascript code
         if isinstance(node.assign, ast.AssName):
-            assign_name = node.assign.name
-            self.add_lookup('variable', assign_name, assign_name)
+            assign_name = self.add_lookup('variable', node.assign.name, node.assign.name)
             if node.assign.flags == "OP_ASSIGN":
                 op = "="
         elif isinstance(node.assign, ast.AssTuple):
@@ -1651,7 +1713,7 @@ if (pyjs_try_err.name == pyjslib.TryElse.name) {"""
                 child_name = child.name
                 if assign_name == "":
                     assign_name = "temp_" + child_name
-                self.add_lookup('variable', assign_name, assign_name)
+                assign_name = self.add_lookup('variable', assign_name, assign_name)
                 s = self.spacing()
                 assign_tuple += """%(s)svar %(child_name)s %(op)s """ % locals()
                 assign_tuple += self.track_call("""%(assign_name)s.__getitem__(%(i)i);
@@ -1679,7 +1741,7 @@ if (pyjs_try_err.name == pyjslib.TryElse.name) {"""
         else:
             raise TranslationError("unsupported type (in _for)", node.list)
 
-        self.add_lookup('variable', assign_name, assign_name)
+        assign_name = self.add_lookup('variable', assign_name, assign_name)
         lhs = "var " + assign_name
         iterator_name = "__" + assign_name
 
@@ -1699,7 +1761,7 @@ if (pyjs_try_err.name == pyjslib.TryElse.name) {"""
         print >>self.output, self.dedent() + "}"
         print >>self.output, self.dedent() + "} catch (e) {"
         self.indent()
-        print >>self.output, self.indent() + "if (e.__name__ != pyjslib.StopIteration.__name__) {"
+        print >>self.output, self.indent() + "if (e.__name__ != 'StopIteration') {"
         print >>self.output, self.spacing() + "throw e;"
         print >>self.output, self.dedent() + "}"
         print >>self.output, self.dedent() + "}"

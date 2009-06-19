@@ -339,6 +339,22 @@ class ClassTest(UnitTest):
     def testClassAttributeAccess(self):
         self.assertEqual(GetAttribute.getIt, WithAttribute.ATTR)
 
+    def testNameMapping(self):
+        instance = MultiBase('a')
+        r = instance.prototype(1, 2, 3)
+        self.assertEqual(r[0], 'MultiBase')
+        self.assertEqual(r[1], 1)
+        self.assertEqual(r[2], 2)
+        self.assertEqual(r[3], 3)
+
+        instance = MultiInherit1('a', 'b')
+        r = instance.call(1, 2, 3)
+        self.assertEqual(r[0], 'MultiInherit1')
+        self.assertEqual(r[1], 1)
+        self.assertEqual(r[2], 2)
+        self.assertEqual(r[3], 3)
+
+
 class PassMeAClass(object):
     def __init__(self):
         pass
@@ -514,6 +530,9 @@ class MultiBase(object):
     def set_x(self,x ):
         self.x = x
 
+    def prototype(self, default, arguments, this):
+        return (self.name, default, arguments, this)
+
 class MultiInherit1(MultiBase):
     name = 'MultiInherit1'
     def __init__(self, x, y):
@@ -522,6 +541,9 @@ class MultiInherit1(MultiBase):
 
     def get_y(self):
         return self.y
+
+    def call(self, default, arguments, this):
+        return self.prototype(default, arguments, this)
 
 class MultiInherit2(MultiBase):
     name = 'MultiInherit2'
