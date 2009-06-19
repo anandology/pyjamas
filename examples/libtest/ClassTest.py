@@ -190,6 +190,11 @@ class ClassTest(UnitTest):
         self.assertEqual(ExampleParentClass().global_x1(), 'global test')
         self.assertEqual(ExampleParentClass().global_x2(), 'global test')
 
+        # Test reqursive class definition
+        instance = RecurseMe()
+        self.assertEqual(instance.chain[0], 0)
+        self.assertEqual(instance.chain[1], 1)
+
     def testStaticMethod(self):
         self.assertEqual(ExampleClass.sampleStaticMethod("a"), "a", "Expected static method to take the parameter I give as its first parameter")
 
@@ -559,4 +564,16 @@ class DoubleInherit(MultiInherit1, MultiInherit2):
     def __init__(self, x, y, z):
         MultiInherit1.__init__(self, x, y) # MultiBase __init__ called once
         MultiInherit2.__init__(self, x, z) # MultiBase __init__ called twice
+
+class RecurseMe(object):
+    chain = []
+    def __init__(self):
+        self.chain.append(0)
+
+class RecurseMe(RecurseMe):
+    def __init__(self):
+        # Cannot do RecurseMe._init__(self), that would really call myself
+        # And we can only do this once...
+        super(self.__class__, self).__init__()
+        self.chain.append(1)
 
