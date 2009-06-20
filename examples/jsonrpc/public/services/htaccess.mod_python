@@ -1,0 +1,5 @@
+Options FollowSymLinks
+#PythonPath "sys.path+['/opt/pyjamas/examples/jsonrpc/output/services']"
+AddHandler mod_python .py
+PythonHandler EchoService::handler
+PythonDebug On 

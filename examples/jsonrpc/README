@@ -1,0 +1,17 @@
+This example is set up so that the JSONRPC python service is run
+by default as a CGI Script.  There is an example python CGI script
+server which is set up to allow access to the JSONService.py CGI
+script, for this example.  Start it as:
+
+    $ cd examples/jsonrpc/output
+    $ python PythonCGIServer.py
+
+If you would like to try this example with Apache2, simply point
+the Apache2 server at the examples/ subdirectory and then ensure
+that Python scripts are allowed to be executed (see Apache2 manuals
+to enable).
+
+If you would like the JSONService.py to be executed under mod_python,
+move public/services/htaccess.mod_python to public/services/.htaccess
+and rebuild (or copy it to output/) and then restart Apache2.
+
