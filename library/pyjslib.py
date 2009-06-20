@@ -20,17 +20,18 @@ from __pyjamas__ import JS
 # must declare import _before_ importing sys
 
 @noSourceTracking
-def import_module(path, parent_module, module_name, dynamic=1, async=False):
+def import_module(path, parent_module, module_name, dynamic=1, async=False, init=False):
     """ 
     """
 
     JS("""
         var cache_file;
 
-        /* FIXME: kees - set up module global array 
-        ev = "modules['"+module_name+"'] = "+module_name+"();";
-        pyjs_eval(ev);
-        */
+        // FIXME: kees - set up module global array 
+        if (init == true) {
+            ev = "modules['"+module_name+"'] = "+module_name+"();";
+            pyjs_eval(ev);
+        }
 
         if (module_name == "sys" || module_name == 'pyjslib')
         {
@@ -212,7 +213,7 @@ class Modload:
         
         for i in range(len(self.app_modlist[self.idx])):
             app = self.app_modlist[self.idx][i]
-            import_module(self.path, self.parent_mod, app, self.dynamic, True);
+            import_module(self.path, self.parent_mod, app, self.dynamic, True, False);
         self.idx += 1
 
         if self.idx >= len(self.app_modlist):

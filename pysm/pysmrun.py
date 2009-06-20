@@ -7,6 +7,10 @@ import sys
 from os.path import join, dirname, basename, abspath
 from optparse import OptionParser
 
+usage = """
+  usage: %prog [options] <application module name or path>
+"""
+
 currentdir = abspath(dirname(dirname(__file__)))
 builddir = abspath("..")
 sys.path.append(join(builddir, "pyjs"))
@@ -38,34 +42,54 @@ def main():
 
     global file_name
 
-    file_name = sys.argv[1]
-    if len(sys.argv) > 2:
-        module_name = sys.argv[2]
+    parser = OptionParser(usage = usage)
+    pyjs.add_compile_options(parser)
+    parser.add_option("-o", "--output",
+        dest="output",
+        help="File to which the generated javascript should be written")
+
+    parser.add_option("-i", "--input",
+        dest="input",
+        help="File from which the generated javascript should be read")
+
+    parser.set_defaults(\
+        output = None,
+        input = None,
+    )
+    (options, args) = parser.parse_args()
+
+    file_name = args[0]
+    if len(args) > 1:
+        module_name = args[1]
     else:
         module_name = None
 
     debug = 0
 
-    parser = pyjs.PlatformParser("platform", verbose=False)
-    parser.setPlatform("pysm")
+    if options.input:
+        txt = open(options.input, 'r').read()
+    else:
+        parser = pyjs.PlatformParser("platform", verbose=False)
+        parser.setPlatform("pysm")
 
-    if file_name.endswith(".py"):
-        file_name = file_name[:-3]
+        if file_name.endswith(".py"):
+            file_name = file_name[:-3]
 
-    app_translator = pyjs.AppTranslator(app_library_dirs, parser,
-                        verbose=False)
-    app_libs, txt = app_translator.translate(file_name, debug=debug,
-                                  library_modules=['_pyjs.js', 'sys', 'pyjslib'])
+        app_translator = pyjs.AppTranslator(
+                app_library_dirs, parser,
+                verbose = False,
+                debug = options.debug,
+                print_statements = options.print_statements,
+                function_argument_checking = options.function_argument_checking,
+                attribute_checking = options.attribute_checking,
+                source_tracking = options.source_tracking,
+                line_tracking = options.line_tracking,
+                store_source = options.store_source,
+        )
+        app_libs, txt = app_translator.translate(file_name, debug=debug,
+                                      library_modules=['_pyjs.js', 'sys', 'pyjslib'])
 
-    #txt = pyjs.translate(file_name, module_name)
-
-    rt = spidermonkey.Runtime()
-    global cx
-    cx = rt.new_context()
-    cx.add_global("pysm_print_fn", pysm_print_fn)
-    cx.add_global("pysm_import_module", pysm_import_module)
-
-    template = """
+        template = """
 var modules = {};
 var pyjs_options = new Object();
 pyjs_options.set_all = function (v) {
@@ -88,14 +112,23 @@ trackstack.push(track);
 
 """
 
-    txt = template % {'app_libs': app_libs, 'module_name': file_name,
-                      'module': txt}
+        txt = template % {'app_libs': app_libs, 'module_name': file_name,
+                          'module': txt}
 
-    txt += "sys();\n" 
-    txt += "pyjslib();\n" 
-    txt += "%s();\n" % file_name
+        txt += "sys();\n" 
+        txt += "pyjslib();\n" 
+        txt += "%s();\n" % file_name
 
-    print txt
+    if options.output:
+        fp = open(options.output, 'w')
+        fp.write(txt)
+        fp.close()
+
+    rt = spidermonkey.Runtime()
+    global cx
+    cx = rt.new_context()
+    cx.add_global("pysm_print_fn", pysm_print_fn)
+    cx.add_global("pysm_import_module", pysm_import_module)
 
     cx.execute(txt)
 

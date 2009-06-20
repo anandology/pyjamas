@@ -11,6 +11,6 @@ def printFunc(objs, newline):
     """)
 
 # pysm_import_module is in pysmrun.py and has been added using add_global()
-def import_module(syspath, parent_name, module_name, dynamic_load, async):
+def import_module(syspath, parent_name, module_name, dynamic_load, async, init):
     pysm_import_module(parent_name, module_name)
 
