@@ -15,3 +15,5 @@ If you would like the JSONService.py to be executed under mod_python,
 move public/services/htaccess.mod_python to public/services/.htaccess
 and rebuild (or copy it to output/) and then restart Apache2.
 
+Thanks to Daniel Carvalho for working out how to run this example
+with mod_python.
