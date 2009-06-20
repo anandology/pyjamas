@@ -52,7 +52,8 @@ def main():
     if file_name.endswith(".py"):
         file_name = file_name[:-3]
 
-    app_translator = pyjs.AppTranslator(app_library_dirs, parser, verbose=False)
+    app_translator = pyjs.AppTranslator(app_library_dirs, parser,
+                        verbose=False)
     app_libs, txt = app_translator.translate(file_name, debug=debug,
                                   library_modules=['_pyjs.js', 'sys', 'pyjslib'])
 
@@ -65,6 +66,21 @@ def main():
     cx.add_global("pysm_import_module", pysm_import_module)
 
     template = """
+var modules = {};
+var pyjs_options = new Object();
+pyjs_options.set_all = function (v) {
+pyjs_options.arg_ignore = v;
+pyjs_options.arg_count = v;
+pyjs_options.arg_is_instance = v;
+pyjs_options.arg_instance_type = v;
+pyjs_options.arg_kwarg_dup = v;
+pyjs_options.arg_kwarg_unexpected_keyword = v;
+pyjs_options.arg_kwarg_multiple_values = v;
+}
+pyjs_options.set_all(true);
+var trackstack = [];
+var track = {module:'__main__', lineno: 1};
+trackstack.push(track);
 %(app_libs)s
 
 

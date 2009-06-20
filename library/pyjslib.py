@@ -27,6 +27,11 @@ def import_module(path, parent_module, module_name, dynamic=1, async=False):
     JS("""
         var cache_file;
 
+        /* FIXME: kees - set up module global array 
+        ev = "modules['"+module_name+"'] = "+module_name+"();";
+        pyjs_eval(ev);
+        */
+
         if (module_name == "sys" || module_name == 'pyjslib')
         {
             /*module_load_request[module_name] = 1;*/
@@ -1090,9 +1095,9 @@ class Dict:
         return self[key]
 
     @noSourceTracking
-    def get(self, key, default=None):
+    def get(self, key, default_value=None):
         if not self.has_key(key):
-            return default
+            return default_value
         return self[key]
 
     @noSourceTracking
@@ -1400,13 +1405,13 @@ def _issubtype(object_, classinfo):
     """)
 
 @noSourceTracking
-def getattr(obj, name, default=None):
+def getattr(obj, name, default_value=None):
     JS("""
     if ((!pyjslib.isObject(obj))||(pyjslib.isUndefined(obj[name]))){
         if (arguments.length != 3){
             throw pyjslib.AttributeError(obj, name);
         }else{
-        return default_;
+        return default_value;
         }
     }
     if (!pyjslib.isFunction(obj[name])) return obj[name];

@@ -502,7 +502,7 @@ class Translator:
     def gen_mod_import(self, parentName, importName, dynamic=1):
         #pyjs_ajax_eval("%(n)s.cache.js", null, true);
         return """\
-%(s)smodules['%(n)s'] = %(n)s();
+%(s)smodules['%(n)s'] = %(n)s(); /* FIXME: kees, this has to go */
 %(s)spyjslib.import_module(sys.loadpath, '%(p)s', '%(n)s', %(d)d, false);
 %(s)strack.module='%(p)s';
 """ % ({'s': self.spacing(), 'p': parentName, 'd': dynamic, 'n': importName})
