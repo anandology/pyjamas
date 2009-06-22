@@ -1,4 +1,4 @@
-from __pyjamas__ import JS
+from pyjamas.__pyjamas__ import JS
 
 def init():
     JS("""

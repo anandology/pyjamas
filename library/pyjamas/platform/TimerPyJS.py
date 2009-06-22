@@ -1,5 +1,4 @@
 #Timer().hookWindowClosing()
-timers = []
 
 class Timer:
     MIN_PERIOD = 1

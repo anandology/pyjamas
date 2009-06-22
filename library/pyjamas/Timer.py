@@ -1,7 +1,11 @@
 # This is the gtk-dependent Timer module.
 # For the pyjamas/javascript version, see platform/TimerPyJS.py
 
-from gobject import timeout_add
+import sys
+if sys.platform not in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
+    from gobject import timeout_add
+else:
+    timers = []
 
 class Timer:
 

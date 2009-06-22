@@ -777,4 +777,6 @@ def insertListItem(select, item, value, index):
 
 
 
+if sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
+    init()
 
