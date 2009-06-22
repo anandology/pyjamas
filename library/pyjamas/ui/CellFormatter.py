@@ -77,10 +77,15 @@ class CellFormatter:
         DOM.setStyleAttribute(self.getElement(row, column), "whiteSpace", wrap_str)
 
     def getCellElement(self, table, row, col):
-        JS("""
-        var out = table.rows[row].cells[col];
-        return (out == null ? null : out);
-        """)
+        length = table.props.rows.props.length
+        if row >= length:
+            return None
+        cols = table.props.rows.item(row).props.cells
+        length = cols.props.length
+        if col >= length:
+            return None
+        item = cols.item(col)
+        return item
 
     def getRawElement(self, row, column):
         return self.getCellElement(self.outer.bodyElem, row, column)

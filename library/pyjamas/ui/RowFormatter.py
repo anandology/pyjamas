@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from __pyjamas__ import JS
 from pyjamas import DOM
 
 class RowFormatter:
@@ -52,9 +51,7 @@ class RowFormatter:
         return self.getRow(self.outer.bodyElem, row)
 
     def getRow(self, element, row):
-        JS("""
-        return element.rows[row];
-        """)
+        return element.props.rows.item(row)
 
     def setStyleAttr(self, row, attrName, value):
         element = self.ensureElement(row)

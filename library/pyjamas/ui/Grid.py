@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from __pyjamas__ import JS
 from pyjamas import DOM
 
 from pyjamas.ui.HTMLTable import HTMLTable
@@ -86,18 +85,13 @@ class Grid(HTMLTable):
         return self.numRows
 
     def addRows(self, table, numRows, columns):
-        JS("""
-        var td = $doc.createElement("td");
-        td.innerHTML = "&nbsp;";
-        var row = $doc.createElement("tr");
-        for(var cellNum = 0; cellNum < columns; cellNum++) {
-            var cell = td.cloneNode(true);
-            row.appendChild(cell);
-        }
-        table.appendChild(row);
-        for(var rowNum = 1; rowNum < numRows; rowNum++) {
-            table.appendChild(row.cloneNode(true));
-        }
-        """)
-
+        td = DOM.createElement("td")
+        td.props.inner_html = "&nbsp;"
+        row = DOM.createElement("tr")
+        for cellNum in range(columns):
+            cell = td.clone_node(True)
+            row.append_child(cell)
+        table.append_child(row)
+        for rowNum in range(numRows):
+            table.append_child(row.clone_node(True))
 

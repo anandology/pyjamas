@@ -11,7 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from __pyjamas__ import JS
+import sys
+if sys.platform not in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
+    from pyjamas.__pyjamas__ import doc
+
 from pyjamas import DOM
 from pyjamas import Window
 import pyjslib
@@ -30,9 +33,8 @@ class RootPanelCls(AbsolutePanel):
         self.onAttach()
 
     def getBodyElement(self):
-        JS("""
-        return $doc.body;
-        """)
+        els = doc().get_elements_by_tag_name("body")
+        return els.item(0)
 
     @classmethod
     def get(cls, id=None):

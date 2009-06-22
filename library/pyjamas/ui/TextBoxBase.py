@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from __pyjamas__ import JS
 from pyjamas import DOM
 
 from pyjamas.ui.FocusWidget import FocusWidget
@@ -42,14 +41,11 @@ class TextBoxBase(FocusWidget):
             DOM.eventPreventDefault(self.currentEvent)
 
     def getCursorPos(self):
-        JS("""
-        try {
-            var element = this.getElement()
-            return element.selectionStart;
-        } catch (e) {
-            return 0;
-        }
-        """)
+        element = self.getElement()
+        try:
+            return element.props.selection_start
+        except:
+            return 0
 
     def getName(self):
         return DOM.getAttribute(self.getElement(), "name")
@@ -61,14 +57,11 @@ class TextBoxBase(FocusWidget):
         return text[start:start + length]
 
     def getSelectionLength(self):
-        JS("""
-        try{
-            var element = this.getElement()
-            return element.selectionEnd - element.selectionStart;
-        } catch (e) {
-            return 0;
-        }
-        """)
+        element = self.getElement()
+        try:
+            return element.props.selection_end - element.props.selection_start
+        except:
+            return 0
 
     def getText(self):
         return DOM.getAttribute(self.getElement(), "value")

@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from __pyjamas__ import JS
+
 from pyjamas import DOM
 
 from pyjamas.ui.ButtonBase import ButtonBase
@@ -35,11 +35,11 @@ class Button(ButtonBase):
             self.addClickListener(listener)
 
     def adjustType(self, button):
-        JS("""
-        if (button.type == 'submit') {
-            try { button.setAttribute("type", "button"); } catch (e) { }
-        }
-        """)
+        if button.props.type == 'submit':
+            try:
+                DOM.setAttribute(button, "type", "button")
+            except:
+                pass
 
     def click(self):
         """

@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from __pyjamas__ import JS, console
 from pyjamas import DOM
 
 from pyjamas.ui.Panel import Panel
@@ -208,9 +207,7 @@ class HTMLTable(Panel):
         return self.getDOMCellCountImpl(element, row)
 
     def getDOMCellCountImpl(self, element, row):
-        JS("""
-        return element.rows[row].cells.length;
-        """)
+        return element.props.rows.item(row).props.cells.props.length
 
     # also callable as getDOMRowCount(element)
     def getDOMRowCount(self, element=None):
@@ -219,9 +216,7 @@ class HTMLTable(Panel):
         return self.getDOMRowCountImpl(element)
 
     def getDOMRowCountImpl(self, element):
-        JS("""
-        return element.rows.length;
-        """)
+        return element.props.rows.props.length
 
     def getEventTargetCell(self, event):
         td = DOM.eventGetTarget(event)

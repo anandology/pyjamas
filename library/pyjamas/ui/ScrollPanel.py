@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from __pyjamas__ import JS
 from pyjamas import DOM
 
 from pyjamas.ui.SimplePanel import SimplePanel
@@ -65,17 +64,12 @@ class ScrollPanel(SimplePanel):
         DOM.setIntAttribute(self.getElement(), "scrollLeft", position)
 
     def ensureVisibleImpl(self, scroll, e):
-        JS("""
-        if (!e) return;
-
-        var item = e;
-        var realOffset = 0;
-        while (item && (item != scroll)) {
-            realOffset += item.offsetTop;
-            item = item.offsetParent;
-            }
-
-        scroll.scrollTop = realOffset - scroll.offsetHeight / 2;
-        """)
-
+        if not e:
+            return
+        item = e
+        realOffset = 0
+        while item and (item != scroll):
+            realOffset += item.props.offset_top
+            item = item.props.offset_parent
+        scroll.props.scroll_top = realOffset - scroll.props.offset_height / 2
 

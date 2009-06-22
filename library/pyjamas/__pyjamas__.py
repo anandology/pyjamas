@@ -68,3 +68,9 @@ def pygwt_processMetas():
                 pygwt_moduleNames.append(content)
     return pygwt_moduleNames
 
+class console:
+
+    @staticmethod
+    def error(msg):
+        print "TODO CONSOLE:", msg
+

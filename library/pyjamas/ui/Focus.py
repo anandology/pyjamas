@@ -11,39 +11,25 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from __pyjamas__ import JS
 from pyjamas import DOM
 
 def blur(elem):
-    JS("""
-    elem.blur();
-    """)
+    elem.blur()
 
 def createFocusable():
-    JS("""
-    var e = $doc.createElement("DIV");
-    e.tabIndex = 0;
-    return e;
-    """)
+    e = DOM.createDiv()
+    e.props.tab_index = 0
+    return e
 
 def focus(elem):
-    JS("""
-    elem.focus();
-    """)
+    elem.focus()
 
 def getTabIndex(elem):
-    JS("""
-    return elem.tabIndex;
-    """)
+    return elem.props.tab_index
 
 def setAccessKey(elem, key):
-    JS("""
-    elem.accessKey = key;
-    """)
+    elem.props.access_key = key
 
 def setTabIndex(elem, index):
-    JS("""
-    elem.tabIndex = index;
-    """)
-
+    elem.props.tab_index = index
 

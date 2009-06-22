@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from __pyjamas__ import JS
 from pyjamas import DOM
 from sets import Set
 import pygwt
@@ -355,9 +354,7 @@ class Tree(Widget):
         return self.childWidgets
 
     def shouldTreeDelegateFocusToElement(self, elem):
-        JS("""
-        var focus = ((elem.nodeName == "SELECT") || (elem.nodeName == "INPUT")  || (elem.nodeName == "CHECKBOX"));
-        return focus;
-        """)
-
+        return elem.props.node_name == 'select' or\
+               elem.props.node_name == 'input' or\
+               elem.props.node_name == 'checkbox'
 

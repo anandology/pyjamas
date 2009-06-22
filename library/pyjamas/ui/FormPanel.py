@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from __pyjamas__ import JS
 from pyjamas import DOM
 
 from pyjamas.ui.SimplePanel import SimplePanel
@@ -78,9 +77,7 @@ class FormPanel(SimplePanel):
 
     # FormPanelImpl.getEncoding
     def getEncoding(self):
-        JS("""
-        return this.getElement().enctype;
-        """)
+        return self.getElement().props.enctype
 
     def getMethod(self):
         return DOM.getAttribute(self.getElement(), "method")
@@ -90,35 +87,22 @@ class FormPanel(SimplePanel):
 
     # FormPanelImpl.getTextContents
     def getTextContents(self, iframe):
-        JS("""
-        try {
-            if (!iframe.contentWindow.document)
-                return null;
-
-            return iframe.contentWindow.document.body.innerHTML;
-        } catch (e) {
-            return null;
-        }
-        """)
+        try:
+            if not iframe.props.content_document:
+                return None
+            return iframe.props.content_document.props.body.props.inner_html
+        except:
+            return None
 
     # FormPanelImpl.hookEvents
     def hookEvents(self, iframe, form, listener):
-        JS("""
-        if (iframe) {
-            iframe.onload = function() {
-                if (!iframe.__formAction)
-                    return;
+        self._listener = listener
+        if iframe:
+            iframe.connect("browser-event", self._onload)
+            iframe.add_event_listener("load", True)
 
-                listener.onFrameLoad();
-            };
-        }
-
-        form.onsubmit = function() {
-            if (iframe)
-                iframe.__formAction = form.action;
-            return listener.onFormSubmit();
-        };
-        """)
+        form.connect("browser-event", self._onsubmit)
+        form.add_event_listener("onsubmit", True)
 
     def onFormSubmit(self):
         event = FormSubmitEvent(self)
@@ -140,11 +124,9 @@ class FormPanel(SimplePanel):
 
     # FormPanelImpl.setEncoding
     def setEncoding(self, encodingType):
-        JS("""
-        var form = this.getElement();
-        form.enctype = encodingType;
-        form.encoding = encodingType;
-        """)
+        form = self.getElement()
+        form.props.enctype = encodingType
+        form.props.encoding = encodingType
 
     def setMethod(self, method):
         DOM.setAttribute(self.getElement(), "method", method)
@@ -161,11 +143,9 @@ class FormPanel(SimplePanel):
 
     # FormPanelImpl.submit
     def submitImpl(self, form, iframe):
-        JS("""
-        if (iframe)
-            iframe.__formAction = form.action;
-        form.submit();
-        """)
+        if iframe:
+            iframe._formAction = form.props.action
+        form.submit()
 
     def onAttach(self):
         SimplePanel.onAttach(self)
@@ -180,9 +160,5 @@ class FormPanel(SimplePanel):
 
     # FormPanelImpl.unhookEvents
     def unhookEvents(self, iframe, form):
-        JS("""
-        if (iframe)
-            iframe.onload = null;
-        form.onsubmit = null;
-        """)
+        print "TODO: unhookEvents"
 

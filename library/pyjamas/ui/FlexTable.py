@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from __pyjamas__ import JS
 from pyjamas import DOM
 
 from pyjamas.ui.HTMLTable import HTMLTable
@@ -58,12 +57,8 @@ class FlexTable(HTMLTable):
             self.insertRow(i)
 
     def addCells(self, table, row, num):
-        JS("""
-        var rowElem = table.rows[row];
-        for(var i = 0; i < num; i++){
-            var cell = $doc.createElement("td");
-            rowElem.appendChild(cell);
-        }
-        """)
-
+        rowElem = table.props.rows.item(row)
+        for i in range(num):
+            cell = doc().create_element("td")
+            rowElem.append_child(cell)
 

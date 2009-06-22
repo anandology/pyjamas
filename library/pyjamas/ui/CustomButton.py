@@ -12,6 +12,10 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+import sys
+if sys.platform not in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
+    from pyjamas.__pyjamas__ import doc, wnd
+
 from pyjamas    import DOM
 from pyjamas.ui import Event
 from pyjamas.ui.ButtonBase import ButtonBase
@@ -460,17 +464,16 @@ class CustomButton (ButtonBase):
         # caused by a keyboard event).
         evt = None # we NEED to initialize evt, to be in the same namespace 
                    # as the evt *inside* of JS block
-        JS("""
-        // We disallow setting the button here, because IE doesn't provide the
-        // button property for click events.
+
+        # We disallow setting the button here, because IE doesn't provide the
+        # button property for click events.
         
-        // there is a good explanation about all the arguments of initMouseEvent
-        // at: https://developer.mozilla.org/En/DOM:event.initMouseEvent
+        # there is a good explanation about all the arguments of initMouseEvent
+        # at: https://developer.mozilla.org/En/DOM:event.initMouseEvent
         
-        evt = $doc.createEvent('MouseEvents');
-        evt.initMouseEvent("click", true, true, $wnd, 1, 0, 0, 0, 0, false, 
-                           false, false, false, 0, null);
-        """)
+        evt = doc().createEvent('MouseEvents')
+        evt.initMouseEvent("click", true, true, wnd(), 1, 0, 0, 0, 0, false, 
+                           false, false, false, 0, null)
         
         self.getElement().dispatchEvent(evt)
         self.allowClick = False
