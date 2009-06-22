@@ -1,17 +1,6 @@
-# This is the gtk-dependent JSONService module.
-# For the pyjamas/javascript version, see platform/JSONServicePyJS.py
-
-
-""" JSONService is a module providing JSON RPC Client side proxying.
-"""
-
-import sys
 from pyjamas.HTTPRequest import HTTPRequest
 import pygwt
-if sys.platform not in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
-    from jsonrpc.json import dumps, loads, JSONDecodeException
-else:
-    from pyjamas.JSONParser import JSONParser
+from pyjamas.JSONParser import JSONParser
 
 # no stream support
 class JSONService:
@@ -24,6 +13,7 @@ class JSONService:
         accept the return value of the remote method, and 
         onRemoteError(code, message, requestInfo) to handle errors.
         """
+        self.parser = JSONParser()
         self.url = url
         self.handler = handler
     
@@ -41,7 +31,7 @@ class JSONService:
 
     def __sendNotify(self, method, params):
         msg = {"id":None, "method":method, "params":params}
-        msg_data = dumps(msg)
+        msg_data = self.parser.encode(msg)
         if not HTTPRequest().asyncPost(self.url, msg_data, self):
             return -1
         return 1
@@ -49,7 +39,7 @@ class JSONService:
     def __sendRequest(self, method, params, handler):
         id = pygwt.getNextHashId()
         msg = {"id":id, "method":method, "params":params}
-        msg_data = dumps(msg)
+        msg_data = self.parser.encode(msg)
         
         request_info = JSONRequestInfo(id, method, handler)
         if not HTTPRequest().asyncPost(self.url, msg_data, JSONResponseTextHandler(request_info)):
@@ -69,61 +59,52 @@ class JSONResponseTextHandler:
         self.request = request
 
     def onCompletion(self, json_str):
-
-        try:
-            response = loads(json_str)
-        except JSONDecodeException:
-            # err.... help?!!
-            self.request.handler.onRemoteError(0, "decode failure", None)
-            return
+        response = JSONParser().decodeAsObject(json_str)
 
         if not response:
             self.request.handler.onRemoteError(0, "Server Error or Invalid Response", self.request)
-        elif response.get("error"):
+        elif response.has_key("error") and response['error']:
             error = response["error"]
-            self.request.handler.onRemoteError(error["code"], error["message"], self.request)
+            self.request.handler.onRemoteError(0, error, self.request)
         else:
             self.request.handler.onRemoteResponse(response["result"], self.request)
     
     def onError(self, error_str, error_code):
         self.request.handler.onRemoteError(error_code, error_str, self.request)
 
-class ServiceProxy(object):
-    def __init__(self, svc, serviceURL, serviceName=None):
-        self.__serviceURL = serviceURL
-        self.__serviceName = serviceName
-        self.__svc = svc
-
-    def __sendNotify(self, method, params):
-        return self.__svc.__sendNotify(method, params)
-
-    def __sendRequest(self, method, params, handler):
-        return self.__svc.__sendRequest(method, params, handler)
-
-    def __getattr__(self, name):
-        if name == '__svc':
-            return self.__svc
-        if self.__serviceName != None:
-            name = "%s.%s" % (self.__serviceName, name)
-        return ServiceProxy(self.__svc, self.__serviceURL, name)
-
-    def __call__(self, *params):
-        if hasattr(params[-1], "onRemoteResponse"):
-            handler = params[-1]
-            return self.__sendRequest(self.__serviceName,
-                                            params[:-1], handler)
-        else:
-            return self.__sendNotify(self.__serviceName, params)
-
 # reserved names: callMethod, onCompletion
-class JSONProxy(JSONService, ServiceProxy):
+class JSONProxy(JSONService):
     def __init__(self, url, methods=None):
-        url = "http://127.0.0.1/%s" % url # TODO: allow alternate locations
         JSONService.__init__(self, url)
-        ServiceProxy.__init__(self, self, url)
+        if methods:
+            self.__registerMethods(methods)
 
     def __createMethod(self, method):
-        pass
+        JS("""
+        return function() {
+            var params = [];
+            for (var n=0; n<arguments.length; n++) { params.push(arguments[n]); }
+            if (params[params.length-1].onRemoteResponse) {
+                var handler=params.pop();
+                return this.__sendRequest(method, params, handler);
+            }
+            else {
+                return this.__sendNotify(method, params);
+            }
+        };
+        """)
+
     def __registerMethods(self, methods):
-        pass
+        JS("""
+        methods=methods.l;
+        for (var i in methods) {
+            var method = methods[i];
+            this[method]=this.__createMethod(method);
+        }
+        """)
+
+
+        
+    
+    
 
