@@ -311,7 +311,9 @@ def generateAppFiles(data_dir, js_includes, app_name, output, dynamic,
 
     app_files = []
     tmpl = read_boilerplate(data_dir, "all.cache.html")
-    parser = pyjs.PlatformParser("platform")
+    pyjs_parser = pyjs.PlatformParser("platform")
+    pyjs_parser.setPlatform("PyJS")
+    parser = pyjs.PlatformParser("platform", chain_plat=pyjs_parser)
     app_headers = ''
     scripts = ['<script type="text/javascript" src="%s"></script>'%script \
                                                   for script in js_includes]
@@ -346,6 +348,7 @@ def generateAppFiles(data_dir, js_includes, app_name, output, dynamic,
 
         # Application.Platform.cache.html
 
+        parser.setPlatform(platform)
         parser.setPlatform(platform)
         app_translator = pyjs.AppTranslator(
             parser=parser, dynamic=dynamic,

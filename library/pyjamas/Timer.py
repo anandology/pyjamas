@@ -1,87 +1,56 @@
-#Timer().hookWindowClosing()
-timers = []
+# This is the gtk-dependent Timer module.
+# For the pyjamas/javascript version, see platform/TimerPyJS.py
+
+from gobject import timeout_add
 
 class Timer:
-    MIN_PERIOD = 1
-    
-    def __init__(self, delay = 0, object = None):
-        self.isRepeating = False
-        self.timerId = 0
 
-        self.listener = object
-        if delay >= Timer.MIN_PERIOD:
-            self.schedule(delay)
-    
+    def __init__(self, time, notify):
+
+        self.notify_fn = notify.onTimer
+        self.id = timeout_add(time, self.notify)
+
     def clearInterval(self, id):
-        JS("""
-        $wnd.clearInterval(id);
-        """)
+        pass
 
     def clearTimeout(self, id):
-        JS("""
-        $wnd.clearTimeout(id);
-        """)
+        pass
 
     def createInterval(self, timer, period):
-        JS("""
-        return $wnd.setInterval(function() { timer.fire(); }, period);
-        """)
+        pass
 
     def createTimeout(self, timer, delay):
-        JS("""
-        return $wnd.setTimeout(function() { timer.fire(); }, delay);
-        """)
+        pass
 
     # TODO - requires Window.addWindowCloseListener
     def hookWindowClosing(self):
         pass
-    
-    def cancel(self):
-        global timers
-        
-        if self.isRepeating:
-            self.clearInterval(self.timerId)
+
+    def notify(self, *args):
+        if self.notify_fn.func_code.co_argcount == 2:
+            self.notify_fn(self)
         else:
-            self.clearTimeout(self.timerId)
-        timers.remove(self)
+            self.notify_fn()
+
+    def cancel(self):
+        print "TODO"
 
     def run(self):
-            self.listener.onTimer(self.timerId)
-    
+        pass
+
     def schedule(self, delayMillis):
-        global timers
-        
-        if delayMillis < Timer.MIN_PERIOD:
-            alert("Timer delay must be positive")
-        self.cancel()
-        self.isRepeating = False
-        self.timerId = self.createTimeout(self, delayMillis)
-        timers.append(self)
+        pass
 
     def scheduleRepeating(self, periodMillis):
-        global timers
-
-        if periodMillis < Timer.MIN_PERIOD:
-            alert("Timer period must be positive")
-        self.cancel()
-        self.isRepeating = True
-        self.timerId = self.createInterval(self, periodMillis)
-        timers.append(self)
+        pass
 
     # TODO: UncaughtExceptionHandler, fireAndCatch
     def fire(self):
-        self.fireImpl()
+        pass
 
     def fireImpl(self):
-        global timers
-        
-        if not self.isRepeating:
-            timers.remove(self)
-
-        self.run()
+        pass
 
     def getID(self):
-        return self.timerId
+        return id
 
-
-    

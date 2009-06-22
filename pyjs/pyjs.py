@@ -2049,11 +2049,12 @@ def translate(file_name, module_name,
 
 
 class PlatformParser:
-    def __init__(self, platform_dir = "", verbose=True):
+    def __init__(self, platform_dir = "", verbose=True, chain_plat=None):
         self.platform_dir = platform_dir
         self.parse_cache = {}
         self.platform = ""
         self.verbose = verbose
+        self.chain_plat = chain_plat
 
     def setPlatform(self, platform):
         self.platform = platform
@@ -2063,7 +2064,11 @@ class PlatformParser:
         importing = False
         if not self.parse_cache.has_key(file_name):
             importing = True
-            mod = compiler.parseFile(file_name)
+            if self.chain_plat:
+                mod, override = self.chain_plat.parseModule(module_name,
+                                                            file_name)
+            else:
+                mod = compiler.parseFile(file_name)
             self.parse_cache[file_name] = mod
         else:
             mod = self.parse_cache[file_name]
