@@ -1,88 +1,101 @@
-from __pyjamas__ import JS
+# This is the gtk-dependent Window module.
+# For the pyjamas/javascript version, see platform/WindowPyJS.py
+
+"""
+    Window provides access to the DOM model's global Window.
+"""
+import sys
+if sys.platform not in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
+
+    import pygtk
+    pygtk.require('2.0')
+    import gtk
+
+    from pyjamas.__pyjamas__ import JS, doc, get_main_frame, wnd
+
+    closingListeners = []
+    resizeListeners = []
+else:
+    closingListeners = None
+    resizeListeners = None
+
 from pyjamas import Location
 
-closingListeners = None
-resizeListeners = None
+def init_listeners():
+    pass
 
 def addWindowCloseListener(listener):
-    init_listeners()
     global closingListeners
     closingListeners.append(listener)
 
 def addWindowResizeListener(listener):
-    init_listeners()
     global resizeListeners
     resizeListeners.append(listener)
 
 def alert(msg):
-    JS("""
-    $wnd.alert(msg);
-    """)
+    wnd().alert(msg)
 
 def confirm(msg):
+    print "TODO", msg
+    alert("Window.confirm() is still on the TODO list. sorry!")
+    return False
     JS("""
-    return $wnd.confirm(msg);
-    """)
+    window.confirm("%s");
+    """ % msg)
 
 def prompt(msg, defaultReply=""):
-    JS("""
-        return $wnd.prompt(msg, defaultReply);
-    """)
+    print "TODO", msg
+    alert("Window.prompt() is still on the TODO list. sorry!")
 
 def enableScrolling(enable):
-   JS("""
-   $doc.body.style.overflow = enable ? 'auto' : 'hidden';
-   """)
+    doc().props.body.props.style.overflow = enable and 'auto' or 'hidden'
 
 def scrollBy(x, y):
-    JS("""
-    $wnd.scrollBy(x, y);
-    """)
+    print "TODO: scrollBy", x, y
+    pass
 
 def scroll(x, y):
-    JS("""
-    $wnd.scroll(x, y);
-    """)
+    print "TODO: scroll", x, y
+    pass
 
 def getClientHeight():
-    JS("""
-    if ($wnd.innerHeight)
-        return $wnd.innerHeight;
-    return $doc.body.clientHeight;
-    """)
+    height = wnd().props.inner_height
+    if height:
+        return height
+    return doc().props.body.props.client_height;
 
 def getClientWidth():
-    JS("""
-    if ($wnd.innerWidth)
-        return $wnd.innerWidth;
-    return $doc.body.clientWidth;
-    """)
+    width = wnd().props.inner_width
+    if width:
+        return width
+    return doc().props.body.props.client_width;
 
 def setLocation(url):
-    JS("""
-    $wnd.location = url;
-    """)
- 
+    print "TODO - setLocation", url
+    pass
+
 location = None
 
 def getLocation():
     global location
-    wnd_location = None
     if not location:
-        JS("""wnd_location = $wnd.location;""")
-        location = Location.Location(wnd_location)
+        print dir(wnd())
+        location = Location.Location(wnd().props.location)
     return location
+    JS("""
+    if(!Window_location)
+       Window_location = Location_Location($wnd.location);
+    return Window_location;
+    """)
  
  
 def getTitle():
-    JS("""
-    return $doc.title;
-    """)
+    return doc.props.title
 
 def open(url, name, features):
     JS("""
-    $wnd.open(url, name, features);
-    """)
+    document.parent.open('%s', '%s', '%s');
+    """ % (url, name, features))
 
 def removeWindowCloseListener(listener):
     global closingListeners
@@ -93,35 +106,16 @@ def removeWindowResizeListener(listener):
     resizeListeners.remove(listener)
 
 def setMargin(size):
-    JS("""
-    $doc.body.style.margin = size;
-    """)
+    doc().props.body.props.style.margin = size;
 
 def setTitle(title):
-    JS("""
-    $doc.title = title;
-    """)
+    doc().props.title = title
 
 def setOnError(onError):
-    if (not callable(onError)):
-        raise TypeError("object is not callable")
-    JS("""\
-    $wnd.onerror=function(msg, url, linenumber){
-        return onError(msg, url, linenumber);
-    }
-    """)
+    pass
 
 def onError(msg, url, linenumber):
-    dialog=JS("""$doc.createElement("div")""")
-    dialog.className='errordialog'
-    # Note: trackstackstr is a global javascript array
-    tracestr = sys.trackstackstr(trackstack.slice(0,-1))
-    tracestr = tracestr.replace("\n", "<br />\n&nbsp;&nbsp;&nbsp;")
-    dialog.innerHTML='&nbsp;<b style="color:red">JavaScript Error: </b>' + \
-        msg +' at line number ' + linenumber +'. Please inform webmaster.' + \
-        '<br />&nbsp;&nbsp;&nbsp;' + tracestr
-    JS("""$doc.body.appendChild(dialog)""")
-    return True
+    pass
 
 # TODO: call fireClosedAndCatch
 def onClosed():
@@ -149,6 +143,11 @@ def fireClosingAndCatch(handler):
     # FIXME - need implementation
     pass
 
+def resize(width, height):
+    print "resize", width, height
+    wnd().resize_to(width, height)
+    wnd().resize_by(width, height)
+
 def fireClosingImpl():
     global closingListeners
     
@@ -169,34 +168,5 @@ def fireResizedImpl():
     for listener in resizeListeners:
         listener.onWindowResized(getClientWidth(), getClientHeight())
 
-def init_listeners():
-    global closingListeners
-    global resizeListeners
-    if not closingListeners:
-        closingListeners = []
-    if not resizeListeners:
-        resizeListeners = []
-
 def init():
-    global onError
-    init_listeners()
-    JS("""
-    $wnd.__pygwt_initHandlers(
-        function() {
-            Window.onResize();
-        },
-        function() {
-            return Window.onClosing();
-        },
-        function() {
-            Window.onClosed();
-            /*$wnd.onresize = null;
-            $wnd.onbeforeclose = null;
-            $wnd.onclose = null;*/
-        }
-    );
-    """)
-    setOnError(onError)
-
-init()
-
+    pass
