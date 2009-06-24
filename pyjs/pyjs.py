@@ -1247,7 +1247,6 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             elif isinstance(child, ast.Assign):
                 self.local_prefix = local_prefix
                 self.push_lookup(private_scope)
-                self.track_lineno(child, True)
                 lhs = "%s.%s" % (local_prefix, child.nodes[0].name)
                 lhs = self.add_lookup('attribute', child.nodes[0].name, lhs)
                 print >>self.output, self.spacing() + "%s = %s" % (lhs, self.expr(child.expr, current_klass))
@@ -2079,8 +2078,6 @@ class PlatformParser:
         if self.platform and os.path.isfile(platform_file_name):
             mod = copy.deepcopy(mod)
             mod_override = compiler.parseFile(platform_file_name)
-            if self.verbose:
-                print "Merging", module_name, self.platform
             self.merge(mod, mod_override)
             override = True
 
@@ -2104,8 +2101,6 @@ class PlatformParser:
                 self.replaceFunction(tree1, child.name, child)
             elif isinstance(child, ast.Class):
                 self.replaceClassMethods(tree1, child.name, child)
-            else:
-                raise TranslationError("Do not know how to merge", child)
 
         return tree1
 
@@ -2129,47 +2124,23 @@ class PlatformParser:
             raise TranslationError("class not found: " + class_name, class_node)
 
         # replace methods
-        for node in class_node.code:
-            if isinstance(node, ast.Function):
+        for function_node in class_node.code:
+            if isinstance(function_node, ast.Function):
                 found = False
                 for child in old_class_node.code:
-                    if isinstance(child, ast.Function) and child.name == node.name:
+                    if isinstance(child, ast.Function) and child.name == function_node.name:
                         found = True
-                        self.copyFunction(child, node)
+                        self.copyFunction(child, function_node)
                         break
 
                 if not found:
-                    raise TranslationError("class method not found: " + class_name + "." + node.name, function_node)
-            elif isinstance(node, ast.Assign) and \
-                 isinstance(node.nodes[0], ast.AssName):
-                found = False
-                for child in old_class_node.code:
-                    if isinstance(child, ast.Assign) and \
-                        self.eqNodes(child.nodes, node.nodes):
-                        found = True
-                        self.copyAssign(child, node)
-                if not found:
-                    self.addCode(old_class_node.code, node)
-            else:
-                raise TranslationError("Do not know how to merge %s" % node, node)
+                    raise TranslationError("class method not found: " + class_name + "." + function_node.name, function_node)
 
     def copyFunction(self, target, source):
         target.code = source.code
         target.argnames = source.argnames
         target.defaults = source.defaults
         target.doc = source.doc # @@@ not sure we need to do this any more
-
-    def copyAssign(self, target, source):
-        target.nodes = source.nodes
-        target.expr = source.expr
-        target.lineno = source.lineno
-        return
-
-    def addCode(self, target, source):
-        target.nodes.append(source)
-
-    def eqNodes(self, nodes1, nodes2):
-        return str(nodes1) == str(nodes2)
 
 def dotreplace(fname):
     path, ext = os.path.splitext(fname)

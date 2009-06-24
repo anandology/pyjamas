@@ -24,27 +24,27 @@ def eventGetButton(evt):
     """)
 
 # This is what is in GWT 1.5 for getAbsoluteLeft.  err...
-#"""
-#    // We cannot use DOMImpl here because offsetLeft/Top return erroneous
-#    // values when overflow is not visible.  We have to difference screenX
-#    // here due to a change in getBoxObjectFor which causes inconsistencies
-#    // on whether the calculations are inside or outside of the element's
-#    // border.
-#    try {
-#      return $doc.getBoxObjectFor(elem).screenX
-#          - $doc.getBoxObjectFor($doc.documentElement).screenX;
-#    } catch (e) {
-#      // This works around a bug in the FF3 betas. The bug
-#      // should be fixed before they release, so this can
-#      // be removed at a later date.
-#      // https://bugzilla.mozilla.org/show_bug.cgi?id=409111
-#      // DOMException.WRONG_DOCUMENT_ERR == 4
-#      if (e.code == 4) {
-#        return 0;
-#      }
-#      throw e;
-#    }
-#"""
+"""
+    // We cannot use DOMImpl here because offsetLeft/Top return erroneous
+    // values when overflow is not visible.  We have to difference screenX
+    // here due to a change in getBoxObjectFor which causes inconsistencies
+    // on whether the calculations are inside or outside of the element's
+    // border.
+    try {
+      return $doc.getBoxObjectFor(elem).screenX
+          - $doc.getBoxObjectFor($doc.documentElement).screenX;
+    } catch (e) {
+      // This works around a bug in the FF3 betas. The bug
+      // should be fixed before they release, so this can
+      // be removed at a later date.
+      // https://bugzilla.mozilla.org/show_bug.cgi?id=409111
+      // DOMException.WRONG_DOCUMENT_ERR == 4
+      if (e.code == 4) {
+        return 0;
+      }
+      throw e;
+    }
+"""
 def getAbsoluteLeft(elem):
     JS("""
     try {
@@ -70,27 +70,27 @@ def getAbsoluteLeft(elem):
     """)
 
 # This is what is in GWT 1.5 for getAbsoluteTop.  err...
-#"""
-#    // We cannot use DOMImpl here because offsetLeft/Top return erroneous
-#    // values when overflow is not visible.  We have to difference screenY
-#    // here due to a change in getBoxObjectFor which causes inconsistencies
-#    // on whether the calculations are inside or outside of the element's
-#    // border.
-#    try {
-#      return $doc.getBoxObjectFor(elem).screenY
-#          - $doc.getBoxObjectFor($doc.documentElement).screenY;
-#    } catch (e) {
-#      // This works around a bug in the FF3 betas. The bug
-#      // should be fixed before they release, so this can
-#      // be removed at a later date.
-#      // https://bugzilla.mozilla.org/show_bug.cgi?id=409111
-#      // DOMException.WRONG_DOCUMENT_ERR == 4
-#      if (e.code == 4) {
-#        return 0;
-#      }
-#      throw e;
-#    }
-#"""
+"""
+    // We cannot use DOMImpl here because offsetLeft/Top return erroneous
+    // values when overflow is not visible.  We have to difference screenY
+    // here due to a change in getBoxObjectFor which causes inconsistencies
+    // on whether the calculations are inside or outside of the element's
+    // border.
+    try {
+      return $doc.getBoxObjectFor(elem).screenY
+          - $doc.getBoxObjectFor($doc.documentElement).screenY;
+    } catch (e) {
+      // This works around a bug in the FF3 betas. The bug
+      // should be fixed before they release, so this can
+      // be removed at a later date.
+      // https://bugzilla.mozilla.org/show_bug.cgi?id=409111
+      // DOMException.WRONG_DOCUMENT_ERR == 4
+      if (e.code == 4) {
+        return 0;
+      }
+      throw e;
+    }
+"""
 def getAbsoluteTop(elem):
     JS("""
     try {

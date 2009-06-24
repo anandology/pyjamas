@@ -1,3 +1,4 @@
+from __pyjamas__ import unescape
 
 class Location:
     def getHash(self):
