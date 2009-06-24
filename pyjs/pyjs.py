@@ -2164,6 +2164,8 @@ class PlatformParser:
                         self.copyAssign(child, node)
                 if not found:
                     self.addCode(old_class_node.code, node)
+            elif isinstance(node, ast.Pass):
+                pass
             else:
                 raise TranslationError("Do not know how to merge %s" % node, node)
 

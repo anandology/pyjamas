@@ -140,11 +140,6 @@ def load_module_wait(proceed_fn, parent_mod, module_list, dynamic):
     wait();
 """)
 
-class object:
-    pass
-
-Object = object
-
 class Modload:
 
     # All to-be-imported module names are in app_modlist
@@ -209,8 +204,6 @@ def preload_app_modules(path, app_modnames, app_imported_fn, dynamic,
 
     loader = Modload(path, app_modnames, app_imported_fn, dynamic, parent_mod)
     loader.next()
-
-import sys
 
 class BaseException:
 
@@ -746,8 +739,6 @@ class List:
         return s;
         """)
 
-list = List
-
 class Tuple:
     @noSourceTracking
     def __init__(self, data=None):
@@ -937,9 +928,6 @@ class Tuple:
         return s;
         """)
 
-tuple = Tuple
-
-
 class Dict:
     @noSourceTracking
     def __init__(self, data=None):
@@ -1128,8 +1116,6 @@ class Dict:
         s += "}";
         return s;
         """)
-
-dict = Dict
 
 # IE6 doesn't like pyjslib.super
 @noSourceTracking
@@ -1526,8 +1512,6 @@ def max(*sequence):
     return maxValue
 
 
-next_hash_id = 0
-
 @noSourceTracking
 def hash(obj):
     JS("""
@@ -1554,7 +1538,6 @@ def isFunction(a):
     JS("""
     return typeof a == 'function';
     """)
-callable = isFunction
 
 @noSourceTracking
 def isString(a):
