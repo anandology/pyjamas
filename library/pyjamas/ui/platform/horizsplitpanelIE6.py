@@ -19,11 +19,6 @@
  */
 """
 
-from pyjamas import DOM
-from pyjamas.Timer import Timer
-from pyjamas.DeferredCommand import DeferredCommand
-
-
 class ImplHorizontalSplitPanel:
     """ The IE6 implementation for horizontal split panels.
     """

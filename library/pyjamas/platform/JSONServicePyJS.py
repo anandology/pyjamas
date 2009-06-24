@@ -1,6 +1,3 @@
-from pyjamas.HTTPRequest import HTTPRequest
-import pygwt
-from pyjamas.JSONParser import JSONParser
 
 # no stream support
 class JSONService:

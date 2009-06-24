@@ -1,8 +1,3 @@
-from __pyjamas__ import JS
-from pyjamas import Location
-
-closingListeners = None
-resizeListeners = None
 
 def addWindowCloseListener(listener):
     init_listeners()
@@ -63,8 +58,6 @@ def setLocation(url):
     $wnd.location = url;
     """)
  
-location = None
-
 def getLocation():
     global location
     wnd_location = None
@@ -197,6 +190,4 @@ def init():
     );
     """)
     setOnError(onError)
-
-init()
 

@@ -1,4 +1,3 @@
-from pyjamas.__pyjamas__ import JS
 
 def init():
     JS("""
@@ -31,10 +30,6 @@ def init():
 
     return true;
     """)
-
-historyListeners = []
-init()
-
 
 class History:
     """

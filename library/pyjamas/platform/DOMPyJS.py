@@ -12,11 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyjamas.__pyjamas__ import JS
+#from pyjamas.__pyjamas__ import JS
 
-sCaptureElem = None
-sEventPreviewStack = []
-currentEvent = None
 
 def init():
     JS("""
@@ -810,6 +807,4 @@ def insertListItem(select, item, value, index):
         insertChild(select, option, index)
 
 
-
-init()
 

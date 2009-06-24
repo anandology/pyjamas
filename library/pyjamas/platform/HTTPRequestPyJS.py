@@ -1,4 +1,3 @@
-from __pyjamas__ import JS
 
 class HTTPRequest:
     # also callable as: asyncPost(self, url, postData, handler)
