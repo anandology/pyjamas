@@ -205,6 +205,7 @@ def sinkEvents(elem, bits):
     elem.onscroll      = (bits & 0x04000) ? $wnd.__dispatchEvent : null;
     elem.onload        = (bits & 0x08000) ? $wnd.__dispatchEvent : null;
     elem.onerror       = (bits & 0x10000) ? $wnd.__dispatchEvent : null;
+    elem.oncontextmenu = (bits & 0x20000) ? $wnd.__dispatchEvent : null; 
     """)
 
 def toString(elem):
