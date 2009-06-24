@@ -293,7 +293,8 @@ class IndexError(LookupError):
 # There seems to be an bug in Chrome with accessing the message
 # property, on which an error is thrown
 # Hence the declaration of 'var message' and the wrapping in try..catch
-JS("""
+def init():
+    JS("""
 pyjslib._errorMapping = function(err) {
     if (err instanceof(ReferenceError) || err instanceof(TypeError)) {
         var message = ''
@@ -1368,7 +1369,6 @@ def isinstance(object_, classinfo):
     if pyjslib.isUndefined(object_):
         return False
     if not pyjslib.isObject(object_):
-        
         return False
     if _isinstance(classinfo, Tuple):
         for ci in classinfo:

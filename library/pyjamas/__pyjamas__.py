@@ -11,6 +11,9 @@ if not sys.platform in  ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
 global main_frame
 main_frame = None
 
+def noSourceTracking(*args):
+    pass
+
 def unescape(str):
     s = s.replace("&amp;", "&")
     s = s.replace("&lt;", "<")
