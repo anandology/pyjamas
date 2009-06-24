@@ -108,8 +108,10 @@ function pyjs__exception_func_param(func_name, minargs, maxargs, nargs) {
     } else {
         return;
     }
-    //throw msg
-    throw pyjslib.TypeError(String(msg));
+    if (typeof pyjslib.TypeError == 'function') {
+        throw pyjslib.TypeError(String(msg));
+    }
+    throw msg
 }
 
 function pyjs__exception_func_multiple_values(func_name, key) {

@@ -6,9 +6,10 @@
 var $wnd = parent;
 var $doc = $wnd.document;
 var $moduleName = "%(app_name)s";
-var module_load_request = {};
-var modules = {};
-$doc.modules = modules;
+var $pyjs = new Object();
+$pyjs.modules = {};
+$pyjs.modules_hash = {};
+$doc.modules = $pyjs.modules;
 var pyjs_options = new Object();
 pyjs_options.set_all = function (v) {
     pyjs_options.arg_ignore = v;
@@ -67,7 +68,7 @@ var onExecutionError = function (exception, name) {
 function %(app_name)s_imported() {
     %(app_name)s.__name__ = '__main__';
     try {
-        modules['%(app_name)s'] = %(app_name)s('__main__');
+        $pyjs.modules['%(app_name)s'] = %(app_name)s('__main__');
     } catch (exception) {
         sys.save_exception_stack();
         onExecutionError(exception, '%(app_name)s');

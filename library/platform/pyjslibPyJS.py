@@ -16,24 +16,51 @@
 
 # must declare import _before_ importing sys
 
+
+# FIXME: dynamic=1, async=False, init=True are useless here (?)
+def import_module(path, parent_module, module_name, dynamic=1, async=False, init=True):
+    JS("""
+    module = $pyjs.modules_hash[module_name];
+    if (typeof module == 'function' && module.__was_initialized__ == true) {
+        return null;
+    }
+    if (module_name == 'sys' || module_name == 'pyjslib') {
+        module();
+        return null;
+    }
+    """)
+    module = None
+    names = module_name.split(".")
+    importName = ''
+    # Import all modules in the chain (import a.b.c)
+    for name in names:
+        importName += name
+        JS("""module = $pyjs.modules_hash[importName];""")
+        if isUndefined(module):
+            raise ImportError("No module named " + importName)
+        if JS("module.__was_initialized__ != true"):
+            # Module wasn't initialized
+            module()
+        importName += '.'
+    return None
+
+# FIXME: dynamic=1, async=False are useless here (?). Only dynamic modules 
+# are loaded with load_module and it's always "async"
 @noSourceTracking
-def import_module(path, parent_module, module_name, dynamic=1, async=False, init=False):
-    """ 
+def load_module(path, parent_module, module_name, dynamic=1, async=False):
+    """
     """
 
     JS("""
         var cache_file;
-
-        // FIXME: kees - set up module global array 
-        if (init == true) {
-            ev = "modules['"+module_name+"'] = "+module_name+"();";
-            pyjs_eval(ev);
+        var module = $pyjs.modules_hash[module_name];
+        if (typeof module == 'function') {
+            return true;
         }
 
-        if (module_name == "sys" || module_name == 'pyjslib')
-        {
-            /*module_load_request[module_name] = 1;*/
-            return;
+        if (!dynamic) {
+            // There's no way we can load a none dynamic module
+            return false;
         }
 
         if (path == null)
@@ -42,7 +69,7 @@ def import_module(path, parent_module, module_name, dynamic=1, async=False, init
         }
 
         var override_name = sys.platform + "." + module_name;
-        if (((sys.overrides != null) && 
+        if (((sys.overrides != null) &&
              (sys.overrides.has_key(override_name))))
         {
             cache_file =  sys.overrides.__getitem__(override_name) ;
@@ -56,135 +83,60 @@ def import_module(path, parent_module, module_name, dynamic=1, async=False, init
 
         //alert("cache " + cache_file + " " + module_name + " " + parent_module);
 
-        /* already loaded? */
-        if (module_load_request[module_name])
-        {
-            if (module_load_request[module_name] >= 3 && parent_module != null)
-            {
-                //onload_fn = parent_module + '.' + module_name + ' = ' + module_name + ';';
-                //pyjs_eval(onload_fn); /* set up the parent-module namespace */
-            }
-            return;
+        onload_fn = '';
+
+        // this one tacks the script onto the end of the DOM
+        pyjs_load_script(cache_file, onload_fn, async);
+
+        try {
+            loaded = (typeof $pyjs.modules_hash[module_name] == 'function')
+        } catch ( e ) {
         }
-        if (typeof (module_load_request[module_name]) == 'undefined')
-        {
-            module_load_request[module_name] = 1;
+        if (loaded) {
+            return true;
         }
-
-        /* following a load, this first executes the script 
-         * "preparation" function MODULENAME_loaded_fn()
-         * and then sets up the loaded module in the namespace
-         * of the parent.
-         */
-
-        onload_fn = ''; // module_name + "_loaded_fn();"
-
-        if (parent_module != null)
-        {
-            //onload_fn += parent_module + '.' + module_name + ' = ' + module_name + ';';
-            /*pmod = parent_module + '.' + module_name;
-            onload_fn += 'alert("' + pmod + '"+' + pmod+');';*/
-        }
-
-
-        if (dynamic)
-        {
-            /* this one tacks the script onto the end of the DOM
-             */
-
-            pyjs_load_script(cache_file, onload_fn, async);
-
-            /* this one actually RUNS the script (eval) into the page.
-               my feeling is that this would be better for non-async
-               but i can't get it to work entirely yet.
-             */
-            /*pyjs_ajax_eval(cache_file, onload_fn, async);*/
-        }
-        else
-        {
-            if (module_name != "pyjslib" &&
-                module_name != "sys")
-                pyjs_eval(onload_fn);
-        }
-
+        return false;
     """)
 
 @noSourceTracking
-def import_wait(proceed_fn, parent_mod, dynamic):
+def load_module_wait(proceed_fn, parent_mod, module_list, dynamic):
+    module_list = module_list.getArray()
     JS("""
 
-    var data = '';
-    var element = $doc.createElement("div");
-    $doc.body.appendChild(element);
-    function write_dom(txt) {
-        element.innerHTML = txt + '<br />';
-    }
+    var wait_count = 0;
+    //var data = '';
+    //var element = $doc.createElement("div");
+    //element.innerHTML = '';
+    //$doc.body.appendChild(element);
+    //function write_dom(txt) {
+    //    element.innerHTML += txt;
+    //}
 
     var timeoutperiod = 1;
     if (dynamic)
         var timeoutperiod = 1;
 
     var wait = function() {
-
-        var status = '';
-        for (l in module_load_request)
-        {
-            var m = module_load_request[l];
-            if (l == "sys" || l == 'pyjslib')
-                continue;
-            status += l + m + " ";
+        wait_count++;
+        //write_dom(".");
+        var loaded = true;
+        for (var i in module_list) {
+            if (typeof $pyjs.modules_hash[module_list[i]] != 'function') {
+                loaded = false;
+                break;
+            }
         }
-
-        //write_dom( " import wait " + wait_count + " " + status + " parent_mod " + parent_mod);
-        wait_count += 1;
-
-        if (status == '')
-        {
+        if (!loaded) {
             setTimeout(wait, timeoutperiod);
-            return;
+        } else {
+            if (proceed_fn.importDone)
+                proceed_fn.importDone(proceed_fn);
+            else
+                proceed_fn();
+            //$doc.body.removeChild(element);
         }
-
-        for (l in module_load_request)
-        {
-            var m = module_load_request[l];
-            if (l == "sys" || l == 'pyjslib')
-            {
-                module_load_request[l] = 4;
-                continue;
-            }
-            if ((parent_mod != null) && (l == parent_mod))
-            {
-                if (m == 1)
-                {
-                    setTimeout(wait, timeoutperiod);
-                    return;
-                }
-                if (m == 2)
-                {
-                    /* cheat and move app on to next stage */
-                    module_load_request[l] = 3;
-                }
-            }
-            if (m == 1 || m == 2)
-            {
-                setTimeout(wait, timeoutperiod);
-                return;
-            }
-            if (m == 3)
-            {
-                //alert("waited for module " + l + ": loaded");
-                module_load_request[l] = 4;
-                mod_fn = modules[l];
-            }
-        }
-        //alert("module wait done");
-
-        if (proceed_fn.importDone)
-            proceed_fn.importDone(proceed_fn);
-        else
-            proceed_fn();
     }
-
+    //write_dom("Loading modules ");
     wait();
 """)
 
@@ -195,28 +147,57 @@ Object = object
 
 class Modload:
 
+    # All to-be-imported module names are in app_modlist
+    # Since we're only _loading_ the modules here, we can do that in almost
+    # any order. There's one limitation: a child/sub module cannot be loaded
+    # unless its parent is loaded. It has to be chained in the module list.
+    # (1) $pyjs.modules.pyjamas
+    # (2) $pyjs.modules.pyjamas.ui
+    # (3) $pyjs.modules.pyjamas.ui.Widget
+    # Therefore, all modules are collected and sorted on the depth (i.e. the 
+    # number of dots in it)
+    # As long as we don't move on to the next depth unless all modules of the
+    # previous depth are loaded, we won't trun into unchainable modules
+    # The execution of the module code is done when the import statement is
+    # reached, or after loading the modules for the main module.
     @noSourceTracking
     def __init__(self, path, app_modlist, app_imported_fn, dynamic,
                  parent_mod):
         self.app_modlist = app_modlist
         self.app_imported_fn = app_imported_fn
         self.path = path
-        self.idx = 0;
         self.dynamic = dynamic
         self.parent_mod = parent_mod
+        self.modules = {}
+        for modlist in self.app_modlist:
+            for mod in modlist:
+                depth = len(mod.split('.'))
+                if not self.modules.has_key(depth):
+                    self.modules[depth] = []
+                self.modules[depth].append(mod)
+        self.depths = self.modules.keys()
+        self.depths.sort()
+        self.depths.reverse()
 
     @noSourceTracking
     def next(self):
-        
-        for i in range(len(self.app_modlist[self.idx])):
-            app = self.app_modlist[self.idx][i]
-            import_module(self.path, self.parent_mod, app, self.dynamic, True, False);
-        self.idx += 1
+        if not self.dynamic:
+            # All modules are static. Just start the main module.
+            self.app_imported_fn()
+            return
+        depth = self.depths.pop()
+        # Initiate the loading of the modules.
+        for app in self.modules[depth]:
+            load_module(self.path, self.parent_mod, app, self.dynamic, True);
 
-        if self.idx >= len(self.app_modlist):
-            import_wait(self.app_imported_fn, self.parent_mod, self.dynamic)
+        if len(self.depths) == 0:
+            # This is the last depth. Start the main module after loading these 
+            # modules.
+            load_module_wait(self.app_imported_fn, self.parent_mod, self.modules[depth], self.dynamic)
         else:
-            import_wait(getattr(self, "next"), self.parent_mod, self.dynamic)
+            # After loading the modules, to the next depth.
+            load_module_wait(getattr(self, "next"), self.parent_mod, self.modules[depth], self.dynamic)
+
 
 def get_module(module_name):
     ev = "__mod = %s;" % module_name
@@ -262,6 +243,20 @@ class StandardError(Exception):
 class TypeError(StandardError):
     pass
 
+class AttributeError(StandardError):
+
+    def toString(self):
+        return "AttributeError: %s of %s" % (self.args[1], self.args[0])
+
+class NameError(StandardError):
+    pass
+
+class ValueError(StandardError):
+    pass
+
+class ImportError(StandardError):
+    pass
+
 class LookupError(StandardError):
 
     def toString(self):
@@ -275,17 +270,6 @@ class KeyError(LookupError):
         elif len(self.args) is 1:
             return repr(self.message)
         return repr(self.args)
-
-class AttributeError(StandardError):
-
-    def toString(self):
-        return "AttributeError: %s of %s" % (self.args[1], self.args[0])
-
-class NameError(StandardError):
-    pass
-
-class ValueError(StandardError):
-    pass
 
 class IndexError(LookupError):
     pass

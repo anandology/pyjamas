@@ -283,7 +283,7 @@ class Translator:
             vdec = ''
         else:
             vdec = 'var '
-        print >>self.output, self.indent() + UU+"%s%s = function (__mod_name__) {" % (vdec, module_name)
+        print >>self.output, self.indent() + UU+"%s%s = $pyjs.modules.%s = function (__mod_name__) {" % (vdec, module_name, module_name)
 
         print >>self.output, self.spacing() + "if("+module_name+".__was_initialized__) return;"
         print >>self.output, self.spacing() + UU+module_name+".__was_initialized__ = true;"
@@ -376,6 +376,7 @@ class Translator:
 
         print >> self.output, self.dedent() + "return this;"
         print >> self.output, self.spacing() + "}; /* end %s */ \n"  % module_name
+        print >>self.output, self.spacing() + UU+"$pyjs.modules_hash['"+module_name+"'] = $pyjs.modules."+module_name+";"
 
     def uniqid(self, prefix = ""):
         if not self.__unique_ids__.has_key(prefix):
@@ -511,16 +512,16 @@ class Translator:
         names = importName.split(".")
         if not importName in self.imported_modules:
             self.imported_modules.append(importName)
+        # Add all parent modules
         _importName = ''
         for name in names:
             _importName += name
             if not _importName in self.imported_modules:
                 self.imported_modules.append(_importName)
-            print >> self.output, self.gen_mod_import(self.raw_module_name,
-                                                 strip_py(_importName),
-                                                 self.dynamic)
             _importName += '.'
-        # FIXME: Modules should be mapped to a secure module name
+        print >> self.output, self.gen_mod_import(self.raw_module_name,
+                                                 strip_py(importName),
+                                                 self.dynamic)
         return
 
     def md5(self, node):
@@ -839,6 +840,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                     assignName = rhs
                 lhs = UU+"%s.%s" % (self.raw_module_name, assignName)
                 lhs = self.add_lookup('import', assignName, lhs)
+                # FIXME: rhs should be a reference to $pyjs.modules.<module>
                 print >> self.output, self.spacing() + "%s = %s;" % (lhs, rhs)
 
     def _function(self, node, local=False):
@@ -1659,6 +1661,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 self.add_imported_module(module_name)
 
             if assignName != module_name:
+                # FIXME: rhs should be a reference to $pyjs.modules.<module>
                 tnode = ast.Assign([ast.AssName(assignName, "OP_ASSIGN", node.lineno)], ast.Name(module_name, node.lineno), node.lineno)
                 self._assign(tnode, None, True)
 

@@ -93,9 +93,9 @@ function pyjs_activate_javascript(txt)
 function pyjs_eval(str)
 {
     if (window.execScript) {
-        window.execScript(str);
+        return window.execScript(str);
     } else {
-        eval(str);
+        return eval(str);
     }
 }
 

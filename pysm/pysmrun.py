@@ -90,7 +90,9 @@ def main():
                                       library_modules=['_pyjs.js', 'sys', 'pyjslib'])
 
         template = """
-var modules = {};
+var $pyjs = new Object();
+$pyjs.modules = {};
+$pyjs.modules_hash = {};
 var pyjs_options = new Object();
 pyjs_options.set_all = function (v) {
 pyjs_options.arg_ignore = v;

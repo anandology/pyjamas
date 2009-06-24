@@ -29,7 +29,10 @@
 def import_module(path, parent_module, module_name, dynamic=1, async=False, init=False):
     pass
 
-def import_wait(proceed_fn, parent_mod, dynamic):
+def load_module(path, parent_module, module_name, dynamic=1, async=False):
+    pass
+
+def load_module_wait(proceed_fn, parent_mod, dynamic):
     pass
 
 class object:
@@ -39,26 +42,56 @@ Object = object
 
 class Modload:
 
+    # All to-be-imported module names are in app_modlist
+    # Since we're only _loading_ the modules here, we can do that in almost
+    # any order. There's one limitation: a child/sub module cannot be loaded
+    # unless its parent is loaded. It has to be chained in the module list.
+    # (1) $pyjs.modules.pyjamas
+    # (2) $pyjs.modules.pyjamas.ui
+    # (3) $pyjs.modules.pyjamas.ui.Widget
+    # Therefore, all modules are collected and sorted on the depth (i.e. the
+    # number of dots in it)
+    # As long as we don't move on to the next depth unless all modules of the
+    # previous depth are loaded, we won't trun into unchainable modules
+    # The execution of the module code is done when the import statement is
+    # reached, or after loading the modules for the main module.
+    @noSourceTracking
     def __init__(self, path, app_modlist, app_imported_fn, dynamic,
                  parent_mod):
         self.app_modlist = app_modlist
         self.app_imported_fn = app_imported_fn
         self.path = path
-        self.idx = 0;
         self.dynamic = dynamic
         self.parent_mod = parent_mod
+        self.modules = {}
+        for modlist in self.app_modlist:
+            for mod in modlist:
+                depth = len(mod.split('.'))
+                if not self.modules.has_key(depth):
+                    self.modules[depth] = []
+                self.modules[depth].append(mod)
+        self.depths = self.modules.keys()
+        self.depths.sort()
+        self.depths.reverse()
 
+    @noSourceTracking
     def next(self):
-        
-        for i in range(len(self.app_modlist[self.idx])):
-            app = self.app_modlist[self.idx][i]
-            import_module(self.path, self.parent_mod, app, self.dynamic, True, False);
-        self.idx += 1
+        if not self.dynamic:
+            # All modules are static. Just start the main module.
+            self.app_imported_fn()
+            return
+        depth = self.depths.pop()
+        # Initiate the loading of the modules.
+        for app in self.modules[depth]:
+            load_module(self.path, self.parent_mod, app, self.dynamic, True);
 
-        if self.idx >= len(self.app_modlist):
-            import_wait(self.app_imported_fn, self.parent_mod, self.dynamic)
+        if len(self.depths) == 0:
+            # This is the last depth. Start the main module after loading these
+            # modules.
+            load_module_wait(self.app_imported_fn, self.parent_mod, self.modules[depth], self.dynamic)
         else:
-            import_wait(getattr(self, "next"), self.parent_mod, self.dynamic)
+            # After loading the modules, to the next depth.
+            load_module_wait(getattr(self, "next"), self.parent_mod, self.modules[depth], self.dynamic)
 
 def get_module(module_name):
     ev = "__mod = %s;" % module_name
@@ -104,6 +137,20 @@ class StandardError(Exception):
 class TypeError(StandardError):
     pass
 
+class AttributeError(StandardError):
+
+    def toString(self):
+        return "AttributeError: %s of %s" % (self.args[1], self.args[0])
+
+class NameError(StandardError):
+    pass
+
+class ValueError(StandardError):
+    pass
+
+class ImportError(StandardError):
+    pass
+
 class LookupError(StandardError):
 
     def toString(self):
@@ -117,17 +164,6 @@ class KeyError(LookupError):
         elif len(self.args) is 1:
             return repr(self.message)
         return repr(self.args)
-
-class AttributeError(StandardError):
-
-    def toString(self):
-        return "AttributeError: %s of %s" % (self.args[1], self.args[0])
-
-class NameError(StandardError):
-    pass
-
-class ValueError(StandardError):
-    pass
 
 class IndexError(LookupError):
     pass
