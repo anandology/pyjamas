@@ -1,3 +1,5 @@
+
+from pyjamas import loader
 from pyjamas import Window
 from pyjamas.DeferredCommand import DeferredCommand
 from pyjamas.ui.DockPanel import DockPanel
@@ -90,3 +92,5 @@ if __name__ == '__main__':
     m = Mail()
     m.onModuleLoad()
 
+
+    loader.run()
