@@ -42,10 +42,10 @@ def exc_clear():
 # save_exception_stack is totally javascript, to prevent trackstack pollution
 JS("""sys.save_exception_stack = function () {
     var save_stack = [];
-    for (var needle in trackstack) {
+    for (var needle in $pyjs.trackstack) {
         var t = new Object();
-        for (var p in trackstack[needle]) {
-            t[p] = trackstack[needle][p];
+        for (var p in $pyjs.trackstack[needle]) {
+            t[p] = $pyjs.trackstack[needle][p];
         }
         save_stack.push(t);
         sys.__last_exception_stack__ = save_stack;

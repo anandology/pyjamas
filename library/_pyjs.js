@@ -38,7 +38,7 @@ function pyjs_args_merge(func, star_args, dstar_args, args)
         try {
             while (true) {
                 var i = __i.next();
-                if (pyjs_options.arg_kwarg_multiple_values && typeof call_args[0][i] != 'undefined') {
+                if ($pyjs.options.arg_kwarg_multiple_values && typeof call_args[0][i] != 'undefined') {
                     pyjs__exception_func_multiple_values(func.__name__, i);
                 }
                 call_args[0][i] = dstar_args.__getitem__(i)
@@ -58,7 +58,7 @@ function pyjs_kwargs_function_call(func, star_args, dstar_args, args)
     args = pyjs_args_merge(func, star_args, dstar_args, args);
     if (func.parse_kwargs) {
         args = func.parse_kwargs.apply(null, args);
-    } else if (pyjs_options.arg_kwarg_unexpected_keyword && args.length > 0) {
+    } else if ($pyjs.options.arg_kwarg_unexpected_keyword && args.length > 0) {
         for (var i in args[0]) {
             pyjs__exception_func_unexpected_keyword(func.__name__, i);
         }
@@ -73,7 +73,7 @@ function pyjs_kwargs_method_call(obj, method_name, star_args, dstar_args, args)
     if (method.parse_kwargs)
     {
         args = method.parse_kwargs.apply(null, args);
-    } else if (pyjs_options.arg_kwarg_unexpected_keyword && args.length > 0) {
+    } else if ($pyjs.options.arg_kwarg_unexpected_keyword && args.length > 0) {
         for (var i in args[0]) {
             pyjs__exception_func_unexpected_keyword(method.__name__, i);
         }
@@ -165,9 +165,9 @@ function pyjs__instancemethod(klass, func_name, func, parse_kwargs) {
         }
         var args = new Array(_this);
         for (var a=argstart;a < arguments.length; a++) args.push(arguments[a]);
-        if (pyjs_options.arg_is_instance) {
+        if ($pyjs.options.arg_is_instance) {
             if (_this.__is_instance__ === true) {
-                if (pyjs_options.arg_instance_type) return func.apply(this, args);
+                if ($pyjs.options.arg_instance_type) return func.apply(this, args);
                 for (var c in _this.__mro__) {
                     var cls = _this.__mro__[c];
                     if (cls == klass) {
@@ -194,7 +194,7 @@ function pyjs__staticmethod(klass, func_name, func, parse_kwargs) {
 
 function pyjs__classmethod(klass, func_name, func, parse_kwargs) {
     var fn = function () {
-        if (pyjs_options.arg_is_instance && this.__is_instance__ !== true && this.__is_instance__ !== false) pyjs__exception_func_instance_expected(func_name, klass.__name__);
+        if ($pyjs.options.arg_is_instance && this.__is_instance__ !== true && this.__is_instance__ !== false) pyjs__exception_func_instance_expected(func_name, klass.__name__);
         var args = new Array(this.prototype);
         for (var a=0;a < arguments.length; a++) args.push(arguments[a]);
         return func.apply(this, args);
@@ -301,10 +301,10 @@ function pyjs__class_function(cls_fn, prop, bases) {
     if (typeof cls == 'undefined') {
         cls=__kwargs.cls;
         delete __kwargs.cls;
-    } else if (pyjs_options.arg_kwarg_multiple_values && typeof __kwargs.cls != 'undefined') {
+    } else if ($pyjs.options.arg_kwarg_multiple_values && typeof __kwargs.cls != 'undefined') {
         pyjs__exception_func_multiple_values('__new__', 'cls');
     }
-    if (pyjs_options.arg_kwarg_unexpected_keyword) {
+    if ($pyjs.options.arg_kwarg_unexpected_keyword) {
         for (var i in __kwargs) {
             pyjs__exception_func_unexpected_keyword('__new__', i);
         }
@@ -322,13 +322,13 @@ function pyjs__class_function(cls_fn, prop, bases) {
         cls_fn['__init__'] = pyjs__bind_method(cls_fn, '__init__', function () {
     if (this.__is_instance__ === true) {
         var self = this;
-        if (pyjs_options.arg_count && arguments.length != 0) pyjs__exception_func_param(arguments.callee.__name__, 1, 1, arguments.length+1);
+        if ($pyjs.options.arg_count && arguments.length != 0) pyjs__exception_func_param(arguments.callee.__name__, 1, 1, arguments.length+1);
     } else {
         var self = arguments[0];
-        if (pyjs_options.arg_is_instance && self.__is_instance__ !== true) pyjs__exception_func_instance_expected(arguments.callee.__name__, arguments.callee.__class__.__name__, self);
-        if (pyjs_options.arg_count && arguments.length != 1) pyjs__exception_func_param(arguments.callee.__name__, 1, 1, arguments.length);
+        if ($pyjs.options.arg_is_instance && self.__is_instance__ !== true) pyjs__exception_func_instance_expected(arguments.callee.__name__, arguments.callee.__class__.__name__, self);
+        if ($pyjs.options.arg_count && arguments.length != 1) pyjs__exception_func_param(arguments.callee.__name__, 1, 1, arguments.length);
     }
-    if (pyjs_options.arg_instance_type) {
+    if ($pyjs.options.arg_instance_type) {
         if (arguments.callee !== arguments.callee.__class__[arguments.callee.__name__]) {
             if (!pyjslib._isinstance(self, arguments.callee.__class__.slice(1))) {
                 pyjs__exception_func_instance_expected(arguments.callee.__name__, arguments.callee.__class__.__name__, self);

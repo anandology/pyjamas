@@ -86,20 +86,20 @@ def main():
 var $pyjs = new Object();
 $pyjs.modules = {};
 $pyjs.modules_hash = {};
-var pyjs_options = new Object();
-pyjs_options.set_all = function (v) {
-pyjs_options.arg_ignore = v;
-pyjs_options.arg_count = v;
-pyjs_options.arg_is_instance = v;
-pyjs_options.arg_instance_type = v;
-pyjs_options.arg_kwarg_dup = v;
-pyjs_options.arg_kwarg_unexpected_keyword = v;
-pyjs_options.arg_kwarg_multiple_values = v;
+$pyjs.options = new Object();
+$pyjs.options.set_all = function (v) {
+    $pyjs.options.arg_ignore = v;
+    $pyjs.options.arg_count = v;
+    $pyjs.options.arg_is_instance = v;
+    $pyjs.options.arg_instance_type = v;
+    $pyjs.options.arg_kwarg_dup = v;
+    $pyjs.options.arg_kwarg_unexpected_keyword = v;
+    $pyjs.options.arg_kwarg_multiple_values = v;
 }
-pyjs_options.set_all(true);
-var trackstack = [];
-var track = {module:'__main__', lineno: 1};
-trackstack.push(track);
+$pyjs.options.set_all(true);
+$pyjs.trackstack = [];
+$pyjs.track = {module:'__main__', lineno: 1};
+$pyjs.trackstack.push($pyjs.track);
 %(app_libs)s
 
 

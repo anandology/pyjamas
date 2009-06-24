@@ -504,7 +504,7 @@ class Translator:
         #pyjs_ajax_eval("%(n)s.cache.js", null, true);
         return """\
 %(s)spyjslib.import_module(sys.loadpath, '%(p)s', '%(n)s', %(d)d, false, true);
-%(s)strack.module='%(p)s';
+%(s)s$pyjs.track.module='%(p)s';
 """ % ({'s': self.spacing(), 'p': parentName, 'd': dynamic, 'n': importName})
 
     def add_imported_module(self, importName):
@@ -530,10 +530,10 @@ class Translator:
     def track_lineno(self, node, module=False):
         if self.source_tracking and node.lineno:
             if module:
-                print >> self.output, self.spacing() + "track.module='%s';" % self.raw_module_name
+                print >> self.output, self.spacing() + "$pyjs.track.module='%s';" % self.raw_module_name
             if self.line_tracking:
-                print >> self.output, self.spacing() + "track.lineno=%d;" % node.lineno
-                #print >> self.output, self.spacing() + "if (track.module!='%s') debugger;" % self.raw_module_name
+                print >> self.output, self.spacing() + "$pyjs.track.lineno=%d;" % node.lineno
+                #print >> self.output, self.spacing() + "if ($pyjs.track.module!='%s') debugger;" % self.raw_module_name
             if self.store_source:
                 self.track_lines[node.lineno] = self.get_line_trace(node)
 
@@ -603,7 +603,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
 
         if self.function_argument_checking:
             print >> output, self.spacing() + """\
-if (pyjs_options.arg_count && %s) pyjs__exception_func_param(arguments.callee.__name__, %d, %s, arguments.length+1);\
+if ($pyjs.options.arg_count && %s) pyjs__exception_func_param(arguments.callee.__name__, %d, %s, arguments.length+1);\
 """ % (argcount1, minargs2, maxargs2str)
 
         print >> output, self.dedent() + """\
@@ -632,15 +632,15 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
 
         if self.function_argument_checking:
             print >> output, """\
-%sif (pyjs_options.arg_is_instance && self.__is_instance__ !== true) pyjs__exception_func_instance_expected(arguments.callee.__name__, arguments.callee.__class__.__name__, self);
-%sif (pyjs_options.arg_count && %s) pyjs__exception_func_param(arguments.callee.__name__, %d, %s, arguments.length);\
+%sif ($pyjs.options.arg_is_instance && self.__is_instance__ !== true) pyjs__exception_func_instance_expected(arguments.callee.__name__, arguments.callee.__class__.__name__, self);
+%sif ($pyjs.options.arg_count && %s) pyjs__exception_func_param(arguments.callee.__name__, %d, %s, arguments.length);\
 """ % (self.spacing(), self.spacing(), argcount2, minargs2, maxargs2str)
 
         print >> output, self.dedent() + "}"
 
         if arg_names and self.function_argument_checking:
             print >> output, """\
-%(s)sif (pyjs_options.arg_instance_type) {
+%(s)sif ($pyjs.options.arg_instance_type) {
 %(s)s\tif (%(self)s.prototype.__md5__ !== '%(__md5__)s') {
 %(s)s\t\tif (!pyjslib._isinstance(%(self)s, arguments.callee.__class__)) {
 %(s)s\t\t\tpyjs__exception_func_instance_expected(arguments.callee.__name__, arguments.callee.__class__.__name__, %(self)s);
@@ -666,7 +666,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             argcount = "(arguments.length < %d || arguments.length > %d)" % (minargs, maxargs)
         if self.function_argument_checking:
             print >> output, self.spacing() + """\
-if (pyjs_options.arg_count && %s) pyjs__exception_func_param(arguments.callee.__name__, %d, %s, arguments.length);\
+if ($pyjs.options.arg_count && %s) pyjs__exception_func_param(arguments.callee.__name__, %d, %s, arguments.length);\
 """ % (argcount, minargs, maxargsstr)
 
         if node.kwargs:
@@ -695,8 +695,8 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             argcount = "(arguments.length < %d || arguments.length > %d)" % (minargs, maxargs)
         if self.function_argument_checking:
             print >> output, """\
-    if (pyjs_options.arg_is_instance && this.__is_instance__ !== true && this.__is_instance__ !== false) pyjs__exception_func_class_expected(arguments.callee.__name__, arguments.callee.__class__.__name__);
-    if (pyjs_options.arg_count && %s) pyjs__exception_func_param(arguments.callee.__name__, %d, %s, arguments.length);\
+    if ($pyjs.options.arg_is_instance && this.__is_instance__ !== true && this.__is_instance__ !== false) pyjs__exception_func_class_expected(arguments.callee.__name__, arguments.callee.__class__.__name__);
+    if ($pyjs.options.arg_count && %s) pyjs__exception_func_param(arguments.callee.__name__, %d, %s, arguments.length);\
 """ % (argcount, minargs+1, maxargsstr)
 
         print >> output, """\
@@ -792,7 +792,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
 %(s)sif (typeof %(arg_name)s == 'undefined') {
 %(s)s\t%(arg_name)s=__kwargs.%(arg_name)s;
 %(s)s\tdelete __kwargs.%(arg_name)s;
-%(s)s} else if (pyjs_options.arg_kwarg_multiple_values && typeof __kwargs.%(arg_name)s != 'undefined') {
+%(s)s} else if ($pyjs.options.arg_kwarg_multiple_values && typeof __kwargs.%(arg_name)s != 'undefined') {
 %(s)s\tpyjs__exception_func_multiple_values('%(function_name)s', '%(arg_name)s');
 %(s)s}\
 """ % {'s': self.spacing(), 'arg_name': arg_name, 'function_name': function_name}
@@ -803,7 +803,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
 
         if self.function_argument_checking and not node.kwargs:
             print >>self.output, """\
-%(s)sif (pyjs_options.arg_kwarg_unexpected_keyword) {
+%(s)sif ($pyjs.options.arg_kwarg_unexpected_keyword) {
 %(s)s\tfor (var i in __kwargs) {
 %(s)s\t\tpyjs__exception_func_unexpected_keyword('%(function_name)s', i);
 %(s)s\t}
@@ -898,7 +898,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         save_output = self.output
         self.output = StringIO()
         if self.source_tracking:
-            print >>self.output, self.spacing() + "track={module:'%s',lineno:%d};trackstack.push(track);" % (self.raw_module_name, node.lineno)
+            print >>self.output, self.spacing() + "$pyjs.track={module:'%s',lineno:%d};$pyjs.trackstack.push($pyjs.track);" % (self.raw_module_name, node.lineno)
         self.track_lineno(node, True)
         for child in node.code:
             self._stmt(child, None)
@@ -918,7 +918,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             lastStmt = None
         if not isinstance(lastStmt, ast.Return):
             if self.source_tracking:
-                print >>self.output, self.spacing() + "trackstack.pop();track=trackstack.pop();trackstack.push(track);"
+                print >>self.output, self.spacing() + "$pyjs.trackstack.pop();$pyjs.track=$pyjs.trackstack.pop();$pyjs.trackstack.push($pyjs.track);"
             # FIXME: check why not on on self._isNativeFunc(lastStmt)
             if not self._isNativeFunc(lastStmt):
                 print >>self.output, self.spacing() + "return null;"
@@ -939,7 +939,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         self.track_lineno(node)
         if self.source_tracking:
             print >>self.output, self.spacing() + "var pyjs__ret = " + expr + ";"
-            print >>self.output, self.spacing() + "trackstack.pop();track=trackstack.pop();trackstack.push(track);"
+            print >>self.output, self.spacing() + "$pyjs.trackstack.pop();$pyjs.track=$pyjs.trackstack.pop();$pyjs.trackstack.push($pyjs.track);"
             print >>self.output, self.spacing() + "return pyjs__ret;"
         else:
             print >>self.output, self.spacing() + "return " + expr + ";"
@@ -1069,7 +1069,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         self.stacksize_depth += 1
         pyjs_try_err = 'pyjs_try_err'
         if self.source_tracking:
-            print >>self.output, self.spacing() + "var pyjs__trackstack_size_%d = trackstack.length;" % self.stacksize_depth
+            print >>self.output, self.spacing() + "var pyjs__trackstack_size_%d = $pyjs.trackstack.length;" % self.stacksize_depth
         print >>self.output, self.indent() + "try {"
 
         for stmt in node.body.nodes:
@@ -1097,11 +1097,11 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         if self.source_tracking:
             print >>self.output, """\
 %(s)ssys.save_exception_stack();
-%(s)sif (trackstack.length > pyjs__trackstack_size_%(d)d) {
-%(s)s\ttrackstack = trackstack.slice(0,pyjs__trackstack_size_%(d)d);
-%(s)s\ttrack = trackstack.slice(-1)[0];
+%(s)sif ($pyjs.trackstack.length > pyjs__trackstack_size_%(d)d) {
+%(s)s\t$pyjs.trackstack = $pyjs.trackstack.slice(0,pyjs__trackstack_size_%(d)d);
+%(s)s\t$pyjs.track = $pyjs.trackstack.slice(-1)[0];
 %(s)s}
-%(s)strack.module='%(m)s';""" % {'s': self.spacing(), 'd': self.stacksize_depth, 'm': self.raw_module_name}
+%(s)s$pyjs.track.module='%(m)s';""" % {'s': self.spacing(), 'd': self.stacksize_depth, 'm': self.raw_module_name}
 
         pyjs_try_err = self.add_lookup('variable', pyjs_try_err, pyjs_try_err)
         if hasattr(node, 'handlers'):
@@ -1355,7 +1355,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         save_output = self.output
         self.output = StringIO()
         if self.source_tracking:
-            print >>self.output, self.spacing() + "track={module:%s, lineno:%d};trackstack.push(track);" % (self.raw_module_name, node.lineno)
+            print >>self.output, self.spacing() + "$pyjs.track={module:%s, lineno:%d};$pyjs.trackstack.push($pyjs.track);" % (self.raw_module_name, node.lineno)
         self.track_lineno(node, True)
         for child in node.code:
             self._stmt(child, current_klass)
@@ -1376,7 +1376,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             lastStmt = None
         if not isinstance(lastStmt, ast.Return):
             if self.source_tracking:
-                print >>self.output, self.spacing() + "trackstack.pop();track=trackstack.pop();trackstack.push(track);"
+                print >>self.output, self.spacing() + "$pyjs.trackstack.pop();$pyjs.track=$pyjs.trackstack.pop();$pyjs.trackstack.push($pyjs.track);"
             if not self._isNativeFunc(lastStmt):
                 print >>self.output, self.spacing() + "return null;"
 
@@ -1771,7 +1771,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
         if self.source_tracking:
             self.stacksize_depth += 1
-            print >>self.output, self.spacing() + "var pyjs__trackstack_size_%d=trackstack.length;" % self.stacksize_depth
+            print >>self.output, self.spacing() + "var pyjs__trackstack_size_%d=$pyjs.trackstack.length;" % self.stacksize_depth
         s = self.spacing()
         print >>self.output, """\
 %(s)svar %(iterator_name)s = """ % locals() + self.track_call("%(list_expr)s.__iter__();" % locals())
@@ -1791,11 +1791,11 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         print >>self.output, self.dedent() + "}"
         if self.source_tracking:
             print >>self.output, """\
-%(s)sif (trackstack.length > pyjs__trackstack_size_%(d)d) {
-%(s)s\ttrackstack = trackstack.slice(0,pyjs__trackstack_size_%(d)d);
-%(s)s\ttrack = trackstack.slice(-1)[0];
+%(s)sif ($pyjs.trackstack.length > pyjs__trackstack_size_%(d)d) {
+%(s)s\t$pyjs.trackstack = $pyjs.trackstack.slice(0,pyjs__trackstack_size_%(d)d);
+%(s)s\t$pyjs.track = $pyjs.trackstack.slice(-1)[0];
 %(s)s}
-%(s)strack.module='%(m)s';""" % {'s': self.spacing(), 'd': self.stacksize_depth, 'm': self.raw_module_name}
+%(s)s$pyjs.track.module='%(m)s';""" % {'s': self.spacing(), 'd': self.stacksize_depth, 'm': self.raw_module_name}
             self.stacksize_depth -= 1
 
     def _while(self, node, current_klass):
