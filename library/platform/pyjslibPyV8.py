@@ -47,7 +47,7 @@ def import_module(syspath, parent_name, module_name, dynamic_load, async, init):
                 JS("""$pyjs.modules_hash[importName] = module""")
         importName += '.'
     name = names[0]
-    JS("""$pyjs.modules[name] = $pyjs.modules_hash[module];""")
+    JS("""$pyjs.modules[name] = $pyjs.modules_hash[name];""")
     return None
 
 # FIXME: dynamic=1, async=False are useless here (?). Only dynamic modules
