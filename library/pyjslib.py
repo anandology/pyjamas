@@ -55,7 +55,6 @@ class Modload:
     # previous depth are loaded, we won't trun into unchainable modules
     # The execution of the module code is done when the import statement is
     # reached, or after loading the modules for the main module.
-    @noSourceTracking
     def __init__(self, path, app_modlist, app_imported_fn, dynamic,
                  parent_mod):
         self.app_modlist = app_modlist
@@ -74,7 +73,6 @@ class Modload:
         self.depths.sort()
         self.depths.reverse()
 
-    @noSourceTracking
     def next(self):
         if not self.dynamic:
             # All modules are static. Just start the main module.
