@@ -17,8 +17,6 @@ def getModuleName():
     """)
 
 def getModuleBaseURL():
-    print "TODO"
-    return ""
     JS("""
     // this is intentionally not using $doc, because we want the module's own url
     var s = document.location.href;

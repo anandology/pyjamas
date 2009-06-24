@@ -61,7 +61,7 @@ class Tree(Widget):
         self.focusListeners.append(listener)
 
     def addItem(self, item):
-        if pyjslib.isString(item):
+        if isinstance(item, str):
             item = TreeItem(item)
 
         ret = self.root.addItem(item)

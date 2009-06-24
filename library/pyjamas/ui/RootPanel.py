@@ -75,7 +75,7 @@ class RootPanelCls(AbsolutePanel):
         return None
 
 def RootPanel(element=None):
-    if pyjslib.isString(element):
+    if isinstance(element, str):
         return RootPanelCls().get(element)
     return RootPanelCls(element)
 

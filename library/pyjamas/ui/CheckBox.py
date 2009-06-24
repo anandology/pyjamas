@@ -41,7 +41,7 @@ class CheckBox(ButtonBase):
         DOM.appendChild(self.getElement(), self.inputElem)
         DOM.appendChild(self.getElement(), self.labelElem)
 
-        uid = "check" + self.getUniqueID()
+        uid = "check%d" % self.getUniqueID()
         DOM.setAttribute(self.inputElem, "id", uid)
         DOM.setAttribute(self.labelElem, "htmlFor", uid)
 

@@ -165,7 +165,10 @@ class UIObject:
         property 'display'"""
         if not element:
             element = self.element
-        return element.style.display != "none"
+        try: # yuk!
+            return element.props.style.display != "none"
+        except AttributeError: # not been set (yet?)
+            return True
 
     # also callable as: setVisible(visible)
     def setVisible(self, element, visible=None):
@@ -178,9 +181,9 @@ class UIObject:
             element = self.element
 
         if visible:
-            element.style.display = ""
+            DOM.setStyleAttribute(element, 'display', "")
         else:
-            element.style.display = "none"
+            DOM.setStyleAttribute(element, 'display', "none")
 
     def unsinkEvents(self, eventBitsToRemove):
         """Reverse the operation of sinkEvents.  See L{UIObject.sinkevents}."""

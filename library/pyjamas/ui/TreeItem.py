@@ -57,15 +57,21 @@ class TreeItem(UIObject):
         DOM.appendChild(tdImg, self.imgElem)
         DOM.appendChild(tdContent, self.contentElem)
 
-        DOM.setAttribute(self.getElement(), "position", "relative")
+        self.__init__Impl(html)
+
+    def __init__Impl(self, html):
+
+        # XXX - can't set pos relative on a div node,
+        # or white_space on an HTML Table..
+        #DOM.setAttribute(self.getElement(), "position", "relative")
         DOM.setStyleAttribute(self.contentElem, "display", "inline")
         DOM.setStyleAttribute(self.getElement(), "whiteSpace", "nowrap")
-        DOM.setAttribute(self.itemTable, "whiteSpace", "nowrap")
+        #DOM.setAttribute(self.itemTable, "whiteSpace", "nowrap")
         DOM.setStyleAttribute(self.childSpanElem, "whiteSpace", "nowrap")
         self.setStyleName(self.contentElem, "gwt-TreeItem", True)
 
         if html != None:
-            if pyjslib.isString(html):
+            if isinstance(html, str):
                 self.setHTML(html)
             else:
                 self.setWidget(html)
@@ -82,7 +88,7 @@ class TreeItem(UIObject):
         item.setTree(self.tree)
         item.setParentItem(self)
         self.children.append(item)
-        DOM.setStyleAttribute(item.getElement(), "marginLeft", 16 + "px")
+        DOM.setStyleAttribute(item.getElement(), "marginLeft", "16px")
         DOM.appendChild(self.childSpanElem, item.getElement())
         if len(self.children) == 1:
             self.updateState()

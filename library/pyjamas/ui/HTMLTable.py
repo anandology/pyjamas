@@ -157,7 +157,8 @@ class HTMLTable(Panel):
         td = self.cleanCell(row, column)
         widget_hash = hash(widget)
         element = widget.getElement()
-        DOM.setAttribute(element, "__hash", widget_hash)
+        element.hash = widget_hash
+        DOM.setElemAttribute(element, "hash", str(widget_hash))
         self.widgetMap[widget_hash] = widget
         self.adopt(widget, td)
 
@@ -175,7 +176,13 @@ class HTMLTable(Panel):
         return self.computeKeyForElement(child)
 
     def computeKeyForElement(self, widgetElement):
-        return DOM.getAttribute(widgetElement, "__hash")
+        try:
+            return DOM.getElemAttribute(widgetElement, "hash")
+        except TypeError:
+            return None
+        return widgetElement.hash 
+
+        return widgetElement.hash
 
     def removeWidget(self, widget):
         self.disown(widget)

@@ -24,7 +24,7 @@ class Popups(Sink):
         list = ListBox()
         list.setVisibleItemCount(5)
         for i in range(10):
-            list.addItem("list item " + i)
+            list.addItem("list item %d" % i)
         panel.add(list)
         
         panel.setSpacing(8)

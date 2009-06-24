@@ -48,10 +48,10 @@ class Layouts(Sink):
         dock.add(north1, DockPanel.NORTH)
         dock.add(scroller, DockPanel.CENTER)
         
-        Logger.write("Layouts", "TODO: flowpanel")
+        #Logger.write("Layouts", "TODO: flowpanel")
         flow = FlowPanel()
         for i in range(8):
-            flow.add(CheckBox("Flow " + i))
+            flow.add(CheckBox("Flow %d" % i))
 
         horz = HorizontalPanel()
         horz.setVerticalAlignment(HasAlignment.ALIGN_MIDDLE)
@@ -77,7 +77,7 @@ class Layouts(Sink):
         menu1.addItem("child11")
         menu1.addItem("child12")
 
-        Logger.write("Layouts", "TODO: htmlpanel")
+        #Logger.write("Layouts", "TODO: htmlpanel")
         id = HTMLPanel.createUniqueId()
         text="""This is an <code>HTMLPanel</code>.  It allows you to add 
             components inside existing HTML, like this: <span id='%s' />

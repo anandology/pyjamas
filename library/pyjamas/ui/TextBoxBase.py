@@ -106,7 +106,7 @@ class TextBoxBase(FocusWidget):
             console.error("From Index: " + pos + "  To Index: " + (pos + length) + "  Text Length: " + len(self.getText()))
 
         element = self.getElement()
-        element.setSelectionRange(pos, pos + length)
+        element.set_selection_range(pos, pos + length)
 
     def setText(self, text):
         DOM.setAttribute(self.getElement(), "value", text)

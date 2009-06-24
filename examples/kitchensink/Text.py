@@ -48,7 +48,7 @@ class Text(Sink):
         return p
 
     def updateText(self, text, echo):
-        echo.setHTML("Text: " + text.getText() + "<br>" + "Selection: " + text.getCursorPos() + ", " + text.getSelectionLength())
+        echo.setHTML("Text: " + text.getText() + "<br>" + "Selection: %d" % text.getCursorPos() + ", %d" % text.getSelectionLength())
 
 
 class TextBoxListener:

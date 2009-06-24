@@ -5,6 +5,11 @@ from pyjamas import Window
 def greet(fred):
     Window.alert("Hello, AJAX!")
 
+class Hello:
+    def onModuleLoad(self):
+        b = Button("Click me", greet)
+        RootPanel().add(b)
+
 if __name__ == '__main__':
-    b = Button("Click me", greet)
-    RootPanel().add(b)
+    h = Hello()
+    h.onModuleLoad()

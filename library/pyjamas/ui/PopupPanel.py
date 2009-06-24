@@ -132,8 +132,9 @@ class PopupPanel(SimplePanel):
             top = 0
 
         element = self.getElement()
-        DOM.setStyleAttribute(element, "left", left + "px")
-        DOM.setStyleAttribute(element, "top", top + "px")
+        DOM.setStyleAttribute(element, "left", "%dpx" % left)
+        DOM.setStyleAttribute(element, "top", "%dpx" % top)
+
 
     def show(self):
         if self.showing:

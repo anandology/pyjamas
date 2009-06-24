@@ -26,7 +26,7 @@ class Lists(Sink):
         self.list.setMultipleSelect(True)
         
         for i in range(len(self.sStrings)):
-            self.combo.addItem("List " + i)
+            self.combo.addItem("List %d" % i)
         self.combo.setSelectedIndex(0)
         self.fillList(0)
         

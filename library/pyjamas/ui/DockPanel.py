@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from __pyjamas__ import console
+from pyjamas.__pyjamas__ import console
 from pyjamas import DOM
 
 from pyjamas.ui.CellPanel import CellPanel
@@ -133,7 +133,7 @@ class DockPanel(CellPanel):
 
         rows = []
         for i in range(rowCount):
-            rows[i] = DockPanelTmpRow()
+            rows.append(DockPanelTmpRow())
             rows[i].tr = DOM.createTR()
             DOM.appendChild(bodyElement, rows[i].tr)
 

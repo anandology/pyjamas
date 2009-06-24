@@ -20,7 +20,7 @@ class Tables(Sink):
         
         for i in range(10):
             for j in range(5):
-                inner.setText(i, j, "" + i + "," + j)
+                inner.setText(i, j, "%d" % i + ",%d" % j)
 
         inner.setWidth("100%")
         outer.setWidth("100%")

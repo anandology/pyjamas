@@ -57,6 +57,6 @@ class SimplePanel(Panel):
 
         if widget != None:
             self.adopt(widget, self.getContainerElement())
-            self.children[0] = widget
+            self.children.append(widget)
 
 
