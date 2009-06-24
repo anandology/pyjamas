@@ -832,16 +832,22 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             elif importName.endswith('.js'):
                 self.imported_js.add(importName)
             else:
-                self.add_imported_module(strip_py(importName))
-                rhs = strip_py(importName).split('.')[0]
+                importName = strip_py(importName)
+                self.add_imported_module(importName)
                 if importAs:
                     assignName = importAs
+                    rhs = "$pyjs.modules." + importName
                 else:
-                    assignName = rhs
-                lhs = UU+"%s.%s" % (self.raw_module_name, assignName)
+                    assignName = importName.split('.')[0]
+                    rhs = "$pyjs.modules." + importName.split('.')[0]
+                if len(self.lookup_stack) == 1:
+                    lhs = UU+"%s.%s" % (self.raw_module_name, assignName)
+                    vdec = ''
+                else:
+                    lhs = assignName
+                    vdec = 'var '
                 lhs = self.add_lookup('import', assignName, lhs)
-                # FIXME: rhs should be a reference to $pyjs.modules.<module>
-                print >> self.output, self.spacing() + "%s = %s;" % (lhs, rhs)
+                print >> self.output, self.spacing() + "%s%s = %s;" % (vdec, lhs, rhs)
 
     def _function(self, node, local=False):
         self.push_options()
@@ -1653,6 +1659,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 assignName = name[1]
             else:
                 assignName = name[0]
+            rhs = "$pyjs.modules." + module_name
             try:
                 ff = self.findFile(module_name + ".py")
             except Exception:
@@ -1660,10 +1667,14 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             if ff:
                 self.add_imported_module(module_name)
 
-            if assignName != module_name:
-                # FIXME: rhs should be a reference to $pyjs.modules.<module>
-                tnode = ast.Assign([ast.AssName(assignName, "OP_ASSIGN", node.lineno)], ast.Name(module_name, node.lineno), node.lineno)
-                self._assign(tnode, None, True)
+            if len(self.lookup_stack) == 1:
+                lhs = UU+"%s.%s" % (self.raw_module_name, assignName)
+                vdec = ''
+            else:
+                lhs = assignName
+                vdec = 'var '
+            lhs = self.add_lookup('import', assignName, lhs)
+            print >> self.output, self.spacing() + "%s%s = %s;" % (vdec, lhs, rhs)
 
     def _compare(self, node, current_klass):
         lhs = self.expr(node.expr, current_klass)

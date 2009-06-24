@@ -39,6 +39,6 @@ class NameTest(UnitTest):
 
         # This test fails, but even the declaration of foo 
         #(foo = object()) makes the test above fail too
-        #foo = object()
-        #import foo
-        #self.assertEqual(foo.__name__, 'foo')
+        foo = object()
+        import foo
+        self.assertEqual(foo.__name__, 'foo')
