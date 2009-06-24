@@ -16,6 +16,8 @@ if sys.platform not in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
     closingListeners = []
     resizeListeners = []
 else:
+    from __pyjamas__ import JS
+    from __pyjamas__ import unescape # for Location IE6 and Opera
     closingListeners = None
     resizeListeners = None
 
@@ -170,3 +172,5 @@ def fireResizedImpl():
 
 def init():
     pass
+
+init()
