@@ -14,11 +14,179 @@
 
 # iteration from Bob Ippolito's Iteration in JavaScript
 
-def import_module(path, parent_module, module_name, dynamic=1, async=False, init=False):
-    pass
+# must declare import _before_ importing sys
 
+@noSourceTracking
+def import_module(path, parent_module, module_name, dynamic=1, async=False, init=False):
+    """ 
+    """
+
+    JS("""
+        var cache_file;
+
+        // FIXME: kees - set up module global array 
+        if (init == true) {
+            ev = "modules['"+module_name+"'] = "+module_name+"();";
+            pyjs_eval(ev);
+        }
+
+        if (module_name == "sys" || module_name == 'pyjslib')
+        {
+            /*module_load_request[module_name] = 1;*/
+            return;
+        }
+
+        if (path == null)
+        {
+            path = './';
+        }
+
+        var override_name = sys.platform + "." + module_name;
+        if (((sys.overrides != null) && 
+             (sys.overrides.has_key(override_name))))
+        {
+            cache_file =  sys.overrides.__getitem__(override_name) ;
+        }
+        else
+        {
+            cache_file =  module_name ;
+        }
+
+        cache_file = (path + cache_file + '.cache.js' ) ;
+
+        //alert("cache " + cache_file + " " + module_name + " " + parent_module);
+
+        /* already loaded? */
+        if (module_load_request[module_name])
+        {
+            if (module_load_request[module_name] >= 3 && parent_module != null)
+            {
+                //onload_fn = parent_module + '.' + module_name + ' = ' + module_name + ';';
+                //pyjs_eval(onload_fn); /* set up the parent-module namespace */
+            }
+            return;
+        }
+        if (typeof (module_load_request[module_name]) == 'undefined')
+        {
+            module_load_request[module_name] = 1;
+        }
+
+        /* following a load, this first executes the script 
+         * "preparation" function MODULENAME_loaded_fn()
+         * and then sets up the loaded module in the namespace
+         * of the parent.
+         */
+
+        onload_fn = ''; // module_name + "_loaded_fn();"
+
+        if (parent_module != null)
+        {
+            //onload_fn += parent_module + '.' + module_name + ' = ' + module_name + ';';
+            /*pmod = parent_module + '.' + module_name;
+            onload_fn += 'alert("' + pmod + '"+' + pmod+');';*/
+        }
+
+
+        if (dynamic)
+        {
+            /* this one tacks the script onto the end of the DOM
+             */
+
+            pyjs_load_script(cache_file, onload_fn, async);
+
+            /* this one actually RUNS the script (eval) into the page.
+               my feeling is that this would be better for non-async
+               but i can't get it to work entirely yet.
+             */
+            /*pyjs_ajax_eval(cache_file, onload_fn, async);*/
+        }
+        else
+        {
+            if (module_name != "pyjslib" &&
+                module_name != "sys")
+                pyjs_eval(onload_fn);
+        }
+
+    """)
+
+@noSourceTracking
 def import_wait(proceed_fn, parent_mod, dynamic):
-    pass
+    JS("""
+
+    var data = '';
+    var element = $doc.createElement("div");
+    $doc.body.appendChild(element);
+    function write_dom(txt) {
+        element.innerHTML = txt + '<br />';
+    }
+
+    var timeoutperiod = 1;
+    if (dynamic)
+        var timeoutperiod = 1;
+
+    var wait = function() {
+
+        var status = '';
+        for (l in module_load_request)
+        {
+            var m = module_load_request[l];
+            if (l == "sys" || l == 'pyjslib')
+                continue;
+            status += l + m + " ";
+        }
+
+        //write_dom( " import wait " + wait_count + " " + status + " parent_mod " + parent_mod);
+        wait_count += 1;
+
+        if (status == '')
+        {
+            setTimeout(wait, timeoutperiod);
+            return;
+        }
+
+        for (l in module_load_request)
+        {
+            var m = module_load_request[l];
+            if (l == "sys" || l == 'pyjslib')
+            {
+                module_load_request[l] = 4;
+                continue;
+            }
+            if ((parent_mod != null) && (l == parent_mod))
+            {
+                if (m == 1)
+                {
+                    setTimeout(wait, timeoutperiod);
+                    return;
+                }
+                if (m == 2)
+                {
+                    /* cheat and move app on to next stage */
+                    module_load_request[l] = 3;
+                }
+            }
+            if (m == 1 || m == 2)
+            {
+                setTimeout(wait, timeoutperiod);
+                return;
+            }
+            if (m == 3)
+            {
+                //alert("waited for module " + l + ": loaded");
+                module_load_request[l] = 4;
+                mod_fn = modules[l];
+            }
+        }
+        //alert("module wait done");
+
+        if (proceed_fn.importDone)
+            proceed_fn.importDone(proceed_fn);
+        else
+            proceed_fn();
+    }
+
+    wait();
+""")
 
 class object:
     pass
@@ -27,18 +195,39 @@ Object = object
 
 class Modload:
 
+    @noSourceTracking
     def __init__(self, path, app_modlist, app_imported_fn, dynamic,
                  parent_mod):
-        pass
+        self.app_modlist = app_modlist
+        self.app_imported_fn = app_imported_fn
+        self.path = path
+        self.idx = 0;
+        self.dynamic = dynamic
+        self.parent_mod = parent_mod
+
+    @noSourceTracking
     def next(self):
-        pass
+        
+        for i in range(len(self.app_modlist[self.idx])):
+            app = self.app_modlist[self.idx][i]
+            import_module(self.path, self.parent_mod, app, self.dynamic, True, False);
+        self.idx += 1
+
+        if self.idx >= len(self.app_modlist):
+            import_wait(self.app_imported_fn, self.parent_mod, self.dynamic)
+        else:
+            import_wait(getattr(self, "next"), self.parent_mod, self.dynamic)
 
 def get_module(module_name):
-    pass
+    ev = "__mod = %s;" % module_name
+    JS("pyjs_eval(ev);")
+    return __mod
 
 def preload_app_modules(path, app_modnames, app_imported_fn, dynamic,
                         parent_mod=None):
-    pass
+
+    loader = Modload(path, app_modnames, app_imported_fn, dynamic, parent_mod)
+    loader.next()
 
 import sys
 
@@ -101,6 +290,223 @@ class ValueError(StandardError):
 class IndexError(LookupError):
     pass
 
+# There seems to be an bug in Chrome with accessing the message
+# property, on which an error is thrown
+# Hence the declaration of 'var message' and the wrapping in try..catch
+JS("""
+pyjslib._errorMapping = function(err) {
+    if (err instanceof(ReferenceError) || err instanceof(TypeError)) {
+        var message = ''
+        try {
+            message = err.message;
+        } catch ( e) {
+        }
+        return pyjslib.AttributeError(message);
+    }
+    return err
+}
+
+pyjslib.TryElse = function () { };
+pyjslib.TryElse.prototype = new Error();
+pyjslib.TryElse.__name__ = 'TryElse';
+pyjslib.TryElse.message = 'TryElse';
+
+pyjslib.StopIteration = function () { };
+pyjslib.StopIteration.prototype = new Error();
+pyjslib.StopIteration.__name__ = 'StopIteration';
+pyjslib.StopIteration.message = 'StopIteration';
+
+pyjslib.String_find = function(sub, start, end) {
+    var pos=this.indexOf(sub, start);
+    if (pyjslib.isUndefined(end)) return pos;
+
+    if (pos + sub.length>end) return -1;
+    return pos;
+}
+
+pyjslib.String_join = function(data) {
+    var text="";
+
+    if (pyjslib.isArray(data)) {
+        return data.join(this);
+    }
+    else if (pyjslib.isIteratable(data)) {
+        var iter=data.__iter__();
+        try {
+            text+=iter.next();
+            while (true) {
+                var item=iter.next();
+                text+=this + item;
+            }
+        }
+        catch (e) {
+            if (e.__name__ != 'StopIteration') throw e;
+        }
+    }
+
+    return text;
+}
+
+pyjslib.String_isdigit = function() {
+    return (this.match(/^\d+$/g) != null);
+}
+
+pyjslib.String_replace = function(old, replace, count) {
+    var do_max=false;
+    var start=0;
+    var new_str="";
+    var pos=0;
+
+    if (!pyjslib.isString(old)) return this.__replace(old, replace);
+    if (!pyjslib.isUndefined(count)) do_max=true;
+
+    while (start<this.length) {
+        if (do_max && !count--) break;
+
+        pos=this.indexOf(old, start);
+        if (pos<0) break;
+
+        new_str+=this.substring(start, pos) + replace;
+        start=pos+old.length;
+    }
+    if (start<this.length) new_str+=this.substring(start);
+
+    return new_str;
+}
+
+pyjslib.String_split = function(sep, maxsplit) {
+    var items=new pyjslib.List();
+    var do_max=false;
+    var subject=this;
+    var start=0;
+    var pos=0;
+
+    if (pyjslib.isUndefined(sep) || pyjslib.isNull(sep)) {
+        sep=" ";
+        subject=subject.strip();
+        subject=subject.replace(/\s+/g, sep);
+    }
+    else if (!pyjslib.isUndefined(maxsplit)) do_max=true;
+
+    if (subject.length == 0) {
+        return items;
+    }
+
+    while (start<subject.length) {
+        if (do_max && !maxsplit--) break;
+
+        pos=subject.indexOf(sep, start);
+        if (pos<0) break;
+
+        items.append(subject.substring(start, pos));
+        start=pos+sep.length;
+    }
+    if (start<=subject.length) items.append(subject.substring(start));
+
+    return items;
+}
+
+pyjslib.String___iter__ = function() {
+    var i = 0;
+    var s = this;
+    return {
+        'next': function() {
+            if (i >= s.length) {
+                throw pyjslib.StopIteration;
+            }
+            return s.substring(i++, i, 1);
+        },
+        '__iter__': function() {
+            return this;
+        }
+    };
+}
+
+pyjslib.String_strip = function(chars) {
+    return this.lstrip(chars).rstrip(chars);
+}
+
+pyjslib.String_lstrip = function(chars) {
+    if (pyjslib.isUndefined(chars)) return this.replace(/^\s+/, "");
+
+    return this.replace(new RegExp("^[" + chars + "]+"), "");
+}
+
+pyjslib.String_rstrip = function(chars) {
+    if (pyjslib.isUndefined(chars)) return this.replace(/\s+$/, "");
+
+    return this.replace(new RegExp("[" + chars + "]+$"), "");
+}
+
+pyjslib.String_startswith = function(prefix, start, end) {
+    // FIXME: accept tuples as suffix (since 2.5)
+    if (pyjslib.isUndefined(start)) start = 0;
+    if (pyjslib.isUndefined(end)) end = this.length;
+
+    if ((end - start) < prefix.length) return false
+    if (this.substr(start, prefix.length) == prefix) return true;
+    return false;
+}
+
+pyjslib.String_endswith = function(suffix, start, end) {
+    // FIXME: accept tuples as suffix (since 2.5)
+    if (pyjslib.isUndefined(start)) start = 0;
+    if (pyjslib.isUndefined(end)) end = this.length;
+
+    if ((end - start) < suffix.length) return false
+    if (this.substr(end - suffix.length, suffix.length) == suffix) return true;
+    return false;
+}
+
+pyjslib.String_ljust = function(width, fillchar) {
+    if (typeof(width) != 'number' ||
+        parseInt(width) != width) {
+        throw (pyjslib.TypeError("an integer is required"));
+    }
+    if (pyjslib.isUndefined(fillchar)) fillchar = ' ';
+    if (typeof(fillchar) != 'string' ||
+        fillchar.length != 1) {
+        throw (pyjslib.TypeError("ljust() argument 2 must be char, not " + typeof(fillchar)));
+    }
+    if (this.length >= width) return this;
+    return this + new Array(width+1 - this.length).join(fillchar);
+}
+
+pyjslib.String_rjust = function(width, fillchar) {
+    if (typeof(width) != 'number' ||
+        parseInt(width) != width) {
+        throw (pyjslib.TypeError("an integer is required"));
+    }
+    if (pyjslib.isUndefined(fillchar)) fillchar = ' ';
+    if (typeof(fillchar) != 'string' ||
+        fillchar.length != 1) {
+        throw (pyjslib.TypeError("rjust() argument 2 must be char, not " + typeof(fillchar)));
+    }
+    if (this.length >= width) return this;
+    return new Array(width + 1 - this.length).join(fillchar) + this;
+}
+
+pyjslib.String_center = function(width, fillchar) {
+    if (typeof(width) != 'number' ||
+        parseInt(width) != width) {
+        throw (pyjslib.TypeError("an integer is required"));
+    }
+    if (pyjslib.isUndefined(fillchar)) fillchar = ' ';
+    if (typeof(fillchar) != 'string' ||
+        fillchar.length != 1) {
+        throw (pyjslib.TypeError("center() argument 2 must be char, not " + typeof(fillchar)));
+    }
+    if (this.length >= width) return this;
+    padlen = width - this.length
+    right = Math.ceil(padlen / 2);
+    left = padlen - right;
+    return new Array(left+1).join(fillchar) + this + new Array(right+1).join(fillchar);
+}
+
+pyjslib.abs = Math.abs;
+
+""")
+
 class Class:
     def __init__(self, name):
         self.name = name
@@ -108,137 +514,81 @@ class Class:
     def __str___(self):
         return self.name
 
+@noSourceTracking
 def eq(a,b):
-    pass
+    # All 'python' classes and types are implemented as objects/functions.
+    # So, for speed, do a typeof X / X.__cmp__  on a/b.
+    # Checking for the existance of .__cmp__ is expensive...
+    JS("""
+    if (a === null) {
+        if (b === null) return true;
+        return false;
+    }
+    if (b === null) {
+        return false;
+    }
+    if ((typeof a == 'object' || typeof a == 'function') && typeof a.__cmp__ == 'function') {
+        return a.__cmp__(b) == 0;
+    } else if ((typeof b == 'object' || typeof b == 'function') && typeof b.__cmp__ == 'function') {
+        return b.__cmp__(a) == 0;
+    }
+    return a == b;
+    """)
 
+@noSourceTracking
 def cmp(a,b):
-    pass
+    JS("""
+    if (a === null) {
+        if (b === null) return 0;
+        return -1;
+    }
+    if (b === null) {
+        return 1;
+    }
+    if ((typeof a == 'object' || typeof a == 'function') && typeof a.__cmp__ == 'function') {
+        return a.__cmp__(b);
+    } else if ((typeof b == 'object' || typeof b == 'function') && typeof b.__cmp__ == 'function') {
+        return -b.__cmp__(a);
+    }
+    if (a > b) return 1;
+    if (b > a) return -1;
+    return 0;
+    """)
 
+@noSourceTracking
 def bool(v):
-    pass
+    # this needs to stay in native code without any dependencies here,
+    # because this is used by if and while, we need to prevent
+    # recursion
+    JS("""
+    if (!v) return false;
+    switch(typeof v){
+    case 'boolean':
+        return v;
+    case 'object':
+        if (v.__nonzero__){
+            return v.__nonzero__();
+        }else if (v.__len__){
+            return v.__len__()>0;
+        }
+        return true;
+    }
+    return Boolean(v);
+    """)
 
 class List:
-    def __init__(self, data=None):
-        pass
-
-    def append(self, item):
-        pass
-
-    def extend(self, data):
-        pass
-
-    def remove(self, value):
-        pass
-
-    def index(self, value, start=0):
-        pass
-
-    def insert(self, index, value):
-        pass
-
-    def pop(self, index = -1):
-        pass
-
-    def __cmp__(self, l):
-        pass
-
-    def slice(self, lower, upper):
-        pass
-
-    def __getitem__(self, index):
-        pass
-
-    def __setitem__(self, index, value):
-        JS("""    this.l[index]=value;""")
-
-    def __delitem__(self, index):
-        JS("""    this.l.splice(index, 1);""")
-
-    def __len__(self):
-        JS("""    return this.l.length;""")
-
-    def __contains__(self, value):
-        return self.index(value) >= 0
-
-    def __iter__(self):
-        JS("""
-        var i = 0;
-        var l = this.l;
-        return {
-            'next': function() {
-                if (i >= l.length) {
-                    throw pyjslib.StopIteration;
-                }
-                return l[i++];
-            },
-            '__iter__': function() {
-                return this;
-            }
-        };
-        """)
-
-    def reverse(self):
-        JS("""    this.l.reverse();""")
-
-    def sort(self, compareFunc=None, keyFunc=None, reverse=False):
-        if not compareFunc:
-            global cmp
-            compareFunc = cmp
-        if keyFunc and reverse:
-            def thisSort1(a,b):
-                return -compareFunc(keyFunc(a), keyFunc(b))
-            self.l.sort(thisSort1)
-        elif keyFunc:
-            def thisSort2(a,b):
-                return compareFunc(keyFunc(a), keyFunc(b))
-            self.l.sort(thisSort2)
-        elif reverse:
-            def thisSort3(a,b):
-                return -compareFunc(a, b)
-            self.l.sort(thisSort3)
-        else:
-            self.l.sort(compareFunc)
-
-    def getArray(self):
-        """
-        Access the javascript Array that is used internally by this list
-        """
-        return self.l
-
-    def __str__(self):
-        return self.__repr__()
-
-    def toString(self):
-        return self.__repr__()
-
-    def __repr__(self):
-        #r = []
-        #for item in self:
-        #    r.append(repr(item))
-        #return '[' + ', '.join(r) + ']'
-        JS("""
-        var s = "[";
-        for (var i=0; i < self.l.length; i++) {
-            s += pyjslib.repr(self.l[i]);
-            if (i < self.l.length - 1)
-                s += ", ";
-        };
-        s += "]"
-        return s;
-        """)
-
-list = List
-
-class Tuple:
+    @noSourceTracking
     def __init__(self, data=None):
         JS("""
         this.l = [];
         this.extend(data);
         """)
 
+    @noSourceTracking
     def append(self, item):
         JS("""    this.l[this.l.length] = item;""")
 
+    @noSourceTracking
     def extend(self, data):
         JS("""
         if (pyjslib.isArray(data)) {
@@ -262,6 +612,7 @@ class Tuple:
             }
         """)
 
+    @noSourceTracking
     def remove(self, value):
         JS("""
         var index=this.index(value);
@@ -270,6 +621,7 @@ class Tuple:
         return true;
         """)
 
+    @noSourceTracking
     def index(self, value, start=0):
         JS("""
         var length=this.l.length;
@@ -281,9 +633,11 @@ class Tuple:
         return -1;
         """)
 
+    @noSourceTracking
     def insert(self, index, value):
         JS("""    var a = this.l; this.l=a.slice(0, index).concat(value, a.slice(index));""")
 
+    @noSourceTracking
     def pop(self, index = -1):
         JS("""
         if (index<0) index = this.l.length + index;
@@ -292,9 +646,10 @@ class Tuple:
         return a;
         """)
 
+    @noSourceTracking
     def __cmp__(self, l):
-        if not isinstance(l, Tuple):
-            return 1
+        if not isinstance(l, List):
+            return -1
         ll = len(self) - len(l)
         if ll != 0:
             return ll
@@ -304,30 +659,37 @@ class Tuple:
                 return ll
         return 0
 
+    @noSourceTracking
     def slice(self, lower, upper):
         JS("""
-        if (upper==null) return pyjslib.Tuple(this.l.slice(lower));
-        return pyjslib.Tuple(this.l.slice(lower, upper));
+        if (upper==null) return pyjslib.List(this.l.slice(lower));
+        return pyjslib.List(this.l.slice(lower, upper));
         """)
 
+    @noSourceTracking
     def __getitem__(self, index):
         JS("""
         if (index<0) index = this.l.length + index;
         return this.l[index];
         """)
 
+    @noSourceTracking
     def __setitem__(self, index, value):
         JS("""    this.l[index]=value;""")
 
+    @noSourceTracking
     def __delitem__(self, index):
         JS("""    this.l.splice(index, 1);""")
 
+    @noSourceTracking
     def __len__(self):
         JS("""    return this.l.length;""")
 
+    @noSourceTracking
     def __contains__(self, value):
         return self.index(value) >= 0
 
+    @noSourceTracking
     def __iter__(self):
         JS("""
         var i = 0;
@@ -345,6 +707,7 @@ class Tuple:
         };
         """)
 
+    @noSourceTracking
     def reverse(self):
         JS("""    this.l.reverse();""")
 
@@ -367,15 +730,205 @@ class Tuple:
         else:
             self.l.sort(compareFunc)
 
+    @noSourceTracking
     def getArray(self):
         """
         Access the javascript Array that is used internally by this list
         """
         return self.l
 
+    @noSourceTracking
     def __str__(self):
         return self.__repr__()
 
+    @noSourceTracking
+    def toString(self):
+        return self.__repr__()
+
+    def __repr__(self):
+        #r = []
+        #for item in self:
+        #    r.append(repr(item))
+        #return '[' + ', '.join(r) + ']'
+        JS("""
+        var s = "[";
+        for (var i=0; i < self.l.length; i++) {
+            s += pyjslib.repr(self.l[i]);
+            if (i < self.l.length - 1)
+                s += ", ";
+        };
+        s += "]"
+        return s;
+        """)
+
+list = List
+
+class Tuple:
+    @noSourceTracking
+    def __init__(self, data=None):
+        JS("""
+        this.l = [];
+        this.extend(data);
+        """)
+
+    @noSourceTracking
+    def append(self, item):
+        JS("""    this.l[this.l.length] = item;""")
+
+    @noSourceTracking
+    def extend(self, data):
+        JS("""
+        if (pyjslib.isArray(data)) {
+            n = this.l.length;
+            for (var i=0; i < data.length; i++) {
+                this.l[n+i]=data[i];
+                }
+            }
+        else if (pyjslib.isIteratable(data)) {
+            var iter=data.__iter__();
+            var i=this.l.length;
+            try {
+                while (true) {
+                    var item=iter.next();
+                    this.l[i++]=item;
+                    }
+                }
+            catch (e) {
+                if (e.__name__ != 'StopIteration') throw e;
+                }
+            }
+        """)
+
+    @noSourceTracking
+    def remove(self, value):
+        JS("""
+        var index=this.index(value);
+        if (index<0) return false;
+        this.l.splice(index, 1);
+        return true;
+        """)
+
+    @noSourceTracking
+    def index(self, value, start=0):
+        JS("""
+        var length=this.l.length;
+        for (var i=start; i<length; i++) {
+            if (this.l[i]==value) {
+                return i;
+                }
+            }
+        return -1;
+        """)
+
+    @noSourceTracking
+    def insert(self, index, value):
+        JS("""    var a = this.l; this.l=a.slice(0, index).concat(value, a.slice(index));""")
+
+    @noSourceTracking
+    def pop(self, index = -1):
+        JS("""
+        if (index<0) index = this.l.length + index;
+        var a = this.l[index];
+        this.l.splice(index, 1);
+        return a;
+        """)
+
+    @noSourceTracking
+    def __cmp__(self, l):
+        if not isinstance(l, Tuple):
+            return 1
+        ll = len(self) - len(l)
+        if ll != 0:
+            return ll
+        for x in range(len(l)):
+            ll = cmp(self.__getitem__(x), l[x])
+            if ll != 0:
+                return ll
+        return 0
+
+    @noSourceTracking
+    def slice(self, lower, upper):
+        JS("""
+        if (upper==null) return pyjslib.Tuple(this.l.slice(lower));
+        return pyjslib.Tuple(this.l.slice(lower, upper));
+        """)
+
+    @noSourceTracking
+    def __getitem__(self, index):
+        JS("""
+        if (index<0) index = this.l.length + index;
+        return this.l[index];
+        """)
+
+    @noSourceTracking
+    def __setitem__(self, index, value):
+        JS("""    this.l[index]=value;""")
+
+    @noSourceTracking
+    def __delitem__(self, index):
+        JS("""    this.l.splice(index, 1);""")
+
+    @noSourceTracking
+    def __len__(self):
+        JS("""    return this.l.length;""")
+
+    @noSourceTracking
+    def __contains__(self, value):
+        return self.index(value) >= 0
+
+    @noSourceTracking
+    def __iter__(self):
+        JS("""
+        var i = 0;
+        var l = this.l;
+        return {
+            'next': function() {
+                if (i >= l.length) {
+                    throw pyjslib.StopIteration;
+                }
+                return l[i++];
+            },
+            '__iter__': function() {
+                return this;
+            }
+        };
+        """)
+
+    @noSourceTracking
+    def reverse(self):
+        JS("""    this.l.reverse();""")
+
+    def sort(self, compareFunc=None, keyFunc=None, reverse=False):
+        if not compareFunc:
+            global cmp
+            compareFunc = cmp
+        if keyFunc and reverse:
+            def thisSort1(a,b):
+                return -compareFunc(keyFunc(a), keyFunc(b))
+            self.l.sort(thisSort1)
+        elif keyFunc:
+            def thisSort2(a,b):
+                return compareFunc(keyFunc(a), keyFunc(b))
+            self.l.sort(thisSort2)
+        elif reverse:
+            def thisSort3(a,b):
+                return -compareFunc(a, b)
+            self.l.sort(thisSort3)
+        else:
+            self.l.sort(compareFunc)
+
+    @noSourceTracking
+    def getArray(self):
+        """
+        Access the javascript Array that is used internally by this list
+        """
+        return self.l
+
+    @noSourceTracking
+    def __str__(self):
+        return self.__repr__()
+
+    @noSourceTracking
     def toString(self):
         return self.__repr__()
 
@@ -403,6 +956,7 @@ tuple = Tuple
 
 
 class Dict:
+    @noSourceTracking
     def __init__(self, data=None):
         JS("""
         this.d = {};
@@ -434,12 +988,14 @@ class Dict:
             }
         """)
 
+    @noSourceTracking
     def __setitem__(self, key, value):
         JS("""
         var sKey = pyjslib.hash(key);
         this.d[sKey]=[key, value];
         """)
 
+    @noSourceTracking
     def __getitem__(self, key):
         JS("""
         var sKey = pyjslib.hash(key);
@@ -450,6 +1006,7 @@ class Dict:
         return value[1];
         """)
 
+    @noSourceTracking
     def __nonzero__(self):
         JS("""
         for (var i in this.d){
@@ -458,6 +1015,7 @@ class Dict:
         return false;
         """)
 
+    @noSourceTracking
     def __len__(self):
         JS("""
         var size=0;
@@ -465,21 +1023,25 @@ class Dict:
         return size;
         """)
 
+    @noSourceTracking
     def has_key(self, key):
         return self.__contains__(key)
 
+    @noSourceTracking
     def __delitem__(self, key):
         JS("""
         var sKey = pyjslib.hash(key);
         delete this.d[sKey];
         """)
 
+    @noSourceTracking
     def __contains__(self, key):
         JS("""
         var sKey = pyjslib.hash(key);
         return (pyjslib.isUndefined(this.d[sKey])) ? false : true;
         """)
 
+    @noSourceTracking
     def keys(self):
         JS("""
         var keys=new pyjslib.List();
@@ -489,6 +1051,7 @@ class Dict:
         return keys;
         """)
 
+    @noSourceTracking
     def values(self):
         JS("""
         var values=new pyjslib.List();
@@ -496,6 +1059,7 @@ class Dict:
         return values;
         """)
 
+    @noSourceTracking
     def items(self):
         JS("""
         var items = new pyjslib.List();
@@ -506,32 +1070,40 @@ class Dict:
           return items;
         """)
 
+    @noSourceTracking
     def __iter__(self):
         return self.keys().__iter__()
 
+    @noSourceTracking
     def iterkeys(self):
         return self.__iter__()
 
+    @noSourceTracking
     def itervalues(self):
         return self.values().__iter__();
 
+    @noSourceTracking
     def iteritems(self):
         return self.items().__iter__();
 
+    @noSourceTracking
     def setdefault(self, key, default_value):
         if not self.has_key(key):
             self[key] = default_value
         return self[key]
 
+    @noSourceTracking
     def get(self, key, default_value=None):
         if not self.has_key(key):
             return default_value
         return self[key]
 
+    @noSourceTracking
     def update(self, d):
         for k,v in d.iteritems():
             self[k] = v
 
+    @noSourceTracking
     def getObject(self):
         """
         Return the javascript Object which this class uses to store
@@ -539,12 +1111,15 @@ class Dict:
         """
         return self.d
 
+    @noSourceTracking
     def copy(self):
         return Dict(self.items())
 
+    @noSourceTracking
     def __str__(self):
         return self.__repr__()
 
+    @noSourceTracking
     def toString(self):
         return self.__repr__()
 
@@ -572,6 +1147,7 @@ class Dict:
 dict = Dict
 
 # IE6 doesn't like pyjslib.super
+@noSourceTracking
 def _super(type_, object_or_type = None):
     # This is a partially implementation: only super(type, object)
     if not _issubtype(object_or_type, type_):
@@ -605,6 +1181,7 @@ def _super(type_, object_or_type = None):
     """)
 
 # taken from mochikit: range( [start,] stop[, step] )
+@noSourceTracking
 def range(start, stop = None, step = 1):
     if stop is None:
         stop = start
@@ -639,6 +1216,7 @@ def range(start, stop = None, step = 1):
         }
     """)
 
+@noSourceTracking
 def slice(object, lower, upper):
     JS("""
     if (pyjslib.isString(object)) {
@@ -657,6 +1235,7 @@ def slice(object, lower, upper):
     return null;
     """)
 
+@noSourceTracking
 def str(text):
     JS("""
     if (pyjslib.hasattr(text,"__str__")) {
@@ -665,6 +1244,7 @@ def str(text):
     return String(text);
     """)
 
+@noSourceTracking
 def ord(x):
     if(isString(x) and len(x) is 1):
         JS("""
@@ -676,11 +1256,13 @@ def ord(x):
         """)
     return None
 
+@noSourceTracking
 def chr(x):
     JS("""
         return String.fromCharCode(x)
     """)
 
+@noSourceTracking
 def is_basetype(x):
     JS("""
        var t = typeof(x);
@@ -692,6 +1274,7 @@ def is_basetype(x):
        ;
     """)
 
+@noSourceTracking
 def get_pyjs_classtype(x):
     JS("""
         if (pyjslib.hasattr(x, "__is_instance__")) {
@@ -701,6 +1284,7 @@ def get_pyjs_classtype(x):
         return null;
     """)
 
+@noSourceTracking
 def repr(x):
     """ Return the string representation of 'x'.
     """
@@ -759,16 +1343,19 @@ def repr(x):
        return "<" + constructor + " object>";
     """)
 
+@noSourceTracking
 def float(text):
     JS("""
     return parseFloat(text);
     """)
 
+@noSourceTracking
 def int(text, radix=0):
     JS("""
     return parseInt(text, radix);
     """)
 
+@noSourceTracking
 def len(object):
     JS("""
     if (object==null) return 0;
@@ -776,6 +1363,7 @@ def len(object):
     return object.length;
     """)
 
+@noSourceTracking
 def isinstance(object_, classinfo):
     if pyjslib.isUndefined(object_):
         return False
@@ -790,6 +1378,7 @@ def isinstance(object_, classinfo):
     else:
         return _isinstance(object_, classinfo)
 
+@noSourceTracking
 def _isinstance(object_, classinfo):
     JS("""
     if (object_.__is_instance__ !== true) {
@@ -801,6 +1390,7 @@ def _isinstance(object_, classinfo):
     return false;
     """)
 
+@noSourceTracking
 def _issubtype(object_, classinfo):
     JS("""
     if (object_.__is_instance__ == null || classinfo.__is_instance__ == null) {
@@ -812,6 +1402,7 @@ def _issubtype(object_, classinfo):
     return false;
     """)
 
+@noSourceTracking
 def getattr(obj, name, default_value=None):
     JS("""
     if ((!pyjslib.isObject(obj))||(pyjslib.isUndefined(obj[name]))){
@@ -835,6 +1426,7 @@ def getattr(obj, name, default_value=None):
     return fnwrap;
     """)
 
+@noSourceTracking
 def delattr(obj, name):
     JS("""
     if (!pyjslib.isObject(obj)) {
@@ -846,6 +1438,7 @@ def delattr(obj, name):
     delete obj[name];
     """)
 
+@noSourceTracking
 def setattr(obj, name, value):
     JS("""
     if (!pyjslib.isObject(obj)) return null;
@@ -854,6 +1447,7 @@ def setattr(obj, name, value):
 
     """)
 
+@noSourceTracking
 def hasattr(obj, name):
     JS("""
     if (!pyjslib.isObject(obj)) return false;
@@ -862,6 +1456,7 @@ def hasattr(obj, name):
     return true;
     """)
 
+@noSourceTracking
 def dir(obj):
     JS("""
     var properties=new pyjslib.List();
@@ -869,6 +1464,7 @@ def dir(obj):
     return properties;
     """)
 
+@noSourceTracking
 def filter(obj, method, sequence=None):
     # object context is LOST when a method is passed, hence object must be passed separately
     # to emulate python behaviour, should generate this code inline rather than as a function call
@@ -888,6 +1484,7 @@ def filter(obj, method, sequence=None):
     return items
 
 
+@noSourceTracking
 def map(obj, method, sequence=None):
     items = []
 
@@ -939,6 +1536,7 @@ def max(*sequence):
 
 next_hash_id = 0
 
+@noSourceTracking
 def hash(obj):
     JS("""
     if (obj == null) return null;
@@ -953,47 +1551,56 @@ def hash(obj):
 
 
 # type functions from Douglas Crockford's Remedial Javascript: http://www.crockford.com/javascript/remedial.html
+@noSourceTracking
 def isObject(a):
     JS("""
     return (a != null && (typeof a == 'object')) || pyjslib.isFunction(a);
     """)
 
+@noSourceTracking
 def isFunction(a):
     JS("""
     return typeof a == 'function';
     """)
 callable = isFunction
 
+@noSourceTracking
 def isString(a):
     JS("""
     return typeof a == 'string';
     """)
 
+@noSourceTracking
 def isNull(a):
     JS("""
     return typeof a == 'object' && !a;
     """)
 
+@noSourceTracking
 def isArray(a):
     JS("""
     return pyjslib.isObject(a) && a.constructor == Array;
     """)
 
+@noSourceTracking
 def isUndefined(a):
     JS("""
     return typeof a == 'undefined';
     """)
 
+@noSourceTracking
 def isIteratable(a):
     JS("""
     return pyjslib.isString(a) || (pyjslib.isObject(a) && a.__iter__);
     """)
 
+@noSourceTracking
 def isNumber(a):
     JS("""
     return typeof a == 'number' && isFinite(a);
     """)
 
+@noSourceTracking
 def toJSObjects(x):
     """
        Convert the pyjs pythonic List and Dict objects into javascript Object and Array
@@ -1037,6 +1644,7 @@ def toJSObjects(x):
          """)
     return x
 
+@noSourceTracking
 def sprintf(strng, args):
     # See http://docs.python.org/library/stdtypes.html
     constructor = get_pyjs_classtype(args)
@@ -1236,6 +1844,7 @@ def sprintf(strng, args):
         sprintf_dict(strng, args)
     return ''.join(result)
 
+@noSourceTracking
 def printFunc(objs, newline):
     JS("""
     if ($wnd.console==undefined)  return;
@@ -1247,6 +1856,7 @@ def printFunc(objs, newline):
     console.debug(s)
     """)
 
+@noSourceTracking
 def type(clsname, bases=None, methods=None):
     """ creates a class, derived from bases, with methods and variables
     """
