@@ -92,7 +92,7 @@ class TabBar(Composite):
             #throw new IndexOutOfBoundsException();
             pass
 
-        if pyjslib.isString(text):
+        if isinstance(text, str):
             if asHTML:
                 item = HTML(text)
             else:
