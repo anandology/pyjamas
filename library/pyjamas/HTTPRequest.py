@@ -48,8 +48,8 @@ class HTTPRequest:
         xmlHttp = self.doCreateXmlHTTPRequest()
         if url[0] != '/':
             uri = get_main_frame().get_uri()
-            if uri[:7] != 'file://' and uri[:7] != 'http://' and \
-               uri[:8] != 'https://':
+            if url[:7] != 'file://' and url[:7] != 'http://' and \
+               url[:8] != 'https://':
                 slash = uri.rfind('/')
                 url = uri[:slash+1] + url
         print "xmlHttp", user, pwd, url, postData, handler, dir(xmlHttp)
