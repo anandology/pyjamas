@@ -1368,6 +1368,14 @@ def len(object):
 def isinstance(object_, classinfo):
     if pyjslib.isUndefined(object_):
         return False
+    JS("""if (classinfo.__name__ == 'int') {
+            return pyjslib.isNumber(object_); /* XXX TODO: check rounded? */
+            }
+        """)
+    JS("""if (classinfo.__name__ == 'str') {
+            return pyjslib.isString(object_);
+            }
+        """)
     if not pyjslib.isObject(object_):
         return False
     if _isinstance(classinfo, Tuple):

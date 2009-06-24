@@ -91,3 +91,14 @@ class BuiltinTest(UnitTest):
         self.assertEqual(repr(t2), "('aa', 'bb')")
         self.assertEqual(repr(d1), "{'a': 1, 'b': 'B'}")
         self.assertEqual(repr(d2), "{1: [1, 2, 3], 2: ['a', 'b', 'c'], 3: (4, 5, 6, 7), 4: ('aa', 'bb'), 5: {'a': 1, 'b': 'B'}}")
+
+    def testIsInstance(self):
+
+        s = 'hello'
+        self.assertTrue(isinstance(s, str), "s is a string")
+        self.assertFalse(isinstance(s, int), "s is a string not an integer")
+
+        s = 1
+        self.assertFalse(isinstance(s, str), "s is an integer not a string")
+        self.assertTrue(isinstance(s, int), "s is an integer")
+

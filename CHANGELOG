@@ -1,6 +1,10 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
+ * Added isinstance(s, str) and isinstance(s, int) support
+
+ * Monster update to include Pyjamas-Desktop
+
  * Added imperfect support for local import/from-import
 
  * Added support for toplevel conditional import/from-import
