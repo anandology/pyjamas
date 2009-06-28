@@ -30,6 +30,7 @@ class Global(PyV8.JSClass):
     def pyv8_print_fn(self, arg):
         print arg
     def pyv8_import_module(self, parent_name, module_name):
+        print "pyv8_import_module", parent_name, module_name
         exec "import " + module_name
         return locals()[module_name]
 
@@ -119,7 +120,7 @@ $pyjs.trackstack.push($pyjs.track);
         fp.write(txt)
         fp.close()
 
-    PyV8.debugger.enabled = True
+    #PyV8.debugger.enabled = True
     # create a context with an explicit global
     ctxt = PyV8.JSContext(Global())
     # enter the context
