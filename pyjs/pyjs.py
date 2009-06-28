@@ -52,6 +52,8 @@ if os.environ.has_key('PYJSPATH'):
 
 # this is the python function used to wrap native javascript
 NATIVE_JS_FUNC_NAME = "JS"
+NATIVE_DOC_FUNC_NAME = "doc"
+NATIVE_WND_FUNC_NAME = "wnd"
 
 UU = ""
 
@@ -964,6 +966,14 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                     return v.args[0].value
                 else:
                     raise TranslationError("native js functions only support constant strings",v.node)
+            elif v.node.name == NATIVE_WND_FUNC_NAME:
+                if len(v.args) != 0:
+                    raise TranslationError("native wnd function doesn't support arguments",v.node)
+                return '$wnd'
+            elif v.node.name == NATIVE_DOC_FUNC_NAME:
+                if len(v.args) != 0:
+                    raise TranslationError("native doc function doesn't support arguments",v.node)
+                return '$doc'
             else:
                 name_type, pyname, jsname, depth, is_local = self.lookup(v.node.name)
                 if name_type is None:
