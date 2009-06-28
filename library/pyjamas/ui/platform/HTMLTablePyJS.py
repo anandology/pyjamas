@@ -6,9 +6,7 @@ class HTMLTable(Panel):
         """)
 
     def getDOMRowCountImpl(self, element):
-        JS("""
         return element.rows.length;
-        """)
 
     def setWidget(self, row, column, widget):
         self.prepareCell(row, column)

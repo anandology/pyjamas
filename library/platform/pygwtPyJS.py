@@ -1,5 +1,3 @@
-sNextHashId = 0
-
 def getNextHashId():
     global sNextHashId
     sNextHashId += 1
