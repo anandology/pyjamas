@@ -61,8 +61,8 @@ class FlexTable(HTMLTable):
             self.insertRow(i)
 
     def addCells(self, table, row, num):
-        rowElem = table.props.rows.item(row)
+        rowElem = table.rows.item(row)
         for i in range(num):
-            cell = doc().create_element("td")
-            rowElem.append_child(cell)
+            cell = doc().createElement("td")
+            rowElem.appendChild(cell)
 

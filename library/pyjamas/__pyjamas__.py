@@ -35,13 +35,13 @@ def get_main_frame():
 
 def doc():
     global main_frame
-    return main_frame.get_gdom_document()
+    return main_frame.getGdomDocument()
 
 def wnd():
     """ try to avoid using this function until a bug in pywebkitgtk
         has been tracked down
     """
-    return main_frame.get_dom_window()
+    return main_frame.getDomWindow()
 
 def JS(code):
     """ try to avoid using this function, it will only give you grief
@@ -61,8 +61,8 @@ pygwt_moduleNames = []
 def pygwt_processMetas():
     from pyjamas import DOM
     global pygwt_moduleNames
-    metas = doc().get_elements_by_tag_name("meta")
-    for i in range(metas.props.length):
+    metas = doc().getElementsByTagName("meta")
+    for i in range(metas.length):
         meta = metas.item(i)
         name = DOM.getAttribute(meta, "name")
         if name == "pygwt:module":

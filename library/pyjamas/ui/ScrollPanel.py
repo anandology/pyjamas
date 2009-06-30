@@ -69,7 +69,7 @@ class ScrollPanel(SimplePanel):
         item = e
         realOffset = 0
         while item and (item != scroll):
-            realOffset += item.props.offset_top
-            item = item.props.offset_parent
-        scroll.props.scroll_top = realOffset - scroll.props.offset_height / 2
+            realOffset += item.offsetTop
+            item = item.offsetParent
+        scroll.scrollTop = realOffset - scroll.offsetHeight / 2
 

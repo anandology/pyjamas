@@ -50,7 +50,7 @@ def prompt(msg, defaultReply=""):
     alert("Window.prompt() is still on the TODO list. sorry!")
 
 def enableScrolling(enable):
-    doc().props.body.props.style.overflow = enable and 'auto' or 'hidden'
+    doc().body.style.overflow = enable and 'auto' or 'hidden'
 
 def scrollBy(x, y):
     print "TODO: scrollBy", x, y
@@ -61,16 +61,16 @@ def scroll(x, y):
     pass
 
 def getClientHeight():
-    height = wnd().props.inner_height
+    height = wnd().innerHeight
     if height:
         return height
-    return doc().props.body.props.client_height;
+    return doc().body.clientHeight;
 
 def getClientWidth():
-    width = wnd().props.inner_width
+    width = wnd().innerWidth
     if width:
         return width
-    return doc().props.body.props.client_width;
+    return doc().body.clientWidth;
 
 def setLocation(url):
     print "TODO - setLocation", url
@@ -82,7 +82,7 @@ def getLocation():
     global location
     if not location:
         print dir(wnd())
-        location = Location.Location(wnd().props.location)
+        location = Location.Location(wnd().location)
     return location
     JS("""
     if(!Window_location)
@@ -92,7 +92,7 @@ def getLocation():
  
  
 def getTitle():
-    return doc.props.title
+    return doc.title
 
 def open(url, name, features):
     JS("""
@@ -108,10 +108,10 @@ def removeWindowResizeListener(listener):
     resizeListeners.remove(listener)
 
 def setMargin(size):
-    doc().props.body.props.style.margin = size;
+    doc().body.style.margin = size;
 
 def setTitle(title):
-    doc().props.title = title
+    doc().title = title
 
 def setOnError(onError):
     pass

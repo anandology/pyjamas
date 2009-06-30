@@ -86,12 +86,12 @@ class Grid(HTMLTable):
 
     def addRows(self, table, numRows, columns):
         td = DOM.createElement("td")
-        td.props.inner_html = "&nbsp;"
+        td.innerHtml = "&nbsp;"
         row = DOM.createElement("tr")
         for cellNum in range(columns):
-            cell = td.clone_node(True)
-            row.append_child(cell)
-        table.append_child(row)
+            cell = td.cloneNode(True)
+            row.appendChild(cell)
+        table.appendChild(row)
         for rowNum in range(numRows):
-            table.append_child(row.clone_node(True))
+            table.appendChild(row.cloneNode(True))
 

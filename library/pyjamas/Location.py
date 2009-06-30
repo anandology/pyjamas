@@ -28,7 +28,7 @@ class Location:
         self.searchDict = None
     
     def getHash(self):
-        return self.location.props.hash
+        return self.location.hash
     
     def getHashDict(self):
         if not self.hashDict or self.hashDictHash != self.getHash():
@@ -37,34 +37,34 @@ class Location:
         return self.hashDict
     
     def getHost(self):
-        return self.location.props.host
+        return self.location.host
     
     def getHostname(self):
-        return self.location.props.hostname
+        return self.location.hostname
     
     def getHref(self):
-        return self.location.props.href
+        return self.location.href
     
     def getPageHref(self):
         """
         Return href with any search or hash stripped
         """
-        href = self.location.props.href
+        href = self.location.href
         if href.find("?"): href = href.split("?")[0]
         if href.find("#"): href = href.split("#")[0]
         return href
     
     def getPathname(self):
-        return self.location.props.pathname
+        return self.location.pathname
     
     def getPort(self):
-        return self.location.props.port
+        return self.location.port
     
     def getProtocol(self):
-        return self.location.props.protocol
+        return self.location.protocol
         
     def getSearch(self):
-        return ""+self.location.props.search
+        return ""+self.location.search
     
     def getSearchDict(self):
         if pyjslib.isString(self.location):
@@ -78,19 +78,19 @@ class Location:
         return searchDict[key]
     
     def reload(self):
-        self.location.props.reload()
+        self.location.reload()
         
     def setHref(self, href):
-        self.location.props.href = href
+        self.location.href = href
 
     def setSearch(self, search):
-        self.location.props.search = search
+        self.location.search = search
         
     def setSearchDict(self, searchDict):
         self.setSearch(makeUrlStringFromDict(searchDict))
         
     def setHash(self, hash):
-        self.location.props.hash = hash
+        self.location.hash = hash
         
     def setHashDict(self, hashDict):
         self.setHash(makeUrlStringFromDict(hashDict))

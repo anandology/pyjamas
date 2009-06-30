@@ -50,7 +50,10 @@ class Logger(Grid):
         
         if target=='':
             target='app'
-        target_idx=self.targets.index(target)
+        try:
+            target_idx=self.targets.index(target)
+        except ValueError:
+            target_idx = -1
         
         # add new target
         if target_idx<0:
@@ -58,7 +61,7 @@ class Logger(Grid):
         
         target_row=target_idx+1     
         old_text=self.getHTML(target_row, 1)
-        log_line=self.counter + ": " + message
+        log_line="%d: " % self.counter + message
 
         if old_text=='&nbsp;':
             new_text=log_line            

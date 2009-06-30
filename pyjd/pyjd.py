@@ -268,7 +268,7 @@ class WebBrowser(gtk.Window):
         logging.debug("initializing web browser window")
 
         self._loading = False
-        self._browser= BrowserPage()
+        self._browser= webkit.WebView()
         #self._browser.connect('load-started', self._loading_start_cb)
         #self._browser.connect('load-progress-changed', self._loading_progress_cb)
         self._browser.connect('load-finished', self._loading_stop_cb)
@@ -373,10 +373,11 @@ class WebBrowser(gtk.Window):
 
         from pyjamas.__pyjamas__ import pygwt_processMetas, set_main_frame
 
-        main_frame = self._browser.get_main_frame()
+        main_frame = self._browser.getMainFrame()
+        main_frame.gobject_wrap = webkit.gobject_wrap
         set_main_frame(main_frame)
 
-        gdoc = main_frame.get_gdom_document()
+        gdoc = main_frame.getGdomDocument()
 
         for m in pygwt_processMetas():
             minst = module_load(m)

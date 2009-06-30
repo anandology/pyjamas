@@ -214,7 +214,7 @@ class HTMLTable(Panel):
         return self.getDOMCellCountImpl(element, row)
 
     def getDOMCellCountImpl(self, element, row):
-        return element.props.rows.item(row).props.cells.props.length
+        return element.rows.item(row).cells.length
 
     # also callable as getDOMRowCount(element)
     def getDOMRowCount(self, element=None):
@@ -223,7 +223,7 @@ class HTMLTable(Panel):
         return self.getDOMRowCountImpl(element)
 
     def getDOMRowCountImpl(self, element):
-        return element.props.rows.props.length
+        return element.rows.length
 
     def getEventTargetCell(self, event):
         td = DOM.eventGetTarget(event)

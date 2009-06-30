@@ -13,7 +13,7 @@ def getCookie(key):
     return getCookie2(key)
 
 def getCookie2(cookie_name):
-    cookiestr = doc().props.cookie
+    cookiestr = doc().cookie
     c = SimpleCookie(cookiestr)
     cs = c.get(cookie_name, None)
     print "getCookie2", cookiestr, "name", cookie_name, "val", cs
@@ -23,7 +23,7 @@ def getCookie2(cookie_name):
     
 # expires can be int or Date
 def setCookie(name, value, expires, domain=None, path=None, secure=False):
-    cookiestr = doc().props.cookie
+    cookiestr = doc().cookie
     c = SimpleCookie(cookiestr)
     c[name] = value
     m = c[name]
@@ -40,7 +40,7 @@ def setCookie(name, value, expires, domain=None, path=None, secure=False):
     c = c.output(header='').strip()
     print "set cookies", c
 
-    doc().props.cookie = c
+    doc().cookie = c
 
     return
     JS("""
@@ -67,7 +67,7 @@ def setCookie(name, value, expires, domain=None, path=None, secure=False):
     """)
 
 def get_crumbs():
-    docCookie = doc().props.cookie
+    docCookie = doc().cookie
     c = SimpleCookie(docCookie)
     c = c.output(header='')
     return map(strip, c.split('\n'))

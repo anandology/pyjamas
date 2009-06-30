@@ -80,7 +80,7 @@ class Mail:
         shortcutHeight = height - self.shortcuts.getAbsoluteTop() - 8
         if (shortcutHeight < 1):
             shortcutHeight = 1
-        self.shortcuts.setHeight("" + shortcutHeight)
+        self.shortcuts.setHeight("%dpx" % shortcutHeight)
 
         # Give the mail detail widget a chance to resize itself as well.
         self.mailDetail.adjustSize(width, height)

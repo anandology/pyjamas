@@ -27,51 +27,69 @@ sCaptureElem = None
 sEventPreviewStack = []
 global sCaptureElem
 
+listeners = {}
+
+def get_listener(item):
+    if item is None:
+        return None
+    global listeners
+    ret = listeners.get(item.__instance__)
+    #print "get listener", item, ret
+    return ret
+
+def set_listener(item, listener):
+    print "set listener", item, listener
+    global listeners
+    listeners[item.__instance__] = listener
+
 def init():
 
     mf = get_main_frame()
     mf.connect("browser-event", browser_event_cb) # yuk.  one signal? oh well..
-    mf.add_window_event_listener("click")
-    mf.add_window_event_listener("change")
-    mf.add_window_event_listener("mouseout")
-    mf.add_window_event_listener("mousedown")
-    mf.add_window_event_listener("mouseup")
-    mf.add_window_event_listener("resize")
-    mf.add_window_event_listener("keyup")
-    mf.add_window_event_listener("keydown")
-    mf.add_window_event_listener("keypress")
+    mf.addWindowEventListener("click")
+    mf.addWindowEventListener("change")
+    mf.addWindowEventListener("mouseout")
+    mf.addWindowEventListener("mousedown")
+    mf.addWindowEventListener("mouseup")
+    mf.addWindowEventListener("resize")
+    mf.addWindowEventListener("keyup")
+    mf.addWindowEventListener("keydown")
+    mf.addWindowEventListener("keypress")
 
 def _dispatchEvent(evt):
     
+    evt = get_main_frame().gobject_wrap(evt) # HACK!
     listener = None
-    curElem =  evt.props.target
+    curElem =  evt.target
     
-    print "_dispatchEvent"
+    #print "_dispatchEvent"
     cap = getCaptureElement()
-    if cap and cap._listener:
-        print "_dispatchEvent", cap, cap._listener
-        dispatchEvent(evt, cap, cap._listener)
-        evt.stop_propagation()
+    listener = get_listener(cap)
+    if cap and listener:
+        print "_dispatchEvent", cap, listener
+        dispatchEvent(evt, cap, listener)
+        evt.stopPropagation()
         return
 
-    while curElem and not (hasattr(curElem, "_listener") and curElem._listener):
-        print "no parent listener", curElem, getParent(curElem)
+    while curElem and not get_listener(curElem):
+        #print "no parent listener", curElem, getParent(curElem)
         curElem = getParent(curElem)
     if curElem and getNodeType(curElem) != 1:
         curElem = None
 
-    if curElem and hasattr(curElem, "_listener") and curElem._listener:
-        dispatchEvent(evt, curElem, curElem._listener)
+    listener = get_listener(curElem)
+    if listener:
+        dispatchEvent(evt, curElem, listener)
     
 def _dispatchCapturedMouseEvent(evt):
 
     if (_dispatchCapturedEvent(evt)):
         cap = getCaptureElement()
-        print "dcme", cap, cap and cap._listener
-        if cap and cap._listener:
-            dispatchEvent(evt, cap, cap._listener)
+        listener = get_listener(cap)
+        if cap and listener:
+            dispatchEvent(evt, cap, listener)
             print "dcmsev, stop propagation"
-            evt.stop_propagation()
+            evt.stopPropagation()
 
 def _dispatchCapturedMouseoutEvent(evt):
     cap = getCaptureElement()
@@ -82,16 +100,18 @@ def _dispatchCapturedMouseoutEvent(evt):
             #When the mouse leaves the window during capture, release capture
             #and synthesize an 'onlosecapture' event.
             setCapture(None)
-            if cap._listener:
+            listener = get_listener(cap)
+            if listener:
                 # this should be interesting...
-                lcEvent = doc().create_event('UIEvent')
-                lcEvent.init_ui_event('losecapture', False, False, wnd(), 0)
-                dispatchEvent(lcEvent, cap, cap._listener);
+                lcEvent = doc().createEvent('UIEvent')
+                lcEvent.initUiEvent('losecapture', False, False, wnd(), 0)
+                dispatchEvent(lcEvent, cap, listener);
 
 def browser_event_cb(view, event, from_window):
 
+    event = get_main_frame().gobject_wrap(event) # HACK!
     et = eventGetType(event)
-    print "browser_event_cb", event, et
+    #print "browser_event_cb", event, et
     if et == "resize":
         onResize()
         return
@@ -107,8 +127,8 @@ def _dispatchCapturedEvent(event):
 
     if not previewEvent(event):
         print "dce, stop propagation"
-        event.stop_propagation()
-        event.prevent_default()
+        event.stopPropagation()
+        event.preventDefault()
         return False
     return True
 
@@ -119,10 +139,10 @@ def addEventPreview(preview):
 
 def appendChild(parent, child):
     print "appendChild", parent, child
-    parent.append_child(child)
+    parent.appendChild(child)
 
 def compare(elem1, elem2):
-    return elem1.is_same_node(elem2)
+    return elem1.isSameNode(elem2)
 
 def createAnchor():
     return createElement("A")
@@ -137,7 +157,7 @@ def createDiv():
     return createElement("div")
 
 def createElement(tag):
-    return doc().create_element(tag)
+    return doc().createElement(tag)
 
 def createFieldSet():
     return createElement("fieldset")
@@ -156,7 +176,7 @@ def createInputCheck():
 
 def createInputElement(elementType):
     e = createElement("INPUT")
-    e.props.type = elementType;
+    e.type = elementType;
     return e
 
 def createInputPassword():
@@ -164,7 +184,7 @@ def createInputPassword():
 
 def createInputRadio(group):
     e = createInputElement('radio')
-    e.props.name = group
+    e.name = group
     return e
 
 def createInputText():
@@ -207,51 +227,51 @@ def eventCancelBubble(evt, cancel):
     evt.cancelBubble = cancel
 
 def eventGetAltKey(evt):
-    return evt.props.alt_key
+    return evt.altKey
 
 def eventGetButton(evt):
-    return evt.props.button
+    return evt.button
 
 def eventGetClientX(evt):
-    return evt.props.client_x
+    return evt.clientX
 
 def eventGetClientY(evt):
-    return evt.props.client_y
+    return evt.clientY
 
 def eventGetCtrlKey(evt):
-    return evt.props.ctrl_key
+    return evt.ctrlKey
 
 def eventGetFromElement(evt):
-    return evt.props.from_element
+    return evt.fromElement
 
 def eventGetKeyCode(evt):
-    return evt.props.which and evt.props.key_code
+    return evt.which and evt.keyCode
 
 def eventGetRepeat(evt):
-    return evt.props.repeat
+    return evt.repeat
 
 def eventGetScreenX(evt):
-    return evt.props.screen_x
+    return evt.screenX
 
 def eventGetScreenY(evt):
-    return evt.props.screen_y
+    return evt.screenY
 
 def eventGetShiftKey(evt):
-    return evt.props.shift_key
+    return evt.shiftKey
 
 def eventGetTarget(event):
-    return event.props.target
+    return event.target
 
 def eventGetToElement(evt):
     type = eventGetType(evt)
     if type == 'mouseout':
-        return evt.props.related_target
+        return evt.relatedTarget
     elif type == 'mouseover':
-        return evt.props.target
+        return evt.target
     return None
 
 def eventGetType(event):
-    return event.props.type
+    return event.type
 
 def eventGetTypeInt(event):
     JS("""
@@ -280,42 +300,42 @@ def eventGetTypeString(event):
     return eventGetType(event)
 
 def eventPreventDefault(evt):
-    evt.prevent_default()
+    evt.preventDefault()
 
 def eventSetKeyCode(evt, key):
-    evt.props.key_code = key
+    evt.keyCode = key
 
 def eventToString(evt):
-    return evt.to_strign
+    return evt.toString
 
 def iframeGetSrc(elem):
-    return elem.props.src
+    return elem.src
 
 def getAbsoluteLeft(elem):
     left = 0
     while elem:
-        left += elem.props.offset_left - elem.props.scroll_left;
-        parent = elem.props.offset_parent;
-        if parent and parent.props.tag_name == 'BODY' and \
+        left += elem.offsetLeft - elem.scrollLeft;
+        parent = elem.offsetParent;
+        if parent and parent.tagName == 'BODY' and \
             hasattr(elem, 'style') and \
             getStyleAttribute(elem, 'position') == 'absolute':
             break
         elem = parent
     
-    return left + doc().props.body.props.scroll_left;
+    return left + doc().body.scrollLeft;
 
 def getAbsoluteTop(elem):
     top = 0
     while elem:
-        top += elem.props.offset_top - elem.props.scroll_top;
-        parent = elem.props.offset_parent;
-        if parent and parent.props.tag_name == 'BODY' and \
+        top += elem.offsetTop - elem.scrollTop;
+        parent = elem.offsetParent;
+        if parent and parent.tagName == 'BODY' and \
             hasattr(elem, 'style') and \
             getStyleAttribute(elem, 'position') == 'absolute':
             break
         elem = parent
     
-    return top + doc().props.body.props.scroll_top;
+    return top + doc().body.scrollTop;
 
 def getAttribute(elem, attr):
     return str(elem.get_property(mash_name_for_glib(attr)))
@@ -342,10 +362,10 @@ def getChild(elem, index):
     Get a child of the DOM element by specifying an index.
     """
     count = 0
-    child = elem.props.first_child
+    child = elem.firstChild
     while child:
-        next = child.props.next_sibling;
-        if child.props.node_type == 1:
+        next = child.nextSibling;
+        if child.nodeType == 1:
             if index == count:
               return child;
             count += 1
@@ -358,11 +378,11 @@ def getChildCount(elem):
     over all the children of that element and counts them.
     """
     count = 0
-    child = elem.props.first_child;
+    child = elem.firstChild;
     while child:
-      if child.props.node_type == 1:
+      if child.nodeType == 1:
           count += 1
-      child = child.props.next_sibling;
+      child = child.nextSibling;
     return count;
 
 def getChildIndex(parent, toFind):
@@ -372,13 +392,13 @@ def getChildIndex(parent, toFind):
     This performs a linear search.
     """
     count = 0
-    child = parent.props.first_child;
+    child = parent.firstChild;
     while child:
         if child == toFind:
             return count
-        if child.props.node_type == 1:
+        if child.nodeType == 1:
             count += 1
-        child = child.props.next_sibling
+        child = child.nextSibling
 
     return -1;
 
@@ -386,13 +406,13 @@ def getElementById(id):
     """
     Return the element in the document's DOM tree with the given id.
     """
-    return doc().get_element_by_id(id)
+    return doc().getElementById(id)
 
 def getEventListener(element):
     """
     See setEventListener() for more information.
     """
-    return element._listener
+    return get_listener(element)
 
 def getEventsSunk(element):
     """
@@ -404,25 +424,25 @@ def getEventsSunk(element):
     return 0
 
 def getFirstChild(elem):
-    child = elem and elem.props.first_child
-    while child and child.props.node_type != 1:
-        child = child.props.next_sibling
+    child = elem and elem.firstChild
+    while child and child.nodeType != 1:
+        child = child.nextSibling
     return child
 
 def getInnerHTML(element):
-    return element and element.props.inner_html
+    return element and element.innerHtml
 
 def getInnerText(element):
     # To mimic IE's 'innerText' property in the W3C DOM, we need to recursively
     # concatenate all child text nodes (depth first).
     text = ''
-    child = element.props.first_child;
+    child = element.firstChild;
     while child:
-      if child.props.node_type == 1:
-        text += child.get_inner_text()
-      elif child.props.node_value:
-        text += child.props.node_value
-      child = child.props.next_sibling
+      if child.nodeType == 1:
+        text += child.getInnerText()
+      elif child.nodeValue:
+        text += child.nodeValue
+      child = child.nextSibling
     return text
 
 def getIntAttribute(elem, attr):
@@ -437,16 +457,16 @@ def getIntStyleAttribute(elem, attr):
     return int(elem.style.get_property(mash_name_for_glib(attr)))
 
 def getNextSibling(elem):
-    sib = elem.props.next_sibling
-    while sib and sib.props.node_type != 1:
-        sib = sib.props.next_sibling
+    sib = elem.nextSibling
+    while sib and sib.nodeType != 1:
+        sib = sib.nextSibling
     return sib
 
 def getNodeType(elem):
-    return elem.props.node_type 
+    return elem.nodeType 
 
 def getParent(elem):
-    parent = elem.props.parent_node 
+    parent = elem.parentNode 
     if parent is None:
         return None
     if getNodeType(parent) != 1:
@@ -454,30 +474,33 @@ def getParent(elem):
     return parent 
 
 def getStyleAttribute(elem, attr):
-    return elem.style.get_property(mash_name_for_glib(attr))
+    try:
+        return elem.style.get_property(mash_name_for_glib(attr))
+    except:
+        return None
 
 def insertChild(parent, toAdd, index):
     count = 0
-    child = parent.props.first_child
+    child = parent.firstChild
     before = None;
     while child:
-        if child.props.node_type == 1:
+        if child.nodeType == 1:
             if (count == index):
                 before = child;
                 break
             
             count += 1
-        child = child.props.next_sibling
+        child = child.nextSibling
 
     if before is None:
-        parent.append_child(toAdd)
+        parent.appendChild(toAdd)
     else:
-        parent.insert_before(toAdd, before)
+        parent.insertBefore(toAdd, before)
 
 class IterChildrenClass:
     def __init__(self, elem):
         self.parent = elem
-        self.child = elem.props.first_child
+        self.child = elem.firstChild
         self.lastChild = None
     def next (self):
         if not self.child:
@@ -509,15 +532,15 @@ class IterWalkChildren:
         if not self.child:
             raise StopIteration
         self.lastChild = self.child
-        first_child = getFirstChild(self.child)
-        next_sibling = getNextSibling(self.child)
-        if first_child is not None:
-            if next_sibling is not None:
-               self.stack.append((next_sibling, self.parent))
+        firstChild = getFirstChild(self.child)
+        nextSibling = getNextSibling(self.child)
+        if firstChild is not None:
+            if nextSibling is not None:
+               self.stack.append((nextSibling, self.parent))
             self.parent = self.child
-            self.child = first_child
-        elif next_sibling is not None:
-            self.child = next_sibling
+            self.child = firstChild
+        elif nextSibling is not None:
+            self.child = nextSibling
         elif len(self.stack) > 0:
             (self.child, self.parent) = self.stack.pop()
         else:
@@ -542,10 +565,10 @@ def isOrHasChild(parent, child):
     while child:
         if parent == child:
             return True
-        child = child.props.parent_node;
+        child = child.parentNode;
         if not child:
             return False
-        if child.props.node_type != 1:
+        if child.nodeType != 1:
             child = None
     return False
 
@@ -556,49 +579,49 @@ def releaseCapture(elem):
     return
 
 def removeChild(parent, child):
-    parent.remove_child(child)
+    parent.removeChild(child)
 
 def replaceChild(parent, newChild, oldChild):
-    parent.replace_child(newChild, oldChild)
+    parent.replaceChild(newChild, oldChild)
 
 def removeEventPreview(preview):
     global sEventPreviewStack
     sEventPreviewStack.remove(preview)
 
 def scrollIntoView(elem):
-    left = elem.props.offset_left
-    top = elem.props.offset_top
-    width = elem.props.offset_width
-    height = elem.props.offset_height
+    left = elem.offsetLeft
+    top = elem.offsetTop
+    width = elem.offsetWidth
+    height = elem.offsetHeight
     
-    if elem.props.parent_node != elem.props.offset_parent:
-        left -= elem.props.parent_node.props.offset_left
-        top -= elem.props.parent_node.props.offset_top
+    if elem.parentNode != elem.offsetParent:
+        left -= elem.parentNode.offsetLeft
+        top -= elem.parentNode.offsetTop
 
-    cur = elem.props.parent_node
-    while cur and cur.props.node_type == 1:
-        if hasattr(cur, 'style') and \
+    cur = elem.parentNode
+    while cur and cur.nodeType == 1:
+        if hasattr(cur, 'style') and hasattr(cur.style, 'overflow') and \
            (cur.style.overflow == 'auto' or cur.style.overflow == 'scroll'):
-            if left < cur.props.scroll_left:
-                cur.props.scroll_left = left
-            if left + width > cur.props.scroll_left + cur.props.client_width:
-                cur.props.scroll_left = (left + width) - cur.props.client_width
-            if top < cur.props.scroll_top:
-                cur.props.scroll_top = top
-            if top + height > cur.props.scroll_top + cur.props.client_height:
-                cur.props.scroll_top = (top + height) - cur.props.client_height
+            if left < cur.scrollLeft:
+                cur.scrollLeft = left
+            if left + width > cur.scrollLeft + cur.clientWidth:
+                cur.scrollLeft = (left + width) - cur.clientWidth
+            if top < cur.scrollTop:
+                cur.scrollTop = top
+            if top + height > cur.scrollTop + cur.clientHeight:
+                cur.scrollTop = (top + height) - cur.clientHeight
 
-        offset_left = cur.props.offset_left
-        offset_top = cur.props.offset_top
-        if cur.props.parent_node != cur.props.offset_parent :
-            if hasattr(cur.props.parent_node.props, "offset_left"):
-                offset_left -= cur.props.parent_node.props.offset_left
-            if hasattr(cur.props.parent_node.props, "offset_top"):
-                offset_top -= cur.props.parent_node.props.offset_top
+        offsetLeft = cur.offsetLeft
+        offsetTop = cur.offsetTop
+        if cur.parentNode != cur.offsetParent :
+            if hasattr(cur.parentNode, "offsetLeft"):
+                offsetLeft -= cur.parentNode.offsetLeft
+            if hasattr(cur.parentNode, "offsetTop"):
+                offsetTop -= cur.parentNode.offsetTop
 
-        left += offset_left - cur.props.scroll_left
-        top += offset_top - cur.props.scroll_top
-        cur = cur.props.parent_node
+        left += offsetLeft - cur.scrollLeft
+        top += offsetTop - cur.scrollTop
+        cur = cur.parentNode
 
 def mash_name_for_glib(name, joiner='-'):
     res = ''
@@ -616,7 +639,7 @@ def setAttribute(element, attribute, value):
     element.set_property(mash_name_for_glib(attribute), value)
 
 def setElemAttribute(element, attribute, value):
-    element.set_attribute(attribute, value)
+    element.setAttribute(attribute, value)
 
 def setBooleanAttribute(elem, attr, value):
     elem.set_property(mash_name_for_glib(attr), value)
@@ -633,16 +656,16 @@ def setEventListener(element, listener):
     when a captured event occurs.  To set which events are captured,
     use sinkEvents().
     """
-    element._listener = listener
+    set_listener(element, listener)
 
 def setInnerHTML(element, html):
-    element.props.inner_html = html
+    element.innerHtml = html
 
 def setInnerText(elem, text):
     #Remove all children first.
-    while elem.props.first_child:
-        elem.remove_child(elem.props.first_child)
-    elem.append_child(doc().create_text_node(text or ''))
+    while elem.firstChild:
+        elem.removeChild(elem.firstChild)
+    elem.appendChild(doc().createTextNode(text or ''))
 
 def setIntElemAttribute(elem, attr, value):
     elem.set_attribute(attr, str(value))
@@ -651,8 +674,8 @@ def setIntAttribute(elem, attr, value):
     elem.set_property(mash_name_for_glib(attr), value)
 
 def setIntStyleAttribute(elem, attr, value):
-    sty = elem.props.style
-    sty.set_css_property(mash_name_for_glib(attr), str(value), "")
+    sty = elem.style
+    sty.setCssProperty(mash_name_for_glib(attr), str(value), "")
 
 def setOptionText(select, text, index):
     print "TODO - setOptionText"
@@ -662,8 +685,8 @@ def setOptionText(select, text, index):
     """)
 
 def setStyleAttribute(element, name, value):
-    sty = element.props.style
-    sty.set_css_property(mash_name_for_glib(name), value, "")
+    sty = element.style
+    sty.setCssProperty(mash_name_for_glib(name), value, "")
 
 def dispatch_event_cb(element, event, capture):
     print "dispatch_event_cb", element, event, capture
@@ -685,46 +708,46 @@ def sinkEvents(element, bits):
     if bits:
         element.connect("browser-event", lambda x,y,z: _dispatchEvent(y))
     if (bits & 0x00001):
-        element.add_event_listener("click", True)
+        element.addEventListener("click", True)
     if (bits & 0x00002):
-        element.add_event_listener("dblclick", True)
+        element.addEventListener("dblclick", True)
     if (bits & 0x00004):
-        element.add_event_listener("mousedown", True)
+        element.addEventListener("mousedown", True)
     if (bits & 0x00008):
-        element.add_event_listener("mouseup", True)
+        element.addEventListener("mouseup", True)
     if (bits & 0x00010):
-        element.add_event_listener("mouseover", True)
+        element.addEventListener("mouseover", True)
     if (bits & 0x00020):
-        element.add_event_listener("mouseout", True)
+        element.addEventListener("mouseout", True)
     if (bits & 0x00040):
-        element.add_event_listener("mousemove", True)
+        element.addEventListener("mousemove", True)
     if (bits & 0x00080):
-        element.add_event_listener("keydown", True)
+        element.addEventListener("keydown", True)
     if (bits & 0x00100):
-        element.add_event_listener("keypress", True)
+        element.addEventListener("keypress", True)
     if (bits & 0x00200):
-        element.add_event_listener("keyup", True)
+        element.addEventListener("keyup", True)
     if (bits & 0x00400):
-        element.add_event_listener("change", True)
+        element.addEventListener("change", True)
     if (bits & 0x00800):
-        element.add_event_listener("focus", True)
+        element.addEventListener("focus", True)
     if (bits & 0x01000):
-        element.add_event_listener("blur", True)
+        element.addEventListener("blur", True)
     if (bits & 0x02000):
-        element.add_event_listener("losecapture", True)
+        element.addEventListener("losecapture", True)
     if (bits & 0x04000):
-        element.add_event_listener("scroll", True)
+        element.addEventListener("scroll", True)
     if (bits & 0x08000):
-        element.add_event_listener("load", True)
+        element.addEventListener("load", True)
     if (bits & 0x10000):
-        element.add_event_listener("error", True)
+        element.addEventListener("error", True)
 
 def toString(elem):
     temp = elem.clone_node(True)
     tempDiv = createDiv()
-    tempDiv.append_child(temp)
-    outer = tempDiv.props.inner_html
-    temp.props.inner_html = ""
+    tempDiv.appendChild(temp)
+    outer = tempDiv.innerHtml
+    temp.innerHtml = ""
     return outer
 
 # TODO: missing dispatchEventAndCatch
@@ -757,7 +780,7 @@ def dispatchEventImpl(event, element, listener):
     if element == sCaptureElem:
         if eventGetType(event) == "losecapture":
             sCaptureElem = None
-    print "dispatchEventImpl", listener, eventGetType(event)
+    #print "dispatchEventImpl", listener, eventGetType(event)
     prevCurrentEvent = currentEvent
     currentEvent = event
     listener.onBrowserEvent(event)

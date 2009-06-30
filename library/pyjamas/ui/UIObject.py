@@ -166,7 +166,7 @@ class UIObject:
         if not element:
             element = self.element
         try: # yuk!
-            return element.props.style.display != "none"
+            return element.style.display != "none"
         except AttributeError: # not been set (yet?)
             return True
 

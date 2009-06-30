@@ -33,7 +33,7 @@ class RootPanelCls(AbsolutePanel):
         self.onAttach()
 
     def getBodyElement(self):
-        els = doc().get_elements_by_tag_name("body")
+        els = doc().getElementsByTagName("body")
         return els.item(0)
 
     @classmethod

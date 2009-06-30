@@ -77,7 +77,7 @@ class FormPanel(SimplePanel):
 
     # FormPanelImpl.getEncoding
     def getEncoding(self):
-        return self.getElement().props.enctype
+        return self.getElement().enctype
 
     def getMethod(self):
         return DOM.getAttribute(self.getElement(), "method")
@@ -88,21 +88,22 @@ class FormPanel(SimplePanel):
     # FormPanelImpl.getTextContents
     def getTextContents(self, iframe):
         try:
-            if not iframe.props.content_document:
+            if not iframe.contentDocument:
                 return None
-            return iframe.props.content_document.props.body.props.inner_html
+            return iframe.contentDocument.body.innerHtml
         except:
             return None
 
     # FormPanelImpl.hookEvents
     def hookEvents(self, iframe, form, listener):
+        # TODO: might have to fix this, use DOM.set_listener()
         self._listener = listener
         if iframe:
             iframe.connect("browser-event", self._onload)
-            iframe.add_event_listener("load", True)
+            iframe.addEventListener("load", True)
 
         form.connect("browser-event", self._onsubmit)
-        form.add_event_listener("onsubmit", True)
+        form.addEventListener("onsubmit", True)
 
     def onFormSubmit(self):
         event = FormSubmitEvent(self)
@@ -125,8 +126,8 @@ class FormPanel(SimplePanel):
     # FormPanelImpl.setEncoding
     def setEncoding(self, encodingType):
         form = self.getElement()
-        form.props.enctype = encodingType
-        form.props.encoding = encodingType
+        form.enctype = encodingType
+        form.encoding = encodingType
 
     def setMethod(self, method):
         DOM.setAttribute(self.getElement(), "method", method)
@@ -144,7 +145,7 @@ class FormPanel(SimplePanel):
     # FormPanelImpl.submit
     def submitImpl(self, form, iframe):
         if iframe:
-            iframe._formAction = form.props.action
+            iframe._formAction = form.action
         form.submit()
 
     def onAttach(self):

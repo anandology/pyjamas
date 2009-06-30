@@ -18,18 +18,18 @@ def blur(elem):
 
 def createFocusable():
     e = DOM.createDiv()
-    e.props.tab_index = 0
+    e.tabIndex = 0
     return e
 
 def focus(elem):
     elem.focus()
 
 def getTabIndex(elem):
-    return elem.props.tab_index
+    return elem.tabIndex
 
 def setAccessKey(elem, key):
-    elem.props.access_key = key
+    elem.accessKey = key
 
 def setTabIndex(elem, index):
-    elem.props.tab_index = index
+    elem.tabIndex = index
 

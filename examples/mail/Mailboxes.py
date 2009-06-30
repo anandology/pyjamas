@@ -27,5 +27,5 @@ class Mailboxes(Composite):
     def imageItemHTML(self, imageUrl, title):
         value  = "<span><img style='margin-right:4px' src='"
         value += "./"
-        value += imageUrl.toLowerCase() + "'>" + title + "</span>"
+        value += imageUrl.lower() + "'>" + title + "</span>"
         return value

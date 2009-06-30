@@ -25,20 +25,25 @@ class HTTPRequest:
         return self.doCreateXmlHTTPRequest()
 
     def doCreateXmlHTTPRequest(self):
-        return get_main_frame().get_xml_http_request()
+        return get_main_frame().getXmlHttpRequest()
 
     def onReadyStateChange(self, xmlHttp, event, ignorearg):
-        if (xmlHttp.props.ready_state != 4) :
+        xmlHttp = get_main_frame().gobject_wrap(xmlHttp)
+        if (xmlHttp.readyState != 4) :
             return
         # TODO - delete xmlHttp.onreadystatechange
         localHandler = xmlHttp.handler
-        responseText = xmlHttp.props.response_text
-        print "headers", xmlHttp.get_all_response_headers()
-        status = xmlHttp.props.status
+        responseText = xmlHttp.responseText
+        print "headers", xmlHttp.getAllResponseHeaders()
+        status = xmlHttp.status
         handler = None
         xmlHttp = None
-        print "response text", responseText, dir(responseText)
-        if status == 200 :
+        print "status", status
+        print "local handler", localHandler
+        # XXX HACK! webkit wrapper returns 0 not 200!
+        if status == 0:
+            print "HACK ALERT! webkit wrapper returns 0 not 200!"
+        if status == 200 or status == 0:
             localHandler.onCompletion(responseText)
         else :
             localHandler.onError(responseText, status)
@@ -47,7 +52,7 @@ class HTTPRequest:
     def asyncPostImpl(self, user, pwd, url, postData, handler):
         xmlHttp = self.doCreateXmlHTTPRequest()
         if url[0] != '/':
-            uri = get_main_frame().get_uri()
+            uri = get_main_frame().getUri()
             if url[:7] != 'file://' and url[:7] != 'http://' and \
                url[:8] != 'https://':
                 slash = uri.rfind('/')
@@ -55,20 +60,20 @@ class HTTPRequest:
         print "xmlHttp", user, pwd, url, postData, handler, dir(xmlHttp)
         #try :
         xmlHttp.open("POST", url, True, '', '')
-        xmlHttp.set_request_header("Content-Type", "text/plain charset=utf-8")
+        xmlHttp.setRequestHeader("Content-Type", "text/plain charset=utf-8")
         for c in Cookies.get_crumbs():
-            xmlHttp.set_request_header("Set-Cookie", c)
+            xmlHttp.setRequestHeader("Set-Cookie", c)
             print "setting cookie", c
         xmlHttp.connect("browser-event", self.onReadyStateChange)
-        xmlHttp.add_event_listener("onreadystatechange")
+        xmlHttp.addEventListener("onreadystatechange")
         xmlHttp.handler = handler # hmm...
         #post_doc = get_main_frame().create_text_gdom_document()
         #body = post_doc.create_element("body")
         #tn = post_doc.create_text_node(postData)
         #post_doc.append_child(tn)
-        #post_doc.props.body = body
+        #post_doc.body = body
         #print post_doc, dir(post_doc), list(post_doc.props)
-        #print "inner html", post_doc.props.body.props.inner_html
+        #print "inner html", post_doc.body.inner_html
         #sys.exit(0)
         #xmlHttp.send(post_doc)
         xmlHttp.send(postData)

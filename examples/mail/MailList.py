@@ -7,6 +7,7 @@ from pyjamas.ui.Label import Label
 from pyjamas.ui import HasAlignment
 from MailItems import MailItems
 from Logger import Logger
+from datetime import datetime
 
 class MailList(Composite):
 
@@ -122,7 +123,7 @@ class MailList(Composite):
                 self.table.getRowFormatter().removeStyleName(row + 1, "mail-SelectedRow")
 
     def update(self):
-        JS("t0 = (new Date()).getTime();")
+        #JS("t0 = (new Date()).getTime();")
         # Update the older/newer buttons & label.
         count = MailItems().getMailItemCount()
         max = self.startIndex + MailList.VISIBLE_EMAIL_COUNT
@@ -132,7 +133,7 @@ class MailList(Composite):
         self.newerButton.setVisible(self.startIndex != 0)
         self.olderButton.setVisible(self.startIndex + MailList.VISIBLE_EMAIL_COUNT < count)
         startIndexPlusOne = self.startIndex + 1
-        self.countLabel.setText("" + startIndexPlusOne + " - " + max + " of " + count)
+        self.countLabel.setText("%d - %d of %d" % (startIndexPlusOne, max, count))
 
         # Show the selected emails.
         i = 0
@@ -162,5 +163,5 @@ class MailList(Composite):
         # Select the first row if none is selected.
         if (self.selectedRow == -1):
             self.selectRow(0)
-        JS("t1 = (new Date()).getTime();")
-	self.table.setHTML(i, 0, (t1-t0))
+        #JS("t1 = (new Date()).getTime();")
+        #self.table.setHTML(i, 0, (t1-t0))

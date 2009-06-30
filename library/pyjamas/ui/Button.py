@@ -35,7 +35,7 @@ class Button(ButtonBase):
             self.addClickListener(listener)
 
     def adjustType(self, button):
-        if button.props.type == 'submit':
+        if button.type == 'submit':
             try:
                 DOM.setAttribute(button, "type", "button")
             except:

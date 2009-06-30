@@ -51,7 +51,7 @@ class RowFormatter:
         return self.getRow(self.outer.bodyElem, row)
 
     def getRow(self, element, row):
-        return element.props.rows.item(row)
+        return element.rows.item(row)
 
     def setStyleAttr(self, row, attrName, value):
         element = self.ensureElement(row)

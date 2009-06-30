@@ -25,6 +25,7 @@ class StackPanel(ComplexPanel):
         ComplexPanel.__init__(self)
         self.body = None
         self.visibleStack = -1
+        self.indices = {}
 
         table = DOM.createTable()
         self.setElement(table)
@@ -46,7 +47,7 @@ class StackPanel(ComplexPanel):
         DOM.appendChild(self.body, tr)
         DOM.appendChild(tr, td)
         self.setStyleName(td, "gwt-StackPanelItem", True)
-        DOM.setIntAttribute(td, "__index", index)
+        self.indices[td] = index
         DOM.setAttribute(td, "height", "1px")
 
         tr = DOM.createTR()
@@ -109,9 +110,9 @@ class StackPanel(ComplexPanel):
         for i in range(rowIndex, rows, 2):
             childTR = DOM.getChild(self.body, i)
             td = DOM.getFirstChild(childTR)
-            curIndex = DOM.getIntAttribute(td, "__index")
+            curIndex = self.indices[td]
             #assert (curIndex == (i / 2) - 1);
-            DOM.setIntAttribute(td, "__index", index)
+            self.indices[td] = index
             index += 1
 
         return True
@@ -138,7 +139,7 @@ class StackPanel(ComplexPanel):
 
     def getDividerIndex(self, elem):
         while (elem != None) and not DOM.compare(elem, self.getElement()):
-            expando = DOM.getAttribute(elem, "__index")
+            expando = self.indices.get(elem)
             if expando != None:
                 return int(expando)
 
