@@ -228,6 +228,20 @@ class ListTest(UnitTest):
             self.assertEqual(item, l[i])
             i += 1
 
+    def testIndex(self):
+        l = [2,4,6,8]
+        try:
+            self.assertEqual(l.index(2), 0)
+        except ValueError:
+            self.fail("ValueError raised when not expected")
+
+        try:
+            self.assertEqual(l.index(200000), 0)
+            self.fail("ValueError not raised when expected")
+        except ValueError, e:
+            self.assertTrue(str(e) == "list.index(x): x not in list",
+                            "ValueError exception returned incorrect message")
+
 class A:
 
     def __cmp__(self, other):
