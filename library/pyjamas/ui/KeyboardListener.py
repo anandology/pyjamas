@@ -58,16 +58,17 @@ def getKeyboardModifiers(event):
 
 def fireKeyboardEvent(listeners, sender, event):
     modifiers = getKeyboardModifiers(event)
+    keycode = DOM.eventGetKeyCode(event)
 
     type = DOM.eventGetType(event)
     if type == "keydown":
         for listener in listeners:
-            listener.onKeyDown(sender, DOM.eventGetKeyCode(event), modifiers)
+            listener.onKeyDown(sender, keycode, modifiers)
     elif type == "keyup":
         for listener in listeners:
-            listener.onKeyUp(sender, DOM.eventGetKeyCode(event), modifiers)
+            listener.onKeyUp(sender, keycode, modifiers)
     elif type == "keypress":
         for listener in listeners:
-            listener.onKeyPress(sender, DOM.eventGetKeyCode(event), modifiers)
+            listener.onKeyPress(sender, keycode, modifiers)
 
 
