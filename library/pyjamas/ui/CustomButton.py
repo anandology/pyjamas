@@ -21,7 +21,6 @@ from pyjamas.ui import Event
 from pyjamas.ui.ButtonBase import ButtonBase
 from pyjamas.ui import Focus
 from pyjamas.ui.UIObject import UIObject
-import pyjslib
 
 """
 Custom Button is a base button class with built in support for a set number
@@ -214,14 +213,14 @@ class CustomButton (ButtonBase):
             handler = upImageText
             upImageText = None
 
-        if upImageText and pyjslib.isString(upImageText):
+        if upImageText and isinstance(upImageText, str):
            upText = upImageText
            upImage = None
         else:
            upImage = upImageText
            upText = None
 
-        if downImageText and pyjslib.isString(downImageText):
+        if downImageText and isinstance(downImageText, str):
            downText = downImageText
            downImage = None
         else:
@@ -378,17 +377,17 @@ class CustomButton (ButtonBase):
         # key handling.
         if (DOM.eventGetTypeInt(event) & Event.KEYEVENTS) != 0:
             keyCode = DOM.eventGetKeyCode(event)
-            if event_type == Event.ONKEYDOWN:
+            if event_type == "keydown":
                 if keyCode == ' ':
                     self.isFocusing = True
                     self.onClickStart()
                 
-            elif event_type == Event.ONKEYUP:
+            elif event_type == "keyup":
                 if self.isFocusing  and  keyCode == ' ':
                     self.isFocusing = False
                     self.onClick()
                 
-            elif event_type == Event.ONKEYPRESS:
+            elif event_type == "keypress":
                 if keyCode == '\n'  or  keyCode == '\r':
                     self.onClickStart()
                     self.onClick()

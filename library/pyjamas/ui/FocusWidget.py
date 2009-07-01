@@ -43,7 +43,10 @@ class FocusWidget(Widget):
         return Focus.getTabIndex(self.getElement())
 
     def isEnabled(self):
-        return not DOM.getBooleanAttribute(self.getElement(), "disabled")
+        try:
+            return not DOM.getBooleanAttribute(self.getElement(), "disabled")
+        except TypeError:
+            return True
 
     def onBrowserEvent(self, event):
         type = DOM.eventGetType(event)

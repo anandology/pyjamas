@@ -272,28 +272,29 @@ def eventGetToElement(evt):
 def eventGetType(event):
     return event.type
 
+eventmap = {
+      "blur": 0x01000,
+      "change": 0x00400,
+      "click": 0x00001,
+      "dblclick": 0x00002,
+      "focus": 0x00800,
+      "keydown": 0x00080,
+      "keypress": 0x00100,
+      "keyup": 0x00200,
+      "load": 0x08000,
+      "losecapture": 0x02000,
+      "mousedown": 0x00004,
+      "mousemove": 0x00040,
+      "mouseout": 0x00020,
+      "mouseover": 0x00010,
+      "mouseup": 0x00008,
+      "scroll": 0x04000,
+      "error": 0x10000,
+      "contextmenu": 0x20000,
+      }
+
 def eventGetTypeInt(event):
-    JS("""
-    switch (event.type) {
-      case "blur": return 0x01000;
-      case "change": return 0x00400;
-      case "click": return 0x00001;
-      case "dblclick": return 0x00002;
-      case "focus": return 0x00800;
-      case "keydown": return 0x00080;
-      case "keypress": return 0x00100;
-      case "keyup": return 0x00200;
-      case "load": return 0x08000;
-      case "losecapture": return 0x02000;
-      case "mousedown": return 0x00004;
-      case "mousemove": return 0x00040;
-      case "mouseout": return 0x00020;
-      case "mouseover": return 0x00010;
-      case "mouseup": return 0x00008;
-      case "scroll": return 0x04000;
-      case "error": return 0x10000;
-    }
-    """)
+    return eventmap.get(str(event.type), 0)
 
 def eventGetTypeString(event):
     return eventGetType(event)
