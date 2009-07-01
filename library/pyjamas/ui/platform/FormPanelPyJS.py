@@ -1,11 +1,5 @@
 class FormPanel(SimplePanel):
 
-    # FormPanelImpl.getEncoding
-    def getEncoding(self):
-        JS("""
-        return this.getElement().enctype;
-        """)
-
     # FormPanelImpl.getTextContents
     def getTextContents(self, iframe):
         JS("""
@@ -36,14 +30,6 @@ class FormPanel(SimplePanel):
                 iframe.__formAction = form.action;
             return listener.onFormSubmit();
         };
-        """)
-
-    # FormPanelImpl.setEncoding
-    def setEncoding(self, encodingType):
-        JS("""
-        var form = this.getElement();
-        form.enctype = encodingType;
-        form.encoding = encodingType;
         """)
 
     # FormPanelImpl.submit
