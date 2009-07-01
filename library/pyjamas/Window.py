@@ -38,27 +38,19 @@ def alert(msg):
     wnd().alert(msg)
 
 def confirm(msg):
-    print "TODO", msg
-    alert("Window.confirm() is still on the TODO list. sorry!")
-    return False
-    JS("""
-    window.confirm("%s");
-    """ % msg)
+    return wnd().confirm(msg)
 
 def prompt(msg, defaultReply=""):
-    print "TODO", msg
-    alert("Window.prompt() is still on the TODO list. sorry!")
+    return wnd().prompt(msg, defaultReply)
 
 def enableScrolling(enable):
     doc().body.style.overflow = enable and 'auto' or 'hidden'
 
 def scrollBy(x, y):
-    print "TODO: scrollBy", x, y
-    pass
+    wnd().scrollBy(x, y)
 
 def scroll(x, y):
-    print "TODO: scroll", x, y
-    pass
+    wnd().scroll(x, y)
 
 def getClientHeight():
     height = wnd().innerHeight
@@ -73,31 +65,22 @@ def getClientWidth():
     return doc().body.clientWidth;
 
 def setLocation(url):
-    print "TODO - setLocation", url
-    pass
+    w = wnd()
+    w.location = url
 
 location = None
 
 def getLocation():
     global location
     if not location:
-        print dir(wnd())
         location = Location.Location(wnd().location)
     return location
-    JS("""
-    if(!Window_location)
-       Window_location = Location_Location($wnd.location);
-    return Window_location;
-    """)
- 
  
 def getTitle():
     return doc.title
 
 def open(url, name, features):
-    JS("""
-    document.parent.open('%s', '%s', '%s');
-    """ % (url, name, features))
+    document.parent.open(url, name, features)
 
 def removeWindowCloseListener(listener):
     global closingListeners
@@ -111,7 +94,8 @@ def setMargin(size):
     doc().body.style.margin = size;
 
 def setTitle(title):
-    doc().title = title
+    d = doc()
+    d.title = title
 
 def setOnError(onError):
     pass
