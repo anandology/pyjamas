@@ -4,6 +4,20 @@
  * Fix for cache-busting in build process with different versions
    of python (use of md5 module), thanks to Oisin Mulvihill
 
+ * Added support for reaching subscript js objects with python syntax
+
+ * Added 'native' functions doc() and wnd() to reach $doc and $wnd
+
+ * Added platform merge for simple class attribute assignments
+
+ * Moved top-level option and track variable to safe variable $pyjs
+
+ * Repaired pyv8 code 
+
+ * Namespace safe module imports
+
+ * Simplified import for pyjs
+
  * Added isinstance(s, str) and isinstance(s, int) support
 
  * Monster update to include Pyjamas-Desktop
