@@ -37,7 +37,7 @@ def get_listener(item):
     return ret
 
 def set_listener(item, listener):
-    print "set listener", item, listener
+    #print "set listener", item, listener
     global listeners
     listeners[item.__instance__] = listener
 
@@ -65,7 +65,7 @@ def _dispatchEvent(evt):
     cap = getCaptureElement()
     listener = get_listener(cap)
     if cap and listener:
-        print "_dispatchEvent", cap, listener
+        #print "_dispatchEvent", cap, listener
         dispatchEvent(evt, cap, listener)
         evt.stopPropagation()
         return
@@ -115,7 +115,7 @@ def browser_event_cb(view, event, from_window):
         onResize()
         return
     elif et == 'mouseout':
-        print "mouse out", event
+        #print "mouse out", event
         return _dispatchCapturedMouseoutEvent(event)
     elif et == 'keyup' or et == 'keydown' or et == 'keypress' or et == 'change':
         return _dispatchCapturedEvent(event)
@@ -137,7 +137,7 @@ def addEventPreview(preview):
     sEventPreviewStack.append(preview)
 
 def appendChild(parent, child):
-    print "appendChild", parent, child
+    #print "appendChild", parent, child
     parent.appendChild(child)
 
 def compare(elem1, elem2):
@@ -646,7 +646,7 @@ def setBooleanAttribute(elem, attr, value):
 def setCapture(elem):
     global sCaptureElem
     sCaptureElem = elem
-    print "setCapture", sCaptureElem
+    #print "setCapture", sCaptureElem
 
 def setEventListener(element, listener):
     """
