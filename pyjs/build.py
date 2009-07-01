@@ -11,8 +11,15 @@ from cStringIO import StringIO
 try:
     # Python 2.5 and above
     from hashlib import md5
+
+    def md5sum(tosum):
+        return md5(tosum).hexdigest()
 except:
     import md5
+    
+    def md5sum(tosum):
+        return md5.new(tosum).hexdigest()
+    
 import re
 
 usage = """
@@ -558,7 +565,7 @@ def generateAppFiles(data_dir, js_includes, app_name, output, dynamic,
             app_headers = app_headers
         )
         if cache_buster:
-            digest = md5.new(file_contents).hexdigest()
+            digest = md5sum(file_contents)
             file_name = "%s.%s.%s" % (platform.lower(), app_name, digest)
         else:
             file_name = "%s.%s" % (platform.lower(), app_name)

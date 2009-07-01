@@ -1,6 +1,9 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
+ * Fix for cache-busting in build process with different versions
+   of python (use of md5 module), thanks to Oisin Mulvihill
+
  * Added isinstance(s, str) and isinstance(s, int) support
 
  * Monster update to include Pyjamas-Desktop
