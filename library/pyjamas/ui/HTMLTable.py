@@ -182,8 +182,6 @@ class HTMLTable(Panel):
             return None
         return widgetElement.hash 
 
-        return widgetElement.hash
-
     def removeWidget(self, widget):
         self.disown(widget)
 
