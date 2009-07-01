@@ -57,16 +57,18 @@ class TreeItem(UIObject):
         DOM.appendChild(tdImg, self.imgElem)
         DOM.appendChild(tdContent, self.contentElem)
 
-        self.__init__Impl(html)
-
-    def __init__Impl(self, html):
-
         # XXX - can't set pos relative on a div node,
         # or white_space on an HTML Table..
-        #DOM.setAttribute(self.getElement(), "position", "relative")
+        try:
+            DOM.setAttribute(self.getElement(), "position", "relative")
+        except:
+            pass
         DOM.setStyleAttribute(self.contentElem, "display", "inline")
         DOM.setStyleAttribute(self.getElement(), "whiteSpace", "nowrap")
-        #DOM.setAttribute(self.itemTable, "whiteSpace", "nowrap")
+        try:
+            DOM.setAttribute(self.itemTable, "whiteSpace", "nowrap")
+        except:
+            pass
         DOM.setStyleAttribute(self.childSpanElem, "whiteSpace", "nowrap")
         self.setStyleName(self.contentElem, "gwt-TreeItem", True)
 
