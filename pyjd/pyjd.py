@@ -236,10 +236,6 @@ class WebToolbar(gtk.Toolbar):
         if not (self._browser.get_zoom_level() == 1.0):
             self._browser.set_zoom_level(1.0);
 
-class BrowserPage(webkit.WebView):
-    def __init__(self):
-        webkit.WebView.__init__(self)
-
 class WebStatusBar(gtk.Statusbar):
     def __init__(self):
         gtk.Statusbar.__init__(self)

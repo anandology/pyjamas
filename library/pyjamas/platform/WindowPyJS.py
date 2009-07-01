@@ -20,6 +20,14 @@ def onError(msg, url, linenumber):
     JS("""$doc.body.appendChild(dialog)""")
     return True
 
+def alert(msg):
+    wnd().alert(msg)
+
+def confirm(msg):
+    return wnd().confirm(msg)
+
+def prompt(msg, defaultReply=""):
+    return wnd().prompt(msg, defaultReply)
 
 def init_listeners():
     global closingListeners

@@ -157,7 +157,6 @@ class HTMLTable(Panel):
         td = self.cleanCell(row, column)
         widget_hash = hash(widget)
         element = widget.getElement()
-        element.hash = widget_hash
         DOM.setElemAttribute(element, "hash", str(widget_hash))
         self.widgetMap[widget_hash] = widget
         self.adopt(widget, td)

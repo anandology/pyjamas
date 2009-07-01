@@ -25,8 +25,8 @@ class Tables(Sink):
         inner.setWidth("100%")
         outer.setWidth("100%")
 
-        inner.setBorderWidth(1)
-        outer.setBorderWidth(1)
+        inner.setBorderWidth("1")
+        outer.setBorderWidth("1")
 
         self.initWidget(outer)
         

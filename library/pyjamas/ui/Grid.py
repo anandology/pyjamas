@@ -86,7 +86,7 @@ class Grid(HTMLTable):
 
     def addRows(self, table, numRows, columns):
         td = DOM.createElement("td")
-        td.innerHtml = "&nbsp;"
+        DOM.setInnerHTML(td, "&nbsp;")
         row = DOM.createElement("tr")
         for cellNum in range(columns):
             cell = td.cloneNode(True)

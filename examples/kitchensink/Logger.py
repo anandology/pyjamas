@@ -12,7 +12,7 @@ class Logger(Grid):
         self.targets.append("app")
         #self.targets.append("ui")
         self.resize(len(self.targets)+1, 2)
-        self.setBorderWidth(1)
+        self.setBorderWidth("1")
         self.counter=0
         
         self.setHTML(0, 0, "<b>Log</b>")

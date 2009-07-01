@@ -90,7 +90,7 @@ class FormPanel(SimplePanel):
         try:
             if not iframe.contentDocument:
                 return None
-            return iframe.contentDocument.body.innerHtml
+            return DOM.getInnerHTML(iframe.contentDocument.body)
         except:
             return None
 

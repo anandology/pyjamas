@@ -51,8 +51,8 @@ class TopPanel(Composite):
             # Position it roughly in the middle of the screen.
             left = (Window.getClientWidth() - 512) / 2
             top = (Window.getClientHeight() - 256) / 2
-            Logger("TopPanel", "left: " + left)
-            Logger("TopPanel", "top: " + top)
+            Logger("TopPanel", "left: %d" % left)
+            Logger("TopPanel", "top: %d" % top)
             dlg.setPopupPosition(left, top)
 
             dlg.show()
