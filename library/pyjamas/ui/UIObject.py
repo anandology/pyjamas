@@ -161,8 +161,9 @@ class UIObject:
         DOM.setIntStyleAttribute(self.element, "zIndex", index)
 
     def isVisible(self, element=None):
-        """Determine whether this element is currently visible, by checking the CSS
-        property 'display'"""
+        """Determine whether this element is currently visible, by checking
+            the CSS property 'display'
+        """
         if not element:
             element = self.element
         try: # yuk!
