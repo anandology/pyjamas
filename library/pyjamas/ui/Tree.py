@@ -354,7 +354,9 @@ class Tree(Widget):
         return self.childWidgets
 
     def shouldTreeDelegateFocusToElement(self, elem):
-        return elem.nodeName == 'select' or\
-               elem.nodeName == 'input' or\
-               elem.nodeName == 'checkbox'
+        name = str(elem.nodeName)
+        name = name.lower()
+        return name == 'select' or\
+               name == 'input' or\
+               name == 'checkbox'
 
