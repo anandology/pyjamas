@@ -25,7 +25,6 @@ if sys.platform not in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
 
 sCaptureElem = None
 sEventPreviewStack = []
-global sCaptureElem
 
 listeners = {}
 
