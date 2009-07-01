@@ -1,5 +1,3 @@
-import pyjslib
-
 def makeUrlDict(s):
     dict = {}
     pairs = s.split("&")
@@ -67,7 +65,7 @@ class Location:
         return ""+self.location.search
     
     def getSearchDict(self):
-        if pyjslib.isString(self.location):
+        if isinstance(self.location, str):
             return {}
         if not self.searchDict:
             self.searchDict = makeUrlDict(self.getSearch()[1:])
@@ -75,7 +73,7 @@ class Location:
 
     def getSearchVar(self, key):
         searchDict = self.getSearchDict()
-        return searchDict[key]
+        return searchDict.get(key)
     
     def reload(self):
         self.location.reload()
