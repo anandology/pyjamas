@@ -30,8 +30,8 @@ class StackPanel(ComplexPanel):
 
         self.body = DOM.createTBody()
         DOM.appendChild(table, self.body)
-        DOM.setIntAttribute(table, "cellSpacing", 0)
-        DOM.setIntAttribute(table, "cellPadding", 0)
+        DOM.setAttribute(table, "cellSpacing", "0")
+        DOM.setAttribute(table, "cellPadding", "0")
 
         DOM.sinkEvents(table, Event.ONCLICK)
         self.setStyleName("gwt-StackPanel")
