@@ -136,7 +136,7 @@ for a in pyjs_attrib_remap_names:
 # XXX: this is a hack: these should be dealt with another way
 # however, console is currently the only global name which is causing
 # problems.
-PYJS_GLOBAL_VARS=("console")
+PYJS_GLOBAL_VARS=("console",)
 
 # This is taken from the django project.
 # Escape every ASCII character with a value less than 32.
