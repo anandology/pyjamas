@@ -119,7 +119,8 @@ class TabBar(Composite):
 
     def onClick(self, sender=None):
         for i in range(1, self.panel.getWidgetCount() - 1):
-            if self.panel.getWidget(i) == sender:
+            if DOM.isOrHasChild(self.panel.getWidget(i).getElement(),
+                                sender.getElement()):
                 return self.selectTab(i - 1)
         return False
 
