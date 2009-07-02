@@ -133,4 +133,44 @@ class ListBox(FocusWidget):
             #throw new IndexOutOfBoundsException();
             pass
 
+    def getSelectedItemText(self, ignore_first_value = False):
+        selected = []
+        if ignore_first_value:
+            start_idx = 1
+        else:
+            start_idx = 0
+        for i in range(start_idx,self.getItemCount()):
+            if self.isItemSelected(i):
+                selected.append(self.getItemText(i))
+        return selected
 
+    def getSelectedValues(self, ignore_first_value = False):
+        selected = []
+        if ignore_first_value:
+            start_idx = 1
+        else:
+            start_idx = 0
+        for i in range(start_idx,self.getItemCount()):
+            if self.isItemSelected(i):
+                selected.append(self.getValue(i))
+        return selected
+
+    def setItemTextSelection(self, values):
+        if not values:
+            values = []
+            self.setSelectedIndex(0)
+        for i in range(0,self.getItemCount()):
+            if self.getItemText(i) in values:
+                self.setItemSelected(i, "selected")
+            else:
+                self.setItemSelected(i, "")
+
+    def setValueSelection(self, values):
+        if not values:
+            values = []
+            self.setSelectedIndex(0)
+        for i in range(0,self.getItemCount()):
+            if self.getValue(i) in values:
+                self.setItemSelected(i, "selected")
+            else:
+                self.setItemSelected(i, "")
