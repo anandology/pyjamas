@@ -31,6 +31,7 @@ class ContentInvoker:
 class Browser(WebView):
     def __init__(self, application, appdir):
         WebView.__init__(self)
+        self.platform = 'hulahop'
         self.progress = ProgressListener()
         self.application = application
         self.appdir = appdir
@@ -50,12 +51,24 @@ class Browser(WebView):
 
     def load_app(self):
 
-        self.load_uri('file://'+os.path.abspath(self.application))
+        uri = self.application
+        if uri.find("://") == -1:
+            # assume file
+            uri = 'file://'+os.path.abspath(uri)
+
+        self.application = uri
+        self.load_uri(uri)
 
     def do_setup(self):
         WebView.do_setup(self)
         self.progress.setup(self)
         
+    def _addXMLHttpRequestEventListener(self, node, event_name, event_fn):
+        
+        listener = xpcom.server.WrapObject(ContentInvoker(self, event_fn),
+                                            interfaces.nsIDOMEventListener)
+        node.addEventListener(event_name, listener)
+
     def addEventListener(self, node, event_name, event_fn):
         
         listener = xpcom.server.WrapObject(ContentInvoker(self, event_fn),
@@ -70,6 +83,14 @@ class Browser(WebView):
         listener = xpcom.server.WrapObject(ContentInvoker(self, event_fn),
                                             interfaces.nsIDOMEventListener)
         self.window_root.addEventListener(event_name, listener, False)
+
+    def getXmlHttpRequest(self):
+        xml_svc_cls = components.classes[ \
+            "@mozilla.org/xmlextras/xmlhttprequest;1"]
+        return xml_svc_cls.createInstance(interfaces.nsIXMLHttpRequest)
+        
+    def getUri(self):
+        return self.application
 
     def _loaded(self, progress_listener):
 
@@ -90,49 +111,43 @@ class Browser(WebView):
             pth = os.path.abspath(self.appdir)
         sys.path.append(pth)
 
-        for m in pygwt_processMetas():
-            minst = module_load(m)
-            minst.onModuleLoad()
+        #for m in pygwt_processMetas():
+        #    minst = module_load(m)
+        #    minst.onModuleLoad()
 
     def _loading(self, progress_listener, progress):
 
         print "loading", progress
 
-def setup():
+def is_loaded():
+    global wv
+    return wv.already_initialised
 
-    import sys
-    import os
-    if len(sys.argv) < 2:
-        print "usage: %s application[.py|.html]" % sys.argv[0]
-        sys.exit(-1)
-    if len(sys.argv) == 3:
-        appdir = sys.argv[2]
+def run(one_event=False):
+    if one_event:
+        gtk.main_iteration()
     else:
-        appdir = None
+        gtk.main()
+
+def setup(application, appdir=None):
 
     win = gtk.Window(gtk.WINDOW_TOPLEVEL)
-    win.set_size_request(800,600)
+    win.set_size_request(800,800)
     win.connect('destroy', gtk.main_quit)
 
     global wv
-    wv = Browser(sys.argv[1], appdir)
+    wv = Browser(application, appdir)
 
     wv.show()
-
     win.add(wv)
-
     win.show()
 
-    #wv.load_uri('http://wiki.laptop.org/go/Guido_van_Robot')
-    #wv.load_uri('file:///home/lkcl/src/pyjamas-desktop/pyjamas-gtkmozembed/blank.html')
-    #wv.load_uri('file://'+os.path.abspath(sys.argv[1]))
     wv.load_app()
 
-    dw = wv.get_dom_window()
-    doc = wv.web_navigation.document
-    print wv.web_navigation.currentURI
-
-    gtk.main()
+    while 1:
+        if is_loaded():
+            return
+        run(one_event=True)
 
 def module_load(m):
     minst = None
@@ -142,7 +157,3 @@ minst = %(mod)s()
 """ % ({'mod': m})
     return minst
 
-
-def main():
-    setup()
-        

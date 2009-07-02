@@ -109,7 +109,7 @@ def _dispatchCapturedMouseoutEvent(evt):
             if listener:
                 # this should be interesting...
                 lcEvent = doc().createEvent('UIEvent')
-                lcEvent.initUiEvent('losecapture', False, False, wnd(), 0)
+                lcEvent.initUIEvent('losecapture', False, False, wnd(), 0)
                 dispatchEvent(lcEvent, cap, listener);
 
 def browser_event_cb(view, event, from_window):

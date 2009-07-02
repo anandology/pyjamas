@@ -28,7 +28,10 @@ class HTTPRequest:
         return get_main_frame().getXmlHttpRequest()
 
     def onReadyStateChange(self, xmlHttp, event, ignorearg):
-        xmlHttp = get_main_frame().gobject_wrap(xmlHttp)
+        try:
+            xmlHttp = get_main_frame().gobject_wrap(xmlHttp) # HACK!
+        except:
+            pass # hula / XUL
         if (xmlHttp.readyState != 4) :
             return
         # TODO - delete xmlHttp.onreadystatechange
@@ -48,24 +51,28 @@ class HTTPRequest:
         else :
             localHandler.onError(responseText, status)
         
-                
     def asyncPostImpl(self, user, pwd, url, postData, handler):
+        mf = get_main_frame()
         xmlHttp = self.doCreateXmlHTTPRequest()
         if url[0] != '/':
-            uri = get_main_frame().getUri()
+            uri = mf.getUri()
             if url[:7] != 'file://' and url[:7] != 'http://' and \
                url[:8] != 'https://':
                 slash = uri.rfind('/')
                 url = uri[:slash+1] + url
         print "xmlHttp", user, pwd, url, postData, handler, dir(xmlHttp)
         #try :
-        xmlHttp.open("POST", url, True, '', '')
+        if mf.platform == 'webkit':
+            xmlHttp.open("POST", url, True, '', '')
+        else:
+            # EEK!  xmlhttprequest.open in xpcom is a miserable bastard.
+            xmlHttp.open("POST", url, True, '', '')
         xmlHttp.setRequestHeader("Content-Type", "text/plain charset=utf-8")
         for c in Cookies.get_crumbs():
             xmlHttp.setRequestHeader("Set-Cookie", c)
             print "setting cookie", c
-        xmlHttp.connect("browser-event", self.onReadyStateChange)
-        xmlHttp.addEventListener("onreadystatechange")
+        mf._addXMLHttpRequestEventListener(xmlHttp, "onreadystatechange",
+                                         self.onReadyStateChange)
         xmlHttp.handler = handler # hmm...
         #post_doc = get_main_frame().create_text_gdom_document()
         #body = post_doc.create_element("body")

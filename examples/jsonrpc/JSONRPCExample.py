@@ -1,3 +1,5 @@
+import pyjd # dummy in pyjs
+
 from pyjamas.ui.RootPanel import RootPanel
 from pyjamas.ui.TextArea import TextArea
 from pyjamas.ui.Label import Label
@@ -101,7 +103,8 @@ after newline
         self.status.setText(response)
 
     def onRemoteError(self, code, message, request_info):
-        self.status.setText("Server Error or Invalid Response: ERROR " + code + " - " + message)
+        self.status.setText("Server Error or Invalid Response: ERROR %d - %s" %
+                            (code, message))
 
 
 class EchoServicePHP(JSONProxy):
@@ -114,5 +117,7 @@ class EchoServicePython(JSONProxy):
         JSONProxy.__init__(self, "services/EchoService.py", ["echo", "reverse", "uppercase", "lowercase"])
 
 if __name__ == '__main__':
+    pyjd.setup("http://127.0.0.1/examples/jsonrpc/output/JSONRPCExample.html")
     JSONRPCExample().onModuleLoad()
+    pyjd.run()
 

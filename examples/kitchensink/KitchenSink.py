@@ -1,3 +1,5 @@
+import pyjd # this is dummy in pyjs
+
 from pyjamas.ui.Button import Button
 from pyjamas.ui.RootPanel import RootPanel
 from pyjamas.ui.HTML import HTML
@@ -110,5 +112,7 @@ class KitchenSink:
 
 
 if __name__ == '__main__':
+    pyjd.setup("public/KitchenSink.html")
     app = KitchenSink()
     app.onModuleLoad()
+    pyjd.run()

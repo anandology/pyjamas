@@ -271,6 +271,14 @@ def addWindowEventListener(self, event_name, cb):
         self._callbacks.append(cb)
     self.addWindowEventListener(event_name)
 
+def addXMLHttpRequestEventListener(element, event_name, cb):
+    if not hasattr(element, "_callbacks"):
+        element._callbacks = []
+    if cb not in element._callbacks:
+        element.connect("browser-event", cb)
+        element._callbacks.append(cb)
+    element.addEventListener(event_name)
+
 def addEventListener(element, event_name, cb):
     if not hasattr(element, "_callbacks"):
         element._callbacks = []
@@ -330,6 +338,11 @@ class WebBrowser(gtk.Window):
 
         self.connect('destroy', gtk.main_quit)
 
+        self.application = application
+        self.appdir = appdir
+
+        return
+
         if os.path.isfile(application):
             
             (pth, app) = os.path.split(application)
@@ -386,7 +399,14 @@ class WebBrowser(gtk.Window):
             self._browser.open(application)
 
 
-        self.show_all()
+    def load_app(self):
+
+        uri = self.application
+        if uri.find("://") == -1:
+            # assume file
+            uri = 'file://'+os.path.abspath(uri)
+
+        self._browser.open(uri)
 
     def init_app(self):
         # TODO: ideally, this should be done by hooking body with an "onLoad".
@@ -396,14 +416,16 @@ class WebBrowser(gtk.Window):
         main_frame = self._browser.getMainFrame()
         main_frame._callbacks = []
         main_frame.gobject_wrap = webkit.gobject_wrap
+        main_frame.platform = 'webkit'
         main_frame.addEventListener = addEventListener
+        main_frame._addXMLHttpRequestEventListener = addXMLHttpRequestEventListener
         main_frame._addWindowEventListener = new.instancemethod(addWindowEventListener, main_frame)
         main_frame.mash_attrib = mash_attrib
         set_main_frame(main_frame)
 
-        for m in pygwt_processMetas():
-            minst = module_load(m)
-            minst.onModuleLoad()
+        #for m in pygwt_processMetas():
+        #    minst = module_load(m)
+        #    minst.onModuleLoad()
 
     def _set_title(self, title):
         self.props.title = title
@@ -501,21 +523,30 @@ class WebBrowser(gtk.Window):
 
 
 
-def main():
+def setup(application, appdir=None):
 
     gtk.gdk.threads_init()
 
-    import sys
-    if len(sys.argv) < 2:
-        print "usage: %s application[.py|.html]" % sys.argv[0]
-        sys.exit(-1)
-    if len(sys.argv) == 3:
-        appdir = sys.argv[2]
-    else:
-        appdir = None
-    webbrowser = WebBrowser(sys.argv[1], appdir)
-    gtk.main()
+    global wv
+    wv = WebBrowser(application, appdir)
 
-if __name__ == "__main__":
-    main()
+    wv.load_app()
+
+    wv.show_all()
+
+    while 1:
+        if is_loaded():
+            return
+        run(one_event=True)
+
+def is_loaded():
+    global wv
+    return wv.already_initialised
+
+def run(one_event=False):
+    if one_event:
+        gtk.main_iteration()
+    else:
+        gtk.main()
+
 

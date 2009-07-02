@@ -39,14 +39,14 @@ class JSONService:
     def onCompletion(self):
         pass
 
-    def __sendNotify(self, method, params):
+    def sendNotify(self, method, params):
         msg = {"id":None, "method":method, "params":params}
         msg_data = dumps(msg)
         if not HTTPRequest().asyncPost(self.url, msg_data, self):
             return -1
         return 1
 
-    def __sendRequest(self, method, params, handler):
+    def sendRequest(self, method, params, handler):
         id = pygwt.getNextHashId()
         msg = {"id":id, "method":method, "params":params}
         msg_data = dumps(msg)
@@ -88,42 +88,29 @@ class JSONResponseTextHandler:
     def onError(self, error_str, error_code):
         self.request.handler.onRemoteError(error_code, error_str, self.request)
 
-class ServiceProxy(object):
-    def __init__(self, svc, serviceURL, serviceName=None):
-        self.__serviceURL = serviceURL
+class ServiceProxy(JSONService):
+    def __init__(self, serviceURL, serviceName=None):
+        JSONService.__init__(self, serviceURL)
         self.__serviceName = serviceName
-        self.__svc = svc
-
-    def __sendNotify(self, method, params):
-        return self.__svc.__sendNotify(method, params)
-
-    def __sendRequest(self, method, params, handler):
-        return self.__svc.__sendRequest(method, params, handler)
-
-    def __getattr__(self, name):
-        if name == '__svc':
-            return self.__svc
-        if self.__serviceName != None:
-            name = "%s.%s" % (self.__serviceName, name)
-        return ServiceProxy(self.__svc, self.__serviceURL, name)
 
     def __call__(self, *params):
         if hasattr(params[-1], "onRemoteResponse"):
             handler = params[-1]
-            return self.__sendRequest(self.__serviceName,
+            return JSONService.sendRequest(self, self.__serviceName,
                                             params[:-1], handler)
         else:
-            return self.__sendNotify(self.__serviceName, params)
+            return JSONService.sendNotify(self, self.__serviceName, params)
 
 # reserved names: callMethod, onCompletion
-class JSONProxy(JSONService, ServiceProxy):
+class JSONProxy(object):
     def __init__(self, url, methods=None):
-        url = "http://127.0.0.1/%s" % url # TODO: allow alternate locations
-        JSONService.__init__(self, url)
-        ServiceProxy.__init__(self, self, url)
+        self._serviceURL = "http://127.0.0.1/%s" % url # TODO: allow alternate locations
 
     def __createMethod(self, method):
         pass
     def __registerMethods(self, methods):
         pass
+
+    def __getattr__(self, name):
+        return ServiceProxy(self._serviceURL, name)
 

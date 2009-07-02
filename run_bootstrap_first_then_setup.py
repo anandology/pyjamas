@@ -89,7 +89,7 @@ if __name__ == '__main__':
         author = "The Pyjamas Project",
         author_email = "lkcl@lkcl.net",
         keywords = keyw,
-        packages=["pyjs"],
+        packages=["pyjs", "pyjd"],
         #scripts = ["bin/pyjsbuild", "bin/pyjscompile"],
         data_files = data_files,
         license = "Apache Software License",

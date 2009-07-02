@@ -43,6 +43,19 @@ if __name__ == '__main__':
     pyjs.main()
 """
 
+pyjdinit = """
+pyjdinitpth = r'%s'
+
+import os
+import sys
+
+import pyjd
+sys.path += [os.path.join(pyjdinitpth, 'library')]
+
+#from pyjd import *
+from hula import *
+"""
+
 pyjdrun = """#!%s
 
 pyjdpth = r'%s'
@@ -126,3 +139,8 @@ if __name__ == '__main__':
     make_cmd(prefix, pth, pyjspth, "pyjscompile", pyjscompile)
     make_cmd(prefix, pth, pyjspth, "pyjdrun", pyjdrun)
 
+    # create pyjd/__init__.py
+    pyjdinitpth = os.path.join("pyjd", "__init__.py")
+    f = open(pyjdinitpth, "w")
+    f.write(pyjdinit % pyjspth)
+    f.close()
