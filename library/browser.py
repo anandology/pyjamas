@@ -9,7 +9,7 @@ class Element:
         elif element != None:
             self.element = element
         else:
-            raise Exception
+            raise Exception("Cannot create Element without tag or element")
         
         self.element.__ref = self;
         self.activeEvents = []
