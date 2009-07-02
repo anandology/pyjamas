@@ -76,14 +76,14 @@ class FlexTableDemo(SimplePanel):
         self.add(self._table)
 
 
-    def hideRows(self):
+    def hideRows(self, sender):
         rowFormatter = self._table.getRowFormatter()
         rowFormatter.setVisible(2, False)
         rowFormatter.setVisible(3, False)
         rowFormatter.setVisible(4, True)
 
 
-    def showRows(self):
+    def showRows(self, sender):
         rowFormatter = self._table.getRowFormatter()
         rowFormatter.setVisible(2, True)
         rowFormatter.setVisible(3, True)
