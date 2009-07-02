@@ -118,13 +118,13 @@ class ImplHorizontalSplitPanel:
         rightElem = self.panel.getWidgetElement(1)
 
         # Set the width of the left side.
-        self.panel.setElemWidth(self.panel.getWidgetElement(0), px + "px")
+        self.panel.setElemWidth(self.panel.getWidgetElement(0), "%dpx" % px)
 
         # Move the splitter to the right edge of the left element.
-        self.panel.setLeft(splitElem, px + "px")
+        self.panel.setLeft(splitElem, "%dpx" % px)
 
         # Move the right element to the right of the splitter.
-        self.panel.setLeft(rightElem, (px + splitElemWidth) + "px")
+        self.panel.setLeft(rightElem, "%dpx" % (px + splitElemWidth))
 
         self.updateRightWidth(rightElem, newRightWidth)
 

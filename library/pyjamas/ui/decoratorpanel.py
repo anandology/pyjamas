@@ -71,8 +71,8 @@ class DecoratorPanel(SimplePanel):
         self.table = self.getElement()
         self.tbody = DOM.createTBody()
         DOM.appendChild(self.table, self.tbody)
-        DOM.setIntAttribute(self.table, "cellSpacing", 0)
-        DOM.setIntAttribute(self.table, "cellPadding", 0)
+        DOM.setAttribute(self.table, "cellSpacing", "0")
+        DOM.setAttribute(self.table, "cellPadding", "0")
 
         # Add each row
         for i in range(len(rowStyles)): 
