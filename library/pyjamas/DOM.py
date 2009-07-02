@@ -35,7 +35,7 @@ def get_listener(item):
     if hasattr(item, "__instance__"):
         ret = listeners.get(item.__instance__)
     else:
-        ret = listeners.get(item)
+        ret = listeners.get(hash(item))
     return ret
 
 def set_listener(item, listener):
@@ -43,7 +43,7 @@ def set_listener(item, listener):
     if hasattr(item, "__instance__"):
         listeners[item.__instance__] = listener
     else:
-        listeners[item] = listener
+        listeners[hash(item)] = listener
 
 def init():
 
@@ -355,18 +355,18 @@ def getAbsoluteTop(elem):
     return top + doc().body.scrollTop;
 
 def getAttribute(elem, attr):
+    mf = get_main_frame()
     return str(getattr(elem, attr))
-    #return str(elem.get_property(mash_name_for_glib(attr)))
 
 def getElemAttribute(elem, attr):
+    mf = get_main_frame()
     if not elem.hasAttribute(attr):
-        return str(getattr(elem, attr))
-        #return str(elem.get_property(mash_name_for_glib(attr)))
+        return str(getattr(elem, mf.mash_attrib(attr)))
     return str(elem.getAttribute(attr))
 
 def getBooleanAttribute(elem, attr):
-    return bool(getattr(elem, attr))
-    #return bool(elem.get_property(mash_name_for_glib(attr)))
+    mf = get_main_frame()
+    return bool(getattr(elem, mf.mash_attrib(attr)))
 
 def getBooleanElemAttribute(elem, attr):
     if not elem.hasAttribute(attr):
@@ -451,9 +451,9 @@ def getFirstChild(elem):
 
 def getInnerHTML(element):
     try:
-        return element and element.innerHtml
+        return element and element.innerHtml # webkit. erk.
     except:
-        return element and element.innerHTML
+        return element and element.innerHTML # hulahop / xul.  yuk.
 
 def getInnerText(element):
     # To mimic IE's 'innerText' property in the W3C DOM, we need to recursively
@@ -469,8 +469,8 @@ def getInnerText(element):
     return text
 
 def getIntAttribute(elem, attr):
+    mf = get_main_frame()
     return int(getattr(elem, attr))
-    #return int(elem.get_property(mash_name_for_glib(attr)))
 
 def getIntElemAttribute(elem, attr):
     if not elem.hasAttribute(attr):
@@ -499,7 +499,7 @@ def getParent(elem):
 
 def getStyleAttribute(elem, attr):
     try:
-        return elem.style.get_property(mash_name_for_glib(attr))
+        return elem.style.getProperty(mash_name_for_glib(attr))
     except:
         return None
 
@@ -660,15 +660,15 @@ def removeAttribute(element, attribute):
     elem.removeAttribute(attribute)
 
 def setAttribute(element, attribute, value):
+    mf = get_main_frame()
     setattr(element, attribute, value)
-    #element.set_property(mash_name_for_glib(attribute), value)
 
 def setElemAttribute(element, attribute, value):
     element.setAttribute(attribute, value)
 
 def setBooleanAttribute(elem, attr, value):
-    setattr(elem, attr, value)
-    #elem.set_property(mash_name_for_glib(attr), value)
+    mf = get_main_frame()
+    setattr(elem, mf.mash_attrib(attr), value)
 
 def setCapture(elem):
     global sCaptureElem
@@ -686,9 +686,9 @@ def setEventListener(element, listener):
 
 def setInnerHTML(element, html):
     try:
-        element.innerHtml = html
+        element.innerHtml = html # webkit. yuk.
     except:
-        element.innerHTML = html
+        element.innerHTML = html # hulahop / xul.  yukk.
 
 def setInnerText(elem, text):
     #Remove all children first.
@@ -700,28 +700,19 @@ def setIntElemAttribute(elem, attr, value):
     elem.setAttribute(attr, str(value))
 
 def setIntAttribute(elem, attr, value):
-    setattr(elem, attr, str(value))
-    #elem.set_property(mash_name_for_glib(attr), value)
+    mf = get_main_frame()
+    setattr(elem, mf.mash_attrib(attr), str(value))
 
 def setIntStyleAttribute(elem, attr, value):
-    sty = elem.style
-    #sty.setCssProperty(mash_name_for_glib(attr), str(value), "")
-    sty.setProperty(attr, str(value), "")
+    mf = get_main_frame()
+    elem.style.setProperty(mf.mash_attrib(attr), str(value), "")
 
 def setOptionText(select, text, index):
-    print "TODO - setOptionText"
-    JS("""
-    var option = select.options[index];
-    option.text = text;
-    """)
+    option = select.options.item(index)
+    option.text = text
 
 def setStyleAttribute(element, name, value):
-    sty = element.style
-    sty.setProperty(name, value, "")
-    #sty.setCssProperty(mash_name_for_glib(name), value, "")
-
-def dispatch_event_cb(element, event, capture):
-    print "dispatch_event_cb", element, event, capture
+    element.style.setProperty(mash_name_for_glib(name), value, "")
 
 def sinkEvents(element, bits):
     """
@@ -741,80 +732,41 @@ def sinkEvents(element, bits):
     if not bits:
         return 
     cb = lambda x,y,z: _dispatchEvent(y)
-    try:
-        element.connect("browser-event", cb)
-        if (bits & 0x00001):
-            element.addEventListener("click", True)
-        if (bits & 0x00002):
-            element.addEventListener("dblclick", True)
-        if (bits & 0x00004):
-            element.addEventListener("mousedown", True)
-        if (bits & 0x00008):
-            element.addEventListener("mouseup", True)
-        if (bits & 0x00010):
-            element.addEventListener("mouseover", True)
-        if (bits & 0x00020):
-            element.addEventListener("mouseout", True)
-        if (bits & 0x00040):
-            element.addEventListener("mousemove", True)
-        if (bits & 0x00080):
-            element.addEventListener("keydown", True)
-        if (bits & 0x00100):
-            element.addEventListener("keypress", True)
-        if (bits & 0x00200):
-            element.addEventListener("keyup", True)
-        if (bits & 0x00400):
-            element.addEventListener("change", True)
-        if (bits & 0x00800):
-            element.addEventListener("focus", True)
-        if (bits & 0x01000):
-            element.addEventListener("blur", True)
-        if (bits & 0x02000):
-            element.addEventListener("losecapture", True)
-        if (bits & 0x04000):
-            element.addEventListener("scroll", True)
-        if (bits & 0x08000):
-            element.addEventListener("load", True)
-        if (bits & 0x10000):
-            element.addEventListener("error", True)
-    except:
-        # hulahop
-        mf = get_main_frame()
-        if (bits & 0x00001):
-            mf.addEventListener(element, "click", cb)
-        if (bits & 0x00002):
-            mf.addEventListener(element, "dblclick", cb)
-        if (bits & 0x00004):
-            mf.addEventListener(element, "mousedown", cb)
-        if (bits & 0x00008):
-            mf.addEventListener(element, "mouseup", cb)
-        if (bits & 0x00010):
-            mf.addEventListener(element, "mouseover", cb)
-        if (bits & 0x00020):
-            mf.addEventListener(element, "mouseout", cb)
-        if (bits & 0x00040):
-            mf.addEventListener(element, "mousemove", cb)
-        if (bits & 0x00080):
-            mf.addEventListener(element, "keydown", cb)
-        if (bits & 0x00100):
-            mf.addEventListener(element, "keypress", cb)
-        if (bits & 0x00200):
-            mf.addEventListener(element, "keyup", cb)
-        if (bits & 0x00400):
-            mf.addEventListener(element, "change", cb)
-        if (bits & 0x00800):
-            mf.addEventListener(element, "focus", cb)
-        if (bits & 0x01000):
-            mf.addEventListener(element, "blur", cb)
-        if (bits & 0x02000):
-            mf.addEventListener(element, "losecapture", cb)
-        if (bits & 0x04000):
-            mf.addEventListener(element, "scroll", cb)
-        if (bits & 0x08000):
-            mf.addEventListener(element, "load", cb)
-        if (bits & 0x10000):
-            mf.addEventListener(element, "error", cb)
-        pass
+    mf = get_main_frame()
+    if (bits & 0x00001):
+        mf.addEventListener(element, "click", cb)
+    if (bits & 0x00002):
+        mf.addEventListener(element, "dblclick", cb)
+    if (bits & 0x00004):
+        mf.addEventListener(element, "mousedown", cb)
+    if (bits & 0x00008):
+        mf.addEventListener(element, "mouseup", cb)
+    if (bits & 0x00010):
+        mf.addEventListener(element, "mouseover", cb)
+    if (bits & 0x00020):
+        mf.addEventListener(element, "mouseout", cb)
+    if (bits & 0x00040):
+        mf.addEventListener(element, "mousemove", cb)
+    if (bits & 0x00080):
+        mf.addEventListener(element, "keydown", cb)
+    if (bits & 0x00100):
+        mf.addEventListener(element, "keypress", cb)
+    if (bits & 0x00200):
+        mf.addEventListener(element, "keyup", cb)
+    if (bits & 0x00400):
+        mf.addEventListener(element, "change", cb)
+    if (bits & 0x00800):
+        mf.addEventListener(element, "focus", cb)
+    if (bits & 0x01000):
+        mf.addEventListener(element, "blur", cb)
+    if (bits & 0x02000):
+        mf.addEventListener(element, "losecapture", cb)
+    if (bits & 0x04000):
+        mf.addEventListener(element, "scroll", cb)
+    if (bits & 0x08000):
+        mf.addEventListener(element, "load", cb)
+    if (bits & 0x10000):
+        mf.addEventListener(element, "error", cb)
 
 def toString(elem):
     temp = elem.clone_node(True)

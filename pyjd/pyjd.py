@@ -254,6 +254,18 @@ class WebStatusBar(gtk.Statusbar):
     def hide_javascript_info(self):
         self.iconbox.hide()
 
+def mash_attrib(name, joiner='-'):
+    res = ''
+    for c in name:
+        if c.isupper():
+            res += joiner + c.lower()
+        else:
+            res += c
+    return res
+
+def addEventListener(element, event_name, cb):
+    element.connect("browser-event", cb)
+    element.addEventListener(event_name, True)
 
 class WebBrowser(gtk.Window):
     def __init__(self, application, appdir=None):
@@ -371,9 +383,9 @@ class WebBrowser(gtk.Window):
 
         main_frame = self._browser.getMainFrame()
         main_frame.gobject_wrap = webkit.gobject_wrap
+        main_frame.addEventListener = addEventListener
+        main_frame.mash_attrib = mash_attrib
         set_main_frame(main_frame)
-
-        gdoc = main_frame.getGdomDocument()
 
         for m in pygwt_processMetas():
             minst = module_load(m)
