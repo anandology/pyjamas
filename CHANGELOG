@@ -1,6 +1,8 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
+ * Added __getimtem__ to Exception
+
  * Fix for cache-busting in build process with different versions
    of python (use of md5 module), thanks to Oisin Mulvihill
 

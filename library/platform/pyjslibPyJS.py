@@ -214,6 +214,9 @@ class BaseException:
         if len(args) == 1:
             self.message = args[0]
 
+    def __getitem__(self, index):
+        return self.args.__getitem__(index)
+
     def __str__(self):
         if len(self.args) is 0:
             return ''
