@@ -1324,6 +1324,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 print >> self.output, self.spacing() + "throw (%s);" % self.expr(
                     node.expr1, current_klass)
         else:
+            if self.source_tracking:
+                print >> self.output, self.spacing() + "$pyjs.trackstack = sys.__last_exception_stack__;"
             print >> self.output, self.spacing() + "throw (sys.__last_exception__?sys.__last_exception__.error:pyjslib.TypeError('exceptions must be classes, instances, or strings (deprecated), not NoneType'));"
 
     def _method(self, node, current_klass, class_name, class_name_, local_prefix):
