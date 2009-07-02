@@ -19,7 +19,6 @@ from pyjamas.ui.Label import Label
 from pyjamas.ui.HorizontalPanel import HorizontalPanel
 from pyjamas.ui.ClickDelegatePanel import ClickDelegatePanel
 from pyjamas.ui import HasAlignment
-import pyjslib
 
 class TabBar(Composite):
 

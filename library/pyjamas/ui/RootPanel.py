@@ -17,7 +17,6 @@ if sys.platform not in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
 
 from pyjamas import DOM
 from pyjamas import Window
-import pyjslib
 
 from pyjamas.ui.AbsolutePanel import AbsolutePanel
 

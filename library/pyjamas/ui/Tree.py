@@ -14,7 +14,6 @@
 from pyjamas import DOM
 from sets import Set
 import pygwt
-import pyjslib
 
 from pyjamas.ui.Widget import Widget
 from pyjamas.ui import Event

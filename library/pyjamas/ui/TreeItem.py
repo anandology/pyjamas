@@ -15,7 +15,6 @@ from pyjamas import DOM
 
 from pyjamas.ui.UIObject import UIObject
 from pyjamas.ui.TreeContentPanel import TreeContentPanel
-import pyjslib
 
 class TreeItem(UIObject):
 

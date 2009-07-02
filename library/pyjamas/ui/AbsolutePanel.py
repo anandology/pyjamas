@@ -13,7 +13,6 @@
 # limitations under the License.
 from pyjamas.__pyjamas__ import console
 from pyjamas import DOM
-import pyjslib
 
 from pyjamas.ui.ComplexPanel import ComplexPanel
 
