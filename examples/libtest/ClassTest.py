@@ -78,6 +78,10 @@ class ClassTest(UnitTest):
         # verify that parent class properties were NOT changed
         self.assertEquals(obj1.x, expected_result2)
 
+        obj = ExampleChildClass(b = 222)
+        self.assertEquals(obj.prop_a, 1)
+        self.assertEquals(obj.prop_b, 222)
+
     # test Class().anObject
     def testInheritedPropertyObjects(self):
         expected_result1 = "another"
@@ -408,6 +412,10 @@ x = 'global test'
 class ExampleParentClass:
     x = "test"
 
+    def __init__(self, a=1, b=2):
+        self.prop_a = a
+        self.prop_b = b
+
     @classmethod
     def sampleClassMethod(cls, arg):
         return cls, arg
@@ -426,8 +434,8 @@ class ExampleParentClass:
         return x
 
 class ExampleChildClass(ExampleParentClass):
-    pass
-
+    def __init__(self, a = 11, b = 22):
+        ExampleParentClass.__init__(self, b = b)
 
 # testInheritedPropertyObjects
 class ExampleParentObject:
