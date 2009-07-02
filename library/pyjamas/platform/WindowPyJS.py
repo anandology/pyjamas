@@ -9,15 +9,15 @@ def setOnError(onError):
     """)
 
 def onError(msg, url, linenumber):
-    dialog=JS("""$doc.createElement("div")""")
+    dialog=doc().createElement("div")
     dialog.className='errordialog'
-    # Note: trackstackstr is a global javascript array
-    tracestr = sys.trackstackstr(trackstack.slice(0,-1))
+    # Note: $pyjs.trackstack is a global javascript array
+    tracestr = sys.trackstackstr(JS("$pyjs.trackstack.slice(0,-1)"))
     tracestr = tracestr.replace("\n", "<br />\n&nbsp;&nbsp;&nbsp;")
     dialog.innerHTML='&nbsp;<b style="color:red">JavaScript Error: </b>' + \
         msg +' at line number ' + linenumber +'. Please inform webmaster.' + \
         '<br />&nbsp;&nbsp;&nbsp;' + tracestr
-    JS("""$doc.body.appendChild(dialog)""")
+    doc().body.appendChild(dialog)
     return True
 
 def alert(msg):
