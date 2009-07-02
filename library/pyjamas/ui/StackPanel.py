@@ -12,8 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pyjslib
-
 from pyjamas import DOM
 
 from pyjamas.ui.ComplexPanel import ComplexPanel
@@ -84,7 +82,7 @@ class StackPanel(ComplexPanel):
     # also callable as remove(child) and remove(index)
     def remove(self, child, index=None):
         if index == None:
-            if pyjslib.isNumber(child):
+            if isinstance(child, int):
                 index = child
                 child = self.getWidget(child)
             else:
