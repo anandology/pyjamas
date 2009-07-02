@@ -12,8 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pyjslib
-
 from pyjamas import DOM
 
 from pyjamas.ui.ComplexPanel import ComplexPanel
@@ -52,7 +50,7 @@ class DeckPanel(ComplexPanel):
         widget.setVisible(False)
 
     def remove(self, widget):
-        if pyjslib.isNumber(widget):
+        if isinstance(widget, int):
             widget = self.getWidget(widget)
 
         if not ComplexPanel.remove(self, widget):

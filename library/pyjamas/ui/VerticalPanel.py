@@ -16,7 +16,6 @@ from pyjamas import DOM
 from pyjamas.ui.CellPanel import CellPanel
 from pyjamas.ui import HasHorizontalAlignment
 from pyjamas.ui import HasVerticalAlignment
-import pyjslib
 
 class VerticalPanel(CellPanel):
 
@@ -69,7 +68,7 @@ class VerticalPanel(CellPanel):
         self.setCellVerticalAlignment(widget, self.vertAlign)
 
     def remove(self, widget):
-        if pyjslib.isNumber(widget):
+        if isinstance(widget, int):
             widget = self.getWidget(widget)
 
         if widget.getParent() != self:

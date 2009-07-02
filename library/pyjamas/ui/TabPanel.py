@@ -17,7 +17,6 @@ from pyjamas.ui.Composite import Composite
 from pyjamas.ui.DeckPanel import DeckPanel
 from pyjamas.ui.VerticalPanel import VerticalPanel
 from pyjamas.ui.TabBar import TabBar
-import pyjslib
 
 class TabPanel(Composite):
     def __init__(self, tabBar=None):
@@ -92,7 +91,7 @@ class TabPanel(Composite):
             listener.onTabSelected(sender, tabIndex)
 
     def remove(self, widget):
-        if pyjslib.isNumber(widget):
+        if isinstance(widget, int):
             widget = self.getWidget(widget)
 
         index = self.getWidgetIndex(widget)

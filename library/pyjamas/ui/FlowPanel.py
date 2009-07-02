@@ -12,8 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pyjslib
-
 from pyjamas import DOM
 
 from pyjamas.ui.ComplexPanel import ComplexPanel
@@ -36,7 +34,7 @@ class FlowPanel(ComplexPanel):
         return self.children.index(child)
 
     def remove(self, index):
-        if pyjslib.isNumber(index):
+        if isinstance(index, int):
             index = self.getWidget(index)
         return ComplexPanel.remove(self, index)
 
