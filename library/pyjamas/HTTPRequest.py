@@ -8,6 +8,8 @@ if sys.platform not in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
 else:
     from __pyjamas__ import JS
 
+handlers = {}
+
 class HTTPRequest:
     # also callable as: asyncPost(self, url, postData, handler)
     def asyncPost(self, user, pwd, url, postData=None, handler=None):
@@ -32,10 +34,12 @@ class HTTPRequest:
             xmlHttp = get_main_frame().gobject_wrap(xmlHttp) # HACK!
         except:
             pass # hula / XUL
-        if (xmlHttp.readyState != 4) :
+        print xmlHttp.readyState
+        if xmlHttp.readyState != 4:
             return
         # TODO - delete xmlHttp.onreadystatechange
-        localHandler = xmlHttp.handler
+        localHandler = handlers.get(xmlHttp)
+        del handlers[xmlHttp]
         responseText = xmlHttp.responseText
         print "headers", xmlHttp.getAllResponseHeaders()
         status = xmlHttp.status
@@ -66,24 +70,19 @@ class HTTPRequest:
             xmlHttp.open("POST", url, True, '', '')
         else:
             # EEK!  xmlhttprequest.open in xpcom is a miserable bastard.
-            xmlHttp.open("POST", url, True, '', '')
+            #xmlHttp.open("POST", url, True, '', '')
+            print xmlHttp.open, dir(xmlHttp.open)
+            print url, xmlHttp.open("POST", url, True)
         xmlHttp.setRequestHeader("Content-Type", "text/plain charset=utf-8")
         for c in Cookies.get_crumbs():
             xmlHttp.setRequestHeader("Set-Cookie", c)
             print "setting cookie", c
+
         mf._addXMLHttpRequestEventListener(xmlHttp, "onreadystatechange",
                                          self.onReadyStateChange)
-        xmlHttp.handler = handler # hmm...
-        #post_doc = get_main_frame().create_text_gdom_document()
-        #body = post_doc.create_element("body")
-        #tn = post_doc.create_text_node(postData)
-        #post_doc.append_child(tn)
-        #post_doc.body = body
-        #print post_doc, dir(post_doc), list(post_doc.props)
-        #print "inner html", post_doc.body.inner_html
-        #sys.exit(0)
-        #xmlHttp.send(post_doc)
+        handlers[xmlHttp] = handler
         xmlHttp.send(postData)
+            
         return True
     
         #except:

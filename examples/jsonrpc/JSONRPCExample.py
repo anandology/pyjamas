@@ -117,7 +117,7 @@ class EchoServicePython(JSONProxy):
         JSONProxy.__init__(self, "services/EchoService.py", ["echo", "reverse", "uppercase", "lowercase"])
 
 if __name__ == '__main__':
-    pyjd.setup("http://127.0.0.1/examples/jsonrpc/output/JSONRPCExample.html")
+    pyjd.setup("http://127.0.0.1/examples/jsonrpc/public/JSONRPCExample.html")
     JSONRPCExample().onModuleLoad()
     pyjd.run()
 

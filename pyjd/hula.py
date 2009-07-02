@@ -66,8 +66,9 @@ class Browser(WebView):
     def _addXMLHttpRequestEventListener(self, node, event_name, event_fn):
         
         listener = xpcom.server.WrapObject(ContentInvoker(self, event_fn),
-                                            interfaces.nsIDOMEventListener)
-        node.addEventListener(event_name, listener)
+                                            interfaces.nsIDOMEventTarget)
+        print event_name, listener
+        node.addEventListener(event_name, listener, False)
 
     def addEventListener(self, node, event_name, event_fn):
         

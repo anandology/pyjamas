@@ -1,5 +1,5 @@
+import pyjd # this is dummy in pyjs
 
-from pyjamas import loader
 from pyjamas import Window
 from pyjamas.DeferredCommand import DeferredCommand
 from pyjamas.ui.DockPanel import DockPanel
@@ -89,8 +89,7 @@ class Mail:
         self.mailDetail.setItem(item)
 
 if __name__ == '__main__':
+    pyjd.setup("./public/Mail.html")
     m = Mail()
     m.onModuleLoad()
-
-
-    loader.run()
+    pyjd.run()
