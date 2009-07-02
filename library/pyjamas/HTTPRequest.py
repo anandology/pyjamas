@@ -29,6 +29,22 @@ class HTTPRequest:
     def doCreateXmlHTTPRequest(self):
         return get_main_frame().getXmlHttpRequest()
 
+    def onLoad(self, sender, event, ignorearg):
+        xmlHttp = event.target
+        localHandler = handlers.get(xmlHttp)
+        del handlers[xmlHttp]
+        responseText = xmlHttp.responseText
+        status = xmlHttp.status
+        handler = None
+        xmlHttp = None
+        # XXX HACK! webkit wrapper returns 0 not 200!
+        if status == 0:
+            print "HACK ALERT! webkit wrapper returns 0 not 200!"
+        if status == 200 or status == 0:
+            localHandler.onCompletion(responseText)
+        else :
+            localHandler.onError(responseText, status)
+        
     def onReadyStateChange(self, xmlHttp, event, ignorearg):
         try:
             xmlHttp = get_main_frame().gobject_wrap(xmlHttp) # HACK!
@@ -72,14 +88,18 @@ class HTTPRequest:
             # EEK!  xmlhttprequest.open in xpcom is a miserable bastard.
             #xmlHttp.open("POST", url, True, '', '')
             print xmlHttp.open, dir(xmlHttp.open)
-            print url, xmlHttp.open("POST", url, True)
+            print url, xmlHttp.open("POST", url)
         xmlHttp.setRequestHeader("Content-Type", "text/plain charset=utf-8")
-        for c in Cookies.get_crumbs():
-            xmlHttp.setRequestHeader("Set-Cookie", c)
-            print "setting cookie", c
+        #for c in Cookies.get_crumbs():
+        #    xmlHttp.setRequestHeader("Set-Cookie", c)
+        #    print "setting cookie", c
 
-        mf._addXMLHttpRequestEventListener(xmlHttp, "onreadystatechange",
+        if mf.platform == 'webkit':
+            mf._addXMLHttpRequestEventListener(xmlHttp, "onreadystatechange",
                                          self.onReadyStateChange)
+        else:
+            mf._addXMLHttpRequestEventListener(xmlHttp, "load",
+                                         self.onLoad)
         handlers[xmlHttp] = handler
         xmlHttp.send(postData)
             
