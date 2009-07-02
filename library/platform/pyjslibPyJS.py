@@ -1326,8 +1326,14 @@ def float(text):
 @noSourceTracking
 def int(text, radix=0):
     JS("""
-    return parseInt(text, radix);
+    var i = parseInt(text, radix);
+    if (!isNaN(i)) {
+        return i;
+    }
     """)
+    if radix == 0:
+        radix = 10
+    raise ValueError("invalid literal for int() with base %d: '%s'" % (radix, text))
 
 @noSourceTracking
 def len(object):
