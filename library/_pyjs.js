@@ -72,7 +72,7 @@ function pyjs_kwargs_method_call(obj, method_name, star_args, dstar_args, args)
     args = pyjs_args_merge(method, star_args, dstar_args, args);
     if (method.parse_kwargs)
     {
-        args = method.parse_kwargs.apply(null, args);
+        args = method.parse_kwargs.apply(obj, args);
     } else if ($pyjs.options.arg_kwarg_unexpected_keyword && args.length > 0) {
         for (var i in args[0]) {
             pyjs__exception_func_unexpected_keyword(method.__name__, i);
@@ -353,7 +353,7 @@ function pyjs__class_function(cls_fn, prop, bases) {
         (bases[i]).__sub_classes__.push(cls_fn);
     }
     cls_fn.parse_kwargs = function () {
-        return cls_fn.__init__.parse_kwargs.apply(null, arguments);
+        return cls_fn.__init__.parse_kwargs.apply(this, arguments);
     }
     return cls_fn;
 }
