@@ -92,6 +92,7 @@
 """
 
 import os
+import new
 import sys
 import logging
 import time
@@ -263,8 +264,19 @@ def mash_attrib(name, joiner='-'):
             res += c
     return res
 
+def addWindowEventListener(self, event_name, cb):
+    print self, event_name, cb
+    if cb not in self._callbacks:
+        self.connect("browser-event", cb)
+        self._callbacks.append(cb)
+    self.addWindowEventListener(event_name)
+
 def addEventListener(element, event_name, cb):
-    element.connect("browser-event", cb)
+    if not hasattr(element, "_callbacks"):
+        element._callbacks = []
+    if cb not in element._callbacks:
+        element.connect("browser-event", cb)
+        element._callbacks.append(cb)
     element.addEventListener(event_name, True)
 
 class WebBrowser(gtk.Window):
@@ -382,8 +394,10 @@ class WebBrowser(gtk.Window):
         from pyjamas.__pyjamas__ import pygwt_processMetas, set_main_frame
 
         main_frame = self._browser.getMainFrame()
+        main_frame._callbacks = []
         main_frame.gobject_wrap = webkit.gobject_wrap
         main_frame.addEventListener = addEventListener
+        main_frame._addWindowEventListener = new.instancemethod(addWindowEventListener, main_frame)
         main_frame.mash_attrib = mash_attrib
         set_main_frame(main_frame)
 

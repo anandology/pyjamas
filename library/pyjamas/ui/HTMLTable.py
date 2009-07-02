@@ -131,10 +131,10 @@ class HTMLTable(Panel):
         DOM.setAttribute(self.tableElem, "border", width)
 
     def setCellPadding(self, padding):
-        DOM.setIntAttribute(self.tableElem, "cellPadding", padding)
+        DOM.setAttribute(self.tableElem, "cellPadding", str(padding))
 
     def setCellSpacing(self, spacing):
-        DOM.setIntAttribute(self.tableElem, "cellSpacing", spacing)
+        DOM.setAttribute(self.tableElem, "cellSpacing", str(spacing))
 
     def setHTML(self, row, column, html):
         self.prepareCell(row, column)

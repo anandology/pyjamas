@@ -48,20 +48,15 @@ def set_listener(item, listener):
 def init():
 
     mf = get_main_frame()
-    try:
-        # webkit
-        mf.connect("browser-event", browser_event_cb) 
-        mf.addWindowEventListener("click")
-        mf.addWindowEventListener("change")
-        mf.addWindowEventListener("mouseout")
-        mf.addWindowEventListener("mousedown")
-        mf.addWindowEventListener("mouseup")
-        mf.addWindowEventListener("resize")
-        mf.addWindowEventListener("keyup")
-        mf.addWindowEventListener("keydown")
-        mf.addWindowEventListener("keypress")
-    except:
-        pass # it's hulahop
+    mf._addWindowEventListener("click", browser_event_cb)
+    mf._addWindowEventListener("change", browser_event_cb)
+    mf._addWindowEventListener("mouseout", browser_event_cb)
+    mf._addWindowEventListener("mousedown", browser_event_cb)
+    mf._addWindowEventListener("mouseup", browser_event_cb)
+    mf._addWindowEventListener("resize", browser_event_cb)
+    mf._addWindowEventListener("keyup", browser_event_cb)
+    mf._addWindowEventListener("keydown", browser_event_cb)
+    mf._addWindowEventListener("keypress", browser_event_cb)
 
 def _dispatchEvent(evt):
     
@@ -72,7 +67,7 @@ def _dispatchEvent(evt):
     listener = None
     curElem =  evt.target
     
-    #print "_dispatchEvent"
+    #print "_dispatchEvent", evt
     cap = getCaptureElement()
     listener = get_listener(cap)
     if cap and listener:
@@ -98,15 +93,15 @@ def _dispatchCapturedMouseEvent(evt):
         listener = get_listener(cap)
         if cap and listener:
             dispatchEvent(evt, cap, listener)
-            print "dcmsev, stop propagation"
+            #print "dcmsev, stop propagation"
             evt.stopPropagation()
 
 def _dispatchCapturedMouseoutEvent(evt):
     cap = getCaptureElement()
     if cap:
-        print "cap", dir(evt), cap
+        #print "cap", dir(evt), cap
         if not eventGetToElement(evt):
-            print "synthesise", cap
+            #print "synthesise", cap
             #When the mouse leaves the window during capture, release capture
             #and synthesize an 'onlosecapture' event.
             setCapture(None)
@@ -139,7 +134,7 @@ def browser_event_cb(view, event, from_window):
 def _dispatchCapturedEvent(event):
 
     if not previewEvent(event):
-        print "dce, stop propagation"
+        #print "dce, stop propagation"
         event.stopPropagation()
         event.preventDefault()
         return False
@@ -701,7 +696,7 @@ def setIntElemAttribute(elem, attr, value):
 
 def setIntAttribute(elem, attr, value):
     mf = get_main_frame()
-    setattr(elem, mf.mash_attrib(attr), str(value))
+    setattr(elem, mf.mash_attrib(attr), int(value))
 
 def setIntStyleAttribute(elem, attr, value):
     mf = get_main_frame()
@@ -788,7 +783,7 @@ def previewEvent(evt):
         
         ret = preview.onEventPreview(evt)
         if not ret:
-            print "previewEvent, cancel, prevent default"
+            #print "previewEvent, cancel, prevent default"
             eventCancelBubble(evt, True)
             eventPreventDefault(evt)
 

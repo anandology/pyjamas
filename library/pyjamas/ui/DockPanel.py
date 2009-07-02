@@ -48,8 +48,8 @@ class DockPanel(CellPanel):
         self.center = None
         self.dock_children = [] # TODO: can self.children be used instead?
 
-        DOM.setIntAttribute(self.getTable(), "cellSpacing", 0)
-        DOM.setIntAttribute(self.getTable(), "cellPadding", 0)
+        DOM.setAttribute(self.getTable(), "cellSpacing", "0")
+        DOM.setAttribute(self.getTable(), "cellPadding", "0")
 
     def add(self, widget, direction):
         if direction == self.CENTER:

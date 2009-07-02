@@ -65,7 +65,7 @@ class Browser(WebView):
     def mash_attrib(self, attrib_name):
         return attrib_name
 
-    def addWindowEventListener(self, event_name, event_fn):
+    def _addWindowEventListener(self, event_name, event_fn):
         
         listener = xpcom.server.WrapObject(ContentInvoker(self, event_fn),
                                             interfaces.nsIDOMEventListener)

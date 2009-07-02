@@ -67,10 +67,10 @@ class CellPanel(ComplexPanel):
 
     def setSpacing(self, spacing):
         self.spacing = spacing
-        DOM.setIntAttribute(self.table, "cellSpacing", spacing)
+        DOM.setAttribute(self.table, "cellSpacing", str(spacing))
 
     def setPadding(self, padding):
         self.padding = padding
-        DOM.setIntAttribute(self.table, "cellPadding", padding)
+        DOM.setAttribute(self.table, "cellPadding", str(padding))
 
 
