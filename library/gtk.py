@@ -1,7 +1,8 @@
-from __pyjamas__ import JS
+from pyjamas import log
 
 import browser
 import gdk
+#import lxml.etree
 
 # WINDOW TYPES
 WINDOW_TOPLEVEL = 1
@@ -128,6 +129,11 @@ class Widget(Object):
         self.widget_cont.setStyle('minWidth', str(self.minwidth) + 'px')
         self.widget_cont.setStyle('margin', str(self.margin) + 'px')
 
+class Entry(Widget):
+    def __init__(self):
+        Widget.__init__(self)
+        self.widget_int = browser.Document.createElement('input')
+        self.widget_cont.append(self.widget_int)
 
 class Container(Widget):
     def __init__(self):
@@ -175,6 +181,9 @@ class Container(Widget):
         for child in self.childs:
             child.hide_all()
         Widget.hide_all(self)
+
+    def child_set_property(self, child, prop, value):
+        setattr(child, prop, value)
 
 class Bin(Container):
     def __init__(self):
@@ -1217,6 +1226,155 @@ class MenuItem(Item):
         Item.dom_event(self, event, element)
         if event.type == 'click':
             self.emit('activate')
+
+gtkbuildermap = {'GtkWindow': gtk.Window,
+          'GtkTable': gtk.Table,
+          'GtkLabel': gtk.Label,
+          'GtkVBox': gtk.VBox,
+          'GtkHBox': gtk.HBox,
+          'GtkEntry': gtk.Entry
+          }
+
+def find_props(node):
+    res = {}
+    if not node:
+        return {}
+    props = node.getElementsByTagName("property")
+    for i in range(props.length):
+        n = props.item(n)
+        name = n.attributes.getNamedItem('name').nodeValue
+        log.write("find_props ")
+        log.write(name)
+        log.write(" ")
+        log.write(n.textContent)
+        log.writebr("")
+        res[name] = n.textContent
+    return res
+
+class BuilderETree:
+
+    def __init__(self):
+        self.objects = []
+
+    def create_object_from_xml_node(self, node):
+        klsname = node.attrib['class']
+        id = node.attrib['id']
+        obj = gtkmap[klsname]()
+        for prop in node.findall("property"):
+            name = prop.attrib['name']
+            value = prop.textContent
+            try:
+                setattr(obj.props, name, value)
+            except:
+                if value.isdigit():
+                    setattr(obj.props, name, int(value))
+                else:
+                    print "setattr failed", klsname, name, value
+        for childnode in node.findall("child"):
+            childobj = childnode.find("object")
+            if childobj is None:
+                continue
+            child = self.create_object_from_xml_node(childobj)
+            obj.add_child(gtk.Builder(), child, klsname)
+            props = find_props(childnode.find("packing"))
+            for prop, value in props.items():
+                if value.isdigit():
+                    value = int(value)
+                obj.child_set_property(child, prop, value)
+            print props
+        return obj
+
+    def add_from_file(self, fname):
+        s = open(fname).read()
+        return s.add_from_string(s)
+
+    def add_from_string(self, f):
+        s = open(fname).read() # whoops don't expect this to work in pyjamas!
+        doc = lxml.etree.fromstring(s)
+        for x in doc:
+            if x.tag != 'object':
+                continue
+            obj = self.create_object_from_xml_node(x)
+            self.objects.append(obj)
+
+    def get_objects(self):
+        return self.objects
+
+gtkmap = {  'GtkWindow': Window,
+            'GtkTable': Table,
+            'GtkLabel': Label,
+            'GtkVBox': VBox,
+            'GtkHBox': HBox,
+            'GtkEntry': Entry
+        }
+
+
+class Builder:
+
+    def __init__(self):
+        self.objects = []
+
+    def create_object_from_xml_node(self, node):
+        klsname = node.attributes.getNamedItem('class').nodeValue
+        id = node.attributes.getNamedItem('id').nodeValue
+        log.writebr("%s %s" % (klsname, id))
+        global gtkmap
+        obj = gtkmap[klsname]()
+        props = node.getElementsByTagName("property")
+        log.writebr("%s %d" % (klsname, props.length))
+        for i in range(props.length):
+            prop = props.item(i)
+            name = prop.attributes.getNamedItem('name').nodeValue
+            value = prop.textContent
+            try:
+                setattr(obj, name, value)
+            except:
+                if value and value.isdigit():
+                    setattr(obj, name, int(value))
+                else:
+                    print "setattr failed", klsname, name, value
+        childnodes = node.getElementsByTagName("child")
+        log.writebr("%s children %d" % (klsname, childnodes.length))
+        for i in range(childnodes.length):
+            childnode = childnodes.item(i)
+            childobj = childnode.getElementsByTagName("object")
+            if childobj is None:
+                continue
+            if childobj.length == 0:
+                continue
+            childobj = childobj.item(0)
+            child = self.create_object_from_xml_node(childobj)
+            #obj.add_child(gtk.Builder(), child, klsname)
+            obj.add(child)
+            packing = childnode.getElementsByTagName("packing")
+            if packing is None:
+                continue
+            if packing.length == 0:
+                continue
+            packing = packing.item(0)
+            props = find_props(packing)
+            for prop, value in props.items():
+                if value.isdigit():
+                    value = int(value)
+                obj.child_set_property(child, prop, value)
+        return obj
+
+    def add_from_file(self, fname):
+        s = open(fname).read()
+        return s.add_from_string(s)
+
+    def add_from_string(self, xmldoc):
+        x = xmldoc.firstChild.firstChild
+        while x:
+            log.writebr(x.nodeName)
+            if x.nodeName == 'object':
+                log.writebr("creating object")
+                obj = self.create_object_from_xml_node(x)
+                self.objects.append(obj)
+            x = x.nextSibling
+
+    def get_objects(self):
+        return self.objects
 
 def main():
     pass

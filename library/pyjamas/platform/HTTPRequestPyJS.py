@@ -66,7 +66,10 @@ class HTTPRequest:
         var xmlHttp = this.doCreateXmlHTTPRequest();
         try {
             xmlHttp.open("GET", url, true);
-            xmlHttp.setRequestHeader("Content-Type", "text/plain; charset=utf-8");
+            if (returnxml)
+                xmlHttp.setRequestHeader("Content-Type", "application/xml; charset=utf-8");
+            else
+                xmlHttp.setRequestHeader("Content-Type", "text/plain; charset=utf-8");
             xmlHttp.onreadystatechange = function() {
                 if (xmlHttp.readyState == 4) {
                     delete xmlHttp.onreadystatechange;
