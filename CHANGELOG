@@ -1,6 +1,8 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
+ * Added PureMVC example EmployeeAdmin
+
  * Added Gecko/XUL/Hulahop as Pyjamas-Desktop engine; added pyjd.setup
    and pyjd.run functions (which are dummy in pyjs); added ~/.pyjd/pyjdrc
    file to configure use of either pywebkitgtk or hulahop
