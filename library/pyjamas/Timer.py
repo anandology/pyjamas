@@ -37,7 +37,7 @@ class Timer:
             self.notify_fn()
 
     def cancel(self):
-        print "TODO"
+        print "Timer.cancel: TODO"
 
     def run(self):
         pass

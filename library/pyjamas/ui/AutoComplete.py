@@ -99,7 +99,7 @@ class AutoCompleteTextBox(TextBox):
                 self.choicesPopup.show()
                 self.visible = True
                 self.choicesPopup.setPopupPosition(self.getAbsoluteLeft(), self.getAbsoluteTop() + self.getOffsetHeight())
-                self.choices.setWidth(self.getOffsetWidth() + "px")
+                self.choices.setWidth("%dpx" % self.getOffsetWidth())
         else:
             self.visible = False
             self.choicesPopup.hide()

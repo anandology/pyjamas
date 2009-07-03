@@ -86,7 +86,7 @@ class UIObject:
     def setHeight(self, height):
         """Set the height of the element associated with this UIObject.  The
            value should be given as a CSS value, such as 100px, 30%, or 50pi"""
-        DOM.setStyleAttribute(self.element, "height", height)
+        DOM.setStyleAttribute(self.element, "height", str(height))
 
     def getHeight(self):
         return DOM.getStyleAttribute(self.element, "height")
@@ -95,9 +95,9 @@ class UIObject:
         """Set the width and height of the element associated with this UIObject
            in pixels.  Width and height should be numbers."""
         if width >= 0:
-            self.setWidth(width + "px")
+            self.setWidth("%dpx" % width)
         if height >= 0:
-            self.setHeight(height + "px")
+            self.setHeight("%dpx" % height)
 
     def setSize(self, width, height):
         """Set the width and height of the element associated with this UIObject.  The
@@ -144,7 +144,7 @@ class UIObject:
     def setWidth(self, width):
         """Set the width of the element associated with this UIObject.  The
            value should be given as a CSS value, such as 100px, 30%, or 50pi"""
-        DOM.setStyleAttribute(self.element, "width", width)
+        DOM.setStyleAttribute(self.element, "width", str(width))
 
     def getWidth(self):
         return DOM.getStyleAttribute(self.element, "width")

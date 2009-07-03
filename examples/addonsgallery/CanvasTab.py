@@ -7,6 +7,7 @@ from pyjamas.ui.RootPanel import RootPanel
 from pyjamas.Canvas2D import Canvas, CanvasImage, ImageLoadListener
 from pyjamas.Timer import Timer
 from math import floor, cos, sin
+import time
 
 class CanvasTab(Sink):
     def __init__(self):
@@ -62,7 +63,8 @@ class ColourGridCanvas(Canvas):
     def draw(self):
         for i in range(0, 6):
             for j in range(0, 6):
-                self.context.fillStyle = 'rgb(' + floor(255-42.5*i) + ',' + floor(255-42.5*j) + ',0)'
+                self.context.fillStyle = 'rgb(%d,%d,0)' % \
+                                        ( floor(255-42.5*i), floor(255-42.5*j))
                 self.context.fillRect(j*25,i*25,25,25)
 
     def onMouseDown(self, sender, x, y):
@@ -101,7 +103,7 @@ class RotatedCanvas(Canvas):
         # Loop through rings (from inside to out)
         for i in range(1,6):
             self.context.save()
-            self.context.fillStyle = 'rgb('+(51*i)+','+(255-51*i)+',255)'
+            self.context.fillStyle = 'rgb(%d,%d,255)'%((51*i), (255-51*i))
 
             # draw individual dots
             for j in range(0,i*6): 
@@ -164,7 +166,7 @@ class PatternCanvas(Canvas):
         pass
 
     def draw(self):
-        ptrn = self.context.createPattern(self.img, 'repeat')
+        ptrn = self.context.createPattern(self.img.getElement(), 'repeat')
         self.context.fillStyle = ptrn
         self.context.fillRect(0,0,200,200)
 
@@ -188,6 +190,8 @@ class SpiroCanvas(Canvas):
         pi = 3.14159265358979323
         x1 = R-O
         y1 = 0
+        x2 = -1
+        y2 =  -1
         i  = 1
         self.context.beginPath()
         self.context.moveTo(x1,y1)
@@ -226,16 +230,10 @@ class SolarCanvas(Canvas):
         self.draw()
 
     def getTimeSeconds(self):
-        JS("""
-        var x = new Date();
-        return x.getSeconds();
-        """)
+        return time.time() % 60
 
     def getTimeMilliseconds(self):
-        JS("""
-        var x = new Date();
-        return x.getMilliseconds();
-        """)
+        return (time.time() * 1000.0) % 1.0
 
     def draw(self):
         pi = 3.14159265358979323
@@ -256,7 +254,10 @@ class SolarCanvas(Canvas):
         self.context.rotate( ((2*pi)/60)*self.getTimeSeconds() + ((2*pi)/60000)*self.getTimeMilliseconds() )
         self.context.translate(105,0)
         self.context.fillRect(0,-12,50,24) # Shadow
-        self.context.drawImage(self.earth,-12,-12)
+        try:
+            self.context.drawImage(self.earth,-12,-12)
+        except:
+            self.context.drawImage(self.earth)
         
         # Moon
         self.context.save()

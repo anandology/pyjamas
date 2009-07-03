@@ -3,7 +3,7 @@ from pyjamas.ui.Image import Image
 from pyjamas.ui.HTML import HTML
 from pyjamas.ui.VerticalPanel import VerticalPanel
 from pyjamas.ui.HorizontalPanel import HorizontalPanel
-from AutoComplete import AutoCompleteTextBox
+from pyjamas.ui.AutoComplete import AutoCompleteTextBox
 
 class AutoCompleteTab(Sink):
     def __init__(self):

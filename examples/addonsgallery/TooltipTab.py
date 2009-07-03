@@ -3,7 +3,7 @@ from pyjamas.ui.Image import Image
 from pyjamas.ui.HTML import HTML
 from pyjamas.ui.VerticalPanel import VerticalPanel
 from pyjamas.ui.HorizontalPanel import HorizontalPanel
-from Tooltip import TooltipListener
+from pyjamas.ui.Tooltip import TooltipListener
 
 class TooltipTab(Sink):
     def __init__(self):

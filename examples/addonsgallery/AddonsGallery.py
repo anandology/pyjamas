@@ -1,3 +1,5 @@
+import pyjd # dummy for pyjs
+
 from pyjamas.ui.Button import Button
 from pyjamas.ui.RootPanel import RootPanel
 from pyjamas.ui.HTML import HTML
@@ -89,5 +91,7 @@ class AddonsGallery:
 
 
 if __name__ == '__main__':
+    pyjd.setup("./public/AddonsGallery.html")
     app = AddonsGallery()
     app.onModuleLoad()
+    pyjd.run()

@@ -2,7 +2,7 @@
 # Ported by Willie Gollino from Tooltip component for GWT - Originally by Alexei Sokolov http://gwt.components.googlepages.com/
 
 from pyjamas.ui.PopupPanel import PopupPanel
-from pyjamas.ui.HTML import HTML, RootPanel
+from pyjamas.ui.HTML import HTML
 from pyjamas.ui.RootPanel import RootPanel
 from pyjamas.Timer import Timer
 
@@ -22,6 +22,8 @@ class Tooltip(PopupPanel):
 
         left = sender.getAbsoluteLeft() + offsetX
         top = sender.getAbsoluteTop() + offsetY
+
+        print "tooltip", left, top
 
         self.setPopupPosition(left, top)
         self.setStyleName(styleName)

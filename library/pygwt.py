@@ -1,3 +1,6 @@
+import sys
+import os
+
 sNextHashId = 0
 
 def getNextHashId():
@@ -12,12 +15,18 @@ def getHashCode(o):
     """)
 
 def getModuleName():
-    JS("""
-    return $moduleName;
-    """)
+
+    mod_name = sys.argv[0]
+    mod_name = os.path.split(mod_name)[1]
+    mod_name = os.path.spliext(mod_name)[0]
+
+    return mod_name
 
 def getModuleBaseURL():
-    print "TODO"
+    
+    print "getModuleBaseURL: TODO"
+    return ""
+
     return ""
     JS("""
     // this is intentionally not using $doc, because we want the module's own url
