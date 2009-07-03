@@ -91,7 +91,6 @@ class Grid(HTMLTable):
         for cellNum in range(columns):
             cell = td.cloneNode(True)
             row.appendChild(cell)
-        table.appendChild(row)
         for rowNum in range(numRows):
             table.appendChild(row.cloneNode(True))
 
