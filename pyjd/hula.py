@@ -130,10 +130,10 @@ def run(one_event=False):
     else:
         gtk.main()
 
-def setup(application, appdir=None):
+def setup(application, appdir=None, width=800, height=600):
 
     win = gtk.Window(gtk.WINDOW_TOPLEVEL)
-    win.set_size_request(800,800)
+    win.set_size_request(width, height)
     win.connect('destroy', gtk.main_quit)
 
     global wv

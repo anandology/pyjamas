@@ -18,6 +18,9 @@ from pyjamas.ui import Event
 from pyjamas.ui.CellFormatter import CellFormatter
 from pyjamas.ui.RowFormatter import RowFormatter
 
+global widgethash
+widgethash = {}
+
 class HTMLTable(Panel):
 
     def __init__(self):
@@ -128,7 +131,7 @@ class HTMLTable(Panel):
         self.tableListeners.remove(listener)
 
     def setBorderWidth(self, width):
-        DOM.setAttribute(self.tableElem, "border", width)
+        DOM.setAttribute(self.tableElem, "border", str(width))
 
     def setCellPadding(self, padding):
         DOM.setAttribute(self.tableElem, "cellPadding", str(padding))
@@ -157,7 +160,7 @@ class HTMLTable(Panel):
         td = self.cleanCell(row, column)
         widget_hash = hash(widget)
         element = widget.getElement()
-        DOM.setElemAttribute(element, "hash", str(widget_hash))
+        widgethash[element] = str(widget_hash)
         self.widgetMap[widget_hash] = widget
         self.adopt(widget, td)
 
@@ -175,16 +178,13 @@ class HTMLTable(Panel):
         return self.computeKeyForElement(child)
 
     def computeKeyForElement(self, widgetElement):
-        try:
-            return DOM.getElemAttribute(widgetElement, "hash")
-        except TypeError:
-            return None
-        return widgetElement.hash 
+        return widgethash.get(widgetElement)
 
     def removeWidget(self, widget):
         self.disown(widget)
-
-        del self.widgetMap[self.computeKeyForElement(widget.getElement())]
+        element = widget.getElement()
+        del self.widgetMap[self.computeKeyForElement(element)]
+        del widgethash[element]
         return True
 
     def checkCellBounds(self, row, column):

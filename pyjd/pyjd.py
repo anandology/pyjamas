@@ -288,8 +288,9 @@ def addEventListener(element, event_name, cb):
     element.addEventListener(event_name, True)
 
 class WebBrowser(gtk.Window):
-    def __init__(self, application, appdir=None):
+    def __init__(self, application, appdir=None, width=800, height=600):
         gtk.Window.__init__(self)
+        self.set_size_request(width, height)
 
         self.already_initialised = False
 
@@ -523,15 +524,14 @@ class WebBrowser(gtk.Window):
 
 
 
-def setup(application, appdir=None):
+def setup(application, appdir=None, width=800, height=600):
 
     gtk.gdk.threads_init()
 
     global wv
-    wv = WebBrowser(application, appdir)
 
+    wv = WebBrowser(application, appdir, width, height)
     wv.load_app()
-
     wv.show_all()
 
     while 1:
