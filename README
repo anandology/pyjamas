@@ -12,7 +12,8 @@ Pyjamas-Desktop
 ---------------
 
 A parallel project is Pyjamas-Desktop: a port of Pyjamas to the
-desktop, using WebKit (http://webkit.org).
+desktop, using WebKit (http://webkit.org) or Hulahop
+(http://wiki.laptop.org/go/HulaHop)
 
 Both projects support exactly the same set of widgets; exactly the
 same API; provide exactly the same functionality.

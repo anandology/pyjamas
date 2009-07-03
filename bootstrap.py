@@ -48,12 +48,26 @@ pyjdinitpth = r'%s'
 
 import os
 import sys
+import ConfigParser
 
-import pyjd
 sys.path += [os.path.join(pyjdinitpth, 'library')]
 
-#from pyjd import *
-from hula import *
+cp = os.environ.get('HOME', '.')
+cp = os.path.join(cp, ".pyjd")
+cp = os.path.join(cp, "pyjdrc")
+cfg = ConfigParser.ConfigParser()
+try:
+    cfg.read(cp)
+    try:
+        engine = cfg.get('gui', 'engine')
+    except ConfigParser.NoOptionError:
+        engine = 'hulahop'
+except:
+    engine = 'hulahop'
+if engine == 'pywebkitgtk':
+    from pywebkitgtk import *
+elif engine == 'hulahop':
+    from hula import *
 """
 
 pyjdrun = """#!%s

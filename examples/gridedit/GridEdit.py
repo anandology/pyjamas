@@ -1,3 +1,5 @@
+import pyjd # dummy in pyjs
+
 from pyjamas.ui.Button import Button
 from pyjamas.ui.RootPanel import RootPanel
 from pyjamas.ui.Label import Label
@@ -74,5 +76,7 @@ class GridEdit:
 
 
 if __name__ == '__main__':
+    pyjd.setup("./GridEdit.html")
     app = GridEdit()
     app.onModuleLoad()
+    pyjd.run()
