@@ -1,9 +1,10 @@
 import os
 import sys
 import hulahop
-#from sugar import env
-#hulahop.startup(os.path.join(env.get_profile_path(), 'gecko'))
-hulahop.startup('/home/lkcl/test')
+# this is for storing the gecko stuff (cache, cookies, plugins etc.)
+gecko_path = os.environ.get('HOME', '.') 
+gecko_path = os.path.join(gecko_path, ".pyjd")
+hulahop.startup(gecko_path)
 
 from hulahop.webview import WebView
 
