@@ -12,12 +12,12 @@ class Timer:
     def __init__(self, time, notify):
 
         self.notify_fn = notify.onTimer
-        self.id = timeout_add(time, self.notify)
+        self.timer_id = timeout_add(time, self.notify)
 
-    def clearInterval(self, id):
+    def clearInterval(self, timer_id):
         pass
 
-    def clearTimeout(self, id):
+    def clearTimeout(self, timer_id):
         pass
 
     def createInterval(self, timer, period):
@@ -32,7 +32,7 @@ class Timer:
 
     def notify(self, *args):
         if self.notify_fn.func_code.co_argcount == 2:
-            self.notify_fn(self)
+            self.notify_fn(self.timer_id)
         else:
             self.notify_fn()
 
@@ -56,5 +56,5 @@ class Timer:
         pass
 
     def getID(self):
-        return id
+        return self.timer_id
 

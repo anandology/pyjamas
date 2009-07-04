@@ -44,14 +44,14 @@ class Tooltip(PopupPanel):
         self.tooltip_show_timer.cancel()
         PopupPanel.hide(self)
 
-    def onTimer(self, id):
+    def onTimer(self, tooltip_id):
         global tooltip_hide_timer
 
         # deactivate fast tooltips on last timer
-        if tooltip_hide_timer and id == tooltip_hide_timer.getID():
+        if tooltip_hide_timer and tooltip_id == tooltip_hide_timer.getID():
             tooltip_hide_timer = None
 
-        if id == self.tooltip_show_timer.getID():
+        if tooltip_id == self.tooltip_show_timer.getID():
             self.show()
         else:
             self.hide()

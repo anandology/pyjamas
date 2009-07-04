@@ -254,16 +254,13 @@ class SolarCanvas(Canvas):
         self.context.rotate( ((2*pi)/60)*self.getTimeSeconds() + ((2*pi)/60000)*self.getTimeMilliseconds() )
         self.context.translate(105,0)
         self.context.fillRect(0,-12,50,24) # Shadow
-        try:
-            self.context.drawImage(self.earth,-12,-12)
-        except:
-            self.context.drawImage(self.earth)
+        self.context.drawImage(self.earth.getElement() ,-12,-12)
         
         # Moon
         self.context.save()
         self.context.rotate( ((2*pi)/6)*self.getTimeSeconds() + ((2*pi)/6000)*self.getTimeMilliseconds() )
         self.context.translate(0,28.5)
-        self.context.drawImage(self.moon,-3.5,-3.5)
+        self.context.drawImage(self.moon.getElement(),-3.5,-3.5)
         self.context.restore()
         
         self.context.restore()
@@ -272,5 +269,5 @@ class SolarCanvas(Canvas):
         self.context.arc(150,150,105,0,pi*2,False) # Earth orbit
         self.context.stroke()
         
-        self.context.drawImage(self.sun,0,0)
+        self.context.drawImage(self.sun.getElement(),0,0)
 
