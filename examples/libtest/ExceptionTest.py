@@ -1,15 +1,18 @@
 from UnitTest import UnitTest
 import sys
 
+
 class MyException:
 
     def toString(self):
         return "MyException"
 
+
 class MyException2:
 
     def toString(self):
         return "MyException2"
+
 
 class ExceptionTest(UnitTest):
     def __init__(self):
@@ -41,7 +44,6 @@ class ExceptionTest(UnitTest):
             self.assertTrue(False, "the exception shouldn't have happened")
             return
         self.assertTrue(True, "the exception should have happened")
-
 
     def testRaiseException(self):
         try:
@@ -193,7 +195,8 @@ class ExceptionTest(UnitTest):
             raise
             self.fail("No error raised on 'raise' after 'sys.exc_clear()'")
         except TypeError, e:
-            self.assertEqual(e.args[0], 'exceptions must be classes, instances, or strings (deprecated), not NoneType')
+            # use message which works for both Python 2.5 and 2.6
+            self.failUnless(e.args[0].startswith('exceptions must be classes'))
         except:
             e = sys.exc_info()
             self.fail('TypeError expected, got %s' % e[0])
