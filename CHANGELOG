@@ -1,6 +1,10 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
+ * Got SVG 2D Canvas addonsgallery example working under Pyjamas-Desktop
+   (Gecko Engine).  Requires a patch to XulRunner, for drawImage to work:
+   https://bugzilla.mozilla.org/show_bug.cgi?id=502234
+
  * Added libtest corrections thanks to stefan schwarzer
 
  * Added PureMVC example EmployeeAdmin
@@ -11,7 +15,7 @@
 
  * int() now raises ValueError
 
- * Added __getimtem__ to Exception
+ * Added __getitem__ to Exception
 
  * Fix for cache-busting in build process with different versions
    of python (use of md5 module), thanks to Oisin Mulvihill
