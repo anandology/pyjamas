@@ -1,10 +1,9 @@
 import sys
 
-global write
-global writebr
 
 def write(text):
     pass
+
 def writebr(text):
     pass
 
@@ -30,17 +29,10 @@ def writebr_std(text):
     sys.stdout.write(text + "\n")
 
 if sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
-
     init_web()
-    global write
-    global writebr
     write = write_web
     writebr = writebr_web
-
 else:
-
-    global write
-    global writebr
     write = write_std
     writebr = writebr_std
 
