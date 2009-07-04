@@ -41,13 +41,19 @@ class DictTest(UnitTest):
         self.assertEqual(d[f1], 1)
         self.assertEqual(d[f2], 2)
 
-        k1, k2 = d.keys()
-        self.assertEqual(f1, k1)
-        self.assertEqual(f2, k2)
+        # keys's result has no implied order, so sort explicitly
+        keys = d.keys()
+        keys.sort()
+        expected = [f1, f2]
+        expected.sort()
+        self.assertEqual(keys, expected)
 
-        v1, v2 = d.values()
-        self.assertEqual(1, v1)
-        self.assertEqual(2, v2)
+        # values's result has no implied order, so sort explicitly
+        values = d.values()
+        values.sort()
+        # already sorted
+        expected = [1, 2]
+        self.assertEqual(values, expected)
 
         self.failUnless(f1 in d)
         self.failUnless(f2 in d)
