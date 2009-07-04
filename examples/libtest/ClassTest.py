@@ -248,7 +248,7 @@ class ClassTest(UnitTest):
             ExampleChildClass.get_x(ExampleClass())
             self.fail('Failed to raise error for invalid instance')
         except TypeError, e:
-            self.assertTrue(e.message.find('get_x() must be called') >= 0, e.message)
+            self.assertTrue(e.args[0].find('get_x() must be called') >= 0, e.args[0])
 
     def testMetaClass(self):
         Klass = type('MyClass', (object,), {'method': method, 'x': 5})
@@ -295,7 +295,7 @@ class ClassTest(UnitTest):
             c.no_args()
             self.fail("Exception should be raised on 'c.no_args()'")
         except TypeError, e:
-            self.assertEqual(e.message,  "no_args() takes no arguments (1 given)")
+            self.assertEqual(e.args[0], "no_args() takes no arguments (1 given)")
 
         self.assertEqual(c.self_arg(), True)
         self.assertEqual(c.two_args(1), 1)
@@ -305,7 +305,7 @@ class ClassTest(UnitTest):
             c.two_args()
             self.fail("Exception should be raised on 'c.two_args()'")
         except TypeError, e:
-            self.assertEqual(e.message,  "two_args() takes exactly 2 arguments (1 given)")
+            self.assertEqual(e.args[0], "two_args() takes exactly 2 arguments (1 given)")
 
     def testSuperTest(self):
         c = DoubleInherit(1,2,3)

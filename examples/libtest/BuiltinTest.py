@@ -47,7 +47,7 @@ class BuiltinTest(UnitTest):
             h = hex(23.2)
             self.fail("No hex() argument error raised")
         except TypeError, why:
-            self.assertEqual(why.message, "hex() argument can't be converted to hex")
+            self.assertEqual(why.args[0], "hex() argument can't be converted to hex")
 
     def testOct(self):
         self.assertEqual(oct(23), '027')

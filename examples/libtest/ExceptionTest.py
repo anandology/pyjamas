@@ -193,7 +193,7 @@ class ExceptionTest(UnitTest):
             raise
             self.fail("No error raised on 'raise' after 'sys.exc_clear()'")
         except TypeError, e:
-            self.assertEqual(e.message, 'exceptions must be classes, instances, or strings (deprecated), not NoneType')
+            self.assertEqual(e.args[0], 'exceptions must be classes, instances, or strings (deprecated), not NoneType')
         except:
             e = sys.exc_info()
             self.fail('TypeError expected, got %s' % e[0])
@@ -202,7 +202,7 @@ class ExceptionTest(UnitTest):
             raise KeyError, 'test'
             self.fail('No error raised')
         except KeyError, e:
-            self.assertEqual(e.message, 'test')
+            self.assertEqual(e.args[0], 'test')
         except:
             e = sys.exc_info()
             self.fail('KeyError expected, got %s' % e[0])
@@ -212,7 +212,7 @@ class ExceptionTest(UnitTest):
             raise
         except:
             err = sys.exc_info()
-            self.assertEqual(e.message, err[1].message)
+            self.assertEqual(e.args[0], err[1].args[0])
 
         raise_errors = [KeyError('KeyError'), TypeError('TypeError'),
                         AttributeError('AttributeError'),
@@ -224,14 +224,14 @@ class ExceptionTest(UnitTest):
                 self.fail("Failed to raise exception")
             except (KeyError, TypeError), e1:
                 raised_errors.append(e1)
-                self.assertTrue(e1.message == 'KeyError' or e1.message == 'TypeError')
+                self.assertTrue(e1.args[0] == 'KeyError' or e1.args[0] == 'TypeError')
             except AttributeError, e2:
                 raised_errors.append(e2)
-                self.assertTrue(e2.message == 'AttributeError')
+                self.assertTrue(e2.args[0] == 'AttributeError')
             except:
                 e3 = sys.exc_info()[1]
                 raised_errors.append(e3)
-                self.assertTrue(e3.message == 'LookupError')
+                self.assertTrue(e3.args[0] == 'LookupError')
         self.assertEqual(len(raised_errors), len(raise_errors))
 
         try:
@@ -241,4 +241,4 @@ class ExceptionTest(UnitTest):
                 self.fail("Got KeyError")
             self.fail("TypeError should not be ignored")
         except TypeError, e:
-            self.assertEqual(e.message, 'TypeError')
+            self.assertEqual(e.args[0], 'TypeError')

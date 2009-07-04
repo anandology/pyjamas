@@ -1,9 +1,15 @@
 # Testing md5 module
 
-import UnitTest
-from md5 import md5
-
 import sys
+import UnitTest
+
+# XXX unfortunately this doesn't work when compiled via build.sh
+# because hashlib doesn't exist as a JavaScript support module
+# try:
+#     from hashlib import md5
+# except ImportError:
+#     from md5 import md5
+from md5 import md5
 
 if sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
 
@@ -24,6 +30,7 @@ else:
             i = ord(c)
             r = r + h[(i >> 4) & 0xF] + h[i & 0xF]
         return r
+
 
 class MD5Test(UnitTest.UnitTest):
     def __init__(self):

@@ -1,5 +1,18 @@
 from UnitTest import UnitTest
+
+# XXX fails with a JavaScript error: "In application LibTest -
+# undefined: set is not defined
+# pyjslib.py, line 1484
+# pyjslib.py, line 206
+# SetTest.py, line 5
+# try:
+#     # try to use the built-in set type
+#     Set = set
+# except NameError:
+#     # fall back to sets module
+#     from sets import Set
 from sets import Set
+
 
 class SetTest(UnitTest):
 	def __init__(self):
