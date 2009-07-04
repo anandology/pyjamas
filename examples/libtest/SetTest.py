@@ -71,12 +71,6 @@ class SetTest(UnitTest):
 		self.assertTrue(v3 in value)
 		self.assertTrue(v4 not in value)
 		self.assertTrue(len(value) is 3)
-		
-		i = 0
-		for v in value:
-			if v.getValue() != items[i].value:
-				self.assertTrue(False)
-			i += 1
 
 
 class DummyClass:

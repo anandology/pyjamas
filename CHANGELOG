@@ -1,6 +1,8 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
+ * Added libtest corrections thanks to stefan schwarzer
+
  * Added PureMVC example EmployeeAdmin
 
  * Added Gecko/XUL/Hulahop as Pyjamas-Desktop engine; added pyjd.setup

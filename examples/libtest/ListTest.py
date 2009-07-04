@@ -1,5 +1,6 @@
 from UnitTest import UnitTest
 
+
 class ListTest(UnitTest):
     def __init__(self):
         UnitTest.__init__(self)
@@ -109,7 +110,6 @@ class ListTest(UnitTest):
         self.assertTrue(l4[3] == 'a')
 
     def testCmp(self):
-
         l1 = [1,2,3]
         l2 = [1,2]
         l3 = [1,2,3]
@@ -128,7 +128,6 @@ class ListTest(UnitTest):
         self.assertTrue(l2 <= l1, "l2 <= l1")
 
     def testCmpListTuple(self):
-
         t1 = (1,2,3)
         l1 = [1,2,3]
 
@@ -202,7 +201,6 @@ class ListTest(UnitTest):
         self.assertEqual(len(l4),0)
 
     def testIter2(self):
-
         i = 0
 
         for item in [0,1,2,3]:
@@ -215,7 +213,6 @@ class ListTest(UnitTest):
         self.assertEqual(i, 3)
 
     def testIter(self):
-
         l = [0,1,2,3]
         i = 0
 
@@ -236,14 +233,15 @@ class ListTest(UnitTest):
             self.fail("ValueError raised when not expected")
 
         try:
-            self.assertEqual(l.index(200000), 0)
-            self.fail("ValueError not raised when expected")
+            l.index(200000)
         except ValueError, e:
             self.assertTrue(str(e) == "list.index(x): x not in list",
-                            "ValueError exception returned incorrect message")
+                            "ValueError exception has incorrect message")
+        else:
+            self.fail("ValueError not raised")
+
 
 class A:
-
     def __cmp__(self, other):
         return -1
 
