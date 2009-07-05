@@ -136,9 +136,9 @@ class SplitPanel(Panel):
         DOM.setStyleAttribute(elem, "width", width)
 
     def add(self, w):
-        if self.getWidget(0) == None:
+        if self.getWidget(0) is None:
             self.setWidget(0, w)
-        elif self.getWidget(1) == None:
+        elif self.getWidget(1) is None:
             self.setWidget(1, w)
         #else:
         #    raise IllegalStateException("A Splitter can only contain two Widgets.")
@@ -172,7 +172,7 @@ class SplitPanel(Panel):
 
         elif typ == 'mousemove':
             if self.isResizing:
-                #assert DOM.getCaptureElement() != None
+                #assert DOM.getCaptureElement() is not None
                 self.onSplitterResize(DOM.eventGetClientX(event) -
                                       self.getAbsoluteLeft(),
                           DOM.eventGetClientY(event) - self.getAbsoluteTop())
@@ -224,11 +224,11 @@ class SplitPanel(Panel):
         if oldWidget == w:
           return
 
-        if (w != None):
+        if w is not None:
           w.removeFromParent()
 
         # Remove the old child.
-        if (oldWidget != None):
+        if oldWidget is not None:
           # Orphan old.
           self.disown(oldWidget)
           # Physical detach old.
@@ -237,7 +237,7 @@ class SplitPanel(Panel):
         # Logical detach old / attach new.
         self.widgets[index] = w
 
-        if (w != None):
+        if w is not None:
             # Physical attach new.
             DOM.appendChild(self.elements[index], w.getElement())
 

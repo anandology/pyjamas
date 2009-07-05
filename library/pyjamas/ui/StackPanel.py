@@ -81,7 +81,7 @@ class StackPanel(ComplexPanel):
 
     # also callable as remove(child) and remove(index)
     def remove(self, child, index=None):
-        if index == None:
+        if index is None:
             if isinstance(child, int):
                 index = child
                 child = self.getWidget(child)
@@ -136,9 +136,9 @@ class StackPanel(ComplexPanel):
         self.setStackVisible(self.visibleStack, True)
 
     def getDividerIndex(self, elem):
-        while (elem != None) and not DOM.compare(elem, self.getElement()):
+        while (elem is not None) and not DOM.compare(elem, self.getElement()):
             expando = self.indices.get(elem)
-            if expando != None:
+            if expando is not None:
                 return int(expando)
 
             elem = DOM.getParent(elem)
@@ -147,7 +147,7 @@ class StackPanel(ComplexPanel):
 
     def setStackVisible(self, index, visible):
         tr = DOM.getChild(self.body, (index * 2))
-        if tr == None:
+        if tr is None:
             return
 
         td = DOM.getFirstChild(tr)

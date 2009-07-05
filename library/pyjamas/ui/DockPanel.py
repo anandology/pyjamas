@@ -53,7 +53,7 @@ class DockPanel(CellPanel):
 
     def add(self, widget, direction):
         if direction == self.CENTER:
-            if self.center != None:
+            if self.center is not None:
                 console.error("Only one CENTER widget may be added")
             self.center = widget
 
@@ -179,13 +179,13 @@ class DockPanel(CellPanel):
             elif layout.direction == self.CENTER:
                 centerTd = td
 
-        if self.center != None:
+        if self.center is not None:
             row = rows[northRow]
             DOM.insertChild(row.tr, centerTd, row.center)
             self.appendAndMaybeAdopt(centerTd, self.center.getElement(), beingAdded)
 
     def appendAndMaybeAdopt(self, parent, child, beingAdded):
-        if beingAdded != None:
+        if beingAdded is not None:
             if DOM.compare(child, beingAdded.getElement()):
                 CellPanel.add(self, beingAdded, parent)
                 return

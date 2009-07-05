@@ -17,7 +17,7 @@ from pyjamas import Window
 def setStyleName(element, style, add):
 
     oldStyle = DOM.getAttribute(element, "className")
-    if oldStyle == None:
+    if oldStyle is None:
         oldStyle = ""
     idx = oldStyle.find(style)
 
@@ -132,7 +132,7 @@ class UIObject:
         associated with this UIObject's element with the given parameter.  Otherwise,
         this is assumed to be a worker function for addStyleName and removeStyleName."""
         # emulate setStyleName(self, style)
-        if style == None:
+        if style is None:
             style = element
             DOM.setAttribute(self.element, "className", style)
             return
@@ -177,7 +177,7 @@ class UIObject:
         given, the self.element is used.  This modifies the CSS property 'display',
         which means that an invisible element not only is not drawn, but doesn't
         occupy any space on the page."""
-        if visible==None:
+        if visible is None:
             visible = element
             element = self.element
 

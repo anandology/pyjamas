@@ -62,7 +62,7 @@ class DecoratorPanel(SimplePanel):
             @param containerIndex the index of the container row
         """
       
-        if rowStyles == None:
+        if rowStyles is None:
             rowStyles = self.DEFAULT_ROW_STYLENAMES
 
         SimplePanel.__init__(self, DOM.createTable())
@@ -161,10 +161,10 @@ class DecoratorTitledPanel(DecoratorPanel):
     def __init__(self, title, titleStyle=None, imgStyle=None,
                              rowStyles=None,
                              containerIndex=2, titleIndex=1) :
-        if rowStyles == None:
-            rowStyles = [ "top", "top2", "middle", "bottom" ]
+        if rowStyles is None:
+            rowStyles = ["top", "top2", "middle", "bottom"]
 
-        if titleStyle == None:
+        if titleStyle is None:
             titleStyle = "title"
 
         DecoratorPanel.__init__(self, rowStyles, containerIndex)

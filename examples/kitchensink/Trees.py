@@ -107,7 +107,7 @@ class Proto:
         self.item = None
         self.text = text
         
-        if children != None:
+        if children is not None:
             self.children = children
 
 

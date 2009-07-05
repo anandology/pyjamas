@@ -44,7 +44,7 @@ class TreeDemo(SimplePanel):
     def createItem(self, label, value=None):
         item = TreeItem(label)
         DOM.setStyleAttribute(item.getElement(), "cursor", "pointer")
-        if value != None:
+        if value is not None:
             item.setUserObject(value)
         return item
 

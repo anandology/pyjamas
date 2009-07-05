@@ -25,7 +25,7 @@ rootPanels = {}
 class RootPanelCls(AbsolutePanel):
     def __init__(self, element=None):
         AbsolutePanel.__init__(self)
-        if element == None:
+        if element is None:
             element = self.getBodyElement()
 
         self.setElement(element)

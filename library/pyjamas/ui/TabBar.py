@@ -56,7 +56,7 @@ class TabBar(Composite):
         self.tabListeners.append(listener)
 
     def getSelectedTab(self):
-        if self.selectedTab == None:
+        if self.selectedTab is None:
             return -1
         return self.panel.getWidgetIndex(self.selectedTab) - 1
 
@@ -83,7 +83,7 @@ class TabBar(Composite):
     def insertTab(self, text, asHTML, beforeIndex=None):
         """ 1st arg can, instead of being 'text', be a widget
         """
-        if beforeIndex == None:
+        if beforeIndex is None:
             beforeIndex = asHTML
             asHTML = False
 
@@ -161,7 +161,7 @@ class TabBar(Composite):
             pass
 
     def setSelectionStyle(self, item, selected):
-        if item != None:
+        if item is not None:
             if selected:
                 item.addStyleName("gwt-TabBarItem-selected")
                 self.setStyleName(DOM.getParent(item.getElement()),

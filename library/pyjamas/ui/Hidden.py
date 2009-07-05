@@ -23,10 +23,10 @@ class Hidden(Widget):
         self.setElement(element)
         DOM.setAttribute(element, "type", "hidden")
 
-        if name != None:
+        if name is not None:
             self.setName(name)
 
-        if value != None:
+        if value is not None:
             self.setValue(value)
 
     def getDefaultValue(self):
@@ -42,7 +42,7 @@ class Hidden(Widget):
         DOM.setAttribute(self.getElement(), "defaultValue", defaultValue)
 
     def setName(self, name):
-        if name == None:
+        if name is None:
             #throw new NullPointerException("Name cannot be null");
             console.error("Name cannot be null")
         elif len(name) == 0:

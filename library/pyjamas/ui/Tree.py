@@ -83,11 +83,11 @@ class Tree(Widget):
             self.root.getChild(i-1).remove()
 
     def ensureSelectedItemVisible(self):
-        if self.curSelection == None:
+        if self.curSelection is None:
             return
 
         parent = self.curSelection.getParentItem()
-        while parent != None:
+        while parent is not None:
             parent.setState(True)
             parent = parent.getParentItem()
 
@@ -124,7 +124,7 @@ class Tree(Widget):
         elif type == "blur" or type == "focus":
             FocusListener.fireFocusEvent(self.focusListeners, self, event)
         elif type == "keydown":
-            if self.curSelection == None:
+            if self.curSelection is None:
                 if self.root.getChildCount() > 0:
                     self.onSelection(self.root.getChild(0), True)
                 Widget.onBrowserEvent(self, event)
@@ -196,8 +196,8 @@ class Tree(Widget):
         self.root.updateStateRecursive()
 
     def setSelectedItem(self, item, fireEvents=True):
-        if item == None:
-            if self.curSelection == None:
+        if item is None:
+            if self.curSelection is None:
                 return
             self.curSelection.setSelected(False)
             self.curSelection = None
@@ -214,7 +214,7 @@ class Tree(Widget):
         return accum.__iter__()
 
     def collectElementChain(self, chain, hRoot, hElem):
-        if (hElem == None) or DOM.compare(hElem, hRoot):
+        if (hElem is None) or DOM.compare(hElem, hRoot):
             return
 
         self.collectElementChain(chain, hRoot, DOM.getParent(hElem))
@@ -225,7 +225,7 @@ class Tree(Widget):
         self.collectElementChain(chain, self.getElement(), hElem)
 
         item = self.findItemByChain(chain, 0, root)
-        if item != None:
+        if item is not None:
             if DOM.compare(item.getImageElement(), hElem):
                 item.setState(not item.getState(), True)
                 return True
@@ -249,7 +249,7 @@ class Tree(Widget):
             child = root.getChild(i)
             if DOM.compare(child.getElement(), hCurElem):
                 retItem = self.findItemByChain(chain, idx + 1, root.getChild(i))
-                if retItem == None:
+                if retItem is None:
                     return child
                 return retItem
 
@@ -257,7 +257,7 @@ class Tree(Widget):
 
     def moveFocus(self, selection):
         focusableWidget = selection.getFocusableWidget()
-        if focusableWidget != None:
+        if focusableWidget is not None:
             focusableWidget.setFocus(True)
             DOM.scrollIntoView(focusableWidget.getElement())
         else:
@@ -283,7 +283,7 @@ class Tree(Widget):
             return
 
         parent = sel.getParentItem()
-        if parent == None:
+        if parent is None:
             parent = self.root
         idx = parent.getChildIndex(sel)
 
@@ -297,7 +297,7 @@ class Tree(Widget):
 
     def moveSelectionUp(self, sel, climb):
         parent = sel.getParentItem()
-        if parent == None:
+        if parent is None:
             parent = self.root
         idx = parent.getChildIndex(sel)
 
@@ -311,12 +311,12 @@ class Tree(Widget):
         if item == self.root:
             return
 
-        if self.curSelection != None:
+        if self.curSelection is not None:
             self.curSelection.setSelected(False)
 
         self.curSelection = item
 
-        if self.curSelection != None:
+        if self.curSelection is not None:
             self.moveFocus(self.curSelection)
             self.curSelection.setSelected(True)
             if fireEvents and len(self.listeners):

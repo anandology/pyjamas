@@ -25,7 +25,7 @@ CAN_DEFAULT = 512
 HAS_DEFAULT = 1024
 HAS_GRAB = 2048
 RC_STYLE = 4096
-COMPOSITE_CHILD	 = 8192
+COMPOSITE_CHILD = 8192
 NO_REPARENT = 16384
 APP_PAINTABLE = 32768
 RECEIVES_DEFAULT = 65536
@@ -41,6 +41,7 @@ POS_LEFT = 1
 POS_RIGHT = 2
 POS_TOP = 4
 POS_BOTTOM = 8
+
 
 class GObject:
     def __init__(self):
@@ -402,7 +403,7 @@ class Button(Bin):
         Bin.__init__(self)
         self.widget_cont.catchEvents(['click'], self)
         self.child = None
-        if label != None:
+        if label is not None:
             self.add(Label(label))
 
         self.widget_int.setStyle('textAlign','center')
@@ -480,7 +481,7 @@ class CheckButton(ToggleButton):
         self.box.pack_start(self.check_widget, False)
         self.add(self.box)
 
-        if label!=None:
+        if label is not None:
             self.label = Label(label)
             self.box.pack_start(self.label, False)
         self.widget_int.setProperty('className','checkbutton')
@@ -512,7 +513,7 @@ class RadioButton(CheckButton):
     def __init__(self, group=None, label=None):
         CheckButton.__init__(self, label)
         self.check.setProperty('type','radio')
-        if group==None:
+        if group is None:
             self.group = RadioButton.counter
             RadioButton.counter += 1
             RadioButton.groups[self.group] = [self]
@@ -566,6 +567,7 @@ class Image(Misc):
         self.img.setStyle('left', str((self.widget_cont.getWidth() - self.img.getWidth()) * self.xalign) + 'px')
         self.minwidth = self.img.getWidth()
         self.minheight = self.img.getHeight()
+
 
 class Label(Misc):
 
@@ -642,7 +644,7 @@ class Range(Widget):
         self.value = browser.Element('div')
         self.value.setStyle('position', 'absolute')
         self.widget_cont.append(self.value)
-        if adjustment!=None:
+        if adjustment is not None:
             self.adjustment = adjustment
         else:
             self.adjustment = Adjustment()
@@ -1129,7 +1131,7 @@ class OptionMenu(Button):
 
     def _selected(self, elem, data=None):
         act = self.menu.get_active()
-        if act!=None:
+        if act is not None:
             self.label.set_text(act.label_cont)
 
     def set_menu(self, menu):

@@ -238,7 +238,7 @@ def Main():
             except:
                scheme = None
 
-    if input == None:
+    if input is None:
         # if there was no input specified then we try to
         # parse ourselves and do it in diffrent flavors.
         WebIt(sys.argv[0], '/MyDir/null', _Null, 1)
@@ -263,7 +263,7 @@ def WebAll(sourcePath, outdir=None, colors=None, show=0):
     # Then we need to colorize them with WebIt
     else:
         fileList = WalkDir(sourcePath)
-        if fileList != None:
+        if fileList is not None:
             for i in fileList:
                 c+=1
                 WebIt(i, outdir, colors, show)
@@ -273,11 +273,11 @@ def WebIt(sourcePath, outdir=None, colors=None, show=0):
     ''' Converts python source to html.
     '''
     print" Converting %s into HTML" % sourcePath                
-    if colors == None:
+    if colors is None:
         # Default colorscheme
         colors = _Dark
     # If no outdir is given we use the sourcePath
-    if outdir == None:
+    if outdir is None:
         htmlPath = sourcePath + '.html'
     else:
         # If we do give an outdir, and it does

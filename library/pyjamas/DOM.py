@@ -814,7 +814,7 @@ def eventGetCurrentEvent():
 def insertListItem(select, item, value, index):
     option = createElement("OPTION")
     setInnerText(option, item)
-    if value != None:
+    if value is not None:
         setAttribute(option, "value", value)
     if index == -1:
         appendChild(select, option)

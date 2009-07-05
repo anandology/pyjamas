@@ -17,7 +17,7 @@ class DeferredCommand:
             current = deferredCommands[0]
             del deferredCommands[0]
             
-            if current == None:
+            if current is None:
                 return
             else:
                 current.execute()

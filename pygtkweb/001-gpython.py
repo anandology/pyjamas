@@ -112,8 +112,8 @@ class GtkInterpreter (threading.Thread):
         """Execute waiting code.  Called every timeout period."""
         self.ready.acquire ()
         if self._kill: gtk.main_quit ()
-        if self.new_cmd != None:  
-            self.ready.notify ()  
+        if self.new_cmd is not None:
+            self.ready.notify()
             self.cmd = self.cmd + self.new_cmd
             self.new_cmd = None
             try:

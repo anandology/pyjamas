@@ -43,7 +43,7 @@ class HTMLTable(Panel):
         for row in range(self.getRowCount()):
             for col in range(self.getCellCount(row)):
                 child = self.getWidget(row, col)
-                if child != None:
+                if child is not None:
                     self.removeWidget(child)
         # assert len(self.widgetMap) == 0
 
@@ -80,13 +80,13 @@ class HTMLTable(Panel):
 
     # also callable as getWidget(widgetElement)
     def getWidget(self, row, column=None):
-        if column == None:
+        if column is None:
             key = self.computeKeyForElement(row)
         else:
             self.checkCellBounds(row, column)
             key = self.computeKey(row, column)
 
-        if key == None:
+        if key is None:
             return None
         return self.widgetMap[key]
 
@@ -142,18 +142,18 @@ class HTMLTable(Panel):
     def setHTML(self, row, column, html):
         self.prepareCell(row, column)
         td = self.cleanCell(row, column)
-        if html != None:
+        if html is not None:
             DOM.setInnerHTML(td, html)
 
     def setText(self, row, column, text):
         self.prepareCell(row, column)
         td = self.cleanCell(row, column)
-        if text != None:
+        if text is not None:
             DOM.setInnerText(td, text)
 
     def setWidget(self, row, column, widget):
         self.prepareCell(row, column)
-        if widget == None:
+        if widget is None:
             return
 
         widget.removeFromParent()
@@ -172,7 +172,7 @@ class HTMLTable(Panel):
     def computeKey(self, row, column):
         element = self.cellFormatter.getRawElement(row, column)
         child = DOM.getFirstChild(element)
-        if child == None:
+        if child is None:
             return None
 
         return self.computeKeyForElement(child)
@@ -206,7 +206,7 @@ class HTMLTable(Panel):
 
     # also callable as getDOMCellCount(row)
     def getDOMCellCount(self, element, row=None):
-        if row == None:
+        if row is None:
             return self.getDOMCellCountImpl(self.bodyElem, element)
         return self.getDOMCellCountImpl(element, row)
 
@@ -215,7 +215,7 @@ class HTMLTable(Panel):
 
     # also callable as getDOMRowCount(element)
     def getDOMRowCount(self, element=None):
-        if element == None:
+        if element is None:
             element = self.bodyElem
         return self.getDOMRowCountImpl(element)
 
@@ -224,7 +224,7 @@ class HTMLTable(Panel):
 
     def getEventTargetCell(self, event):
         td = DOM.eventGetTarget(event)
-        while td != None:
+        while td is not None:
             if DOM.getAttribute(td, "tagName").lower() == "td":
                 tr = DOM.getParent(td)
                 body = DOM.getParent(tr)
@@ -258,10 +258,10 @@ class HTMLTable(Panel):
     def internalClearCell(self, td):
         maybeChild = DOM.getFirstChild(td)
         widget = None
-        if maybeChild != None:
+        if maybeChild is not None:
             widget = self.getWidget(maybeChild)
 
-        if widget != None:
+        if widget is not None:
             self.removeWidget(widget)
             return True
 

@@ -24,7 +24,7 @@ class ScrollPanel(SimplePanel):
         self.setAlwaysShowScrollBars(False)
         self.sinkEvents(Event.ONSCROLL)
 
-        if child != None:
+        if child is not None:
             self.setWidget(child)
 
     def addScrollListener(self, listener):

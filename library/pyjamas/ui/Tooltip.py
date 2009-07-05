@@ -75,12 +75,12 @@ class TooltipListener:
         self.offsetY = TooltipListener.DEFAULT_OFFSET_Y
 
     def onMouseEnter(self, sender):
-        if self.tooltip != None:
+        if self.tooltip is not None:
             self.tooltip.hide()
         self.tooltip = Tooltip(sender, self.offsetX, self.offsetY, self.text, self.show_delay, self.hide_delay, self.styleName)
 
     def onMouseLeave(self, sender):
-        if self.tooltip != None:
+        if self.tooltip is not None:
             self.tooltip.hide()
 
     def onMouseMove(self, sender, x, y):

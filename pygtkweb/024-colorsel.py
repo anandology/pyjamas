@@ -27,7 +27,7 @@ class ColorSelectionExample:
             handled = True
 
             # Create color selection dialog
-            if self.colorseldlg == None:
+            if self.colorseldlg is None:
                 self.colorseldlg = gtk.ColorSelectionDialog(
                     "Select background color")
 

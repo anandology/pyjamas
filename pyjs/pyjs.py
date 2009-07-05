@@ -401,7 +401,7 @@ class Translator:
         return self.spacing()
 
     def push_options(self):
-	    self.option_stack.append((\
+        self.option_stack.append((\
             self.debug, self.print_statements, self.function_argument_checking,
             self.attribute_checking, self.source_tracking,
             self.line_tracking, self.store_source,
@@ -1477,7 +1477,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
     def get_start_line(self, node, lineno):
         if node:
-            if hasattr(node, "lineno") and node.lineno != None and node.lineno < lineno:
+            if hasattr(node, "lineno") and node.lineno is not None and node.lineno < lineno:
                 lineno = node.lineno
             if hasattr(node, 'getChildren'):
                 for n in node.getChildren():
@@ -1488,7 +1488,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         lineNum1 = "Unknown"
         srcLine = ""
         if hasattr(node, "lineno"):
-            if node.lineno != None:
+            if node.lineno is not None:
                 lineNum2 = node.lineno
                 lineNum1 = self.get_start_line(node, lineNum2)
                 srcLine = self.src[min(lineNum1, len(self.src))-1].strip()
@@ -1952,9 +1952,9 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         if node.flags == "OP_APPLY":
             lower = "null"
             upper = "null"
-            if node.lower != None:
+            if node.lower is not None:
                 lower = self.expr(node.lower, current_klass)
-            if node.upper != None:
+            if node.upper is not None:
                 upper = self.expr(node.upper, current_klass)
             return  "pyjslib.slice(" + self.expr(node.expr, current_klass) + ", " + lower + ", " + upper + ")"
         else:

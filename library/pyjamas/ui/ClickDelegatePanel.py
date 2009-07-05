@@ -32,7 +32,7 @@ class ClickDelegatePanel(Composite):
         self.focusablePanel = SimplePanel(Focus.createFocusable())
         self.focusablePanel.setWidget(child)
         wrapperWidget = p.createTabTextWrapper()
-        if wrapperWidget == None:
+        if wrapperWidget is None:
             self.initWidget(self.focusablePanel)
         else :
             wrapperWidget.setWidget(self.focusablePanel)

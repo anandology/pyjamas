@@ -71,7 +71,7 @@ class TreeItem(UIObject):
         DOM.setStyleAttribute(self.childSpanElem, "whiteSpace", "nowrap")
         self.setStyleName(self.contentElem, "gwt-TreeItem", True)
 
-        if html != None:
+        if html is not None:
             if isinstance(html, str):
                 self.setHTML(html)
             else:
@@ -83,7 +83,7 @@ class TreeItem(UIObject):
             #if not item.getTree:
             item = TreeItem(item)
 
-        if (item.getParentItem() != None) or (item.getTree() != None):
+        if (item.getParentItem() is not None) or (item.getTree() is not None):
             item.remove()
 
         item.setTree(self.tree)
@@ -127,7 +127,7 @@ class TreeItem(UIObject):
         return self.userObject
 
     def getWidget(self):
-        if self.contentPanel == None:
+        if self.contentPanel is None:
             return None
 
         return self.contentPanel.getWidget()
@@ -136,9 +136,9 @@ class TreeItem(UIObject):
         return self.selected
 
     def remove(self):
-        if self.parent != None:
+        if self.parent is not None:
             self.parent.removeItem(self)
-        elif self.tree != None:
+        elif self.tree is not None:
             self.tree.removeItem(self)
 
     def removeItem(self, item):
@@ -190,21 +190,21 @@ class TreeItem(UIObject):
         self.contentPanel.setWidget(widget)
 
     def clearContentPanel(self):
-        if self.contentPanel != None:
+        if self.contentPanel is not None:
             child = self.contentPanel.getWidget()
-            if child != None:
+            if child is not None:
                 self.contentPanel.remove(child)
 
-            if self.tree != None:
+            if self.tree is not None:
                 self.tree.disown(self.contentPanel)
                 self.contentPanel = None
 
     def ensureContentPanel(self):
-        if self.contentPanel == None:
+        if self.contentPanel is None:
             DOM.setInnerHTML(self.contentElem, "")
             self.contentPanel = TreeContentPanel(self.contentElem)
             self.contentPanel.setTreeItem(self)
-            if self.getTree() != None:
+            if self.getTree() is not None:
                 self.tree.adopt(self.contentPanel)
 
     def addTreeItems(self, accum):
@@ -228,7 +228,7 @@ class TreeItem(UIObject):
         item = self
         ret = 0
 
-        while item != None:
+        while item is not None:
             ret += DOM.getIntAttribute(item.getElement(), "offsetTop")
             item = item.getParentItem()
 
@@ -241,7 +241,7 @@ class TreeItem(UIObject):
         return None
 
     def imgSrc(self, img):
-        if self.tree == None:
+        if self.tree is None:
             return img
         src = self.tree.getImageBase() + img
         return src
@@ -253,18 +253,18 @@ class TreeItem(UIObject):
         if self.tree == tree:
             return
 
-        if self.tree != None:
+        if self.tree is not None:
             if self.tree.getSelectedItem() == self:
                 self.tree.setSelectedItem(None)
 
-            if self.contentPanel != None:
+            if self.contentPanel is not None:
                 self.tree.disown(self.contentPanel)
 
         self.tree = tree
         for child in self.children:
             child.setTree(tree)
         self.updateState()
-        if tree != None and self.contentPanel != None:
+        if tree is not None and self.contentPanel is not None:
                 tree.adopt(self.contentPanel)
 
     def updateState(self):
@@ -289,7 +289,7 @@ class TreeItem(UIObject):
 
 class RootTreeItem(TreeItem):
     def addItem(self, item):
-        if (item.getParentItem() != None) or (item.getTree() != None):
+        if (item.getParentItem() is not None) or (item.getTree() is not None):
             item.remove()
         item.setTree(self.getTree())
 

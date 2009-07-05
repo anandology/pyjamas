@@ -74,7 +74,7 @@ class Proto:
         self.text = text
         self.root = '/'
         
-        if children != None:
+        if children is not None:
             self.children = children
 
     def pathify(self):

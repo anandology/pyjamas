@@ -106,10 +106,10 @@ class DialogBox(PopupPanel):
         self.caption.onDetach()
 
     def setWidget(self, widget):
-        if self.child != None:
+        if self.child is not None:
             self.panel.remove(self.child)
 
-        if widget != None:
+        if widget is not None:
             self.panel.setWidget(1, 0, widget)
 
         self.child = widget

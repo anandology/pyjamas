@@ -23,7 +23,7 @@ class TabPanel(Composite):
         Composite.__init__(self)
         self.tab_children = [] # TODO: can self.children be used instead?
         self.deck = DeckPanel()
-        if tabBar == None:
+        if tabBar is None:
             self.tabBar = TabBar()
         else:
             self.tabBar = tabBar
@@ -41,7 +41,7 @@ class TabPanel(Composite):
         self.deck.setStyleName("gwt-TabPanelBottom")
 
     def add(self, widget, tabText=None, asHTML=False):
-        if tabText == None:
+        if tabText is None:
             console.error("A tabText parameter must be specified with add().")
         self.insert(widget, tabText, asHTML, self.getWidgetCount())
 

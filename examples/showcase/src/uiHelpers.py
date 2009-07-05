@@ -61,17 +61,17 @@ def indent(contents, all=None, left=None, right=None, top=None, bottom=None,
         Upon completion, we return a Panel object contained the wrapped-up
         contents.
     """
-    if all != None:
+    if all is not None:
         left   = all
         right  = all
         top    = all
         bottom = all
 
-    if hIndent != None:
+    if hIndent is not None:
         left  = hIndent
         right = hIndent
 
-    if vIndent != None:
+    if vIndent is not None:
         top    = vIndent
         bottom = vIndent
 
@@ -198,7 +198,7 @@ class PanelApp:
         """
         if panelID == self._curPanelID: return
 
-        if self._curPanelID != None:
+        if self._curPanelID is not None:
             self._root.remove(self._panels[self._curPanelID])
 
         self._root.add(self._panels[panelID])

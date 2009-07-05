@@ -121,12 +121,12 @@ class AutoCompleteTextBox(TextBox):
 
 class SimpleAutoCompletionItems:
     def __init__(self, items = None):
-        if items == None:
+        if items is None:
             items = []
         self.completions = items
 
     def getCompletionItems(self, match):
-        matches = []        
+        matches = []
         match = match.lower()
         
         for i in range(len(self.completions)):

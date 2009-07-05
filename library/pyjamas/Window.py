@@ -150,7 +150,7 @@ def fireClosingImpl():
     ret = None
     for listener in closingListeners:
         msg = listener.onWindowClosing()
-        if ret == None:
+        if ret is None:
             ret = msg
     return ret
 

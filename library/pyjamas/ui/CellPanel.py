@@ -53,12 +53,12 @@ class CellPanel(ComplexPanel):
 
     def setCellHorizontalAlignment(self, widget, align):
         td = self.getWidgetTd(widget)
-        if td != None:
+        if td is not None:
             DOM.setAttribute(td, "align", align)
 
     def setCellVerticalAlignment(self, widget, align):
         td = self.getWidgetTd(widget)
-        if td != None:
+        if td is not None:
             DOM.setStyleAttribute(td, "verticalAlign", align)
 
     def setCellWidth(self, widget, width):

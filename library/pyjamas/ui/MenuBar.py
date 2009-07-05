@@ -82,7 +82,7 @@ class MenuBar(Widget):
         Widget.onBrowserEvent(self, event)
 
         item = self.findItem(DOM.eventGetTarget(event))
-        if item == None:
+        if item is None:
             return False
 
         type = DOM.eventGetType(event)
@@ -118,29 +118,29 @@ class MenuBar(Widget):
 
     def closeAllParents(self):
         curMenu = self
-        while curMenu != None:
+        while curMenu is not None:
             curMenu.close()
 
-            if (curMenu.parentMenu == None) and (curMenu.selectedItem != None):
+            if curMenu.parentMenu is None and curMenu.selectedItem is not None:
                 curMenu.selectedItem.setSelectionStyle(False)
                 curMenu.selectedItem = None
 
             curMenu = curMenu.parentMenu
 
     def doItemAction(self, item, fireCommand):
-        if (self.shownChildMenu != None) and (item.getSubMenu() == self.shownChildMenu):
+        if (self.shownChildMenu is not None) and (item.getSubMenu() == self.shownChildMenu):
             return
 
-        if (self.shownChildMenu != None):
+        if (self.shownChildMenu is not None):
             self.shownChildMenu.onHide()
             self.popup.hide()
 
-        if item.getSubMenu() == None:
+        if item.getSubMenu() is None:
             if fireCommand:
                 self.closeAllParents()
 
                 cmd = item.getCommand()
-                if cmd != None:
+                if cmd is not None:
                     DeferredCommand().add(cmd)
             return
 
@@ -160,24 +160,24 @@ class MenuBar(Widget):
         self.popup.show()
 
     def onDetach(self):
-        if self.popup != None:
+        if self.popup is not None:
             self.popup.hide()
 
         Widget.onDetach(self)
 
     def itemOver(self, item):
-        if item == None:
-            if (self.selectedItem != None) and (self.shownChildMenu == self.selectedItem.getSubMenu()):
+        if item is None:
+            if (self.selectedItem is not None) and (self.shownChildMenu == self.selectedItem.getSubMenu()):
                 return
 
         self.selectItem(item)
 
-        if item != None:
-            if (self.shownChildMenu != None) or (self.parentMenu != None) or self.autoOpen:
+        if item is not None:
+            if (self.shownChildMenu is not None) or (self.parentMenu is not None) or self.autoOpen:
                 self.doItemAction(item, False)
 
     def close(self):
-        if self.parentMenu != None:
+        if self.parentMenu is not None:
             self.parentMenu.popup.hide()
 
     def findItem(self, hItem):
@@ -194,7 +194,7 @@ class MenuBar(Widget):
             return DOM.getChild(self.body, 0)
 
     def onHide(self):
-        if self.shownChildMenu != None:
+        if self.shownChildMenu is not None:
             self.shownChildMenu.onHide()
             self.popup.hide()
 
@@ -206,10 +206,10 @@ class MenuBar(Widget):
         if item == self.selectedItem:
             return
 
-        if self.selectedItem != None:
+        if self.selectedItem is not None:
             self.selectedItem.setSelectionStyle(False)
 
-        if item != None:
+        if item is not None:
             item.setSelectionStyle(True)
 
         self.selectedItem = item

@@ -7,7 +7,7 @@ class Widget:
 
     def setParent(self, parent):
         self.parent = parent
-        if parent == None:
+        if parent is None:
             self.onDetach()
         elif parent.attached:
             self.onAttach()

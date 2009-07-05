@@ -17,18 +17,18 @@ from pyjamas.ui.Panel import Panel
 
 class SimplePanel(Panel):
     """
-        A panel which contains a single widget.  Useful if you have an area where
-        you'd like to be able to replace the widget with another, or if you need to
-        wrap something in a DIV.
+    A panel which contains a single widget.  Useful if you have an area where
+    you'd like to be able to replace the widget with another, or if you need to
+    wrap something in a DIV.
     """
     def __init__(self, element=None):
         Panel.__init__(self)
-        if element == None:
+        if element is None:
             element = DOM.createDiv()
         self.setElement(element)
 
     def add(self, widget):
-        if self.getWidget() != None:
+        if self.getWidget() is not None:
             console.error("SimplePanel can only contain one child widget")
             return
         self.setWidget(widget)
@@ -52,10 +52,10 @@ class SimplePanel(Panel):
         if self.getWidget() == widget:
             return
 
-        if self.getWidget() != None:
+        if self.getWidget() is not None:
             self.remove(self.getWidget())
 
-        if widget != None:
+        if widget is not None:
             self.adopt(widget, self.getContainerElement())
             self.children.append(widget)
 

@@ -32,7 +32,7 @@ class GetSelectionExample:
             targets = selection_data.get_targets()
             for target in targets:
                 name = str(target)
-                if name != None:
+                if name is not None:
                     print "%s" % name
                 else:
                     print "(bad target)"

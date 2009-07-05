@@ -104,7 +104,7 @@ class MailList(Composite):
         # When a row (other than the first one, which is used as a header) is
         # selected, display its associated MailItem.
         item = MailItems().getMailItem(self.startIndex + row)
-        if (item == None):
+        if item is None:
             return
                     
         self.styleRow(self.selectedRow, False)

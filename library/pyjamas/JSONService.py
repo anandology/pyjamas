@@ -15,7 +15,7 @@ else:
 
 # no stream support
 class JSONService:
-    def __init__(self, url, handler = None):
+    def __init__(self, url, handler=None):
         """
         Create a JSON remote service object.  The url is the URL that will receive
         POST data with the JSON request.  See the JSON-RPC spec for more information.
@@ -28,10 +28,10 @@ class JSONService:
         self.handler = handler
     
     def callMethod(self, method, params, handler = None):
-        if handler == None:
+        if handler is None:
             handler = self.handler
             
-        if handler == None:
+        if handler is None:
             return self.__sendNotify(method, params)
         else:
             return self.__sendRequest(method, params, handler)
@@ -40,7 +40,7 @@ class JSONService:
         pass
 
     def sendNotify(self, method, params):
-        msg = {"id":None, "method":method, "params":params}
+        msg = {"id": None, "method": method, "params": params}
         msg_data = dumps(msg)
         if not HTTPRequest().asyncPost(self.url, msg_data, self):
             return -1

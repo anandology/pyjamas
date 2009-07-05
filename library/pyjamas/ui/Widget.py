@@ -100,8 +100,8 @@ class Widget(UIObject):
         assumes we are being attached also and calls onAttach()."""
         oldparent = self.parent
         self.parent = parent
-        if parent == None:
-            if oldparent != None and oldparent.attached:
+        if parent is None:
+            if oldparent is not None and oldparent.attached:
                 self.onDetach()
         elif parent.attached:
             self.onAttach()

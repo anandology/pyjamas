@@ -24,7 +24,7 @@ class MenuItem(UIObject):
     #   MenuItem(text, asHTML)
     def __init__(self, text, asHTML, subMenu=None):
         cmd = None
-        if subMenu == None:
+        if subMenu is None:
             if hasattr(asHTML, "execute"): # text, cmd
                 cmd = asHTML
                 asHTML = False

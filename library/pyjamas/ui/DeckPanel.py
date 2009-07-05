@@ -64,7 +64,7 @@ class DeckPanel(ComplexPanel):
     def showWidget(self, index):
         self.checkIndex(index)
 
-        if self.visibleWidget != None:
+        if self.visibleWidget is not None:
             self.visibleWidget.setVisible(False)
 
         self.visibleWidget = self.getWidget(index)

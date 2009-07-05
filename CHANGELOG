@@ -1,6 +1,9 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
+ * Patch from Stefan Schwarzer to replace != None with is not None
+   and == None with is None, general clean-up.
+
  * Got SVG 2D Canvas addonsgallery example working under Pyjamas-Desktop
    (Gecko Engine).  Requires a patch to XulRunner, for drawImage to work:
    https://bugzilla.mozilla.org/show_bug.cgi?id=502234

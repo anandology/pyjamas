@@ -66,7 +66,7 @@ class FormPanel(SimplePanel):
 
         self.sinkEvents(Event.ONLOAD)
 
-        if target != None:
+        if target is not None:
             self.setTarget(target)
 
     def addFormHandler(self, handler):

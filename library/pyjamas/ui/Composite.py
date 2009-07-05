@@ -21,7 +21,7 @@ class Composite(Widget):
         self.widget = None
 
     def initWidget(self, widget):
-        if self.widget != None:
+        if self.widget is not None:
             return
 
         widget.removeFromParent()

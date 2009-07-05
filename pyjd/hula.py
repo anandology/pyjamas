@@ -53,7 +53,7 @@ class Browser(WebView):
     def load_app(self):
 
         uri = self.application
-        if uri.find("://") == -1:
+        if uri.find(":") == -1:
             # assume file
             uri = 'file://'+os.path.abspath(uri)
 
@@ -125,9 +125,10 @@ def is_loaded():
     global wv
     return wv.already_initialised
 
-def run(one_event=False):
+def run(one_event=False, block=True):
     if one_event:
-        gtk.main_iteration()
+        if block or gtk.events_pending():
+            gtk.main_iteration()
     else:
         gtk.main()
 

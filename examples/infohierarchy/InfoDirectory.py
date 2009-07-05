@@ -27,7 +27,7 @@ from pyjamas.Timer import Timer
 class CollapserPanel(SimplePanel):
     def __init__(self, sink):
         SimplePanel.__init__(self)
-        self.sink = sink 
+        self.sink = sink
         self.caption = HTML()
         self.child = None 
         self.showing = False
@@ -120,10 +120,10 @@ class CollapserPanel(SimplePanel):
         self.caption.onDetach()
 
     def setWidget(self, widget):
-        if self.child != None:
+        if self.child is not None:
             self.panel.remove(self.child)
 
-        if widget != None:
+        if widget is not None:
             self.panel.setWidget(1, 0, widget)
 
         self.child = widget

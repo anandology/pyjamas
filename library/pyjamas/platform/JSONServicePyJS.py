@@ -15,10 +15,10 @@ class JSONService:
         self.handler = handler
     
     def callMethod(self, method, params, handler = None):
-        if handler == None:
+        if handler is None:
             handler = self.handler
             
-        if handler == None:
+        if handler is None:
             return self.__sendNotify(method, params)
         else:
             return self.__sendRequest(method, params, handler)

@@ -55,7 +55,7 @@ def draw_brush(widget, x, y):
     widget.queue_draw_area(rect[0], rect[1], rect[2], rect[3])
 
 def button_press_event(widget, event):
-    if event.button == 1 and pixmap != None:
+    if event.button == 1 and pixmap is not None:
         draw_brush(widget, event.x, event.y)
     return True
 
@@ -67,7 +67,7 @@ def motion_notify_event(widget, event):
         y = event.y
         state = event.state
     
-    if state & gtk.gdk.BUTTON1_MASK and pixmap != None:
+    if state & gtk.gdk.BUTTON1_MASK and pixmap is not None:
         draw_brush(widget, x, y)
   
     return True

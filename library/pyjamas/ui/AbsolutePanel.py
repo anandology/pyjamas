@@ -27,7 +27,7 @@ class AbsolutePanel(ComplexPanel):
     def add(self, widget, left=None, top=None):
         ComplexPanel.add(self, widget, self.getElement())
 
-        if left != None:
+        if left is not None:
             self.setWidgetPosition(widget, left, top)
 
     def setWidgetPosition(self, widget, left, top):

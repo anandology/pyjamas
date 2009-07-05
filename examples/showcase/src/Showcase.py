@@ -139,7 +139,7 @@ class Showcase:
         """ Respond to the user selecting an item in our tree.
         """
         demo = item.getUserObject()
-        if demo == None:
+        if demo is None:
             self.showDemo(None)
         else:
             self.showDemo(demo['name'])
@@ -154,7 +154,7 @@ class Showcase:
     def showDemo(self, name):
         """ Show the demonstration with the given name.
         """
-        if self._curContents != None:
+        if self._curContents is not None:
             self._rightPanel.remove(self._curContents)
             self._curContents = None
 
@@ -164,7 +164,7 @@ class Showcase:
                 demo = d
                 break
 
-        if demo != None:
+        if demo is not None:
             exampleID = HTMLPanel.createUniqueId()
 
             html = []

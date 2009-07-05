@@ -37,7 +37,7 @@ class TextBoxBase(FocusWidget):
         self.clickListeners.append(listener)
 
     def cancelKey(self):
-        if self.currentEvent != None:
+        if self.currentEvent is not None:
             DOM.eventPreventDefault(self.currentEvent)
 
     def getCursorPos(self):
@@ -90,7 +90,7 @@ class TextBoxBase(FocusWidget):
         self.setSelectionRange(pos, 0)
 
     def setKey(self, key):
-        if self.currentEvent != None:
+        if self.currentEvent is not None:
             DOM.eventSetKeyCode(self.currentEvent, key)
 
     def setName(self, name):

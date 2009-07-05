@@ -25,7 +25,7 @@ class HTMLPanel(ComplexPanel):
 
     def add(self, widget, id):
         element = self.getElementById(self.getElement(), id)
-        if element == None:
+        if element is None:
             # throw new NoSuchElementException()
             return
         ComplexPanel.add(self, widget, element)
@@ -39,13 +39,13 @@ class HTMLPanel(ComplexPanel):
 
     def getElementById(self, element, id):
         element_id = DOM.getAttribute(element, "id")
-        if element_id != None and element_id == id:
+        if element_id is not None and element_id == id:
             return element
 
         child = DOM.getFirstChild(element)
-        while child != None:
+        while child is not None:
             ret = self.getElementById(child, id)
-            if ret != None:
+            if ret is not None:
                 return ret
             child = DOM.getNextSibling(child)
 

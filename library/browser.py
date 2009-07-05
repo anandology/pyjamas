@@ -2,11 +2,11 @@ from __pyjamas__ import JS
 
 class Element:
     def __init__(self, tag=None, element=None):
-        if tag != None:
+        if tag is not None:
             JS('''
             this.element = $doc.createElement(tag);
             ''')
-        elif element != None:
+        elif element is not None:
             self.element = element
         else:
             raise Exception("Cannot create Element without tag or element")

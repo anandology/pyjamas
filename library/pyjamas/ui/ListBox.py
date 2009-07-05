@@ -59,7 +59,7 @@ class ListBox(FocusWidget):
 
     # also callable as insertItem(item, index)
     def insertItem(self, item, value, index=None):
-        if index == None:
+        if index is None:
             index = value
             value = None
         DOM.insertListItem(self.getElement(), item, value, index)
@@ -113,7 +113,7 @@ class ListBox(FocusWidget):
 
     def setItemText(self, index, text):
         self.checkIndex(index)
-        if text == None:
+        if text is None:
             console.error("Cannot set an option to have null text")
             return
         DOM.setOptionText(self.getElement(), text, index)

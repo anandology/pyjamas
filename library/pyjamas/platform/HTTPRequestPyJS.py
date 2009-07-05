@@ -3,13 +3,13 @@ class HTTPRequest:
     # also callable as: asyncPost(self, url, postData, handler)
     def asyncPost(self, user, pwd, url, postData=None, handler=None,
                                         returnxml=0):
-        if postData == None:
+        if postData is None:
             return self.asyncPostImpl(None, None, user, pwd, url, returnxml)
         return self.asyncPostImpl(user, pwd, url, postData, handler, returnxml)
 
     # also callable as: asyncGet(self, url, handler)
     def asyncGet(self, user, pwd, url, handler, returnxml=0):
-        if url == None:
+        if url is None:
             return self.asyncGetImpl(None, None, user, pwd, returnxml)
         return self.asyncGetImpl(user, pwd, url, handler, returnxml)
 
