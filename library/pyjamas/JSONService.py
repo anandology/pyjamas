@@ -56,6 +56,10 @@ class JSONService:
             return -1
         return id
 
+    # dummy here - overridden in platform/JSONServicePyJS.py
+    def __sendNotify(self, method, params): pass
+    def __sendRequest(self, method, params, handler): pass
+
 
 class JSONRequestInfo:
     def __init__(self, id, method, handler):
