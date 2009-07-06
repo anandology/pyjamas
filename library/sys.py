@@ -20,17 +20,14 @@ def setappname(an):
     appname = an
 
 def getloadpath():
-    global loadpath
     return loadpath
 
 def addoverride(module_name, path):
-    global overrides
     overrides[module_name] = path
 
 __last_exception__ = None
 __last_exception_stack__ = None
 def exc_info():
-    global __last_exception__
     if not __last_exception__:
         return (None, None, None)
     return (__last_exception__.error.__class__, __last_exception__.error, None)
@@ -54,7 +51,6 @@ return null;
 }""")
 
 def trackstackstr(stack=None):
-    global __last_exception_stack__
     if stack is None:
         stack = __last_exception_stack__
     if not stack:

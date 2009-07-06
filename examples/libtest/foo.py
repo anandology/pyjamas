@@ -7,6 +7,6 @@ class Bar:
 bar = Bar()
 
 foo_value = 1
+
 def get_foo_value():
-    global foo_value
     return foo_value

@@ -39,8 +39,6 @@ class RootPanelCls(AbsolutePanel):
         """
 
         """
-        global rootPanels
-
         if rootPanels.has_key(id):
             return rootPanels[id]
 
@@ -63,8 +61,6 @@ class RootPanelCls(AbsolutePanel):
 
     @classmethod
     def onWindowClosed(cls):
-        global rootPanels
-
         for panel in rootPanels.itervalues():
             panel.onDetach()
 

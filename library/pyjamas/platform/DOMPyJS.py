@@ -86,7 +86,6 @@ def init():
     """)
 
 def addEventPreview(preview):
-    global sEventPreviewStack
     sEventPreviewStack.append(preview)
 
 def appendChild(parent, child):
@@ -335,7 +334,6 @@ def getBooleanAttribute(elem, attr):
     """)
 
 def getCaptureElement():
-    global sCaptureElem
     return sCaptureElem
 
 def getChild(elem, index):
@@ -609,7 +607,6 @@ def replaceChild(parent, newChild, oldChild):
     """)
 
 def removeEventPreview(preview):
-    global sEventPreviewStack
     sEventPreviewStack.remove(preview)
 
 def scrollIntoView(elem):
@@ -766,7 +763,6 @@ def dispatchEvent(event, element, listener):
     dispatchEventImpl(event, element, listener)
 
 def previewEvent(evt):
-    global sEventPreviewStack
     ret = True
     if len(sEventPreviewStack) > 0:
         preview = sEventPreviewStack[len(sEventPreviewStack) - 1]
@@ -793,7 +789,6 @@ def dispatchEventImpl(event, element, listener):
     currentEvent = prevCurrentEvent
 
 def eventGetCurrentEvent():
-    global currentEvent
     return currentEvent
 
 def insertListItem(select, item, value, index):

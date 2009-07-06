@@ -28,11 +28,9 @@ def aFunctionReturningFunction():
     return aFunctionReturningParam
 
 def aFunctionReturningGlobalX1():
-    global x
     return x
 
 def aFunctionReturningGlobalX2():
-    global x
     return x
 
 def aFunctionReturningGlobalX3():

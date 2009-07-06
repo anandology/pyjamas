@@ -212,10 +212,6 @@ class Table(Container):
     def attach(self, child, left_attach, right_attach,
                top_attach, bottom_attach, xoptions=None,
                yoptions=None, xpadding=0, ypadding=0):
-
-        global EXPAND
-        global FILL
-
         if xoptions is None:
             xoptions = EXPAND|FILL
         if yoptions is None:
@@ -352,7 +348,6 @@ class VBox(Box):
 
 class Window(Bin):
     def __init__(self, type=WINDOW_TOPLEVEL):
-        global WINDOW_TOPLEVEL
         Bin.__init__(self)
         browser.Document.window.catchEvents(['resize'], self)
 
@@ -375,7 +370,6 @@ class Window(Bin):
         self.child = child
 
     def set_title(self, title):
-        global WINDOW_TOPLEVEL
         self.title = title
         if self.type == WINDOW_TOPLEVEL:
             browser.Document.setTitle(title)
@@ -664,7 +658,6 @@ class Range(Widget):
 class Scale(Range):
 
     def __init__(self, adjustment=None):
-        global POS_TOP
         Range.__init__(self, adjustment)
         self.line = browser.Element('div')
         self.line.setStyle('position','absolute')
@@ -731,9 +724,6 @@ class VScale(Scale):
         self.minheight = 60
 
     def _redraw(self):
-        global POS_TOP
-        global POS_LEFT
-        global POS_RIGHT
         Scale._redraw(self)
         if not self.draw_value:
             self.line.setStyle('left',
@@ -801,8 +791,6 @@ class VScale(Scale):
             self.adjustment.set_value(value)
 
     def _adjustment_value_changed(self):
-        global POS_LEFT
-        global POS_RIGHT
         Scale._adjustment_value_changed(self)
         value = self.adjustment.get_value()
         if self.draw_value:
@@ -826,9 +814,6 @@ class HScale(Scale):
         self.minheight = 37
 
     def _redraw(self):
-        global POS_TOP
-        global POS_LEFT
-        global POS_RIGHT
         Scale._redraw(self)
         if not self.draw_value:
             self.line.setStyle('top',
@@ -898,8 +883,6 @@ class HScale(Scale):
             self.adjustment.set_value(value)
 
     def _adjustment_value_changed(self):
-        global POS_TOP
-        global POS_BOTTOM
         Scale._adjustment_value_changed(self)
         value = self.adjustment.get_value()
         if self.draw_value:
@@ -1320,7 +1303,6 @@ class Builder:
         klsname = node.attributes.getNamedItem('class').nodeValue
         id = node.attributes.getNamedItem('id').nodeValue
         log.writebr("%s %s" % (klsname, id))
-        global gtkmap
         obj = gtkmap[klsname]()
         props = node.getElementsByTagName("property")
         log.writebr("%s %d" % (klsname, props.length))

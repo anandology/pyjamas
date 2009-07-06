@@ -57,7 +57,6 @@ class History:
     """
 
     def addHistoryListener(self, listener):
-        global historyListeners
         historyListeners.append(listener)
 
     def back(self):
@@ -96,12 +95,9 @@ class History:
         pass
     
     def fireHistoryChangedImpl(self, historyToken):
-        global historyListeners
-        
         for listener in historyListeners:
             listener.onHistoryChanged(historyToken)
 
     def removeHistoryListener(self, listener):
-        global historyListeners
         historyListeners.remove(listener)
 

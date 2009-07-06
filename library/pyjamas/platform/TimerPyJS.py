@@ -36,8 +36,6 @@ class Timer:
         pass
     
     def cancel(self):
-        global timers
-        
         if self.isRepeating:
             self.clearInterval(self.timerId)
         else:
@@ -48,8 +46,6 @@ class Timer:
             self.listener.onTimer(self.timerId)
     
     def schedule(self, delayMillis):
-        global timers
-        
         if delayMillis < Timer.MIN_PERIOD:
             alert("Timer delay must be positive")
         self.cancel()
@@ -58,8 +54,6 @@ class Timer:
         timers.append(self)
 
     def scheduleRepeating(self, periodMillis):
-        global timers
-
         if periodMillis < Timer.MIN_PERIOD:
             alert("Timer period must be positive")
         self.cancel()
@@ -72,11 +66,8 @@ class Timer:
         self.fireImpl()
 
     def fireImpl(self):
-        global timers
-        
         if not self.isRepeating:
             timers.remove(self)
-
         self.run()
 
     def getID(self):

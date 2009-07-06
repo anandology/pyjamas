@@ -61,8 +61,6 @@ class Image(Widget):
                 listener.onError(self)
 
     def prefetch(self, url):
-        global prefetchImages
-
         img = DOM.createImg()
         DOM.setAttribute(img, "src", url)
         prefetchImages[url] = img

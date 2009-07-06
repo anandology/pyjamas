@@ -6,13 +6,10 @@ from pyjamas.ui.HTML import HTML
 from pyjamas.ui.RootPanel import RootPanel
 from pyjamas.Timer import Timer
 
-global tooltip_hide_timer 
 tooltip_hide_timer = None
 
 class Tooltip(PopupPanel):
     def __init__(self, sender, offsetX, offsetY, text, show_delay, hide_delay, styleName):
-        global tooltip_hide_timer
-        
         PopupPanel.__init__(self, True)
         self.show_delay = show_delay
         self.hide_delay = hide_delay
@@ -37,7 +34,7 @@ class Tooltip(PopupPanel):
         global tooltip_hide_timer
         
         # activate fast tooltips
-        tooltip_hide_timer=Timer(self.hide_delay, self)
+        tooltip_hide_timer = Timer(self.hide_delay, self)
         PopupPanel.show(self)
 
     def hide(self):

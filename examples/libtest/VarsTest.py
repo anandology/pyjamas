@@ -24,9 +24,6 @@ class VarsTest(UnitTest.UnitTest):
         return "Vars"
 
     def testGlobalListData(self):
-        global data
-        global data_test
-
         self.assertTrue(cmp(data, [1,2,3]), "global list should be [1,2,3]")
         self.assertTrue(data_test, "global test of list should be True")
 
@@ -44,7 +41,6 @@ class VarsTest(UnitTest.UnitTest):
         self.assertEqual(x, 3, "the value of x should be 3")
 
     def testGlobalVars(self):
-        global module_global_x
         self.assertEqual(module_global_x, 1)
 
     def testImports(self):
@@ -73,7 +69,6 @@ class VarsTest(UnitTest.UnitTest):
         self.assertEqual(foo.bar.X, 1)
 
     def testImport(self):
-        global myfoo, myfoo_value, myget_foo_value
         a0 = foo.foo_value
         a1 = 2
         self.assertEqual(myfoo_value, a0)

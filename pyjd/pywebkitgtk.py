@@ -525,7 +525,6 @@ class WebBrowser(gtk.Window):
 
 
 def setup(application, appdir=None, width=800, height=600):
-
     gtk.gdk.threads_init()
 
     global wv
@@ -540,7 +539,6 @@ def setup(application, appdir=None, width=800, height=600):
         run(one_event=True)
 
 def is_loaded():
-    global wv
     return wv.already_initialised
 
 def run(one_event=False):

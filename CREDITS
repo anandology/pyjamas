@@ -23,7 +23,7 @@ G Clinch
 Kees Boss
 Oisin Mulvihill
 Laszlo Krekacs - khiraly@gmail.com
-Stefan Schwarzer
+Stefan Schwarzer - <sschwarzer@sschwarzer.net>
 
 
 Erik gets a special mention for the contribution of the "Showcase".
@@ -36,10 +36,15 @@ Bernd's work on the core python compiler has been absolutely invaluable.
 
 G Clinch ported the DisclosurePanel from GWT
 
-Kees Boss added multiple inheritance support
+Kees Boss added multiple inheritance support and has just gone mad with
+the python-esque improvements since.
 
 Laszlo Krekacs has been adding little bits of language support, and also
 ported Toggle, Custom and Push buttons from GWT 1.6
+
+Stefan is a recent contributor since Europython and has been adding
+"formal correctness" patches that are more in line with python 2.5 and 2.6
+and python coding standards.
 
 James - thank you for kick-starting this project.
 

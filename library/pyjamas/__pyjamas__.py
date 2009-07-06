@@ -8,7 +8,6 @@ import sys
 if not sys.platform in  ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
     from traceback import print_stack
 
-global main_frame
 main_frame = None
 
 def noSourceTracking(*args):
@@ -30,11 +29,9 @@ def set_main_frame(frame):
     DOM.init()
 
 def get_main_frame():
-    global main_frame
     return main_frame
 
 def doc():
-    global main_frame
     try:
         return main_frame.getGdomDocument() # webkit
     except:
@@ -53,7 +50,6 @@ def JS(code):
     """ try to avoid using this function, it will only give you grief
         right now...
     """
-    global main_frame
     ctx = main_frame.gjs_get_global_context()
     try:
         return ctx.eval(code)
@@ -61,12 +57,10 @@ def JS(code):
         print "code", code
         print_stack()
 
-global pygwt_moduleNames
 pygwt_moduleNames = []
 
 def pygwt_processMetas():
     from pyjamas import DOM
-    global pygwt_moduleNames
     metas = doc().getElementsByTagName("meta")
     for i in range(metas.length):
         meta = metas.item(i)

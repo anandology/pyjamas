@@ -18,7 +18,6 @@ from pyjamas.ui import Event
 from pyjamas.ui.CellFormatter import CellFormatter
 from pyjamas.ui.RowFormatter import RowFormatter
 
-global widgethash
 widgethash = {}
 
 class HTMLTable(Panel):

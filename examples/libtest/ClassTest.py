@@ -427,7 +427,6 @@ class ExampleParentClass:
         return x
 
     def global_x1(self):
-        global x
         return x
 
     def global_x2(self):

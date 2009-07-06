@@ -38,7 +38,6 @@ def init_listeners():
         resizeListeners = []
 
 def init():
-    global onError
     init_listeners()
     JS("""
     $wnd.__pygwt_initHandlers(

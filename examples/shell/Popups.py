@@ -21,11 +21,9 @@ from pyjamas import DOM
 modal_popups = {}
 
 def ModalPopupActive(title):
-    global modal_popups
     return modal_popups.has_key(title)
 
 def ModalPopupCloseAll():
-    global modal_popups
     while len(modal_popups) > 0:
         k = modal_popups.keys()[0]
         modal_popups[k].hide()
@@ -148,7 +146,6 @@ class DialogBoxModal(PopupPanel):
         if self.showing:
             return
 
-        global modal_popups
         if modal_popups.has_key(self.identifier) and \
            modal_popups[self.identifier] != self:
             return
@@ -160,7 +157,6 @@ class DialogBoxModal(PopupPanel):
         if not self.showing:
             return
 
-        global modal_popups
         if modal_popups.has_key(self.identifier):
             del modal_popups[self.identifier]
 
@@ -181,8 +177,6 @@ class DialogBoxModal(PopupPanel):
 class PopupFrame(DialogBoxModal):
 
     def __init__(self, identifier, title, iframe):
-
-        global modal_popups
         if modal_popups.has_key(identifier):
             return
         modal_popups[identifier] = self

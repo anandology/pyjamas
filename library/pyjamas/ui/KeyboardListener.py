@@ -40,10 +40,6 @@ def getKeyboardModifiers(event):
     ctrl = 0
     alt = 0
 
-    global MODIFIER_ALT
-    global MODIFIER_CTRL
-    global MODIFIER_SHIFT
-
     if DOM.eventGetShiftKey(event):
         shift = MODIFIER_SHIFT
 

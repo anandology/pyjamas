@@ -31,7 +31,6 @@ listeners = {}
 def get_listener(item):
     if item is None:
         return None
-    global listeners
     if hasattr(item, "__instance__"):
         ret = listeners.get(item.__instance__)
     else:
@@ -39,7 +38,6 @@ def get_listener(item):
     return ret
 
 def set_listener(item, listener):
-    global listeners
     if hasattr(item, "__instance__"):
         listeners[item.__instance__] = listener
     else:
@@ -142,7 +140,6 @@ def _dispatchCapturedEvent(event):
 
 
 def addEventPreview(preview):
-    global sEventPreviewStack
     sEventPreviewStack.append(preview)
 
 def appendChild(parent, child):
@@ -369,7 +366,6 @@ def getBooleanElemAttribute(elem, attr):
     return bool(elem.getAttribute(attr))
 
 def getCaptureElement():
-    global sCaptureElem
     return sCaptureElem
 
 def getChild(elem, index):
@@ -604,7 +600,6 @@ def replaceChild(parent, newChild, oldChild):
     parent.replaceChild(newChild, oldChild)
 
 def removeEventPreview(preview):
-    global sEventPreviewStack
     sEventPreviewStack.remove(preview)
 
 def scrollIntoView(elem):
@@ -717,7 +712,6 @@ def sinkEvents(element, bits):
     @param bits: A combination of bits; see ui.Event for bit values
     """
     mask = getEventsSunk(element) ^ bits
-    global eventbitsmap
     eventbitsmap[element] = bits
     if not mask:
         return
@@ -776,7 +770,6 @@ def dispatchEvent(event, element, listener):
     dispatchEventImpl(event, element, listener)
 
 def previewEvent(evt):
-    global sEventPreviewStack
     ret = True
     if len(sEventPreviewStack) > 0:
         preview = sEventPreviewStack[len(sEventPreviewStack) - 1]
@@ -808,7 +801,6 @@ def dispatchEventImpl(event, element, listener):
     currentEvent = prevCurrentEvent
 
 def eventGetCurrentEvent():
-    global currentEvent
     return currentEvent
 
 def insertListItem(select, item, value, index):

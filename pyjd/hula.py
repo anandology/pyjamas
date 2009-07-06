@@ -122,7 +122,6 @@ class Browser(WebView):
         print "loading", progress
 
 def is_loaded():
-    global wv
     return wv.already_initialised
 
 def run(one_event=False, block=True):

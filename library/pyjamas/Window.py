@@ -27,11 +27,9 @@ def init_listeners():
     pass
 
 def addWindowCloseListener(listener):
-    global closingListeners
     closingListeners.append(listener)
 
 def addWindowResizeListener(listener):
-    global resizeListeners
     resizeListeners.append(listener)
 
 def alert(txt):
@@ -93,11 +91,9 @@ def open(url, name, features):
     document.parent.open(url, name, features)
 
 def removeWindowCloseListener(listener):
-    global closingListeners
     closingListeners.remove(listener)
 
 def removeWindowResizeListener(listener):
-    global resizeListeners
     resizeListeners.remove(listener)
 
 def setMargin(size):
@@ -130,8 +126,6 @@ def fireClosedAndCatch(handler):
     pass
 
 def fireClosedImpl():
-    global closingListeners
-    
     for listener in closingListeners:
         listener.onWindowClosed()
 
@@ -145,8 +139,6 @@ def resize(width, height):
     wnd().resize_by(width, height)
 
 def fireClosingImpl():
-    global closingListeners
-    
     ret = None
     for listener in closingListeners:
         msg = listener.onWindowClosing()
@@ -159,8 +151,6 @@ def fireResizedAndCatch(handler):
     pass
 
 def fireResizedImpl():
-    global resizeListeners
-
     for listener in resizeListeners:
         listener.onWindowResized(getClientWidth(), getClientHeight())
 
