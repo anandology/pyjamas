@@ -106,8 +106,12 @@ class ServiceProxy(JSONService):
             return JSONService.sendNotify(self, self.__serviceName, params)
 
 # reserved names: callMethod, onCompletion
-class JSONProxy(object):
+class JSONProxy(JSONService):
     def __init__(self, url, methods=None):
+        # don't call JSONService.__init__ here because we don't need it.
+        # only in the override (JSONServicePyJS.py) is JSONService.__init__
+        # needed.  in here, for pyjd, things are done slightly differently.
+        # (using __getattr__).
         self._serviceURL = "http://127.0.0.1/%s" % url # TODO: allow alternate locations
 
     def __createMethod(self, method):

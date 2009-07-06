@@ -120,7 +120,8 @@ if __name__ == '__main__':
     # for pyjd, set up a web server and load the HTML from there:
     # this convinces the browser engine that the AJAX will be loaded
     # from the same URI base as the URL, it's all a bit messy...
-    pyjd.setup("http://127.0.0.1/examples/jsonrpc/JSONRPCExample.html")
-    JSONRPCExample().onModuleLoad()
+    pyjd.setup("http://127.0.0.1/examples/jsonrpc/public/JSONRPCExample.html")
+    app = JSONRPCExample()
+    app.onModuleLoad()
     pyjd.run()
 
