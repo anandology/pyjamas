@@ -92,7 +92,7 @@ class ListBox(FocusWidget):
     def setItemSelected(self, index, selected):
         self.checkIndex(index)
         option = DOM.getChild(self.getElement(), index)
-        DOM.setBooleanAttribute(option, "selected", selected)
+        DOM.setIntAttribute(option, "selected", selected and 1 or 0)
 
     def setMultipleSelect(self, multiple):
         DOM.setBooleanAttribute(self.getElement(), "multiple", multiple)
