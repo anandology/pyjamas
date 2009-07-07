@@ -1,0 +1,179 @@
+==========
+Translator
+==========
+
+The python -> javascript translator translates a single module into a
+javascript file. It accepts a list of source files, where each of the
+files is an override of its predecessor.
+
+
+    >>> from pyjs import translator
+
+Let us write a simple module.
+
+    >>> import tempfile, os
+    >>> tmp = tempfile.mkdtemp()
+
+    >>> mymodule1 = os.path.join(tmp, 'mymodule1.py')
+    >>> out_file = os.path.join(tmp, 'mymodule.js')
+    >>> f = file(mymodule1, 'w')
+    >>> f.write("""
+    ... def main():
+    ...     print 1
+    ... if __name__=='__main__':
+    ...     main()
+    ... """)
+    >>> f.close()
+
+
+Compile our module.
+
+    >>> translator.translate([mymodule1], out_file,
+    ...                      debug=False,
+    ...                      print_statements = True,
+    ...                      function_argument_checking=True,
+    ...                      attribute_checking=True,
+    ...                      source_tracking=False,
+    ...                      line_tracking=False,
+    ...                      store_source=False)
+    []
+    >>> print file(out_file).read()
+    /* start module: mymodule1 */
+    var mymodule1 = $pyjs.loaded_modules["mymodule1"] = function (__mod_name__) {
+    ...
+	pyjslib.printFunc([1], 1);...
+
+
+Let us write an override and rewrite th main function.
+
+    >>> mymodule2 = os.path.join(tmp, 'mymodule2.py')
+    >>> f = file(mymodule2, 'w')
+    >>> f.write("""
+    ... def main():
+    ...     print 2
+    ... """)
+    >>> f.close()
+
+
+    >>> translator.translate([mymodule1, mymodule2], out_file,
+    ...                      debug=False,
+    ...                      print_statements = True,
+    ...                      function_argument_checking=True,
+    ...                      attribute_checking=True,
+    ...                      source_tracking=False,
+    ...                      line_tracking=False,
+    ...                      store_source=False)
+    []
+
+We now get the override.
+
+    >>> print file(out_file).read()
+    /* start module: mymodule1 */
+    var mymodule1 = $pyjs.loaded_modules["mymodule1"] = function (__mod_name__) {
+    ...
+	pyjslib.printFunc([2], 1);...
+    if (pyjslib.bool(pyjslib.eq(mymodule1.__name__, String('__main__')))) {
+    ...
+
+
+The import statement just generates js functions, it does not care if
+modules are there.
+
+    >>> imports = os.path.join(tmp, 'imports.py')
+    >>> f = file(imports, 'w')
+    >>> f.write("""
+    ... import a
+    ... import a.b
+    ... from a.b import c
+    ... from x import z as y
+    ... def main():
+    ...     import z as x
+    ... """)
+    >>> f.close()
+
+    >>> translator.translate([imports], out_file,
+    ...                      debug=False,
+    ...                      print_statements = True,
+    ...                      function_argument_checking=True,
+    ...                      attribute_checking=True,
+    ...                      source_tracking=False,
+    ...                      line_tracking=False,
+    ...                      store_source=False)
+    ['a', 'a.b', 'x', 'z']
+
+    >>> print file(out_file).read()
+    /* start module: imports */
+    ...
+    /*
+    PYJS_DEPS: ['a', 'a.b', 'x', 'z']
+    */
+
+
+    >>> baseclass = os.path.join(tmp, 'baseclass.py')
+    >>> f = file(baseclass, 'w')
+    >>> f.write("""
+    ... if 1:
+    ...     import pack4
+    ... import pack1
+    ... import pack1.mod
+    ... import pack1.mod as jod
+    ... from pack2.x import y
+    ... from pack2.x import something as z
+    ... print pack1
+    ... print y
+    ... def main():
+    ...     import pack3
+    ...     import pack3.sub
+    ...     import pack3.sub as pub
+    ...     from pack3 import z as y
+    ...     print pack3
+    ... """)
+    >>> f.close()
+
+    >>> deps = translator.translate([baseclass], out_file,
+    ...                      debug=False,
+    ...                      print_statements = True,
+    ...                      function_argument_checking=True,
+    ...                      attribute_checking=True,
+    ...                      source_tracking=False,
+    ...                      line_tracking=False,
+    ...                      store_source=False)
+
+Note that the __import__ function is called twice in edge-cases like
+the on in this example, it does not matter because duplicate imports
+do nothing. TODO: fix this
+
+    >>> for line in file(out_file):
+    ...     print line.strip()
+    /* start module: baseclass */
+    ...
+    try {
+    if (pyjslib.bool(1)) {
+    baseclass.pack4 = pyjslib.__import__('pack4', 'baseclass')
+    }
+    baseclass.pack1 = pyjslib.__import__('pack1', 'baseclass')
+    pyjslib.__import__('pack1.mod', 'baseclass')
+    baseclass.pack1 = pyjslib.__import__('pack1', 'baseclass')
+    baseclass.jod = pyjslib.__import__('pack1.mod', 'baseclass')
+    pyjslib.__import__('pack2.x', 'baseclass')
+    baseclass.y = pack2.x.y;
+    pyjslib.__import__('pack2.x', 'baseclass')
+    baseclass.z = pack2.x.something;
+    pyjslib.printFunc([baseclass.pack1], 1);
+    pyjslib.printFunc([baseclass.y], 1);
+    baseclass.main = function() {
+    if ($pyjs.options.arg_count && arguments.length != 0) pyjs__exception_func_param(arguments.callee.__name__, 0, 0, arguments.length);
+    var pack3 = pyjslib.__import__('pack3', 'baseclass')
+    pyjslib.__import__('pack3.sub', 'baseclass')
+    var pack3 = pyjslib.__import__('pack3', 'baseclass')
+    var pub = pyjslib.__import__('pack3.sub', 'baseclass')
+    pyjslib.__import__('pack3', 'baseclass')
+    var y = pack3.z;
+    pyjslib.printFunc([pack3], 1);
+    return null;
+    };
+    ...
+    */
+
+    >>> import shutil
+    >>> shutil.rmtree(tmp)

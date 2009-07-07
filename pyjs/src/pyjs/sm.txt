@@ -1,0 +1,51 @@
+===================
+Spidermonkey-Linker
+===================
+
+    >>> from pyjs import sm
+    >>> from pyjs.testing import (
+    ...     outputContainsSystemFiles,
+    ...     outputContainsPlatforms,
+    ...     outputContainsFiles,
+    ...     )
+
+The spidermonkey linker does not copy any files it just loads them
+from their current location.
+
+Let us generate a start file for the libtest example. We assume we are
+in the svn checkout here.
+
+    >>> import os
+    >>> libtest_dir = os.path.join(os.path.dirname(os.path.dirname(
+    ...     os.path.dirname(os.path.dirname(__file__)))), 'examples', 'libtest')
+
+    >>> import tempfile, os, shutil
+    >>> tmp = tempfile.mkdtemp()
+    >>> output = os.path.join(tmp, 'LibTest.js')
+
+Note that this linker does not need any platforms argument because it
+compiles just one.
+
+    >>> l = sm.SpidermonkeyLinker('LibTest',
+    ...                           output=output,
+    ...                           path=[libtest_dir])
+    >>> l()
+    >>> os.listdir(tmp)
+    ['LibTest.js']
+
+    >>> out_file = os.path.join(output, 'LibTest.js')
+    >>> print open(out_file).read()
+    var...
+    load('...pyjslib.__spidermonkey__.js', ...
+    load('.../public/_pyjs.js', '...sprintf.js');
+    <BLANKLINE>
+    pyjslib('pyjslib');
+    pyjslib.__import__('LibTest', 'LibTest', '__main__');...
+
+We can actually execute this with js.
+
+    >>> os.system('js %s' % output)
+    0
+
+    >>> shutil.rmtree(tmp)
+

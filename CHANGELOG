@@ -1,6 +1,38 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
+ * huge refactoring, with incompatible changes,  see TODO
+
+ * the translator and the linker are now split
+
+ * python packages are now supported
+
+ * translation (not linking) is done on a per-file basis like in
+   python, no requirement for existing imports anymore
+
+ * overrides are searched for in a namespace package e.g
+   (__mozilla__), this means we can place overrides anywhere in the
+   pyjs.path
+
+ * platforms can inherit from others e.g. spidermonkey inherits from
+   mozilla (multioverride - no need for runner specific special
+   translation like the PyJS hack)
+
+ * public folders are looked up in any directory where a module lives
+   - this means the data_directory option is gone
+
+ * pyjs/builtin/public now holds required bootstrap script files
+
+ * there is a dev directory where all scripts from pyjs are now
+   generated via normal setup.py and buildout
+
+ * in the dev directory a test script tests the translator, browser-
+   and spidermonkey-linker, the spidermonkey linker test actually runs
+   examples/libtest
+
+ * builtins now live in pyjs/builtin, those builtins (e.g. pyjslib)
+   are transparent from python
+
  * Patch from Stefan Schwarzer to replace != None with is not None
    and == None with is None, general clean-up.
 
@@ -31,7 +63,7 @@
 
  * Moved top-level option and track variable to safe variable $pyjs
 
- * Repaired pyv8 code 
+ * Repaired pyv8 code
 
  * Namespace safe module imports
 
@@ -45,12 +77,12 @@
 
  * Added support for toplevel conditional import/from-import
 
- * Added name mapping to protect javascript reserved function methods 
+ * Added name mapping to protect javascript reserved function methods
    and reserved local variables (e.g. .name/.prototype, this/arguments)
 
  * Revised name (variable/class/function/...) lookup
 
- * Extended compile option support for commandline building and 
+ * Extended compile option support for commandline building and
    compiling and for function / method decorators
 
  * Added __repr__() and toString() to list/tuple/dict
@@ -110,7 +142,7 @@
  * Added argument checking on all functions/methods
 
  * Added kwarg parsing on all generated functions
- 
+
  * Added parital implementation of super() function
 
  * Changed Javascript backend for generating classes
@@ -164,7 +196,7 @@
 
  * Add support for Google Gears (Database)
 
- * Completed DisclosurePanel port 
+ * Completed DisclosurePanel port
 
 
                     Changes made to Pyjamas since 0.5

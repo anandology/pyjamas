@@ -23,10 +23,10 @@ def init_web():
            $doc.body.appendChild(write. element); """)
 
 def write_std(text):
-    sys.stdout.write(text)
+    print text,
 
 def writebr_std(text):
-    sys.stdout.write(text + "\n")
+    print text
 
 if sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
     init_web()

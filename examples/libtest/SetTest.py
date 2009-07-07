@@ -15,68 +15,67 @@ from sets import Set
 
 
 class SetTest(UnitTest):
-	def __init__(self):
-		UnitTest.__init__(self)
+    def __init__(self):
+        UnitTest.__init__(self)
 
-	def getName(self):
-		return "Set"
+    def getName(self):
+        return "Set"
 
-	def testInit(self):
-		value = Set(['a', 'b', 'c'])
-		
-		self.assertTrue('b' in value)
-		self.assertTrue('d' not in value)
+    def testInit(self):
+        value = Set(['a', 'b', 'c'])
 
-	def testAdd(self):
-		value = Set()
-		value.add("a")
-		value.add("b")
-		value.add("a")		
-		
-		self.assertTrue('a' in value)
-		self.assertTrue('c' not in value)
-		self.assertTrue(len(value) is 2)
+        self.assertTrue('b' in value)
+        self.assertTrue('d' not in value)
 
-	def testRemove(self):
-		value = Set(['a', 'b', 'c'])
-		value.remove('a')
-		
-		self.assertTrue('a' not in value)
-		self.assertTrue('b' in value)
+    def testAdd(self):
+        value = Set()
+        value.add("a")
+        value.add("b")
+        value.add("a")
 
-	def testIter(self):
-		items = ['a', 'b', 'c']
-		value = Set(items)
-		
-		for i in value:
-			items.remove(i)			
+        self.assertTrue('a' in value)
+        self.assertTrue('c' not in value)
+        self.assertTrue(len(value) is 2)
 
-		self.assertTrue(len(items) is 0)
+    def testRemove(self):
+        value = Set(['a', 'b', 'c'])
+        value.remove('a')
 
-	def testAddObject(self):
-		v1 = DummyClass('a')
-		v2 = DummyClass('b')
-		v3 = DummyClass('b')
-		v4 = DummyClass('c')
-		items = [v1, v2, v3]
+        self.assertTrue('a' not in value)
+        self.assertTrue('b' in value)
 
-		value = Set()
-		value.add(v1)
-		value.add(v2)
-		value.add(v1)
-		value.add(v3)
-		
-		self.assertTrue(v1 in value)
-		self.assertTrue(v2 in value)
-		self.assertTrue(v3 in value)
-		self.assertTrue(v4 not in value)
-		self.assertTrue(len(value) is 3)
+    def testIter(self):
+        items = ['a', 'b', 'c']
+        value = Set(items)
+
+        for i in value:
+            items.remove(i)
+
+        self.assertTrue(len(items) is 0)
+
+    def testAddObject(self):
+        v1 = DummyClass('a')
+        v2 = DummyClass('b')
+        v3 = DummyClass('b')
+        v4 = DummyClass('c')
+
+        value = Set()
+        value.add(v1)
+        value.add(v2)
+        value.add(v1)
+        value.add(v3)
+
+        self.assertTrue(v1 in value)
+        self.assertTrue(v2 in value)
+        self.assertTrue(v3 in value)
+        self.assertTrue(v4 not in value)
+        self.assertTrue(len(value) is 3)
 
 
 class DummyClass:
-	def __init__(self, value):
-		self.value = value
-	
-	def getValue(self):
-		return self.value
+    def __init__(self, value):
+        self.value = value
+
+    def getValue(self):
+        return self.value
 

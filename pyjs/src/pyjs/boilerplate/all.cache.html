@@ -1,0 +1,103 @@
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <!--<script type="text/javascript" src="com.iskitz.ajile.js"></script>-->
+<script>
+var $wnd = parent;
+var $doc = $wnd.document;
+var $moduleName = "%(app_name)s";
+var $pyjs = new Object();
+$pyjs.modules = {};
+$pyjs.modules_hash = {};
+$pyjs.available_modules = %(available_modules)s;
+$pyjs.loaded_modules = {};
+$pyjs.options = new Object();
+$pyjs.options.set_all = function (v) {
+    $pyjs.options.arg_ignore = v;
+    $pyjs.options.arg_count = v;
+    $pyjs.options.arg_is_instance = v;
+    $pyjs.options.arg_instance_type = v;
+    $pyjs.options.arg_kwarg_dup = v;
+    $pyjs.options.arg_kwarg_unexpected_keyword = v;
+    $pyjs.options.arg_kwarg_multiple_values = v;
+}
+$pyjs.options.set_all(true);
+$pyjs.trackstack = [];
+$pyjs.track = {module:'__main__', lineno: 1};
+$pyjs.trackstack.push($pyjs.track);
+
+/*
+ * prepare app system vars
+ */
+$pyjs.platform = '%(platform)s';
+$pyjs.appname = '%(app_name)s';
+$pyjs.loadpath = './';
+
+</script>
+%(app_headers)s
+</head>
+<body onload="if (parent && parent.__pygwt_webModeFrameOnLoad) parent.__pygwt_webModeFrameOnLoad(window, '%(app_name)s');">
+<font face='arial' size='-1'>This script is part of module</font> <code>%(app_name)s</code>
+
+<script><!--
+
+/* early app libs */
+
+%(early_app_libs)s
+
+/* app libs */
+%(app_libs)s
+
+var wait_count = 0;
+
+var onExecutionError = function (exception, name) {
+    var extra = sys.trackstackstr();
+    if (extra == '') {
+        if (exception.name.indexOf('HaltException', 0) < 0) { 
+            extra = "\n.  Rebuild with pyjsbuild -d for more information.";
+        }
+    } else {
+        extra = "\n" + extra;
+    }
+    alert( "In application " + name + " - " + 
+          exception.name + ': '  + exception.message + extra);
+};
+
+function app_imported() {
+    //TODO: check if this is really needed
+    pyjslib('pyjslib');
+    pyjslib.__import__('%(app_name)s', '%(app_name)s', '__main__');
+    return;
+    try {
+        $pyjs.modules['%(app_name)s'] = %(app_name)s('__main__');
+    } catch (exception) {
+        sys.save_exception_stack();
+        onExecutionError(exception, '%(app_name)s');
+    }
+}
+
+function prepare_app() {
+    app_imported();
+     // TODO: we don't need it actually because of the late import call
+}
+
+function pygwtOnLoad(onLoadError, name) {
+     prepare_app();
+     return;
+    if (onLoadError != null)
+        try {
+            prepare_app();
+        } catch (exception) {
+            onLoadError(exception, name);
+        }
+    else {
+        prepare_app();
+    }
+}
+
+--></script>
+
+%(app_body)s
+
+</body>
+</html>

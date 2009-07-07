@@ -32,7 +32,7 @@ class BoolTest(UnitTest):
         return "Bool"
 
     def testBaseTypes(self):
-
+        print "in testBaseTypes"
         # meta test first
         self.assertTrue(True)
         self.assertFalse(False)
@@ -83,7 +83,7 @@ class BoolTest(UnitTest):
         while([]):
             self.fail("Empty lists should not evaluate to True in While")
             break;
-
         while([1]):
             return
         self.fail("None-empty lists should evaluate to True in While")
+

@@ -1,0 +1,19 @@
+=====
+Todos
+=====
+
+After the europython merge we have still some things to change.
+
+- fix all example build scripts
+
+- test all examples
+
+- move all python library modules implemented for js into pyjs/lib
+
+- move all builtin modules implemented for js into pyjs/builtin
+
+- fix v8 runner (implement linker)
+
+- evtl. fix spidermonkey runner, but there is a linker that already
+  uses the js commandline interface from spidermonkey
+

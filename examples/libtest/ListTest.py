@@ -235,6 +235,9 @@ class ListTest(UnitTest):
         try:
             l.index(200000)
         except ValueError, e:
+            print "------------------------"
+            print str(e)
+            print "------------------------"
             self.assertTrue(str(e) == "list.index(x): x not in list",
                             "ValueError exception has incorrect message")
         else:

@@ -67,6 +67,7 @@ class UnitTest:
         title="<b>" + self.getNameFmt("Test failed") + "</b>"
         writebr(title + msg)
         if sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
+            from __pyjamas__ import JS
             JS("""if (typeof console != 'undefined') {
                 console.error(msg)
                 console.trace()
@@ -123,8 +124,6 @@ class UnitTest:
             fg_colour="#000000"
 
         tests_passed=self.tests_completed - self.tests_failed
-
-
         if sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
             output="<table cellpadding=4 width=100%><tr><td bgcolor='" + bg_colour + "'><font face='arial' size=4 color='" + fg_colour + "'><b>"
         else:

@@ -3,5 +3,5 @@
 # and buildout in order to make pyjsbuild
 
 options="$*"
-if [ -z $options ] ; then options="-O";fi
-../../bin/pyjsbuild $options Hello.py
+#if [ -z $options ] ; then options="-O";fi
+../../bin/pyjsbuild --print-statements $options Hello

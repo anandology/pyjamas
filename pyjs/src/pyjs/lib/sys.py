@@ -1,6 +1,3 @@
-# the platform name (PyV8, smjs, Mozilla, IE6, Opera, Safari etc.)
-platform = '' # to be updated by app, on compile
-
 # a dictionary of module override names (platform-specific)
 overrides = None # to be updated by app, on compile
 
@@ -57,11 +54,11 @@ def trackstackstr(stack=None):
         return ''
     stackstrings = []
     for s in list(stack):
-        # s.module['__track_lines__'] might not exist yet
-        JS("var msg = (typeof s.module['__track_lines__'] == 'undefined'? '':eval(s.module + '.__track_lines__[' + s.lineno + ']'));")
+        JS("var msg = eval(s.module + '.__track_lines__[' + s.lineno + ']');")
         if msg:
             stackstrings.append(msg)
         else:
             stackstrings.append('%s.py, line %d' % (s.module, s.lineno))
     return '\n'.join(stackstrings)
 
+platform = JS('$pyjs.platform')

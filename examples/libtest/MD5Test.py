@@ -11,7 +11,8 @@ import UnitTest
 #     from md5 import md5
 from md5 import md5
 
-if sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
+if sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz',
+                    'safari', 'spidermonkey']:
 
     def hexstr(s):
         h = '0123456789abcdef'

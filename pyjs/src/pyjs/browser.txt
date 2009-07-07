@@ -1,0 +1,167 @@
+==============
+Browser-Linker
+==============
+
+    >>> from pyjs import browser
+    >>> from pyjs.testing import (
+    ...     outputContainsSystemFiles,
+    ...     outputContainsPlatforms,
+    ...     outputContainsFiles,
+    ...     )
+
+Let us generate some python code.
+
+    >>> import tempfile, os, shutil
+    >>> tmp = tempfile.mkdtemp()
+
+    >>> lib_path = os.path.join(tmp, 'lib')
+    >>> pp = os.path.join(lib_path, 'mypackage')
+    >>> os.makedirs(pp)
+    >>> mp = os.path.join(pp, '__init__.py')
+    >>> f = file(mp, 'w')
+    >>> f.write("""
+    ... # package
+    ... """)
+    >>> f.close()
+    >>> mp = os.path.join(pp, 'index.py')
+    >>> f = file(mp, 'w')
+    >>> f.write("""
+    ... def main():
+    ...     print 1
+    ... """)
+    >>> f.close()
+
+    >>> output = os.path.join(tmp, 'output')
+    >>> l = browser.BrowserLinker('mypackage.index',
+    ...                          output=output,
+    ...                          platforms=['ie6', 'mozilla'],
+    ...                          path=[lib_path])
+
+    >>> l()
+
+By default the javascript code is compiled to a subdirectory in the
+output directory.
+
+    >>> sorted(os.listdir(os.path.join(output, 'lib')))
+    ['mypackage.index.js', 'mypackage.js', 'pyjslib.__mozilla__.js', 'pyjslib.js']
+
+    >>> out_file = os.path.join(output, 'mypackage.index.ie6.cache.html')
+    >>> print file(out_file).read()
+    <html>...
+    var pyjslib = ...
+    var mypackage = $pyjs.loaded_modules["mypackage"] = function (__mod_name__)...
+
+    >>> outputContainsSystemFiles(output)
+    >>> outputContainsPlatforms(output, 'mypackage.index', ['ie6', 'mozilla'])
+    >>> outputContainsFiles(output, ['mypackage.index.html'])
+
+Let us add another package with some public folder.
+
+    >>> pp = os.path.join(lib_path, 'second_package')
+    >>> os.makedirs(pp)
+    >>> mp = os.path.join(pp, '__init__.py')
+    >>> f = file(mp, 'w')
+    >>> f.write("""
+    ... # package
+    ... """)
+    >>> f.close()
+    >>> mp = os.path.join(pp, 'widget.py')
+    >>> f = file(mp, 'w')
+    >>> f.write("""
+    ... # do something
+    ... """)
+    >>> f.close()
+    >>> p_dir = os.path.join(pp, 'public')
+    >>> os.mkdir(p_dir)
+    >>> mp = os.path.join(p_dir, 'second.css')
+    >>> f = file(mp, 'w')
+    >>> f.write("""
+    ... /* some css */
+    ... """)
+    >>> f.close()
+
+    >>> l()
+
+Public folders are merged together, but only if something of the
+package gets imported, which is not the case in this example right
+now.
+
+    >>> outputContainsSystemFiles(output)
+    >>> outputContainsPlatforms(output, 'mypackage.index', ['ie6', 'mozilla'])
+    >>> outputContainsFiles(output, ['mypackage.index.html'])
+
+So let us add an import.
+
+    >>> mp = os.path.join(lib_path, 'mypackage', 'index.py')
+    >>> f = file(mp, 'w')
+    >>> f.write("""
+    ... import second_package.widget
+    ... def main():
+    ...     print 1
+    ... if __name__=='__main__':
+    ...     main()
+    ... """)
+    >>> f.close()
+
+Now we have the contents of the public folder in our output directory.
+
+    >>> l()
+    >>> print sorted(os.listdir(output))
+    [..., 'second.css'...]
+
+Now we will add a sub module and import it.
+
+    >>> mp = os.path.join(lib_path, 'mypackage', 'util.py')
+    >>> f = file(mp, 'w')
+    >>> f.write("""
+    ... def log(msg):
+    ...     print msg
+    ... """)
+    >>> f.close()
+
+    >>> mp = os.path.join(lib_path, 'mypackage', 'index.py')
+    >>> f = file(mp, 'w')
+    >>> f.write("""
+    ... import second_package.widget
+    ... import util
+    ... def main():
+    ...     print 1
+    ... if __name__=='__main__':
+    ...     main()
+    ... """)
+    >>> f.close()
+
+    >>> l()
+    >>> outputContainsSystemFiles(output)
+    >>> outputContainsPlatforms(output, 'mypackage.index', ['ie6', 'mozilla'])
+    >>> outputContainsFiles(output, ['mypackage.index.html'])
+
+    >>> op = os.path.join(output, 'mypackage.index.ie6.cache.html')
+    >>> f = file(op, 'r')
+    >>> content = f.read()
+    >>> f.close()
+
+    >>> 'mypackage.util.log' in content
+    True
+
+Use an import of an unknown module.
+
+    >>> pp = os.path.join(lib_path, 'mypackage')
+    >>> mp = os.path.join(pp, 'index.py')
+    >>> f = file(mp, 'w')
+    >>> f.write("""
+    ... import unknown.module
+    ... """)
+    >>> f.close()
+    >>> l = browser.BrowserLinker('mypackage.index',
+    ...                          output=output,
+    ...                          platforms=['ie6', 'mozilla'],
+    ...                          path=[lib_path])
+    >>> l()
+    Traceback (most recent call last):
+    RuntimeError: Module 'unknown' found. Dep of {'...
+
+clean up!
+
+    >>> shutil.rmtree(tmp)
+
