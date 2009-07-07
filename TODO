@@ -4,6 +4,10 @@ Todos
 
 After the europython merge we have still some things to change.
 
+- test on windows (who is willing?)
+
+- fix debug stuff in translated code
+
 - fix all example build scripts
 
 - test all examples
