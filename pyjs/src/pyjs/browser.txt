@@ -144,7 +144,8 @@ Now we will add a sub module and import it.
     >>> 'mypackage.util.log' in content
     True
 
-Use an import of an unknown module.
+Use an import of an unknown module does not raise an exception because
+this is raised on runtime.
 
     >>> pp = os.path.join(lib_path, 'mypackage')
     >>> mp = os.path.join(pp, 'index.py')
@@ -158,8 +159,6 @@ Use an import of an unknown module.
     ...                          platforms=['ie6', 'mozilla'],
     ...                          path=[lib_path])
     >>> l()
-    Traceback (most recent call last):
-    RuntimeError: Module 'unknown' found. Dep of {'...
 
 clean up!
 

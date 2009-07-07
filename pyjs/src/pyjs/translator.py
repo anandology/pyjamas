@@ -758,6 +758,22 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             print >>self.output, self.indent() + function_name+'.parse_kwargs = function (', ", ".join(["__kwargs"]+arg_names), ") {"
         else:
             print >>self.output, self.indent() + ", function (", ", ".join(["__kwargs"]+arg_names), ") {"
+        print >>self.output, self.spacing() + "var __r = [];"
+        print >>self.output, self.spacing() + "var pyjs__va_arg_start = %d;" % (len(arg_names)+1)
+
+        if len(arg_names) > 0:
+            print >>self.output, """\
+%(s)sif (typeof %(arg_name)s != 'undefined' && this.__is_instance__ === false && %(arg_name)s.__is_instance__ === true) {
+%(s)s\t__r.push(%(arg_name)s);
+%(s)s\tpyjs__va_arg_start++;""" % {'s': self.spacing(), 'arg_name': arg_names[0]}
+            idx = 1
+            for arg_name in arg_names:
+                idx += 1
+                print >>self.output, """\
+%(s)s\t%(arg_name)s = arguments[%(idx)d];\
+""" % {'s': self.spacing(), 'arg_name': arg_name, 'idx': idx}
+            print >>self.output, self.spacing() + "}"
+
         for arg_name in arg_names:
             if self.function_argument_checking:
                 print >>self.output, """\
@@ -772,6 +788,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                 print >>self.output, self.indent() + "if (typeof %s == 'undefined') {"%(arg_name)
                 print >>self.output, self.spacing() + "%s=__kwargs.%s;"% (arg_name, arg_name)
                 print >>self.output, self.dedent() + "}"
+            print >>self.output, self.spacing() + "__r.push(%s);" % arg_name
 
         if self.function_argument_checking and not node.kwargs:
             print >>self.output, """\
@@ -783,12 +800,11 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
 """ % {'s': self.spacing(), 'function_name': function_name}
 
         # Always add all remaining arguments. Needed for argument checking _and_ if self != this;
-        print >>self.output, self.spacing() + "var __r = "+"".join(["[", ", ".join(arg_names), "]"])+";"
         print >>self.output, """\
-%(s)sfor (var pyjs__va_arg = %(a)d;pyjs__va_arg < arguments.length;pyjs__va_arg++) {
+%(s)sfor (var pyjs__va_arg = pyjs__va_arg_start;pyjs__va_arg < arguments.length;pyjs__va_arg++) {
 %(s)s\t__r.push(arguments[pyjs__va_arg]);
 %(s)s}
-""" % {'s': self.spacing(), 'a': len(arg_names)+1}
+""" % {'s': self.spacing()}
         if node.kwargs:
             print >>self.output, self.spacing() + "__r.push(pyjslib.Dict(__kwargs));"
         print >>self.output, self.spacing() + "return __r;"
@@ -796,6 +812,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             print >>self.output, self.dedent() + "};"
         else:
             print >>self.output, self.dedent() + "});"
+
 
     def _import(self, node, local=False):
         # XXX: hack for in-function checking, we should have another
@@ -845,6 +862,12 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                                                    self.raw_module_name)
         print >> self.output, self.spacing(), stmt
         for name in node.names:
+            sub = node.modname + '.' + name[0]
+            stmt = "pyjslib.__import__('%s', '%s')" % (
+                sub, self.raw_module_name)
+            print >> self.output, self.spacing(), stmt
+            self.add_imported_module(sub)
+
             ass_name = name[1] or name[0]
             if local:
                 lhs = 'var %s =' % ass_name

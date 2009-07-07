@@ -99,13 +99,13 @@ modules are there.
     ...                      source_tracking=False,
     ...                      line_tracking=False,
     ...                      store_source=False)
-    ['a', 'a.b', 'x', 'z']
+    ['a', 'a.b', 'a.b.c', 'x', 'x.z', 'z']
 
     >>> print file(out_file).read()
     /* start module: imports */
     ...
     /*
-    PYJS_DEPS: ['a', 'a.b', 'x', 'z']
+    PYJS_DEPS: ['a', 'a.b', 'a.b.c', 'x', 'x.z', 'z']
     */
 
 
@@ -147,7 +147,6 @@ do nothing. TODO: fix this
     ...     print line.strip()
     /* start module: baseclass */
     ...
-    try {
     if (pyjslib.bool(1)) {
     baseclass.pack4 = pyjslib.__import__('pack4', 'baseclass')
     }
@@ -156,18 +155,21 @@ do nothing. TODO: fix this
     baseclass.pack1 = pyjslib.__import__('pack1', 'baseclass')
     baseclass.jod = pyjslib.__import__('pack1.mod', 'baseclass')
     pyjslib.__import__('pack2.x', 'baseclass')
+    pyjslib.__import__('pack2.x.y', 'baseclass')
     baseclass.y = pack2.x.y;
     pyjslib.__import__('pack2.x', 'baseclass')
+    pyjslib.__import__('pack2.x.something', 'baseclass')
     baseclass.z = pack2.x.something;
     pyjslib.printFunc([baseclass.pack1], 1);
     pyjslib.printFunc([baseclass.y], 1);
     baseclass.main = function() {
-    if ($pyjs.options.arg_count && arguments.length != 0) pyjs__exception_func_param(arguments.callee.__name__, 0, 0, arguments.length);
+    ...
     var pack3 = pyjslib.__import__('pack3', 'baseclass')
     pyjslib.__import__('pack3.sub', 'baseclass')
     var pack3 = pyjslib.__import__('pack3', 'baseclass')
     var pub = pyjslib.__import__('pack3.sub', 'baseclass')
     pyjslib.__import__('pack3', 'baseclass')
+    pyjslib.__import__('pack3.z', 'baseclass')
     var y = pack3.z;
     pyjslib.printFunc([pack3], 1);
     return null;
