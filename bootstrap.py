@@ -70,23 +70,6 @@ elif engine == 'hulahop':
     from hula import *
 """
 
-pyjdrun = """#!%s
-
-pyjdpth = r'%s'
-
-import os
-import sys
-sys.path[0:0] = [
-  r'%s',
-  ]
-
-import pyjd
-sys.path += [os.path.join(pyjdpth, 'library')]
-
-if __name__ == '__main__':
-    pyjd.main()
-"""
-
 batcmdtxt = '''@echo off
 set CMD_LINE_ARGS=
 :setArgs
@@ -151,7 +134,6 @@ if __name__ == '__main__':
 
     make_cmd(prefix, pth, pyjspth, "pyjsbuild", pyjsbuild)
     make_cmd(prefix, pth, pyjspth, "pyjscompile", pyjscompile)
-    make_cmd(prefix, pth, pyjspth, "pyjdrun", pyjdrun)
 
     # create pyjd/__init__.py
     pyjdinitpth = os.path.join("pyjd", "__init__.py")
