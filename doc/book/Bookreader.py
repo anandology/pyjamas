@@ -1,3 +1,5 @@
+import pyjd # dummy in pyjs
+
 from pyjamas.ui.RootPanel import RootPanel
 from pyjamas.ui.HTML import HTML
 #from pyjamas.ui.NamedFrame import NamedFrame
@@ -117,7 +119,7 @@ class Bookreader:
         self.curSink.onShow()
         
     def loadSinks(self):
-        HTTPRequest().asyncPost("contents.txt", "", ChapterListLoader(self))
+        HTTPRequest().asyncGet("contents.txt", ChapterListLoader(self))
 
     def setChapters(self, chapters):
         for l in chapters:
@@ -138,6 +140,7 @@ class Bookreader:
 
 
 if __name__ == '__main__':
+    pyjd.setup("./public/Bookreader.html")
     app = Bookreader()
     app.onModuleLoad()
-
+    pyjd.run()

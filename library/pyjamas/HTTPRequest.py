@@ -18,7 +18,7 @@ class HTTPRequest:
         return self.asyncPostImpl(user, pwd, url, postData, handler)
 
     # also callable as: asyncGet(self, url, handler)
-    def asyncGet(self, user, pwd, url, handler):
+    def asyncGet(self, user, pwd, url=None, handler=None):
         if url is None:
             return self.asyncGetImpl(None, None, user, pwd)
         return self.asyncGetImpl(user, pwd, url, handler)
@@ -114,19 +114,31 @@ class HTTPRequest:
         
 
     def asyncGetImpl(self, user, pwd, url, handler):
+        mf = get_main_frame()
+        if url[0] != '/':
+            uri = mf.getUri()
+            if url[:7] != 'file://' and url[:7] != 'http://' and \
+               url[:8] != 'https://':
+                slash = uri.rfind('/')
+                url = uri[:slash+1] + url
         xmlHttp = self.doCreateXmlHTTPRequest()
         print dir(xmlHttp)
-        try :
-            xmlHttp.open("GET", url, true, None, None)
-            xmlHttp.setRequestHeader("Content-Type", "text/plain charset=utf-8")
-            # TODO: xmlHttp.onreadystatechange = self.onReadyStateChange
-            xmlHttp.send('')
-            return True
-        
-        except:
-            #TODO: del xmlHttp.onreadystatechange
-            handler = None
-            xmlHttp = None
-            localHandler.onError(String(e))
-            return False
+        print user, pwd, url, handler
+        #try :
+
+        if mf.platform == 'webkit':
+            xmlHttp.open("GET", url, True, user, pwd)
+        else:
+            xmlHttp.open("POST", url)
+        xmlHttp.setRequestHeader("Content-Type", "text/plain charset=utf-8")
+        # TODO: xmlHttp.onreadystatechange = self.onReadyStateChange
+        xmlHttp.send('')
+        return True
+    
+        #except:
+        #    #TODO: del xmlHttp.onreadystatechange
+        #    handler = None
+        #    xmlHttp = None
+        #    handler.onError(err)
+        #    return False
         
