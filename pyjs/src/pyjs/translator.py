@@ -2466,52 +2466,105 @@ def add_compile_options(parser):
     speed_options = {}
 
     parser.add_option("-d", "--debug",
-                      dest="debug", default=False,
+                      dest="debug",
                       action="store_true",
-                      help="Enable debugging in output."
-                      )
+                      help="Wrap function calls with javascript debug code",
+                     )
+    parser.add_option("--no-debug",
+                      dest="debug",
+                      action="store_false",
+                     )
+    speed_options['debug'] = False
 
+    parser.add_option("--no-print-statements",
+                      dest="print_statments",
+                      action="store_false",
+                      help="Remove all print statements",
+                     )
     parser.add_option("--print-statements",
                       dest="print_statements",
                       action="store_true",
-                      default=False,
-                      help="Generate code for print statements"
-                      )
+                      help="Generate code for print statements",
+                     )
+    speed_options['print_statements'] = False
 
     parser.add_option("--no-function-argument-checking",
                       dest = "function_argument_checking",
                       action="store_false",
-                      default=True,
-                      help = "Generate no code for function argument checking"
-                      )
+                      help = "Do not generate code for function argument checking",
+                     )
+    parser.add_option("--function-argument-checking",
+                      dest = "function_argument_checking",
+                      action="store_true",
+                      help = "Generate code for function argument checking",
+                     )
+    speed_options['function_argument_checking'] = False
 
     parser.add_option("--no-attribute-checking",
                       dest = "attribute_checking",
-                      default=True,
                       action="store_false",
-                      help = "Generate no code for attribute checking"
-                      )
+                      help = "Do not generate code for attribute checking",
+                     )
+    parser.add_option("--attribute-checking",
+                      dest = "attribute_checking",
+                      action="store_true",
+                      help = "Generate code for attribute checking",
+                     )
+    speed_options['attribute_checking'] = False
 
+    parser.add_option("--no-source-tracking",
+                      dest = "source_tracking",
+                      action="store_false",
+                      help = "Do not generate code for source tracking",
+                     )
     parser.add_option("--source-tracking",
                       dest = "source_tracking",
                       action="store_true",
-                      default=False,
-                      help = "Generate code for source tracking"
-                      )
+                      help = "Generate code for source tracking",
+                     )
+    speed_options['source_tracking'] = False
 
+    parser.add_option("--no-line-tracking",
+                      dest = "line_tracking",
+                      action="store_true",
+                      help = "Do not generate code for source tracking on every line",
+                     )
     parser.add_option("--line-tracking",
                       dest = "line_tracking",
                       action="store_true",
-                      default=False,
-                      help = "Generate code for source tracking on every line"
-                      )
+                      help = "Generate code for source tracking on every line",
+                     )
 
+    parser.add_option("--no-store-source",
+                      dest = "store_source",
+                      action="store_false",
+                      help = "Do not store python code in javascript",
+                     )
     parser.add_option("--store-source",
                       dest = "store_source",
                       action="store_true",
-                      default=False,
-                      help = "Store python code line in javascript"
-                      )
+                      help = "Store python code in javascript",
+                     )
+
+
+    def set_multiple(option, opt_str, value, parser, **kwargs):
+        for k in kwargs.keys():
+            setattr(parser.values, k, kwargs[k])
+
+    parser.add_option("-O",
+                      action="callback",
+                      callback = set_multiple,
+                      callback_kwargs = speed_options,
+                      help="Set all options that maximize speed",
+                     )
+    parser.set_defaults(debug=False,
+                        print_statements=True,
+                        function_argument_checking = True,
+                        attribute_checking = True,
+                        source_tracking = True,
+                        line_tracking = True,
+                        store_source = True,
+                       )
 
 
 usage = """
