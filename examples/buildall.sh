@@ -24,4 +24,5 @@
 (cd widgets; ./build.sh $*)
 (cd ajaxlibtest; ./build.sh $*)
 (cd xmldoc; ./build.sh $*)
-(cd employeeadmin; ./build.sh $*)
+# missing svn add??
+#(cd employeeadmin; ./build.sh $*)

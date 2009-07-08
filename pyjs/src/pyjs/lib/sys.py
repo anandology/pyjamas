@@ -22,16 +22,14 @@ def getloadpath():
 def addoverride(module_name, path):
     overrides[module_name] = path
 
-__last_exception__ = None
-__last_exception_stack__ = None
 def exc_info():
-    if not __last_exception__:
+    le = JS('$pyjs.__last_exception__')
+    if not le:
         return (None, None, None)
-    return (__last_exception__.error.__class__, __last_exception__.error, None)
+    return (le.error.__class__, __last_exception__.error, None)
 
 def exc_clear():
-    global __last_exception__
-    __last_exception__ = None
+    JS('$pyjs.__last_exception__ = null;')
 
 # save_exception_stack is totally javascript, to prevent trackstack pollution
 JS("""sys.save_exception_stack = function () {
@@ -42,14 +40,14 @@ JS("""sys.save_exception_stack = function () {
             t[p] = $pyjs.trackstack[needle][p];
         }
         save_stack.push(t);
-        sys.__last_exception_stack__ = save_stack;
+        $pyjs.__last_exception_stack__ = save_stack;
     }
 return null;
 }""")
 
 def trackstackstr(stack=None):
     if stack is None:
-        stack = __last_exception_stack__
+        stack = JS('$pyjs.__last_exception_stack__')
     if not stack:
         return ''
     stackstrings = []

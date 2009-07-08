@@ -1144,7 +1144,7 @@ if (%(e)s.__name__ == 'TryElse') {""" % {'e': pyjs_try_err}
         print >> self.output, self.spacing() + """\
 var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__name__ );\
 """ % {'e': pyjs_try_err}
-        print >> self.output, self.spacing() + "sys.__last_exception__ = {error: %s, module: %s, try_lineno: %s};" % (pyjs_try_err, self.raw_module_name, node.lineno)
+        print >> self.output, self.spacing() + "$pyjs.__last_exception__ = {error: %s, module: %s, try_lineno: %s};" % (pyjs_try_err, self.raw_module_name, node.lineno)
         if self.source_tracking:
             print >>self.output, """\
 %(s)ssys.save_exception_stack();
@@ -1179,7 +1179,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                         l = [ "%s_name == %s.__name__" % (pyjs_try_err, self.expr(expr, current_klass)) ]
                     print >> self.output, "%sif (%s) {" % (else_str, "||".join(l))
                 self.indent()
-                print >> self.output, self.spacing() + "sys.__last_exception__.except_lineno = %d;" % lineno
+                print >> self.output, self.spacing() + "$pyjs.__last_exception__.except_lineno = %d;" % lineno
                 tnode = ast.Assign([ast.AssName(errName, "OP_ASSIGN", lineno)], ast.Name(pyjs_try_err, lineno), lineno)
                 self._assign(tnode, current_klass, top_level)
                 for stmt in handler[2]:
@@ -1350,7 +1350,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 print >> self.output, self.spacing() + "throw (%s);" % self.expr(
                     node.expr1, current_klass)
         else:
-            print >> self.output, self.spacing() + "throw (sys.__last_exception__?sys.__last_exception__.error:pyjslib.TypeError('exceptions must be classes, instances, or strings (deprecated), not NoneType'));"
+            print >> self.output, self.spacing() + "throw ($pyjs.__last_exception__?$pyjs.__last_exception__.error:pyjslib.TypeError('exceptions must be classes, instances, or strings (deprecated), not NoneType'));"
 
     def _method(self, node, current_klass, class_name, class_name_, local_prefix):
         self.push_options()

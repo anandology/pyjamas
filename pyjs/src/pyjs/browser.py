@@ -196,7 +196,8 @@ def build_script():
 
     if options.platforms:
        app_platforms = options.platforms.lower().split(',')
-    print pyjs.path
+    print "Building:", top_module
+    print "PYJSPATH:", pyjs.path
 
     translator_arguments=dict(
         debug=options.debug,
@@ -213,3 +214,4 @@ def build_script():
                       path=pyjs.path,
                       translator_arguments=translator_arguments)
     l()
+    print "Built to :", os.path.abspath(options.output)
