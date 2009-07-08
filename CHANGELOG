@@ -1,6 +1,9 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
+ * Tuples no more behave like List. No mutating methods anymore to go
+   inline with the pyhton implementation.
+
  * huge refactoring, with incompatible changes,  see TODO
 
  * the translator and the linker are now split
