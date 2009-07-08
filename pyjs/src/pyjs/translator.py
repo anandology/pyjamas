@@ -2132,7 +2132,7 @@ def merge(tree1, tree2):
             replaceClassMethods(tree1, child.name, child)
         else:
             raise TranslationError(
-                "Do not know how to merge", child, self.module_name)
+                "Do not know how to merge", child)
     return tree1
 
 def replaceFunction(tree, function_name, function_node):

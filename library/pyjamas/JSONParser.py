@@ -1,7 +1,7 @@
-from pyjamas.__pyjamas__ import JS
+from __pyjamas__ import JS
 import math
 
-JS("""
+"""
 /*
 JSONEncode:
     +---------------+-------------------+---------------+
@@ -44,7 +44,8 @@ JSONDecode:
     | null          | None              | null         |
     +---------------+-------------------+--------------+
 */
-""")
+"""
+
 
 # toJSONString & parseJSON from http://www.json.org/json.js
 

@@ -8,10 +8,6 @@
 import sys
 from pyjamas.HTTPRequest import HTTPRequest
 import pygwt
-if sys.platform not in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
-    from jsonrpc.json import dumps, loads, JSONDecodeException
-else:
-    from pyjamas.JSONParser import JSONParser
 
 # no stream support
 class JSONService:
@@ -40,6 +36,7 @@ class JSONService:
         pass
 
     def sendNotify(self, method, params):
+        from jsonrpc.json import dumps
         msg = {"id": None, "method": method, "params": params}
         msg_data = dumps(msg)
         if not HTTPRequest().asyncPost(self.url, msg_data, self):
@@ -47,6 +44,7 @@ class JSONService:
         return 1
 
     def sendRequest(self, method, params, handler):
+        from jsonrpc.json import dumps
         id = pygwt.getNextHashId()
         msg = {"id":id, "method":method, "params":params}
         msg_data = dumps(msg)
@@ -73,7 +71,7 @@ class JSONResponseTextHandler:
         self.request = request
 
     def onCompletion(self, json_str):
-
+        from jsonrpc.json import loads, JSONDecodeException
         try:
             response = loads(json_str)
         except JSONDecodeException:

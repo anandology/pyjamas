@@ -1,4 +1,3 @@
-
 # no stream support
 class JSONService:
     def __init__(self, url, handler = None):
@@ -10,6 +9,7 @@ class JSONService:
         accept the return value of the remote method, and 
         onRemoteError(code, message, requestInfo) to handle errors.
         """
+        from pyjamas.JSONParser import JSONParser
         self.parser = JSONParser()
         self.url = url
         self.handler = handler
@@ -56,6 +56,7 @@ class JSONResponseTextHandler:
         self.request = request
 
     def onCompletion(self, json_str):
+        from pyjamas.JSONParser import JSONParser
         response = JSONParser().decodeAsObject(json_str)
 
         if not response:
