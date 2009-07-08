@@ -151,12 +151,12 @@ class Klass:
 
 
 class TranslationError(Exception):
-    def __init__(self, message, node):
+    def __init__(self, message, node, module_name=''):
         if node:
             lineno = node.lineno
         else:
             lineno = "Unknown"
-        self.message = "line %s:\n%s\n%s" % (lineno, message, node)
+        self.message = "%s line %s:\n%s\n%s" % (module_name, lineno, message, node)
 
     def __str__(self):
         return self.message
@@ -337,7 +337,9 @@ class Translator:
                 elif isinstance(child, ast.Stmt):
                     self._stmt(child, None)
                 else:
-                    raise TranslationError("unsupported type (in __init__)", child)
+                    raise TranslationError(
+                        "unsupported type (in __init__)",
+                        child, self.module_name)
             self.output = buffered_output
 
         self.output = save_output
@@ -378,7 +380,7 @@ class Translator:
 
     def dedent(self):
         if self.indent_level == 0:
-            raise TranslationError("Dedent error", None)
+            raise TranslationError("Dedent error", None, self.module_name)
         self.indent_level -= 1
         return self.spacing()
 
@@ -406,7 +408,8 @@ class Translator:
             elif d.name == 'classmethod':
                 classmethod = True
             else:
-                raise TranslationError("Unknown decorator '%s'" % d.name, node)
+                raise TranslationError(
+                    "Unknown decorator '%s'" % d.name, node, self.module_name)
         return (staticmethod, classmethod)
 
     def remap_regex(self, re_list, *words):
@@ -995,14 +998,20 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                         self.has_js_return = True
                     return v.args[0].value
                 else:
-                    raise TranslationError("native js functions only support constant strings",v.node)
+                    raise TranslationError(
+                        "native js functions only support constant strings",
+                        v.node, self.module_name)
             elif v.node.name == NATIVE_WND_FUNC_NAME:
                 if len(v.args) != 0:
-                    raise TranslationError("native wnd function doesn't support arguments",v.node)
+                    raise TranslationError(
+                        "native wnd function doesn't support arguments",
+                        v.node, self.module_name)
                 return '$wnd'
             elif v.node.name == NATIVE_DOC_FUNC_NAME:
                 if len(v.args) != 0:
-                    raise TranslationError("native doc function doesn't support arguments",v.node)
+                    raise TranslationError(
+                        "native doc function doesn't support arguments",
+                        v.node, self.module_name)
                 return '$doc'
             else:
                 name_type, pyname, jsname, depth, is_local = self.lookup(v.node.name)
@@ -1032,7 +1041,8 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                 call_name = self.expr(v.node.expr, current_klass) + "." + v.node.attrname
                 call_args = []
             else:
-                raise TranslationError("unsupported type (in _callfunc)", v.node.expr)
+                raise TranslationError(
+                    "unsupported type (in _callfunc)", v.node.expr, self.module_name)
         elif isinstance(v.node, ast.CallFunc):
             call_name = self._callfunc(v.node, current_klass)
             call_args = []
@@ -1040,7 +1050,8 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             call_name = self._subscript(v.node, current_klass)
             call_args = []
         else:
-            raise TranslationError("unsupported type (in _callfunc)", v.node)
+            raise TranslationError(
+                "unsupported type (in _callfunc)", v.node, self.module_name)
 
         call_name = strip_py(call_name)
 
@@ -1207,7 +1218,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         elif isinstance(v.expr, ast.CallFunc):
             return self._callfunc(v.expr, self.modpfx()) + "." + attr_name
         else:
-            raise TranslationError("unsupported type (in _getattr)", v.expr)
+            raise TranslationError(
+                "unsupported type (in _getattr)", v.expr, self.module_name)
 
 
     def modpfx(self):
@@ -1268,7 +1280,9 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                     node_base_name = node_base.attrname
                     base_class = self.expr(node_base, None)
                 else:
-                    raise TranslationError("unsupported type (in _class)", node_base)
+                    raise TranslationError(
+                        "unsupported type (in _class)",
+                        node_base, self.module_name)
                 base_classes.append((node_base_name, base_class))
             current_klass.set_base(base_classes[0][1])
 
@@ -1301,7 +1315,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 # Probably a docstring, turf it
                 pass
             else:
-                raise TranslationError("unsupported type (in _class)", child)
+                raise TranslationError(
+                    "unsupported type (in _class)", child, self.module_name)
         print >>self.output, """\
 %(s)sreturn pyjs__class_function(cls_instance, cls_definition, 
 %(s)s                            new Array(""" % {'s': self.spacing()}  + ",".join(map(lambda x: x[1], base_classes)) + """));
@@ -1313,7 +1328,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
     def _raise(self, node, current_klass):
         if node.expr3:
             raise TranslationError("More than two expressions unsupported",
-                                   node)
+                                   node, self.module_name)
         if node.expr1:
             if node.expr2:
                 print >> self.output, """
@@ -1481,7 +1496,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         elif isinstance(node, ast.From):
             self._from(node, True)
         else:
-            raise TranslationError("unsupported type (in _stmt)", node)
+            raise TranslationError(
+                "unsupported type (in _stmt)", node, self.module_name)
 
 
     def get_start_line(self, node, lineno):
@@ -1545,7 +1561,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             elif isinstance(v.expr, ast.Subscript):
                 lhs = self._subscript(v.expr, current_klass) + "." + attr_name
             else:
-                raise TranslationError("unsupported type (in _assign)", v.expr)
+                raise TranslationError(
+                    "unsupported type (in _assign)", v.expr, self.module_name)
             return lhs
 
         def _lhsFromName(v, top_level, current_klass):
@@ -1574,7 +1591,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             if v.flags == "OP_ASSIGN":
                 op = "="
             else:
-                raise TranslationError("unsupported flag (in _assign)", v)
+                raise TranslationError(
+                    "unsupported flag (in _assign)", v, self.module_name)
 
         elif isinstance(v, ast.AssName):
             rhs = self.expr(node.expr, current_klass)
@@ -1582,18 +1600,21 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             if v.flags == "OP_ASSIGN":
                 op = "="
             else:
-                raise TranslationError("unsupported flag (in _assign)", v)
+                raise TranslationError(
+                    "unsupported flag (in _assign)", v, self.module_name)
         elif isinstance(v, ast.Subscript):
             if v.flags == "OP_ASSIGN":
                 obj = self.expr(v.expr, current_klass)
                 if len(v.subs) != 1:
-                    raise TranslationError("must have one sub (in _assign)", v)
+                    raise TranslationError(
+                        "must have one sub (in _assign)", v, self.module_name)
                 idx = self.expr(v.subs[0], current_klass)
                 value = self.expr(node.expr, current_klass)
                 print >>self.output, self.spacing() + self.track_call(obj + ".__setitem__(" + idx + ", " + value + ");")
                 return
             else:
-                raise TranslationError("unsupported flag (in _assign)", v)
+                raise TranslationError(
+                    "unsupported flag (in _assign)", v, self.module_name)
         elif isinstance(v, (ast.AssList, ast.AssTuple)):
             tempName = self.uniqid("__tupleassign__")
             print >>self.output, self.spacing() + "var " + tempName + " = " + \
@@ -1610,7 +1631,9 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                         obj = self.expr(child.expr, current_klass)
                         if len(child.subs) != 1:
                             raise TranslationError("must have one sub " +
-                                                   "(in _assign)", child)
+                                                   "(in _assign)",
+                                                   child,
+                                                   self.module_name)
                         idx = self.expr(child.subs[0], current_klass)
                         value = self.expr(node.expr, current_klass)
                         print >>self.output, self.spacing() + self.track_call(obj + ".__setitem__(" \
@@ -1619,7 +1642,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 print >>self.output, self.spacing() + lhs + " = " + rhs + ";"
             return
         else:
-            raise TranslationError("unsupported type (in _assign)", v)
+            raise TranslationError(
+                "unsupported type (in _assign)", v, self.module_name)
 
         if dbg:
             print "b", repr(node.expr), rhs
@@ -1631,9 +1655,13 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         if isinstance(node.expr, ast.CallFunc):
             if isinstance(node.expr.node, ast.Name) and node.expr.node.name == NATIVE_JS_FUNC_NAME:
                 if len(node.expr.args) != 1:
-                    raise TranslationError("native javascript function %s must have one arg" % NATIVE_JS_FUNC_NAME, node.expr)
+                    raise TranslationError(
+                        "native javascript function %s must have one arg" % NATIVE_JS_FUNC_NAME,
+                        node.expr, self.module_name)
                 if not isinstance(node.expr.args[0], ast.Const):
-                    raise TranslationError("native javascript function %s must have constant arg" % NATIVE_JS_FUNC_NAME, node.expr)
+                    raise TranslationError(
+                        "native javascript function %s must have constant arg" % NATIVE_JS_FUNC_NAME,
+                        node.expr, self.module_name)
                 raw_js = node.expr.args[0].value
                 if self.re_return.search(raw_js):
                     self.has_js_return = True
@@ -1646,7 +1674,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             if node.expr.value is not None: # Empty statements generate ignore None
                 print >>self.output, self.spacing() + self._const(node.expr)
         else:
-            raise TranslationError("unsupported type (in _discard)", node.expr)
+            raise TranslationError(
+                "unsupported type (in _discard)", node.expr,  self.module_name)
 
 
     def _if(self, node, current_klass):
@@ -1679,7 +1708,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             for child in consequence.nodes:
                 self._stmt(child, current_klass)
         else:
-            raise TranslationError("unsupported type (in _if_test)", consequence)
+            raise TranslationError(
+                "unsupported type (in _if_test)", consequence,  self.module_name)
 
         print >>self.output, self.dedent() + "}"
 
@@ -1688,7 +1718,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         lhs = self.expr(node.expr, current_klass)
 
         if len(node.ops) != 1:
-            raise TranslationError("only one ops supported (in _compare)", node)
+            raise TranslationError(
+                "only one ops supported (in _compare)", node,  self.module_name)
 
         op = node.ops[0][0]
         rhs_node = node.ops[0][1]
@@ -1752,7 +1783,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 """ % locals())
                 i += 1
         else:
-            raise TranslationError("unsupported type (in _for)", node.assign)
+            raise TranslationError(
+                "unsupported type (in _for)", node.assign, self.module_name)
 
         if isinstance(node.list, ast.Name):
             list_expr = self._name(node.list, current_klass)
@@ -1771,7 +1803,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         elif isinstance(node.list, ast.Slice):
             list_expr = self._slice(node.list, current_klass)
         else:
-            raise TranslationError("unsupported type (in _for)", node.list)
+            raise TranslationError(
+                "unsupported type (in _for)", node.list, self.module_name)
 
         assign_name = self.add_lookup('variable', assign_name, assign_name)
         lhs = "var " + assign_name
@@ -1813,7 +1846,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             for child in node.body.nodes:
                 self._stmt(child, current_klass)
         else:
-            raise TranslationError("unsupported type (in _while)", node.body)
+            raise TranslationError(
+                "unsupported type (in _while)", node.body, self.module_name)
         print >>self.output, "    }"
 
 
@@ -1830,7 +1864,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         elif node.value is None:
             return "null"
         else:
-            raise TranslationError("unsupported type (in _const)", node)
+            raise TranslationError(
+                "unsupported type (in _const)", node, self.module_name)
 
     def _unaryadd(self, node, current_klass):
         return self.expr(node.expr, current_klass)
@@ -1883,15 +1918,18 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             if len(node.subs) == 1:
                 return self.track_call(self.expr(node.expr, current_klass) + ".__getitem__(" + self.expr(node.subs[0], current_klass) + ")")
             else:
-                raise TranslationError("must have one sub (in _subscript)", node)
+                raise TranslationError(
+                    "must have one sub (in _subscript)", node, self.module_name)
         else:
-            raise TranslationError("unsupported flag (in _subscript)", node)
+            raise TranslationError(
+                "unsupported flag (in _subscript)", node, self.module_name)
 
     def _subscript_stmt(self, node, current_klass):
         if node.flags == "OP_DELETE":
             print >>self.output, "    " + self.track_call(self.expr(node.expr, current_klass) + ".__delitem__(" + self.expr(node.subs[0], current_klass) + ");")
         else:
-            raise TranslationError("unsupported flag (in _subscript)", node)
+            raise TranslationError(
+                "unsupported flag (in _subscript)", node, self.module_name)
 
     def _list(self, node, current_klass):
         return self.track_call("new pyjslib.List([" + ", ".join([self.expr(x, current_klass) for x in node.nodes]) + "])")
@@ -1909,9 +1947,11 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
     def _lambda(self, node, current_klass):
         if node.varargs:
-            raise TranslationError("varargs are not supported in Lambdas", node)
+            raise TranslationError(
+                "varargs are not supported in Lambdas", node, self.module_name)
         if node.kwargs:
-            raise TranslationError("kwargs are not supported in Lambdas", node)
+            raise TranslationError(
+                "kwargs are not supported in Lambdas", node, self.module_name)
         res = StringIO()
         arg_names = list(node.argnames)
         self.push_lookup()
@@ -1937,7 +1977,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 upper = self.expr(node.upper, current_klass)
             return  "pyjslib.slice(" + self.expr(node.expr, current_klass) + ", " + lower + ", " + upper + ")"
         else:
-            raise TranslationError("unsupported flag (in _slice)", node)
+            raise TranslationError(
+                "unsupported flag (in _slice)", node, self.module_name)
 
     def _global(self, node, current_klass):
         for name in node.names:
@@ -2040,7 +2081,8 @@ pyjslib.getattr(%(attr_left)s, '%(attr_right)s'):\
         elif isinstance(node, ast.Lambda):
             return self._lambda(node, current_klass)
         else:
-            raise TranslationError("unsupported type (in expr)", node)
+            raise TranslationError(
+                "unsupported type (in expr)", node, self.module_name)
 
 
 def translate(sources, output_file, module_name=None,
@@ -2089,7 +2131,8 @@ def merge(tree1, tree2):
         elif isinstance(child, ast.Class):
             replaceClassMethods(tree1, child.name, child)
         else:
-            raise TranslationError("Do not know how to merge", child)
+            raise TranslationError(
+                "Do not know how to merge", child, self.module_name)
     return tree1
 
 def replaceFunction(tree, function_name, function_node):
@@ -2098,7 +2141,8 @@ def replaceFunction(tree, function_name, function_node):
         if isinstance(child, ast.Function) and child.name == function_name:
             copyFunction(child, function_node)
             return
-    raise TranslationError("function not found: " + function_name, function_node)
+    raise TranslationError(
+        "function not found: " + function_name, function_node, self.module_name)
 
 def copyFunction(target, source):
     target.code = source.code
@@ -2120,7 +2164,8 @@ def replaceClassMethods(tree, class_name, class_node):
             break
 
     if not old_class_node:
-        raise TranslationError("class not found: " + class_name, class_node)
+        raise TranslationError(
+            "class not found: " + class_name, class_node, self.module_name)
 
     # replace methods
     for node in class_node.code:
@@ -2133,7 +2178,9 @@ def replaceClassMethods(tree, class_name, class_node):
                     break
 
             if not found:
-                raise TranslationError("class method not found: " + class_name + "." + node.name, node)
+                raise TranslationError(
+                    "class method not found: " + class_name + "." + node.name,
+                    node, self.module_name)
         elif isinstance(node, ast.Assign) and \
              isinstance(node.nodes[0], ast.AssName):
             found = False
@@ -2147,7 +2194,8 @@ def replaceClassMethods(tree, class_name, class_node):
         elif isinstance(node, ast.Pass):
             pass
         else:
-            raise TranslationError("Do not know how to merge %s" % node, node)
+            raise TranslationError(
+                "Do not know how to merge %s" % node, node, self.module_name)
 
 
 
@@ -2207,7 +2255,8 @@ class PlatformParser:
             elif isinstance(child, ast.Class):
                 self.replaceClassMethods(tree1, child.name, child)
             else:
-                raise TranslationError("Do not know how to merge", child)
+                raise TranslationError(
+                    "Do not know how to merge", child, self.module_name)
 
         return tree1
 
@@ -2217,7 +2266,9 @@ class PlatformParser:
             if isinstance(child, ast.Function) and child.name == function_name:
                 self.copyFunction(child, function_node)
                 return
-        raise TranslationError("function not found: " + function_name, function_node)
+        raise TranslationError(
+            "function not found: " + function_name,
+            function_node, self.module_name)
 
     def replaceClassMethods(self, tree, class_name, class_node):
         # find class to replace
@@ -2228,7 +2279,8 @@ class PlatformParser:
                 break
 
         if not old_class_node:
-            raise TranslationError("class not found: " + class_name, class_node)
+            raise TranslationError(
+                "class not found: " + class_name, class_node, self.module_name)
 
         # replace methods
         for node in class_node.code:
@@ -2241,7 +2293,9 @@ class PlatformParser:
                         break
 
                 if not found:
-                    raise TranslationError("class method not found: " + class_name + "." + node.name, node)
+                    raise TranslationError(
+                        "class method not found: " + class_name + "." + node.name,
+                        node, self.module_name)
             elif isinstance(node, ast.Assign) and \
                  isinstance(node.nodes[0], ast.AssName):
                 found = False
@@ -2255,7 +2309,9 @@ class PlatformParser:
             elif isinstance(node, ast.Pass):
                 pass
             else:
-                raise TranslationError("Do not know how to merge %s" % node, node)
+                raise TranslationError(
+                    "Do not know how to merge %s" % node,
+                    node, self.module_name)
 
     def copyFunction(self, target, source):
         target.code = source.code

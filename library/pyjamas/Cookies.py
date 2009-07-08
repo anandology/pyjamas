@@ -39,8 +39,8 @@ def setCookie(name, value, expires, domain=None, path=None, secure=False):
 
     c = c.output(header='').strip()
     print "set cookies", c
-
-    doc().cookie = c
+    _doc = doc()
+    _doc.cookie = c
 
     return
     JS("""
