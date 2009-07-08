@@ -33,7 +33,7 @@ class GUI_Controller:
     def run(self):
         """ run is called to set off the GTK mainloop """
         gtk.main()
-	return	
+        return
 
 class InfoModel:
     """ The model class holds the information we want to display """

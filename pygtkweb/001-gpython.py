@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 import __builtin__
 import __main__
 import codeop
@@ -10,6 +11,7 @@ import threading
 import traceback
 import signal
 import sys
+
 if sys.version[0] == '2':
     import pygtk
     pygtk.require("2.0")
@@ -173,7 +175,7 @@ if __name__=="__main__":
 
     try:
         while 1:
-	    command = raw_input (prompt) + '\n' # raw_input strips newlines
+            command = raw_input (prompt) + '\n' # raw_input strips newlines
             prompt = interpreter.feed (command) and '>>> ' or '... '
     except (EOFError, KeyboardInterrupt): pass
 

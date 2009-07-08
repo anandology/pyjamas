@@ -55,9 +55,9 @@ def hsv_to_rgb(h, s, v):
         ihue = int(hue)
         if ihue == 0:
             return(value, t, p)
-	elif ihue == 1:
+        elif ihue == 1:
             return(q, value, p)
-	elif ihue == 2:
+        elif ihue == 2:
             return(p, value, t)
         elif ihue == 3:
             return(p, q, value)

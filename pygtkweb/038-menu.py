@@ -35,8 +35,8 @@ class MenuExample:
             # ...and add it to the menu.
             menu.append(menu_items)
 
-	    # Do something interesting when the menuitem is selected
-	    menu_items.connect("activate", self.menuitem_response, buf)
+            # Do something interesting when the menuitem is selected
+            menu_items.connect("activate", self.menuitem_response, buf)
 
             # Show the widget
             menu_items.show()

@@ -16,9 +16,9 @@ class NotebookExample:
         tval = False
         bval = False
         if self.show_tabs == False:
-	    tval = True 
+            tval = True 
         if self.show_border == False:
-	    bval = True
+            bval = True
 
         notebook.set_show_tabs(tval)
         self.show_tabs = tval
