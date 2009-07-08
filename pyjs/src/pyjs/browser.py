@@ -65,6 +65,8 @@ class BrowserLinker(linker.BaseLinker):
                 self.merged_public.add(dir_name)
 
     def find_boilerplate(self, name):
+        if not self.top_module_path:
+            raise RuntimeError('Top module not found %r' % self.top_module)
         if not self.boilerplate_path:
             self.boilerplate_path = [BOILERPLATE_PATH]
             module_bp_path = os.path.join(

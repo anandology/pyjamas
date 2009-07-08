@@ -54,6 +54,7 @@ class BaseLinker(object):
         self.js_libs = js_libs
         self.translator_arguments = translator_arguments
         self.compile_inplace = compile_inplace
+        self.top_module_path = None
 
     def __call__(self):
         self.visited_modules = {}
