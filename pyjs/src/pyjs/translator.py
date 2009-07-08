@@ -2464,6 +2464,7 @@ class AppTranslator:
 
 def add_compile_options(parser):
     speed_options = {}
+    pythonic_options = {}
 
     parser.add_option("-d", "--debug",
                       dest="debug",
@@ -2475,6 +2476,7 @@ def add_compile_options(parser):
                       action="store_false",
                      )
     speed_options['debug'] = False
+    pythonic_options['debug'] = False
 
     parser.add_option("--no-print-statements",
                       dest="print_statments",
@@ -2499,6 +2501,7 @@ def add_compile_options(parser):
                       help = "Generate code for function argument checking",
                      )
     speed_options['function_argument_checking'] = False
+    pythonic_options['function_argument_checking'] = True
 
     parser.add_option("--no-attribute-checking",
                       dest = "attribute_checking",
@@ -2511,6 +2514,7 @@ def add_compile_options(parser):
                       help = "Generate code for attribute checking",
                      )
     speed_options['attribute_checking'] = False
+    pythonic_options['attribute_checking'] = True
 
     parser.add_option("--no-source-tracking",
                       dest = "source_tracking",
@@ -2523,6 +2527,7 @@ def add_compile_options(parser):
                       help = "Generate code for source tracking",
                      )
     speed_options['source_tracking'] = False
+    pythonic_options['source_tracking'] = True
 
     parser.add_option("--no-line-tracking",
                       dest = "line_tracking",
@@ -2534,6 +2539,7 @@ def add_compile_options(parser):
                       action="store_true",
                       help = "Generate code for source tracking on every line",
                      )
+    pythonic_options['line_tracking'] = True
 
     parser.add_option("--no-store-source",
                       dest = "store_source",
@@ -2545,6 +2551,7 @@ def add_compile_options(parser):
                       action="store_true",
                       help = "Store python code in javascript",
                      )
+    pythonic_options['line_tracking'] = True
 
 
     def set_multiple(option, opt_str, value, parser, **kwargs):
@@ -2557,13 +2564,19 @@ def add_compile_options(parser):
                       callback_kwargs = speed_options,
                       help="Set all options that maximize speed",
                      )
+    parser.add_option("--strict",
+                      action="callback",
+                      callback = set_multiple,
+                      callback_kwargs = pythonic_options,
+                      help="Set all options that mimic standard python behavior",
+                     )
     parser.set_defaults(debug=False,
                         print_statements=True,
-                        function_argument_checking = True,
-                        attribute_checking = True,
-                        source_tracking = True,
-                        line_tracking = True,
-                        store_source = True,
+                        function_argument_checking = False,
+                        attribute_checking = False,
+                        source_tracking = False,
+                        line_tracking = False,
+                        store_source = False,
                        )
 
 

@@ -1,2 +1,2 @@
 #!/bin/sh
-../../bin/pyjsbuild $@ LibTest
+../../bin/pyjsbuild --strict $@ LibTest
