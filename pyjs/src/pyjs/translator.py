@@ -1819,7 +1819,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         print >>self.output, self.indent() + """try {"""
         print >>self.output, self.indent() + """while (true) {"""
         print >>self.output, self.spacing() + """%(lhs)s %(op)s""" % locals(),
-        print >>self.output, self.track_call("%(iterator_name)s.next();"% locals())
+        print >>self.output, self.track_call("%(iterator_name)s.next()"% locals()) + ";"
         print >>self.output, self.spacing() + """%(assign_tuple)s""" % locals()
         for node in node.body.nodes:
             self._stmt(node, current_klass)
