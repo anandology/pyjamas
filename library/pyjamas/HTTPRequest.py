@@ -129,7 +129,7 @@ class HTTPRequest:
         if mf.platform == 'webkit':
             xmlHttp.open("GET", url, True, user, pwd)
         else:
-            xmlHttp.open("POST", url)
+            xmlHttp.open("GET", url)
         xmlHttp.setRequestHeader("Content-Type", "text/plain charset=utf-8")
         # TODO: xmlHttp.onreadystatechange = self.onReadyStateChange
         xmlHttp.send('')
