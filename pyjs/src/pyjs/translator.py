@@ -732,11 +732,13 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         else:
             end = "arguments.length"
         print >> self.output, """\
-%(s)svar %(v)s = pyjslib.Tuple();
+%(s)svar %(v)s = new Array();
 %(s)sfor (var pyjs__va_arg = %(b)d; pyjs__va_arg < %(e)s; pyjs__va_arg++) {
 %(s)s\tvar pyjs__arg = arguments[pyjs__va_arg];
-%(s)s\t%(v)s.append(pyjs__arg);
-%(s)s}\
+%(s)s\t%(v)s.push(pyjs__arg);
+%(s)s}
+%(s)s%(v)s = pyjslib.Tuple(%(v)s);
+\
 """ % {'s': self.spacing(), 'v': varargname, 'b': start, 'e': end}
 
     def __varargs_handler(self, node, varargname, arg_names, current_klass, loop_var = None):

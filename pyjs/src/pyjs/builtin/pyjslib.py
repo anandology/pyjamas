@@ -830,16 +830,6 @@ class Tuple:
     def __init__(self, data=None):
         JS("""
         this.l = [];
-        this.extend(data);
-        """)
-
-    @noSourceTracking
-    def append(self, item):
-        JS("""    this.l[this.l.length] = item;""")
-
-    @noSourceTracking
-    def extend(self, data):
-        JS("""
         if (pyjslib.isArray(data)) {
             n = this.l.length;
             for (var i=0; i < data.length; i++) {
@@ -859,40 +849,6 @@ class Tuple:
                 if (e.__name__ != 'StopIteration') throw e;
                 }
             }
-        """)
-
-    @noSourceTracking
-    def remove(self, value):
-        JS("""
-        var index=this.index(value);
-        if (index<0) return false;
-        this.l.splice(index, 1);
-        return true;
-        """)
-
-    @noSourceTracking
-    def index(self, value, start=0):
-        JS("""
-        var length=this.l.length;
-        for (var i=start; i<length; i++) {
-            if (this.l[i]==value) {
-                return i;
-                }
-            }
-        """)
-        raise ValueError("list.index: " + value + " not in list")
-
-    @noSourceTracking
-    def insert(self, index, value):
-        JS("""    var a = this.l; this.l=a.slice(0, index).concat(value, a.slice(index));""")
-
-    @noSourceTracking
-    def pop(self, index = -1):
-        JS("""
-        if (index<0) index = this.l.length + index;
-        var a = this.l[index];
-        this.l.splice(index, 1);
-        return a;
         """)
 
     @noSourceTracking
@@ -923,21 +879,20 @@ class Tuple:
         """)
 
     @noSourceTracking
-    def __setitem__(self, index, value):
-        JS("""    this.l[index]=value;""")
-
-    @noSourceTracking
-    def __delitem__(self, index):
-        JS("""    this.l.splice(index, 1);""")
-
-    @noSourceTracking
     def __len__(self):
         JS("""    return this.l.length;""")
 
     @noSourceTracking
     def __contains__(self, value):
-        
-        return self.index(value) >= 0
+        JS("""
+        var length=this.l.length;
+        for (var i=start; i<length; i++) {
+            if (this.l[i]===value) {
+                return true;
+                }
+            }
+        """)
+        return False
 
     @noSourceTracking
     def __iter__(self):
@@ -956,28 +911,6 @@ class Tuple:
             }
         };
         """)
-
-    @noSourceTracking
-    def reverse(self):
-        JS("""    this.l.reverse();""")
-
-    def sort(self, compareFunc=None, keyFunc=None, reverse=False):
-        if not compareFunc:
-            compareFunc = cmp
-        if keyFunc and reverse:
-            def thisSort1(a,b):
-                return -compareFunc(keyFunc(a), keyFunc(b))
-            self.l.sort(thisSort1)
-        elif keyFunc:
-            def thisSort2(a,b):
-                return compareFunc(keyFunc(a), keyFunc(b))
-            self.l.sort(thisSort2)
-        elif reverse:
-            def thisSort3(a,b):
-                return -compareFunc(a, b)
-            self.l.sort(thisSort3)
-        else:
-            self.l.sort(compareFunc)
 
     @noSourceTracking
     def getArray(self):
