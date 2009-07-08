@@ -253,7 +253,7 @@ a:visited {
 {
     height: 5px;
     width: 5px;
-    background-image: url('corner_dialog_topleft.png');
+    background-image: url('images/corner_dialog_topleft.png');
 }
 .gwt-DecoratorPanel .topLeftInner /* { the inner element of the cell } */
 {
@@ -261,7 +261,7 @@ a:visited {
 .gwt-DecoratorPanel .topCenter /* /* { the top center cell } */
 {
     height: 5px;
-    background-image: url('corner_dialog_edge.png');
+    background-image: url('images/corner_dialog_edge.png');
 }
 .gwt-DecoratorPanel .topCenterInner 
 {
@@ -270,7 +270,7 @@ a:visited {
 {
     height: 5px;
     width: 5px;
-    background-image: url('corner_dialog_topright.png');
+    background-image: url('images/corner_dialog_topright.png');
 }
 .gwt-DecoratorPanel .topRightInner /* { the inner element of the cell } */
 {
@@ -282,7 +282,7 @@ a:visited {
 {
     height: 100%;
     width: 5px;
-    background-image: url('corner_dialog_edge.png');
+    background-image: url('images/corner_dialog_edge.png');
     background-repeat: repeat-y;
 }
 .gwt-DecoratorPanel .middleLeftInner /* { the inner element of the cell } */
@@ -298,7 +298,7 @@ a:visited {
 {
     height: 100%;
     width: 5px;
-    background-image: url('corner_dialog_edge.png');
+    background-image: url('images/corner_dialog_edge.png');
     background-repeat: repeat-y;
 }
 .gwt-DecoratorPanel .middleRightInner /* { the inner element of the cell } */
@@ -311,7 +311,7 @@ a:visited {
 {
     height: 5px;
     width: 5px;
-    background-image: url('corner_dialog_bottomleft.png');
+    background-image: url('images/corner_dialog_bottomleft.png');
 }
 .gwt-DecoratorPanel .bottomLeftInner /* { the inner element of the cell } */
 {
@@ -319,7 +319,7 @@ a:visited {
 .gwt-DecoratorPanel .bottomCenter /* { the bottom center cell } */
 {
     height: 5px;
-    background-image: url('corner_dialog_edge.png');
+    background-image: url('images/corner_dialog_edge.png');
 }
 .gwt-DecoratorPanel .bottomCenterInner /* { the inner element of the cell } */
 {
@@ -328,7 +328,7 @@ a:visited {
 {
     height: 5px;
     width: 5px;
-    background-image: url('corner_dialog_bottomright.png');
+    background-image: url('images/corner_dialog_bottomright.png');
 }
 .gwt-DecoratorPanel .bottomRightInner /* { the inner element of the cell } */
 {
@@ -345,12 +345,12 @@ a:visited {
 {
     height: 5px;
     width: 5px;
-    background-image: url('corner_dialog_topleft.png');
+    background-image: url('images/corner_dialog_topleft.png');
 }
 .gwt-DecoratedTabBar-wrapper .tabTopCenter 
 {
     height: 5px;
-    background-image: url('corner_dialog_edge.png');
+    background-image: url('images/corner_dialog_edge.png');
 }
 .gwt-DecoratedTabBar-wrapper .tabTopRightInner /* { the inner element of the cell } */
 {
@@ -363,12 +363,12 @@ a:visited {
 {
     height: 5px;
     width: 5px;
-    background-image: url('corner_dialog_topright.png');
+    background-image: url('images/corner_dialog_topright.png');
     background-repeat: no-repeat;
 }
 .gwt-DecoratedTabBar-wrapper .tabMiddleCenter /* { the middle row } */
 {
-    background-image: url('corner_dialog_edge.png');
+    background-image: url('images/corner_dialog_edge.png');
     background-repeat: repeat;
     cursor: pointer;
     cursor: hand;
@@ -377,14 +377,14 @@ a:visited {
 {
     height: 100%;
     width: 5px;
-    background-image: url('corner_dialog_edge.png');
+    background-image: url('images/corner_dialog_edge.png');
     background-repeat: repeat-y;
 }
 .gwt-DecoratedTabBar-wrapper .tabMiddleRight /* { the middle right cell } */
 {
     height: 100%;
     width: 50px;
-    background-image: url('corner_dialog_edge.png');
+    background-image: url('images/corner_dialog_edge.png');
     background-repeat: repeat-y;
     padding-left: 5px;
     padding-right: 5px;
@@ -394,36 +394,36 @@ a:visited {
 {
     height: 5px;
     width: 5px;
-    background-image: url('corner_dialog_topleft_black.png');
+    background-image: url('images/corner_dialog_topleft_black.png');
 }
 .gwt-DecoratedTabBar-wrapper .gwt-TabBarItem-selected .tabTopCenter 
 {
     height: 5px;
-    background-image: url('corner_dialog_edge_black.png');
+    background-image: url('images/corner_dialog_edge_black.png');
 }
 .gwt-DecoratedTabBar-wrapper .gwt-TabBarItem-selected .tabTopRight
 {
     height: 5px;
     width: 5px;
-    background-image: url('corner_dialog_topright_black.png');
+    background-image: url('images/corner_dialog_topright_black.png');
 }
 .gwt-DecoratedTabBar-wrapper .gwt-TabBarItem-selected .tabMiddleCenter /* { the middle row } */
 {
-    background-image: url('corner_dialog_edge_black.png');
+    background-image: url('images/corner_dialog_edge_black.png');
     background-repeat: repeat;
 }
 .gwt-DecoratedTabBar-wrapper .gwt-TabBarItem-selected .tabMiddleLeft /* { the middle left cell } */
 {
     height: 100%;
     width: 5px;
-    background-image: url('corner_dialog_edge_black.png');
+    background-image: url('images/corner_dialog_edge_black.png');
     background-repeat: repeat-y;
 }
 .gwt-DecoratedTabBar-wrapper .gwt-TabBarItem-selected .tabMiddleRight /* { the middle right cell } */
 {
     height: 100%;
     width: 50px;
-    background-image: url('corner_dialog_edge_black.png');
+    background-image: url('images/corner_dialog_edge_black.png');
     background-repeat: repeat-y;
     padding-left: 5px;
     padding-right: 5px;

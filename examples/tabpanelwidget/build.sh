@@ -1,2 +1,2 @@
 #!/bin/sh
-../../bin/pyjsbuild $@ Tabs.py
+../../bin/pyjsbuild $@ Tabs
