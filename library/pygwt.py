@@ -1,5 +1,4 @@
 import sys
-import os
 
 sNextHashId = 0
 
@@ -15,11 +14,10 @@ def getHashCode(o):
     """)
 
 def getModuleName():
-
+    import os
     mod_name = sys.argv[0]
     mod_name = os.path.split(mod_name)[1]
     mod_name = os.path.spliext(mod_name)[0]
-
     return mod_name
 
 def getModuleBaseURL():

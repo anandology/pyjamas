@@ -2106,6 +2106,10 @@ def copyFunction(target, source):
     target.defaults = source.defaults
     target.doc = source.doc # @@@ not sure we need to do this any more
 
+def addCode(target, source):
+    target.nodes.append(source)
+
+
 
 def replaceClassMethods(tree, class_name, class_node):
     # find class to replace
@@ -2264,9 +2268,6 @@ class PlatformParser:
         target.expr = source.expr
         target.lineno = source.lineno
         return
-
-    def addCode(self, target, source):
-        target.nodes.append(source)
 
     def eqNodes(self, nodes1, nodes2):
         return str(nodes1) == str(nodes2)

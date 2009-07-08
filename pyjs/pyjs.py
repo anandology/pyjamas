@@ -1,3 +1,5 @@
+raise RuntimeError("This module is just here for reference, use pyjs.translator")
+
 #!/usr/bin/env python
 # Copyright 2006 James Tauber and contributors
 #

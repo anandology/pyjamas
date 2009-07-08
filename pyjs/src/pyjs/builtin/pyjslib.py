@@ -19,33 +19,34 @@
 class object:
     pass
 
-# FIXME: dynamic=1, async=False, init=True are useless here (?)
-def import_module(path, parent_module, module_name, dynamic=1, async=False, init=True):
-    JS("""
-    module = $pyjs.modules_hash[module_name];
-    if (typeof module == 'function' && module.__was_initialized__ == true) {
-        return null;
-    }
-    if (module_name == 'sys' || module_name == 'pyjslib') {
-        module();
-        return null;
-    }
-    """)
-    module = None
-    names = module_name.split(".")
-    importName = ''
-    # Import all modules in the chain (import a.b.c)
-    for name in names:
-        importName += name
-        JS("""module = $pyjs.modules_hash[importName];""")
-        if isUndefined(module):
-            raise ImportError("No module named " + importName)
-        if JS("module.__was_initialized__ != true"):
-            # Module wasn't initialized
-            module()
-        importName += '.'
-    return None
+# # FIXME: dynamic=1, async=False, init=True are useless here (?)
+# def import_module(path, parent_module, module_name, dynamic=1, async=False, init=True):
+#     JS("""
+#     module = $pyjs.modules_hash[module_name];
+#     if (typeof module == 'function' && module.__was_initialized__ == true) {
+#         return null;
+#     }
+#     if (module_name == 'sys' || module_name == 'pyjslib') {
+#         module();
+#         return null;
+#     }
+#     """)
+#     module = None
+#     names = module_name.split(".")
+#     importName = ''
+#     # Import all modules in the chain (import a.b.c)
+#     for name in names:
+#         importName += name
+#         JS("""module = $pyjs.modules_hash[importName];""")
+#         if isUndefined(module):
+#             raise ImportError("No module named " + importName)
+#         if JS("module.__was_initialized__ != true"):
+#             # Module wasn't initialized
+#             module()
+#         importName += '.'
+#     return None
 
+@noSourceTracking
 def __import__(path, context, module_name=None):
     available = list(JS("$pyjs.available_modules"))
     mod_path = None
@@ -68,9 +69,13 @@ def __import__(path, context, module_name=None):
             mod_path = path
             is_mod = True
         else:
-            ns = '.'.join(path.split('.')[:-1])
-            if ns in available:
-                mod_path = ns
+            if '.' in path:
+                ns = '.'.join(path.split('.')[:-1])
+                if ns in available:
+                    mod_path = ns
+    if not mod_path:
+        raise ImportError(
+            "No module named " + path + ' (context=' + context + ')')
     # initialize all modules/packages
     importName = ''
     parts = mod_path.split('.')
@@ -81,7 +86,7 @@ def __import__(path, context, module_name=None):
         if isUndefined(module):
             print "error:", path, names, name, available
             raise ImportError(
-                "No module named " + importName + ', ' + org_path + ', ' + context)
+                "No module named " + importName + ', ' + path + ', ' + context)
         if l==i+1:
             module(module_name)
         else:
@@ -90,6 +95,7 @@ def __import__(path, context, module_name=None):
 
     # we have no package, so no relative imports possible
     module = JS("$pyjs.loaded_modules[mod_path];")
+
     module()
     if is_mod:
         return module
