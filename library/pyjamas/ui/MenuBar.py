@@ -105,10 +105,10 @@ class MenuBar(Widget):
         self.popup = None
 
     def removeItem(self, item):
-        idx = self.items.index(item)
-        if idx == -1:
+        try:
+            idx = self.items.index(item)
+        except ValueError:
             return
-
         container = self.getItemContainerElement()
         DOM.removeChild(container, DOM.getChild(container, idx))
         del self.items[idx]

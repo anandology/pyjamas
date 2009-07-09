@@ -2,7 +2,7 @@
 
 class Timer:
     MIN_PERIOD = 1
-    
+
     def __init__(self, delay = 0, object = None):
         self.isRepeating = False
         self.timerId = 0
@@ -10,7 +10,7 @@ class Timer:
         self.listener = object
         if delay >= Timer.MIN_PERIOD:
             self.schedule(delay)
-    
+
     def clearInterval(self, id):
         JS("""
         $wnd.clearInterval(id);
@@ -34,17 +34,18 @@ class Timer:
     # TODO - requires Window.addWindowCloseListener
     def hookWindowClosing(self):
         pass
-    
+
     def cancel(self):
         if self.isRepeating:
             self.clearInterval(self.timerId)
         else:
             self.clearTimeout(self.timerId)
-        timers.remove(self)
+        if self in timers:
+            timers.remove(self)
 
     def run(self):
-            self.listener.onTimer(self.timerId)
-    
+        self.listener.onTimer(self.timerId)
+
     def schedule(self, delayMillis):
         if delayMillis < Timer.MIN_PERIOD:
             alert("Timer delay must be positive")
@@ -66,12 +67,10 @@ class Timer:
         self.fireImpl()
 
     def fireImpl(self):
-        if not self.isRepeating:
+        if not self.isRepeating and self in timers:
             timers.remove(self)
         self.run()
 
     def getID(self):
         return self.timerId
 
-
-    
