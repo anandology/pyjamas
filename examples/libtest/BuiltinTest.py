@@ -20,12 +20,20 @@ class BuiltinTest(UnitTest):
 
     def testInt(self):
         self.assertEqual(int("5"), 5)
+        self.assertEqual(int("09"), 9)
         self.assertEqual(6, 6)
+
         try:
             int('not int')
             self.fail("No int() argument error raised")
         except ValueError, e:
             self.assertEqual(e[0], "invalid literal for int() with base 10: 'not int'")
+
+        try:
+            int(1, 10)
+            self.fail("No int() argument error raised")
+        except TypeError, e:
+            self.assertEqual(e[0], "int() can't convert non-string with explicit base")
 
     def testOrdChr(self):
         for i in range(256):

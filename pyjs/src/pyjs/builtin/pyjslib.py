@@ -1357,16 +1357,22 @@ def float(text):
     """)
 
 @noSourceTracking
-def int(text, radix=0):
+def int(text, radix=None):
     JS("""
-    var i = parseInt(text, radix);
+    var _radix = radix;
+    if (radix === null) {
+        _radix = 10
+    } else {
+        if (typeof text != 'string') {
+            throw pyjslib.TypeError("int() can't convert non-string with explicit base");
+        }
+    }
+    var i = parseInt(text, _radix);
     if (!isNaN(i)) {
         return i;
     }
     """)
-    if radix == 0:
-        radix = 10
-    raise ValueError("invalid literal for int() with base %d: '%s'" % (radix, text))
+    raise ValueError("invalid literal for int() with base %d: '%s'" % (_radix, text))
 
 @noSourceTracking
 def len(object):
