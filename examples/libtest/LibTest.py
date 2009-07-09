@@ -16,6 +16,7 @@ if sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
     from JSOTest import JSOTest
 from BuiltinTest import BuiltinTest
 from MD5Test import MD5Test
+from TimeModuleTest import TimeModuleTest
 
 def main():
 
@@ -35,6 +36,7 @@ def main():
         JSOTest().run()
     BuiltinTest().run()
     MD5Test().run()
+    TimeModuleTest().run()
 
 if __name__ == '__main__':
     main()
