@@ -15,23 +15,23 @@ class JSONService:
         """
         Create a JSON remote service object.  The url is the URL that will receive
         POST data with the JSON request.  See the JSON-RPC spec for more information.
-        
-        The handler object should implement onRemoteResponse(value, requestInfo) to 
-        accept the return value of the remote method, and 
+
+        The handler object should implement onRemoteResponse(value, requestInfo) to
+        accept the return value of the remote method, and
         onRemoteError(code, message, requestInfo) to handle errors.
         """
         self.url = url
         self.handler = handler
-    
+
     def callMethod(self, method, params, handler = None):
         if handler is None:
             handler = self.handler
-            
+
         if handler is None:
             return self.__sendNotify(method, params)
         else:
             return self.__sendRequest(method, params, handler)
-    
+
     def onCompletion(self):
         pass
 
@@ -48,7 +48,7 @@ class JSONService:
         id = pygwt.getNextHashId()
         msg = {"id":id, "method":method, "params":params}
         msg_data = dumps(msg)
-        
+
         request_info = JSONRequestInfo(id, method, handler)
         if not HTTPRequest().asyncPost(self.url, msg_data, JSONResponseTextHandler(request_info)):
             return -1
@@ -64,7 +64,7 @@ class JSONRequestInfo:
         self.id = id
         self.method = method
         self.handler = handler
-    
+
 
 class JSONResponseTextHandler:
     def __init__(self, request):
@@ -86,7 +86,7 @@ class JSONResponseTextHandler:
             self.request.handler.onRemoteError(error["code"], error["message"], self.request)
         else:
             self.request.handler.onRemoteResponse(response["result"], self.request)
-    
+
     def onError(self, error_str, error_code):
         self.request.handler.onRemoteError(error_code, error_str, self.request)
 

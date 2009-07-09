@@ -2107,6 +2107,7 @@ def translate(sources, output_file, module_name=None,
             merge(tree, current_tree)
         else:
             tree = current_tree
+    #XXX: if we have an override the sourcefile and the tree is not the same!
     f = file(sources[0], "r")
     src = f.read()
     f.close()

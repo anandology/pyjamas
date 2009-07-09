@@ -145,7 +145,7 @@ Now we will add a sub module and import it.
     True
 
 Use an import of an unknown module does not raise an exception because
-this is raised on runtime.
+this is raised at runtime.
 
     >>> pp = os.path.join(lib_path, 'mypackage')
     >>> mp = os.path.join(pp, 'index.py')
@@ -160,7 +160,15 @@ this is raised on runtime.
     ...                          path=[lib_path])
     >>> l()
 
-clean up!
+
+Overrides
+---------
+
+#TODO: tests for overrides
+
+
+cleanup
+-------
 
     >>> shutil.rmtree(tmp)
 

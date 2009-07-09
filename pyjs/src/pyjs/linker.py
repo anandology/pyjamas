@@ -111,10 +111,8 @@ class BaseLinker(object):
         self.merge_resources(dir_name)
         if platform and overrides:
             plat_suffix = '.__%s__' % platform
-            out_file = '%s.__%s__.js' % (file_path[:-3], platform)
         else:
             plat_suffix = ''
-            out_file = '%s.js' % file_path[:-3]
         if self.compile_inplace:
             mod_part, extension = os.path.splitext(file_path)
             out_file = '%s%s.js' % (mod_part, plat_suffix)
@@ -123,8 +121,14 @@ class BaseLinker(object):
                                     '%s%s.js' % (module_name, plat_suffix))
         if out_file in self.done.get(platform, []):
             return
-        # translate if no platform or if we have an override
-        if (platform is None or (platform and overrides)):
+        # translate if
+        #  -    no platform
+        #  - or if we have an override
+        #  - or the module is used in an override only
+        if (   platform is None
+            or (platform and overrides)
+            or (out_file not in self.done.get(None,[]))
+           ):
             deps = translator.translate([file_path] +  overrides,
                                         out_file,
                                         module_name=module_name,
