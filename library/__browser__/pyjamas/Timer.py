@@ -49,7 +49,8 @@ class Timer:
     def schedule(self, delayMillis):
         if delayMillis < Timer.MIN_PERIOD:
             alert("Timer delay must be positive")
-        self.cancel()
+        if self in timers:
+            self.cancel()
         self.isRepeating = False
         self.timerId = self.createTimeout(self, delayMillis)
         timers.append(self)
@@ -57,7 +58,8 @@ class Timer:
     def scheduleRepeating(self, periodMillis):
         if periodMillis < Timer.MIN_PERIOD:
             alert("Timer period must be positive")
-        self.cancel()
+        if self in timers:
+            self.cancel()
         self.isRepeating = True
         self.timerId = self.createInterval(self, periodMillis)
         timers.append(self)
