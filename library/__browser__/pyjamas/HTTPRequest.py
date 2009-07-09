@@ -2,10 +2,14 @@
 class HTTPRequest:
     # also callable as: asyncPost(self, url, postData, handler)
     def asyncPost(self, user, pwd, url, postData=None, handler=None,
-                                        returnxml=0):
+                                        returnxml=0,
+                                        content_type='text/plain charset=utf8'):
         if postData is None:
-            return self.asyncPostImpl(None, None, user, pwd, url, returnxml)
-        return self.asyncPostImpl(user, pwd, url, postData, handler, returnxml)
+            return self.asyncPostImpl(None, None, user, pwd, url, returnxml,
+                                      content_type)
+        return self.asyncPostImpl(user, pwd, url, postData, handler,
+                                    returnxml,
+                                  content_type)
 
     # also callable as: asyncGet(self, url, handler)
     def asyncGet(self, user, pwd, url, handler, returnxml=0):
@@ -21,14 +25,15 @@ class HTTPRequest:
         return new XMLHttpRequest();
         """)
 
-    def asyncPostImpl(self, user, pwd, url, postData, handler, returnxml=0):
+    def asyncPostImpl(self, user, pwd, url, postData, handler,
+                            returnxml, content_type):
+        pdlen = str(len(postData))
         JS("""
         var xmlHttp = this.doCreateXmlHTTPRequest();
         try {
             xmlHttp.open("POST", url, true);
-            xmlHttp.setRequestHeader("Content-Type",
-                                           "application/x-www-form-urlencoded");
-            xmlHttp.setRequestHeader("Content-Length", postData.length);
+            xmlHttp.setRequestHeader("Content-Type", content_type);
+            xmlHttp.setRequestHeader("Content-Length", pdlen);
             xmlHttp.onreadystatechange = function() {
                 if (xmlHttp.readyState == 4) {
                     delete xmlHttp.onreadystatechange;

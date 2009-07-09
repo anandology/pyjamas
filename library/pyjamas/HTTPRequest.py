@@ -12,10 +12,13 @@ handlers = {}
 
 class HTTPRequest:
     # also callable as: asyncPost(self, url, postData, handler)
-    def asyncPost(self, user, pwd, url, postData=None, handler=None):
+    def asyncPost(self, user, pwd, url, postData=None, handler=None,
+                        return_xml=0, content_type='text/plain charset=utf8'):
         if postData is None:
-            return self.asyncPostImpl(None, None, user, pwd, url)
-        return self.asyncPostImpl(user, pwd, url, postData, handler)
+            return self.asyncPostImpl(None, None, user, pwd, url,
+                                      return_xml, content_type)
+        return self.asyncPostImpl(user, pwd, url, postData, handler,
+                                 return_xml, content_type)
 
     # also callable as: asyncGet(self, url, handler)
     def asyncGet(self, user, pwd, url=None, handler=None):
@@ -71,7 +74,8 @@ class HTTPRequest:
         else :
             localHandler.onError(responseText, status)
         
-    def asyncPostImpl(self, user, pwd, url, postData, handler):
+    def asyncPostImpl(self, user, pwd, url, postData, handler, 
+                            return_xml, content_type):
         mf = get_main_frame()
         xmlHttp = self.doCreateXmlHTTPRequest()
         if url[0] != '/':
@@ -89,7 +93,8 @@ class HTTPRequest:
             #xmlHttp.open("POST", url, True, '', '')
             print xmlHttp.open, dir(xmlHttp.open)
             print url, xmlHttp.open("POST", url)
-        xmlHttp.setRequestHeader("Content-Type", "text/plain charset=utf-8")
+        xmlHttp.setRequestHeader("Content-Type", content_type)
+        xmlHttp.setRequestHeader("Content-Length", str(len(postData)))
         #for c in Cookies.get_crumbs():
         #    xmlHttp.setRequestHeader("Set-Cookie", c)
         #    print "setting cookie", c

@@ -39,7 +39,8 @@ class JSONService:
         from jsonrpc.json import dumps
         msg = {"id": None, "method": method, "params": params}
         msg_data = dumps(msg)
-        if not HTTPRequest().asyncPost(self.url, msg_data, self):
+        if not HTTPRequest().asyncPost(self.url, msg_data, self,
+                                       content_type="text/x-json"):
             return -1
         return 1
 
@@ -50,7 +51,9 @@ class JSONService:
         msg_data = dumps(msg)
 
         request_info = JSONRequestInfo(id, method, handler)
-        if not HTTPRequest().asyncPost(self.url, msg_data, JSONResponseTextHandler(request_info)):
+        if not HTTPRequest().asyncPost(self.url, msg_data,
+                                       JSONResponseTextHandler(request_info),
+                                       content_type="text/x-json"):
             return -1
         return id
 
