@@ -139,7 +139,7 @@ class Entry(Widget):
 class Container(Widget):
     def __init__(self):
         Widget.__init__(self)
-        self.childs = []
+        self.children = []
         self.widget_int = browser.Document.createElement('div')
         self.widget_int.setStyle('position', 'absolute')
         self.widget_cont.append(self.widget_int)
@@ -147,7 +147,7 @@ class Container(Widget):
     def add(self, child):
         if self._visible: child.show()
         child._parent = self
-        self.childs.append(child)
+        self.children.append(child)
         self.widget_int.append(child.widget_cont)
         self.minwidth += child.minwidth
         self.minheight += child.minheight
@@ -165,21 +165,21 @@ class Container(Widget):
         self.widget_int.setStyle('height', self.widget_cont.getHeight() + 'px')
         self.minwidth = 2 * self.margin
         self.minheight = 2 * self.margin
-        for child in self.childs:
+        for child in self.children:
             child._redraw()
-        if len(self.childs) == 1:
-            self.minwidth += self.childs[0].minwidth
-            self.minheight += self.childs[0].minheight
+        if len(self.children) == 1:
+            self.minwidth += self.children[0].minwidth
+            self.minheight += self.children[0].minheight
         self.widget_cont.setStyle('minHeight', str(self.minheight) + 'px')
         self.widget_cont.setStyle('minWidth', str(self.minwidth) + 'px')
 
     def show_all(self):
-        for child in self.childs:
+        for child in self.children:
             child.show_all()
         Widget.show_all(self)
 
     def hide_all(self):
-        for child in self.childs:
+        for child in self.children:
             child.hide_all()
         Widget.hide_all(self)
 
@@ -191,13 +191,13 @@ class Bin(Container):
         Container.__init__(self)
 
     def get_child(self):
-        if len(self.childs)>0:
-            return self.childs[0]
+        if len(self.children)>0:
+            return self.children[0]
         else:
             return None
 
     def add(self, child):
-        if len(self.childs)>0:
+        if len(self.children)>0:
             pass #TODO: GtkWarning !!!
         Container.add(self, child)
 
@@ -260,24 +260,24 @@ class HBox(Box):
         count = 0
         fix_width = 0
         if not self.homogeneous:
-            for child in self.childs:
+            for child in self.children:
                 if child.expand:
                     count += 1
                 else:
                     fix_width += child.minwidth + self.spacing + child.padding + 2 * child.margin
         else:
-            count = len(self.childs)
+            count = len(self.children)
         horitz_inc = (self.widget_cont.getWidth() - 2 * self.margin - fix_width) / count
         left = self.margin
-        for child in self.childs:
-            if len(self.childs) != 1:
+        for child in self.children:
+            if len(self.children) != 1:
                 if child.minheight + 2 * self.margin > self.minheight:
                     self.minheight = child.minheight + 2 * self.margin
                 self.minwidth += child.minwidth + 2 * child.margin + self.spacing + child.padding
         self.widget_cont.setStyle('minHeight', str(self.minheight) + 'px')
         self.widget_cont.setStyle('minWidth', str(self.minwidth) + 'px')
 
-        for child in self.childs:
+        for child in self.children:
             child.widget_cont.setStyle('height',
                     str(self.widget_cont.getHeight() - 2 * self.margin) + 'px')
             child.widget_cont.setStyle('left',
@@ -311,17 +311,17 @@ class VBox(Box):
         count = 0
         fix_height = 0
         if not self.homogeneous:
-            for child in self.childs:
+            for child in self.children:
                 if child.expand:
                     count += 1
                 else:
                     fix_height += child.minheight + self.spacing + child.padding + 2 * child.margin
         else:
-            count = len(self.childs)
+            count = len(self.children)
         vert_inc = (self.widget_cont.getHeight() - 2 * self.margin - fix_height) / count
         top = self.margin
-        for child in self.childs:
-            if len(self.childs) != 1:
+        for child in self.children:
+            if len(self.children) != 1:
                 if child.minwidth + 2 * self.margin > self.minwidth:
                     self.minwidth = child.minwidth + 2 * self.margin
                 self.minheight += child.minheight + 2 * child.margin + self.spacing + child.padding
@@ -329,7 +329,7 @@ class VBox(Box):
         self.widget_cont.setStyle('minHeight', str(self.minheight) + 'px')
         self.widget_cont.setStyle('minWidth', str(self.minwidth) + 'px')
 
-        for child in self.childs:
+        for child in self.children:
             child.widget_cont.setStyle('width',
                     str(self.widget_cont.getWidth() - 2 * self.margin) + 'px')
             child.widget_cont.setStyle('top',
@@ -1153,7 +1153,7 @@ class MenuShell(Container):
 
     def _redraw(self):
         Container._redraw(self)
-        for child in self.childs:
+        for child in self.children:
             if child.minwidth > self.minwidth:
                 self.minwidth = child.minwidth
             self.minheight += child.minheight
