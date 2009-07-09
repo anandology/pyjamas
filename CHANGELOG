@@ -1,6 +1,8 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
+ * Added augassign for indexed items
+
  * Whitespace cleanup of addons by stefan schwarzer
 
  * Extended time module with gmtime/localtime/mktime and partial strftime

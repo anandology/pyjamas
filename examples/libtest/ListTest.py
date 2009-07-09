@@ -235,14 +235,34 @@ class ListTest(UnitTest):
         try:
             l.index(200000)
         except ValueError, e:
-            print "------------------------"
-            print str(e)
-            print "------------------------"
             self.assertTrue(str(e) == "list.index(x): x not in list",
                             "ValueError exception has incorrect message")
         else:
             self.fail("ValueError not raised")
 
+    def testAugAssign(self):
+        l = [10, 10.0]
+        def getidx(x):
+            return x
+        def getlist():
+            return l
+        l[0] += 1
+        self.assertEqual(l[0], 11)
+        l[0] -= 2
+        self.assertEqual(l[0], 9)
+        l[0] /= 3
+        self.assertEqual(l[0], 3)
+        l[0] *= 9
+        self.assertEqual(l[0], 27)
+        l[0] %= 5
+        self.assertEqual(l[0], 2)
+        a = 0
+        l[a] += 1
+        self.assertEqual(l[0], 3)
+        l[getidx(0)] += 1
+        self.assertEqual(l[0], 4)
+        getlist()[getidx(0)] += 1
+        self.assertEqual(l[0], 5)
 
 class A:
     def __cmp__(self, other):

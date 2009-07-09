@@ -313,7 +313,7 @@ class Translator:
                 elif isinstance(child, ast.Assign):
                     self._assign(child, None, True)
                 elif isinstance(child, ast.AugAssign):
-                    self._augassign(child, None)
+                    self._augassign(child, None, True)
                 elif isinstance(child, ast.If):
                     self._if(child, None)
                 elif isinstance(child, ast.For):
@@ -1531,14 +1531,53 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                + "\\n" \
                + "    " + srcLine
 
-    def _augassign(self, node, current_klass):
+    def _augassign(self, node, current_klass, top_level = False):
+        def astOP(op):
+            if op == "+=":
+                return ast.Add
+            elif op == "-=":
+                return ast.Sub
+            elif op == "*=":
+                return ast.Mul
+            elif op == "/=":
+                return ast.Div
+            elif op == "%=":
+                return ast.Mod
+            else:
+                raise TranslationError(
+                 "unsupported OP (in _augassign)", node, self.module_name)
         v = node.node
         if isinstance(v, ast.Getattr):
             # XXX HACK!  don't allow += on return result of getattr.
             # TODO: create a temporary variable or something.
             lhs = self._getattr(v, current_klass, False)
-        else:
+        elif isinstance(v, ast.Name):
             lhs = self._name(node.node, current_klass)
+        elif isinstance(v, ast.Subscript):
+            if len(v.subs) != 1:
+                raise TranslationError(
+                    "must have one sub (in _assign)", v, self.module_name)
+            lhs = ast.Subscript(v.expr, "OP_ASSIGN", v.subs)
+            expr = v.expr
+            subs = v.subs
+            if not (isinstance(v.subs[0], ast.Const) or \
+                    isinstance(v.subs[0], ast.Name)) or \
+               not isinstance(v.expr, ast.Name):
+                # There's something complex here.
+                # Neither a simple x[0] += ?
+                # Nore a simple x[y] += ?
+                augexpr = self.uniqid('augexpr')
+                augsub = self.uniqid('augsub')
+                print >>self.output, self.spacing() + "var " + augsub + " = " + self.expr(subs[0], current_klass) + ";"
+                print >>self.output, self.spacing() + "var " + augexpr + " = " + self.expr(expr, current_klass) + ";"
+                lhs = ast.Subscript(ast.Name(augexpr), "OP_ASSIGN", [ast.Name(augsub)])
+                v = ast.Subscript(ast.Name(augexpr), v.flags, [ast.Name(augsub)])
+            op = astOP(node.op)
+            tnode = ast.Assign([lhs], op((v, node.expr)))
+            return self._assign(tnode, current_klass, top_level)
+        else:
+            raise TranslationError(
+                "unsupported type (in _augassign)", v, self.module_name)
         op = node.op
         rhs = self.expr(node.expr, current_klass)
         print >>self.output, self.spacing() + lhs + " " + op + " " + rhs + ";"
