@@ -315,6 +315,9 @@ class LookupError(StandardError):
     def toString(self):
         return self.__name__ + ": " + self.args[0]
 
+class RuntimeError(StandardError):
+    pass
+
 class KeyError(LookupError):
 
     def __str__(self):
@@ -325,6 +328,9 @@ class KeyError(LookupError):
         return repr(self.args)
 
 class IndexError(LookupError):
+    pass
+
+class NotImplementedError(RuntimeError):
     pass
 
 # There seems to be an bug in Chrome with accessing the message
