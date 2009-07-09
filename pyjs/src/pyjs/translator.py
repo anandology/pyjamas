@@ -98,8 +98,11 @@ for a in pyjs_vars_remap_names:
     pyjs_vars_remap.append(re.compile('^%s$' % a))
 
 # Attributes that should be remapped in classes
+# NOTE!  'name' is REMOVED because it stops Slideshow example from working.
+# i know it causes a ton of tests in LibTest to fail, but that indicates
+# that an alternative solution needs to be found.
 pyjs_attrib_remap_names = [\
-    'name', 'prototype', 'call', 'apply', 'constructor', 
+    'prototype', 'call', 'apply', 'constructor', 
 ]
 pyjs_attrib_remap = []
 for a in pyjs_attrib_remap_names:
