@@ -1,6 +1,8 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
+ * Extended time module with gmtime/localtime/mktime and partial strftime
+
  * Tuples no more behave like List. No mutating methods anymore to go
    inline with the pyhton implementation.
 
