@@ -512,25 +512,28 @@ class Translator:
             if self.store_source:
                 self.track_lines[node.lineno] = self.get_line_trace(node)
 
-    def track_call(self, call_code):
+    def track_call(self, call_code, lineno=None):
         if self.debug:
+            dbg = self.uniqid("pyjs_dbg_")
+            mod = self.raw_module_name
             call_code = """\
 (function(){\
-var pyjs_dbg_retry = 0;
-try{var pyjs_dbg_res=%s;}catch(pyjs_dbg_err){
-    if (pyjs_dbg_err.__name__ != 'StopIteration') {
+var %(dbg)s_retry = 0;
+try{var %(dbg)s_res=%(call_code)s;}catch(%(dbg)s_err){
+    if (%(dbg)s_err.__name__ != 'StopIteration') {
+        alert("Module %(mod)s at line %(lineno)s :\\n" + %(dbg)s_err);
         debugger;
     }
-    switch (pyjs_dbg_retry) {
+    switch (%(dbg)s_retry) {
         case 1:
-            pyjs_dbg_res=%s;
+            %(dbg)s_res=%(call_code)s;
             break;
         case 2:
             break;
         default:
-            throw pyjs_dbg_err;
+            throw %(dbg)s_err;
     }
-}return pyjs_dbg_res})()""" % (call_code, call_code)
+}return %(dbg)s_res})()""" % locals()
         return call_code
 
     def _instance_method_init(self, node, arg_names, varargname, kwargname,
@@ -1097,7 +1100,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                                   + ")")
         else:
             call_code = call_name + "(" + ", ".join(call_args) + ")"
-        return self.track_call(call_code)
+        return self.track_call(call_code, v.lineno)
 
     def _print(self, node, current_klass):
         if not self.print_statements:
@@ -1106,7 +1109,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         for ch4 in node.nodes:
             arg = self.expr(ch4, current_klass)
             call_args.append(arg)
-        print >>self.output, self.spacing() + self.track_call("pyjslib.printFunc([%s], %d);" % (', '.join(call_args), int(isinstance(node, ast.Printnl))))
+        print >>self.output, self.spacing() + self.track_call("pyjslib.printFunc([%s], %d)" % (', '.join(call_args), int(isinstance(node, ast.Printnl))), node.lineno) + ';'
 
     def _tryFinally(self, node, current_klass, top_level=False):
         body = node.body
@@ -1610,7 +1613,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                         "must have one sub (in _assign)", v, self.module_name)
                 idx = self.expr(v.subs[0], current_klass)
                 value = self.expr(node.expr, current_klass)
-                print >>self.output, self.spacing() + self.track_call(obj + ".__setitem__(" + idx + ", " + value + ");")
+                print >>self.output, self.spacing() + self.track_call(obj + ".__setitem__(" + idx + ", " + value + ")", v.lineno) + ';'
                 return
             else:
                 raise TranslationError(
@@ -1620,7 +1623,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             print >>self.output, self.spacing() + "var " + tempName + " = " + \
                                  self.expr(node.expr, current_klass) + ";"
             for index,child in enumerate(v.getChildNodes()):
-                rhs = self.track_call(tempName + ".__getitem__(" + str(index) + ")")
+                rhs = self.track_call(tempName + ".__getitem__(" + str(index) + ")", v.lineno)
 
                 if isinstance(child, ast.AssAttr):
                     lhs = _lhsFromAttr(child, current_klass)
@@ -1637,7 +1640,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                         idx = self.expr(child.subs[0], current_klass)
                         value = self.expr(node.expr, current_klass)
                         print >>self.output, self.spacing() + self.track_call(obj + ".__setitem__(" \
-                                           + idx + ", " + rhs + ");")
+                                           + idx + ", " + rhs + ")", v.lineno) + ';'
                         continue
                 print >>self.output, self.spacing() + lhs + " = " + rhs + ";"
             return
@@ -1700,7 +1703,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         if test:
             expr = self.expr(test, current_klass)
 
-            print >>self.output, self.indent() +keyword + " (" + self.track_call("pyjslib.bool(" + expr + ")")+") {"
+            print >>self.output, self.indent() +keyword + " (" + self.track_call("pyjslib.bool(" + expr + ")", test.lineno)+") {"
         else:
             print >>self.output, self.indent() + keyword + " {"
 
@@ -1726,19 +1729,19 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         rhs = self.expr(rhs_node, current_klass)
 
         if op == "==":
-            return self.track_call("pyjslib.eq(%s, %s)" % (lhs, rhs))
+            return self.track_call("pyjslib.eq(%s, %s)" % (lhs, rhs), node.lineno)
         if op == "<":
-            return self.track_call("(pyjslib.cmp(%s, %s) == -1)" % (lhs, rhs))
+            return self.track_call("(pyjslib.cmp(%s, %s) == -1)" % (lhs, rhs), node.lineno)
         if op == "<=":
-            return self.track_call("(pyjslib.cmp(%s, %s) != 1)" % (lhs, rhs))
+            return self.track_call("(pyjslib.cmp(%s, %s) != 1)" % (lhs, rhs), node.lineno)
         if op == ">":
-            return self.track_call("(pyjslib.cmp(%s, %s) == 1)" % (lhs, rhs))
+            return self.track_call("(pyjslib.cmp(%s, %s) == 1)" % (lhs, rhs), node.lineno)
         if op == ">=":
-            return self.track_call("(pyjslib.cmp(%s, %s) != -1)" % (lhs, rhs))
+            return self.track_call("(pyjslib.cmp(%s, %s) != -1)" % (lhs, rhs), node.lineno)
         if op == "in":
-            return self.track_call(rhs + ".__contains__(" + lhs + ")")
+            return self.track_call(rhs + ".__contains__(" + lhs + ")", node.lineno)
         elif op == "not in":
-            return "!" + self.track_call(rhs + ".__contains__(" + lhs + ")")
+            return "!" + self.track_call(rhs + ".__contains__(" + lhs + ")", node.lineno)
         if op == "is":
             op = "==="
         if op == "is not":
@@ -1779,8 +1782,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 assign_name = self.add_lookup('variable', assign_name, assign_name)
                 s = self.spacing()
                 assign_tuple += """%(s)svar %(child_name)s %(op)s """ % locals()
-                assign_tuple += self.track_call("""%(assign_name)s.__getitem__(%(i)i);
-                """ % locals())
+                assign_tuple += self.track_call("%(assign_name)s.__getitem__(%(i)i)" % locals(), node.lineno) + ';'
                 i += 1
         else:
             raise TranslationError(
@@ -1815,11 +1817,11 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             print >>self.output, self.spacing() + "var pyjs__trackstack_size_%d=$pyjs.trackstack.length;" % self.stacksize_depth
         s = self.spacing()
         print >>self.output, """\
-%(s)svar %(iterator_name)s = """ % locals() + self.track_call("%(list_expr)s.__iter__();" % locals())
+%(s)svar %(iterator_name)s = """ % locals() + self.track_call("%(list_expr)s.__iter__()" % locals(), node.lineno) + ';'
         print >>self.output, self.indent() + """try {"""
         print >>self.output, self.indent() + """while (true) {"""
         print >>self.output, self.spacing() + """%(lhs)s %(op)s""" % locals(),
-        print >>self.output, self.track_call("%(iterator_name)s.next()"% locals()) + ";"
+        print >>self.output, self.track_call("%(iterator_name)s.next()"% locals(), node.lineno) + ";"
         print >>self.output, self.spacing() + """%(assign_tuple)s""" % locals()
         for node in node.body.nodes:
             self._stmt(node, current_klass)
@@ -1841,7 +1843,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
     def _while(self, node, current_klass):
         test = self.expr(node.test, current_klass)
-        print >>self.output, "    while (" + self.track_call("pyjslib.bool(" + test + ")") + ") {"
+        print >>self.output, "    while (" + self.track_call("pyjslib.bool(" + test + ")", node.lineno) + ") {"
         if isinstance(node.body, ast.Stmt):
             for child in node.body.nodes:
                 self._stmt(child, current_klass)
@@ -1889,7 +1891,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         if isinstance(node.left, ast.Const) and isinstance(node.left.value, StringType):
            #self.imported_js.add("sprintf.js") # Include the sprintf functionality if it is used
            #return "sprintf("+self.expr(node.left, current_klass) + ", " + self.expr(node.right, current_klass)+")"
-           return self.track_call("pyjslib.sprintf("+self.expr(node.left, current_klass) + ", " + self.expr(node.right, current_klass)+")")
+           return self.track_call("pyjslib.sprintf("+self.expr(node.left, current_klass) + ", " + self.expr(node.right, current_klass)+")", node.lineno)
         return self.expr(node.left, current_klass) + " % " + self.expr(node.right, current_klass)
 
     def _power(self, node, current_klass):
@@ -1916,7 +1918,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
     def _subscript(self, node, current_klass):
         if node.flags == "OP_APPLY":
             if len(node.subs) == 1:
-                return self.track_call(self.expr(node.expr, current_klass) + ".__getitem__(" + self.expr(node.subs[0], current_klass) + ")")
+                return self.track_call(self.expr(node.expr, current_klass) + ".__getitem__(" + self.expr(node.subs[0], current_klass) + ")", node.lineno)
             else:
                 raise TranslationError(
                     "must have one sub (in _subscript)", node, self.module_name)
@@ -1926,13 +1928,13 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
     def _subscript_stmt(self, node, current_klass):
         if node.flags == "OP_DELETE":
-            print >>self.output, "    " + self.track_call(self.expr(node.expr, current_klass) + ".__delitem__(" + self.expr(node.subs[0], current_klass) + ");")
+            print >>self.output, "    " + self.track_call(self.expr(node.expr, current_klass) + ".__delitem__(" + self.expr(node.subs[0], current_klass) + ")", node.lineno) + ';'
         else:
             raise TranslationError(
                 "unsupported flag (in _subscript)", node, self.module_name)
 
     def _list(self, node, current_klass):
-        return self.track_call("new pyjslib.List([" + ", ".join([self.expr(x, current_klass) for x in node.nodes]) + "])")
+        return self.track_call("new pyjslib.List([" + ", ".join([self.expr(x, current_klass) for x in node.nodes]) + "])", node.lineno)
 
     def _dict(self, node, current_klass):
         items = []
@@ -1943,7 +1945,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         return self.track_call("new pyjslib.Dict([" + ", ".join(items) + "])")
 
     def _tuple(self, node, current_klass):
-        return self.track_call("new pyjslib.Tuple([" + ", ".join([self.expr(x, current_klass) for x in node.nodes]) + "])")
+        return self.track_call("new pyjslib.Tuple([" + ", ".join([self.expr(x, current_klass) for x in node.nodes]) + "])", node.lineno)
 
     def _lambda(self, node, current_klass):
         if node.varargs:

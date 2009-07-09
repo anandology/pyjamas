@@ -751,6 +751,7 @@ class List:
         JS("""    return this.l.length;""")
 
     @noSourceTracking
+    @noDebug
     def __contains__(self, value):
         try:
             self.index(value)
