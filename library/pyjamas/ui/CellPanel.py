@@ -45,7 +45,7 @@ class CellPanel(ComplexPanel):
         return DOM.getParent(widget.getElement())
 
     def setBorderWidth(self, width):
-        DOM.setAttribute(self.table, "border", "" + width)
+        DOM.setAttribute(self.table, "border", "%d" % width)
 
     def setCellHeight(self, widget, height):
         td = DOM.getParent(widget.getElement())

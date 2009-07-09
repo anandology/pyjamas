@@ -51,7 +51,7 @@ class TreeDemo(SimplePanel):
 
     def onTreeItemSelected(self, item):
         value = item.getUserObject()
-        Window.alert("You clicked on " + value)
+        Window.alert("You clicked on " + str(value))
 
 
     def onTreeItemStateChanged(self, item):

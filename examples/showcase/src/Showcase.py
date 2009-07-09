@@ -3,6 +3,8 @@
     A simply Pyjamas application that showcases the various widgets and panels
     defined by the 'ui' module.
 """
+import pyjd # dummy in pyjs
+
 from pyjamas.ui.HorizontalPanel import HorizontalPanel
 from pyjamas.ui.HTML import HTML
 from pyjamas.ui.HTMLPanel import HTMLPanel
@@ -229,5 +231,7 @@ class Showcase:
 
 
 if __name__ == '__main__':
+    pyjd.setup("./public/Showcase.html")
     app = Showcase()
     app.onModuleLoad()
+    pyjd.run()

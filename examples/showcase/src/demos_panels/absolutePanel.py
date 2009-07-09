@@ -35,7 +35,7 @@ class AbsolutePanelDemo(SimplePanel):
         wrapper = VerticalPanel()
         wrapper.setBorderWidth(1)
         wrapper.add(HTML(label))
-        DOM.setIntAttribute(wrapper.getTable(), "cellPadding", 10)
+        DOM.setAttribute(wrapper.getTable(), "cellPadding", "10")
         DOM.setAttribute(wrapper.getTable(), "bgColor", "#C3D9FF")
 
         return wrapper
