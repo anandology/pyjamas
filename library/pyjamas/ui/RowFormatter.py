@@ -12,11 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from pyjamas import DOM
+from pyjamas.ui import Applier
 
-class RowFormatter:
+class RowFormatter(Applier):
 
     def __init__(self, outer):
         self.outer = outer
+        Applier.__init__(self, **kwargs)
 
     def addStyleName(self, row, styleName):
         self.outer.setStyleName(self.ensureElement(row), styleName, True)

@@ -1,4 +1,5 @@
 # Copyright 2006 James Tauber and contributors
+# Copyright 2009 Luke Kenneth Casson Leighton
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -30,3 +31,29 @@ class HasAlignment:
     ALIGN_LEFT = "left"
     ALIGN_RIGHT = "right"
 
+class Applier:
+             
+    def __init__(self, **kwargs):
+        """ use this to apply properties as a dictionary, e.g.
+                x = klass(..., StyleName='class-name')
+            will do:
+                x = klass(...)
+                x.setStyleName('class-name')
+
+            and:
+                x = klass(..., Size=("100%", "20px"), Visible=False)
+            will do:
+                x = klass(...)
+                x.setSize("100%", "20px")
+                x.setVisible(False)
+        """
+        if kwargs:
+            for prop in kwargs.keys():
+                fn = getattr(self, "set%s" % prop, None)
+                if fn:
+                    args = kwargs[prop]
+                    if isinstance(args, tuple):
+                        fn(*args)
+                    else:
+                        fn(args)
+    

@@ -48,7 +48,7 @@ class Tabs:
         red = "1638"
         green = "1640"
 
-        self.fTabs = DecoratedTabPanel(Width="100%", Height="100%")
+        self.fTabs = DecoratedTabPanel(Size=("600px", "100%"))
         self.fTabs.add(self.createImage("rembrandt/JohannesElison.jpg"), red, True)
         self.fTabs.add(self.createImage("rembrandt/SelfPortrait1640.jpg"), green, True)
         self.fTabs.add(self.createImage("rembrandt/LaMarcheNocturne.jpg"), "1642")

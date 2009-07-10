@@ -16,8 +16,8 @@ from pyjamas import DOM
 from pyjamas.ui.CellFormatter import CellFormatter
 
 class FlexCellFormatter(CellFormatter):
-    def __init__(self, outer):
-        CellFormatter.__init__(self, outer)
+    def __init__(self, outer, **kwargs):
+        CellFormatter.__init__(self, outer, **kwargs)
 
     def getColSpan(self, row, column):
         return DOM.getIntAttribute(self.getElement(row, column), "colSpan")

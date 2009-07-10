@@ -13,6 +13,7 @@
 # limitations under the License.
 from pyjamas import DOM
 from pyjamas import Window
+from pyjamas.ui import Applier
 
 def setStyleName(element, style, add):
 
@@ -39,17 +40,10 @@ def setStyleName(element, style, add):
             end = oldStyle[idx + len(style):]
             DOM.setAttribute(element, "className", begin + end)
 
-class UIObject:
+class UIObject(Applier):
 
     def __init__(self, **kwargs):
-        """ apply properties as a dictionary, e.g.
-            x = UIObject(StyleName='class-name')
-        """
-        if kwargs:
-            for prop in kwargs.keys():
-                fn = getattr(self, "set%s" % prop, None)
-                if fn:
-                    fn(kwargs[prop])
+        Applier.__init__(self, **kwargs)
 
     def getAbsoluteLeft(self):
         return DOM.getAbsoluteLeft(self.getElement())

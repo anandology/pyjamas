@@ -12,11 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from pyjamas import DOM
+from pyjamas.ui import Applier
 
-class CellFormatter:
+class CellFormatter(Applier):
 
-    def __init__(self, outer):
+    def __init__(self, outer, **kwargs):
         self.outer = outer
+        Applier.__init__(self, **kwargs)
 
     def addStyleName(self, row, column, styleName):
         self.outer.prepareCell(row, column)
