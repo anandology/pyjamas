@@ -37,34 +37,28 @@ class FormPanelDemo(SimplePanel):
     def __init__(self):
         SimplePanel.__init__(self)
 
-        self.form = FormPanel()
-        self.form.setAction("http://google.com/search")
-        self.form.setTarget("results")
+        self.form = FormPanel(Action="http://google.com/search",
+                              Target="results")
 
-        vPanel = VerticalPanel()
-        vPanel.setSpacing(5)
-
-        hPanel = HorizontalPanel()
-        hPanel.setSpacing(5)
+        vPanel = VerticalPanel(Spacing=5)
+        hPanel = HorizontalPanel(Spacing=5)
 
         hPanel.add(Label("Search for:"))
-
-        self.field = TextBox()
-        self.field.setName("q")
-        hPanel.add(self.field)
-
-        hPanel.add(Button("Submit", getattr(self, "onBtnClick")))
+        hPanel.add(TextBox(Name="q"))
+        hPanel.add(Button("Submit", self))
 
         vPanel.add(hPanel)
 
-        results = NamedFrame("results")
+        results = NamedFrame("results",
+                             Width="100%",
+                             Height="200px")
         vPanel.add(results)
 
         self.form.add(vPanel)
         self.add(self.form)
 
 
-    def onBtnClick(self, event):
+    def onClick(self, event):
         self.form.submit()
 
 

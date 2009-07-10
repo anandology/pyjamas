@@ -43,31 +43,33 @@ class FormPanel(SimplePanel):
     METHOD_GET = "get"
     METHOD_POST = "post"
 
-    def __init__(self, target = None):
+    def __init__(self, target = None, **kwargs):
         global FormPanel_formId
 
         if hasattr(target, "getName"):
             target = target.getName()
 
-        SimplePanel.__init__(self, DOM.createForm())
+        element = DOM.createForm()
 
         self.formHandlers = []
         self.iframe = None
 
         FormPanel_formId += 1
         formName = "FormPanel_" + str(FormPanel_formId)
-        DOM.setAttribute(self.getElement(), "target", formName)
-        DOM.setInnerHTML(self.getElement(), "<iframe name='" + formName + "'>")
-        self.iframe = DOM.getFirstChild(self.getElement())
+        DOM.setAttribute(element, "target", formName)
+        DOM.setInnerHTML(element, "<iframe name='" + formName + "'>")
+        self.iframe = DOM.getFirstChild(element)
 
         DOM.setIntStyleAttribute(self.iframe, "width", 0)
         DOM.setIntStyleAttribute(self.iframe, "height", 0)
         DOM.setIntStyleAttribute(self.iframe, "border", 0)
 
-        self.sinkEvents(Event.ONLOAD)
-
         if target is not None:
-            self.setTarget(target)
+            kwargs['Target'] = target
+
+        SimplePanel.__init__(self, element, **kwargs)
+
+        self.sinkEvents(Event.ONLOAD)
 
     def addFormHandler(self, handler):
         self.formHandlers.append(handler)
@@ -93,6 +95,16 @@ class FormPanel(SimplePanel):
             return DOM.getInnerHTML(iframe.contentDocument.body)
         except:
             return None
+
+    def onload(self, *args):
+       if not self.iframe.__formAction:
+           return
+       self._listener.onFrameLoad()
+
+    def onsubmit(self, *args):
+       if self.iframe:
+           self.iframe.__formAction = form.action
+       return self._listener.onFormSubmit()
 
     # FormPanelImpl.hookEvents
     def hookEvents(self, iframe, form, listener):
