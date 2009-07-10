@@ -22,7 +22,7 @@ if not found:
     print "app does not have 'if __name__ == '__main__'' so giving up"
     sys.exit(0)
 
-f = open(sys.argv[1] + ".py2", "w")
+f = open(sys.argv[1] + ".py", "w")
 
 f.write("""
 import pyjd  # this is dummy in pyjs
