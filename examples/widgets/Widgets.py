@@ -1,3 +1,4 @@
+import pyjd # dummy in pyjs
 from pyjamas.ui.Button import Button
 from pyjamas.ui.RootPanel import RootPanel
 from pyjamas import Window
@@ -42,7 +43,7 @@ class SolarCanvas(Canvas):
 
     def onLoad(self, sender=None):
         el = self.clock.getElement()
-        self.width = DOM.getAttribute(el, "width")
+        self.width = DOM.getIntAttribute(el, "width")
         self.height = DOM.getIntAttribute(el, "height")
         self.setWidth("%dpx" % self.width)
         self.setHeight("%dpx" % self.height)
@@ -121,7 +122,7 @@ class SolarCanvas(Canvas):
         
         self.context.restore()
         
-        self.context.drawImage(self.clock,0,0)
+        self.context.drawImage(self.clock.getElement(),0,0)
 
 
 def AppInit():
@@ -138,6 +139,7 @@ def AppInit():
 
 
 if __name__ == '__main__':
+    pyjd.setup("./public/Widgets.html")
     app = Widgets()
     app.onModuleLoad()
-
+    pyjd.run()
