@@ -68,6 +68,12 @@ class BuiltinTest(UnitTest):
     def testRound(self):
         self.assertEqual(round(13.12345), 13.0)
         self.assertEqual(round(13.12345, 3), 13.123)
+        self.assertEqual(round(-13.12345), -13.0)
+        self.assertEqual(round(-13.12345, 3), -13.123)
+        self.assertEqual(round(13.62345), 14.0)
+        self.assertEqual(round(13.62345, 3), 13.623)
+        self.assertEqual(round(-13.62345), -14.0)
+        self.assertEqual(round(-13.62345, 3), -13.623)
 
     def testDivmod(self):
         test_set = [(14, 3, 4, 2),
