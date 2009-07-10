@@ -19,8 +19,7 @@ from pyjamas.ui import Event
 
 class StackPanel(ComplexPanel):
 
-    def __init__(self):
-        ComplexPanel.__init__(self)
+    def __init__(self, **kwargs):
         self.body = None
         self.visibleStack = -1
         self.indices = {}
@@ -30,11 +29,14 @@ class StackPanel(ComplexPanel):
 
         self.body = DOM.createTBody()
         DOM.appendChild(table, self.body)
-        DOM.setAttribute(table, "cellSpacing", "0")
-        DOM.setAttribute(table, "cellPadding", "0")
+
+        if not kwargs.has_key('Spacing'): kwargs['Spacing'] = 0
+        if not kwargs.has_key('Padding'): kwargs['Padding'] = 0
+        if not kwargs.has_key('StyleName'): kwargs['StyleName'] = "gwt-StackPanel"
 
         DOM.sinkEvents(table, Event.ONCLICK)
-        self.setStyleName("gwt-StackPanel")
+
+        ComplexPanel.__init__(self, **kwargs)
 
     def add(self, widget, stackText="", asHTML=False):
         widget.removeFromParent()

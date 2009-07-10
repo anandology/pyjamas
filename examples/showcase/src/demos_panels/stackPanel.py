@@ -40,7 +40,7 @@ class StackPanelDemo(SimplePanel):
     def __init__(self):
         SimplePanel.__init__(self)
 
-        stack = StackPanel()
+        stack = StackPanel(Width="100%", Height="300px")
 
         stack.add(HTML('The quick<br>brown fox<br>jumps over the<br>lazy dog.'),
                   "Stack 1")
@@ -49,6 +49,5 @@ class StackPanelDemo(SimplePanel):
         stack.add(HTML('The smart money<br>is on the<br>black horse.'),
                   "Stack 3")
 
-        stack.setWidth("100%")
         self.add(stack)
 
