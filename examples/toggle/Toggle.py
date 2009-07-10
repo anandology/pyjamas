@@ -1,5 +1,6 @@
 """ testint our demo slider
 """
+import pyjd # dummy in pyjs
 
 from pyjamas.ui.Label      import Label
 from pyjamas.ui.Button     import Button
@@ -63,8 +64,9 @@ class Toggle:
 
 
 if __name__ == "__main__":
+    pyjd.setup("./public/Toggle.html")
     app = Toggle()
     app.onModuleLoad()
-
+    pyjd.run()
 
 

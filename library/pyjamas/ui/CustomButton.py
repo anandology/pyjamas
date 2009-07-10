@@ -179,9 +179,9 @@ class CustomButton (ButtonBase):
     So how can I make difference between listener and downImage/downText ?
     """
     
-    def __init__(self, upImageText = None, downImageText=None, listener = None):
+    def __init__(self, upImageText = None, downImageText=None, listener = None,
+                       **kwargs):
         """Constructor for CustomButton."""
-        ButtonBase.__init__(self, Focus.createFocusable())
         
         self.curFace      = None # The button's current face.
         self.curFaceElement = None # No "undefined" anymore
@@ -197,14 +197,10 @@ class CustomButton (ButtonBase):
         self.allowClick  = False # Used to decide whether to allow clicks to 
                                  # propagate up to the superclass or container elements.
     
-        self.sinkEvents(Event.ONCLICK | Event.MOUSEEVENTS | Event.FOCUSEVENTS
-                        | Event.KEYEVENTS)
         self.setUpFace(self.createFace(None, "up", self.UP))
         #self.getUpFace().setText("Not initialized yet:)")
         #self.setCurrentFace(self.getUpFace())
 
-        self.setStyleName(self.STYLENAME_DEFAULT)
-        
         # Add a11y role "button"
         # XXX: TODO Accessibility
     
@@ -232,7 +228,6 @@ class CustomButton (ButtonBase):
         if upText: self.getUpFace().setText(upText)
         if downImage: self.getDownFace().setImage(downImage)
         if downText: self.getDownFace().setText(downText)
-        if listener: self.addClickListener(listener)
         
         # set the face DOWN
         #self.setCurrentFace(self.getDownFace())
@@ -240,6 +235,12 @@ class CustomButton (ButtonBase):
         # set the face UP
         #self.setCurrentFace(self.getUpFace())
     
+        if not kwargs.has_key('StyleName'): kwargs['StyleName']=self.STYLENAME_DEFAULT
+        
+        ButtonBase.__init__(self, Focus.createFocusable(), **kwargs)
+        self.sinkEvents(Event.ONCLICK | Event.MOUSEEVENTS | Event.FOCUSEVENTS
+                        | Event.KEYEVENTS)
+        if listener: self.addClickListener(listener)
     
     def updateButtonFace(self):
         if self.curFace is not None and \
@@ -571,7 +572,7 @@ class CustomButton (ButtonBase):
     def createFace(self, delegateTo, name, faceID):
         # TODO: name and faceID
         # TODO: maybe no need to break it into this pieces
-        face = Face(self,delegateTo) 
+        face = Face(self, delegateTo) 
         face.setName(name)
         face.setFaceID(faceID)
         return face

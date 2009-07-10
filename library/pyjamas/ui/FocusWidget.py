@@ -48,6 +48,8 @@ class FocusWidget(Widget):
             return not DOM.getBooleanAttribute(self.getElement(), "disabled")
         except TypeError:
             return True
+        except AttributeError:
+            return True
 
     def onBrowserEvent(self, event):
         type = DOM.eventGetType(event)
