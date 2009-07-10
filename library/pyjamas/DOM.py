@@ -756,6 +756,8 @@ def sinkEvents(element, bits):
         mf.addEventListener(element, "load", cb)
     if (bits & 0x10000):
         mf.addEventListener(element, "error", cb)
+    if (bits & 0x20000):
+        mf.addEventListener(element, "contextmenu", cb)
 
 def toString(elem):
     temp = elem.clone_node(True)
