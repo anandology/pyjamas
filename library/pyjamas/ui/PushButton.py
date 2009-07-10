@@ -24,12 +24,15 @@ class PushButton (CustomButton):
     """    
     STYLENAME_DEFAULT = "gwt-PushButton"
     
-    def __init__(self, upImageText = None, downImageText=None, handler = None):
+    def __init__(self, upImageText = None, downImageText=None, handler = None,
+                       **kwargs):
         """
         Constructor for PushButton.
         """
-        CustomButton.__init__(self, upImageText, downImageText, handler)
-        self.setStyleName(self.STYLENAME_DEFAULT)
+        if not kwargs.has_key('StyleName'): kwargs['StyleName']=self.STYLENAME_DEFAULT
+
+        CustomButton.__init__(self, upImageText, downImageText, handler,
+                                    **kwargs)
     
     
     def onClick(self, sender=None):
