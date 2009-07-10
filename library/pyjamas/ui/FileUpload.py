@@ -17,10 +17,11 @@ from pyjamas.ui.Widget import Widget
 
 class FileUpload(Widget):
     def __init__(self):
-        Widget.__init__(self)
-        self.setElement(DOM.createElement("input"))
-        DOM.setAttribute(self.getElement(), "type", "file")
-        self.setStyleName("gwt-FileUpload")
+        if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-FileUpload"
+        element = DOM.createElement("input")
+        DOM.setAttribute(element, "type", "file")
+        self.setElement(element)
+        Widget.__init__(self, **kwargs)
 
     def getFilename(self):
         return DOM.getAttribute(self.getElement(), "value")
