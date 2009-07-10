@@ -2,6 +2,17 @@
 Installing Pyjamas
 ==================
 
+BEFORE PROCEEDING READ THE FOLLOWING WARNING.
+
+DO NOT install the pyjamas libraries into /usr/share/python-support,
+/usr/lib/python2.N/site-packages or ANY location where the "standard"
+python interpreter could possibly pick them up.  The pyjamas libraries
+have nothing to do with python libraries when used by the compiler,
+and contain replacements for sys.py, time.py and other modules that
+are critical to pyjamas.   It goes without saying that if you overwrite
+the standard python modules with the pyjamas equivalents, you will run into
+massive problems.  Don't do it.
+
 Developer Sandbox Setup
 =======================
 
@@ -9,9 +20,9 @@ In this directory run:
 
  python bootstrap.py
 
-The files ``./bin/pyjsbuild`` and ``./bin/pyjscompile`` will be created,
-custom-tailored with hard-coded paths specific to the exact absolute
-location that the bootstrap.py command is run from.  In this way, you
+The files ``pyjd/__init__.py``, ``./bin/pyjsbuild`` and ``./bin/pyjscompile``
+will be created, custom-tailored with hard-coded paths specific to the exact
+absolute location that the bootstrap.py command is run from.  In this way, you
 will be able to install, test and use multiple versions of Pyjamas, without
 cross-interference.
 
@@ -35,8 +46,8 @@ and ./bin/pyjscompile commands.  For example:
 
  python boostrap.py /usr/bin /usr/share/pyjamas
 
-After ./bin/pyjsbuild and ./bin/pyjscompile commands have been created,
-they can now be installed system-wide, along with the libraries.
+After ./pyjd/__init__.py, ./bin/pyjsbuild and ./bin/pyjscompile have been
+created, they can now be installed system-wide, along with the libraries.
 
  python run_bootstrap_first_then_setup.py install
 
@@ -44,7 +55,7 @@ You *may* need to specify --install-data={pickasuitablelocation}
 and you *may* need to specify the same location to the bootstrap.py
 command (prior to running run_bootstrap_first_then_setup.py)
 
- python boostrap.py /usr/bin {pickasuitablelocation}
+ python bootstrap.py /usr/bin {pickasuitablelocation}
 
 The commands pyjscompile and pyjsbuild will be installed;
 the boilerplate web templates, the pyjamas "builtin" libraries
@@ -56,14 +67,4 @@ path is:
 
 You can over-ride this default location with the PYJSPREFIX
 environment variable.
-
-*** WARNING ***
-
-DO NOT install the pyjamas libraries into /usr/share/python-support,
-/usr/lib/python2.N/site-packages or ANY location where the "standard"
-python interpreter could possibly pick them up.  The pyjamas libraries
-have nothing to do with python libraries, and if you ever install
-pyjamas-desktop, which DOES provide identical pyjamas libraries that
-have been altered to use pywebkitgtk (instead of being compiled to
-javascript), you will run into massive problems.
 

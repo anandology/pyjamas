@@ -11,15 +11,34 @@ For more information, see:
 Pyjamas-Desktop
 ---------------
 
-A parallel project is Pyjamas-Desktop: a port of Pyjamas to the
-desktop, using WebKit (http://webkit.org) or Hulahop
-(http://wiki.laptop.org/go/HulaHop)
-
-Both projects support exactly the same set of widgets; exactly the
-same API; provide exactly the same functionality.
 
 Pyjamas runs your application in a Web Browser; Pyjamas-Desktop runs
 exactly the same python application on the Desktop.
 
     http://pyjd.org
+
+Release 0.6 of Pyjamas also incorporates Pyjamas-Desktop directly into
+the Pyjamas Distribution.  To use Pyjamas-Desktop there are two choices,
+with more planned (MacOSX PyObjC; Windows python-win32com MSHTML; KDE's
+PyKHTML).
+
+1) - Gecko / XulRunner
+
+install hulahop and python-xpcom.  hulahop is distributed with
+both Debian and Ubuntu; python-xpcom is part of XULRunner and is
+also distributed with both Debian and Ubuntu.  Other users should
+investigate the installation instructions for python-xpcom and
+hulahop for the operating system of their choice on the appropriate
+web sites.
+
+2) - PyWebKitGtk
+
+you will need a patched version of pywebkitgtk:
+http://code.google.com/p/pywebkitgtk/issues/detail?id=13
+
+you will need a patched version of webkit:
+http://github.com/lkcl/webkit/16401.master
+
+Detailed build instructions are available on http://pyjd.org
+
 
