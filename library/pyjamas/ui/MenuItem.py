@@ -22,7 +22,7 @@ class MenuItem(UIObject):
     #   MenuItem(text, asHTML, cmd)
     #   MenuItem(text, subMenu)
     #   MenuItem(text, asHTML)
-    def __init__(self, text, asHTML, subMenu=None):
+    def __init__(self, text, asHTML, subMenu=None, **kwargs):
         cmd = None
         if subMenu is None:
             if hasattr(asHTML, "execute"): # text, cmd
@@ -43,19 +43,21 @@ class MenuItem(UIObject):
 
         self.setElement(DOM.createTD())
         self.sinkEvents(Event.ONCLICK | Event.ONMOUSEOVER | Event.ONMOUSEOUT)
-        self.setSelectionStyle(False)
 
+        kwargs['SelectionStyle'] = False
         if asHTML:
-            self.setHTML(text)
+            kwargs['HTML'] = text
         else:
-            self.setText(text)
-
-        self.setStyleName("gwt-MenuItem")
+            kwargs['Text'] = text
 
         if cmd:
-            self.setCommand(cmd)
+            kwargs['Command'] = cmd
         if subMenu:
-            self.setSubMenu(subMenu)
+            kwargs['SubMenu'] = subMenu
+
+        if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-MenuItem"
+
+        UIObject.__init__(self, **kwargs)
 
     def getCommand(self):
         return self.command

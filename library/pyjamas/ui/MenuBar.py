@@ -19,8 +19,9 @@ from pyjamas.ui.MenuItem import MenuItem
 from pyjamas.ui.MenuBarPopupPanel import MenuBarPopupPanel
 
 class MenuBar(Widget):
-    def __init__(self, vertical=False):
-        Widget.__init__(self)
+    def __init__(self, vertical=False, **kwargs):
+        if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-MenuBar"
+
         self.body = None
         self.items = []
         self.parentMenu = None
@@ -29,8 +30,6 @@ class MenuBar(Widget):
         self.shownChildMenu = None
         self.vertical = False
         self.autoOpen = False
-
-        Widget.__init__(self)
 
         table = DOM.createTable()
         self.body = DOM.createTBody()
@@ -45,7 +44,8 @@ class MenuBar(Widget):
         outer = DOM.createDiv()
         DOM.appendChild(outer, table)
         self.setElement(outer)
-        self.setStyleName("gwt-MenuBar")
+        Widget.__init__(self, **kwargs)
+
 
     # also callable as:
     #   addItem(item)
