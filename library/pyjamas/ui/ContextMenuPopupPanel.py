@@ -15,11 +15,10 @@ from pyjamas import DOM
 from pyjamas.ui.PopupPanel import PopupPanel
 
 class ContextMenuPopupPanel(PopupPanel):
-    def __init__(self, item):
+    def __init__(self, item, **kwargs):
         self.item = item
-        PopupPanel.__init__(self, True)
-
-        self.setWidget(item)
+        kwargs['Widget'] = item
+        PopupPanel.__init__(self, True, **kwargs)
 
     def showAt(self, x, y):
 
