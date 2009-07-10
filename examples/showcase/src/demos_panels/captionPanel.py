@@ -33,7 +33,8 @@ If the implementation is easy to explain, it may be a good idea.<br />
 Namespaces are one honking great idea -- let's do more of those!</p>
 """)
 
-        panel = CaptionPanel("Caption-Panel", contents)
+        panel = CaptionPanel("Caption-Panel", contents,
+                             Width="300px")
 
         self.add(panel)
 

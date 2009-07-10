@@ -22,14 +22,14 @@ class CaptionPanel(SimplePanel):
     fieldset HTML element.
     """
 
-    def __init__(self, caption, w=None):
-        SimplePanel.__init__(self, DOM.createElement("fieldset"))
-        self.caption = caption
-        self.legend = DOM.createElement("legend");
-        DOM.appendChild(self.getElement(), self.legend);
-        self.setCaption(caption);
-        if w is not None:
-            self.setWidget(w);
+    def __init__(self, caption, widget=None, **kwargs):
+        element = DOM.createElement("fieldset")
+        self.legend = DOM.createElement("legend")
+        DOM.appendChild(element, self.legend)
+        kwargs['Caption'] = caption
+        if widget is not None:
+            kwargs['Widget'] = widget
+        SimplePanel.__init__(self, element, **kwargs)
 
     def getCaption(self):
         return self.caption
