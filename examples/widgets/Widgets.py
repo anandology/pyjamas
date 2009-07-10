@@ -7,6 +7,7 @@ from pyjamas.ui.HTML import HTML
 from pyjamas.Canvas2D import Canvas, CanvasImage, ImageLoadListener
 from pyjamas.Timer import Timer
 from pyjamas import DOM
+import time
 
 class Widgets:
     def onModuleLoad(self):
@@ -59,28 +60,16 @@ class SolarCanvas(Canvas):
         self.draw()
 
     def getTimeSeconds(self):
-        JS("""
-        var x = new Date();
-        return x.getSeconds();
-        """)
-
-    def getTimeMinutes(self):
-        JS("""
-        var x = new Date();
-        return x.getMinutes();
-        """)
-
-    def getTimeHours(self):
-        JS("""
-        var x = new Date();
-        return x.getHours();
-        """)
+        return time.time() % 60.0
 
     def getTimeMilliseconds(self):
-        JS("""
-        var x = new Date();
-        return x.getMilliseconds();
-        """)
+        return (time.time() * 1000.0) % 1.0
+
+    def getTimeMinutes(self):
+        return (time.time() / 60) % 60.0
+
+    def getTimeHours(self):
+        return (time.time() / 3600) % 12.0
 
     def draw(self):
         pi = 3.14159265358979323
