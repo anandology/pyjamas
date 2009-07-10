@@ -14,22 +14,24 @@ from pyjamas.ui import KeyboardListener
 from pyjamas.ui.RootPanel import RootPanel
 
 class AutoCompleteTextBox(TextBox):
-    def __init__(self):
+    def __init__(self, **kwargs):
         self.choicesPopup = PopupPanel(True, False)
         self.choices = ListBox()
         self.items = SimpleAutoCompletionItems()
         self.popupAdded = False
         self.visible = False
 
-        TextBox.__init__(self)
-        self.addKeyboardListener(self)
         self.choices.addChangeListener(self)
-        self.setStyleName("AutoCompleteTextBox")
 
         self.choicesPopup.add(self.choices)
         self.choicesPopup.addStyleName("AutoCompleteChoices")
             
         self.choices.setStyleName("list")
+
+        if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-AutoCompleteTextBox"
+
+        TextBox.__init__(self, **kwargs)
+        self.addKeyboardListener(self)
 
     def setCompletionItems(self, items):
         if not hasattr(items, 'getCompletionItems'):
