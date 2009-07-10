@@ -1,22 +1,37 @@
 #!/usr/bin/env python
 #
-# appends onModuleLoad thingy onto application
-# pyjamas 0.5 no longer automatically calls onModuleLoad
+# converts app to pyjd
 #
 
 import sys
 
-txt = open(sys.argv[1] + ".py", "r").read()
+lines = open(sys.argv[1] + ".py", "r").readlines()
 
-f = open(sys.argv[1] + ".py", "w")
+txt = ''
+found = 0
+txt2 = ''
+for l in lines:
+    if found:
+        txt2 += l
+        continue
+    if l.startswith("if __name__") and l.index("__main__") > 0:
+        found = 1
+    txt += l
 
-# assume that app has __main__ as last bit.
+if not found:
+    print "app does not have 'if __name__ == '__main__'' so giving up"
+    sys.exit(0)
+
+f = open(sys.argv[1] + ".py2", "w")
 
 f.write("""
-from pyjamas import loader
+import pyjd  # this is dummy in pyjs
 %s
-    loader.run()
-""" % txt)
+    # load HTML file (dummy in pyjs)
+    pyjd.setup("./public/%s.html")
+%s
+    pyjd.run() # start pyjd app (dummy in pyjs)
+""" % (txt, sys.argv[1], txt2))
 
 f.close()
 
