@@ -16,7 +16,7 @@ from pyjamas.ui import Applier
 
 class RowFormatter(Applier):
 
-    def __init__(self, outer):
+    def __init__(self, outer, **kwargs):
         self.outer = outer
         Applier.__init__(self, **kwargs)
 
