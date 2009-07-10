@@ -54,11 +54,12 @@ class UnitTest:
 
     def isTestMethod(self, method):
         if callable(getattr(self, method)):
-            if method.find("test") is 0:
+            if method.find("test") == 0:
                 return True
         return False
 
     def fail(self, msg=None):
+        self.startTest()
         self.tests_failed+=1
 
         if not msg:
@@ -115,6 +116,28 @@ class UnitTest:
                 msg=repr(first) + " == " + repr(second) + " within " + repr(places) + " places"
             return self.fail(msg)
 
+    # based on the Python standard library
+    def assertRaises(self, excClass, callableObj, *args, **kwargs):
+        """
+        Fail unless an exception of class excClass is thrown
+        by callableObj when invoked with arguments args and keyword
+        arguments kwargs. If a different type of exception is
+        thrown, it will not be caught, and the test case will be
+        deemed to have suffered an error, exactly as for an
+        unexpected exception.
+        """
+        self.startTest()
+        try:
+            callableObj(*args, **kwargs)
+        except excClass, exc:
+            return
+        else:
+            if hasattr(excClass, '__name__'):
+                excName = excClass.__name__
+            else:
+                excName = str(excClass)
+            self.fail("%s not raised" % excName)
+
     def displayStats(self):
         if self.tests_failed:
             bg_colour="#ff0000"
@@ -131,7 +154,7 @@ class UnitTest:
         output+=self.getNameFmt() + "Passed %d " % tests_passed + "/ %d" % self.tests_completed + " tests"
 
         if self.tests_failed:
-            output+=" ( %d failed)" % self.tests_failed 
+            output+=" (%d failed)" % self.tests_failed
 
         if sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
             output+="</b></font></td></tr></table>"

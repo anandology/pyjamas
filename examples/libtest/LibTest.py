@@ -17,6 +17,7 @@ if sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
 from BuiltinTest import BuiltinTest
 from MD5Test import MD5Test
 from TimeModuleTest import TimeModuleTest
+from TypeCompatibilityTest import TypeCompatibilityTest
 
 def main():
 
@@ -37,8 +38,8 @@ def main():
     BuiltinTest().run()
     MD5Test().run()
     TimeModuleTest().run()
+    TypeCompatibilityTest().run()
 
 if __name__ == '__main__':
     main()
-
 
