@@ -18,16 +18,12 @@ from pyjamas.ui import Event
 
 class HTML(Label):
 
-    def __init__(self, html=None, wordWrap=True):
-        Label.__init__(self)
-
+    def __init__(self, html=None, **kwargs):
+        if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-HTML"
+        if html: kwargs['HTML'] = html
         self.setElement(DOM.createDiv())
         self.sinkEvents(Event.ONCLICK | Event.MOUSEEVENTS)
-        self.setStyleName("gwt-HTML")
-        if html:
-            self.setHTML(html)
-
-        self.setWordWrap(wordWrap)
+        Label.__init__(self, **kwargs)
 
     def getHTML(self):
         return DOM.getInnerHTML(self.getElement())

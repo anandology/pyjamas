@@ -46,11 +46,10 @@ class UIObject:
             x = UIObject(StyleName='class-name')
         """
         if kwargs:
-            Window.alert(self.__name__ + repr(kwargs))
             for prop in kwargs.keys():
                 fn = getattr(self, "set%s" % prop, None)
                 if fn:
-                    fn(keys[prop])
+                    fn(kwargs[prop])
 
     def getAbsoluteLeft(self):
         return DOM.getAbsoluteLeft(self.getElement())

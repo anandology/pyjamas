@@ -22,13 +22,14 @@ from pyjamas.ui import KeyboardListener
 class FocusWidget(Widget):
 
     def __init__(self, element, **kwargs):
-        Widget.__init__(self, **kwargs)
+        self.setElement(element)
         self.clickListeners = []
         self.focusListeners = []
         self.keyboardListeners = []
 
-        self.setElement(element)
         self.sinkEvents(Event.ONCLICK | Event.FOCUSEVENTS | Event.KEYEVENTS)
+
+        Widget.__init__(self, **kwargs)
 
     def addClickListener(self, listener):
         self.clickListeners.append(listener)

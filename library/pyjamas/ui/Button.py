@@ -18,7 +18,7 @@ from pyjamas.ui.ButtonBase import ButtonBase
 
 class Button(ButtonBase):
 
-    def __init__(self, html=None, listener=None):
+    def __init__(self, html=None, listener=None, **kwargs):
         """
         Create a new button widget.
 
@@ -26,11 +26,11 @@ class Button(ButtonBase):
         @param listener: A new click listener; see addClickListener()
 
         """
-        ButtonBase.__init__(self, DOM.createButton())
+        if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-Button"
+        if html: kwargs['HTML'] = html
+
+        ButtonBase.__init__(self, DOM.createButton(), **kwargs)
         self.adjustType(self.getElement())
-        self.setStyleName("gwt-Button")
-        if html:
-            self.setHTML(html)
         if listener:
             self.addClickListener(listener)
 
