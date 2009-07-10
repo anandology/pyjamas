@@ -16,8 +16,15 @@ from pyjamas import DOM
 from pyjamas.ui.Widget import Widget
 
 class Composite(Widget):
-    def __init__(self, **kwargs):
+    def __init__(self, widget=None, **kwargs):
+        # this is all a bit awkward!  initialising
+        # stuff that really should be done in Widget.__init__
+        # allows us to call self.initWidget here and thus
+        # have **kwargs applied afterwards.
         self.widget = None
+        self.attached = None
+        if widget:
+            self.initWidget(widget)
         Widget.__init__(self, **kwargs)
 
     def initWidget(self, widget):

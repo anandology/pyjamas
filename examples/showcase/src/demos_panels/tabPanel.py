@@ -52,14 +52,12 @@ class TabPanelDemo(SimplePanel):
     def __init__(self):
         SimplePanel.__init__(self)
 
-        tabs = TabPanel()
+        tabs = TabPanel(Width="100%", Height="250px")
         tabs.add(HTML("The quick brown fox jumps over the lazy dog."), "Tab 1")
         tabs.add(HTML("The early bird catches the worm."), "Tab 2")
         tabs.add(HTML("The smart money is on the black horse."), "Tab 3")
 
         tabs.selectTab(0)
-        tabs.setWidth("100%")
-        tabs.setHeight("250px")
 
         self.add(tabs)
 

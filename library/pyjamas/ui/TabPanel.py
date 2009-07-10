@@ -19,10 +19,9 @@ from pyjamas.ui.VerticalPanel import VerticalPanel
 from pyjamas.ui.TabBar import TabBar
 
 class TabPanel(Composite):
-    def __init__(self, tabBar=None):
-        Composite.__init__(self)
+    def __init__(self, tabBar=None, **kwargs):
         self.tab_children = [] # TODO: can self.children be used instead?
-        self.deck = DeckPanel()
+        self.deck = DeckPanel(StyleName="gwt-TabPanelBottom")
         if tabBar is None:
             self.tabBar = TabBar()
         else:
@@ -36,9 +35,10 @@ class TabPanel(Composite):
         panel.setCellHeight(self.deck, "100%")
         self.tabBar.setWidth("100%")
         self.tabBar.addTabListener(self)
-        self.initWidget(panel)
-        self.setStyleName("gwt-TabPanel")
-        self.deck.setStyleName("gwt-TabPanelBottom")
+
+        if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-TabPanel"
+
+        Composite.__init__(self, panel, **kwargs)
 
     def add(self, widget, tabText=None, asHTML=False):
         if tabText is None:
