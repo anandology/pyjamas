@@ -23,7 +23,7 @@ class FlowPanelDemo(SimplePanel):
     def __init__(self):
         SimplePanel.__init__(self)
 
-        flow = FlowPanel()
+        flow = FlowPanel(Width="400px")
 
         flow.add(Button("Item 1"))
         flow.add(Button("Item 2"))
@@ -35,6 +35,6 @@ class FlowPanelDemo(SimplePanel):
         flow.add(Button("Item 8"))
         flow.add(Button("Item 9"))
         flow.add(Button("Item 10"))
-        flow.setWidth("400px")
+
         self.add(flow)
 

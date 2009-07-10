@@ -17,9 +17,9 @@ from pyjamas import DOM
 from pyjamas.ui.ComplexPanel import ComplexPanel
 
 class FlowPanel(ComplexPanel):
-    def __init__(self):
-        ComplexPanel.__init__(self)
+    def __init__(self, **kwargs):
         self.setElement(DOM.createDiv())
+        ComplexPanel.__init__(self, **kwargs)
 
     def add(self, w):
         ComplexPanel.add(self, w, self.getElement())
