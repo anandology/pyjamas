@@ -206,6 +206,7 @@ def build_script():
         print_statements = options.print_statements,
         function_argument_checking=options.function_argument_checking,
         attribute_checking=options.attribute_checking,
+        bound_methods=options.bound_methods,
         source_tracking=options.source_tracking,
         line_tracking=options.line_tracking,
         store_source=options.store_source)

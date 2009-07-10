@@ -192,6 +192,8 @@ class Translator:
         'noFunctionArgumentChecking': ('function_argument_checking', False),
         'AttributeChecking': ('attribute_checking', True),
         'noAttributeChecking': ('attribute_checking', False),
+        'BoundMethods': ('bound_methods', True),
+        'noBoundMethods': ('bound_methods', False),
         'SourceTracking': ('source_tracking', True),
         'noSourceTracking': ('source_tracking', False),
         'LineTracking': ('line_tracking', True),
@@ -206,6 +208,7 @@ class Translator:
                  print_statements=True,
                  function_argument_checking=True,
                  attribute_checking=True,
+                 bound_methods=True,
                  source_tracking=True,
                  line_tracking=True,
                  store_source=True,
@@ -230,6 +233,7 @@ class Translator:
         self.print_statements = print_statements
         self.function_argument_checking = function_argument_checking
         self.attribute_checking = attribute_checking
+        self.bound_methods = bound_methods
         self.source_tracking = source_tracking
         self.line_tracking = line_tracking
         self.store_source = store_source
@@ -387,14 +391,14 @@ class Translator:
     def push_options(self):
 	    self.option_stack.append((\
             self.debug, self.print_statements, self.function_argument_checking,
-            self.attribute_checking, self.source_tracking,
-            self.line_tracking, self.store_source,
+            self.attribute_checking, self.bound_methods,
+            self.source_tracking, self.line_tracking, self.store_source,
         ))
     def pop_options(self):
         (\
             self.debug, self.print_statements, self.function_argument_checking,
-            self.attribute_checking, self.source_tracking,
-            self.line_tracking, self.store_source,
+            self.attribute_checking, self.bound_methods,
+            self.source_tracking, self.line_tracking, self.store_source,
         ) = self.option_stack.pop()
 
     def parse_decorators(self, node):
@@ -2087,11 +2091,14 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                     'attr_left': attr_left, 
                     'attr_right': attr_right,
                 }
-            attr_code = """\
+            if self.bound_methods:
+                attr_code = """\
 (typeof %(attr)s == 'function' && %(attr_left)s.__is_instance__?\
 pyjslib.getattr(%(attr_left)s, '%(attr_right)s'):\
 %(attr)s)\
-""" % {'attr': attr, 'attr_left': attr_left, 'attr_right': attr_right}
+"""
+            else:
+                attr_code = "%(attr)s"
             attr_code = attr_code % pdict
             pdict['attr_code'] = attr_code
 
@@ -2131,6 +2138,7 @@ def translate(sources, output_file, module_name=None,
               print_statements = True,
               function_argument_checking=True,
               attribute_checking=True,
+              bound_methods=True,
               source_tracking=True,
               line_tracking=True,
               store_source=True,
@@ -2159,6 +2167,7 @@ def translate(sources, output_file, module_name=None,
                    print_statements = print_statements,
                    function_argument_checking = function_argument_checking,
                    attribute_checking = attribute_checking,
+                   bound_methods = bound_methods,
                    source_tracking = source_tracking,
                    line_tracking = line_tracking,
                    store_source = store_source,
@@ -2382,6 +2391,7 @@ class AppTranslator:
                  print_statements=True,
                  function_argument_checking=True,
                  attribute_checking=True,
+                 bound_methods=True,
                  source_tracking=True,
                  line_tracking=True,
                  store_source=True,
@@ -2397,6 +2407,7 @@ class AppTranslator:
         self.print_statements = print_statements
         self.function_argument_checking = function_argument_checking
         self.attribute_checking = attribute_checking
+        self.bound_methods = bound_methods
         self.source_tracking = source_tracking
         self.line_tracking = line_tracking
         self.store_source = store_source
@@ -2450,6 +2461,7 @@ class AppTranslator:
                        print_statements = self.print_statements,
                        function_argument_checking = self.function_argument_checking,
                        attribute_checking = self.attribute_checking,
+                       bound_methods = self.bound_methods,
                        source_tracking = self.source_tracking,
                        line_tracking = self.line_tracking,
                        store_source = self.store_source,
@@ -2558,6 +2570,19 @@ def add_compile_options(parser):
     speed_options['attribute_checking'] = False
     pythonic_options['attribute_checking'] = True
 
+    parser.add_option("--no-bound-methods",
+                      dest = "bound_methods",
+                      action="store_false",
+                      help = "Do not generate code for binding methods",
+                     )
+    parser.add_option("--bound-methods",
+                      dest = "bound_methods",
+                      action="store_true",
+                      help = "Generate code for binding methods",
+                     )
+    speed_options['bound_methods'] = False
+    pythonic_options['bound_methods'] = True
+
     parser.add_option("--no-source-tracking",
                       dest = "source_tracking",
                       action="store_false",
@@ -2616,6 +2641,7 @@ def add_compile_options(parser):
                         print_statements=True,
                         function_argument_checking = False,
                         attribute_checking = False,
+                        bound_methods = True,
                         source_tracking = False,
                         line_tracking = False,
                         store_source = False,
@@ -2656,6 +2682,7 @@ def main():
               print_statements = options.print_statements,
               function_argument_checking = options.function_argument_checking,
               attribute_checking = options.attribute_checking,
+              bound_methods = options.bound_methods,
               source_tracking = options.source_tracking,
               line_tracking = options.line_tracking,
               store_source = options.store_source,
