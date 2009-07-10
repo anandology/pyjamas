@@ -20,9 +20,9 @@ class TextArea(TextBoxBase):
     HTML textarea widget, allowing multi-line text entry.  Use setText/getText to
     get and access the current text.
     """
-    def __init__(self):
-        TextBoxBase.__init__(self, DOM.createTextArea())
-        self.setStyleName("gwt-TextArea")
+    def __init__(self, **kwargs):
+        if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-TextArea"
+        TextBoxBase.__init__(self, DOM.createTextArea(), **kwargs)
 
     def getCharacterWidth(self):
         return DOM.getIntAttribute(self.getElement(), "cols")

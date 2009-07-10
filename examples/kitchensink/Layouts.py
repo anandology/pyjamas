@@ -31,11 +31,10 @@ class Layouts(Sink):
         to see the nifty scroll bars!"""
         
         contents = HTML(text)
-        scroller = ScrollPanel(contents)
-        scroller.setStyleName("ks-layouts-Scroller")
+        scroller = ScrollPanel(contents, StyleName="ks-layouts-Scroller")
         
-        dock = DockPanel()
-        dock.setHorizontalAlignment(HasAlignment.ALIGN_CENTER)
+        dock = DockPanel(HorizontalAlignment=HasAlignment.ALIGN_CENTER,
+                         Spacing=10)
         north0 = HTML("This is the <i>first</i> north component", True)
         east = HTML("<center>This<br>is<br>the<br>east<br>component</center>", True)
         south = HTML("This is the south component")
@@ -53,14 +52,12 @@ class Layouts(Sink):
         for i in range(8):
             flow.add(CheckBox("Flow %d" % i))
 
-        horz = HorizontalPanel()
-        horz.setVerticalAlignment(HasAlignment.ALIGN_MIDDLE)
+        horz = HorizontalPanel(VerticalAlignment=HasAlignment.ALIGN_MIDDLE)
         horz.add(Button("Button"))
         horz.add(HTML("<center>This is a<br>very<br>tall thing</center>", True))
         horz.add(Button("Button"))
 
-        vert = VerticalPanel()
-        vert.setHorizontalAlignment(HasAlignment.ALIGN_CENTER)
+        vert = VerticalPanel(HorizontalAlignment=HasAlignment.ALIGN_CENTER)
         vert.add(Button("Small"))
         vert.add(Button("--- BigBigBigBig ---"))
         vert.add(Button("tiny"))
@@ -91,9 +88,8 @@ class Layouts(Sink):
         disclose.add(HTML("""<b>Ta-daaaaa!</b><br />Ok - it could have
                              been<br />more of a surprise."""))
 
-        panel = VerticalPanel()
-        panel.setSpacing(8)
-        panel.setHorizontalAlignment(HasAlignment.ALIGN_CENTER)
+        panel = VerticalPanel(Spacing=8,
+                              HorizontalAlignment=HasAlignment.ALIGN_CENTER)
         
         panel.add(self.makeLabel("Dock Panel"))
         panel.add(dock)

@@ -40,16 +40,17 @@ class DockPanel(CellPanel):
     SOUTH = "south"
     WEST = "west"
 
-    def __init__(self):
-        CellPanel.__init__(self)
+    def __init__(self, **kwargs):
+
+        if not kwargs.has_key('Spacing'): kwargs['Spacing'] = 0
+        if not kwargs.has_key('Padding'): kwargs['Padding'] = 0
 
         self.horzAlign = HasHorizontalAlignment.ALIGN_LEFT
         self.vertAlign = HasVerticalAlignment.ALIGN_TOP
         self.center = None
         self.dock_children = [] # TODO: can self.children be used instead?
 
-        DOM.setAttribute(self.getTable(), "cellSpacing", "0")
-        DOM.setAttribute(self.getTable(), "cellPadding", "0")
+        CellPanel.__init__(self, **kwargs)
 
     def add(self, widget, direction):
         if direction == self.CENTER:

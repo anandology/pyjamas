@@ -19,12 +19,10 @@ from pyjamas.ui.RowFormatter import RowFormatter
 
 class Grid(HTMLTable):
 
-    def __init__(self, rows=0, columns=0):
-        HTMLTable.__init__(self)
-        self.cellFormatter = CellFormatter(self)
-        self.rowFormatter = RowFormatter(self)
+    def __init__(self, rows=0, columns=0, **kwargs):
         self.numColumns = 0
         self.numRows = 0
+        HTMLTable.__init__(self, **kwargs)
         if rows > 0 or columns > 0:
             self.resize(rows, columns)
 

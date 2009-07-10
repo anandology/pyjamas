@@ -20,18 +20,18 @@ from pyjamas.ui import MouseListener
 prefetchImages = {}
 
 class Image(Widget):
-    def __init__(self, url=""):
-        Widget.__init__(self)
+    def __init__(self, url="", **kwargs):
+        if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-Image"
+        if url: kwargs['Url'] = url
+
+        self.setElement(DOM.createImg())
+
         self.clickListeners = []
         self.loadListeners = []
         self.mouseListeners = []
 
-        self.setElement(DOM.createImg())
         self.sinkEvents(Event.ONCLICK | Event.MOUSEEVENTS | Event.ONLOAD | Event.ONERROR)
-        self.setStyleName("gwt-Image")
-
-        if url:
-            self.setUrl(url)
+        Widget.__init__(self, **kwargs)
 
     def addClickListener(self, listener):
         self.clickListeners.append(listener)

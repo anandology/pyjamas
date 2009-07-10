@@ -19,17 +19,18 @@ from pyjamas.ui import HasVerticalAlignment
 
 class HorizontalPanel(CellPanel):
 
-    def __init__(self):
-        CellPanel.__init__(self)
+    def __init__(self, **kwargs):
+
+        if not kwargs.has_key('Spacing'): kwargs['Spacing'] = 0
+        if not kwargs.has_key('Padding'): kwargs['Padding'] = 0
 
         self.horzAlign = HasHorizontalAlignment.ALIGN_LEFT
         self.vertAlign = HasVerticalAlignment.ALIGN_TOP
 
+        CellPanel.__init__(self, **kwargs)
+
         self.tableRow = DOM.createTR()
         DOM.appendChild(self.getBody(), self.tableRow)
-
-        DOM.setAttribute(self.getTable(), "cellSpacing", "0")
-        DOM.setAttribute(self.getTable(), "cellPadding", "0")
 
     def add(self, widget):
         self.insert(widget, self.getWidgetCount())

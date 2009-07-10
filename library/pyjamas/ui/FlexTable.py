@@ -22,10 +22,10 @@ from pyjamas.ui.RowFormatter import RowFormatter
 from pyjamas.ui.FlexCellFormatter import FlexCellFormatter 
 
 class FlexTable(HTMLTable):
-    def __init__(self):
-        HTMLTable.__init__(self)
-        self.cellFormatter = FlexCellFormatter(self)
-        self.rowFormatter = RowFormatter(self)
+    def __init__(self, **kwargs):
+        if not kwargs.has_key('CellFormatter'):
+            kwargs['CellFormatter'] = FlexCellFormatter(self)
+        HTMLTable.__init__(self, **kwargs)
 
     def addCell(self, row):
         self.insertCell(row, self.getCellCount(row))

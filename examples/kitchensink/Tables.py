@@ -7,8 +7,8 @@ from pyjamas.ui.Image import Image
 class Tables(Sink):
     def __init__(self):
         Sink.__init__(self)
-        inner = Grid(10, 5)
-        outer = FlexTable()
+        inner = Grid(10, 5, Width="100%", BorderWidth="1")
+        outer = FlexTable(Width="100%", BorderWidth="1")
 
         outer.setWidget(0, 0, Image(self.baseURL() + "rembrandt/LaMarcheNocturne.jpg"))
         outer.getFlexCellFormatter().setColSpan(0, 0, 2)
@@ -21,12 +21,6 @@ class Tables(Sink):
         for i in range(10):
             for j in range(5):
                 inner.setText(i, j, "%d" % i + ",%d" % j)
-
-        inner.setWidth("100%")
-        outer.setWidth("100%")
-
-        inner.setBorderWidth("1")
-        outer.setBorderWidth("1")
 
         self.initWidget(outer)
         

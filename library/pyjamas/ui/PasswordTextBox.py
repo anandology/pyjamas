@@ -16,8 +16,9 @@ from pyjamas import DOM
 from pyjamas.ui.TextBoxBase import TextBoxBase
 
 class PasswordTextBox(TextBoxBase):
-    def __init__(self):
-        TextBoxBase.__init__(self, DOM.createInputPassword())
-        self.setStyleName("gwt-PasswordTextBox")
+    def __init__(self, **kwargs):
+        if not kwargs.has_key('StyleName'):
+            kwargs['StyleName']="gwt-PasswordTextBox"
+        TextBoxBase.__init__(self, DOM.createInputPassword(), **kwargs)
 
 

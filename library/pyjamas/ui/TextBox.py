@@ -16,9 +16,9 @@ from pyjamas import DOM
 from pyjamas.ui.TextBoxBase import TextBoxBase
 
 class TextBox(TextBoxBase):
-    def __init__(self):
-        TextBoxBase.__init__(self, DOM.createInputText())
-        self.setStyleName("gwt-TextBox")
+    def __init__(self, **kwargs):
+        if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-TextBox"
+        TextBoxBase.__init__(self, DOM.createInputText(), **kwargs)
 
     def getMaxLength(self):
         return DOM.getIntAttribute(self.getElement(), "maxLength")

@@ -16,14 +16,11 @@ class Lists(Sink):
             ["foo3", "bar3", "baz3", "toto3", "tintin3"],
             ["foo4", "bar4", "baz4", "toto4", "tintin4"]]
 
-        self.combo=ListBox()
-        self.list=ListBox()
+        self.combo=ListBox(VisibleItemCount=1)
+        self.list=ListBox(MultipleSelect=True, VisibleItemCount=10)
         self.echo=Label()
 
-        self.combo.setVisibleItemCount(1)
         self.combo.addChangeListener(self)
-        self.list.setVisibleItemCount(10)
-        self.list.setMultipleSelect(True)
         
         for i in range(len(self.sStrings)):
             self.combo.addItem("List %d" % i)
@@ -32,14 +29,12 @@ class Lists(Sink):
         
         self.list.addChangeListener(self)
         
-        horz = HorizontalPanel()
-        horz.setVerticalAlignment(HasAlignment.ALIGN_TOP)
-        horz.setSpacing(8)
+        horz = HorizontalPanel(VerticalAlignment=HasAlignment.ALIGN_TOP,
+                               Spacing=8)
         horz.add(self.combo)
         horz.add(self.list)
         
-        panel = VerticalPanel()
-        panel.setHorizontalAlignment(HasAlignment.ALIGN_LEFT)
+        panel = VerticalPanel(HorizontalAlignment=HasAlignment.ALIGN_LEFT)
         panel.add(horz)
         panel.add(self.echo)
         self.initWidget(panel)

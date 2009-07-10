@@ -17,15 +17,15 @@ from pyjamas.ui.ComplexPanel import ComplexPanel
 
 class CellPanel(ComplexPanel):
 
-    def __init__(self):
-        ComplexPanel.__init__(self)
-
+    def __init__(self, **kwargs):
         self.table = DOM.createTable()
+        self.setElement(self.table)
         self.body = DOM.createTBody()
         self.spacing = None
         self.padding = None
         DOM.appendChild(self.table, self.body)
-        self.setElement(self.table)
+
+        ComplexPanel.__init__(self, **kwargs)
 
     def getTable(self):
         return self.table

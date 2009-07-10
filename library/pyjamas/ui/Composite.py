@@ -16,9 +16,9 @@ from pyjamas import DOM
 from pyjamas.ui.Widget import Widget
 
 class Composite(Widget):
-    def __init__(self):
-        Widget.__init__(self)
+    def __init__(self, **kwargs):
         self.widget = None
+        Widget.__init__(self, **kwargs)
 
     def initWidget(self, widget):
         if self.widget is not None:

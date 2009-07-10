@@ -17,10 +17,10 @@ from pyjamas import DOM
 from pyjamas.ui.ComplexPanel import ComplexPanel
 
 class DeckPanel(ComplexPanel):
-    def __init__(self):
-        ComplexPanel.__init__(self)
+    def __init__(self, **kwargs):
         self.visibleWidget = None
         self.setElement(DOM.createDiv())
+        ComplexPanel.__init__(self, **kwargs)
 
     def add(self, widget):
         self.insert(widget, self.getWidgetCount())

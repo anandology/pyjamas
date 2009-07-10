@@ -21,11 +21,11 @@ class SimplePanel(Panel):
     you'd like to be able to replace the widget with another, or if you need to
     wrap something in a DIV.
     """
-    def __init__(self, element=None):
-        Panel.__init__(self)
+    def __init__(self, element=None, **kwargs):
         if element is None:
             element = DOM.createDiv()
         self.setElement(element)
+        Panel.__init__(self, **kwargs)
 
     def add(self, widget):
         if self.getWidget() is not None:

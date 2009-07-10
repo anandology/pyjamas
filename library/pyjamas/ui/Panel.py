@@ -17,9 +17,9 @@ from pyjamas import DOM
 from pyjamas.ui.Widget import Widget
 
 class Panel(Widget):
-    def __init__(self):
-        Widget.__init__(self)
+    def __init__(self, **kwargs):
         self.children = []
+        Widget.__init__(self, **kwargs)
 
     def add(self):
         console.error("This panel does not support no-arg add()")

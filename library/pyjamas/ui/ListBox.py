@@ -17,12 +17,12 @@ from pyjamas.ui.FocusWidget import FocusWidget
 from pyjamas.ui import Event
 
 class ListBox(FocusWidget):
-    def __init__(self):
+    def __init__(self, **kwargs):
+        if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-ListBox"
         self.changeListeners = []
         self.INSERT_AT_END = -1
-        FocusWidget.__init__(self, DOM.createSelect())
+        FocusWidget.__init__(self, DOM.createSelect(), **kwargs)
         self.sinkEvents(Event.ONCHANGE)
-        self.setStyleName("gwt-ListBox")
 
     def addChangeListener(self, listener):
         self.changeListeners.append(listener)

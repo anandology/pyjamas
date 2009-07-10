@@ -22,12 +22,12 @@ class TextBoxBase(FocusWidget):
     ALIGN_LEFT = "left"
     ALIGN_RIGHT = "right"
 
-    def __init__(self, element):
+    def __init__(self, element, **kwargs):
         self.changeListeners = []
         self.clickListeners = []
         self.currentEvent = None
 
-        FocusWidget.__init__(self, element)
+        FocusWidget.__init__(self, element, **kwargs)
         self.sinkEvents(Event.ONCHANGE)
 
     def addChangeListener(self, listener):

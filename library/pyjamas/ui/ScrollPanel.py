@@ -17,15 +17,16 @@ from pyjamas.ui.SimplePanel import SimplePanel
 from pyjamas.ui import Event
 
 class ScrollPanel(SimplePanel):
-    def __init__(self, child=None):
-        SimplePanel.__init__(self)
+    def __init__(self, child=None, **kwargs):
         self.scrollListeners = []
 
-        self.setAlwaysShowScrollBars(False)
-        self.sinkEvents(Event.ONSCROLL)
-
         if child is not None:
-            self.setWidget(child)
+            kwargs['Widget'] = child
+        if not kwargs.has_key('AlwaysShowScrollBars'):
+             kwargs['AlwaysShowScrollBars'] = False
+
+        SimplePanel.__init__(self, **kwargs)
+        self.sinkEvents(Event.ONSCROLL)
 
     def addScrollListener(self, listener):
         self.scrollListeners.append(listener)

@@ -22,10 +22,12 @@ widgethash = {}
 
 class HTMLTable(Panel):
 
-    def __init__(self):
-        Panel.__init__(self)
-        self.cellFormatter = CellFormatter(self)
-        self.rowFormatter = RowFormatter(self)
+    def __init__(self, **kwargs):
+        if not kwargs.has_key('CellFormatter'):
+            kwargs['CellFormatter'] = CellFormatter(self)
+        if not kwargs.has_key('RowFormatter'):
+            kwargs['RowFormatter'] = RowFormatter(self)
+
         self.tableListeners = []
         self.widgetMap = {}
 
@@ -33,7 +35,10 @@ class HTMLTable(Panel):
         self.bodyElem = DOM.createTBody()
         DOM.appendChild(self.tableElem, self.bodyElem)
         self.setElement(self.tableElem)
+
         self.sinkEvents(Event.ONCLICK)
+
+        Panel.__init__(self, **kwargs)
 
     def addTableListener(self, listener):
         self.tableListeners.append(listener)

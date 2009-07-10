@@ -16,14 +16,13 @@ from pyjamas import DOM
 from pyjamas.ui.CheckBox import CheckBox
 
 class RadioButton(CheckBox):
-    def __init__(self, group, label=None, asHTML=False):
-        self.initElement(DOM.createInputRadio(group))
-
-        self.setStyleName("gwt-RadioButton")
+    def __init__(self, group, label=None, asHTML=False, **kwargs):
+        if not kwargs.has_key('StyleName'):kwargs['StyleName']="gwt-RadioButton"
         if label:
             if asHTML:
-                self.setHTML(label)
+                kwargs['HTML'] = label
             else:
-                self.setText(label)
+                kwargs['Text'] = label
 
+        self.initElement(DOM.createInputRadio(group), **kwargs)
 

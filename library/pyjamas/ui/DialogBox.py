@@ -27,13 +27,9 @@ class DialogBox(PopupPanel):
         self.dragging = False
         self.dragStartX = 0
         self.dragStartY = 0
-        self.panel = FlexTable()
-
+        self.panel = FlexTable(Height="100%", BorderWidth="0",
+                                CellPadding="0", CellSpacing="0")
         self.panel.setWidget(0, 0, self.caption)
-        self.panel.setHeight("100%")
-        self.panel.setBorderWidth("0")
-        self.panel.setCellPadding("0")
-        self.panel.setCellSpacing("0")
         self.panel.getCellFormatter().setHeight(1, 0, "100%")
         self.panel.getCellFormatter().setWidth(1, 0, "100%")
         self.panel.getCellFormatter().setAlignment(1, 0, HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE)
