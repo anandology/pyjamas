@@ -34,9 +34,9 @@ class VarsTest(UnitTest.UnitTest):
 
     def testChangeVarInInnerScope(self):
         x = 5
-        if x is 1:
+        if x == 1:
             x = 2
-        elif x is 5:
+        elif x == 5:
             x = 3
         self.assertEqual(x, 3, "the value of x should be 3")
 
