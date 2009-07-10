@@ -18,7 +18,8 @@ class HtmlPanelDemo(SimplePanel):
         panel = HTMLPanel('<b>This is some HTML</b><br>' +
                           'First widget:<span id="' + id1 + '"></span><br>' +
                           'Second widget:<span id="' + id2 + '"></span><br>' +
-                          'More <i>HTML</i>')
+                          'More <i>HTML</i>',
+                          Width="150px")
 
         panel.add(Button("Hi there"), id1)
         panel.add(Label("This label intentionally left blank"), id2)

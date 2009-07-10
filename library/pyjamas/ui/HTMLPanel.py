@@ -18,9 +18,16 @@ from pyjamas.ui.ComplexPanel import ComplexPanel
 HTMLPanel_sUid = 0
 
 class HTMLPanel(ComplexPanel):
-    def __init__(self, html):
-        ComplexPanel.__init__(self)
+    def __init__(self, html, **kwargs):
+        # NOTE! don't set a default style on this panel, because the
+        # HTML might expect to have one already.
+        #if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-HTMLPanel"
+        if html: kwargs['HTML'] = html
+
         self.setElement(DOM.createDiv())
+        ComplexPanel.__init__(self, **kwargs)
+
+    def setHTML(self, html):
         DOM.setInnerHTML(self.getElement(), html)
 
     def add(self, widget, id):
