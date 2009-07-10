@@ -17,17 +17,19 @@ from pyjamas import DOM
 from pyjamas.ui.Widget import Widget
 
 class Hidden(Widget):
-    def __init__(self, name=None, value=None):
-        Widget.__init__(self)
+    def __init__(self, name=None, value=None, **kwargs):
+
         element = DOM.createElement("input")
         self.setElement(element)
         DOM.setAttribute(element, "type", "hidden")
 
         if name is not None:
-            self.setName(name)
+            kwargs['Name'] = name
 
         if value is not None:
-            self.setValue(value)
+            kwargs['Value'] = value
+
+        Widget.__init__(self, **kwargs)
 
     def getDefaultValue(self):
         return DOM.getAttribute(self.getElement(), "defaultValue")
