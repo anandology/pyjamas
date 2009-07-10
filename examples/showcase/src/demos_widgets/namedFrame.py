@@ -12,15 +12,15 @@ class NamedFrameDemo(SimplePanel):
     def __init__(self):
         SimplePanel.__init__(self)
 
-        vPanel = VerticalPanel()
-        vPanel.setSpacing(5)
+        vPanel = VerticalPanel(Spacing=5)
 
-        frame = NamedFrame("myFrame")
-        frame.setWidth("100%")
-        frame.setHeight("200px")
+        frame = NamedFrame("myFrame",
+                            Width="100%",
+                            Height="200px")
 
         vPanel.add(frame)
         vPanel.add(HTML('<a href="http://google.com" target="myFrame">Google</a>'))
         vPanel.add(HTML('<a href="http://yahoo.com" target="myFrame">Yahoo</a>'))
+        vPanel.add(HTML('<a href="http://pyjs.org" target="myFrame">Pyjamas</a>'))
 
         self.add(vPanel)

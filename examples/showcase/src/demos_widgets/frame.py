@@ -14,8 +14,8 @@ class FrameDemo(SimplePanel):
     def __init__(self):
         SimplePanel.__init__(self)
 
-        frame = Frame("http://google.com")
-        frame.setWidth("100%")
-        frame.setHeight("200px")
+        frame = Frame("http://google.com",
+                      Width="100%",
+                      Height="200px")
         self.add(frame)
 

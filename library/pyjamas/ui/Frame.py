@@ -16,12 +16,13 @@ from pyjamas import DOM
 from pyjamas.ui.Widget import Widget
 
 class Frame(Widget):
-    def __init__(self, url=""):
-        Widget.__init__(self)
-        self.setElement(DOM.createIFrame())
-
+    def __init__(self, url="", element=None, **kwargs):
+        if element is None: 
+            element = DOM.createIFrame()
         if url:
-            self.setUrl(url)
+            kwargs['Url'] = url
+        self.setElement(element)
+        Widget.__init__(self, **kwargs)
 
     def getUrl(self):
         return DOM.getAttribute(self.getElement(), "src")

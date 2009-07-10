@@ -16,13 +16,12 @@ from pyjamas import DOM
 from pyjamas.ui.Frame import Frame
 
 class NamedFrame(Frame):
-    def __init__(self, name):
-        Frame.__init__(self)
+    def __init__(self, name, **kwargs):
         div = DOM.createDiv()
         DOM.setInnerHTML(div, "<iframe name='" + name + "'>")
 
         iframe = DOM.getFirstChild(div)
-        self.setElement(iframe)
+        Frame.__init__(self, None, iframe, **kwargs)
 
     def getName(self):
         return DOM.getAttribute(self.getElement(), "name")
