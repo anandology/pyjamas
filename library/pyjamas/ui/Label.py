@@ -19,10 +19,10 @@ from pyjamas.ui import MouseListener
 
 class Label(Widget):
 
-    def __init__(self, text=None, **kwargs):
+    def __init__(self, text=None, wordWrap=True, **kwargs):
         if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-Label"
-        if not kwargs.has_key('WordWrap'): kwargs['WordWrap']=True
         if text: kwargs['Text'] = text
+        kwargs['WordWrap'] = wordWrap
         self.setElement(DOM.createDiv())
         self.horzAlign = ""
         self.clickListeners = []
