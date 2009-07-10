@@ -4,10 +4,14 @@
  * Allowed all widget constructors to take kwargs which will result
    in the setXXXX method being called.  Tuples as kwargs will result
    in *args to the setXXXX method e.g.
-       p = HorizontalPanel(Size=("600px", "200%"),
-                           StyleName="class-name",
-                           Visible=False)
-
+        p = HorizontalPanel(Size=("600px", "200%"),
+                            StyleName="class-name",
+                            Visible=False)
+   is equivalent to:
+        p = HorizontalPanel()
+        p.setSize("600px", "100%")
+        p.setStyleName("class-name")
+        p.setVisible(False)
    This is a strategically very significant upgrade to Pyjamas Widgets:
    it dramatically simplifies the creation of applications.
    Closes #34.
