@@ -25,7 +25,7 @@ class SplitPanel(Panel):
         {@link VerticalSplitPanel}.
     """
 
-    def __init__(self, mainElem, splitElem, headElem, tailElem):
+    def __init__(self, mainElem, splitElem, headElem, tailElem, **kwargs):
         """ Initializes the split panel.
            @param mainElem the root element for the split panel
            @param splitElem the element that acts as the splitter
@@ -33,14 +33,15 @@ class SplitPanel(Panel):
            @param tailElem the element to contain the bottom or right most widget
         """
 
-        Panel.__init__(self)
-
         self.widgets = [None, None]
         self.elements = [headElem, tailElem]
         self.isResizing = False
 
         self.setElement(mainElem)
         self.splitElem = splitElem
+
+        Panel.__init__(self, **kwargs)
+
         self.sinkEvents(Event.MOUSEEVENTS)
 
     def addAbsolutePositoning(self, elem):

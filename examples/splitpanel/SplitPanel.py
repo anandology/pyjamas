@@ -1,3 +1,5 @@
+import pyjd # dummy in pyjs
+
 from pyjamas.ui.RootPanel import RootPanel
 from pyjamas.ui.HTML import HTML
 from pyjamas.ui.Label import Label
@@ -34,5 +36,7 @@ class SplitPanel:
 
 
 if __name__ == '__main__':
+    pyjd.setup("./public/SplitPanel.html")
     app = SplitPanel()
     app.onModuleLoad()
+    pyjd.run()
