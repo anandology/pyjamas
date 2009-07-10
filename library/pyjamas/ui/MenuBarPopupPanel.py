@@ -16,11 +16,10 @@ from pyjamas import DOM
 from pyjamas.ui.PopupPanel import PopupPanel
 
 class MenuBarPopupPanel(PopupPanel):
-    def __init__(self, item):
+    def __init__(self, item, **kwargs):
         self.item = item
-        PopupPanel.__init__(self, True)
-
-        self.setWidget(item.getSubMenu())
+        kwargs['Widget'] = item.getSubMenu()
+        PopupPanel.__init__(self, True, **kwargs)
         item.getSubMenu().onShow()
 
     def onEventPreview(self, event):
