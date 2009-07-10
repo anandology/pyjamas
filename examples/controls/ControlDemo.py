@@ -1,5 +1,6 @@
 """ ControlDemo Example
 """
+import pyjd # dummy in pyjs
 from pyjamas.ui.RootPanel import RootPanel
 from pyjamas.ui.Label import Label
 from pyjamas.ui.Controls import VerticalDemoSlider
@@ -54,5 +55,7 @@ class ControlDemo:
 
 
 if __name__ == '__main__':
+    pyjd.setup("./public/ControlDemo.html")
     app = ControlDemo()
     app.onModuleLoad()
+    pyjd.run()

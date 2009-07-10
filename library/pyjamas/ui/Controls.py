@@ -17,10 +17,8 @@ from pyjamas.ui.TextBox import TextBox
 class Control(FocusWidget):
 
     def __init__(self, element, min_value, max_value,
-                       start_value=None, step=None):
-
-        FocusWidget.__init__(self, element)
-        self.sinkEvents( Event.FOCUSEVENTS | Event.ONCLICK | Event.MOUSEEVENTS)
+                       start_value=None, step=None,
+                       **kwargs):
 
         self.min_value = min_value
         self.max_value = max_value
@@ -34,7 +32,9 @@ class Control(FocusWidget):
         self.mouseListeners = []
         self.dragging = False
         
-        self.setTabIndex(0)
+        if not kwargs.has_key("TabIndex"): kwargs['TabIndex'] = 0
+        FocusWidget.__init__(self, element, **kwargs)
+        self.sinkEvents( Event.FOCUSEVENTS | Event.ONCLICK | Event.MOUSEEVENTS)
 
     def onBrowserEvent(self, event):
         type = DOM.eventGetType(event)
@@ -138,13 +138,12 @@ class Control(FocusWidget):
 
 class VerticalDemoSlider(Control):
 
-    def __init__(self, min_value, max_value, start_value=None, step=None):
+    def __init__(self, min_value, max_value, start_value=None, step=None,
+                       **kwargs):
+
+        if not kwargs.has_key("StyleName"): kwargs['StyleName'] = "gwt-VerticalSlider"
 
         element = DOM.createDiv()
-        Control.__init__(self, element, min_value, max_value, start_value, step)
-
-        self.setStyleName("gwt-VerticalSlider")
-
         DOM.setStyleAttribute(element, "position", "relative")
         DOM.setStyleAttribute(element, "overflow", "hidden")
 
@@ -155,6 +154,9 @@ class VerticalDemoSlider(Control):
         DOM.setStyleAttribute(self.handle, "width", "100%")
         DOM.setStyleAttribute(self.handle, "height", "10px")
         DOM.setStyleAttribute(self.handle, "backgroundColor", "#808080")
+
+        Control.__init__(self, element, min_value, max_value, start_value, step,
+                               **kwargs)
 
         self.addClickListener(self)
         self.addFocusListener(self)
@@ -206,23 +208,25 @@ class VerticalDemoSlider(Control):
 
 class VerticalDemoSlider2(VerticalDemoSlider):
 
-    def __init__(self, min_value, max_value, start_value=None):
+    def __init__(self, min_value, max_value, start_value=None, **kwargs):
 
-        VerticalDemoSlider.__init__(self, min_value, max_value, start_value)
+        VerticalDemoSlider.__init__(self, min_value, max_value, start_value,
+                                    **kwargs)
         self.addMouseListener(self)
         self.addKeyboardListener(self)
 
 class InputControl(Control):
 
-    def __init__(self, min_value, max_value, start_value=None, step=None):
+    def __init__(self, min_value, max_value, start_value=None, step=None,
+                       **kwargs):
 
+        if not kwargs.has_key("StyleName"): kwargs['StyleName'] = "gwt-InputControl"
         self.input = TextBox()
         self.input.addKeyboardListener(self)
         #element = DOM.createDiv()
         element = self.input.getElement() # YUK!!!
-        Control.__init__(self, element, min_value, max_value, start_value, step)
-
-        self.setStyleName("gwt-InputControl")
+        Control.__init__(self, element, min_value, max_value, start_value, step,
+                               **kwargs)
 
         self.addClickListener(self)
         self.addFocusListener(self)
