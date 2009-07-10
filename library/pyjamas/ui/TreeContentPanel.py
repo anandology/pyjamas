@@ -15,9 +15,9 @@ from pyjamas import DOM
 from pyjamas.ui.SimplePanel import SimplePanel
 
 class TreeContentPanel(SimplePanel):
-    def __init__(self, element):
-        SimplePanel.__init__(self, element)
+    def __init__(self, element, **kwargs):
         self.tree_item = None
+        SimplePanel.__init__(self, element, **kwargs)
 
     def getTreeItem(self):
         return self.tree_item
