@@ -19,24 +19,26 @@ from pyjamas.ui import Event
 
 class Hyperlink(Widget):
 
-    def __init__(self, text="", asHTML=False, targetHistoryToken=""):
-        Widget.__init__(self)
+    def __init__(self, text="", asHTML=False, targetHistoryToken="",
+                       **kwargs):
         self.clickListeners = []
         self.targetHistoryToken = ""
 
         self.setElement(DOM.createDiv())
         self.anchorElem = DOM.createAnchor()
         DOM.appendChild(self.getElement(), self.anchorElem)
-        self.sinkEvents(Event.ONCLICK)
-        self.setStyleName("gwt-Hyperlink")
 
-        if asHTML:
-            self.setHTML(text)
-        else:
-            self.setText(text)
-
+        if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-Hyperlink"
+        if text:
+            if asHTML:
+                kwargs['HTML'] = text
+            else:
+                kwargs['Text'] = text
         if targetHistoryToken:
-            self.setTargetHistoryToken(targetHistoryToken)
+            kwargs['TargetHistoryToken'] = targetHistoryToken
+
+        Widget.__init__(self, **kwargs)
+        self.sinkEvents(Event.ONCLICK)
 
     def addClickListener(self, listener):
         self.clickListeners.append(listener)
