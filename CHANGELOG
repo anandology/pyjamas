@@ -1,6 +1,17 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
+ * Allowed all widget constructors to take kwargs which will result
+   in the setXXXX method being called.  Tuples as kwargs will result
+   in *args to the setXXXX method e.g.
+       p = HorizontalPanel(Size=("600px", "200%"),
+                           StyleName="class-name",
+                           Visible=False)
+
+   This is a strategically very significant upgrade to Pyjamas Widgets:
+   it dramatically simplifies the creation of applications.
+   Closes #34.
+
  * Added compile-options --[no-]bound-methods
 
  * Added augassign for indexed items
