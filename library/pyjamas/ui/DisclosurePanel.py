@@ -86,15 +86,12 @@ class DefaultHeader(Widget):
 
 class DisclosurePanel(Composite):
 
-    def __init__(self, headerText, isOpen=False):
-
-        Composite.__init__(self)
+    def __init__(self, headerText, isOpen=False, **kwargs):
 
         self.handlers = []
         self.content = None
 
         self.mainPanel = VerticalPanel()
-        self.initWidget(self.mainPanel)
 
         self.header = ClickableHeader(self)
         self.contentWrapper = SimplePanel()
@@ -106,11 +103,14 @@ class DisclosurePanel(Composite):
                               "overflow", "hidden");
 
         self.isOpen = isOpen
-        self.setStyleName("gwt-DisclosurePanel")
-        self.setContentDisplay()
 
         self.headerObj = DefaultHeader(headerText, self)
         self.setHeader(self.headerObj)
+
+        if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-DisclosurePanel"
+        Composite.__init__(self, self.mainPanel, **kwargs)
+
+        self.setContentDisplay()
 
     def add(self, widget):
         if self.getContent() is None:
