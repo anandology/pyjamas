@@ -1,3 +1,5 @@
+examples/showcase/build/
+examples/showcase/src/demoInfo.py
 output
 *.pyc
 .*.sw?
