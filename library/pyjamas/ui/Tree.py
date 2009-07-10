@@ -24,8 +24,9 @@ from pyjamas.ui import KeyboardListener
 from pyjamas.ui import FocusListener
 
 class Tree(Widget):
-    def __init__(self):
-        Widget.__init__(self)
+    def __init__(self, **kwargs):
+        if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-Tree"
+
         self.root = None
         self.childWidgets = Set()
         self.curSelection = None
@@ -45,13 +46,14 @@ class Tree(Widget):
         DOM.setIntStyleAttribute(self.focusable, "zIndex", -1)
         DOM.appendChild(self.getElement(), self.focusable)
 
+        self.root = RootTreeItem()
+        self.root.setTree(self)
+
+        Widget.__init__(self, **kwargs)
+
         self.sinkEvents(Event.MOUSEEVENTS | Event.ONCLICK | Event.KEYEVENTS)
         #DOM.sinkEvents(self.focusable, Event.FOCUSEVENTS | Event.KEYEVENTS | DOM.getEventsSunk(self.focusable))
         DOM.sinkEvents(self.focusable, Event.FOCUSEVENTS)
-
-        self.root = RootTreeItem()
-        self.root.setTree(self)
-        self.setStyleName("gwt-Tree")
 
     def add(self, widget):
         self.addItem(widget)

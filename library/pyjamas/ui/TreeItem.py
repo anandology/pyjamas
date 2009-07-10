@@ -19,7 +19,7 @@ from pyjamas.ui.TreeContentPanel import TreeContentPanel
 class TreeItem(UIObject):
 
     # also callable as TreeItem(widget)
-    def __init__(self, html=None):
+    def __init__(self, html=None, **kwargs):
         self.children = []
         self.contentPanel = None
         self.itemTable = None
@@ -71,11 +71,15 @@ class TreeItem(UIObject):
         DOM.setStyleAttribute(self.childSpanElem, "whiteSpace", "nowrap")
         self.setStyleName(self.contentElem, "gwt-TreeItem", True)
 
+        #if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-TreeItem"
+
         if html is not None:
             if isinstance(html, str):
-                self.setHTML(html)
+                kwargs['HTML'] = html
             else:
-                self.setWidget(html)
+                kwargs['Widget'] = html
+
+        UIObject.__init__(self, **kwargs)
 
     # also callable as addItem(widget) and addItem(itemText)
     def addItem(self, item):
