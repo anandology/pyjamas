@@ -43,9 +43,7 @@ class FlexTableDemo(SimplePanel):
     def __init__(self):
         SimplePanel.__init__(self)
 
-        self._table = FlexTable()
-        self._table.setBorderWidth(1)
-        self._table.setWidth("100%")
+        self._table = FlexTable(BorderWidth=1, Width="100%")
 
         cellFormatter = self._table.getFlexCellFormatter()
         rowFormatter = self._table.getRowFormatter()

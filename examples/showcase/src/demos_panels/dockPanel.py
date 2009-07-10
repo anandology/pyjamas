@@ -21,17 +21,15 @@ class DockPanelDemo(SimplePanel):
     def __init__(self):
         SimplePanel.__init__(self)
 
-        panel = DockPanel()
-        panel.setBorderWidth(1)
+        panel = DockPanel(BorderWidth=1, Padding=8,
+                          HorizontalAlignment=HasAlignment.ALIGN_CENTER,
+                          VerticalAlignment=HasAlignment.ALIGN_MIDDLE)
 
         north  = Label("North")
         west   = Label("West")
         center = Label("Center")
         east   = Label("East")
         south  = Label("South")
-
-        panel.setHorizontalAlignment(HasAlignment.ALIGN_CENTER)
-        panel.setVerticalAlignment(HasAlignment.ALIGN_MIDDLE)
 
         panel.add(north,  DockPanel.NORTH)
         panel.add(west,   DockPanel.WEST)
