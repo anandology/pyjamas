@@ -1029,13 +1029,13 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                     call_name = jsname
             call_args = []
         elif isinstance(v.node, ast.Getattr):
-            attr_name = self.attrib_remap(v.node.attrname)
-
             if isinstance(v.node.expr, ast.Name):
-                call_name = self._name2(v.node.expr, current_klass, attr_name)
+                attrname = self.attrib_remap(v.node.attrname)
+                call_name = self._name2(v.node.expr, current_klass, attrname)
                 call_args = []
             elif isinstance(v.node.expr, ast.Getattr):
-                call_name = self._getattr2(v.node.expr, current_klass, attr_name)
+                call_name = self._getattr2(v.node.expr, current_klass, v.node.attrname)
+		call_name = self.attrib_remap(call_name)
                 call_args = []
             elif isinstance(v.node.expr, ast.CallFunc):
                 call_name = self._callfunc(v.node.expr, current_klass) + "." + v.node.attrname

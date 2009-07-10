@@ -1,8 +1,15 @@
 from UnitTest import UnitTest
 
+name = 'Name'
+prototype = 'Prototype'
+call = 'Call'
+apply = 'Apply'
+constructor = 'Constructor'
+
 class Foo:
     a = 1
     b = [1,2]
+    name = "Foo"
 
     def __init__(self, v):
         self.v = v
@@ -10,6 +17,11 @@ class Foo:
     def getV(self):
         return self.v
 
+    def call(self, name):
+        name = name.upper()
+        prototype = self.name
+        apply = self.name.lower()
+        return (name, prototype, apply, self.name)
 
 class AttributeTest(UnitTest):
     def __init__(self):
@@ -96,3 +108,14 @@ class AttributeTest(UnitTest):
         t = foo.b
         foo.b.append(3)
         self.assertEqual(t[2], 3)
+
+    def testAttributMapping(self):
+        f = Foo(1)
+        self.assertEqual(Foo.name, 'Foo')
+        self.assertEqual(f.name, 'Foo')
+        name, prototype, apply, constructor = f.call('bAr')
+        self.assertEqual(name, 'BAR')
+        self.assertEqual(prototype, 'Foo')
+        self.assertEqual(apply, 'foo')
+        self.assertEqual(constructor, 'Foo')
+
