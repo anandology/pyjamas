@@ -24,15 +24,12 @@ class TabBar(Composite):
 
     STYLENAME_DEFAULT = "gwt-TabBarItem"
 
-    def __init__(self):
-        Composite.__init__(self)
+    def __init__(self, **kwargs):
+
+        if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-TabBar"
         self.panel = HorizontalPanel()
         self.selectedTab = None
         self.tabListeners = []
-
-        self.initWidget(self.panel)
-        self.sinkEvents(Event.ONCLICK)
-        self.setStyleName("gwt-TabBar")
 
         self.panel.setVerticalAlignment(HasAlignment.ALIGN_BOTTOM)
 
@@ -48,6 +45,9 @@ class TabBar(Composite):
         first.setHeight("100%")
         self.panel.setCellHeight(first, "100%")
         self.panel.setCellWidth(rest, "100%")
+
+        Composite.__init__(self, self.panel, **kwargs)
+        self.sinkEvents(Event.ONCLICK)
 
     def addTab(self, text, asHTML=False):
         self.insertTab(text, asHTML, self.getTabCount())

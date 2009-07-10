@@ -51,8 +51,7 @@ class DecoratorPanel(SimplePanel):
     #The default styles applied to each row.
     DEFAULT_ROW_STYLENAMES = [ "top", "middle", "bottom" ]
 
-    def __init__(self, rowStyles=None,
-                             containerIndex=1) :
+    def __init__(self, rowStyles=None, containerIndex=1, **kwargs):
         """ Creates a new panel using the specified style names to
             apply to each row.  Each row will contain three cells
             (Left, Center, and Right). The Center cell in the
@@ -65,10 +64,8 @@ class DecoratorPanel(SimplePanel):
         if rowStyles is None:
             rowStyles = self.DEFAULT_ROW_STYLENAMES
 
-        SimplePanel.__init__(self, DOM.createTable())
-
         # Add a tbody
-        self.table = self.getElement()
+        self.table = DOM.createTable()
         self.tbody = DOM.createTBody()
         DOM.appendChild(self.table, self.tbody)
         DOM.setAttribute(self.table, "cellSpacing", "0")
@@ -81,8 +78,8 @@ class DecoratorPanel(SimplePanel):
             if i == containerIndex:
                 self.containerElem = DOM.getFirstChild(DOM.getChild(row, 1))
 
-        # Set the overall style name
-        self.setStyleName(self.DEFAULT_STYLENAME)
+        if not kwargs.has_key('StyleName'): kwargs['StyleName']=self.DEFAULT_STYLENAME
+        SimplePanel.__init__(self, self.table, **kwargs)
 
     def createTR(self, styleName) :
         """ Create a new row with a specific style name. The row
@@ -135,11 +132,10 @@ class DecoratedTabBar(TabBar):
 
     STYLENAME_DEFAULT = "gwt-DecoratedTabBar"
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         """ Creates an empty {@link DecoratedTabBar}.
         """
-        TabBar.__init__(self)
-        self.setStyleName(self.STYLENAME_DEFAULT)
+        TabBar.__init__(self, **kwargs)
 
     def createTabTextWrapper(self):
         return DecoratorPanel(self.TAB_ROW_STYLES, 1)
@@ -147,10 +143,10 @@ class DecoratedTabBar(TabBar):
 class DecoratedTabPanel(TabPanel):
     DEFAULT_STYLENAME = "gwt-DecoratedTabPanel"
 
-    def __init__(self):
-        TabPanel.__init__(self, DecoratedTabBar())
+    def __init__(self, **kwargs):
+        if not kwargs.has_key('StyleName'): kwargs['StyleName']=self.DEFAULT_STYLENAME
+        TabPanel.__init__(self, DecoratedTabBar(), **kwargs)
 
-        self.setStyleName(self.DEFAULT_STYLENAME)
         self.getTabBar().setStyleName(DecoratedTabBar.STYLENAME_DEFAULT)
 
     def createTabTextWrapper(self):

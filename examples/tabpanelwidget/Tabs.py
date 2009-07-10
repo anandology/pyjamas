@@ -1,3 +1,5 @@
+import pyjd # dummy in pyjs
+
 from pyjamas.ui.TabPanel import TabPanel
 from pyjamas.ui import HasAlignment
 from pyjamas.ui.Image import Image
@@ -46,15 +48,12 @@ class Tabs:
         red = "1638"
         green = "1640"
 
-        self.fTabs = DecoratedTabPanel()
+        self.fTabs = DecoratedTabPanel(Width="100%", Height="100%")
         self.fTabs.add(self.createImage("rembrandt/JohannesElison.jpg"), red, True)
         self.fTabs.add(self.createImage("rembrandt/SelfPortrait1640.jpg"), green, True)
         self.fTabs.add(self.createImage("rembrandt/LaMarcheNocturne.jpg"), "1642")
         self.fTabs.add(self.createImage("rembrandt/TheReturnOfTheProdigalSon.jpg"), "1662")
         self.fTabs.selectTab(0)
-
-        self.fTabs.setWidth("100%")
-        self.fTabs.setHeight("100%")
 
         dp = DecoratorTitledPanel("Tabs", "bluetitle", "bluetitleicon",
                       ["bluetop", "bluetop2", "bluemiddle", "bluebottom"])
@@ -73,5 +72,8 @@ class Tabs:
         return p
 
 if __name__ == '__main__':
+    pyjd.setup("./public/Tabs.html")
     app = Tabs()
     app.onModuleLoad()
+    pyjd.run()
+
