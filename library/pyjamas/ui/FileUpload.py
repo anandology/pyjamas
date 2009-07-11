@@ -16,7 +16,7 @@ from pyjamas import DOM
 from pyjamas.ui.Widget import Widget
 
 class FileUpload(Widget):
-    def __init__(self):
+    def __init__(self, **kwargs):
         if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-FileUpload"
         element = DOM.createElement("input")
         DOM.setAttribute(element, "type", "file")
