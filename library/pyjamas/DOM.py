@@ -650,7 +650,6 @@ def removeAttribute(element, attribute):
     elem.removeAttribute(attribute)
 
 def setAttribute(element, attribute, value):
-    mf = get_main_frame()
     setattr(element, attribute, value)
 
 def setElemAttribute(element, attribute, value):
@@ -690,8 +689,7 @@ def setIntElemAttribute(elem, attr, value):
     elem.setAttribute(attr, str(value))
 
 def setIntAttribute(elem, attr, value):
-    mf = get_main_frame()
-    setattr(elem, mf.mash_attrib(attr), int(value))
+    setattr(elem, attr, int(value))
 
 def setIntStyleAttribute(elem, attr, value):
     mf = get_main_frame()
