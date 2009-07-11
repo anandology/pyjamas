@@ -21,3 +21,20 @@ After the europython merge we have still some things to change.
 - evtl. fix spidermonkey runner, but there is a linker that already
   uses the js commandline interface from spidermonkey
 
+From http://code.google.com/p/pyjamas/issues, for 0.6 release:
+
+49  Defect      __pygwt_onBadProperty is not defined        
+130 Defect      "for child in node['children']" fails    
+181 Defect      FormPanel doesn't work under pyjd    
+182 Defect      pyjd hulahop back-end is double-eventing     
+154 Defect      Multiple notification of a single event      
+
+97  Enhancement ui.Tree Widgets have too much whitespace around their contents
+148 Enhancement implementation of dict, in python    
+180 Enhancement any way that the 4th arg to pyjs__bind_method could go in a fn?
+
+146 ----        pyjsbuild --version reports ancient date     
+161 ----        Translator generate code depend on pyjslib before pyjslib    
+166 ----        If I use build.sh -c from the trunk I get a traceback about md5
+176 ----        -c and --cache-buster options have gone from build   
+
