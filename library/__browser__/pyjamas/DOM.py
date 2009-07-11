@@ -88,6 +88,11 @@ def init():
 def addEventPreview(preview):
     sEventPreviewStack.append(preview)
 
+def buttonClick(button):
+    JS("""
+    button.click();
+    """)
+
 def appendChild(parent, child):
     JS("""
     parent.appendChild(child);

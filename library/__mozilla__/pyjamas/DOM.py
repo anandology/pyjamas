@@ -1,3 +1,14 @@
+def buttonClick(button):
+    JS("""
+        var doc = button.ownerDocument;
+        if (doc != null) {
+            var evt = doc.createEvent('MouseEvents');
+            evt.initMouseEvent('click', true, true, null, 0, 0,
+                                0, 0, 0, false, false, false, false, 0, null);
+            button.dispatchEvent(evt);
+        }
+    """)
+
 def compare(elem1, elem2):
     JS("""
     if (!elem1 && !elem2) {

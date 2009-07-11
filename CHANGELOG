@@ -1,6 +1,11 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
+ * #152 - added buttonClick and fixed up CustomButton (see Toggle example)
+   at same time.  EVENT.BUTTON_LEFT, BUTTON_MIDDLE, BUTTON_RIGHT had wrong
+   #defines as well: only CustomButton was using them which was why nobody
+   noticed.
+
  * Allowed all widget constructors to take kwargs which will result
    in the setXXXX method being called.  Tuples as kwargs will result
    in *args to the setXXXX method e.g.

@@ -60,7 +60,7 @@ class Toggle:
             text = ">>>DOWN<<<"
             if self.i: text = ">>>>UP<<<<"
             self.i = not self.i
-            self.label.setText(text+" isdown: "+self.toggle.isDown())
+            self.label.setText(text+" isdown: "+str(self.toggle.isDown()))
 
 
 if __name__ == "__main__":

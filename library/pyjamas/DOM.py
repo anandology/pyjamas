@@ -146,6 +146,12 @@ def appendChild(parent, child):
     #print "appendChild", parent, child
     parent.appendChild(child)
 
+def buttonClick(element):
+    evt = doc().createEvent('MouseEvents')
+    evt.initMouseEvent("click", True, True, wnd(), 1, 0, 0, 0, 0, False,
+                        False, False, False, 0, element)
+    element.dispatchEvent(evt)
+
 def compare(elem1, elem2):
     return elem1.isSameNode(elem2)
 

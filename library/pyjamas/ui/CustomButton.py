@@ -13,8 +13,6 @@
 # the License.
 
 import sys
-if sys.platform not in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
-    from pyjamas.__pyjamas__ import doc, wnd
 
 from pyjamas    import DOM
 from pyjamas.ui import Event
@@ -371,7 +369,6 @@ class CustomButton (ButtonBase):
                 self.isCapturing = False
                 self.onClickCancel()
             
-
         ButtonBase.onBrowserEvent(self, event)
         
         # Synthesize clicks based on keyboard events AFTER the normal
@@ -471,11 +468,7 @@ class CustomButton (ButtonBase):
         # there is a good explanation about all the arguments of initMouseEvent
         # at: https://developer.mozilla.org/En/DOM:event.initMouseEvent
         
-        evt = doc().createEvent('MouseEvents')
-        evt.initMouseEvent("click", true, true, wnd(), 1, 0, 0, 0, 0, false, 
-                           false, false, false, 0, null)
-        
-        self.getElement().dispatchEvent(evt)
+        DOM.buttonClick(self.getElement())
         self.allowClick = False
     
     
