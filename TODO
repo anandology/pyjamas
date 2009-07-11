@@ -21,8 +21,13 @@ After the europython merge we have still some things to change.
 - evtl. fix spidermonkey runner, but there is a linker that already
   uses the js commandline interface from spidermonkey
 
+  [lkcl: yeah, but the commandline interface can't interact with
+   python modules.  i strongly recommend dropping cmd-line and using
+   python-spidermonkey.]
+
 From http://code.google.com/p/pyjamas/issues, for 0.6 release:
 
+184 Defect      current translator dog-slow compared to 0.4 and 0.5
 49  Defect      __pygwt_onBadProperty is not defined        
 130 Defect      "for child in node['children']" fails    
 181 Defect      FormPanel doesn't work under pyjd    
