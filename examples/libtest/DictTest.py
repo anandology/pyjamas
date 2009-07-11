@@ -80,3 +80,25 @@ class DictTest(UnitTest):
         # we need the other constructors too, like:
         # d = dict({1:1, 2:2})
 
+    def testIter(self):
+        d = {1: [1,2,3], 2: {'a': 1, 'b': 2, 'c': 3}}
+        a = 0
+        for k in d:
+            a += k
+        self.assertEqual(a, 3)
+
+        a = 0
+        for k in d[1]:
+            a += k
+        self.assertEqual(a, 6)
+
+        a = 0
+        for k in d[1][1:]:
+            a += k
+        self.assertEqual(a, 5)
+
+        a = 0
+        for k in d[2]:
+            a += d[2][k]
+        self.assertEqual(a, 6)
+
