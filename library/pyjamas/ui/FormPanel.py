@@ -11,6 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import sys
+if sys.platform not in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
+    from pyjamas.__pyjamas__ import get_main_frame
+
 from pyjamas import DOM
 
 from pyjamas.ui.SimplePanel import SimplePanel
@@ -96,15 +100,23 @@ class FormPanel(SimplePanel):
         except:
             return None
 
-    def onload(self, *args):
-       if not self.iframe.__formAction:
-           return
-       self._listener.onFrameLoad()
+    def _onload(self, form, event, something):
+        print form, event, something
+        if not self.iframe.__formAction:
+            return
+        self._listener.onFrameLoad()
 
-    def onsubmit(self, *args):
-       if self.iframe:
-           self.iframe.__formAction = form.action
-       return self._listener.onFormSubmit()
+    def _onsubmit(self, form, event, something):
+        print form, event, something
+        try:
+            event = get_main_frame().gobject_wrap(event) # webkit HACK!
+            form = get_main_frame().gobject_wrap(form) # webkit HACK!
+        except:
+            pass
+
+        if self.iframe:
+            self.iframe.__formAction = form.action
+        return self._listener.onFormSubmit()
 
     # FormPanelImpl.hookEvents
     def hookEvents(self, iframe, form, listener):
