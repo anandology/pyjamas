@@ -71,6 +71,12 @@ class Element:
         this.element.style[property] = value;
         ''')
 
+    def setPxStyle(self, property, value):
+        self.setStyle(property, "%dpx" % value)
+
+    def setPercentStyle(self, property, value):
+        self.setStyle(property, "%d%%" % value)
+
     def getStyle(self, property):
         JS('''
         return this.element.style[property];
