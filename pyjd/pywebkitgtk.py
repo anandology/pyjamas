@@ -269,7 +269,7 @@ def addWindowEventListener(self, event_name, cb):
     if cb not in self._callbacks:
         self.connect("browser-event", cb)
         self._callbacks.append(cb)
-    self.addWindowEventListener(event_name)
+    return self.addWindowEventListener(event_name, True)
 
 def addXMLHttpRequestEventListener(element, event_name, cb):
     if not hasattr(element, "_callbacks"):
@@ -277,7 +277,7 @@ def addXMLHttpRequestEventListener(element, event_name, cb):
     if cb not in element._callbacks:
         element.connect("browser-event", cb)
         element._callbacks.append(cb)
-    element.addEventListener(event_name)
+    return element.addEventListener(event_name)
 
 def addEventListener(element, event_name, cb):
     if not hasattr(element, "_callbacks"):
@@ -285,7 +285,7 @@ def addEventListener(element, event_name, cb):
     if cb not in element._callbacks:
         element.connect("browser-event", cb)
         element._callbacks.append(cb)
-    element.addEventListener(event_name, True)
+    return element.addEventListener(event_name, True)
 
 class WebBrowser(gtk.Window):
     def __init__(self, application, appdir=None, width=800, height=600):

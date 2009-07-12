@@ -70,12 +70,14 @@ class Browser(WebView):
                                             interfaces.nsIDOMEventListener)
         print event_name, listener
         node.addEventListener(event_name, listener, False)
+        return listener
 
     def addEventListener(self, node, event_name, event_fn):
         
         listener = xpcom.server.WrapObject(ContentInvoker(self, event_fn),
                                             interfaces.nsIDOMEventListener)
         node.addEventListener(event_name, listener, False)
+        return listener
 
     def mash_attrib(self, attrib_name):
         return attrib_name
@@ -85,6 +87,7 @@ class Browser(WebView):
         listener = xpcom.server.WrapObject(ContentInvoker(self, event_fn),
                                             interfaces.nsIDOMEventListener)
         self.window_root.addEventListener(event_name, listener, False)
+        return listener
 
     def getXmlHttpRequest(self):
         xml_svc_cls = components.classes[ \
