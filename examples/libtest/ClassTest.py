@@ -365,11 +365,41 @@ class ClassTest(UnitTest):
         self.assertEqual(r[2], 2)
         self.assertEqual(r[3], 3)
 
+    def testGlobalClassFactory(self):
+
+        gregister("passme", PassMeAClass)
+        gregister("exchild", ExampleChildClass)
+        gregister("mscp1", ExampleMultiSuperclassParent1)
+
+        pmc = ggetObject("passme")
+        self.assertEqual(pmc.foo(), "foo in PassMeAClass")
+
+        try:
+            pmc = ggetObject("mscp1", 5) 
+        except:
+            self.assertEqual(False, True, "Exception indicates bug in compiler: 'Error: uncaught exception: ExampleMultiSuperclassParent1() arguments after ** must be a dictionary 5'")
+        else:
+            self.assertEqual(pmc.x, 5)
+        try:
+            pmc = ggetObject("exchild", 5, 7) # 5 is ignored
+        except:
+            self.assertEqual(False, True, "Exception indicates bug in compiler: 'Error: uncaught exception: ExampleChildClass() arguments after ** must be a dictionary 7'")
+        else:
+            self.assertEqual(pmc.prop_a, 1)
+            self.assertEqual(pmc.prop_b, 7)
+
     def testClassFactory(self):
 
         f = Factory()
         f.register("passme", PassMeAClass)
         f.register("exchild", ExampleChildClass)
+
+        try:
+            pmc = f.getObjectCompilerBug("passme")
+        except:
+            self.assertEqual(False, True, "Compiler bug in class factory test")
+        else:
+            self.assertEqual(pmc.foo(), "foo in PassMeAClass")
 
         pmc = f.getObject("passme")
         self.assertEqual(pmc.foo(), "foo in PassMeAClass")
@@ -601,6 +631,19 @@ class Factory:
     def register(self, className, classe):
         Factory._classes[className] = classe
 
-    def getObject(self, className,*args, **kargs):
+    def getObjectCompilerBug(self, className,*args, **kargs):
         return Factory._classes[className](*args, **kargs)
+
+    def getObject(self, className,*args, **kargs):
+        f = Factory._classes[className]
+        return f(*args, **kargs)
+
+global gclasses
+gclasses = {}
+
+def gregister(className, classe):
+    gclasses[className] = classe
+def ggetObject(className, *args, **kargs):
+    classe = gclasses[className]
+    return classe(*args, **kargs)
 
