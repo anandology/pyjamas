@@ -10,6 +10,7 @@ from imports import exec_order as EXEC_ORDER
 
 from imports.classes import WithAttribute
 
+
 class GetAttribute():
     # This class definition fails at startup
     getIt = WithAttribute.ATTR
@@ -364,6 +365,14 @@ class ClassTest(UnitTest):
         self.assertEqual(r[2], 2)
         self.assertEqual(r[3], 3)
 
+    def testClassFactory(self):
+
+        f = Factory()
+        f.register("passme", PassMeAClass)
+        f.register("exchild", ExampleChildClass)
+
+        pmc = f.getObject("passme")
+        self.assertEqual(pmc.foo(), "foo in PassMeAClass")
 
 class PassMeAClass(object):
     def __init__(self):
@@ -584,4 +593,14 @@ class RecurseMe(RecurseMe):
         # And we can only do this once...
         super(self.__class__, self).__init__()
         self.chain.append(1)
+
+class Factory:
+    _classes = {}
+    def __init__(self):
+        pass
+    def register(self, className, classe):
+        Factory._classes[className] = classe
+
+    def getObject(self, className,*args, **kargs):
+        return Factory._classes[className](*args, **kargs)
 
