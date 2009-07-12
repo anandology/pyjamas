@@ -14,11 +14,11 @@ class GridDemo(SimplePanel):
     def __init__(self):
         SimplePanel.__init__(self)
 
-        grid = Grid(5, 5)
+        grid = Grid(5, 5,
+                    BorderWidth=2,
+                    CellPadding=4,
+                    CellSpacing=1)
         grid.setHTML(0, 0, '<b>Hello, World!</b>')
-        grid.setBorderWidth(2)
-        grid.setCellPadding(4)
-        grid.setCellSpacing(1)
 
         for row in range(1, 5):
             for col in range(1, 5):
