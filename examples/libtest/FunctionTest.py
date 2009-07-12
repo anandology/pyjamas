@@ -1,5 +1,10 @@
 from UnitTest import UnitTest
 
+from ClassTest import PassMeAClass
+from ClassTest import ExampleChildClass
+from ClassTest import ExampleMultiSuperclassParent1
+import Factory2
+
 class Handler:
 
     def __init__(self, x):
@@ -101,3 +106,27 @@ class FunctionTest(UnitTest):
         self.assertEqual(r[1], 1)
         self.assertEqual(r[2], 2)
         self.assertEqual(r[3], 3)
+
+    def testFactory(self):
+
+        Factory2.gregister("passme", PassMeAClass)
+        Factory2.gregister("exchild", ExampleChildClass)
+        Factory2.gregister("mscp1", ExampleMultiSuperclassParent1)
+
+        pmc = Factory2.ggetObject("passme")
+        self.assertEqual(pmc.foo(), "foo in PassMeAClass")
+
+        try:
+            pmc = Factory2.ggetObject("mscp1", 5)
+        except:
+            self.assertEqual(False, True, "Exception indicates bug in compiler: 'Error: uncaught exception: ExampleMultiSuperclassParent1() arguments after ** must be a dictionary 5'")
+        else:
+            self.assertEqual(pmc.x, 5)
+        try:
+            pmc = Factory2.ggetObject("exchild", 5, 7) # 5 is ignored
+        except:
+            self.assertEqual(False, True, "Exception indicates bug in compiler: 'Error: uncaught exception: ExampleChildClass() arguments after ** must be a dictionary 7'")
+        else:
+            self.assertEqual(pmc.prop_a, 1)
+            self.assertEqual(pmc.prop_b, 7)
+
