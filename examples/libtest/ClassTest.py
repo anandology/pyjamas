@@ -404,6 +404,14 @@ class ClassTest(UnitTest):
         pmc = f.getObject("passme")
         self.assertEqual(pmc.foo(), "foo in PassMeAClass")
 
+        try:
+            pmc = f.getObject("exchild", 5, 7) # 5 is ignored
+        except:
+            self.assertEqual(False, True, "Exception indicates bug in compiler: 'Error: uncaught exception: ExampleChildClass() arguments after ** must be a dictionary 7'")
+        else:
+            self.assertEqual(pmc.prop_a, 1)
+            self.assertEqual(pmc.prop_b, 7)
+
 class PassMeAClass(object):
     def __init__(self):
         pass
