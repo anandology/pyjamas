@@ -28,9 +28,8 @@ class Label(Widget):
         self.clickListeners = []
         self.mouseListeners = []
 
-        self.sinkEvents(Event.ONCLICK | Event.MOUSEEVENTS)
-
         Widget.__init__(self, **kwargs)
+        self.sinkEvents(Event.ONCLICK | Event.MOUSEEVENTS)
 
     def addClickListener(self, listener):
         self.clickListeners.append(listener)

@@ -25,8 +25,8 @@ class HTML(Label):
         if element is None:
             element = DOM.createDiv()
         self.setElement(element)
-        self.sinkEvents(Event.ONCLICK | Event.MOUSEEVENTS)
         Label.__init__(self, **kwargs)
+        self.sinkEvents(Event.ONCLICK | Event.MOUSEEVENTS)
 
     def getHTML(self):
         return DOM.getInnerHTML(self.getElement())

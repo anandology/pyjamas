@@ -56,16 +56,17 @@ def init():
     mf._addWindowEventListener("keydown", browser_event_cb)
     mf._addWindowEventListener("keypress", browser_event_cb)
 
-def _dispatchEvent(evt):
+def _dispatchEvent(sender, evt, useCap):
     
     try:
+        sender = get_main_frame().gobject_wrap(sender) # webkit HACK!
         evt = get_main_frame().gobject_wrap(evt) # webkit HACK!
     except:
         pass
     listener = None
-    curElem =  evt.target
+    curElem =  sender
     
-    #print "_dispatchEvent", evt
+    #print "_dispatchEvent", sender, evt, evt.type
     cap = getCaptureElement()
     listener = get_listener(cap)
     if cap and listener:
@@ -724,7 +725,8 @@ def sinkEvents(element, bits):
 
     if not bits:
         return 
-    cb = lambda x,y,z: _dispatchEvent(y)
+    #cb = lambda x,y,z: _dispatchEvent(y)
+    cb = _dispatchEvent
     mf = get_main_frame()
     if (bits & 0x00001):
         mf.addEventListener(element, "click", cb)

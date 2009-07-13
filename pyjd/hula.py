@@ -22,12 +22,12 @@ from progresslistener import ProgressListener
 class ContentInvoker:
     _com_interfaces_ = interfaces.nsIDOMEventListener
 
-    def __init__(self, browser, event_fn):
-        self._browser = browser
+    def __init__(self, node, event_fn):
+        self._node = node
         self._event_fn = event_fn
 
     def handleEvent(self, event):
-        self._event_fn(self, event, False)
+        self._event_fn(self._node, event, False)
 
 class Browser(WebView):
     def __init__(self, application, appdir):
@@ -66,7 +66,7 @@ class Browser(WebView):
         
     def _addXMLHttpRequestEventListener(self, node, event_name, event_fn):
         
-        listener = xpcom.server.WrapObject(ContentInvoker(self, event_fn),
+        listener = xpcom.server.WrapObject(ContentInvoker(node, event_fn),
                                             interfaces.nsIDOMEventListener)
         print event_name, listener
         node.addEventListener(event_name, listener, False)
@@ -74,9 +74,9 @@ class Browser(WebView):
 
     def addEventListener(self, node, event_name, event_fn):
         
-        listener = xpcom.server.WrapObject(ContentInvoker(self, event_fn),
+        listener = xpcom.server.WrapObject(ContentInvoker(node, event_fn),
                                             interfaces.nsIDOMEventListener)
-        node.addEventListener(event_name, listener, False)
+        node.addEventListener(event_name, listener, True)
         return listener
 
     def mash_attrib(self, attrib_name):
@@ -84,9 +84,10 @@ class Browser(WebView):
 
     def _addWindowEventListener(self, event_name, event_fn):
         
-        listener = xpcom.server.WrapObject(ContentInvoker(self, event_fn),
+        listener = xpcom.server.WrapObject(ContentInvoker(self.window_root,
+                                                          event_fn),
                                             interfaces.nsIDOMEventListener)
-        self.window_root.addEventListener(event_name, listener, False)
+        self.window_root.addEventListener(event_name, listener, True)
         return listener
 
     def getXmlHttpRequest(self):
