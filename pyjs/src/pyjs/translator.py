@@ -1088,9 +1088,16 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                 star_arg_name = 'null'
             if not dstar_arg_name:
                 dstar_arg_name = 'null'
-            try: call_this, method_name = call_name.rsplit(".", 1)
-            except ValueError:
-                # Must be a function call ...
+            if call_name[-1] == ')':
+                # Function call, or an entity (...)
+                call_this = None
+            else:
+                try:
+                    call_this, method_name = call_name.rsplit(".", 1)
+                except ValueError:
+                    # Must be a function call ...
+                    call_this = None
+            if call_this is None:
                 call_code = ("pyjs_kwargs_function_call("+call_name+", "
                                   + star_arg_name 
                                   + ", " + dstar_arg_name
