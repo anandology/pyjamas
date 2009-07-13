@@ -550,10 +550,17 @@ pyjslib.String_center = function(width, fillchar) {
     left = padlen - right;
     return new Array(left+1).join(fillchar) + this + new Array(right+1).join(fillchar);
 }
+pyjslib.String___getitem__ = function(idx) {
+    if (idx < 0) idx += this.length;
+    if (idx < 0 || idx > this.length) {
+        throw(pyjslib.IndexError("string index out of range"));
+    }
+    return this.charAt(idx);
+}
 
 pyjslib.abs = Math.abs;
 
-String.prototype.__getitem__ = String.prototype.charAt;
+String.prototype.__getitem__ = pyjslib.String___getitem__;
 String.prototype.upper = String.prototype.toUpperCase;
 String.prototype.lower = String.prototype.toLowerCase;
 String.prototype.find=pyjslib.String_find;

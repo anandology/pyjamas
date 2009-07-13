@@ -215,3 +215,19 @@ class StringTest(UnitTest):
 
         # Check for handling of newlines in format string
         self.assertEqual("\n%(s1)s\n%(s1)s\n" % testdict, '\nstring\nstring\n')
+
+    def testIndex(self):
+        s = "12345"
+        self.assertEqual(s[0], '1')
+        self.assertEqual(s[-1], '5')
+        self.assertEqual(s[1:-1], '234')
+        try:
+            a = s[200]
+            self.fail("Failed to raise an IndexError")
+        except IndexError, e:
+            self.assertEqual(e[0], 'string index out of range')
+        try:
+            a = s[-200]
+            self.fail("Failed to raise an IndexError")
+        except IndexError, e:
+            self.assertEqual(e[0], 'string index out of range')
