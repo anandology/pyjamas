@@ -575,13 +575,25 @@ if (this.__is_instance__ === true) {\
 var %s = this;\
 """ % arg_names[0]
 
+        if node.varargs:
+            self._varargs_handler(node, varargname, maxargs1)
+
         if node.kwargs:
             print >> output, self.spacing() + """\
 var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[arguments.length];\
 """ % (kwargname, maxargs1)
-
-        if node.varargs:
-            self._varargs_handler(node, varargname, maxargs1)
+            s = self.spacing()
+            print >> output, """\
+%(s)sif (typeof %(kwargname)s != 'object' || %(kwargname)s.__is_instance__ !== true || %(kwargname)s.__name__ != 'Dict') {\
+""" % locals()
+            if node.varargs:
+                print >> output, """\
+%(s)s\tif (typeof %(kwargname)s != 'undefined') %(varargname)s.l.push(%(kwargname)s);\
+""" % locals()
+            print >> output, """\
+%(s)s\t%(kwargname)s = arguments[arguments.length+1];
+%(s)s}\
+""" % locals()
 
         if self.function_argument_checking:
             print >> output, self.spacing() + """\
@@ -604,13 +616,25 @@ var %s = arguments[0];\
 %s = arguments[%d];\
 """ % (arg_name, arg_idx)
 
+        if node.varargs:
+            self._varargs_handler(node, varargname, maxargs2)
+
         if node.kwargs:
             print >> output, self.spacing() + """\
 var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[arguments.length];\
 """ % (kwargname, maxargs2)
-
-        if node.varargs:
-            self._varargs_handler(node, varargname, maxargs2)
+            s = self.spacing()
+            print >> output, """\
+%(s)sif (typeof %(kwargname)s != 'object' || %(kwargname)s.__is_instance__ !== true || %(kwargname)s.__name__ != 'Dict') {\
+""" % locals()
+            if node.varargs:
+                print >> output, """\
+%(s)s\tif (typeof %(kwargname)s != 'undefined') %(varargname)s.l.push(%(kwargname)s);\
+""" % locals()
+            print >> output, """\
+%(s)s\t%(kwargname)s = arguments[arguments.length+1];
+%(s)s}\
+""" % locals()
 
         if self.function_argument_checking:
             print >> output, """\
@@ -651,13 +675,26 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
 if ($pyjs.options.arg_count && %s) pyjs__exception_func_param(arguments.callee.__name__, %d, %s, arguments.length);\
 """ % (argcount, minargs, maxargsstr)
 
+        if node.varargs:
+            self._varargs_handler(node, varargname, maxargs)
+
         if node.kwargs:
             print >> output, self.spacing() + """\
 var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[arguments.length];\
 """ % (kwargname, maxargs)
+            s = self.spacing()
+            print >> output, """\
+%(s)sif (typeof %(kwargname)s != 'object' || %(kwargname)s.__is_instance__ !== true || %(kwargname)s.__name__ != 'Dict') {\
+""" % locals()
+            if node.varargs:
+                print >> output, """\
+%(s)s\tif (typeof %(kwargname)s != 'undefined') %(varargname)s.l.push(%(kwargname)s);\
+""" % locals()
+            print >> output, """\
+%(s)s\t%(kwargname)s = arguments[arguments.length+1];
+%(s)s}\
+""" % locals()
 
-        if node.varargs:
-            self._varargs_handler(node, varargname, maxargs)
 
     def _class_method_init(self, node, arg_names, varargname, kwargname,
                            current_klass, output=None):
@@ -685,13 +722,25 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
     var %s = this.prototype;\
 """ % (arg_names[0],)
 
+        if node.varargs:
+            self._varargs_handler(node, varargname, maxargs)
+
         if node.kwargs:
             print >> output, """\
         var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[arguments.length];\
 """ % (kwargname, maxargs)
-
-        if node.varargs:
-            self._varargs_handler(node, varargname, maxargs)
+            s = self.spacing()
+            print >> output, """\
+%(s)sif (typeof %(kwargname)s != 'object' || %(kwargname)s.__is_instance__ !== true || %(kwargname)s.__name__ != 'Dict') {\
+""" % locals()
+            if node.varargs:
+                print >> output, """\
+%(s)s\tif (typeof %(kwargname)s != 'undefined') %(varargname)s.l.push(%(kwargname)s);\
+""" % locals()
+            print >> output, """\
+%(s)s\t%(kwargname)s = arguments[arguments.length+1];
+%(s)s}\
+""" % locals()
 
     def _default_args_handler(self, node, arg_names, current_klass, kwargname,
                               output=None):

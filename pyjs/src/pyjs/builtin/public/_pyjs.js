@@ -70,7 +70,7 @@ function pyjs_kwargs_method_call(obj, method_name, star_args, dstar_args, args)
 {
     var method = obj[method_name];
     args = pyjs_args_merge(method, star_args, dstar_args, args);
-    if (method.parse_kwargs)
+    if (typeof method.parse_kwargs == 'function')
     {
         args = method.parse_kwargs.apply(obj, args);
     } else if ($pyjs.options.arg_kwarg_unexpected_keyword && args.length > 0) {
