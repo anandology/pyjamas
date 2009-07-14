@@ -1,6 +1,10 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
+ * #180 - 25% reduction in code output size thanks to Kees moving
+   some of the auto-generated code on a per-function basis into
+   javascript support routines.
+
  * #152 - added buttonClick and fixed up CustomButton (see Toggle example)
    at same time.  EVENT.BUTTON_LEFT, BUTTON_MIDDLE, BUTTON_RIGHT had wrong
    #defines as well: only CustomButton was using them which was why nobody
