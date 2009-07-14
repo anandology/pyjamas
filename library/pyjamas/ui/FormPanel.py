@@ -57,6 +57,7 @@ class FormPanel(SimplePanel):
 
         self.formHandlers = []
         self.iframe = None
+        self.__formAction = None
 
         FormPanel_formId += 1
         formName = "FormPanel_" + str(FormPanel_formId)
@@ -102,7 +103,7 @@ class FormPanel(SimplePanel):
 
     def _onload(self, form, event, something):
         print form, event, something
-        if not self.iframe.__formAction:
+        if not self.__formAction:
             return
         self._listener.onFrameLoad()
 
@@ -115,7 +116,7 @@ class FormPanel(SimplePanel):
             pass
 
         if self.iframe:
-            self.iframe.__formAction = form.action
+            self.__formAction = form.action
         return self._listener.onFormSubmit()
 
     # FormPanelImpl.hookEvents
@@ -123,11 +124,12 @@ class FormPanel(SimplePanel):
         # TODO: might have to fix this, use DOM.set_listener()
         self._listener = listener
         if iframe:
-            iframe.connect("browser-event", self._onload)
-            iframe.addEventListener("load", True)
+            wf = mf = get_main_frame()
+            self._onload_listener = mf.addEventListener(iframe, "load",
+                                                        self._onload)
 
-        form.connect("browser-event", self._onsubmit)
-        form.addEventListener("onsubmit", True)
+        self._onsubmit_listener = mf.addEventListener(form, "onsubmit",
+                                                    self._onsubmit)
 
     def onFormSubmit(self):
         event = FormSubmitEvent(self)
@@ -169,7 +171,7 @@ class FormPanel(SimplePanel):
     # FormPanelImpl.submit
     def submitImpl(self, form, iframe):
         if iframe:
-            iframe._formAction = form.action
+            self.__formAction = form.action
         form.submit()
 
     def onAttach(self):
@@ -185,5 +187,7 @@ class FormPanel(SimplePanel):
 
     # FormPanelImpl.unhookEvents
     def unhookEvents(self, iframe, form):
-        print "TODO: unhookEvents"
+        # these might be wrong, need testing.
+        iframe.removeEventListener("load", self._onload_listener, True)
+        form.removeEventListener("onsubmit", self._onsubmit_listener, True)
 
