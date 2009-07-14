@@ -86,7 +86,7 @@ class RoleProxy(puremvc.patterns.proxy.Proxy):
                     userRoles = self.data[i].roles
                     for j in range(0,len(userRoles)):
                         if userRoles[j] == role:
-                            del userRoles[i]
+                            del userRoles[j]
                             break
 
     def getUserRoles(self, username):

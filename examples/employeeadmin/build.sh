@@ -1,6 +1,5 @@
 #!/bin/sh
 options="$*"
-if [ -z "$options" ] ; then options="-O";fi
 
 get_puremvc ( ) {
 	URL="http://puremvc.org/pages/downloads/Python/PureMVC_Python.zip"
@@ -24,4 +23,4 @@ if [ ! -f PureMVC_Python_1_0/src/puremvc/__init__.py ] ; then
 		exit 1
 	fi
 fi
-../../bin/pyjsbuild --library_dir "`pwd`/PureMVC_Python_1_0/src" $options EmployeeAdmin.py
+../../bin/pyjsbuild --library_dir "`pwd`/PureMVC_Python_1_0/src" $options EmployeeAdmin
