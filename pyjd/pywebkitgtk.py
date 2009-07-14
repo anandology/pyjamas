@@ -100,6 +100,7 @@ from gettext import gettext as _
 from traceback import print_stack
 
 import gtk
+import gobject
 import webkit
 
 def module_load(m):
@@ -525,7 +526,8 @@ class WebBrowser(gtk.Window):
 
 
 def setup(application, appdir=None, width=800, height=600):
-    gtk.gdk.threads_init()
+
+    gobject.threads_init()
 
     global wv
 
