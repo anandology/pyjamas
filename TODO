@@ -31,7 +31,6 @@ From http://code.google.com/p/pyjamas/issues, for 0.6 release:
 49  Defect      __pygwt_onBadProperty is not defined        
 
 97  Enhancement ui.Tree Widgets have too much whitespace around their contents
-180 Enhancement any way that the 4th arg to pyjs__bind_method could go in a fn?
 
 146 ----        pyjsbuild --version reports ancient date     
 166 ----        If I use build.sh -c from the trunk I get a traceback about md5
