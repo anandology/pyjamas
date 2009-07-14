@@ -265,7 +265,7 @@ def mash_attrib(name, joiner='-'):
     return res
 
 def addWindowEventListener(self, event_name, cb):
-    print self, event_name, cb
+    #print self, event_name, cb
     if cb not in self._callbacks:
         self.connect("browser-event", cb)
         self._callbacks.append(cb)
@@ -505,8 +505,8 @@ class WebBrowser(gtk.Window):
         pass
 
     def _browser_event_cb(self, view, event, message, fromwindow):
-        print "event! wha-hey!", event, view, message
-        print event.get_event_type()
+        #print "event! wha-hey!", event, view, message
+        #print event.get_event_type()
         #event.stop_propagation()
         return True
 
