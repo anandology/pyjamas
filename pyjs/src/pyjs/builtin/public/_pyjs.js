@@ -1,16 +1,41 @@
 
-function pyjs_args_merge(func, star_args, dstar_args, args)
+function pyjs_kwargs_call(obj, func, star_args, dstar_args, args)
 {
-    var call_args;
+    if (obj !== null) {
+        func = obj[func];
+    }
 
+    // Merge dstar_args into args[0]
+    if (dstar_args) {
+        if (pyjslib.get_pyjs_classtype(dstar_args) != 'Dict') {
+            throw (pyjslib.TypeError(func.__name__ + "() arguments after ** must be a dictionary " + pyjslib.repr(dstar_args)));
+        }
+        var __i = dstar_args.__iter__();
+        try {
+            while (true) {
+                var i = __i.next();
+                if ($pyjs.options.arg_kwarg_multiple_values && typeof args[0][i] != 'undefined') {
+                    pyjs__exception_func_multiple_values(func.__name__, i);
+                }
+                args[0][i] = dstar_args.__getitem__(i)
+            }
+        } catch (e) {
+            if (e != pyjslib.StopIteration) {
+                throw e;
+            }
+        }
+
+    }
+
+    // Append star_args to args
     if (star_args) {
         if (!pyjslib.isIteratable(star_args)) {
             throw (pyjslib.TypeError(func.__name__ + "() arguments after * must be a sequence" + pyjslib.repr(star_args)));
         }
         if (star_args.l != null && star_args.l.constructor == Array) {
-            call_args = args.concat(star_args.l);
+            args = args.concat(star_args.l);
         } else {
-            call_args = Array();
+            var call_args = Array();
             var __i = star_args.__iter__();
             var i = 0;
             try {
@@ -23,62 +48,66 @@ function pyjs_args_merge(func, star_args, dstar_args, args)
                     throw e;
                 }
             }
-            call_args = args.concat(call_args);
+            args = args.concat(call_args);
         }
     }
-    else
-    {
-        call_args = args;
+
+    // Now convert args to call_args
+    // args = __kwargs, arg1, arg2, ...
+    // _args = arg1, arg2, arg3, ... [*args, [**kwargs]]
+    var _args = [];
+
+    // Get function/method arguments
+    if (typeof func.__args__ != 'undefined') {
+        var __args__ = func.__args__;
+    } else {
+        var __args__ = new Array(null, null);
     }
-    if (dstar_args) {
-        if (pyjslib.get_pyjs_classtype(dstar_args) != 'Dict') {
-            throw (pyjslib.TypeError(func.__name__ + "() arguments after ** must be a dictionary " + pyjslib.repr(dstar_args)));
+
+    var a, aname, _idx , idx;
+    _idx = idx = 1;
+    if (obj === null) {
+        if (func.__is_instance__ === false) {
+            // Skip first argument in __args__
+            _idx ++;
         }
-        var __i = dstar_args.__iter__();
-        try {
-            while (true) {
-                var i = __i.next();
-                if ($pyjs.options.arg_kwarg_multiple_values && typeof call_args[0][i] != 'undefined') {
-                    pyjs__exception_func_multiple_values(func.__name__, i);
-                }
-                call_args[0][i] = dstar_args.__getitem__(i)
+    } else {
+        if (typeof obj.__is_instance__ == 'undefined' && typeof func.__is_instance__ != 'undefined' && func.__is_instance__ === false) {
+            // Skip first argument in __args__
+            _idx ++;
+        } else if (func.__bind_type__ > 0) {
+            if (typeof args[1] == 'undefined' || obj.__is_instance__ !== false || args[1].__is_instance__ !== true) {
+                // Skip first argument in __args__
+                _idx ++;
             }
-        } catch (e) {
-            if (e != pyjslib.StopIteration) {
-                throw e;
-            }
-        }
-
-    }
-    return call_args;
-}
-
-function pyjs_kwargs_function_call(func, star_args, dstar_args, args)
-{
-    args = pyjs_args_merge(func, star_args, dstar_args, args);
-    if (func.parse_kwargs) {
-        args = func.parse_kwargs.apply(null, args);
-    } else if ($pyjs.options.arg_kwarg_unexpected_keyword && args.length > 0) {
-        for (var i in args[0]) {
-            pyjs__exception_func_unexpected_keyword(func.__name__, i);
         }
     }
-    return func.apply(null, args);
-}
-
-function pyjs_kwargs_method_call(obj, method_name, star_args, dstar_args, args)
-{
-    var method = obj[method_name];
-    args = pyjs_args_merge(method, star_args, dstar_args, args);
-    if (typeof method.parse_kwargs == 'function')
-    {
-        args = method.parse_kwargs.apply(obj, args);
-    } else if ($pyjs.options.arg_kwarg_unexpected_keyword && args.length > 0) {
-        for (var i in args[0]) {
-            pyjs__exception_func_unexpected_keyword(method.__name__, i);
+    for (++_idx; _idx < __args__.length; _idx++, idx++) {
+        aname = __args__[_idx];
+        a = args[0][aname];
+        if (typeof args[idx] == 'undefined') {
+            _args.push(a);
+            delete args[0][aname];
+        } else {
+            if (typeof a != 'undefined') pyjs__exception_func_multiple_values(func.__name__, aname);
+            _args.push(args[idx]);
         }
     }
-    return method.apply(obj, args);
+
+    // Append the left-over args
+    for (;idx < args.length;idx++) {
+            _args.push(args[idx]);
+    }
+
+    if (__args__[1] === null) {
+        // Check for unexpected keyword
+        for (var kwname in args[0]) {
+            pyjs__exception_func_unexpected_keyword(func.__name__, kwname);
+        }
+    } else {
+        _args.push(pyjslib.Dict(args[0]));
+    }
+    return func.apply(obj, _args);
 }
 
 function pyjs__exception_func_param(func_name, minargs, maxargs, nargs) {
@@ -148,14 +177,15 @@ function pyjs__exception_func_instance_expected(func_name, class_name, instance)
         throw pyjslib.TypeError(String("unbound method "+func_name+"() must be called with "+class_name+" instance as first argument (got "+instance+" instead)"));
 }
 
-function pyjs__bind_method(klass, func_name, func, parse_kwargs) {
+function pyjs__bind_method(klass, func_name, func, bind_type, args) {
     func.__name__ = func.func_name = func_name;
+    func.__bind_type__ = bind_type;
+    func.__args__ = args;
     func.__class__ = klass;
     func.prototype = func;
-    if (typeof parse_kwargs != 'undefined') func.parse_kwargs = parse_kwargs;
     return func;
 }
-function pyjs__instancemethod(klass, func_name, func, parse_kwargs) {
+function pyjs__instancemethod(klass, func_name, func, bind_type, args) {
     var fn = function () {
         var _this = this;
         var argstart = 0;
@@ -180,19 +210,21 @@ function pyjs__instancemethod(klass, func_name, func, parse_kwargs) {
         return func.apply(this, args);
     };
     func.__name__ = func.func_name = func_name;
+    func.__bind_type__ = bind_type;
+    func.__args__ = args;
     func.__class__ = klass;
-    if (typeof parse_kwargs != 'undefined') func.parse_kwargs = parse_kwargs;
     return fn;
 }
 
-function pyjs__staticmethod(klass, func_name, func, parse_kwargs) {
+function pyjs__staticmethod(klass, func_name, func, bind_type, args) {
     func.__name__ = func.func_name = func_name;
+    func.__bind_type__ = bind_type;
+    func.__args__ = args;
     func.__class__ = klass;
-    if (typeof parse_kwargs != 'undefined') func.parse_kwargs = parse_kwargs;
     return func;
 }
 
-function pyjs__classmethod(klass, func_name, func, parse_kwargs) {
+function pyjs__classmethod(klass, func_name, func, bind_type, args) {
     var fn = function () {
         if ($pyjs.options.arg_is_instance && this.__is_instance__ !== true && this.__is_instance__ !== false) pyjs__exception_func_instance_expected(func_name, klass.__name__);
         var args = new Array(this.prototype);
@@ -200,8 +232,9 @@ function pyjs__classmethod(klass, func_name, func, parse_kwargs) {
         return func.apply(this, args);
     };
     func.__name__ = func.func_name = func_name;
+    func.__bind_type__ = bind_type;
+    func.__args__ = args;
     func.__class__ = klass;
-    if (typeof parse_kwargs != 'undefined') func.parse_kwargs = parse_kwargs;
     return fn;
 }
 
@@ -297,26 +330,7 @@ function pyjs__class_function(cls_fn, prop, bases) {
     instance.__dict__ = instance.__class__ = instance;
     instance.__is_instance__ = true;
     return instance;
-}, function (__kwargs, cls) {
-    if (typeof cls == 'undefined') {
-        cls=__kwargs.cls;
-        delete __kwargs.cls;
-    } else if ($pyjs.options.arg_kwarg_multiple_values && typeof __kwargs.cls != 'undefined') {
-        pyjs__exception_func_multiple_values('__new__', 'cls');
-    }
-    if ($pyjs.options.arg_kwarg_unexpected_keyword) {
-        for (var i in __kwargs) {
-            pyjs__exception_func_unexpected_keyword('__new__', i);
-        }
-    }
-    var __r = [cls];
-    for (var pyjs__va_arg = 2;pyjs__va_arg < arguments.length;pyjs__va_arg++) {
-        __r.push(arguments[pyjs__va_arg]);
-    }
-
-    return __r;
-});
-
+}, 1, ['cls']);
     }
     if (cls_fn['__init__'] == null) {
         cls_fn['__init__'] = pyjs__bind_method(cls_fn, '__init__', function () {
@@ -335,10 +349,7 @@ function pyjs__class_function(cls_fn, prop, bases) {
             }
         }
     }
-}, function (__kwargs) {
-    var __r = [];
-    return __r;
-});
+}, 0, ['self']);
     }
     cls_fn.__name__ = class_name;
     cls_fn.__module__ = class_module;
@@ -352,9 +363,7 @@ function pyjs__class_function(cls_fn, prop, bases) {
     for (var i = 0; i < bases.length; i++) {
         (bases[i]).__sub_classes__.push(cls_fn);
     }
-    cls_fn.parse_kwargs = function () {
-        return cls_fn.__init__.parse_kwargs.apply(this, arguments);
-    }
+    cls_fn.__args__ = cls_fn.__init__.__args__;
     return cls_fn;
 }
 
@@ -365,7 +374,7 @@ function pyjs_type(clsname, bases, methods)
     var obj = new Object;
     for (var i in methods) {
         if (typeof methods[i] == 'function') {
-            obj[i] = pyjs__instancemethod(cls_instance, i, methods[i], methods[i].parse_kwargs);
+            obj[i] = pyjs__instancemethod(cls_instance, i, methods[i], methods[i].__bind_type__, methods[i].__args__);
         } else {
             obj[i] = methods[i];
         }

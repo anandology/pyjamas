@@ -1183,7 +1183,8 @@ def _super(type_, object_or_type = None):
             return obj[name].apply(object_or_type,args);
         }
         fnwrap.__name__ = name;
-        fnwrap.parse_kwargs = obj.parse_kwargs;
+    	fnwrap.__args__ = obj.__args__;
+    	fnwrap.__bind_type__ = obj.__bind_type__;
         return fnwrap;
     }
     for (var m in fn) {
@@ -1455,7 +1456,8 @@ def getattr(obj, name, default_value=None):
         return method.apply(obj,args);
     }
     fnwrap.__name__ = name;
-    fnwrap.parse_kwargs = obj.parse_kwargs;
+    fnwrap.__args__ = obj.__args__;
+    fnwrap.__bind_type__ = obj.__bind_type__;
     return fnwrap;
     """)
 

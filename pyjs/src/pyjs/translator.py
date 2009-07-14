@@ -540,6 +540,32 @@ try{var %(dbg)s_res=%(call_code)s;}catch(%(dbg)s_err){
 }return %(dbg)s_res})()""" % locals()
         return call_code
 
+    def func_args(self, node, function_name, bind_type, args, stararg, dstararg):
+        if bind_type == 'static':
+            bind_type = 0
+        elif bind_type == 'bound':
+            bind_type = 1
+        elif bind_type == 'class':
+            bind_type = 2
+        else:
+            raise TranslationError("Unknown bind type: %s" % bind_type, node)
+        args = repr(args)[1:]
+        if dstararg:
+            args = "'%s',%s" % (dstararg, args)
+        else:
+            args = "null,%s" % args
+        if stararg:
+            args = "'%s',%s" % (stararg, args)
+        else:
+            args = "null,%s" % args
+        args = '[' + args
+        
+        if function_name is None:
+            print >>self.output, "\t, %d, %s);" % (bind_type, args)
+        else:
+            print >>self.output, self.spacing() + "%s.__bind_type__ = %s;" % (function_name, bind_type)
+            print >>self.output, self.spacing() + "%s.__args__ = %s;" % (function_name, args)
+
     def _instance_method_init(self, node, arg_names, varargname, kwargname,
                               current_klass, output=None):
         output = output or self.output
@@ -747,7 +773,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         output = output or self.output
         if node.kwargs and (len(arg_names) > 0):
             # This is necessary when **kwargs in function definition
-            # and the call didn't pass the parse_kwargs() of this function.
+            # and the call didn't pass the pyjs_kwargs_call().
             # See libtest testKwArgsInherit
             # This is not completely safe: if the last element in arguments 
             # is an dict and the corresponding argument shoud be a dict and 
@@ -1017,7 +1043,9 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         print >>self.output, self.dedent() + "};"
         print >>self.output, self.spacing() + "%s.__name__ = '%s';\n" % (function_name, node.name)
 
-        self._kwargs_parser(node, function_name, normal_arg_names, None)
+        self.func_args(node, function_name, 'static', declared_arg_names, varargname, kwargname)
+
+        #self._kwargs_parser(node, function_name, normal_arg_names, None)
         self.has_js_return = save_has_js_return
         self.pop_options()
         self.pop_lookup()
@@ -1147,13 +1175,13 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                     # Must be a function call ...
                     call_this = None
             if call_this is None:
-                call_code = ("pyjs_kwargs_function_call("+call_name+", "
+                call_code = ("pyjs_kwargs_call(null, "+call_name+", "
                                   + star_arg_name 
                                   + ", " + dstar_arg_name
                                   + ", ["+fn_args+"]"
                                   + ")")
             else:
-                call_code = ("pyjs_kwargs_method_call("+call_this+", '"+method_name+"', "
+                call_code = ("pyjs_kwargs_call("+call_this+", '"+method_name+"', "
                                   + star_arg_name 
                                   + ", " + dstar_arg_name
                                   + ", ["+fn_args+"]"
@@ -1498,10 +1526,17 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
         print >>self.output, self.dedent() + "}"
 
+        bind_type = 'bound'
         if staticmethod:
-            self._kwargs_parser(node, method_name, normal_arg_names, current_klass, True)
-        else:
-            self._kwargs_parser(node, method_name, normal_arg_names[1:], current_klass, True)
+            bind_type = 'static'
+        elif classmethod:
+            bind_type = 'class'
+        self.func_args(node, None, bind_type, declared_arg_names, varargname, kwargname)
+
+        #if staticmethod:
+        #    self._kwargs_parser(node, method_name, normal_arg_names, current_klass, True)
+        #else:
+        #    self._kwargs_parser(node, method_name, normal_arg_names[1:], current_klass, True)
 
         self.has_js_return = save_has_js_return
         self.pop_options()
