@@ -28,10 +28,10 @@ After the europython merge we have still some things to change.
 From http://code.google.com/p/pyjamas/issues, for 0.6 release:
 
 184 Defect      current apps setup dog-slow compared to 0.4 and 0.5
-49  Defect      __pygwt_onBadProperty is not defined        
 
 97  Enhancement ui.Tree Widgets have too much whitespace around their contents
 
+49  Defect      __pygwt_onBadProperty is not defined        
 146 ----        pyjsbuild --version reports ancient date     
 166 ----        If I use build.sh -c from the trunk I get a traceback about md5
 176 ----        -c and --cache-buster options have gone from build   
