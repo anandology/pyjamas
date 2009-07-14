@@ -2713,6 +2713,10 @@ def add_compile_options(parser):
 
 
     def set_multiple(option, opt_str, value, parser, **kwargs):
+        if opt_str == '-O':
+            sys.stderr.write("""\
+Warning: -O disables several options that make pyjs behave like python
+""")
         for k in kwargs.keys():
             setattr(parser.values, k, kwargs[k])
 
