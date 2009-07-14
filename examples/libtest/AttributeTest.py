@@ -97,10 +97,16 @@ class AttributeTest(UnitTest):
     def testInstanceAttr(self):
         foo = Foo(1)
         foo_fn = foo.getV
-        t = foo_fn()
+        try:
+            t = foo_fn()
+        except:
+            t = None
         self.assertEqual(t, 1)
         foo.getV = 2
-        t = foo_fn()
+        try:
+            t = foo_fn()
+        except:
+            t = None
         self.assertEqual(t, 1)
         t = foo.a
         foo.a = 2

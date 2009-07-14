@@ -56,6 +56,8 @@ class ClassTest(UnitTest):
             self.fail("Failed to raise error on ExampleClass().fail_a()")
         except (NameError, AttributeError), e:
             self.assertTrue(True)
+        except:
+            self.fail("Failed to raise NameError or AttributeError on ExampleClass().fail_a()")
 
     # test Class().x
     def testInheritedProperties(self):
