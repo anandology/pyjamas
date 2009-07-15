@@ -48,13 +48,24 @@ class object:
 
 @noSourceTracking
 def __import__(path, context, module_name=None):
-    available = list(JS("$pyjs.available_modules"))
+    available = JS("$pyjs.available_modules_dict")
+    if isUndefined(available):
+        # Convert the $pyjs.available_modules js array to 
+        # a Python dictionary. Lookups in the dictionary with has_key are 
+        # way faster than a __contains__ lookup in a list.
+        # This hack needs attention if the $pyjs.available_modules gets
+        # updated after creation of the dictionary
+        available = {}
+        for m in list(JS("$pyjs.available_modules")):
+            available[m] = False
+        # Store the dictionary for later use
+        JS("$pyjs.available_modules_dict = available;")
     mod_path = None
     is_mod = False
     if '.' in context:
         package = '.'.join(context.split('.')[:-1])
         relative_ns = package + '.' + path
-        if relative_ns in available:
+        if available.has_key(relative_ns):
             mod_path = relative_ns
             is_mod = True
         else:
@@ -62,16 +73,16 @@ def __import__(path, context, module_name=None):
             # a dot is in the path
             if '.' in path:
                 relative_ns = '.'.join(relative_ns.split('.')[:-1])
-                if relative_ns in available:
+                if available.has_key(relative_ns):
                     mod_path = relative_ns
     if not mod_path:
-        if path in available:
+        if available.has_key(path):
             mod_path = path
             is_mod = True
         else:
             if '.' in path:
                 ns = '.'.join(path.split('.')[:-1])
-                if ns in available:
+                if available.has_key(ns):
                     mod_path = ns
     if not mod_path:
         raise ImportError(
