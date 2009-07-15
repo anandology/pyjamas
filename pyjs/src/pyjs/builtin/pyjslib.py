@@ -76,27 +76,37 @@ def __import__(path, context, module_name=None):
     if not mod_path:
         raise ImportError(
             "No module named " + path + ' (context=' + context + ')')
-    # initialize all modules/packages
-    importName = ''
-    parts = mod_path.split('.')
-    l = len(parts)
-    for i, name in enumerate(parts):
-        importName += name
-        JS("module = $pyjs.loaded_modules[importName];")
-        if isUndefined(module):
-            print "error:", path, names, name, available
-            raise ImportError(
-                "No module named " + importName + ', ' + path + ', ' + context)
-        if l==i+1:
-            module(module_name)
-        else:
-            module(None)
-        importName += '.'
 
-    # we have no package, so no relative imports possible
-    module = JS("$pyjs.loaded_modules[mod_path];")
+    # Check if the module is already loaded and initialized
+    # If so, parent modules should already be initialized too
+    try:
+        module = JS("$pyjs.loaded_modules[mod_path];")
+        if not module.__was_initialized__:
+            module = None
+    except:
+        module = None
+    if module is None:
+        # initialize all modules/packages
+        importName = ''
+        parts = mod_path.split('.')
+        l = len(parts)
+        for i, name in enumerate(parts):
+            importName += name
+            JS("module = $pyjs.loaded_modules[importName];")
+            if isUndefined(module):
+                print "error:", path, names, name, available
+                raise ImportError(
+                    "No module named " + importName + ', ' + path + ', ' + context)
+            if l==i+1:
+                module(module_name)
+            else:
+                module(None)
+            importName += '.'
 
-    module()
+        # we have no package, so no relative imports possible
+        module = JS("$pyjs.loaded_modules[mod_path];")
+
+        module()
     if is_mod:
         return module
     else:
