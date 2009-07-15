@@ -371,8 +371,11 @@ pyjslib.String_find = function(sub, start, end) {
 pyjslib.String_join = function(data) {
     var text="";
 
-    if (pyjslib.isArray(data)) {
+    if (data.constructor == Array) {
         return data.join(this);
+    }
+    else if (data.prototype.__md5__ == pyjslib.List.prototype.__md5__) {
+        return data.l.join(this);
     }
     else if (pyjslib.isIteratable(data)) {
         var iter=data.__iter__();
