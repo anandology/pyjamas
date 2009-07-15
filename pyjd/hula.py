@@ -50,6 +50,15 @@ class Browser(WebView):
         self.progress.connect('loading-stop', self._loaded)
         self.progress.connect('loading-progress', self._loading)
 
+    def _alert(self, txt):
+        self.get_prompt_svc().alert(None, "Alert", txt)
+
+    def get_prompt_svc(self):
+
+        prompt_svc_cls = components.classes[ \
+            "@mozilla.org/embedcomp/prompt-service;1"]
+        return prompt_svc_cls.createInstance(interfaces.nsIPromptService)
+
     def load_app(self):
 
         uri = self.application

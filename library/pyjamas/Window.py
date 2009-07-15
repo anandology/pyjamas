@@ -33,17 +33,19 @@ def addWindowResizeListener(listener):
     resizeListeners.append(listener)
 
 def alert(txt):
-	def close(w):
-		dialog.destroy()
-	dialog = gtk.Dialog("Sample", None, gtk.DIALOG_DESTROY_WITH_PARENT)
-	label = gtk.Label(txt)
-	dialog.vbox.add(label)
-	label.show()
-	button = gtk.Button("OK")
-	dialog.action_area.pack_start (button, True, True, 0)
-	button.connect("clicked", close)
-	button.show()
-	dialog.run ()
+    #get_main_frame()._alert(txt)
+
+    def close(w):
+        dialog.destroy()
+    dialog = gtk.Dialog("Alert", None, gtk.DIALOG_DESTROY_WITH_PARENT)
+    label = gtk.Label(txt)
+    dialog.vbox.add(label)
+    label.show()
+    button = gtk.Button("OK")
+    dialog.action_area.pack_start (button, True, True, 0)
+    button.connect("clicked", close)
+    button.show()
+    dialog.run ()
 
 def confirm(msg):
     return wnd().confirm(msg)
