@@ -45,10 +45,10 @@ def getTabIndex(elem):
 
 def setAccessKey(elem, key):
     JS("""
-    elem.firstChild.accessKey = key;
+    if (elem.firstChild != null) elem.firstChild.accessKey = key;
     """)
 
 def setTabIndex(elem, index):
     JS("""
-    elem.firstChild.tabIndex = index;
+    if (elem.firstChild != null) elem.firstChild.tabIndex = index;
     """)
