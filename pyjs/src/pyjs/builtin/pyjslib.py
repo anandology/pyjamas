@@ -1409,9 +1409,10 @@ def int(text, radix=None):
 @noSourceTracking
 def len(object):
     JS("""
-    if (object==null) return 0;
-    if (pyjslib.isObject(object) && object.__len__) return object.__len__();
-    return object.length;
+    if (typeof object.__len__ == 'function') return object.__len__();
+    if (typeof object.length != 'undefined') return object.length;
+    if (object === null) return 0;
+    throw pyjslib.TypeError("object has no len()")
     """)
 
 @noSourceTracking
