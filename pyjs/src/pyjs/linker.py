@@ -107,7 +107,13 @@ class BaseLinker(object):
     def visit_module(self, file_path, overrides, platform,
                      module_name):
         # look if we have a public dir
-        dir_name = os.path.dirname(file_path)
+        dir_name, file_name = os.path.split(file_path)
+        if file_name.split('.')[0] != module_name.split('.')[-1]:
+            if file_name == "__init__.py":
+                if os.path.basename(dir_name) != module_name.split('.')[-1]:
+                    return
+            else:
+                return
         self.merge_resources(dir_name)
         if platform and overrides:
             plat_suffix = '.__%s__' % platform
