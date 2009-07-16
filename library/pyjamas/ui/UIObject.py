@@ -43,6 +43,10 @@ def setStyleName(element, style, add):
 class UIObject(Applier):
 
     def __init__(self, **kwargs):
+        # do not initialise element, here, to None, whatever you do.
+        # there are circumstances where UIObject.__init__ is the last
+        # thing that is done in derived classes, where self.setElement
+        # will _already_ have been called.
         Applier.__init__(self, **kwargs)
 
     def getAbsoluteLeft(self):
