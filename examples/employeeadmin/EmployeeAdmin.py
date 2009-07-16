@@ -7,7 +7,16 @@ Addapted for pyjamas: Kees Bos
 
 import pyjd # dummy
 
-import puremvc.patterns.facade
+try:
+    import puremvc.patterns.facade
+except:
+    from pyjamas.Window import alert
+    alert("""\
+This application depends on puremvc for python,\n\
+which doesn't seem to be available.\n\
+See README.
+""")
+
 import controller, components
 
 class AppFacade(puremvc.patterns.facade.Facade):
