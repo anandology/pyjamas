@@ -27,8 +27,6 @@ After the europython merge we have still some things to change.
 
 From http://code.google.com/p/pyjamas/issues, for 0.6 release:
 
-184 Defect      current apps setup dog-slow compared to 0.4 and 0.5
-
 97  Enhancement ui.Tree Widgets have too much whitespace around their contents
 
 49  Defect      __pygwt_onBadProperty is not defined        
