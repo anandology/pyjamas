@@ -28,11 +28,13 @@ class UserProxy(puremvc.patterns.proxy.Proxy):
         for i in range(0,len(self.data)):
             if self.data[i].username == user.username:
                 self.data[i] = user
+		break
 
     def deleteItem(self, user):
         for i in range(0,len(self.data)):
             if self.data[i].username == user.username:
                 del self.data[i]
+		break
 
 class RoleProxy(puremvc.patterns.proxy.Proxy):
 
