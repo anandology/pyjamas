@@ -47,14 +47,16 @@ class Canvas(Widget):
         
         ctx._createPattern = ctx.createPattern;
         ctx.createPattern = function(img, rep) {
-            if (!(img instanceof Image)) img = img.getElement(); 
+            // Next line breaks things for Chrome
+            //if (!(img instanceof Image)) img = img.getElement(); 
             return this._createPattern(img, rep);
             }
 
         ctx._drawImage = ctx.drawImage;
         ctx.drawImage = function() {
             var a=arguments;
-            if (!(a[0] instanceof Image)) a[0] = a[0].getElement();
+            // Next line breaks things for Chrome
+            //if (!(a[0] instanceof Image)) a[0] = a[0].getElement();
             if (a.length==9) return this._drawImage(a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8]);
             else if (a.length==5) return this._drawImage(a[0], a[1], a[2], a[3], a[4]);
             return this._drawImage(a[0], a[1], a[2]);
