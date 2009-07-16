@@ -322,7 +322,7 @@ def eventSetKeyCode(evt, key):
     evt.keyCode = key
 
 def eventToString(evt):
-    return evt.toString
+    return evt.toString()
 
 def iframeGetSrc(elem):
     return elem.src

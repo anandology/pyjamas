@@ -93,47 +93,15 @@ def buttonClick(button):
     button.click();
     """)
 
-def appendChild(parent, child):
-    JS("""
-    parent.appendChild(child);
-    """)
-
 def compare(elem1, elem2):
     JS("""
     return (elem1 == elem2);
     """)
 
-def createAnchor():
-    return createElement("A")
-
-def createButton():
-    return createElement("button")
-
-def createCol():
-    return createElement("col")
-
-def createDiv():
-    return createElement("div")
-
 def createElement(tag):
     JS("""
     return $doc.createElement(tag);
     """)
-
-def createFieldSet():
-    return createElement("fieldset")
-
-def createForm():
-    return createElement("form")
-
-def createIFrame():
-    return createElement("iframe")
-
-def createImg():
-    return createElement("img")
-
-def createInputCheck():
-    return createInputElement("checkbox")
 
 def createInputElement(elementType):
     JS("""
@@ -142,79 +110,12 @@ def createInputElement(elementType):
     return e;
     """)
 
-def createInputPassword():
-    return createInputElement("password")
-
 def createInputRadio(group):
     JS("""
     var elem = $doc.createElement("INPUT");
     elem.type = 'radio';
     elem.name = group;
     return elem;
-    """)
-
-def createInputText():
-    return createInputElement("text")
-
-def createLabel():
-    return createElement("label")
-
-def createLegend():
-    return createElement("legend")
-
-def createOptions():
-    return createElement("options")
-
-def createSelect():
-    return createElement("select")
-
-def createSpan():
-    return createElement("span")
-
-def createTable():
-    return createElement("table")
-
-def createTBody():
-    return createElement("tbody")
-
-def createTD():
-    return createElement("td")
-
-def createTextArea():
-    return createElement("textarea")
-
-def createTH():
-    return createElement("th")
-
-def createTR():
-    return createElement("tr")
-
-def eventCancelBubble(evt, cancel):
-    evt.cancelBubble = cancel
-
-def eventGetAltKey(evt):
-    JS("""
-    return evt.altKey;
-    """)
-
-def eventGetButton(evt):
-    JS("""
-    return evt.button;
-    """)
-
-def eventGetClientX(evt):
-    JS("""
-    return evt.clientX;
-    """)
-
-def eventGetClientY(evt):
-    JS("""
-    return evt.clientY;
-    """)
-
-def eventGetCtrlKey(evt):
-    JS("""
-    return evt.ctrlKey;
     """)
 
 def eventGetFromElement(evt):
@@ -227,26 +128,6 @@ def eventGetKeyCode(evt):
     return evt.which ? evt.which : evt.keyCode;
     """)
 
-def eventGetRepeat(evt):
-    JS("""
-    return evt.repeat;
-    """)
-
-def eventGetScreenX(evt):
-    JS("""
-    return evt.screenX;
-    """)
-
-def eventGetScreenY(evt):
-    JS("""
-    return evt.screenY;
-    """)
-
-def eventGetShiftKey(evt):
-    JS("""
-    return evt.shiftKey;
-    """)
-
 def eventGetTarget(event):
     JS("""
     return event.target ? event.target : null;
@@ -255,11 +136,6 @@ def eventGetTarget(event):
 def eventGetToElement(evt):
     JS("""
     return evt.relatedTarget ? evt.relatedTarget : null;
-    """)
-
-def eventGetType(event):
-    JS("""
-    return event.type;
     """)
 
 def eventGetTypeInt(event):
@@ -286,25 +162,9 @@ def eventGetTypeInt(event):
     }
     """)
 
-def eventGetTypeString(event):
-    return eventGetType(event)
-
-def eventPreventDefault(evt):
-    evt.preventDefault()
-
-def eventSetKeyCode(evt, key):
-    JS("""
-    evt.keyCode = key;
-    """)
-
 def eventToString(evt):
     JS("""
     return evt.toString();
-    """)
-
-def iframeGetSrc(elem):
-    JS("""
-    return elem.src;
     """)
 
 def getAbsoluteLeft(elem):
@@ -583,32 +443,10 @@ def walkChildren(elem):
     };
     """)
    
-def isOrHasChild(parent, child):
-    JS("""
-    while (child) {
-      if (parent == child)
-        return true;
-      child = child.parentNode;
-      if (child.nodeType != 1)
-        child = null;
-    }
-    return false;
-    """)
-
 def releaseCapture(elem):
     JS("""
     if ((DOM.sCaptureElem != null) && DOM.compare(elem, DOM.sCaptureElem))
         DOM.sCaptureElem = null;
-    """)
-
-def removeChild(parent, child):
-    JS("""
-    parent.removeChild(child);
-    """)
-
-def replaceChild(parent, newChild, oldChild):
-    JS("""
-    parent.replaceChild(newChild, oldChild);
     """)
 
 def removeEventPreview(preview):
