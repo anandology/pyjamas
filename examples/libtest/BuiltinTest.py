@@ -1,5 +1,13 @@
 from UnitTest import UnitTest
 
+try:
+    builtin_value = builtin.value
+except:
+    builtin_value = None
+if False:
+    import builtin
+import builtin
+
 class Foo:
     pass
 
@@ -122,3 +130,9 @@ class BuiltinTest(UnitTest):
         self.assertFalse(isinstance(s, str), "s is an integer not a string")
         self.assertTrue(isinstance(s, int), "s is an integer")
 
+    def testImport(self):
+        self.assertEqual(builtin_value, None, "The builtin is loaded before import!")
+        try:
+            self.assertEqual(builtin.value, builtin.get_value())
+        except:
+            self.fail("Import failed for builtin")
