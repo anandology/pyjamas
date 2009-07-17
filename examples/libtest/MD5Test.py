@@ -17,8 +17,9 @@ if sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz',
     def hexstr(s):
         h = '0123456789abcdef'
         r = ''
+        i = None
         for x in range(16):
-            JS("var i = s[x];")
+            JS("i = s[x];")
             r = r + h[(i >> 4) & 0xF] + h[i & 0xF]
         return r
 

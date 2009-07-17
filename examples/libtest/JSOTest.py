@@ -1,3 +1,4 @@
+import pyjslib
 from UnitTest import UnitTest
 
 class Foo:pass

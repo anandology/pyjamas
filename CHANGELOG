@@ -1,6 +1,17 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
+ * translator is now using unknown properties as module properties
+   Take care of this when mixing JS and Python code :
+     JS("var a = 1")
+     if a == 1:
+         pass
+   "a" is not know to the translator because it was declared in JS.
+   Do this :
+     a = None
+     JS("a = 1")
+   Now a is known to python.
+
  * #180 - 25% reduction in code output size thanks to Kees moving
    some of the auto-generated code on a per-function basis into
    javascript support routines.

@@ -7,7 +7,7 @@ var $wnd = parent;
 var $doc = $wnd.document;
 var $moduleName = "%(app_name)s";
 var $pyjs = new Object();
-$pyjs.modules = {};
+$pyjs.__modules__ = {};
 $pyjs.modules_hash = {};
 $pyjs.available_modules = %(available_modules)s;
 $pyjs.loaded_modules = {};
@@ -66,16 +66,14 @@ var onExecutionError = function (exception, name) {
 };
 
 function app_imported() {
-    //TODO: check if this is really needed
     pyjslib('pyjslib');
-    pyjslib.__import__('%(app_name)s', '%(app_name)s', '__main__');
+    $pyjs.__modules__.pyjslib = $pyjs.loaded_modules['pyjslib']
+    pyjslib.__import__(
+               ['%(app_name)s'],
+               '%(app_name)s',
+               '%(app_name)s',
+               '__main__');
     return;
-    try {
-        $pyjs.modules['%(app_name)s'] = %(app_name)s('__main__');
-    } catch (exception) {
-        sys.save_exception_stack();
-        onExecutionError(exception, '%(app_name)s');
-    }
 }
 
 function prepare_app() {

@@ -382,36 +382,36 @@ this.getdigestBits = function() {
 def hexstr(s):
     h = '0123456789abcdef'
     r = ''
+    i = None
     for x in range(16):
-        JS("var i = s[x];")
+        JS("i = s[x];")
         r = r + h[(i >> 4) & 0xF] + h[i & 0xF]
     return r
 
 class md5:
     def __init__(self, s=''):
         self.finished = False
-        JS(""" this.md5 = new _md5();
-            this.md5.init();
-           """)
+        JS("""
+            this.md5 = new _md5();
+            """)
+        self.md5.init()
         self.update(s)
 
     def update(self, s):
         for c in str(s):
             b = ord(c)
-            JS(" this.md5.update(b); ")
+            self.md5.update(b)
 
     def hexdigest(self):
         if not self.finished:
             self.finished = True
-            JS(""" this.md5.finish(); """)
-        JS(""" var res = this.md5.getdigestBits(); 
-        return md5.hexstr(res);
-        """)
+            self.md5.finish()
+        res = self.md5.getdigestBits()
+        return hexstr(res)
 
     def digest(self):
         if not self.finished:
             self.finished = True
-            JS(""" this.md5.finish(); """)
-        JS(""" var res = this.md5.getdigestBits(); 
-            return res;
-            """)
+            self.md5.finish()
+        return self.md5.getdigestBits()
+

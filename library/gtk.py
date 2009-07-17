@@ -1248,14 +1248,15 @@ class MenuItem(Item):
         if event.type == 'click':
             self.emit('activate')
 
+gtkbuildermap = {
+          'GtkWindow': Window,
+          'GtkTable': Table,
+          'GtkLabel': Label,
+          'GtkVBox': VBox,
+          'GtkHBox': HBox,
+          'GtkEntry': Entry
+          }
 
-gtkbuildermap = {'GtkWindow': gtk.Window,
-                 'GtkTable': gtk.Table,
-                 'GtkLabel': gtk.Label,
-                 'GtkVBox': gtk.VBox,
-                 'GtkHBox': gtk.HBox,
-                 'GtkEntry': gtk.Entry
-                }
 
 def find_props(node):
     res = {}
@@ -1299,7 +1300,7 @@ class BuilderETree:
             if childobj is None:
                 continue
             child = self.create_object_from_xml_node(childobj)
-            obj.add_child(gtk.Builder(), child, klsname)
+            obj.add_child(Builder(), child, klsname)
             props = find_props(childnode.find("packing"))
             for prop, value in props.items():
                 if value.isdigit():

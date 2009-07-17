@@ -86,6 +86,8 @@ PYJSLIB_BUILTIN_MAPPING = {\
     'super': 'pyjslib._super',
 }
 
+SCOPE_KEY = 0
+
 # Variable names that should be remapped in functions/methods
 # arguments -> arguments_
 # arguments_ -> arguments__
@@ -277,81 +279,62 @@ class Translator:
         if decl:
             print >>self.output, self.spacing() + decl
 
-        save_output = self.output
-        buffered_output = StringIO()
-        self.output = buffered_output
-
         if self.attribute_checking and not raw_module_name in ['sys', 'pyjslib']:
             attribute_checking = True
             print >>self.output, self.indent() + 'try {'
         else:
             attribute_checking = False
 
-        # First pass, collect global names:
-        #  - Ignore output
-        #  - Run all statements (just all, to be shure we will reach 
-        #    all the 'import' and 'from' statements)
-        #  - Restore output
-        # Second pass, create compiled code
-        # BTW. import/from thats not in the top-level is not yet
-        # supported, but eventually will
-        self.output = StringIO()
+        mod.lineno = 1
+        self.track_lineno(mod, True)
+        for child in mod.node:
+            self.has_js_return = False
+            self.track_lineno(child)
+            if isinstance(child, ast.Function):
+                self._function(child, False)
+            elif isinstance(child, ast.Class):
+                self._class(child)
+            elif isinstance(child, ast.Import):
+                self._import(child, False)
+            elif isinstance(child, ast.From):
+                self._from(child, False)
+            elif isinstance(child, ast.Discard):
+                self._discard(child, None)
+            elif isinstance(child, ast.Assign):
+                self._assign(child, None, True)
+            elif isinstance(child, ast.AugAssign):
+                self._augassign(child, None, True)
+            elif isinstance(child, ast.If):
+                self._if(child, None)
+            elif isinstance(child, ast.For):
+                self._for(child, None)
+            elif isinstance(child, ast.While):
+                self._while(child, None)
+            elif isinstance(child, ast.Subscript):
+                self._subscript_stmt(child, None)
+            elif isinstance(child, ast.Global):
+                self._global(child, None)
+            elif isinstance(child, ast.Printnl):
+               self._print(child, None)
+            elif isinstance(child, ast.Print):
+               self._print(child, None)
+            elif isinstance(child, ast.TryExcept):
+                self._tryExcept(child, None, True)
+            elif isinstance(child, ast.TryFinally):
+                self._tryFinally(child, None, True)
+            elif isinstance(child, ast.Raise):
+                self._raise(child, None)
+            elif isinstance(child, ast.Stmt):
+                self._stmt(child, None)
+            else:
+                raise TranslationError(
+                    "unsupported type (in __init__)",
+                    child, self.module_name)
 
-        for compile_pass in range(2):
-            self.compile_pass = compile_pass
-            mod.lineno = 1
-            self.track_lineno(mod, True)
-            for child in mod.node:
-                self.has_js_return = False
-                self.track_lineno(child)
-                if isinstance(child, ast.Function):
-                    self._function(child, False)
-                elif isinstance(child, ast.Class):
-                    self._class(child)
-                elif isinstance(child, ast.Import):
-                    self._import(child, False)
-                elif isinstance(child, ast.From):
-                    self._from(child, False)
-                elif isinstance(child, ast.Discard):
-                    self._discard(child, None)
-                elif isinstance(child, ast.Assign):
-                    self._assign(child, None, True)
-                elif isinstance(child, ast.AugAssign):
-                    self._augassign(child, None, True)
-                elif isinstance(child, ast.If):
-                    self._if(child, None)
-                elif isinstance(child, ast.For):
-                    self._for(child, None)
-                elif isinstance(child, ast.While):
-                    self._while(child, None)
-                elif isinstance(child, ast.Subscript):
-                    self._subscript_stmt(child, None)
-                elif isinstance(child, ast.Global):
-                    self._global(child, None)
-                elif isinstance(child, ast.Printnl):
-                   self._print(child, None)
-                elif isinstance(child, ast.Print):
-                   self._print(child, None)
-                elif isinstance(child, ast.TryExcept):
-                    self._tryExcept(child, None, True)
-                elif isinstance(child, ast.TryFinally):
-                    self._tryFinally(child, None, True)
-                elif isinstance(child, ast.Raise):
-                    self._raise(child, None)
-                elif isinstance(child, ast.Stmt):
-                    self._stmt(child, None)
-                else:
-                    raise TranslationError(
-                        "unsupported type (in __init__)",
-                        child, self.module_name)
-            self.output = buffered_output
-
-        self.output = save_output
         if self.source_tracking and self.store_source:
             for l in self.track_lines.keys():
                 print >> self.output, self.spacing() + '''%s.__track_lines__[%d] = "%s";''' % (raw_module_name, l, self.track_lines[l].replace('"', '\"'))
 
-        print >> self.output, buffered_output.getvalue()
         if attribute_checking:
             print >> self.output, self.spacing() + "} catch (pyjs_attr_err) {throw pyjslib._errorMapping(pyjs_attr_err)};"
 
@@ -490,6 +473,16 @@ class Translator:
                 break
             depth -= 1
         return (name_type, pyname, jsname, depth, max_depth == depth and not name_type is None)
+
+    def scopeName(self, name, depth, local):
+        if local:
+            return name
+        while depth >= 0:
+            scopeName = self.lookup_stack[depth].get(SCOPE_KEY, None)
+            if scopeName is not None:
+                return scopeName + name
+            depth -= 1
+        return self.modpfx() + name
 
     def add_imported_module(self, importName):
         names = importName.split(".")
@@ -905,65 +898,89 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         # XXX: hack for in-function checking, we should have another
         # object to check our scope
         local = local and self.option_stack
-        for importName, importAs in node.names:
-            # special module to help make pyjamas modules loadable in
-            # the python interpreter
-            if importName != '__pyjamas__':
-                # add to dependencies
+        self._doImport(node.names, local, True)
+
+    def _doImport(self, names, local, assignBase):
+        for importName, importAs in names:
+            if importName == '__pyjamas__':
+                continue
+            # "searchList" contains a list of possible module names :
+            #   We create the list at compile time to save runtime.
+            searchList = []
+            context = self.raw_module_name
+            if '.' in context:
+                # our context lives in a package so it is possible to have a
+                # relative import
+                package = context.rsplit('.', 1)[0]
+                relName = package + '.' + importName
+                searchList.append(relName)
+                if '.' in importName:
+                    searchList.append(relName.rsplit('.', 1)[0])
+            # the absolute path
+            searchList.append(importName)
+            if '.' in importName:
+                searchList.append(importName.rsplit('.', 1)[0])
+
+            mod = self.lookup(importName)
+            package_mod = self.lookup(importName.split('.', 1)[0])
+            if (   mod[0] != 'module'
+                or (assignBase and package_mod[0] != 'module')
+               ):
+                # the import statement
+                stmt = "pyjslib.__import__([%s], '%s', '%s')" % (
+                            ', '.join(["'%s'"% n for n in searchList]),
+                            importName,
+                            self.raw_module_name,
+                            )
+                print >> self.output, self.spacing(), stmt
+                self.add_lookup("module", importName, importName)
                 self.add_imported_module(importName)
+            if assignBase:
+                # get the name in scope
                 package_name = importName.split('.')[0]
                 if importAs:
-                    rhs = importName
                     ass_name = importAs
                 else:
                     ass_name = package_name
-                    rhs = package_name
-                    # make sure the module below the package gets
-                    # imported too
-                    if package_name!=importName:
-                        stmt = "pyjslib.__import__('%s', '%s')" % (
-                            importName, self.raw_module_name)
-                        print >> self.output, self.spacing(), stmt
-                if local:
-                    lhs = 'var %s =' % ass_name
-                    self.add_lookup("variable", ass_name, ass_name)
-                else:
-                    fqn = '.'.join((self.raw_module_name, ass_name))
-                    lhs = '%s =' %  fqn
-                    self.add_lookup("variable", ass_name, fqn)
-                stmt = "%s pyjslib.__import__('%s', '%s')" % (
-                    lhs, rhs, self.raw_module_name)
-                print >> self.output, self.spacing(), stmt
-
+                var = self.lookup(ass_name)
+                if var[0] != 'variable' or local:
+                    if local:
+                        jsname_mod = ass_name
+                        jsname = ass_name
+                        lhs = 'var %s =' % jsname
+                    else:
+                        jsname_mod = '.'.join((self.raw_module_name, package_name))
+                        jsname = '.'.join((self.raw_module_name, ass_name))
+                        lhs = '%s =' %  jsname
+                    if importAs:
+                        mod_name = importName
+                    else:
+                        mod_name = ass_name
+                    stmt = '%s $pyjs.__modules__.%s'% (lhs, mod_name)
+                    print >> self.output, self.spacing(), stmt
+                    self.add_lookup("module", ass_name, jsname)
 
     def _from(self, node, local=False):
-        # XXX: hack for in-function checking, we should have another
-        # object to check our scope
-        local = local and self.option_stack
         if node.modname == '__pyjamas__':
             # special module to help make pyjamas modules loadable in
             # the python interpreter
             return
-        self.add_imported_module(node.modname)
-        stmt = "pyjslib.__import__('%s', '%s')" % (node.modname,
-                                                   self.raw_module_name)
-        print >> self.output, self.spacing(), stmt
+        # XXX: hack for in-function checking, we should have another
+        # object to check our scope
+        local = local and self.option_stack
         for name in node.names:
             sub = node.modname + '.' + name[0]
-            stmt = "pyjslib.__import__('%s', '%s')" % (
-                sub, self.raw_module_name)
-            print >> self.output, self.spacing(), stmt
-            self.add_imported_module(sub)
-
+            self._doImport(((sub, None),), local, False)
             ass_name = name[1] or name[0]
             if local:
                 lhs = 'var %s =' % ass_name
+                jsname = ass_name
                 self.add_lookup("variable", ass_name, ass_name)
             else:
-                fqn = "%s.%s" % (self.raw_module_name, ass_name)
-                lhs = '%s =' %  fqn
-                self.add_lookup("variable", ass_name, fqn)
-            rhs = '.'.join((node.modname, name[0]))
+                jsname = "%s.%s" % (self.raw_module_name, ass_name)
+                lhs = '%s =' %  jsname
+                self.add_lookup("variable", ass_name, jsname)
+            rhs = '.'.join(('$pyjs', '__modules__', node.modname, name[0]))
             print >> self.output, self.spacing(), "%s %s;" % (lhs, rhs)
 
     def _function(self, node, local=False):
@@ -1102,7 +1119,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                 if name_type is None:
                     # What to do with a (yet) unknown name?
                     # Just nothing...
-                    call_name = v.node.name
+                    call_name = self.scopeName(v.node.name, depth, is_local)
                 else:
                     call_name = jsname
             call_args = []
@@ -1113,7 +1130,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                 call_args = []
             elif isinstance(v.node.expr, ast.Getattr):
                 call_name = self._getattr2(v.node.expr, current_klass, v.node.attrname)
-		call_name = self.attrib_remap(call_name)
+                call_name = self.attrib_remap(call_name)
                 call_args = []
             elif isinstance(v.node.expr, ast.CallFunc):
                 call_name = self._callfunc(v.node.expr, current_klass) + "." + v.node.attrname
@@ -1141,7 +1158,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
 
         kwargs = []
         star_arg_name = None
-        if v.star_args:
+        if v.star_args: 
             star_arg_name = self.expr(v.star_args, current_klass)
         dstar_arg_name = None
         if v.dstar_args:
@@ -1188,6 +1205,9 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                                   + ")")
         else:
             call_code = call_name + "(" + ", ".join(call_args) + ")"
+        if call_code.startswith('ExampleClass'):
+            print call_code
+            import pdb; pdb.set_trace()
         return self.track_call(call_code, v.lineno)
 
     def _print(self, node, current_klass):
@@ -1205,7 +1225,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             body = node
         node.body.final = node.final
         self._tryExcept(body, current_klass, top_level=top_level)
-        
+
     def _tryExcept(self, node, current_klass, top_level=False):
 
         self.stacksize_depth += 1
@@ -1328,23 +1348,23 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         if name_type is None:
             # What to do with a (yet) unknown name?
             # Just nothing...
-            return name
+            return self.scopeName(name, depth, is_local)
         return jsname
 
     def _name2(self, v, current_klass, attr_name):
-        obj = v.name
-        name_type, pyname, jsname, depth, is_local = self.lookup(obj)
-        if not name_type is None:
-            obj = jsname
-        return obj + "." + attr_name
+        name_type, pyname, jsname, depth, is_local = self.lookup(v.name)
+        if name_type is None:
+            jsname = self.scopeName(v.name, depth, is_local)
+        return jsname + "." + attr_name
 
     def _getattr2(self, v, current_klass, attr_name):
         if isinstance(v.expr, ast.Getattr):
             return self._getattr2(v.expr, current_klass, v.attrname + "." + attr_name)
         if isinstance(v.expr, ast.Name):
             name_type, pyname, jsname, depth, is_local = self.lookup(v.expr.name)
-            if not name_type is None:
-                return jsname + '.' +v.attrname+"."+attr_name
+            if name_type is None:
+                jsname = self.scopeName(v.expr.name, depth, is_local)
+            return jsname + '.' +v.attrname+"."+attr_name
         return self.expr(v.expr, current_klass) + "." + v.attrname + "." + attr_name
 
     def _class(self, node):
@@ -1664,7 +1684,9 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 augexpr = self.uniqid('augexpr')
                 augsub = self.uniqid('augsub')
                 print >>self.output, self.spacing() + "var " + augsub + " = " + self.expr(subs[0], current_klass) + ";"
+                self.add_lookup('variable', augexpr, augexpr)
                 print >>self.output, self.spacing() + "var " + augexpr + " = " + self.expr(expr, current_klass) + ";"
+                self.add_lookup('variable', augsub, augsub)
                 lhs = ast.Subscript(ast.Name(augexpr), "OP_ASSIGN", [ast.Name(augsub)])
                 v = ast.Subscript(ast.Name(augexpr), v.flags, [ast.Name(augsub)])
             op = astOP(node.op)
@@ -1706,6 +1728,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             name_type, pyname, jsname, depth, is_local = self.lookup(v.name)
             if is_local:
                 lhs = jsname
+                self.add_lookup('variable', v.name, jsname)
             elif top_level:
                 if current_klass:
                     #lhs = "var " + v.name + " = " + current_klass.name_ + "." + v.name
@@ -1812,7 +1835,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 print >>self.output, self.spacing() + self._const(node.expr)
         else:
             raise TranslationError(
-                "unsupported type (in _discard)", node.expr,  self.module_name)
+                "unsupported type, must be call or const (in _discard)", node.expr,  self.module_name)
 
 
     def _if(self, node, current_klass):
@@ -1913,7 +1936,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 child_name = child.name
                 if assign_name == "":
                     assign_name = "temp_" + child_name
-                assign_name = self.add_lookup('variable', assign_name, assign_name)
+                self.add_lookup('variable', child_name, child_name)
                 s = self.spacing()
                 assign_tuple += """%(s)svar %(child_name)s %(op)s """ % locals()
                 assign_tuple += self.track_call("%(assign_name)s.__getitem__(%(i)i)" % locals(), node.lineno) + ';'
@@ -2120,10 +2143,10 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         for name in node.names:
             name_type, pyname, jsname, depth, is_local = self.lookup(name)
             if name_type is None:
-                # Not defined yet. Assume module global
+                # Not defined yet.
                 name_type = 'variable'
                 pyname = name
-                jsname = self.modpfx() + name
+                jsname = self.scopeName(name, depth, is_local)
             self.add_lookup(name_type, pyname, jsname)
 
     def expr(self, node, current_klass):
@@ -2713,10 +2736,6 @@ def add_compile_options(parser):
 
 
     def set_multiple(option, opt_str, value, parser, **kwargs):
-        if opt_str == '-O':
-            sys.stderr.write("""\
-Warning: -O disables several options that make pyjs behave like python
-""")
         for k in kwargs.keys():
             setattr(parser.values, k, kwargs[k])
 

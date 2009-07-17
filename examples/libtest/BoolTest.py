@@ -32,7 +32,6 @@ class BoolTest(UnitTest):
         return "Bool"
 
     def testBaseTypes(self):
-        print "in testBaseTypes"
         # meta test first
         self.assertTrue(True)
         self.assertFalse(False)
