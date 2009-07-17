@@ -9,6 +9,7 @@
 (cd libtest; ./build.sh $*)
 (cd mail; ./build.sh $*)
 (cd onclicktest; ./build.sh $*)
+(cd maparea; ./build.sh $*)
 (cd addonsgallery; ./build.sh $*)
 (cd controls; ./build.sh $*)
 (cd formpanel; ./build.sh $*)
