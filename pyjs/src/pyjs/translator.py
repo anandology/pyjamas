@@ -249,6 +249,7 @@ class Translator:
         self.lookup_stack = [{}]
         self.indent_level = 0
         self.__unique_ids__ = {}
+        self.module_scope = [[]]
 
         for v in PYJSLIB_BUILTIN_FUNCTIONS:
             self.add_lookup("builtin", v, "pyjslib." + v)
@@ -295,9 +296,9 @@ class Translator:
             elif isinstance(child, ast.Class):
                 self._class(child)
             elif isinstance(child, ast.Import):
-                self._import(child, False, True)
+                self._import(child, False)
             elif isinstance(child, ast.From):
-                self._from(child, False, True)
+                self._from(child, False)
             elif isinstance(child, ast.Discard):
                 self._discard(child, None)
             elif isinstance(child, ast.Assign):
@@ -505,12 +506,16 @@ class Translator:
         names = importName.split(".")
         if not importName in self.imported_modules:
             self.imported_modules.append(importName)
+        if not importName in self.module_scope[-1]:
+            self.module_scope[-1].append(importName)
         # Add all parent modules
         _importName = ''
         for name in names:
             _importName += name
             if not _importName in self.imported_modules:
                 self.imported_modules.append(_importName)
+            if not importName in self.module_scope[-1]:
+                self.module_scope[-1].append(_importName)
             _importName += '.'
 
     def md5(self, node):
@@ -911,17 +916,19 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             print >>self.output, self.dedent() + "});"
 
 
-    def _import(self, node, local=False, root=False):
+    def _import(self, node, local=False):
         # XXX: hack for in-function checking, we should have another
         # object to check our scope
         local = local and self.option_stack
-        self._doImport(node.names, local, root, True)
+        self._doImport(node.names, local, True)
 
-    def _doImport(self, names, local, root, assignBase):
-        if root:
-            modtype = 'root-module'
-        else:
-            modtype = 'module'
+    def _doImport(self, names, local, assignBase):
+        def isinscope(modname):
+            for scope in self.module_scope:
+                if modname in scope:
+                    return True
+            return False
+
         for importName, importAs in names:
             if importName == '__pyjamas__':
                 continue
@@ -944,8 +951,8 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
 
             mod = self.lookup(importName)
             package_mod = self.lookup(importName.split('.', 1)[0])
-            if (   mod[0] != 'root-module'
-                or (assignBase and not package_mod[0] in ['root-module', 'module'])
+            if (   not mod[0] in ["module", None]
+                or not isinscope(importName)
                ):
                 # the import statement
                 stmt = "pyjslib.__import__([%s], '%s', '%s')" % (
@@ -954,7 +961,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                             self.raw_module_name,
                             )
                 print >> self.output, self.spacing(), stmt
-                self.add_lookup(modtype, importName, importName)
+                self.add_lookup("module", importName, importName)
                 self.add_imported_module(importName)
             if assignBase:
                 # get the name in scope
@@ -979,9 +986,9 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                         mod_name = ass_name
                     stmt = '%s $pyjs.__modules__.%s'% (lhs, mod_name)
                     print >> self.output, self.spacing(), stmt
-                    self.add_lookup(modtype, ass_name, jsname)
+                    self.add_lookup("module", ass_name, jsname)
 
-    def _from(self, node, local=False, root=False):
+    def _from(self, node, local=False):
         if node.modname == '__pyjamas__':
             # special module to help make pyjamas modules loadable in
             # the python interpreter
@@ -991,7 +998,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         local = local and self.option_stack
         for name in node.names:
             sub = node.modname + '.' + name[0]
-            self._doImport(((sub, None),), local, root, False)
+            self._doImport(((sub, None),), local, False)
             ass_name = name[1] or name[0]
             if local:
                 lhs = 'var %s =' % ass_name
@@ -1005,6 +1012,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             print >> self.output, self.spacing(), "%s %s;" % (lhs, rhs)
 
     def _function(self, node, local=False):
+        self.module_scope.append([])
         self.push_options()
         save_has_js_return = self.has_js_return
         self.has_js_return = False
@@ -1087,6 +1095,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         self.has_js_return = save_has_js_return
         self.pop_options()
         self.pop_lookup()
+        self.module_scope.pop()
 
 
     def _return(self, node, current_klass):
@@ -1249,6 +1258,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
 
     def _tryExcept(self, node, current_klass, top_level=False):
 
+        self.module_scope.append([])
         self.stacksize_depth += 1
         pyjs_try_err = 'pyjs_try_err'
         if self.source_tracking:
@@ -1332,6 +1342,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 self._stmt(stmt, current_klass)
         print >>self.output, self.dedent()  + "}"
         self.stacksize_depth -= 1
+        self.module_scope.pop()
 
     # XXX: change use_getattr to True to enable "strict" compilation
     # but incurring a 100% performance penalty. oops.
@@ -1389,6 +1400,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         return self.expr(v.expr, current_klass) + "." + v.attrname + "." + attr_name
 
     def _class(self, node):
+        self.module_scope.append([])
         class_name = self.modpfx() + uuprefix(node.name, 1)
         current_klass = Klass(class_name, class_name)
         current_klass.__md5__ = self.md5(node)
@@ -1453,6 +1465,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 %(s)sreturn pyjs__class_function(cls_instance, cls_definition, 
 %(s)s                            new Array(""" % {'s': self.spacing()}  + ",".join(map(lambda x: x[1], base_classes)) + """));
 %s})();""" % self.dedent()
+        self.module_scope.pop()
 
     def classattr(self, node, current_klass):
         self._assign(node, current_klass, True)
@@ -1485,6 +1498,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             print >> self.output, self.spacing() + "throw ($pyjs.__last_exception__?$pyjs.__last_exception__.error:pyjslib.TypeError('exceptions must be classes, instances, or strings (deprecated), not NoneType'));"
 
     def _method(self, node, current_klass, class_name, class_name_, local_prefix):
+        self.module_scope.append([])
         self.push_options()
         save_has_js_return = self.has_js_return
         self.has_js_return = False
@@ -1582,6 +1596,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.has_js_return = save_has_js_return
         self.pop_options()
         self.pop_lookup()
+        self.module_scope.pop()
 
     def _isNativeFunc(self, node):
         if isinstance(node, ast.Discard):
@@ -1878,6 +1893,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
 
     def _if_test(self, keyword, test, consequence, current_klass):
+        self.module_scope.append([])
         if test:
             expr = self.expr(test, current_klass)
 
@@ -1893,7 +1909,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 "unsupported type (in _if_test)", consequence,  self.module_name)
 
         print >>self.output, self.dedent() + "}"
-
+        self.module_scope.pop()
 
     def _compare(self, node, current_klass):
         lhs = self.expr(node.expr, current_klass)
@@ -1942,6 +1958,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         return expr
 
     def _for(self, node, current_klass):
+        self.module_scope.append([])
         assign_name = ""
         assign_tuple = ""
 
@@ -2018,8 +2035,10 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 %(s)s}
 %(s)s$pyjs.track.module='%(m)s';""" % {'s': self.spacing(), 'd': self.stacksize_depth, 'm': self.raw_module_name}
             self.stacksize_depth -= 1
+        self.module_scope.pop()
 
     def _while(self, node, current_klass):
+        self.module_scope.append([])
         test = self.expr(node.test, current_klass)
         print >>self.output, "    while (" + self.track_call("pyjslib.bool(" + test + ")", node.lineno) + ") {"
         if isinstance(node.body, ast.Stmt):
@@ -2029,6 +2048,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             raise TranslationError(
                 "unsupported type (in _while)", node.body, self.module_name)
         print >>self.output, "    }"
+        self.module_scope.pop()
 
 
     def _const(self, node):
