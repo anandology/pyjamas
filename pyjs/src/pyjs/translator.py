@@ -264,6 +264,7 @@ class Translator:
             vdec = ''
         else:
             vdec = 'var '
+        vdec = ''
         print >>self.output, self.spacing() + "/* start module: %s */" % module_name
         print >>self.output, self.spacing() + '%s%s = $pyjs.loaded_modules["%s"] = function (__mod_name__) {' % (vdec, module_name, module_name)
 
@@ -306,7 +307,7 @@ class Translator:
             elif isinstance(child, ast.AugAssign):
                 self._augassign(child, None, True)
             elif isinstance(child, ast.If):
-                self._if(child, None)
+                self._if(child, None, True)
             elif isinstance(child, ast.For):
                 self._for(child, None)
             elif isinstance(child, ast.While):
@@ -326,7 +327,7 @@ class Translator:
             elif isinstance(child, ast.Raise):
                 self._raise(child, None)
             elif isinstance(child, ast.Stmt):
-                self._stmt(child, None)
+                self._stmt(child, None, True)
             else:
                 raise TranslationError(
                     "unsupported type (in __init__)",
@@ -501,6 +502,16 @@ class Translator:
                 return scopeName + name
             depth -= 1
         return self.modpfx() + name
+
+    def local_js_vars_decl(self):
+        names = []
+        for name in self.lookup_stack[-1].keys():
+            jsname = self.lookup_stack[-1][name][2]
+            if not jsname.find('.') >= 0:
+                names.append(jsname)
+        if len(names) > 0:
+            return self.spacing() + "var %s;" % ','.join(names)
+        return ''
 
     def add_imported_module(self, importName):
         names = importName.split(".")
@@ -976,6 +987,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                         jsname_mod = ass_name
                         jsname = ass_name
                         lhs = 'var %s =' % jsname
+                        lhs = '%s =' %  jsname
                     else:
                         jsname_mod = '.'.join((self.raw_module_name, package_name))
                         jsname = '.'.join((self.raw_module_name, ass_name))
@@ -1072,6 +1084,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                 self._stmt(child, None)
         captured_output = self.output.getvalue()
         self.output = save_output
+        print >>self.output, self.local_js_vars_decl()
         print >>self.output, captured_output,
 
         # we need to return null always, so it is not undefined
@@ -1565,6 +1578,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 self._stmt(child, None)
         captured_output = self.output.getvalue()
         self.output = save_output
+        print >>self.output, self.local_js_vars_decl()
         print >>self.output, captured_output,
 
 
@@ -1606,7 +1620,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                     return True
         return False
 
-    def _stmt(self, node, current_klass):
+    def _stmt(self, node, current_klass, top_level = False):
         self.track_lineno(node)
 
         if isinstance(node, ast.Return):
@@ -1616,13 +1630,13 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         elif isinstance(node, ast.Continue):
             self._continue(node, current_klass)
         elif isinstance(node, ast.Assign):
-            self._assign(node, current_klass)
+            self._assign(node, current_klass, top_level)
         elif isinstance(node, ast.AugAssign):
-            self._augassign(node, current_klass)
+            self._augassign(node, current_klass, top_level)
         elif isinstance(node, ast.Discard):
             self._discard(node, current_klass)
         elif isinstance(node, ast.If):
-            self._if(node, current_klass)
+            self._if(node, current_klass, top_level)
         elif isinstance(node, ast.For):
             self._for(node, current_klass)
         elif isinstance(node, ast.While):
@@ -1640,9 +1654,9 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         elif isinstance(node, ast.Print):
            self._print(node, current_klass)
         elif isinstance(node, ast.TryExcept):
-            self._tryExcept(node, current_klass)
+            self._tryExcept(node, current_klass, top_level)
         elif isinstance(node, ast.TryFinally):
-            self._tryFinally(node, current_klass)
+            self._tryFinally(node, current_klass, top_level)
         elif isinstance(node, ast.Raise):
             self._raise(node, current_klass)
         elif isinstance(node, ast.Import):
@@ -1777,6 +1791,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             else:
                 vname = self.add_lookup("variable", v.name, v.name)
                 lhs = "var " + vname
+                lhs = vname
             return lhs
 
         dbg = 0
@@ -1874,7 +1889,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 "unsupported type, must be call or const (in _discard)", node.expr,  self.module_name)
 
 
-    def _if(self, node, current_klass):
+    def _if(self, node, current_klass, top_level = False):
         for i in range(len(node.tests)):
             test, consequence = node.tests[i]
             if i == 0:
@@ -1882,7 +1897,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             else:
                 keyword = "else if"
 
-            self._if_test(keyword, test, consequence, current_klass)
+            self.lookup_stack[-1]
+            self._if_test(keyword, test, consequence, current_klass, top_level)
 
         if node.else_:
             keyword = "else"
@@ -1892,7 +1908,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             self._if_test(keyword, test, consequence, current_klass)
 
 
-    def _if_test(self, keyword, test, consequence, current_klass):
+    def _if_test(self, keyword, test, consequence, current_klass, top_level = False):
         self.module_scope.append([])
         if test:
             expr = self.expr(test, current_klass)
@@ -1903,7 +1919,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
         if isinstance(consequence, ast.Stmt):
             for child in consequence.nodes:
-                self._stmt(child, current_klass)
+                self._stmt(child, current_klass, top_level)
         else:
             raise TranslationError(
                 "unsupported type (in _if_test)", consequence,  self.module_name)

@@ -1,6 +1,9 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
+ * Local variables (in functions/methods) are now declared at the
+   head of the function/method
+
  * Compiler option decorators now take the form @compiler.<option>
 
  * translator is now using unknown properties as module properties
