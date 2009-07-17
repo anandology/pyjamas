@@ -185,7 +185,7 @@ def mod_var_name_decl(raw_module_name):
 
 class Translator:
 
-    decorator_options = {\
+    decorator_compiler_options = {\
         'Debug': ('debug', True),
         'noDebug': ('debug', False),
         'PrintStatements': ('print_statements', True),
@@ -388,15 +388,32 @@ class Translator:
         staticmethod = False
         classmethod = False
         for d in node.decorators:
-            if self.decorator_options.has_key(d.name):
-                setattr(self, self.decorator_options[d.name][0], self.decorator_options[d.name][1])
-            elif d.name == 'staticmethod':
-                staticmethod = True
-            elif d.name == 'classmethod':
-                classmethod = True
+            if isinstance(d, ast.Getattr):
+                if isinstance(d.expr, ast.Name):
+                    if d.expr.name == 'compiler':
+                        # Special case: compiler option
+                        if self.decorator_compiler_options.has_key(d.attrname):
+                            setattr(self, self.decorator_compiler_options[d.attrname][0], self.decorator_compiler_options[d.attrname][1])
+                        else:
+                            raise TranslationError(
+                                "Unknown compiler option '%s'" % d.attrname, node, self.module_name)
+                    else:
+                        raise TranslationError(
+                            "Unknown decorator '%s'" % d.attrname, node, self.module_name)
+                else:
+                    raise TranslationError(
+                        "Unknown decorator '%s'" % d.attrname, node, self.module_name)
+            elif isinstance(d, ast.Name):
+                if d.name == 'staticmethod':
+                    staticmethod = True
+                elif d.name == 'classmethod':
+                    classmethod = True
+                else:
+                    raise TranslationError(
+                        "Unknown decorator '%s'" % d.name, node, self.module_name)
             else:
                 raise TranslationError(
-                    "Unknown decorator '%s'" % d.name, node, self.module_name)
+                    "Unknown decorator '%s'" % d, node, self.module_name)
         return (staticmethod, classmethod)
 
     def remap_regex(self, re_list, *words):

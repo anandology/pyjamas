@@ -1,6 +1,8 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
+ * Compiler option decorators now take the form @compiler.<option>
+
  * translator is now using unknown properties as module properties
    Take care of this when mixing JS and Python code :
      JS("var a = 1")
