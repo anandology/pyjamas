@@ -99,10 +99,7 @@ class BaseLinker(object):
                     # prevent package overrides
                     if override_path and not override_path.endswith('__init__.py'):
                         override_paths.append(override_path)
-            if override_paths:
-                self.visit_module(p, override_paths, platform, module_name=mn)
-            else:
-                self.visit_module(p, [], platform, module_name=mn)
+            self.visit_module(p, override_paths, platform, module_name=mn)
 
     def visit_module(self, file_path, overrides, platform,
                      module_name):
