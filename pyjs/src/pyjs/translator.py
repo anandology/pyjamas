@@ -503,11 +503,14 @@ class Translator:
             depth -= 1
         return self.modpfx() + name
 
-    def local_js_vars_decl(self):
+    def local_js_vars_decl(self, ignore_py_vars):
         names = []
         for name in self.lookup_stack[-1].keys():
+            pyname = self.lookup_stack[-1][name][1]
             jsname = self.lookup_stack[-1][name][2]
-            if not jsname.find('.') >= 0:
+            if (     not jsname.find('.') >= 0
+                 and not pyname in ignore_py_vars
+               ):
                 names.append(jsname)
         if len(names) > 0:
             return self.spacing() + "var %s;" % ','.join(names)
@@ -1084,7 +1087,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                 self._stmt(child, None)
         captured_output = self.output.getvalue()
         self.output = save_output
-        print >>self.output, self.local_js_vars_decl()
+        print >>self.output, self.local_js_vars_decl(local_arg_names)
         print >>self.output, captured_output,
 
         # we need to return null always, so it is not undefined
@@ -1578,7 +1581,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 self._stmt(child, None)
         captured_output = self.output.getvalue()
         self.output = save_output
-        print >>self.output, self.local_js_vars_decl()
+        print >>self.output, self.local_js_vars_decl(local_arg_names)
         print >>self.output, captured_output,
 
 
