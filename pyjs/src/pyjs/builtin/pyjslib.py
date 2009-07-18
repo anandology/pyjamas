@@ -1575,8 +1575,12 @@ def hash(obj):
     if (obj.__hash__) return obj.__hash__();
     if (obj.constructor == String || obj.constructor == Number || obj.constructor == Date) return obj;
 
-    obj.$H = ++pyjslib.next_hash_id;
-    return obj.$H;
+    try {
+        obj.$H = ++pyjslib.next_hash_id;
+        return obj.$H;
+    } catch (e) {
+        return obj;
+    }
     """)
 
 
