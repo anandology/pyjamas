@@ -16,8 +16,15 @@ def init():
     // we're probably backing into the app, so _don't_ set the iframe's location.
     var tokenElement = null;
     if (historyFrame.contentWindow) {
-        var doc = historyFrame.contentWindow.document;
-        tokenElement = doc ? doc.getElementById('__historyToken') : null;
+        var hdoc;
+        try {
+            // bug #196 weirdly we're getting a cross-site script error
+            // when accessing this.
+            hdoc = historyFrame.contentWindow.document;
+        } catch (e) {
+            hdoc = null;
+        }
+        tokenElement = hdoc ? hdoc.getElementById('__historyToken') : null;
     }
 
     if (tokenElement)
