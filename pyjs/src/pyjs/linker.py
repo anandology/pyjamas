@@ -93,7 +93,7 @@ class BaseLinker(object):
                 self.top_module_path = p
             override_paths=[]
             if platform:
-                for pl in [platform] + self.platform_parents.get(platform, []):
+                for pl in self.platform_parents.get(platform, []) + [platform]:
                     override_path = module_path('__%s__.%s' % (pl, mn),
                                                 self.path)
                     # prevent package overrides
