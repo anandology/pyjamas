@@ -27,9 +27,8 @@ class FocusWidget(Widget):
         self.focusListeners = []
         self.keyboardListeners = []
 
-        self.sinkEvents(Event.ONCLICK | Event.FOCUSEVENTS | Event.KEYEVENTS)
-
         Widget.__init__(self, **kwargs)
+        self.sinkEvents(Event.ONCLICK | Event.FOCUSEVENTS | Event.KEYEVENTS)
 
     def addClickListener(self, listener):
         self.clickListeners.append(listener)

@@ -34,7 +34,8 @@ class Control(FocusWidget):
         
         if not kwargs.has_key("TabIndex"): kwargs['TabIndex'] = 0
         FocusWidget.__init__(self, element, **kwargs)
-        self.sinkEvents( Event.FOCUSEVENTS | Event.ONCLICK | Event.MOUSEEVENTS)
+        self.sinkEvents( Event.FOCUSEVENTS | Event.ONCLICK | Event.MOUSEEVENTS |
+                         Event.KEYEVENTS)
 
     def onBrowserEvent(self, event):
         type = DOM.eventGetType(event)
@@ -121,11 +122,6 @@ class Control(FocusWidget):
     def onMouseLeave(self, sender):
         pass
     def onKeyDown(self, sender, keycode, modifiers):
-        pass
-    def onKeyUp(self, sender, keycode, modifiers):
-        pass
-
-    def onKeyPress(self, sender, keycode, modifiers):
         if keycode == KeyboardListener.KEY_UP:
             new_value = self.processValue(self.value + self.step)
             self.setControlPos(new_value)
@@ -135,6 +131,11 @@ class Control(FocusWidget):
             self.setControlPos(new_value)
             self.setValue(new_value)
 
+    def onKeyUp(self, sender, keycode, modifiers):
+        pass
+
+    def onKeyPress(self, sender, keycode, modifiers):
+        pass
 
 class VerticalDemoSlider(Control):
 
