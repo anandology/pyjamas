@@ -92,9 +92,9 @@ class Calendar(FocusPanel):
     def getDaysInMonth(self,month,year):
         days = 0
         mth = month + 1
-        if mth in (1,3,5,7,8,10,12):
+        if mth in [1,3,5,7,8,10,12]:
             days=31
-        elif mth in (4,6,8,11):
+        elif mth in [4,6,8,11]:
             days = 30
         elif (mth==2 and self.isLeapYear(year)):
             days = 29
