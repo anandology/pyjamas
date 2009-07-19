@@ -1,3 +1,27 @@
+"""
+    Simple History management class for back/forward button support.
+    
+    This class allows your AJAX application to use a history.  Each time you
+    call newItem(), a new item is added to the history and the history
+    listeners are notified.  If the user clicks the browser's forward or back 
+    buttons, the appropriate item (a string passed to newItem) is fetched
+    from the history and the history listeners are notified.
+    
+    The address bar of the browser contains the current token, using 
+    the "#" seperator (for implementation reasons, not because we love 
+    the # mark).
+    
+    You may want to check whether the hash already contains a history
+    token when the page loads and use that to show appropriate content;
+    this allows users of the site to store direct links in their
+    bookmarks or send them in emails.
+    
+    To make this work properly in all browsers, you must add a specially
+    named iframe to your html page, like this:
+    
+    <iframe id='__pygwt_historyFrame' style='width:0;height:0;border:0'></iframe>
+"""
+
 
 def init():
     JS("""
@@ -18,8 +42,7 @@ def init():
             $wnd.__historyToken = token;
             // TODO - move init back into History
             // this.onHistoryChanged(token);
-            var h = new History.History();
-            h.onHistoryChanged(token);
+            pyjamas.History.onHistoryChanged(token);
         }
 
         $wnd.setTimeout('__checkHistory()', 250);
@@ -31,73 +54,48 @@ def init():
     return true;
     """)
 
-class History:
-    """
-        Simple History management class for back/forward button support.
-        
-        This class allows your AJAX application to use a history.  Each time you
-        call newItem(), a new item is added to the history and the history
-        listeners are notified.  If the user clicks the browser's forward or back 
-        buttons, the appropriate item (a string passed to newItem) is fetched
-        from the history and the history listeners are notified.
-        
-        The address bar of the browser contains the current token, using 
-        the "#" seperator (for implementation reasons, not because we love 
-        the # mark).
-        
-        You may want to check whether the hash already contains a history
-        token when the page loads and use that to show appropriate content;
-        this allows users of the site to store direct links in their
-        bookmarks or send them in emails.
-        
-        To make this work properly in all browsers, you must add a specially
-        named iframe to your html page, like this:
-        
-        <iframe id='__pygwt_historyFrame' style='width:0;height:0;border:0'></iframe>
-    """
+def addHistoryListener(listener):
+    historyListeners.append(listener)
 
-    def addHistoryListener(self, listener):
-        historyListeners.append(listener)
+def back():
+    JS("""
+    $wnd.history.back();
+    """)
 
-    def back(self):
-        JS("""
-        $wnd.history.back();
-        """)
+def forward():
+    JS("""
+    $wnd.history.forward();
+    """)
 
-    def forward(self):
-        JS("""
-        $wnd.history.forward();
-        """)
-    
-    def getToken(self):
-        JS("""
-        return $wnd.__historyToken;
-        """)
-    
-    def newItem(self, historyToken):
-        JS("""
-        if(historyToken == "" || historyToken == null){
-            historyToken = "#";
-        }
-        $wnd.location.hash = encodeURIComponent(historyToken);
-        """)
+def getToken():
+    JS("""
+    return $wnd.__historyToken;
+    """)
 
-    # TODO - fireHistoryChangedAndCatch not implemented
-    def onHistoryChanged(self, historyToken):
-        #UncaughtExceptionHandler handler = GWT.getUncaughtExceptionHandler();
-        #if (handler != null)
-        #   fireHistoryChangedAndCatch(historyToken, handler);
-        #else
-        self.fireHistoryChangedImpl(historyToken)
+def newItem(historyToken):
+    JS("""
+    if(historyToken == "" || historyToken == null){
+        historyToken = "#";
+    }
+    $wnd.location.hash = encodeURIComponent(historyToken);
+    """)
 
-    # TODO
-    def fireHistoryChangedAndCatch(self):
-        pass
-    
-    def fireHistoryChangedImpl(self, historyToken):
-        for listener in historyListeners:
-            listener.onHistoryChanged(historyToken)
+# TODO - fireHistoryChangedAndCatch not implemented
+def onHistoryChanged(historyToken):
+    #UncaughtExceptionHandler handler = GWT.getUncaughtExceptionHandler();
+    #if (handler != null)
+    #   fireHistoryChangedAndCatch(historyToken, handler);
+    #else
+    fireHistoryChangedImpl(historyToken)
 
-    def removeHistoryListener(self, listener):
-        historyListeners.remove(listener)
+# TODO
+def fireHistoryChangedAndCatch():
+    pass
+
+def fireHistoryChangedImpl(historyToken):
+    for listener in historyListeners:
+        listener.onHistoryChanged(historyToken)
+
+def removeHistoryListener(listener):
+    historyListeners.remove(listener)
 

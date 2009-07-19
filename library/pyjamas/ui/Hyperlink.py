@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from pyjamas import DOM
-from pyjamas.History import History
+from pyjamas import History
 
 from pyjamas.ui.Widget import Widget
 from pyjamas.ui import Event
@@ -57,7 +57,7 @@ class Hyperlink(Widget):
             for listener in self.clickListeners:
                 if hasattr(listener, 'onClick'): listener.onClick(self)
                 else: listener(self)
-            History().newItem(self.targetHistoryToken)
+            History.newItem(self.targetHistoryToken)
             DOM.eventPreventDefault(event)
 
     def removeClickListener(self, listener):

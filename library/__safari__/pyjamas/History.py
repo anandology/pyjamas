@@ -44,8 +44,7 @@ def init():
 
             // TODO - move init back into History
             // this.onHistoryChanged(token);
-            var h = new History.History();
-            h.onHistoryChanged(token);
+            pyjamas.History.onHistoryChanged(token);
         }
     };
 
@@ -53,10 +52,8 @@ def init():
     """)
 
         
-class History:
-
-    def newItem(self, historyToken):
-        JS("""
-        var iframe = $doc.getElementById('__pygwt_historyFrame');
-        iframe.contentWindow.location.href = 'history.html?' + historyToken;
-        """)
+def newItem(historyToken):
+    JS("""
+    var iframe = $doc.getElementById('__pygwt_historyFrame');
+    iframe.contentWindow.location.href = 'history.html?' + historyToken;
+    """)
