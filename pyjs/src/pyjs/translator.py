@@ -1897,7 +1897,6 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
 
     def _if_test(self, keyword, test, consequence, current_klass, top_level = False):
-        self.module_scope.append([])
         if test:
             expr = self.expr(test, current_klass)
 
