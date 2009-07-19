@@ -1913,7 +1913,6 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
         print >>self.output, self.dedent() + "}"
 
-
     def _compare(self, node, current_klass):
         lhs = self.expr(node.expr, current_klass)
 
