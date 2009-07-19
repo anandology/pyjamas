@@ -44,7 +44,6 @@ def init():
 
             // TODO - move init back into History
             // this.onHistoryChanged(token);
-            alert(token);
             pyjamas.History.onHistoryChanged(token);
         }
     };
