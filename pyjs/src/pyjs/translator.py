@@ -296,9 +296,9 @@ class Translator:
             elif isinstance(child, ast.Class):
                 self._class(child)
             elif isinstance(child, ast.Import):
-                self._import(child, False, True)
+                self._import(child, False)
             elif isinstance(child, ast.From):
-                self._from(child, False, True)
+                self._from(child, False)
             elif isinstance(child, ast.Discard):
                 self._discard(child, None)
             elif isinstance(child, ast.Assign):
@@ -373,7 +373,7 @@ class Translator:
         return self.spacing()
 
     def push_options(self):
-        self.option_stack.append((\
+	    self.option_stack.append((\
             self.debug, self.print_statements, self.function_argument_checking,
             self.attribute_checking, self.bound_methods,
             self.source_tracking, self.line_tracking, self.store_source,
@@ -925,17 +925,13 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             print >>self.output, self.dedent() + "});"
 
 
-    def _import(self, node, local=False, root=False):
+    def _import(self, node, local=False):
         # XXX: hack for in-function checking, we should have another
         # object to check our scope
         local = local and self.option_stack
-        self._doImport(node.names, local, root, True)
+        self._doImport(node.names, local, True)
 
-    def _doImport(self, names, local, root, assignBase):
-        if root:
-            modtype = 'root-module'
-        else:
-            modtype = 'module'
+    def _doImport(self, names, local, assignBase):
         for importName, importAs in names:
             if importName == '__pyjamas__':
                 continue
@@ -958,8 +954,8 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
 
             mod = self.lookup(importName)
             package_mod = self.lookup(importName.split('.', 1)[0])
-            if (   mod[0] != 'root-module'
-                or (assignBase and not package_mod[0] in ['root-module', 'module'])
+            if (   mod[0] != 'module'
+                or (assignBase and package_mod[0] != 'module')
                ):
                 # the import statement
                 stmt = "pyjslib.__import__([%s], '%s', '%s')" % (
@@ -968,7 +964,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                             self.raw_module_name,
                             )
                 print >> self.output, self.spacing(), stmt
-                self.add_lookup(modtype, importName, importName)
+                self.add_lookup("module", importName, importName)
                 self.add_imported_module(importName)
             if assignBase:
                 # get the name in scope
@@ -994,9 +990,9 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                         mod_name = ass_name
                     stmt = '%s $pyjs.__modules__.%s'% (lhs, mod_name)
                     print >> self.output, self.spacing(), stmt
-                    self.add_lookup(modtype, ass_name, jsname)
+                    self.add_lookup("module", ass_name, jsname)
 
-    def _from(self, node, local=False, root=False):
+    def _from(self, node, local=False):
         if node.modname == '__pyjamas__':
             # special module to help make pyjamas modules loadable in
             # the python interpreter
@@ -1006,7 +1002,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         local = local and self.option_stack
         for name in node.names:
             sub = node.modname + '.' + name[0]
-            self._doImport(((sub, None),), local, root, False)
+            self._doImport(((sub, None),), local, False)
             ass_name = name[1] or name[0]
             if local:
                 lhs = 'var %s =' % ass_name
