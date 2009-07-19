@@ -32,7 +32,6 @@ def init():
         // is changing.  Note that setting location.hash does _not_ add a history
         // frame on IE, so we don't have to do a 'location.replace()'.
         if (token != $wnd.__historyToken) {
-            alert("token " + token + " __ht " + $wnd.__historyToken);
             $wnd.__historyToken = token;
             $wnd.location.hash = encodeURIComponent(token);
             // TODO - move init back into History
