@@ -69,56 +69,62 @@ modules are there.
 
     >>> print file(out_file).read()
     /* start module: imports */
-    var imports = $pyjs.loaded_modules["imports"] = function (__mod_name__) {
+    imports = $pyjs.loaded_modules["imports"] = function (__mod_name__) {
     if(imports.__was_initialized__) return imports;
     imports.__was_initialized__ = true;
     if (__mod_name__ == null) __mod_name__ = 'imports';
     var __name__ = imports.__name__ = __mod_name__;
     try {
-        pyjslib.__import__(['a'], 'a', 'imports')
-        imports.a = $pyjs.__modules__.a
-        pyjslib.__import__(['x.z.y', 'x.z'], 'x.z.y', 'imports')
-        imports.y = $pyjs.__modules__.x.z.y;
-        pyjslib.__import__(['x.z.p', 'x.z'], 'x.z.p', 'imports')
-        imports.pp = $pyjs.__modules__.x.z.p;
-        pyjslib.__import__(['a.b', 'a'], 'a.b', 'imports')
-        imports.a = $pyjs.__modules__.a
-        imports.a.b.something();
-        imports.a = $pyjs.__modules__.a
-        imports.a_foo = $pyjs.__modules__.a
-        imports.a.something();
-        imports.a = 0;
-        imports.a += 1;
-        imports.bb = 0;
-        pyjslib.__import__(['a.b.c', 'a.b'], 'a.b.c', 'imports')
-        imports.c = $pyjs.__modules__.a.b.c;
-        imports.c();
-        imports.a = 42;
-        imports.main = function() {
-                if ($pyjs.options.arg_count && arguments.length != 0) pyjs__exception_func_param(arguments.callee.__name__, 0, 0, arguments.length);
-                pyjslib.__import__(['a.b', 'a'], 'a.b', 'imports')
-                var a = $pyjs.__modules__.a
-                a.b.something();
-                a = 1;
-                pyjslib.__import__(['z'], 'z', 'imports')
-                var x = $pyjs.__modules__.z
-                x();
-                var y = $pyjs.__modules__.x.z.y;
-                var pp = $pyjs.__modules__.x.z.p;
-                return null;
-        };
-        imports.main.__name__ = 'main';
-        imports.main.__bind_type__ = 0;
-        imports.main.__args__ = [null,null,];
-        } catch (pyjs_attr_err) {throw pyjslib._errorMapping(pyjs_attr_err)};
-        return this;
-        }; /* end imports */
-        $pyjs.modules_hash['imports'] = $pyjs.loaded_modules['imports'];
-        /* end module: imports */
+    	pyjslib.__import__(['a'], 'a', 'imports')
+    	imports.a = $pyjs.__modules__.a
+    	pyjslib.__import__(['x.z.y', 'x.z'], 'x.z.y', 'imports')
+    	imports.y = $pyjs.__modules__.x.z.y;
+    	pyjslib.__import__(['x.z.p', 'x.z'], 'x.z.p', 'imports')
+    	imports.pp = $pyjs.__modules__.x.z.p;
+    	pyjslib.__import__(['a.b', 'a'], 'a.b', 'imports')
+    	imports.a = $pyjs.__modules__.a
+    	imports.a.b.something();
+    	imports.a = $pyjs.__modules__.a
+    	imports.a_foo = $pyjs.__modules__.a
+    	imports.a.something();
+    	imports.a = 0;
+    	imports.a += 1;
+    	imports.bb = 0;
+    	pyjslib.__import__(['a.b.c', 'a.b'], 'a.b.c', 'imports')
+    	imports.c = $pyjs.__modules__.a.b.c;
+    	imports.c();
+    	imports.a = 42;
+    	imports.main = function() {
+    		if ($pyjs.options.arg_count && arguments.length != 0) pyjs__exception_func_param(arguments.callee.__name__, 0, 0, arguments.length);
+    		var a,pp,y,x,z;
+    		pyjslib.__import__(['a.b', 'a'], 'a.b', 'imports')
+    		a = $pyjs.__modules__.a
+    		a.b.something();
+    		a = 1;
+    		pyjslib.__import__(['z'], 'z', 'imports')
+    		x = $pyjs.__modules__.z
+    		x();
+    		var y = $pyjs.__modules__.x.z.y;
+    		var pp = $pyjs.__modules__.x.z.p;
+    		return null;
+    	};
+    	imports.main.__name__ = 'main';
+    <BLANKLINE>
+    	imports.main.__bind_type__ = 0;
+    	imports.main.__args__ = [null,null,];
+    	} catch (pyjs_attr_err) {throw pyjslib._errorMapping(pyjs_attr_err)};
+    	return this;
+    	}; /* end imports */
+    	$pyjs.modules_hash['imports'] = $pyjs.loaded_modules['imports'];
+    <BLANKLINE>
+    <BLANKLINE>
+    	/* end module: imports */
+    <BLANKLINE>
+    <BLANKLINE>
     /*
     PYJS_DEPS: ['a', 'x.z.y', 'x', 'x.z', 'x.z.p', 'a.b', 'a.b.c', 'z']
     */
-
+    <BLANKLINE>
 
     >>> baseclass = os.path.join(tmp, 'baseclass.py')
     >>> f = file(baseclass, 'w')
@@ -157,7 +163,11 @@ do nothing. TODO: fix this
     >>> for line in file(out_file):
     ...     print line.strip()
     /* start module: baseclass */
-    ...
+    baseclass = $pyjs.loaded_modules["baseclass"] = function (__mod_name__) {
+    if(baseclass.__was_initialized__) return baseclass;
+    baseclass.__was_initialized__ = true;
+    if (__mod_name__ == null) __mod_name__ = 'baseclass';
+    var __name__ = baseclass.__name__ = __mod_name__;
     try {
     if (pyjslib.bool(1)) {
     pyjslib.__import__(['pack4'], 'pack4', 'baseclass')
@@ -176,17 +186,31 @@ do nothing. TODO: fix this
     pyjslib.printFunc([baseclass.y], 1);
     baseclass.main = function() {
     if ($pyjs.options.arg_count && arguments.length != 0) pyjs__exception_func_param(arguments.callee.__name__, 0, 0, arguments.length);
+    var y,pub,pack3;
     pyjslib.__import__(['pack3'], 'pack3', 'baseclass')
-    var pack3 = $pyjs.__modules__.pack3
+    pack3 = $pyjs.__modules__.pack3
     pyjslib.__import__(['pack3.sub', 'pack3'], 'pack3.sub', 'baseclass')
-    var pack3 = $pyjs.__modules__.pack3
-    var pub = $pyjs.__modules__.pack3.sub
+    pack3 = $pyjs.__modules__.pack3
+    pyjslib.__import__(['pack3.sub', 'pack3'], 'pack3.sub', 'baseclass')
+    pub = $pyjs.__modules__.pack3.sub
     pyjslib.__import__(['pack3.z', 'pack3'], 'pack3.z', 'baseclass')
     var y = $pyjs.__modules__.pack3.z;
     pyjslib.printFunc([pack3], 1);
     return null;
     };
-    ...
+    baseclass.main.__name__ = 'main';
+    <BLANKLINE>
+    baseclass.main.__bind_type__ = 0;
+    baseclass.main.__args__ = [null,null,];
+    } catch (pyjs_attr_err) {throw pyjslib._errorMapping(pyjs_attr_err)};
+    return this;
+    }; /* end baseclass */
+    $pyjs.modules_hash['baseclass'] = $pyjs.loaded_modules['baseclass'];
+    <BLANKLINE>
+    <BLANKLINE>
+    /* end module: baseclass */
+    <BLANKLINE>
+    <BLANKLINE>
     /*
     PYJS_DEPS: ['pack4', 'pack1', 'pack1.mod', 'pack2.x.y', 'pack2', 'pack2.x', 'pack2.x.something', 'pack3', 'pack3.sub', 'pack3.z']
     */
@@ -227,7 +251,11 @@ Note that the block-level defines the smartness of the imports.
     >>> for line in file(out_file):
     ...     print line.strip()
     /* start module: baseclass */
-    ...
+    baseclass = $pyjs.loaded_modules["baseclass"] = function (__mod_name__) {
+    if(baseclass.__was_initialized__) return baseclass;
+    baseclass.__was_initialized__ = true;
+    if (__mod_name__ == null) __mod_name__ = 'baseclass';
+    var __name__ = baseclass.__name__ = __mod_name__;
     try {
     if (pyjslib.bool(false)) {
     pyjslib.__import__(['pack1.sub', 'pack1'], 'pack1.sub', 'baseclass')
@@ -239,7 +267,6 @@ Note that the block-level defines the smartness of the imports.
     }
     pyjslib.__import__(['pack1.sub', 'pack1'], 'pack1.sub', 'baseclass')
     baseclass.pack1 = $pyjs.__modules__.pack1
-    pyjslib.__import__(['pack1'], 'pack1', 'baseclass')
     baseclass.pack1 = $pyjs.__modules__.pack1
     pyjslib.__import__(['pack2'], 'pack2', 'baseclass')
     baseclass.pack2 = $pyjs.__modules__.pack2
@@ -247,20 +274,33 @@ Note that the block-level defines the smartness of the imports.
     pyjslib.printFunc([baseclass.y], 1);
     baseclass.main = function() {
     if ($pyjs.options.arg_count && arguments.length != 0) pyjs__exception_func_param(arguments.callee.__name__, 0, 0, arguments.length);
+    var pack3;
     if (pyjslib.bool(false)) {
     pyjslib.__import__(['pack3.sub1', 'pack3'], 'pack3.sub1', 'baseclass')
-    var pack3 = $pyjs.__modules__.pack3
+    pack3 = $pyjs.__modules__.pack3
     pyjslib.__import__(['pack3'], 'pack3', 'baseclass')
-    var pack3 = $pyjs.__modules__.pack3
+    pack3 = $pyjs.__modules__.pack3
     }
     pyjslib.__import__(['pack3'], 'pack3', 'baseclass')
-    var pack3 = $pyjs.__modules__.pack3
+    pack3 = $pyjs.__modules__.pack3
     pyjslib.__import__(['pack3.sub2', 'pack3'], 'pack3.sub2', 'baseclass')
-    var pack3 = $pyjs.__modules__.pack3
+    pack3 = $pyjs.__modules__.pack3
     pyjslib.printFunc([pack3], 1);
     return null;
     };
-    ...
+    baseclass.main.__name__ = 'main';
+    <BLANKLINE>
+    baseclass.main.__bind_type__ = 0;
+    baseclass.main.__args__ = [null,null,];
+    } catch (pyjs_attr_err) {throw pyjslib._errorMapping(pyjs_attr_err)};
+    return this;
+    }; /* end baseclass */
+    $pyjs.modules_hash['baseclass'] = $pyjs.loaded_modules['baseclass'];
+    <BLANKLINE>
+    <BLANKLINE>
+    /* end module: baseclass */
+    <BLANKLINE>
+    <BLANKLINE>
     /*
     PYJS_DEPS: ['pack1.sub', 'pack1', 'pack2.x.y', 'pack2', 'pack2.x', 'pack3.sub1', 'pack3', 'pack3.sub2']
     */
@@ -309,7 +349,7 @@ The following is not working right now.
     >>> for line in file(out_file):
     ...     print line.strip()
     /* start module: more */
-    var more = $pyjs.loaded_modules["more"] = function (__mod_name__) {
+    more = $pyjs.loaded_modules["more"] = function (__mod_name__) {
     if(more.__was_initialized__) return more;
     more.__was_initialized__ = true;
     if (__mod_name__ == null) __mod_name__ = 'more';
