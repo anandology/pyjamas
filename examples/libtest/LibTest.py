@@ -2,6 +2,7 @@ import sys
 
 from StringTest import StringTest
 from ListTest import ListTest
+from TupleTest import TupleTest
 from ClassTest import ClassTest
 from SetTest import SetTest
 from ArgsTest import ArgsTest
@@ -23,6 +24,7 @@ def main():
 
     BoolTest().run()
     ListTest().run()
+    TupleTest().run()
     FunctionTest().run()
     ExceptionTest().run()
     ClassTest().run()

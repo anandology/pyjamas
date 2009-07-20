@@ -12,4 +12,4 @@ class List:
 class Tuple:
 
     def __contains__(self, value):
-        return this.l.indexOf(value)>=0;
+        return JS('self.l.indexOf(value)>=0')
