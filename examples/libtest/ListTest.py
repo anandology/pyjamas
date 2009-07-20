@@ -117,6 +117,9 @@ class ListTest(UnitTest):
 
         t1 = (1,2,3)
 
+        self.assertEquals(cmp([],[]), 0, "Empty lists are the same")
+        self.assertTrue([]==[])
+        self.assertEquals([]!=[], False)
         self.assertTrue(cmp(l1, l2) == 1)
         self.assertTrue(cmp(l2, l1) == -1)
         self.assertTrue(cmp(l3, l4) == -1)

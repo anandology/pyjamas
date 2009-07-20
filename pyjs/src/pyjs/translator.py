@@ -1926,6 +1926,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
         if op == "==":
             return self.track_call("pyjslib.eq(%s, %s)" % (lhs, rhs), node.lineno)
+        if op == "!=":
+            return self.track_call("!pyjslib.eq(%s, %s)" % (lhs, rhs), node.lineno)
         if op == "<":
             return self.track_call("(pyjslib.cmp(%s, %s) == -1)" % (lhs, rhs), node.lineno)
         if op == "<=":

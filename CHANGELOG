@@ -1,5 +1,6 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
+ * fixed the "!=" operator, it now uses pyjslib.eq
 
  * Yi Choong contributed a DateField widget, and example - thank you!
 
