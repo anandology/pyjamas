@@ -29,6 +29,72 @@ NATIVE_JS_FUNC_NAME = "JS"
 NATIVE_DOC_FUNC_NAME = "doc"
 NATIVE_WND_FUNC_NAME = "wnd"
 
+JS_RESERVED_WORDS = frozenset((
+    'abstract',
+    'as',
+    'boolean',
+    'break',
+    'byte',
+    'case',
+    'catch',
+    'char',
+    'class',
+    'continue',
+    'const',
+    'debugger',
+    'default',
+    'delete',
+    'do',
+    'double',
+    'else',
+    'enum',
+    'export',
+    'extends',
+    'false',
+    'final',
+    'finally',
+    'float',
+    'for',
+    'function',
+    'goto',
+    'if',
+    'implements',
+    'import',
+    'in',
+    'instanceof',
+    'int',
+    'interface',
+    'is',
+    'long',
+    'namespace',
+    'native',
+    'new',
+    'null',
+    'package',
+    'private',
+    'protected',
+    'public',
+    'return',
+    'short',
+    'static',
+    'super',
+    'switch',
+    'synchronized',
+    'this',
+    'throw',
+	'throws',
+    'transient',
+    'true',
+    'try',
+    'typeof',
+    'use',
+    'var',
+    'void',
+    'volatile',
+    'while',
+    'with',
+    ))
+
 PYJSLIB_BUILTIN_FUNCTIONS=("cmp",
                            "map",
                            "filter",
@@ -259,11 +325,15 @@ class Translator:
         for k in PYJSLIB_BUILTIN_MAPPING.keys():
             self.add_lookup("builtin", k, PYJSLIB_BUILTIN_MAPPING[k])
 
-        if module_name.find(".") >= 0:
+        if '.' in module_name:
             vdec = ''
         else:
+            if module_name in JS_RESERVED_WORDS:
+                raise TranslationError(
+                    "reserved word used for top-level module %r" % module_name,
+                    mod, self.module_name)
+
             vdec = 'var '
-        vdec = ''
         print >>self.output, self.spacing() + "/* start module: %s */" % module_name
         print >>self.output, self.spacing() + '%s%s = $pyjs.loaded_modules["%s"] = function (__mod_name__) {' % (vdec, module_name, module_name)
 

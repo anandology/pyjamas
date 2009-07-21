@@ -1,6 +1,10 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
+ * raise a TranslationError if a reserved word is used for a module
+   name, this would cause unpredictable results in running code, which
+   is very hard to debug.
+
  * fixed __contains__ on Tuples in mozilla and added TupleTest to LibTest
 
  * fixed the "!=" operator, it now uses pyjslib.eq

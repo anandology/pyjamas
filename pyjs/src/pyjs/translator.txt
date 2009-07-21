@@ -69,7 +69,7 @@ modules are there.
 
     >>> print file(out_file).read()
     /* start module: imports */
-    imports = $pyjs.loaded_modules["imports"] = function (__mod_name__) {
+    var imports = $pyjs.loaded_modules["imports"] = function (__mod_name__) {
     if(imports.__was_initialized__) return imports;
     imports.__was_initialized__ = true;
     if (__mod_name__ == null) __mod_name__ = 'imports';
@@ -163,7 +163,7 @@ do nothing. TODO: fix this
     >>> for line in file(out_file):
     ...     print line.strip()
     /* start module: baseclass */
-    baseclass = $pyjs.loaded_modules["baseclass"] = function (__mod_name__) {
+    var baseclass = $pyjs.loaded_modules["baseclass"] = function (__mod_name__) {
     if(baseclass.__was_initialized__) return baseclass;
     baseclass.__was_initialized__ = true;
     if (__mod_name__ == null) __mod_name__ = 'baseclass';
@@ -215,6 +215,7 @@ do nothing. TODO: fix this
     PYJS_DEPS: ['pack4', 'pack1', 'pack1.mod', 'pack2.x.y', 'pack2', 'pack2.x', 'pack2.x.something', 'pack3', 'pack3.sub', 'pack3.z']
     */
 
+
     >>> baseclass = os.path.join(tmp, 'baseclass.py')
     >>> f = file(baseclass, 'w')
     >>> f.write("""
@@ -251,7 +252,7 @@ Note that the block-level defines the smartness of the imports.
     >>> for line in file(out_file):
     ...     print line.strip()
     /* start module: baseclass */
-    baseclass = $pyjs.loaded_modules["baseclass"] = function (__mod_name__) {
+    var baseclass = $pyjs.loaded_modules["baseclass"] = function (__mod_name__) {
     if(baseclass.__was_initialized__) return baseclass;
     baseclass.__was_initialized__ = true;
     if (__mod_name__ == null) __mod_name__ = 'baseclass';
@@ -305,7 +306,6 @@ Note that the block-level defines the smartness of the imports.
     PYJS_DEPS: ['pack1.sub', 'pack1', 'pack2.x.y', 'pack2', 'pack2.x', 'pack3.sub1', 'pack3', 'pack3.sub2']
     */
 
-
 The following is not working right now.
 
     >>> more = os.path.join(tmp, 'more.py')
@@ -350,7 +350,7 @@ The following is not working right now.
     >>> for line in file(out_file):
     ...     print line.strip()
     /* start module: more */
-    more = $pyjs.loaded_modules["more"] = function (__mod_name__) {
+    var more = $pyjs.loaded_modules["more"] = function (__mod_name__) {
     if(more.__was_initialized__) return more;
     more.__was_initialized__ = true;
     if (__mod_name__ == null) __mod_name__ = 'more';
@@ -374,6 +374,31 @@ The following is not working right now.
     PYJS_DEPS: ['write.write', 'write', 'write.x']
     */
 
+We cannot use top-level names that are reserved words in javascript.
+
+    >>> m = os.path.join(tmp, 'package.py')
+    >>> out_file = os.path.join(tmp, 'package.js')
+    >>> f = file(m, 'w')
+    >>> f.write("""
+    ... print 1
+    ... """)
+    >>> f.close()
+
+    >>> translator.translate([m], out_file,
+    ...                      debug=False,
+    ...                      print_statements = True,
+    ...                      function_argument_checking=True,
+    ...                      attribute_checking=True,
+    ...                      source_tracking=False,
+    ...                      line_tracking=False,
+    ...                      store_source=False)
+    Traceback (most recent call last):
+    ...
+    TranslationError: package line None:
+    reserved word used for top-level module 'package'
+    Module(None, Stmt([Printnl([Const(1)], None)]))
+
     >>> import shutil
     >>> shutil.rmtree(tmp)
+
 
