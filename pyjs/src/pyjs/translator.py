@@ -1315,9 +1315,6 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                                   + ")")
         else:
             call_code = call_name + "(" + ", ".join(call_args) + ")"
-        if call_code.startswith('ExampleClass'):
-            print call_code
-            import pdb; pdb.set_trace()
         return self.track_call(call_code, v.lineno)
 
     def _print(self, node, current_klass):
