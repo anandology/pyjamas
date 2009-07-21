@@ -87,7 +87,7 @@ def __import__(searchList, path, context, module_name=None):
             raise ImportError(
                 "No module named " + importName + ', ' + path + ' in context ' + context)
         if i == 0:
-            JS("$pyjs.__modules__[importName] = module")
+            JS("$pyjs.__modules__[importName] = module;")
         if l==i+1:
             # This is the last module, we set the module name here
             module(module_name)
@@ -140,7 +140,7 @@ def load_module(path, parent_module, module_name, dynamic=1, async=False):
         pyjs_load_script(cache_file, onload_fn, async);
 
         try {
-            loaded = (typeof $pyjs.modules_hash[module_name] == 'function')
+            loaded = (typeof $pyjs.modules_hash[module_name] == 'function');
         } catch ( e ) {
         }
         if (loaded) {
@@ -153,16 +153,7 @@ def load_module(path, parent_module, module_name, dynamic=1, async=False):
 def load_module_wait(proceed_fn, parent_mod, module_list, dynamic):
     module_list = module_list.getArray()
     JS("""
-
     var wait_count = 0;
-    //var data = '';
-    //var element = $doc.createElement("div");
-    //element.innerHTML = '';
-    //$doc.body.appendChild(element);
-    //function write_dom(txt) {
-    //    element.innerHTML += txt;
-    //}
-
     var timeoutperiod = 1;
     if (dynamic)
         var timeoutperiod = 1;
@@ -186,8 +177,7 @@ def load_module_wait(proceed_fn, parent_mod, module_list, dynamic):
                 proceed_fn();
             //$doc.body.removeChild(element);
         }
-    }
-    //write_dom("Loading modules ");
+    };
     wait();
 """)
 
@@ -332,15 +322,15 @@ def init():
     JS("""
 pyjslib._errorMapping = function(err) {
     if (err instanceof(ReferenceError) || err instanceof(TypeError)) {
-        var message = ''
+        var message = '';
         try {
             message = err.message;
         } catch ( e) {
         }
         return pyjslib.AttributeError(message);
     }
-    return err
-}
+    return err;
+};
 
 pyjslib.TryElse = function () { };
 pyjslib.TryElse.prototype = new Error();
@@ -358,7 +348,7 @@ pyjslib.String_find = function(sub, start, end) {
 
     if (pos + sub.length>end) return -1;
     return pos;
-}
+};
 
 pyjslib.String_join = function(data) {
     var text="";
@@ -384,11 +374,11 @@ pyjslib.String_join = function(data) {
     }
 
     return text;
-}
+};
 
 pyjslib.String_isdigit = function() {
     return (this.match(/^\d+$/g) != null);
-}
+};
 
 pyjslib.String_replace = function(old, replace, count) {
     var do_max=false;
@@ -411,11 +401,11 @@ pyjslib.String_replace = function(old, replace, count) {
     if (start<this.length) new_str+=this.substring(start);
 
     return new_str;
-}
+};
 
 pyjslib.String___contains__ = function(s){
     return this.indexOf(s)>=0;
-}
+};
 
 pyjslib.String_split = function(sep, maxsplit) {
     var items=new pyjslib.List();
@@ -447,7 +437,7 @@ pyjslib.String_split = function(sep, maxsplit) {
     if (start<=subject.length) items.append(subject.substring(start));
 
     return items;
-}
+};
 
 pyjslib.String___iter__ = function() {
     var i = 0;
@@ -463,43 +453,43 @@ pyjslib.String___iter__ = function() {
             return this;
         }
     };
-}
+};
 
 pyjslib.String_strip = function(chars) {
     return this.lstrip(chars).rstrip(chars);
-}
+};
 
 pyjslib.String_lstrip = function(chars) {
     if (pyjslib.isUndefined(chars)) return this.replace(/^\s+/, "");
 
     return this.replace(new RegExp("^[" + chars + "]+"), "");
-}
+};
 
 pyjslib.String_rstrip = function(chars) {
     if (pyjslib.isUndefined(chars)) return this.replace(/\s+$/, "");
 
     return this.replace(new RegExp("[" + chars + "]+$"), "");
-}
+};
 
 pyjslib.String_startswith = function(prefix, start, end) {
     // FIXME: accept tuples as suffix (since 2.5)
     if (pyjslib.isUndefined(start)) start = 0;
     if (pyjslib.isUndefined(end)) end = this.length;
 
-    if ((end - start) < prefix.length) return false
+    if ((end - start) < prefix.length) return false;
     if (this.substr(start, prefix.length) == prefix) return true;
     return false;
-}
+};
 
 pyjslib.String_endswith = function(suffix, start, end) {
     // FIXME: accept tuples as suffix (since 2.5)
     if (pyjslib.isUndefined(start)) start = 0;
     if (pyjslib.isUndefined(end)) end = this.length;
 
-    if ((end - start) < suffix.length) return false
+    if ((end - start) < suffix.length) return false;
     if (this.substr(end - suffix.length, suffix.length) == suffix) return true;
     return false;
-}
+};
 
 pyjslib.String_ljust = function(width, fillchar) {
     if (typeof(width) != 'number' ||
@@ -513,7 +503,7 @@ pyjslib.String_ljust = function(width, fillchar) {
     }
     if (this.length >= width) return this;
     return this + new Array(width+1 - this.length).join(fillchar);
-}
+};
 
 pyjslib.String_rjust = function(width, fillchar) {
     if (typeof(width) != 'number' ||
@@ -527,7 +517,7 @@ pyjslib.String_rjust = function(width, fillchar) {
     }
     if (this.length >= width) return this;
     return new Array(width + 1 - this.length).join(fillchar) + this;
-}
+};
 
 pyjslib.String_center = function(width, fillchar) {
     if (typeof(width) != 'number' ||
@@ -540,18 +530,19 @@ pyjslib.String_center = function(width, fillchar) {
         throw (pyjslib.TypeError("center() argument 2 must be char, not " + typeof(fillchar)));
     }
     if (this.length >= width) return this;
-    padlen = width - this.length
+    padlen = width - this.length;
     right = Math.ceil(padlen / 2);
     left = padlen - right;
     return new Array(left+1).join(fillchar) + this + new Array(right+1).join(fillchar);
-}
+};
+
 pyjslib.String___getitem__ = function(idx) {
     if (idx < 0) idx += this.length;
     if (idx < 0 || idx > this.length) {
         throw(pyjslib.IndexError("string index out of range"));
     }
     return this.charAt(idx);
-}
+};
 
 pyjslib.abs = Math.abs;
 
@@ -833,8 +824,8 @@ class List:
             s += pyjslib.repr(self.l[i]);
             if (i < self.l.length - 1)
                 s += ", ";
-        };
-        s += "]"
+        }
+        s += "]";
         return s;
         """)
 
@@ -955,10 +946,10 @@ class Tuple:
             s += pyjslib.repr(self.l[i]);
             if (i < self.l.length - 1)
                 s += ", ";
-        };
+        }
         if (self.l.length == 1)
             s += ",";
-        s += ")"
+        s += ")";
         return s;
         """)
 
@@ -1074,7 +1065,7 @@ class Dict:
         var items = new pyjslib.List();
         for (var key in this.d) {
           var kv = this.d[key];
-          items.append(new pyjslib.List(kv))
+          items.append(new pyjslib.List(kv));
           }
           return items;
         """)
@@ -1144,11 +1135,11 @@ class Dict:
 
         var s = "{";
         for (var i=0; i<keys.length; i++) {
-            var v = self.d[keys[i]]
+            var v = self.d[keys[i]];
             s += pyjslib.repr(v[0]) + ": " + pyjslib.repr(v[1]);
             if (i < keys.length-1)
-                s += ", "
-        };
+                s += ", ";
+        }
         s += "}";
         return s;
         """)
@@ -1162,7 +1153,7 @@ def _super(type_, object_or_type = None):
     if not _issubtype(object_or_type, type_):
         raise TypeError("super(type, obj): obj must be an instance or subtype of type")
     JS("""
-    var fn = pyjs_type('super', type_.__mro__.slice(1), {})
+    var fn = pyjs_type('super', type_.__mro__.slice(1), {});
     fn.__new__ = fn.__mro__[1].__new__;
     fn.__init__ = fn.__mro__[1].__init__;
     if (object_or_type.__is_instance__ === false) {
@@ -1176,7 +1167,7 @@ def _super(type_, object_or_type = None):
               args.push(arguments[i]);
             }
             return obj[name].apply(object_or_type,args);
-        }
+        };
         fnwrap.__name__ = name;
     	fnwrap.__args__ = obj.__args__;
     	fnwrap.__bind_type__ = obj.__bind_type__;
@@ -1197,22 +1188,6 @@ def range(start, stop = None, step = 1):
         stop = start
         start = 0
     JS("""
-/*
-    var start = 0;
-    var stop = 0;
-    var step = 1;
-
-    if (arguments.length == 2) {
-        start = arguments[0];
-        stop = arguments[1];
-        }
-    else if (arguments.length == 3) {
-        start = arguments[0];
-        stop = arguments[1];
-        step = arguments[2];
-        }
-    else if (arguments.length>0) stop = arguments[0];
-*/
     return {
         'next': function() {
             if ((step > 0 && start >= stop) || (step < 0 && start <= stop)) throw pyjslib.StopIteration;
@@ -1223,7 +1198,7 @@ def range(start, stop = None, step = 1):
         '__iter__': function() {
             return this;
             }
-        }
+        };
     """)
 
 @compiler.noSourceTracking
@@ -1269,7 +1244,7 @@ def ord(x):
 @compiler.noSourceTracking
 def chr(x):
     JS("""
-        return String.fromCharCode(x)
+        return String.fromCharCode(x);
     """)
 
 @compiler.noSourceTracking
@@ -1280,8 +1255,7 @@ def is_basetype(x):
        t == 'function' ||
        t == 'number' ||
        t == 'string' ||
-       t == 'undefined'
-       ;
+       t == 'undefined';
     """)
 
 @compiler.noSourceTracking
@@ -1327,7 +1301,7 @@ def repr(x):
                return '"' + x + '"';
            var s = x.replace(new RegExp('"', "g"), '\\\\"');
            return '"' + s + '"';
-       };
+       }
 
        if (t == "undefined")
            return "undefined";
@@ -1450,7 +1424,7 @@ def getattr(obj, name, default_value=None):
           args.push(arguments[i]);
         }
         return method.apply(obj,args);
-    }
+    };
     fnwrap.__name__ = name;
     fnwrap.__args__ = obj.__args__;
     fnwrap.__bind_type__ = obj.__bind_type__;
@@ -1672,7 +1646,7 @@ def toJSObjects(x):
         var result = {};
         for(var k in x) {
             var v = x[k];
-            var tv = pyjslib.toJSObjects(v)
+            var tv = pyjslib.toJSObjects(v);
             result[k] = tv;
             }
             return result;

@@ -574,6 +574,7 @@ try{var %(dbg)s_res=%(call_code)s;}catch(%(dbg)s_err){
         else:
             raise TranslationError("Unknown bind type: %s" % bind_type, node)
         args = repr(args)[1:]
+        org_args = args
         if dstararg:
             args = "'%s',%s" % (dstararg, args)
         else:
@@ -583,7 +584,9 @@ try{var %(dbg)s_res=%(call_code)s;}catch(%(dbg)s_err){
         else:
             args = "null,%s" % args
         args = '[' + args
-        
+        # remove any empty tail
+        if args.endswith(',]'):
+            args = args[:-2] + ']'
         if function_name is None:
             print >>self.output, "\t, %d, %s);" % (bind_type, args)
         else:
@@ -1337,7 +1340,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
             if node.handlers[-1][0]:
                 # No default catcher, create one to fall through
-                print >> self.output, "%s{ throw %s }" % (else_str, pyjs_try_err)
+                print >> self.output, "%s{ throw %s; }" % (else_str, pyjs_try_err)
         if hasattr(node, 'else_') and node.else_:
             print >> self.output, self.dedent() + "}",
 
@@ -1457,7 +1460,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 self.track_lineno(child, True)
                 lhs = "%s.%s" % (local_prefix, child.nodes[0].name)
                 lhs = self.add_lookup('attribute', child.nodes[0].name, lhs)
-                print >>self.output, self.spacing() + "%s = %s" % (lhs, self.expr(child.expr, current_klass))
+                print >>self.output, self.spacing() + "%s = %s;" % (lhs, self.expr(child.expr, current_klass))
                 private_scope = self.pop_lookup()
             elif isinstance(child, ast.Discard) and isinstance(child.expr, ast.Const):
                 # Probably a docstring, turf it

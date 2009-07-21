@@ -111,7 +111,7 @@ modules are there.
     	imports.main.__name__ = 'main';
     <BLANKLINE>
     	imports.main.__bind_type__ = 0;
-    	imports.main.__args__ = [null,null,];
+    	imports.main.__args__ = [null,null];
     	} catch (pyjs_attr_err) {throw pyjslib._errorMapping(pyjs_attr_err)};
     	return this;
     	}; /* end imports */
@@ -201,7 +201,7 @@ do nothing. TODO: fix this
     baseclass.main.__name__ = 'main';
     <BLANKLINE>
     baseclass.main.__bind_type__ = 0;
-    baseclass.main.__args__ = [null,null,];
+    baseclass.main.__args__ = [null,null];
     } catch (pyjs_attr_err) {throw pyjslib._errorMapping(pyjs_attr_err)};
     return this;
     }; /* end baseclass */
@@ -291,7 +291,7 @@ Note that the block-level defines the smartness of the imports.
     baseclass.main.__name__ = 'main';
     <BLANKLINE>
     baseclass.main.__bind_type__ = 0;
-    baseclass.main.__args__ = [null,null,];
+    baseclass.main.__args__ = [null,null];
     } catch (pyjs_attr_err) {throw pyjslib._errorMapping(pyjs_attr_err)};
     return this;
     }; /* end baseclass */
@@ -304,6 +304,7 @@ Note that the block-level defines the smartness of the imports.
     /*
     PYJS_DEPS: ['pack1.sub', 'pack1', 'pack2.x.y', 'pack2', 'pack2.x', 'pack3.sub1', 'pack3', 'pack3.sub2']
     */
+
 
 The following is not working right now.
 
