@@ -2,6 +2,7 @@ import translator
 import os
 import sys
 import util
+import logging
 
 LIB_PATH = os.path.join(os.path.dirname(__file__), 'lib')
 BUILTIN_PATH = os.path.join(os.path.dirname(__file__), 'builtin')
@@ -103,7 +104,6 @@ class BaseLinker(object):
 
     def visit_module(self, file_path, overrides, platform,
                      module_name):
-        # look if we have a public dir
         dir_name, file_name = os.path.split(file_path)
         if file_name.split('.')[0] != module_name.split('.')[-1]:
             if file_name == "__init__.py":
@@ -132,6 +132,8 @@ class BaseLinker(object):
             or (platform and overrides)
             or (out_file not in self.done.get(None,[]))
            ):
+            logging.info('Translating module:%s platform:%s out:%r' % (
+                module_name, platform or '-', out_file))
             deps = translator.translate([file_path] +  overrides,
                                         out_file,
                                         module_name=module_name,

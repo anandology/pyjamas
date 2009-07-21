@@ -183,12 +183,20 @@ def build_script():
     linker.add_linker_options(parser)
     parser.add_option("-P", "--platforms", dest="platforms",
         help="platforms to build for, comma-separated")
+    parser.add_option("-l", "--log-level", dest="log_level",
+                      default=None,
+                      type="int",
+                      help="The python log level as an int")
     parser.set_defaults(output="output",
                         js_includes=[],
                         library_dirs=[],
                         platforms=(','.join(AVAILABLE_PLATFORMS))
                         )
     options, args = parser.parse_args()
+
+    if options.log_level is not None:
+        import logging
+        logging.basicConfig(level=options.log_level)
     if len(args) != 1:
         parser.error("incorrect number of arguments")
 

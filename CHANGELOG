@@ -1,6 +1,10 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
+ * use python's standard logging module for displaying messages in the
+   linker. The browser linker now takes a -l option for specifying the
+   python log level. e.g -l 0 displays all log messages
+
  * created a new parent platform called "array_extras" which is used
    for "sm", "mozilla", "opera" and "safari" in order to use things
    like Array.indexOf on all browser that suppport the array extras.

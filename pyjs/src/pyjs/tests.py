@@ -12,5 +12,8 @@ def test_suite():
     sm = DocFileSuite('sm.txt',
                 optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS,
                       )
-    s = unittest.TestSuite((translator, browser, sm))
+    util = DocFileSuite('util.txt',
+                optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS,
+                        )
+    s = unittest.TestSuite((translator, browser, sm, util))
     return s
