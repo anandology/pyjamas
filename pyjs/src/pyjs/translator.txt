@@ -75,34 +75,34 @@ modules are there.
     if (__mod_name__ == null) __mod_name__ = 'imports';
     var __name__ = imports.__name__ = __mod_name__;
     try {
-    	pyjslib.__import__(['a'], 'a', 'imports')
-    	imports.a = $pyjs.__modules__.a
-    	pyjslib.__import__(['x.z.y', 'x.z'], 'x.z.y', 'imports')
+    	pyjslib.__import__(['a'], 'a', 'imports');
+    	imports.a = $pyjs.__modules__.a;
+    	pyjslib.__import__(['x.z.y', 'x.z'], 'x.z.y', 'imports');
     	imports.y = $pyjs.__modules__.x.z.y;
-    	pyjslib.__import__(['x.z.p', 'x.z'], 'x.z.p', 'imports')
+    	pyjslib.__import__(['x.z.p', 'x.z'], 'x.z.p', 'imports');
     	imports.pp = $pyjs.__modules__.x.z.p;
-    	pyjslib.__import__(['a.b', 'a'], 'a.b', 'imports')
-    	imports.a = $pyjs.__modules__.a
+    	pyjslib.__import__(['a.b', 'a'], 'a.b', 'imports');
+    	imports.a = $pyjs.__modules__.a;
     	imports.a.b.something();
-    	imports.a = $pyjs.__modules__.a
-    	imports.a_foo = $pyjs.__modules__.a
+    	imports.a = $pyjs.__modules__.a;
+    	imports.a_foo = $pyjs.__modules__.a;
     	imports.a.something();
     	imports.a = 0;
     	imports.a += 1;
     	imports.bb = 0;
-    	pyjslib.__import__(['a.b.c', 'a.b'], 'a.b.c', 'imports')
+    	pyjslib.__import__(['a.b.c', 'a.b'], 'a.b.c', 'imports');
     	imports.c = $pyjs.__modules__.a.b.c;
     	imports.c();
     	imports.a = 42;
     	imports.main = function() {
     		if ($pyjs.options.arg_count && arguments.length != 0) pyjs__exception_func_param(arguments.callee.__name__, 0, 0, arguments.length);
     		var a,pp,y,x,z;
-    		pyjslib.__import__(['a.b', 'a'], 'a.b', 'imports')
-    		a = $pyjs.__modules__.a
+    		pyjslib.__import__(['a.b', 'a'], 'a.b', 'imports');
+    		a = $pyjs.__modules__.a;
     		a.b.something();
     		a = 1;
-    		pyjslib.__import__(['z'], 'z', 'imports')
-    		x = $pyjs.__modules__.z
+    		pyjslib.__import__(['z'], 'z', 'imports');
+    		x = $pyjs.__modules__.z;
     		x();
     		var y = $pyjs.__modules__.x.z.y;
     		var pp = $pyjs.__modules__.x.z.p;
@@ -170,30 +170,30 @@ do nothing. TODO: fix this
     var __name__ = baseclass.__name__ = __mod_name__;
     try {
     if (pyjslib.bool(1)) {
-    pyjslib.__import__(['pack4'], 'pack4', 'baseclass')
-    baseclass.pack4 = $pyjs.__modules__.pack4
+    pyjslib.__import__(['pack4'], 'pack4', 'baseclass');
+    baseclass.pack4 = $pyjs.__modules__.pack4;
     }
-    pyjslib.__import__(['pack1'], 'pack1', 'baseclass')
-    baseclass.pack1 = $pyjs.__modules__.pack1
-    pyjslib.__import__(['pack1.mod', 'pack1'], 'pack1.mod', 'baseclass')
-    baseclass.pack1 = $pyjs.__modules__.pack1
-    baseclass.jod = $pyjs.__modules__.pack1.mod
-    pyjslib.__import__(['pack2.x.y', 'pack2.x'], 'pack2.x.y', 'baseclass')
+    pyjslib.__import__(['pack1'], 'pack1', 'baseclass');
+    baseclass.pack1 = $pyjs.__modules__.pack1;
+    pyjslib.__import__(['pack1.mod', 'pack1'], 'pack1.mod', 'baseclass');
+    baseclass.pack1 = $pyjs.__modules__.pack1;
+    baseclass.jod = $pyjs.__modules__.pack1.mod;
+    pyjslib.__import__(['pack2.x.y', 'pack2.x'], 'pack2.x.y', 'baseclass');
     baseclass.y = $pyjs.__modules__.pack2.x.y;
-    pyjslib.__import__(['pack2.x.something', 'pack2.x'], 'pack2.x.something', 'baseclass')
+    pyjslib.__import__(['pack2.x.something', 'pack2.x'], 'pack2.x.something', 'baseclass');
     baseclass.z = $pyjs.__modules__.pack2.x.something;
     pyjslib.printFunc([baseclass.pack1], 1);
     pyjslib.printFunc([baseclass.y], 1);
     baseclass.main = function() {
     if ($pyjs.options.arg_count && arguments.length != 0) pyjs__exception_func_param(arguments.callee.__name__, 0, 0, arguments.length);
     var y,pub,pack3;
-    pyjslib.__import__(['pack3'], 'pack3', 'baseclass')
-    pack3 = $pyjs.__modules__.pack3
-    pyjslib.__import__(['pack3.sub', 'pack3'], 'pack3.sub', 'baseclass')
-    pack3 = $pyjs.__modules__.pack3
-    pyjslib.__import__(['pack3.sub', 'pack3'], 'pack3.sub', 'baseclass')
-    pub = $pyjs.__modules__.pack3.sub
-    pyjslib.__import__(['pack3.z', 'pack3'], 'pack3.z', 'baseclass')
+    pyjslib.__import__(['pack3'], 'pack3', 'baseclass');
+    pack3 = $pyjs.__modules__.pack3;
+    pyjslib.__import__(['pack3.sub', 'pack3'], 'pack3.sub', 'baseclass');
+    pack3 = $pyjs.__modules__.pack3;
+    pyjslib.__import__(['pack3.sub', 'pack3'], 'pack3.sub', 'baseclass');
+    pub = $pyjs.__modules__.pack3.sub;
+    pyjslib.__import__(['pack3.z', 'pack3'], 'pack3.z', 'baseclass');
     var y = $pyjs.__modules__.pack3.z;
     pyjslib.printFunc([pack3], 1);
     return null;
@@ -258,33 +258,33 @@ Note that the block-level defines the smartness of the imports.
     var __name__ = baseclass.__name__ = __mod_name__;
     try {
     if (pyjslib.bool(false)) {
-    pyjslib.__import__(['pack1.sub', 'pack1'], 'pack1.sub', 'baseclass')
-    baseclass.pack1 = $pyjs.__modules__.pack1
-    pyjslib.__import__(['pack1'], 'pack1', 'baseclass')
-    baseclass.pack1 = $pyjs.__modules__.pack1
-    pyjslib.__import__(['pack2.x.y', 'pack2.x'], 'pack2.x.y', 'baseclass')
+    pyjslib.__import__(['pack1.sub', 'pack1'], 'pack1.sub', 'baseclass');
+    baseclass.pack1 = $pyjs.__modules__.pack1;
+    pyjslib.__import__(['pack1'], 'pack1', 'baseclass');
+    baseclass.pack1 = $pyjs.__modules__.pack1;
+    pyjslib.__import__(['pack2.x.y', 'pack2.x'], 'pack2.x.y', 'baseclass');
     baseclass.y = $pyjs.__modules__.pack2.x.y;
     }
-    pyjslib.__import__(['pack1.sub', 'pack1'], 'pack1.sub', 'baseclass')
-    baseclass.pack1 = $pyjs.__modules__.pack1
-    baseclass.pack1 = $pyjs.__modules__.pack1
-    pyjslib.__import__(['pack2'], 'pack2', 'baseclass')
-    baseclass.pack2 = $pyjs.__modules__.pack2
+    pyjslib.__import__(['pack1.sub', 'pack1'], 'pack1.sub', 'baseclass');
+    baseclass.pack1 = $pyjs.__modules__.pack1;
+    baseclass.pack1 = $pyjs.__modules__.pack1;
+    pyjslib.__import__(['pack2'], 'pack2', 'baseclass');
+    baseclass.pack2 = $pyjs.__modules__.pack2;
     pyjslib.printFunc([baseclass.pack1], 1);
     pyjslib.printFunc([baseclass.y], 1);
     baseclass.main = function() {
     if ($pyjs.options.arg_count && arguments.length != 0) pyjs__exception_func_param(arguments.callee.__name__, 0, 0, arguments.length);
     var pack3;
     if (pyjslib.bool(false)) {
-    pyjslib.__import__(['pack3.sub1', 'pack3'], 'pack3.sub1', 'baseclass')
-    pack3 = $pyjs.__modules__.pack3
-    pyjslib.__import__(['pack3'], 'pack3', 'baseclass')
-    pack3 = $pyjs.__modules__.pack3
+    pyjslib.__import__(['pack3.sub1', 'pack3'], 'pack3.sub1', 'baseclass');
+    pack3 = $pyjs.__modules__.pack3;
+    pyjslib.__import__(['pack3'], 'pack3', 'baseclass');
+    pack3 = $pyjs.__modules__.pack3;
     }
-    pyjslib.__import__(['pack3'], 'pack3', 'baseclass')
-    pack3 = $pyjs.__modules__.pack3
-    pyjslib.__import__(['pack3.sub2', 'pack3'], 'pack3.sub2', 'baseclass')
-    pack3 = $pyjs.__modules__.pack3
+    pyjslib.__import__(['pack3'], 'pack3', 'baseclass');
+    pack3 = $pyjs.__modules__.pack3;
+    pyjslib.__import__(['pack3.sub2', 'pack3'], 'pack3.sub2', 'baseclass');
+    pack3 = $pyjs.__modules__.pack3;
     pyjslib.printFunc([pack3], 1);
     return null;
     };
@@ -355,10 +355,10 @@ The following is not working right now.
     if (__mod_name__ == null) __mod_name__ = 'more';
     var __name__ = more.__name__ = __mod_name__;
     try {
-    pyjslib.__import__(['write.write', 'write'], 'write.write', 'more')
+    pyjslib.__import__(['write.write', 'write'], 'write.write', 'more');
     more.write = $pyjs.__modules__.write.write;
     more.write();
-    pyjslib.__import__(['write.x', 'write'], 'write.x', 'more')
+    pyjslib.__import__(['write.x', 'write'], 'write.x', 'more');
     more.x = $pyjs.__modules__.write.x;
     } catch (pyjs_attr_err) {throw pyjslib._errorMapping(pyjs_attr_err)};
     return this;

@@ -962,7 +962,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                 or (assignBase and not package_mod[0] in ['root-module', 'module'])
                ):
                 # the import statement
-                stmt = "pyjslib.__import__([%s], '%s', '%s')" % (
+                stmt = "pyjslib.__import__([%s], '%s', '%s');" % (
                             ', '.join(["'%s'"% n for n in searchList]),
                             importName,
                             self.raw_module_name,
@@ -992,7 +992,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                         mod_name = importName
                     else:
                         mod_name = ass_name
-                    stmt = '%s $pyjs.__modules__.%s'% (lhs, mod_name)
+                    stmt = '%s $pyjs.__modules__.%s;'% (lhs, mod_name)
                     print >> self.output, self.spacing(), stmt
                     self.add_lookup(modtype, ass_name, jsname)
 
