@@ -1,6 +1,10 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
+ * created a new parent platform called "array_extras" which is used
+   for "sm", "mozilla", "opera" and "safari" in order to use things
+   like Array.indexOf on all browser that suppport the array extras.
+
  * raise a TranslationError if a reserved word is used for a module
    name, this would cause unpredictable results in running code, which
    is very hard to debug.

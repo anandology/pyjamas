@@ -30,11 +30,11 @@ class BrowserLinker(linker.BaseLinker):
 
     # we derive from mozilla
     platform_parents = {
-        'mozilla':['browser'],
+        'mozilla':['array_extras', 'browser'],
         'ie6':['browser'],
-        'safari':['browser'],
+        'safari':['array_extras', 'browser'],
         'oldmoz':['browser'],
-        'opera':['browser']
+        'opera':['array_extras', 'browser']
         }
 
     def visit_start(self):

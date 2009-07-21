@@ -55,7 +55,7 @@ class SpidermonkeyLinker(linker.BaseLinker):
 
     # we derive from mozilla
     platform_parents = {
-        PLATFORM:['mozilla']
+        PLATFORM:['mozilla', 'array_extras']
         }
 
     def __init__(self, *args, **kwargs):

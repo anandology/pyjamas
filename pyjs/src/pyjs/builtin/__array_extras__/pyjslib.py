@@ -1,3 +1,4 @@
+"""Overrides which use the indexOf method of arrays in supported browsers"""
 
 class List:
 
