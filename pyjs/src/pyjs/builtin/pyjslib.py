@@ -892,7 +892,7 @@ class Tuple:
     def __contains__(self, value):
         JS("""
         var length=this.l.length;
-        for (var i=start; i<length; i++) {
+        for (var i=0; i<length; i++) {
             if (this.l[i]===value) {
                 return true;
                 }
