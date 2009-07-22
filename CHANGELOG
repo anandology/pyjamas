@@ -1,6 +1,15 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
+ * fixed a bug in linker which caused js_libs to be duplicated when
+   called twice in a process. this only affects tests, not console
+   scripts.
+
+ * added --multi-file option to browser linker to generate script tags
+   instead of including the whole code in one file. now it is possible
+   to really work with firebug because of the small files. added this
+   option to build.sh of libtest by default.
+
  * fixed browser linker which didn't take js_includes into account
 
  * use python's standard logging module for displaying messages in the

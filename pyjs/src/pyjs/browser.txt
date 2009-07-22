@@ -161,6 +161,43 @@ this is raised at runtime.
     >>> l()
 
 
+Multifile Linking
+=================
+
+In order to be able to debug scripts in e.g. Firebug it is usefull to
+have smaller script files, the multifile option does this by writing
+script tags into the generated cache.html file.
+
+    >>> l = browser.BrowserLinker('mypackage.index',
+    ...                           output=output,
+    ...                           multi_file=True,
+    ...                           platforms=['ie6', 'mozilla'],
+    ...                           path=[lib_path])
+    >>> l()
+
+    >>> op = os.path.join(output, 'mypackage.index.ie6.cache.html')
+    >>> f = file(op)
+    >>> content = f.read()
+    >>> f.close()
+
+    >>> print content
+    <html>
+    ...
+    --></script>
+    <BLANKLINE>
+    <script type="text/javascript" src="_pyjs.js"></script>
+    <script type="text/javascript" src="sprintf.js"></script>
+    <script type="text/javascript" src="lib/pyjslib.js"></script>
+    <script type="text/javascript" src="lib/mypackage.js"></script>
+    <script type="text/javascript" src="lib/mypackage.index.js"></script>
+    <BLANKLINE>
+    </body>
+    </html>
+    <BLANKLINE>
+
+
+
+
 Overrides
 ---------
 

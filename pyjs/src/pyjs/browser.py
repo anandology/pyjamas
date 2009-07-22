@@ -37,6 +37,10 @@ class BrowserLinker(linker.BaseLinker):
         'opera':['browser', 'array_extras'],
         }
 
+    def __init__(self, *args, **kwargs):
+        self.multi_file = kwargs.pop('multi_file', False)
+        super(BrowserLinker, self).__init__(*args, **kwargs)
+
     def visit_start(self):
         super(BrowserLinker, self).visit_start()
         self.boilerplate_path = None
@@ -91,20 +95,30 @@ class BrowserLinker(linker.BaseLinker):
         out_path = os.path.join(
             self.output,
             '.'.join((self.top_module, platform, 'cache.html')))
-        app_code = StringIO()
         done = self.done[platform]
-        for p in done:
-            f = file(p)
-            app_code.write(f.read())
-            f.close()
+
+        if self.multi_file:
+            js_libs = list(self.js_libs)
+            for p in done:
+                js_libs.append(p[len(self.output)+1:])
+            app_code = ''
+        else:
+            js_libs = self.js_libs
+            app_code = StringIO()
+            for p in done:
+                f = file(p)
+                app_code.write(f.read())
+                f.close()
+            app_code = app_code.getvalue()
         scripts = ['<script type="text/javascript" src="%s"></script>'%script \
-                   for script in self.js_libs]
+                   for script in js_libs]
         app_body = '\n'.join(scripts)
+
         deps = []
         file_contents = template % dict(
             app_name = self.top_module,
             early_app_libs = '',
-            app_libs = app_code.getvalue(),
+            app_libs = app_code,
             app_body = app_body,
             platform = platform.lower(),
             available_modules = self.visited_modules[platform],
@@ -187,6 +201,12 @@ def build_script():
                       default=None,
                       type="int",
                       help="The python log level as an int")
+    parser.add_option(
+        "-m", "--multi-file", dest="multi_file",
+        default=False,
+        action="store_true",
+        help="Include each module via a script-tag instead of writing"
+              " the whole code into the main cache.html file")
     parser.set_defaults(output="output",
                         js_includes=[],
                         library_dirs=[],
@@ -224,6 +244,7 @@ def build_script():
                       platforms=app_platforms,
                       path=pyjs.path,
                       js_libs=options.js_includes,
-                      translator_arguments=translator_arguments)
+                      translator_arguments=translator_arguments,
+                      multi_file=options.multi_file)
     l()
     print "Built to :", os.path.abspath(options.output)

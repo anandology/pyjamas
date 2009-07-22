@@ -52,7 +52,7 @@ class BaseLinker(object):
         self.platforms = platforms
         self.top_module = top_module
         self.output = os.path.abspath(output)
-        self.js_libs = js_libs
+        self.js_libs = list(js_libs)
         self.translator_arguments = translator_arguments
         self.compile_inplace = compile_inplace
         self.top_module_path = None
