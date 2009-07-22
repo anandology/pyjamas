@@ -195,8 +195,55 @@ script tags into the generated cache.html file.
     </html>
     <BLANKLINE>
 
+Cachebusting
+============
 
+The cache buster option appends the md5 hash of the contents of files
+to their paths.
 
+    >>> l = browser.BrowserLinker('mypackage.index',
+    ...                           output=output,
+    ...                           multi_file=True,
+    ...                           cache_buster=True,
+    ...                           platforms=['ie6', 'mozilla'],
+    ...                           path=[lib_path])
+    >>> l()
+
+    >>> op = os.path.join(output, 'mypackage.index.nocache.html')
+    >>> f = file(op)
+
+The script selectors point to the according files.
+
+    >>> print f.read()
+    <html><head><script>
+    ...
+    O(["true","ie6"],"mypackage.index.ie6.fcf9ac32abb223b15256e5ab8c0641fc.cache.html");
+    O(["true","mozilla"],"mypackage.index.mozilla.ca2f722974ea204cf544504eaaf467f1.cache.html");...
+
+    >>> from pprint import pprint
+    >>> pprint(sorted(os.listdir(output)))
+    ['...
+     'mypackage.index.ie6.fcf9ac32abb223b15256e5ab8c0641fc.cache.html',
+     'mypackage.index.mozilla.ca2f722974ea204cf544504eaaf467f1.cache.html',
+     ...']
+
+Also the libfiles which are generated from multifile option are upated.
+
+    >>> op = os.path.join(
+    ...     output, 'mypackage.index.ie6.fcf9ac32abb223b15256e5ab8c0641fc.cache.html')
+    >>> f = file(op)
+    >>> print f.read()
+    <html>...
+    <script type="text/javascript" src="_pyjs.js"></script>
+    <script type="text/javascript" src="sprintf.js"></script>
+    <script ...src="lib/pyjslib.a3a580694ab1a1a84c7794fdd996644f.js"></script>
+    <script ...src="lib/mypackage.f739f311158b12902d5a104067d5ae18.js"></script>
+    <script ...src="lib/mypackage.index.a730245b822aece5d56373f0c460e55b.js">...
+
+    >>> pprint(sorted(os.listdir(os.path.join(output, 'lib'))))
+    ['mypackage.f739f311158b12902d5a104067d5ae18.js',...
+     'mypackage.index.a730245b822aece5d56373f0c460e55b.js',...
+     'pyjslib.__mozilla__.ad9c4781d3571d0e462ace61b25970ba.js',...
 
 Overrides
 ---------

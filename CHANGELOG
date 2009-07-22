@@ -1,6 +1,9 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
+ * re-added the --cache-buster option, which now also works along with
+   --multi-file. both options are now enabled in libtest build.
+
  * fixed a bug in linker which caused js_libs to be duplicated when
    called twice in a process. this only affects tests, not console
    scripts.

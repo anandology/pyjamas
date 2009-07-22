@@ -39,6 +39,7 @@ class BrowserLinker(linker.BaseLinker):
 
     def __init__(self, *args, **kwargs):
         self.multi_file = kwargs.pop('multi_file', False)
+        self.cache_buster = kwargs.pop('cache_buster', False)
         super(BrowserLinker, self).__init__(*args, **kwargs)
 
     def visit_start(self):
@@ -47,11 +48,30 @@ class BrowserLinker(linker.BaseLinker):
         self.js_libs.append('_pyjs.js')
         self.js_libs.append('sprintf.js')
         self.merged_public = set()
+        self.app_files = {}
+        self.renamed_libs = {}
 
     def visit_end_platform(self, platform):
         if not platform:
             return
-        self._generate_app_file(platform)
+        if self.cache_buster:
+            import hashlib
+            # rename the files to their hashed equivalents
+            renamed = []
+            for p in self.done[platform]:
+                if p in self.renamed_libs:
+                    new_p = self.renamed_libs[p]
+                else:
+                    f = open(p)
+                    md5 = hashlib.md5(f.read()).hexdigest()
+                    f.close()
+                    name, ext = os.path.splitext(p)
+                    new_p = name + '.' + md5 + ext
+                    os.rename(p, new_p)
+                    self.renamed_libs[p] = new_p
+                renamed.append(new_p)
+            self.done[platform] = renamed
+        self.app_files[platform] = self._generate_app_file(platform)
 
     def visit_end(self):
         html_output_filename = os.path.join(self.output, self.top_module + '.html')
@@ -92,9 +112,8 @@ class BrowserLinker(linker.BaseLinker):
     def _generate_app_file(self, platform):
         # TODO: cache busting
         template = self.read_boilerplate('all.cache.html')
-        out_path = os.path.join(
-            self.output,
-            '.'.join((self.top_module, platform, 'cache.html')))
+        name_parts = [self.top_module, platform, 'cache.html']
+
         done = self.done[platform]
 
         if self.multi_file:
@@ -125,19 +144,27 @@ class BrowserLinker(linker.BaseLinker):
             dynamic = 0,
             app_headers = ''
         )
+        if self.cache_buster:
+            import hashlib
+            md5 = hashlib.md5(file_contents).hexdigest()
+            name_parts.insert(2, md5)
+        out_path = os.path.join(self.output, '.'.join((name_parts)))
+
         out_file = file(out_path, 'w')
         out_file.write(file_contents)
         out_file.close()
+        return out_path
 
     def _create_nocache_html(self):
         # nocache
         template = self.read_boilerplate('home.nocache.html')
         out_path = os.path.join(self.output, self.top_module + ".nocache.html")
-        select_tmpl = """O(["true","%%s"],"%s.%%s.cache.html");\n""" % self.top_module
+        select_tmpl = """O(["true","%s"],"%s");\n"""
         script_selectors = StringIO()
         for platform in self.platforms:
-            script_selectors.write(
-                select_tmpl % (platform, platform))
+            cache_html = os.path.basename(self.app_files[platform])
+            sel = select_tmpl % (platform, cache_html)
+            script_selectors.write(sel)
         out_file = file(out_path, 'w')
         out_file.write(template % dict(
             app_name = self.top_module,
@@ -207,6 +234,14 @@ def build_script():
         action="store_true",
         help="Include each module via a script-tag instead of writing"
               " the whole code into the main cache.html file")
+
+    parser.add_option(
+        "-c", "--cache-buster", action="store_true",
+        dest="cache_buster",
+        default=False,
+        help="Enable browser cache-busting (MD5 hash added to output filenames)",
+        )
+
     parser.set_defaults(output="output",
                         js_includes=[],
                         library_dirs=[],
@@ -245,6 +280,7 @@ def build_script():
                       path=pyjs.path,
                       js_libs=options.js_includes,
                       translator_arguments=translator_arguments,
-                      multi_file=options.multi_file)
+                      multi_file=options.multi_file,
+                      cache_buster=options.cache_buster)
     l()
     print "Built to :", os.path.abspath(options.output)
