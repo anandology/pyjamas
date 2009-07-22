@@ -1,7 +1,7 @@
 
 class Location:
     def getHash(self):
-        return unescape(self.location.hash)
-    
+        return JS('unescape(self.location.hash)')
+
     def getSearch(self):
-        return unescape(self.location.search)
+        return JS('unescape(self.location.search)')
