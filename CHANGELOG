@@ -1,6 +1,8 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
+ * fixed browser linker which didn't take js_includes into account
+
  * use python's standard logging module for displaying messages in the
    linker. The browser linker now takes a -l option for specifying the
    python log level. e.g -l 0 displays all log messages

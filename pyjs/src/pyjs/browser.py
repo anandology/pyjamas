@@ -223,6 +223,7 @@ def build_script():
                       output=options.output,
                       platforms=app_platforms,
                       path=pyjs.path,
+                      js_libs=options.js_includes,
                       translator_arguments=translator_arguments)
     l()
     print "Built to :", os.path.abspath(options.output)
