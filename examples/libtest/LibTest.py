@@ -15,6 +15,7 @@ from NameTest import NameTest
 from DictTest import DictTest
 if sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
     from JSOTest import JSOTest
+    from WindowTest import WindowTest
 from BuiltinTest import BuiltinTest
 from MD5Test import MD5Test
 from TimeModuleTest import TimeModuleTest
@@ -37,6 +38,7 @@ def main():
     DictTest().run()
     if sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
         JSOTest().run()
+        WindowTest().run()
     BuiltinTest().run()
     MD5Test().run()
     TimeModuleTest().run()

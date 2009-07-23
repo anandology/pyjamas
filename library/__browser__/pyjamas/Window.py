@@ -1,4 +1,10 @@
 
+def getClientHeight():
+    return JS('$wnd.innerHeight')
+
+def getClientWidth():
+    return JS('$wnd.innerWidth')
+
 def setOnError(onError):
     if (not callable(onError)):
         raise TypeError("object is not callable")

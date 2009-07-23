@@ -1,6 +1,9 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
+ * fixed pyjamas.Window.getClientWidth/Height on IE. removed
+   conditionals from __browser__ implementation in those functions.
+
  * prevent usage of builtin names in pyjslib, this causes javascript
    errors at least in javascript lint. int and float are now int_
    float_ in javascript. for python code nothing should change.
