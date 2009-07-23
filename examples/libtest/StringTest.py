@@ -9,6 +9,14 @@ class StringTest(UnitTest):
     def getName(self):
         return "String"
 
+    def testToString(self):
+        # TODO: this fails on IE, because we can not override toString
+        # in the normal way
+        # we need to do something like this
+        # http://webreflection.blogspot.com/2007/07/quick-fix-internet-explorer-and.html
+        o = ClassWithOwnToString()
+        self.assertEquals(o.toString(), 'ClassWithOwnToString as a String')
+
     def testReplace(self):
         text="this is a rather long string"
         expected_result1="th--- --- a rather long string"
@@ -231,3 +239,9 @@ class StringTest(UnitTest):
             self.fail("Failed to raise an IndexError")
         except IndexError, e:
             self.assertEqual(e[0], 'string index out of range')
+
+class ClassWithOwnToString(object):
+
+    def toString(self):
+        return 'ClassWithOwnToString as a String'
+
