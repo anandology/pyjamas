@@ -1,4 +1,4 @@
-import pyjslib
+import sys
 from UnitTest import UnitTest
 
 # syntax check
@@ -67,8 +67,10 @@ class ClassTest(UnitTest):
 
         # for we just make sure the result is undefined and not the value of
         # ExampleClass.a
-        x = ExampleClass().fail_a()
-        self.assertTrue(pyjslib.isUndefined(x))
+        if sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz',
+                            'safari']:
+            x = ExampleClass().fail_a()
+            self.assertTrue(JS('pyjslib.isUndefined(x)'))
 
     # test Class().x
     def testInheritedProperties(self):
