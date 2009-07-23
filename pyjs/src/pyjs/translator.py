@@ -23,6 +23,7 @@ import copy
 from cStringIO import StringIO
 import re
 import hashlib
+import logging
 
 # this is the python function used to wrap native javascript
 NATIVE_JS_FUNC_NAME = "JS"
@@ -2388,8 +2389,14 @@ def translate(sources, output_file, module_name=None,
     tree= None
     for src in sources:
         current_tree = compiler.parseFile(src)
+        flags = set()
+        f = file(src)
+        for l in f:
+            if l.startswith('#@PYJS_'):
+                flags.add(l.strip()[7:])
+        f.close()
         if tree:
-            merge(tree, current_tree)
+            tree = merge(tree, current_tree, flags)
         else:
             tree = current_tree
     #XXX: if we have an override the sourcefile and the tree is not the same!
@@ -2411,7 +2418,9 @@ def translate(sources, output_file, module_name=None,
     output.close()
     return t.imported_modules
 
-def merge(tree1, tree2):
+def merge(tree1, tree2, flags):
+    if 'FULL_OVERRIDE' in flags:
+        return tree2
     for child in tree2.node:
         if isinstance(child, ast.Function):
             replaceFunction(tree1, child.name, child)
@@ -2429,7 +2438,7 @@ def replaceFunction(tree, function_name, function_node):
             copyFunction(child, function_node)
             return
     raise TranslationError(
-        "function not found: " + function_name, function_node, self.module_name)
+        "function not found: " + function_name, function_node, None)
 
 def copyFunction(target, source):
     target.code = source.code
@@ -2534,18 +2543,6 @@ class PlatformParser:
         platform_file_name = module_name + self.platform + extension
 
         return os.path.join(os.path.dirname(file_name), self.platform_dir, platform_file_name)
-
-    def merge(self, tree1, tree2):
-        for child in tree2.node:
-            if isinstance(child, ast.Function):
-                self.replaceFunction(tree1, child.name, child)
-            elif isinstance(child, ast.Class):
-                self.replaceClassMethods(tree1, child.name, child)
-            else:
-                raise TranslationError(
-                    "Do not know how to merge", child, self.module_name)
-
-        return tree1
 
     def replaceFunction(self, tree, function_name, function_node):
         # find function to replace

@@ -1,25 +1,16 @@
 # This is the gtk-dependent Window module.
-# For the pyjamas/javascript version, see platform/WindowPyJS.py
+# For the pyjamas/javascript version, see __browser__/pyjamas/Window.py
 
 """
     Window provides access to the DOM model's global Window.
 """
-import sys
-if sys.platform not in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
 
-    import pygtk
-    pygtk.require('2.0')
-    import gtk
-
-    from pyjamas.__pyjamas__ import JS, doc, get_main_frame, wnd
-
-    closingListeners = []
-    resizeListeners = []
-else:
-    from __pyjamas__ import JS
-    from __pyjamas__ import unescape # for Location IE6 and Opera
-    closingListeners = None
-    resizeListeners = None
+import pygtk
+pygtk.require('2.0')
+import gtk
+from pyjamas.__pyjamas__ import JS, doc, get_main_frame, wnd
+closingListeners = []
+resizeListeners = []
 
 from pyjamas import Location
 
@@ -156,10 +147,4 @@ def fireResizedImpl():
     for listener in resizeListeners:
         listener.onWindowResized(getClientWidth(), getClientHeight())
 
-def init():
-    pass
-
-init()
-
-import gtk
 

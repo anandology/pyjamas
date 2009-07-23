@@ -1,2 +1,2 @@
 #!/bin/sh
-../../bin/pyjsbuild $@ KitchenSink
+../../bin/pyjsbuild --strict --cache-buster $@ KitchenSink

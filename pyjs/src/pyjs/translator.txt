@@ -398,6 +398,34 @@ We cannot use top-level names that are reserved words in javascript.
     reserved word used for top-level module 'package'
     Module(None, Stmt([Printnl([Const(1)], None)]))
 
+Full overrides
+==============
+
+It is possible override the whole module by specifying a special flag in
+the override file.
+
+    >>> m = os.path.join(tmp, 'o1.py')
+    >>> out_file = os.path.join(tmp, 'o1.js')
+    >>> f = file(m, 'w')
+    >>> f.write("""
+    ... #@PYJS_FULL_OVERRIDE
+    ... print "this is o1 override full"
+    ... """)
+    >>> f.close()
+    >>> deps = translator.translate([more, m], out_file,
+    ...                      debug=False,
+    ...                      print_statements = True,
+    ...                      function_argument_checking=True,
+    ...                      attribute_checking=True,
+    ...                      source_tracking=False,
+    ...                      line_tracking=False,
+    ...                      store_source=False)
+    >>> deps
+    []
+    >>> print file(out_file).read()
+    /...('this is o1 override full')], 1);...
+
+
     >>> import shutil
     >>> shutil.rmtree(tmp)
 

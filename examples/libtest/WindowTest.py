@@ -17,5 +17,8 @@ class WindowTest(UnitTest):
         self.assertTrue(isinstance(w, int))
         self.assertTrue(isinstance(h, int))
 
-
-
+    def testLocation(self):
+        self.assertTrue(Window.getLocation().getHref().endswith(
+            'LibTest.html'))
+        self.assertEquals(Window.getTitle(),
+                          'PyJamas Auto-Generated HTML file LibTest')
