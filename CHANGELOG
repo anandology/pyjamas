@@ -1,6 +1,10 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
+ * prevent usage of builtin names in pyjslib, this causes javascript
+   errors at least in javascript lint. int and float are now int_
+   float_ in javascript. for python code nothing should change.
+
  * re-added the --cache-buster option, which now also works along with
    --multi-file. both options are now enabled in libtest build.
 

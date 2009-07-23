@@ -1328,13 +1328,13 @@ def repr(x):
     """)
 
 @compiler.noSourceTracking
-def float(text):
+def float_(text):
     JS("""
     return parseFloat(text);
     """)
 
 @compiler.noSourceTracking
-def int(text, radix=None):
+def int_(text, radix=None):
     _radix = radix
     JS("""
     if (radix === null) {
@@ -1364,7 +1364,7 @@ def len(object):
 def isinstance(object_, classinfo):
     if isUndefined(object_):
         return False
-    JS("""if (classinfo.__name__ == 'int') {
+    JS("""if (classinfo.__name__ == 'int_') {
             return pyjslib.isNumber(object_); /* XXX TODO: check rounded? */
             }
         """)

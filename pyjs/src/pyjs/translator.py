@@ -317,7 +317,12 @@ class Translator:
         self.__unique_ids__ = {}
 
         for v in PYJSLIB_BUILTIN_FUNCTIONS:
-            self.add_lookup("builtin", v, "pyjslib." + v)
+            # rename reserved words, pyjslib has to handle this internally
+            if v in JS_RESERVED_WORDS:
+                vf = v + '_'
+            else:
+                vf = v
+            self.add_lookup("builtin", v, "pyjslib." + vf)
         for v in PYJSLIB_BUILTIN_CLASSES:
             self.add_lookup("builtin", v, "pyjslib." + v)
         for v in PYJS_GLOBAL_VARS:
