@@ -4,7 +4,7 @@
 import sys
 if sys.platform not in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
     from Cookie import SimpleCookie
-    from pyjamas.__pyjamas__ import doc
+    from __pyjamas__ import doc
     import urllib
     import datetime
     from string import strip

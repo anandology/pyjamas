@@ -1,4 +1,4 @@
-from pyjamas.__pyjamas__ import JS
+from __pyjamas__ import JS
 
 # Check http://docs.python.org/library/time.html
 

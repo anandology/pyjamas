@@ -1,3 +1,4 @@
+raise RuntimeError, "this module is deprecated, use the one in library"
 
 def decodeURI(s):    
     """

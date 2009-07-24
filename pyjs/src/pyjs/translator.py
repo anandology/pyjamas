@@ -25,6 +25,7 @@ import re
 import hashlib
 import logging
 
+
 # this is the python function used to wrap native javascript
 NATIVE_JS_FUNC_NAME = "JS"
 NATIVE_DOC_FUNC_NAME = "doc"
@@ -422,7 +423,7 @@ class Translator:
         print >>self.output, self.spacing(), "/* end module: %s */" % module_name
         print >> self.output, "\n"
 
-        # print out the deps
+        # print out the deps and check for wrong imports
         if self.imported_modules:
             print >> self.output, '/*'
             print >> self.output, 'PYJS_DEPS: %s' % self.imported_modules
@@ -1024,6 +1025,9 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         for importName, importAs in names:
             if importName == '__pyjamas__':
                 continue
+            if '__pyjamas__' in importName:
+                logging.warn("%s: Forbidden module dependency %s" % (
+                    self.module_name, importName))
             # "searchList" contains a list of possible module names :
             #   We create the list at compile time to save runtime.
             searchList = []

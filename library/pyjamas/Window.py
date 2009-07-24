@@ -8,7 +8,7 @@
 import pygtk
 pygtk.require('2.0')
 import gtk
-from pyjamas.__pyjamas__ import JS, doc, get_main_frame, wnd
+from __pyjamas__ import JS, doc, get_main_frame, wnd
 closingListeners = []
 resizeListeners = []
 

@@ -13,7 +13,7 @@
 # limitations under the License.
 import sys
 if sys.platform not in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
-    from pyjamas.__pyjamas__ import get_main_frame
+    from __pyjamas__ import get_main_frame
 
 from pyjamas import DOM
 

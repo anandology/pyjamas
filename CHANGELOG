@@ -1,6 +1,11 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
+ * moved pyjamas.__pyjamas__ to __pyjamas__, this way the translator
+   now removes any import from __pyjamas__ this module is not existent
+   in javascript, only in python. if there is a requirement to a
+   function in __pyjamas__ in javascript, it does not belong there.
+
  * added flag handling to overrides for translator, see
    translator.txt. it is now possible to override a whole
    module. which is now actually used for pyjamas.Window so we do not

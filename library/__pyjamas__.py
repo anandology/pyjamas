@@ -1,5 +1,6 @@
 # This is the gtk-dependent __pyjamas__ module.
-# For the pyjamas/javascript version, see platform/__pyjamas__PyJS.py
+# In javascript this module is not needed, any imports of this module
+# are removed by the translator.
 
 """ This module interfaces between PyWebkitGTK and the Pyjamas API,
     to get applications kick-started.
