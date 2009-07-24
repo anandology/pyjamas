@@ -705,7 +705,7 @@ def setIntStyleAttribute(elem, attr, value):
 
 def setOptionText(select, text, index):
     option = select.options.item(index)
-    option.text = text
+    option.textContent = text
 
 def setStyleAttribute(element, name, value):
     element.style.setProperty(mash_name_for_glib(name), value, "")

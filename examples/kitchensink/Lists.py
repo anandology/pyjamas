@@ -23,7 +23,10 @@ class Lists(Sink):
         self.combo.addChangeListener(self)
         
         for i in range(len(self.sStrings)):
-            self.combo.addItem("List %d" % i)
+            txt = "List %d" % i
+            self.combo.addItem(txt)
+            # test setItemText
+            self.combo.setItemText(i, txt + " using set text")
         self.combo.setSelectedIndex(0)
         self.fillList(0)
         
