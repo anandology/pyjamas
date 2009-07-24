@@ -1,5 +1,5 @@
 import sys
-
+from LoopTest import LoopTest
 from StringTest import StringTest
 from ListTest import ListTest
 from TupleTest import TupleTest
@@ -22,7 +22,7 @@ from TimeModuleTest import TimeModuleTest
 from TypeCompatibilityTest import TypeCompatibilityTest
 
 def main():
-
+    LoopTest().run()
     BoolTest().run()
     ListTest().run()
     TupleTest().run()
