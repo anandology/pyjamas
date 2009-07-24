@@ -3,11 +3,6 @@ from UnitTest import UnitTest
 import write
 
 class StringTest(UnitTest):
-    def __init__(self):
-        UnitTest.__init__(self)
-
-    def getName(self):
-        return "String"
 
     def testToString(self):
         # TODO: this fails on IE, because we can not override toString

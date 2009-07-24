@@ -7,12 +7,7 @@ def ftest(a, b):
     return [a, b]
 
 class ArgsTest(UnitTest):
-    def __init__(self):
-        UnitTest.__init__(self)
 
-    def getName(self):
-        return "Args"
- 
     def testNaming1(self):
         values = ftest(1, 2)
         self.assertEquals(values[0], 1)

@@ -15,11 +15,6 @@ class MyException2:
 
 
 class ExceptionTest(UnitTest):
-    def __init__(self):
-        UnitTest.__init__(self)
-
-    def getName(self):
-        return "Exception"
 
     def testTypeError(self):
         try:

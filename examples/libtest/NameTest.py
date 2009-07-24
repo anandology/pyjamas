@@ -13,12 +13,6 @@ def aProcedure():
 
 class NameTest(UnitTest):
 
-    def __init__(self):
-        UnitTest.__init__(self)
-
-    def getName(self):
-        return "Name"
-
     def testClassName(self):
         self.assertEqual(Handler.__name__, "Handler")
         self.assertEqual(Handler.get_name.__name__, "get_name")

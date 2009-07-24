@@ -4,11 +4,6 @@ class Foo:
     pass
 
 class DictTest(UnitTest):
-    def __init__(self):
-        UnitTest.__init__(self)
-
-    def getName(self):
-        return "Dict"
 
     def testStringKeys(self):
         d = {'a':1, 'b':2, '3':3, 3:4}

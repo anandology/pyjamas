@@ -15,11 +15,6 @@ from sets import Set
 
 
 class SetTest(UnitTest):
-    def __init__(self):
-        UnitTest.__init__(self)
-
-    def getName(self):
-        return "Set"
 
     def testInit(self):
         value = Set(['a', 'b', 'c'])

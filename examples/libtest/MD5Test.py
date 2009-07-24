@@ -35,11 +35,6 @@ else:
 
 
 class MD5Test(UnitTest.UnitTest):
-    def __init__(self):
-        UnitTest.UnitTest.__init__(self)
-
-    def getName(self):
-        return "MD5"
 
     def md5test(self, s, expected):
         self.assertEqual(hexstr(md5(s).digest()), expected)

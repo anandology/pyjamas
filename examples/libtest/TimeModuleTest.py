@@ -6,11 +6,6 @@ import time
 
 
 class TimeModuleTest(UnitTest.UnitTest):
-    def __init__(self):
-        UnitTest.UnitTest.__init__(self)
-
-    def getName(self):
-        return "TimeModule"
 
     def testBasics(self):
         t = time.time()

@@ -57,12 +57,6 @@ def call(default, arguments, this):
 
 class FunctionTest(UnitTest):
 
-    def __init__(self):
-        UnitTest.__init__(self)
-
-    def getName(self):
-        return "Function"
-
     def testLambda(self):
         # NOTE: kwargs and varargs are currently not supported and
         # raise a TranslationError

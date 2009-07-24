@@ -35,7 +35,7 @@ class UnitTest:
         pass
 
     def getName(self):
-        return ""
+        return self.__class__.__name__
 
     def getNameFmt(self, msg=""):
         if self.getName():

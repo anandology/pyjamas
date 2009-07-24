@@ -25,12 +25,6 @@ class Bar:
 
 class BoolTest(UnitTest):
 
-    def __init__(self):
-        UnitTest.__init__(self)
-
-    def getName(self):
-        return "Bool"
-
     def testBaseTypes(self):
         # meta test first
         self.assertTrue(True)

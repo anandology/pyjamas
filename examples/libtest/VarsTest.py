@@ -17,11 +17,6 @@ def changeme(lst):
 # setting the bases as a GetAttr expression here is by intent to test
 # GetAttr nodes in Class bases
 class VarsTest(UnitTest.UnitTest):
-    def __init__(self):
-        UnitTest.UnitTest.__init__(self)
-
-    def getName(self):
-        return "Vars"
 
     def testGlobalListData(self):
         self.assertTrue(cmp(data, [1,2,3]), "global list should be [1,2,3]")

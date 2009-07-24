@@ -2,11 +2,6 @@ from UnitTest import UnitTest
 
 
 class ListTest(UnitTest):
-    def __init__(self):
-        UnitTest.__init__(self)
-
-    def getName(self):
-        return "List"
 
     def testSliceGet(self):
         value = [0, 1, 2, 3, 4]

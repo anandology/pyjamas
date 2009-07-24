@@ -24,11 +24,6 @@ class Foo:
         return (name, prototype, apply, self.name)
 
 class AttributeTest(UnitTest):
-    def __init__(self):
-        UnitTest.__init__(self)
-
-    def getName(self):
-        return "Attribute"
 
     def testHasattr(self):
         self.assertEqual(hasattr(self, "getName"), True, "AttrTest should have method 'getName'")
@@ -36,7 +31,8 @@ class AttributeTest(UnitTest):
 
     def testGetattr(self):
         func = getattr(self, "getName")
-        self.assertEqual(func(), "Attribute", "getattr does not return correct value'")
+        self.assertEqual(func(), "AttributeTest",
+                         "getattr does not return correct value'")
 
         self.assertEqual(1, getattr(Foo, "notthere", 1))
         foo = Foo(1)

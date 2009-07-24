@@ -18,11 +18,6 @@ class GetAttribute():
 
 
 class ClassTest(UnitTest):
-    def __init__(self):
-        UnitTest.__init__(self)
-
-    def getName(self):
-        return "Class"
 
     # test Class.x
     def testClassVars(self):

@@ -8,12 +8,6 @@ def add(arg1, arg2):
 
 
 class TypeCompatibilityTest(UnitTest):
- 
-    def __init__(self):
-        UnitTest.__init__(self)
-
-    def getName(self):
-        return "TypeCompatibility"
 
     def test_string_plus_number(self):
         try:

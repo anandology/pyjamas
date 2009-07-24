@@ -7,13 +7,6 @@ class JSOTest(UnitTest):
 
     """tests for javascript object conversion"""
 
-    def __init__(self):
-        UnitTest.__init__(self)
-
-    def getName(self):
-        return "JSO"
-
-
     def testJSObject(self):
         f1 = Foo()
         d = {'f1key': f1}

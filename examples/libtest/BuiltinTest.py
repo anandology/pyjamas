@@ -4,11 +4,6 @@ class Foo:
     pass
 
 class BuiltinTest(UnitTest):
-    def __init__(self):
-        UnitTest.__init__(self)
-
-    def getName(self):
-        return "Builtin"
 
     def testMinMax(self):
         self.assertEqual(max(1,2,3,4), 4)

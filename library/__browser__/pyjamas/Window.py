@@ -1,9 +1,17 @@
 #@PYJS_FULL_OVERRIDE
 from __pyjamas__ import JS
 from pyjamas.Location import Location
+import sys
+
 closingListeners = None
 resizeListeners = None
 location = None
+
+def addWindowCloseListener(listener):
+    closingListeners.append(listener)
+
+def addWindowResizeListener(listener):
+    resizeListeners.append(listener)
 
 def getTitle():
     return JS('$doc.title')
