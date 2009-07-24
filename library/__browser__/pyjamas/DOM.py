@@ -549,10 +549,8 @@ def setIntStyleAttribute(elem, attr, value):
     """)
 
 def setOptionText(select, text, index):
-    JS("""
-    var option = select.options[index];
-    option.text = text;
-    """)
+    option = select.options.item(index)
+    option.text = text
 
 def setStyleAttribute(element, name, value):
     JS("""
