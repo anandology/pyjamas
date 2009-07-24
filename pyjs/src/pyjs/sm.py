@@ -13,6 +13,7 @@ $wnd.document = new Object();
 var $doc = $wnd.document;
 var $moduleName = "%(app_name)s";
 var $pyjs = new Object();
+$pyjs.__modules__ = {};
 $pyjs.modules = {};
 $pyjs.modules_hash = {};
 $pyjs.available_modules = %(available_modules)s;
@@ -44,9 +45,8 @@ $pyjs.loadpath = './';
 load(%(module_files)s);
 
 load(%(js_lib_files)s);
-
 pyjslib('pyjslib');
-pyjslib.__import__('%(app_name)s', '%(app_name)s', '__main__');
+pyjslib.__import__(['%(app_name)s'], '%(app_name)s', '%(app_name)s', '__main__');
 """
 
 class SpidermonkeyLinker(linker.BaseLinker):

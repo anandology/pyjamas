@@ -21,31 +21,32 @@ in the svn checkout here.
 
     >>> import tempfile, os, shutil
     >>> tmp = tempfile.mkdtemp()
-    >>> output = os.path.join(tmp, 'LibTest.js')
+    >>> out_file = os.path.join(tmp, 'LibTest.js')
 
 Note that this linker does not need any platforms argument because it
 compiles just one.
 
     >>> l = sm.SpidermonkeyLinker('LibTest',
-    ...                           output=output,
+    ...                           output=tmp,
     ...                           path=[libtest_dir])
     >>> l()
     >>> os.listdir(tmp)
-    ['LibTest.js']
+    ['lib', 'LibTest.js']
 
-    >>> out_file = os.path.join(output, 'LibTest.js')
     >>> print open(out_file).read()
     var...
     load('...pyjslib.__spidermonkey__.js', ...
     load('.../public/_pyjs.js', '...sprintf.js');
     <BLANKLINE>
     pyjslib('pyjslib');
-    pyjslib.__import__('LibTest', 'LibTest', '__main__');...
+    pyjslib.__import__(['LibTest'], 'LibTest', 'LibTest', '__main__');
 
 We can actually execute this with js.
 
-    >>> os.system('js %s' % output)
+    >>> cmd = 'time js %s' % out_file
+    >>> os.system(cmd)
     0
 
     >>> shutil.rmtree(tmp)
+
 
