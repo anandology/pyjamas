@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" id="the_svg" >
+<g id="svg_transform_element" transform="">
+<circle  id="thedot" cx="50" cy="50" r="10" fill="red" />
+<polygon id="triangle" points="2,20 22,20 12,40" fill="black" stroke="blue" stroke-width="1" />
+</g>
+</svg>
