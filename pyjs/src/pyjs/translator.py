@@ -1025,9 +1025,6 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         for importName, importAs in names:
             if importName == '__pyjamas__':
                 continue
-            if '__pyjamas__' in importName:
-                logging.warn("%s: Forbidden module dependency %s" % (
-                    self.module_name, importName))
             # "searchList" contains a list of possible module names :
             #   We create the list at compile time to save runtime.
             searchList = []

@@ -3,7 +3,7 @@
 
 import sys
 if sys.platform not in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
-    from __pyjamas__ import JS, doc, get_main_frame
+    from pyjamas.__pyjamas__ import JS, doc, get_main_frame
 
 historyToken = ''
 
