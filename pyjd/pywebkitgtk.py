@@ -414,6 +414,8 @@ class WebBrowser(gtk.Window):
         # TODO: ideally, this should be done by hooking body with an "onLoad".
 
         from pyjamas.__pyjamas__ import pygwt_processMetas, set_main_frame
+        from pyjamas.__pyjamas__ import set_gtk_module
+        set_gtk_module(gtk)
 
         main_frame = self._browser.getMainFrame()
         main_frame._callbacks = []
