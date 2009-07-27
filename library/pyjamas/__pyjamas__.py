@@ -10,6 +10,7 @@ if not sys.platform in  ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
     from traceback import print_stack
 
 main_frame = None
+gtk_module = None
 
 def noSourceTracking(*args):
     pass
@@ -20,6 +21,14 @@ def unescape(str):
     s = s.replace("&gt;", ">")
     s = s.replace("&quot;", '"')
     return s
+
+def set_gtk_module(m):
+    global gtk_module
+    gtk_module = m
+
+def get_gtk_module():
+    global gtk_module
+    return gtk_module
 
 def set_main_frame(frame):
     global main_frame

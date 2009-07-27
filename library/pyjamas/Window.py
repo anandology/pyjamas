@@ -7,10 +7,6 @@
 import sys
 if sys.platform not in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
 
-    import pygtk
-    pygtk.require('2.0')
-    import gtk
-
     from pyjamas.__pyjamas__ import get_main_frame
 
     closingListeners = []
@@ -21,7 +17,7 @@ else:
     closingListeners = None
     resizeListeners = None
 
-from pyjamas.__pyjamas__ import doc, wnd
+from pyjamas.__pyjamas__ import doc, wnd, get_gtk_module
 from pyjamas import Location
 
 def init_listeners():
@@ -41,6 +37,7 @@ def removeWindowResizeListener(listener):
 
 def alert(txt):
     #get_main_frame()._alert(txt)
+    gtk = get_gtk_module()
 
     def close(w):
         dialog.destroy()

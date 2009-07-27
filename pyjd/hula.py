@@ -119,7 +119,9 @@ class Browser(WebView):
         doc = dw.document
 
         from pyjamas.__pyjamas__ import pygwt_processMetas, set_main_frame
+        from pyjamas.__pyjamas__ import set_gtk_module
         set_main_frame(self)
+        set_gtk_module(gtk)
 
         (pth, app) = os.path.split(self.application)
         if self.appdir:
