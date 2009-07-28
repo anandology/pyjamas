@@ -64,6 +64,9 @@ def get_dir(dirname):
 get_dir("library")
 get_dir("examples")
 
+# likewise pyjs/src/pyjs
+get_dir(os.path.join("pyjs", "src", "pyjs"))
+
 #from pprint import pprint
 #pprint(data_files)
 
