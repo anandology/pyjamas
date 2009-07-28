@@ -38,8 +38,6 @@ class ClickDelegatePanel(Composite):
             wrapperWidget.setWidget(self.focusablePanel)
             self.initWidget(wrapperWidget)
 
-        # bug in click handling - Labels steal clicks!
-        child.addClickListener(self)
         if hasattr(child, "addKeyboardListener"):
             child.addKeyboardListener(kDelegate)
 
