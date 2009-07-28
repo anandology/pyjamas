@@ -8,7 +8,7 @@ def quote(s, safe=''):
     >>> quote("hey")
     'hey'
     >>> quote("$%&/?/+ s")
-    '%24%25%26/%3F/%2B%20s'
+    '%24%25%26%2F%3F%2F%2B%20s'
 
     """
     JS("""return encodeURIComponent(s);""")
@@ -21,7 +21,7 @@ def urlencode(d):
     >>> urlencode({"a": 34, "bbb": "ccc"})
     'a=34&bbb=ccc'
     >>> urlencode({"a": 34, "bbb": "$%&/?/+ s"})
-    'a=34&bbb=%24%25%26/%3F/%2B%20s'
+    'a=34&bbb=%24%25%26%2F%3F%2F%2B%20s'
     >>> urlencode({"a": 34})
     'a=34'
     >>> urlencode({})
