@@ -22,7 +22,6 @@
 from pyjamas.ui.splitpanel import SplitPanel
 from pyjamas import DOM
 from pyjamas.DeferredCommand import DeferredCommand
-from pyjamas.Timer import Timer
 
 class ImplHorizontalSplitPanel:
     """ The standard implementation for horizontal split panels.
