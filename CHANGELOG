@@ -1,6 +1,10 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
+ * fixed urllib quote TODO: need real implementation of quote
+
+ * removed deprecated pyjs.py from root of pyjs
+
  * we now do not need to override pyjamas.Window fully anymore, so use
    base implementation, which now does not import gtk anymore. moved
    pyjamas/__pyjamas__ to /__pyjamas__ again.

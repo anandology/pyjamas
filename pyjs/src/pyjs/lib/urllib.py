@@ -1,4 +1,5 @@
-def quote(s):
+# TODO: implement safe
+def quote(s, safe=''):
     """
     This function is equivalent to urllib.quote().
 
