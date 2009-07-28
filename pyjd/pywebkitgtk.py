@@ -413,8 +413,8 @@ class WebBrowser(gtk.Window):
     def init_app(self):
         # TODO: ideally, this should be done by hooking body with an "onLoad".
 
-        from pyjamas.__pyjamas__ import pygwt_processMetas, set_main_frame
-        from pyjamas.__pyjamas__ import set_gtk_module
+        from __pyjamas__ import pygwt_processMetas, set_main_frame
+        from __pyjamas__ import set_gtk_module
         set_gtk_module(gtk)
 
         main_frame = self._browser.getMainFrame()

@@ -118,8 +118,8 @@ class Browser(WebView):
         dw = self.get_dom_window()
         doc = dw.document
 
-        from pyjamas.__pyjamas__ import pygwt_processMetas, set_main_frame
-        from pyjamas.__pyjamas__ import set_gtk_module
+        from __pyjamas__ import pygwt_processMetas, set_main_frame
+        from __pyjamas__ import set_gtk_module
         set_main_frame(self)
         set_gtk_module(gtk)
 

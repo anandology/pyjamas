@@ -30,6 +30,7 @@ def get_gtk_module():
     return gtk_module
 
 def set_main_frame(frame):
+    print "set_main_frame", frame
     global main_frame
     main_frame = frame
     from pyjamas import DOM
