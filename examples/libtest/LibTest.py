@@ -32,6 +32,7 @@ from BuiltinTest import BuiltinTest
 from MD5Test import MD5Test
 from TimeModuleTest import TimeModuleTest
 from TypeCompatibilityTest import TypeCompatibilityTest
+from UrllibModuleTest import UrllibModuleTest
 
 def main():
     LoopTest().run()
@@ -55,6 +56,7 @@ def main():
     MD5Test().run()
     TimeModuleTest().run()
     TypeCompatibilityTest().run()
+    UrllibModuleTest().run()
 
 if __name__ == '__main__':
     main()
