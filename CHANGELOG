@@ -5,6 +5,8 @@
    base implementation, which now does not import gtk anymore. moved
    pyjamas/__pyjamas__ to /__pyjamas__ again.
 
+ * Added beginnings of urllib (quote, urlencode) thanks to Ondrej Certik
+
  * Fixed speed issue #199!  was related to accidental inclusion of gtk.py,
    which accidentally pulled in browser.py, gobject.py and much more.
    Thank you to dobee and jukart for identifying the source of the problem.
