@@ -3,8 +3,11 @@
 """ simple creation of two commands, customised for your specific system.
     windows users get a corresponding batch file.  yippeeyaiyay.
 """
+version = '0.6pre2'
+
 pyjsbuild = """#!%s
 
+pyjsversion = r'%s'
 pyjspth = r'%s'
 
 import os
@@ -19,11 +22,15 @@ os.path.join(pyjspth, 'addons'),
 
 import pyjs.browser
 if __name__ == '__main__':
+    if "--version" in sys.argv:
+        print "Version:", pyjsversion
+        sys.exit(0)
     pyjs.browser.build_script()
 """
 
 pyjscompile = """#!%s
 
+pyjsversion = r'%s'
 pyjspth = r'%s'
 
 import os
@@ -36,15 +43,24 @@ import pyjs.translator
 pyjs.path += [os.path.join(pyjspth, 'library')]
 
 if __name__ == '__main__':
+    if "--version" in sys.argv:
+        print "Version:", pyjsversion
+        sys.exit(0)
     pyjs.translator.main()
 """
 
 pyjdinit = """
+pyjdversion = r'%s'
 pyjdinitpth = r'%s'
 
 import os
 import sys
 import ConfigParser
+
+if "--version" in sys.argv:
+    print "Version:", pyjdversion
+    sys.exit(0)
+
 
 sys.path += [os.path.join(pyjdinitpth, 'library')]
 
@@ -81,7 +97,7 @@ python %s %%CMD_LINE_ARGS%%
 import os
 import sys
 
-def make_cmd(prefix, pth, pyjspth, cmdname, txt):
+def make_cmd(prefix, pth, pyjsversion, pyjspth, cmdname, txt):
 
     if sys.platform == 'win32':
         cmd_name = cmdname + ".py"
@@ -98,7 +114,7 @@ def make_cmd(prefix, pth, pyjspth, cmdname, txt):
     if os.path.exists(cmd):
         os.unlink(cmd)
     f = open(cmd, "w")
-    f.write(txt % (sys.executable, pyjspth, pth))
+    f.write(txt % (sys.executable, pyjsversion, pyjspth, pth))
     f.close()
 
     if hasattr(os, "chmod"):
@@ -128,11 +144,11 @@ if __name__ == '__main__':
     else:
         prefix = "."
 
-    make_cmd(prefix, pth, pyjspth, "pyjsbuild", pyjsbuild)
-    make_cmd(prefix, pth, pyjspth, "pyjscompile", pyjscompile)
+    make_cmd(prefix, pth, version, pyjspth, "pyjsbuild", pyjsbuild)
+    make_cmd(prefix, pth, version, pyjspth, "pyjscompile", pyjscompile)
 
     # create pyjd/__init__.py
     pyjdinitpth = os.path.join("pyjd", "__init__.py")
     f = open(pyjdinitpth, "w")
-    f.write(pyjdinit % pyjspth)
+    f.write(pyjdinit % (version, pyjspth))
     f.close()
