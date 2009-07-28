@@ -1,23 +1,14 @@
 # This is the gtk-dependent Window module.
-# For the pyjamas/javascript version, see platform/WindowPyJS.py
+# For the pyjamas/javascript version, see __browser__.pyjamas.Window
 
 """
     Window provides access to the DOM model's global Window.
 """
-import sys
-if sys.platform not in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
 
-    from pyjamas.__pyjamas__ import get_main_frame
+closingListeners = []
+resizeListeners = []
 
-    closingListeners = []
-    resizeListeners = []
-else:
-    from __pyjamas__ import JS
-    from __pyjamas__ import unescape # for Location IE6 and Opera
-    closingListeners = None
-    resizeListeners = None
-
-from pyjamas.__pyjamas__ import doc, wnd, get_gtk_module
+from __pyjamas__ import doc, wnd, get_gtk_module
 from pyjamas import Location
 
 def init_listeners():

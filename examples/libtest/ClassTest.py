@@ -1,5 +1,5 @@
 import sys
-from UnitTest import UnitTest
+from UnitTest import UnitTest, IN_BROWSER
 
 # syntax check
 # import a, b, c
@@ -62,8 +62,7 @@ class ClassTest(UnitTest):
 
         # for we just make sure the result is undefined and not the value of
         # ExampleClass.a
-        if sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz',
-                            'safari']:
+        if IN_BROWSER:
             x = ExampleClass().fail_a()
             self.assertTrue(JS('pyjslib.isUndefined(x)'))
 

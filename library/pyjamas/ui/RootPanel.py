@@ -12,8 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import sys
-if sys.platform not in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
-    from pyjamas.__pyjamas__ import doc
+from __pyjamas__ import doc
 
 from pyjamas import DOM
 from pyjamas import Window

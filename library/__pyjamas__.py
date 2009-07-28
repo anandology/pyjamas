@@ -6,8 +6,7 @@
     to get applications kick-started.
 """
 import sys
-if not sys.platform in  ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
-    from traceback import print_stack
+from traceback import print_stack
 
 main_frame = None
 gtk_module = None

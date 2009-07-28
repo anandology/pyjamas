@@ -1,7 +1,12 @@
 from write import write, writebr
 import sys
 
+IN_BROWSER = sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']
+IN_JS = sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz',
+                         'safari', 'spidermonkey']
+
 class UnitTest:
+
     def __init__(self):
         self.tests_completed=0
         self.tests_failed=0

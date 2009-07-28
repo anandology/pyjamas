@@ -1,4 +1,29 @@
 
+def addWindowCloseListener(listener):
+    closingListeners.append(listener)
+
+def addWindowResizeListener(listener):
+    resizeListeners.append(listener)
+
+def getTitle():
+    return JS('$doc.title')
+
+def getLocation():
+    global location
+    if not location:
+        location = Location.Location(wnd().location)
+    return location
+
+def setLocation(url):
+    w = JS('$wnd')
+    w.location = url
+
+def getClientHeight():
+    return JS('$wnd.innerHeight')
+
+def getClientWidth():
+    return JS('$wnd.innerWidth')
+
 def setOnError(onError):
     if (not callable(onError)):
         raise TypeError("object is not callable")
@@ -7,6 +32,49 @@ def setOnError(onError):
         return onError(msg, url, linenumber);
     }
     """)
+
+def fireClosingImpl():
+    ret = None
+    for listener in closingListeners:
+        msg = listener.onWindowClosing()
+        if ret is None:
+            ret = msg
+    return ret
+
+def fireResizedAndCatch(handler):
+    # FIXME - need implementation
+    pass
+
+def fireResizedImpl():
+    for listener in resizeListeners:
+        listener.onWindowResized(getClientWidth(), getClientHeight())
+
+# TODO: call fireClosedAndCatch
+def onClosed():
+    fireClosedImpl()
+
+# TODO: call fireClosingAndCatch
+def onClosing():
+    fireClosingImpl()
+
+# TODO: call fireResizedAndCatch
+def onResize():
+    fireResizedImpl()
+
+def fireClosedAndCatch(handler):
+    # FIXME - need implementation
+    pass
+
+def fireClosedImpl():
+    for listener in closingListeners:
+        listener.onWindowClosed()
+
+def fireClosingAndCatch(handler):
+    # FIXME - need implementation
+    pass
+
+def resize(width, height):
+    wnd().resizeTo(width, height)
 
 def onError(msg, url, linenumber):
     dialog=doc().createElement("div")

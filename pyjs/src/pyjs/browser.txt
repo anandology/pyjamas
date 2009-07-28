@@ -215,8 +215,7 @@ to their paths.
 The script selectors point to the according files.
 
     >>> print f.read()
-    <html><head><script>
-    ...
+    <html>...
     O(["true","ie6"],"mypackage.index.ie6.2da78b3ac76b1a1c9879e3e8a9997eb0.cache.html");
     O(["true","mozilla"],"mypackage.index.mozilla.1b658fcd34b8f530360aa5de3cd9e8c3.cache.html");...
 

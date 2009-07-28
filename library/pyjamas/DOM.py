@@ -19,7 +19,7 @@
 import sys
 if sys.platform not in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
     from pyjamas.Window import onResize, onClosing, onClosed
-    from pyjamas.__pyjamas__ import JS, doc, get_main_frame, wnd
+    from __pyjamas__ import JS, doc, get_main_frame, wnd
 
     currentEvent = None
 

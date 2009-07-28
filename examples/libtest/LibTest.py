@@ -1,4 +1,4 @@
-import sys
+from UnitTest import IN_BROWSER, IN_JS, IN_BROWSER
 from LoopTest import LoopTest
 from StringTest import StringTest
 from ListTest import ListTest
@@ -13,8 +13,20 @@ from BoolTest import BoolTest
 from FunctionTest import FunctionTest
 from NameTest import NameTest
 from DictTest import DictTest
-if sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
+
+if IN_JS:
     from JSOTest import JSOTest
+else:
+    import os, sys
+    here = os.path.abspath(os.path.dirname(__file__))
+    library = os.path.join(os.path.dirname(os.path.dirname(
+        here)), 'library')
+    sys.path.append(library)
+
+# spidermonkey has no window implementation, but we like to test the
+# import of pyjamas.Window in pure python too
+import sys
+if sys.platform != 'spidermonkey':
     from WindowTest import WindowTest
 from BuiltinTest import BuiltinTest
 from MD5Test import MD5Test
@@ -36,7 +48,7 @@ def main():
     AttributeTest().run()
     NameTest().run()
     DictTest().run()
-    if sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
+    if IN_BROWSER:
         JSOTest().run()
         WindowTest().run()
     BuiltinTest().run()

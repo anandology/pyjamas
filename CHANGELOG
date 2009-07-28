@@ -1,6 +1,10 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
+ * we now do not need to override pyjamas.Window fully anymore, so use
+   base implementation, which now does not import gtk anymore. moved
+   pyjamas/__pyjamas__ to /__pyjamas__ again.
+
  * Fixed speed issue #199!  was related to accidental inclusion of gtk.py,
    which accidentally pulled in browser.py, gobject.py and much more.
    Thank you to dobee and jukart for identifying the source of the problem.
@@ -14,11 +18,7 @@
 
  * added flag handling to overrides for translator, see
    translator.txt. it is now possible to override a whole
-   module. which is now actually used for pyjamas.Window so we do not
-   need to build gtk.py for browser, which saves about 400k of
-   generated code if pyjamas.Window is used. in the future we should
-   add more such flags for overrides and get rid of all the "if
-   sys.platform.." stuff.
+   module.
 
  * fixed pyjamas.Window.getClientWidth/Height on IE. removed
    conditionals from __browser__ implementation in those functions.
