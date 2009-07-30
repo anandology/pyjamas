@@ -3,7 +3,7 @@ Section: python
 Priority: extra
 Maintainer: Luke Kenneth Casson Leighton <lkcl@lkcl.net>
 Build-Depends: debhelper (>= 7), python-support (>= 0.5.3), python, sed (>= 4.1.5)
-Standards-Version: 3.8.0
+Standards-Version: 3.8.1
 Homepage: http://pyjs.org
 
 Package: pyjamas
