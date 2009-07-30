@@ -1,5 +1,5 @@
 This package was debianized by Luke Kenneth Casson Leighton <lkcl@lkcl.net>
-on Tue, 24 Mar 2009 19:26:53 +0000.
+on Thu, 30 Jul 2009 21:20
 
 It was downloaded from http://pyjs.org
 
@@ -30,7 +30,10 @@ Copyright:
     Copyright (C) 2006, 2007 James Tauber
     Copyright (C) 2006 Google, Inc.
 
-License:
+Licenses:
+
+    Apache 2 - /usr/share/common-licenses/Apache-2.0
+    --------
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -45,6 +48,8 @@ License:
     limitations under the License.
 
 
+    GPLv2 - /usr/share/common-licenses/GPL-2
+    -----
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public

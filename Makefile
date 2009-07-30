@@ -1,4 +1,4 @@
-VERSION=0.6pre2
+VERSION=0.6~pre2
 DEBSUBVERSION=1
 
 help:
