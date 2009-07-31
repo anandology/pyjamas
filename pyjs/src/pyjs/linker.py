@@ -3,9 +3,13 @@ import os
 import sys
 import util
 import logging
+import pyjs
 
-LIB_PATH = os.path.join(os.path.dirname(__file__), 'lib')
-BUILTIN_PATH = os.path.join(os.path.dirname(__file__), 'builtin')
+
+#LIB_PATH = os.path.join(os.path.dirname(__file__), 'lib')
+#BUILTIN_PATH = os.path.join(os.path.dirname(__file__), 'builtin')
+LIB_PATH = os.path.join(pyjs.pyjspth, "pyjs", "src", "pyjs", "lib")
+BUILTIN_PATH = os.path.join(pyjs.pyjspth, "pyjs", "src", "pyjs", "builtin")
 
 _path_cache= {}
 def module_path(name, path):

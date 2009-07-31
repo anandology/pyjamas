@@ -8,7 +8,8 @@ import pyjs
 
 AVAILABLE_PLATFORMS = ('IE6', 'Opera', 'OldMoz', 'Safari', 'Mozilla')
 
-BOILERPLATE_PATH = os.path.join(os.path.dirname(__file__), 'boilerplate')
+#BOILERPLATE_PATH = os.path.join(os.path.dirname(__file__), 'boilerplate')
+BOILERPLATE_PATH = os.path.join(pyjs.pyjspth, 'pyjs', 'src','pyjs', 'boilerplate')
 
 APP_HTML_TEMPLATE = """\
 <html>

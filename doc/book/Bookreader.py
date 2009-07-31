@@ -10,7 +10,7 @@ from pyjamas.ui.VerticalPanel import VerticalPanel
 from pyjamas.ui.ScrollPanel import ScrollPanel
 from pyjamas import Window
 from SinkList import SinkList
-from pyjamas.History import History
+from pyjamas import History
 import Chapter
 from pyjamas.HTTPRequest import HTTPRequest
 from BookLoader import ChapterListLoader

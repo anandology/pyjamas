@@ -25,6 +25,10 @@ import re
 import hashlib
 import logging
 
+import pyjs
+
+#LIBRARY_PATH = os.path.abspath(os.path.dirname(__file__))
+LIBRARY_PATH = os.path.join(pyjs.pyjspth, "pyjs", "src", "pyjs")
 
 # this is the python function used to wrap native javascript
 NATIVE_JS_FUNC_NAME = "JS"
@@ -2660,7 +2664,7 @@ class AppTranslator:
         for library_dir in self.library_dirs:
             file_name = dotreplace(file_name)
             full_file_name = os.path.join(
-                os.path.abspath(os.path.dirname(__file__)), library_dir, file_name)
+                    LIBRARY_PATH, library_dir, file_name)
             if os.path.isfile(full_file_name):
                 return full_file_name
 
@@ -2668,7 +2672,7 @@ class AppTranslator:
             fnameinit = fnameinit + "/__init__.py"
 
             full_file_name = os.path.join(
-                os.path.abspath(os.path.dirname(__file__)), library_dir, fnameinit)
+                    LIBRARY_PATH, library_dir, fnameinit)
             if os.path.isfile(full_file_name):
                 return full_file_name
 

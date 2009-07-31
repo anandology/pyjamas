@@ -16,6 +16,7 @@ sys.path[0:0] = [
 os.path.join(r'%s', 'pyjs', 'src'),
   ]
 import pyjs
+pyjs.pyjspth = r'%s'
 pyjs.path += [os.path.join(pyjspth, 'library'),
 os.path.join(pyjspth, 'addons'),
 ]
@@ -40,6 +41,7 @@ sys.path[0:0] = [
   ]
 
 import pyjs.translator
+pyjs.pyjspth = r'%s'
 pyjs.path += [os.path.join(pyjspth, 'library')]
 
 if __name__ == '__main__':
@@ -114,7 +116,7 @@ def make_cmd(prefix, pth, pyjsversion, pyjspth, cmdname, txt):
     if os.path.exists(cmd):
         os.unlink(cmd)
     f = open(cmd, "w")
-    f.write(txt % (sys.executable, pyjsversion, pyjspth, pth))
+    f.write(txt % (sys.executable, pyjsversion, pyjspth, pth, pyjspth))
     f.close()
 
     if hasattr(os, "chmod"):

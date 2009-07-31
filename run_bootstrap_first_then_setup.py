@@ -66,6 +66,9 @@ get_dir("examples")
 
 # likewise pyjs/src/pyjs
 get_dir(os.path.join("pyjs", "src", "pyjs"))
+get_dir(os.path.join("pyjs", "src", "pyjs", "builtin"))
+get_dir(os.path.join("pyjs", "src", "pyjs", "lib"))
+get_dir(os.path.join("pyjs", "src", "pyjs", "boilerplate"))
 
 #from pprint import pprint
 #pprint(data_files)
@@ -91,7 +94,7 @@ if __name__ == '__main__':
         author = "The Pyjamas Project",
         author_email = "lkcl@lkcl.net",
         keywords = keyw,
-        packages=["pyjs", "pyjd"],
+        packages=["pyjs", "pyjd", "pyjs.src.pyjs"],
         #scripts = ["bin/pyjsbuild", "bin/pyjscompile"],
         data_files = data_files,
         license = "Apache Software License",
