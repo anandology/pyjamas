@@ -117,7 +117,7 @@ sprintfWrapper = {
 				min: match[6] || 0,
 				precision: match[8],
 				code: match[9] || '%',
-				negative: parseInt(param) < 0 ? true : false,
+				negative: parseFloat(param) < 0 ? true : false,
 				argument: String(param)
 			};
 		}
