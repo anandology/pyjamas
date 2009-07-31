@@ -71,7 +71,6 @@ get_dir(os.path.join("pyjs", "src", "pyjs"))
 #pprint(data_files)
 
 import distutils.core
-print dir(distutils.core)
 
 if __name__ == '__main__':
 

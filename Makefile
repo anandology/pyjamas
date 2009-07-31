@@ -35,6 +35,8 @@ debian-build:
 	         --exclude=fckeditor \
 	         --exclude=*.pyc \
 	         --exclude=.git* \
+	         --exclude=*.rej \
+	         --exclude=*.orig \
 	         --exclude=.*.sw? \
 			 --exclude=deb \
 			 .

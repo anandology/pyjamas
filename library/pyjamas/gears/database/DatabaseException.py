@@ -20,7 +20,6 @@
 """*
 * Exception class indicating a Gears database-related error.
 """
-@SuppressWarnings("serial")
 class DatabaseException(GearsException):
     """*
     * Constructor taking a message.

@@ -71,7 +71,8 @@ binary-indep: build install
 	dh_installexamples tmp/examples/*
 	dh_install bin/pyjsbuild /usr/bin
 	dh_installman debian/pyjsbuild.1
-	dh_pysupport
+	dh_pysupport 
+	dh_pysupport /usr/share/pyjamas/library
 	dh_link 
 	dh_compress -Xexamples
 	dh_fixperms 
