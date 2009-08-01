@@ -125,7 +125,7 @@ class Chapter(Sink):
 
         self.name = self.name.replace(" ", "_")
         self.name = self.name.lower()
-        HTTPRequest().asyncPost("%s.txt" % self.name, "", ChapterLoader(self))
+        HTTPRequest().asyncGet("%s.txt" % self.name, "", ChapterLoader(self))
 
     def setChapter(self, text):
         self.loaded = True
