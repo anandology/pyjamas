@@ -12,9 +12,7 @@ pyjspth = r'%s'
 
 import os
 import sys
-sys.path[0:0] = [
-os.path.join(r'%s', 'pyjs', 'src'),
-  ]
+sys.path[0:0] = [r'%s']
 import pyjs
 pyjs.pyjspth = r'%s'
 pyjs.path += [os.path.join(pyjspth, 'library'),
@@ -36,9 +34,7 @@ pyjspth = r'%s'
 
 import os
 import sys
-sys.path[0:0] = [
-  r'%s/pyjs/src',
-  ]
+sys.path[0:0] = [r'%s']
 
 import pyjs.translator
 pyjs.pyjspth = r'%s'
@@ -134,10 +130,12 @@ def make_cmd(prefix, pth, pyjsversion, pyjspth, cmdname, txt):
 if __name__ == '__main__':
     if len(sys.argv) >= 2:
         pth = sys.argv[1]
+        pyjspth = pth
     else:
         pth = os.path.abspath(os.getcwd())
+        pyjspth = pth
+        pth = os.path.join(pth, 'pyjs', 'src')
 
-    pyjspth = pth
     if len(sys.argv) == 3:
         prefix = sys.argv[2]
     elif len(sys.argv) == 4:
@@ -154,3 +152,4 @@ if __name__ == '__main__':
     f = open(pyjdinitpth, "w")
     f.write(pyjdinit % (version, pyjspth))
     f.close()
+
