@@ -116,7 +116,7 @@ class Interface:
         print "\tdef __init__(self, item):"
         print "\t\tself.__dict__['__instance__'] = item"
         print ""
-        print "\tdef __get_instance(self, kls=None):"
+        print "\tdef __get_instance_%s(self, kls=None):" % self.name
         print "\t\tif kls is None:"
         print "\t\t\tkls = MSHTML.%s" % self.name
         print "\t\treturn self.__instance__.QueryInterface(kls)"
@@ -125,12 +125,14 @@ class Interface:
             override = ''
             # *sigh*...
             if self.name == 'IHTMLDocument2' and p == 'body':
-                override = 'MSHTML.DispHTMLBody'
+                override = ', DispHTMLBody'
             print "\t#%s" % p
             print "\tdef _get_%s(self):" % p
-            print "\t\treturn wrap(self.__get_instance(%s).%s)" % (override, p)
+            print "\t\treturn wrap(self.__get_instance_%s().%s%s)" % \
+                                        (self.name, p, override)
             print "\tdef _set_%s(self, value):" % p
-            print "\t\tself.__get_instance().%s = unwrap(value)" % p
+            print "\t\tself.__get_instance_%s().%s = unwrap(value)" % \
+                                        (self.name, p)
             print "\t%s = property(_get_%s, _set_%s)" % (p, p, p)
             print ""
 
@@ -142,10 +144,12 @@ class Interface:
             print "\tdef %s(self, *args):" % f_
             print "\t\targs = map(unwrap, args)"
             if f == 'print':
-                print "\t\tfn = getattr('%s', self.__get_instance())" % f
+                print "\t\tfn = getattr('%s', self.__get_instance_%s())" % \
+                                      (self.name, f)
                 print "\t\treturn wrap(fn(*args))"
             else:
-                print "\t\treturn wrap(self.__get_instance().%s(*args))" % f
+                print "\t\treturn wrap(self.__get_instance_%s().%s(*args))" % \
+                                      (self.name, f)
             print ""
 
         print "wrapperClasses['%s'] = %s" % (self.uuid, self.name)
@@ -220,12 +224,17 @@ def unwrap(item):
     if not backWrapperClasses.has_key(kls):
         return item
     return item.__instance__
-def wrap(item):
+def wrap(item, override=None):
+    if override: # easier to pass in class than GUID
+        override = backWrapperClasses[override]
     if item is None:
         return None
     if not hasattr(item, '_iid_'):
         return item
-    kls = str(item._iid_)
+    if override:
+        kls = override
+    else:
+        kls = str(item._iid_)
     if coWrapperClasses.has_key(kls):
         return coWrapperClasses[kls](item)
     if not wrapperClasses.has_key(kls):
