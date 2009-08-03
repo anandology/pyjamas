@@ -80,6 +80,8 @@ def onError(msg, url, linenumber):
     dialog=doc().createElement("div")
     dialog.className='errordialog'
     # Note: $pyjs.trackstack is a global javascript array
+    # XXX: we should not have a sys dependency here!
+    import sys
     tracestr = sys.trackstackstr(JS("$pyjs.trackstack.slice(0,-1)"))
     tracestr = tracestr.replace("\n", "<br />\n&nbsp;&nbsp;&nbsp;")
     dialog.innerHTML='&nbsp;<b style="color:red">JavaScript Error: </b>' + \
