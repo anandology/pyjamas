@@ -1,6 +1,7 @@
 from UnitTest import UnitTest
 
 
+
 class ListTest(UnitTest):
 
     def testSliceGet(self):
@@ -124,6 +125,14 @@ class ListTest(UnitTest):
         self.assertTrue(l1 >= l2, "l1 >= l2")
         self.assertTrue(l2 < l1, "l2 < l1")
         self.assertTrue(l2 <= l1, "l2 <= l1")
+
+        b1 = B()
+        b2 = B()
+        l1 = [b1, b2]
+        l2 = [b2, b1]
+        self.assertFalse(l1==l2,
+                         'TODO: List comparison with plain objects not implemented')
+
 
     def testCmpListTuple(self):
         t1 = (1,2,3)
@@ -266,5 +275,6 @@ class A:
     def __cmp__(self, other):
         return -1
 
-
+class B:
+    pass
 
