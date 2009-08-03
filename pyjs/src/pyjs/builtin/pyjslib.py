@@ -77,6 +77,7 @@ def __import__(searchList, path, context, module_name=None):
     except:
         pass
     # initialize all modules/packages
+    save_track_module = JS("$pyjs.track.module")
     importName = ''
     parts = mod_path.split('.')
     l = len(parts)
@@ -94,6 +95,8 @@ def __import__(searchList, path, context, module_name=None):
         else:
             module(None)
         importName += '.'
+    JS("$pyjs.track.module = save_track_module;")
+
 
 # FIXME: dynamic=1, async=False are useless here (?). Only dynamic modules 
 # are loaded with load_module and it's always "async"

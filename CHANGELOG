@@ -1,6 +1,14 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
+ * The -d option now sets:
+    --debug-wrap
+    --source-tracking
+    --line-tracking
+    --store-source
+
+ * Bugfix for soure tracking/debugging
+
  * BUGFIX: the --no-print-statements option was not honored in browser
    linker
 

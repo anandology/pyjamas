@@ -51,8 +51,9 @@ def trackstackstr(stack=None):
     if not stack:
         return ''
     stackstrings = []
+    msg = ''
     for s in list(stack):
-        JS("var msg = eval(s.module + '.__track_lines__[' + s.lineno + ']');")
+        JS("msg = eval(s.module + '.__track_lines__[' + s.lineno + ']');")
         if msg:
             stackstrings.append(msg)
         else:

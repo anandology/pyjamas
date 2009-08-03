@@ -357,6 +357,9 @@ class Translator:
         if self.source_tracking:
             print >> self.output, self.spacing() + "%s.__track_lines__ = new Array();" % raw_module_name
 
+        save_output = self.output
+        self.output = StringIO()
+
         decl = mod_var_name_decl(raw_module_name)
         if decl:
             print >>self.output, self.spacing() + decl
@@ -413,9 +416,12 @@ class Translator:
                     "unsupported type (in __init__)",
                     child, self.module_name)
 
+        captured_output = self.output.getvalue()
+        self.output = save_output
         if self.source_tracking and self.store_source:
             for l in self.track_lines.keys():
                 print >> self.output, self.spacing() + '''%s.__track_lines__[%d] = "%s";''' % (raw_module_name, l, self.track_lines[l].replace('"', '\"'))
+        print >>self.output, captured_output,
 
         if attribute_checking:
             print >> self.output, self.spacing() + "} catch (pyjs_attr_err) {throw pyjslib._errorMapping(pyjs_attr_err)};"
@@ -2755,20 +2761,21 @@ class AppTranslator:
         return lib_code.getvalue(), app_code.getvalue()
 
 def add_compile_options(parser):
+    debug_options = {}
     speed_options = {}
     pythonic_options = {}
 
-    parser.add_option("-d", "--debug",
+    parser.add_option("--debug-wrap",
                       dest="debug",
                       action="store_true",
                       help="Wrap function calls with javascript debug code",
                      )
-    parser.add_option("--no-debug",
+    parser.add_option("--no-debug-wrap",
                       dest="debug",
                       action="store_false",
                      )
+    debug_options['debug'] = True
     speed_options['debug'] = False
-    pythonic_options['debug'] = False
 
     parser.add_option("--no-print-statements",
                       dest="print_statements",
@@ -2831,6 +2838,7 @@ def add_compile_options(parser):
                       action="store_true",
                       help = "Generate code for source tracking",
                      )
+    debug_options['source_tracking'] = True
     speed_options['source_tracking'] = False
     pythonic_options['source_tracking'] = True
 
@@ -2844,6 +2852,7 @@ def add_compile_options(parser):
                       action="store_true",
                       help = "Generate code for source tracking on every line",
                      )
+    debug_options['line_tracking'] = True
     pythonic_options['line_tracking'] = True
 
     parser.add_option("--no-store-source",
@@ -2856,13 +2865,20 @@ def add_compile_options(parser):
                       action="store_true",
                       help = "Store python code in javascript",
                      )
-    pythonic_options['line_tracking'] = True
+    debug_options['store_source'] = True
+    pythonic_options['store_source'] = True
 
 
     def set_multiple(option, opt_str, value, parser, **kwargs):
         for k in kwargs.keys():
             setattr(parser.values, k, kwargs[k])
 
+    parser.add_option("-d", "--debug",
+                      action="callback",
+                      callback = set_multiple,
+                      callback_kwargs = debug_options,
+                      help="Set all debugging options",
+                     )
     parser.add_option("-O",
                       action="callback",
                       callback = set_multiple,
