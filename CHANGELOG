@@ -1,6 +1,9 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
+ * BUGFIX: the --no-print-statements option was not honored in browser
+   linker
+
  * fixed urllib quote TODO: need real implementation of quote
 
  * removed deprecated pyjs.py from root of pyjs

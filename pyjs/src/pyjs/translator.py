@@ -2771,7 +2771,7 @@ def add_compile_options(parser):
     pythonic_options['debug'] = False
 
     parser.add_option("--no-print-statements",
-                      dest="print_statments",
+                      dest="print_statements",
                       action="store_false",
                       help="Remove all print statements",
                      )
