@@ -108,6 +108,14 @@ def init_listeners():
         resizeListeners = []
 
 def init():
+    # Currently, the handling of global is not quite right
+    # Temporary hack
+    global sys
+    def import_sys():
+        import sys
+        return sys
+    sys = import_sys()
+
     init_listeners()
     JS("""
     $wnd.__pygwt_initHandlers(
