@@ -636,6 +636,7 @@ class Translator:
 var %(dbg)s_retry = 0;
 try{var %(dbg)s_res=%(call_code)s;}catch(%(dbg)s_err){
     if (%(dbg)s_err.__name__ != 'StopIteration') {
+        var save_stack = $pyjs.__last_exception_stack__;
         sys.save_exception_stack();
         var pyjs_msg = "Module %(mod)s at line %(lineno)s :\\n" + %(dbg)s_err;
 
@@ -643,6 +644,7 @@ try{var %(dbg)s_res=%(call_code)s;}catch(%(dbg)s_err){
             pyjs_msg += "\\n" + sys.trackstackstr();
         } catch (s) {};
         alert(pyjs_msg);
+        $pyjs.__last_exception_stack__ = save_stack;
         debugger;
     }
     switch (%(dbg)s_retry) {
