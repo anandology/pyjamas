@@ -116,13 +116,19 @@ class Interface:
         print "\tdef __init__(self, item):"
         print "\t\tself.__dict__['__instance__'] = item"
         print ""
-        print "\tdef __get_instance(self):"
-        print "\t\treturn self.__instance__.QueryInterface(MSHTML.%s)" % self.name
+        print "\tdef __get_instance(self, kls=None):"
+        print "\t\tif kls is None:"
+        print "\t\t\tkls = MSHTML.%s" % self.name
+        print "\t\treturn self.__instance__.QueryInterface(kls)"
 
         for p in self.props:
+            override = ''
+            # *sigh*...
+            if self.name == 'IHTMLDocument2' and p == 'body':
+                override = 'MSHTML.DispHTMLBody'
             print "\t#%s" % p
             print "\tdef _get_%s(self):" % p
-            print "\t\treturn wrap(self.__get_instance().%s)" % p
+            print "\t\treturn wrap(self.__get_instance(%s).%s)" % (override, p)
             print "\tdef _set_%s(self, value):" % p
             print "\t\tself.__get_instance().%s = unwrap(value)" % p
             print "\t%s = property(_get_%s, _set_%s)" % (p, p, p)

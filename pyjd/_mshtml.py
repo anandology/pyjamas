@@ -11,7 +11,6 @@ wrapperClasses = {}
 coWrapperClasses = {}
 backWrapperClasses = {}
 def unwrap(item):
-    print 'unwrap', item, type(item)
     if item is None:
         return None
     kls = item.__class__
@@ -19,7 +18,6 @@ def unwrap(item):
         return item
     return item.__instance__
 def wrap(item):
-    print 'wrap', item, type(item)
     if item is None:
         return None
     if not hasattr(item, '_iid_'):
@@ -39,8 +37,10 @@ class IHTMLFiltersCollection(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLFiltersCollection)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLFiltersCollection
+		return self.__instance__.QueryInterface(kls)
 	#length
 	def _get_length(self):
 		return wrap(self.__get_instance().length)
@@ -70,8 +70,10 @@ class IHTMLStyle(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLStyle)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLStyle
+		return self.__instance__.QueryInterface(kls)
 	#font
 	def _get_font(self):
 		return wrap(self.__get_instance().font)
@@ -711,8 +713,10 @@ class IHTMLStyle2(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLStyle2)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLStyle2
+		return self.__instance__.QueryInterface(kls)
 	#textJustifyTrim
 	def _get_textJustifyTrim(self):
 		return wrap(self.__get_instance().textJustifyTrim)
@@ -948,8 +952,10 @@ class IHTMLRuleStyle(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLRuleStyle)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLRuleStyle
+		return self.__instance__.QueryInterface(kls)
 	#borderLeftWidth
 	def _get_borderLeftWidth(self):
 		return wrap(self.__get_instance().borderLeftWidth)
@@ -1535,8 +1541,10 @@ class DispHTMLStyle(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.DispHTMLStyle)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.DispHTMLStyle
+		return self.__instance__.QueryInterface(kls)
 wrapperClasses['{3050F55A-98B5-11CF-BB82-00AA00BDCE0B}'] = DispHTMLStyle
 backWrapperClasses[DispHTMLStyle] = '{3050F55A-98B5-11CF-BB82-00AA00BDCE0B}'
 
@@ -1547,8 +1555,10 @@ class IHTMLStyle3(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLStyle3)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLStyle3
+		return self.__instance__.QueryInterface(kls)
 	#scrollbarHighlightColor
 	def _get_scrollbarHighlightColor(self):
 		return wrap(self.__get_instance().scrollbarHighlightColor)
@@ -1664,8 +1674,10 @@ class IHTMLStyle4(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLStyle4)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLStyle4
+		return self.__instance__.QueryInterface(kls)
 	#textOverflow
 	def _get_textOverflow(self):
 		return wrap(self.__get_instance().textOverflow)
@@ -1690,8 +1702,10 @@ class IHTMLRenderStyle(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLRenderStyle)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLRenderStyle
+		return self.__instance__.QueryInterface(kls)
 	#renderingPriority
 	def _get_renderingPriority(self):
 		return wrap(self.__get_instance().renderingPriority)
@@ -1765,8 +1779,10 @@ class IHTMLCurrentStyle(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLCurrentStyle)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLCurrentStyle
+		return self.__instance__.QueryInterface(kls)
 	#layoutGridType
 	def _get_layoutGridType(self):
 		return wrap(self.__get_instance().layoutGridType)
@@ -2412,8 +2428,10 @@ class IHTMLCurrentStyle2(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLCurrentStyle2)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLCurrentStyle2
+		return self.__instance__.QueryInterface(kls)
 	#scrollbarHighlightColor
 	def _get_scrollbarHighlightColor(self):
 		return wrap(self.__get_instance().scrollbarHighlightColor)
@@ -2550,8 +2568,10 @@ class IHTMLCurrentStyle3(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLCurrentStyle3)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLCurrentStyle3
+		return self.__instance__.QueryInterface(kls)
 	#wordSpacing
 	def _get_wordSpacing(self):
 		return wrap(self.__get_instance().wordSpacing)
@@ -2590,8 +2610,10 @@ class IHTMLCurrentStyle4(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLCurrentStyle4)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLCurrentStyle4
+		return self.__instance__.QueryInterface(kls)
 	#msInterpolationMode
 	def _get_msInterpolationMode(self):
 		return wrap(self.__get_instance().msInterpolationMode)
@@ -2630,8 +2652,10 @@ class DispHTMLCurrentStyle(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.DispHTMLCurrentStyle)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.DispHTMLCurrentStyle
+		return self.__instance__.QueryInterface(kls)
 wrapperClasses['{3050F557-98B5-11CF-BB82-00AA00BDCE0B}'] = DispHTMLCurrentStyle
 backWrapperClasses[DispHTMLCurrentStyle] = '{3050F557-98B5-11CF-BB82-00AA00BDCE0B}'
 
@@ -2642,8 +2666,10 @@ class IHTMLRect(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLRect)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLRect
+		return self.__instance__.QueryInterface(kls)
 	#top
 	def _get_top(self):
 		return wrap(self.__get_instance().top)
@@ -2682,8 +2708,10 @@ class IHTMLRectCollection(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLRectCollection)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLRectCollection
+		return self.__instance__.QueryInterface(kls)
 	#length
 	def _get_length(self):
 		return wrap(self.__get_instance().length)
@@ -2713,8 +2741,10 @@ class IHTMLDOMNode(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLDOMNode)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLDOMNode
+		return self.__instance__.QueryInterface(kls)
 	#lastChild
 	def _get_lastChild(self):
 		return wrap(self.__get_instance().lastChild)
@@ -2840,8 +2870,10 @@ class IHTMLDOMNode2(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLDOMNode2)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLDOMNode2
+		return self.__instance__.QueryInterface(kls)
 	#ownerDocument
 	def _get_ownerDocument(self):
 		return wrap(self.__get_instance().ownerDocument)
@@ -2859,8 +2891,10 @@ class IHTMLDOMAttribute(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLDOMAttribute)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLDOMAttribute
+		return self.__instance__.QueryInterface(kls)
 	#nodeName
 	def _get_nodeName(self):
 		return wrap(self.__get_instance().nodeName)
@@ -2892,8 +2926,10 @@ class IHTMLDOMTextNode(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLDOMTextNode)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLDOMTextNode
+		return self.__instance__.QueryInterface(kls)
 	#length
 	def _get_length(self):
 		return wrap(self.__get_instance().length)
@@ -2928,8 +2964,10 @@ class IHTMLDOMTextNode2(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLDOMTextNode2)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLDOMTextNode2
+		return self.__instance__.QueryInterface(kls)
 	#appendData
 	def appendData(self, *args):
 		args = map(unwrap, args)
@@ -2965,8 +3003,10 @@ class IHTMLDOMImplementation(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLDOMImplementation)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLDOMImplementation
+		return self.__instance__.QueryInterface(kls)
 	#hasFeature
 	def hasFeature(self, *args):
 		args = map(unwrap, args)
@@ -2982,8 +3022,10 @@ class DispHTMLDOMTextNode(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.DispHTMLDOMTextNode)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.DispHTMLDOMTextNode
+		return self.__instance__.QueryInterface(kls)
 wrapperClasses['{3050F565-98B5-11CF-BB82-00AA00BDCE0B}'] = DispHTMLDOMTextNode
 backWrapperClasses[DispHTMLDOMTextNode] = '{3050F565-98B5-11CF-BB82-00AA00BDCE0B}'
 
@@ -2994,8 +3036,10 @@ class IHTMLDOMChildrenCollection(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLDOMChildrenCollection)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLDOMChildrenCollection
+		return self.__instance__.QueryInterface(kls)
 	#length
 	def _get_length(self):
 		return wrap(self.__get_instance().length)
@@ -3025,8 +3069,10 @@ class DispDOMChildrenCollection(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.DispDOMChildrenCollection)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.DispDOMChildrenCollection
+		return self.__instance__.QueryInterface(kls)
 wrapperClasses['{3050F577-98B5-11CF-BB82-00AA00BDCE0B}'] = DispDOMChildrenCollection
 backWrapperClasses[DispDOMChildrenCollection] = '{3050F577-98B5-11CF-BB82-00AA00BDCE0B}'
 
@@ -3037,8 +3083,10 @@ class IHTMLElement(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLElement)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLElement
+		return self.__instance__.QueryInterface(kls)
 	#all
 	def _get_all(self):
 		return wrap(self.__get_instance().all)
@@ -3423,8 +3471,10 @@ class IHTMLElement2(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLElement2)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLElement2
+		return self.__instance__.QueryInterface(kls)
 	#behaviorUrns
 	def _get_behaviorUrns(self):
 		return wrap(self.__get_instance().behaviorUrns)
@@ -3861,8 +3911,10 @@ class IHTMLElement3(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLElement3)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLElement3
+		return self.__instance__.QueryInterface(kls)
 	#contentEditable
 	def _get_contentEditable(self):
 		return wrap(self.__get_instance().contentEditable)
@@ -4032,8 +4084,10 @@ class IHTMLElement4(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLElement4)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLElement4
+		return self.__instance__.QueryInterface(kls)
 	#onfocusout
 	def _get_onfocusout(self):
 		return wrap(self.__get_instance().onfocusout)
@@ -4092,8 +4146,10 @@ class IHTMLGenericElement(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLGenericElement)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLGenericElement
+		return self.__instance__.QueryInterface(kls)
 	#recordset
 	def _get_recordset(self):
 		return wrap(self.__get_instance().recordset)
@@ -4116,8 +4172,10 @@ class DispHTMLGenericElement(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.DispHTMLGenericElement)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.DispHTMLGenericElement
+		return self.__instance__.QueryInterface(kls)
 wrapperClasses['{3050F563-98B5-11CF-BB82-00AA00BDCE0B}'] = DispHTMLGenericElement
 backWrapperClasses[DispHTMLGenericElement] = '{3050F563-98B5-11CF-BB82-00AA00BDCE0B}'
 
@@ -4128,8 +4186,10 @@ class IHTMLStyleSheetRule(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLStyleSheetRule)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLStyleSheetRule
+		return self.__instance__.QueryInterface(kls)
 	#style
 	def _get_style(self):
 		return wrap(self.__get_instance().style)
@@ -4161,8 +4221,10 @@ class IHTMLStyleSheetRulesCollection(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLStyleSheetRulesCollection)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLStyleSheetRulesCollection
+		return self.__instance__.QueryInterface(kls)
 	#length
 	def _get_length(self):
 		return wrap(self.__get_instance().length)
@@ -4185,8 +4247,10 @@ class IHTMLStyleSheetPage(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLStyleSheetPage)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLStyleSheetPage
+		return self.__instance__.QueryInterface(kls)
 	#pseudoClass
 	def _get_pseudoClass(self):
 		return wrap(self.__get_instance().pseudoClass)
@@ -4211,8 +4275,10 @@ class IHTMLStyleSheetPagesCollection(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLStyleSheetPagesCollection)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLStyleSheetPagesCollection
+		return self.__instance__.QueryInterface(kls)
 	#length
 	def _get_length(self):
 		return wrap(self.__get_instance().length)
@@ -4235,8 +4301,10 @@ class IHTMLStyleSheet(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLStyleSheet)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLStyleSheet
+		return self.__instance__.QueryInterface(kls)
 	#title
 	def _get_title(self):
 		return wrap(self.__get_instance().title)
@@ -4351,8 +4419,10 @@ class IHTMLStyleSheet2(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLStyleSheet2)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLStyleSheet2
+		return self.__instance__.QueryInterface(kls)
 	#pages
 	def _get_pages(self):
 		return wrap(self.__get_instance().pages)
@@ -4375,8 +4445,10 @@ class DispHTMLStyleSheet(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.DispHTMLStyleSheet)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.DispHTMLStyleSheet
+		return self.__instance__.QueryInterface(kls)
 wrapperClasses['{3050F58D-98B5-11CF-BB82-00AA00BDCE0B}'] = DispHTMLStyleSheet
 backWrapperClasses[DispHTMLStyleSheet] = '{3050F58D-98B5-11CF-BB82-00AA00BDCE0B}'
 
@@ -4387,8 +4459,10 @@ class IHTMLStyleSheetsCollection(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLStyleSheetsCollection)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLStyleSheetsCollection
+		return self.__instance__.QueryInterface(kls)
 	#length
 	def _get_length(self):
 		return wrap(self.__get_instance().length)
@@ -4418,8 +4492,10 @@ class IHTMLTxtRange(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLTxtRange)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLTxtRange
+		return self.__instance__.QueryInterface(kls)
 	#text
 	def _get_text(self):
 		return wrap(self.__get_instance().text)
@@ -4579,8 +4655,10 @@ class IHTMLFormElement(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLFormElement)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLFormElement
+		return self.__instance__.QueryInterface(kls)
 	#elements
 	def _get_elements(self):
 		return wrap(self.__get_instance().elements)
@@ -4688,8 +4766,10 @@ class IHTMLTextContainer(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLTextContainer)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLTextContainer
+		return self.__instance__.QueryInterface(kls)
 	#onscroll
 	def _get_onscroll(self):
 		return wrap(self.__get_instance().onscroll)
@@ -4740,8 +4820,10 @@ class IHTMLImgElement(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLImgElement)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLImgElement
+		return self.__instance__.QueryInterface(kls)
 	#mimeType
 	def _get_mimeType(self):
 		return wrap(self.__get_instance().mimeType)
@@ -4955,8 +5037,10 @@ class IHTMLImageElementFactory(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLImageElementFactory)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLImageElementFactory
+		return self.__instance__.QueryInterface(kls)
 	#create
 	def create(self, *args):
 		args = map(unwrap, args)
@@ -4972,8 +5056,10 @@ class DispHTMLImg(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.DispHTMLImg)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.DispHTMLImg
+		return self.__instance__.QueryInterface(kls)
 wrapperClasses['{3050F51C-98B5-11CF-BB82-00AA00BDCE0B}'] = DispHTMLImg
 backWrapperClasses[DispHTMLImg] = '{3050F51C-98B5-11CF-BB82-00AA00BDCE0B}'
 
@@ -4984,8 +5070,10 @@ class IHTMLUniqueName(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLUniqueName)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLUniqueName
+		return self.__instance__.QueryInterface(kls)
 	#uniqueID
 	def _get_uniqueID(self):
 		return wrap(self.__get_instance().uniqueID)
@@ -5010,8 +5098,10 @@ class IHTMLControlElement(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLControlElement)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLControlElement
+		return self.__instance__.QueryInterface(kls)
 	#onblur
 	def _get_onblur(self):
 		return wrap(self.__get_instance().onblur)
@@ -5105,8 +5195,10 @@ class IHTMLBodyElement(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLBodyElement)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLBodyElement
+		return self.__instance__.QueryInterface(kls)
 	#onload
 	def _get_onload(self):
 		return wrap(self.__get_instance().onload)
@@ -5241,8 +5333,10 @@ class IHTMLBodyElement2(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLBodyElement2)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLBodyElement2
+		return self.__instance__.QueryInterface(kls)
 	#onbeforeprint
 	def _get_onbeforeprint(self):
 		return wrap(self.__get_instance().onbeforeprint)
@@ -5267,8 +5361,10 @@ class DispHTMLBody(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.DispHTMLBody)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.DispHTMLBody
+		return self.__instance__.QueryInterface(kls)
 wrapperClasses['{3050F507-98B5-11CF-BB82-00AA00BDCE0B}'] = DispHTMLBody
 backWrapperClasses[DispHTMLBody] = '{3050F507-98B5-11CF-BB82-00AA00BDCE0B}'
 
@@ -5279,8 +5375,10 @@ class IHTMLAnchorElement(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLAnchorElement)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLAnchorElement
+		return self.__instance__.QueryInterface(kls)
 	#mimeType
 	def _get_mimeType(self):
 		return wrap(self.__get_instance().mimeType)
@@ -5448,8 +5546,10 @@ class IHTMLElementCollection(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLElementCollection)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLElementCollection
+		return self.__instance__.QueryInterface(kls)
 	#length
 	def _get_length(self):
 		return wrap(self.__get_instance().length)
@@ -5489,8 +5589,10 @@ class DispHTMLElementCollection(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.DispHTMLElementCollection)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.DispHTMLElementCollection
+		return self.__instance__.QueryInterface(kls)
 wrapperClasses['{3050F56B-98B5-11CF-BB82-00AA00BDCE0B}'] = DispHTMLElementCollection
 backWrapperClasses[DispHTMLElementCollection] = '{3050F56B-98B5-11CF-BB82-00AA00BDCE0B}'
 
@@ -5501,8 +5603,10 @@ class IHTMLSelectElement(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLSelectElement)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLSelectElement
+		return self.__instance__.QueryInterface(kls)
 	#multiple
 	def _get_multiple(self):
 		return wrap(self.__get_instance().multiple)
@@ -5617,8 +5721,10 @@ class DispHTMLSelectElement(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.DispHTMLSelectElement)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.DispHTMLSelectElement
+		return self.__instance__.QueryInterface(kls)
 wrapperClasses['{3050F531-98B5-11CF-BB82-00AA00BDCE0B}'] = DispHTMLSelectElement
 backWrapperClasses[DispHTMLSelectElement] = '{3050F531-98B5-11CF-BB82-00AA00BDCE0B}'
 
@@ -5629,8 +5735,10 @@ class IHTMLSelectionObject(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLSelectionObject)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLSelectionObject
+		return self.__instance__.QueryInterface(kls)
 	#type
 	def _get_type(self):
 		return wrap(self.__get_instance().type)
@@ -5663,8 +5771,10 @@ class IHTMLOptionElement(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLOptionElement)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLOptionElement
+		return self.__instance__.QueryInterface(kls)
 	#index
 	def _get_index(self):
 		return wrap(self.__get_instance().index)
@@ -5717,8 +5827,10 @@ class IHTMLOptionElementFactory(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLOptionElementFactory)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLOptionElementFactory
+		return self.__instance__.QueryInterface(kls)
 	#create
 	def create(self, *args):
 		args = map(unwrap, args)
@@ -5734,8 +5846,10 @@ class DispHTMLOptionElement(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.DispHTMLOptionElement)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.DispHTMLOptionElement
+		return self.__instance__.QueryInterface(kls)
 wrapperClasses['{3050F52B-98B5-11CF-BB82-00AA00BDCE0B}'] = DispHTMLOptionElement
 backWrapperClasses[DispHTMLOptionElement] = '{3050F52B-98B5-11CF-BB82-00AA00BDCE0B}'
 
@@ -5746,8 +5860,10 @@ class IHTMLInputElement(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLInputElement)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLInputElement
+		return self.__instance__.QueryInterface(kls)
 	#defaultChecked
 	def _get_defaultChecked(self):
 		return wrap(self.__get_instance().defaultChecked)
@@ -5999,8 +6115,10 @@ class IHTMLInputTextElement(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLInputTextElement)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLInputTextElement
+		return self.__instance__.QueryInterface(kls)
 	#status
 	def _get_status(self):
 		return wrap(self.__get_instance().status)
@@ -6105,8 +6223,10 @@ class DispHTMLInputElement(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.DispHTMLInputElement)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.DispHTMLInputElement
+		return self.__instance__.QueryInterface(kls)
 wrapperClasses['{3050F57D-98B5-11CF-BB82-00AA00BDCE0B}'] = DispHTMLInputElement
 backWrapperClasses[DispHTMLInputElement] = '{3050F57D-98B5-11CF-BB82-00AA00BDCE0B}'
 
@@ -6117,8 +6237,10 @@ class IHTMLTextAreaElement(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLTextAreaElement)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLTextAreaElement
+		return self.__instance__.QueryInterface(kls)
 	#status
 	def _get_status(self):
 		return wrap(self.__get_instance().status)
@@ -6230,8 +6352,10 @@ class DispHTMLUnknownElement(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.DispHTMLUnknownElement)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.DispHTMLUnknownElement
+		return self.__instance__.QueryInterface(kls)
 wrapperClasses['{3050F539-98B5-11CF-BB82-00AA00BDCE0B}'] = DispHTMLUnknownElement
 backWrapperClasses[DispHTMLUnknownElement] = '{3050F539-98B5-11CF-BB82-00AA00BDCE0B}'
 
@@ -6242,8 +6366,10 @@ class IOmHistory(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IOmHistory)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IOmHistory
+		return self.__instance__.QueryInterface(kls)
 	#length
 	def _get_length(self):
 		return wrap(self.__get_instance().length)
@@ -6276,8 +6402,10 @@ class IHTMLMimeTypesCollection(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLMimeTypesCollection)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLMimeTypesCollection
+		return self.__instance__.QueryInterface(kls)
 	#length
 	def _get_length(self):
 		return wrap(self.__get_instance().length)
@@ -6295,8 +6423,10 @@ class IHTMLPluginsCollection(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLPluginsCollection)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLPluginsCollection
+		return self.__instance__.QueryInterface(kls)
 	#length
 	def _get_length(self):
 		return wrap(self.__get_instance().length)
@@ -6319,8 +6449,10 @@ class IHTMLOpsProfile(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLOpsProfile)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLOpsProfile
+		return self.__instance__.QueryInterface(kls)
 	#doRequest
 	def doRequest(self, *args):
 		args = map(unwrap, args)
@@ -6376,8 +6508,10 @@ class IOmNavigator(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IOmNavigator)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IOmNavigator
+		return self.__instance__.QueryInterface(kls)
 	#mimeTypes
 	def _get_mimeTypes(self):
 		return wrap(self.__get_instance().mimeTypes)
@@ -6522,8 +6656,10 @@ class IHTMLLocation(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLLocation)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLLocation
+		return self.__instance__.QueryInterface(kls)
 	#search
 	def _get_search(self):
 		return wrap(self.__get_instance().search)
@@ -6610,8 +6746,10 @@ class IHTMLBookmarkCollection(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLBookmarkCollection)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLBookmarkCollection
+		return self.__instance__.QueryInterface(kls)
 	#length
 	def _get_length(self):
 		return wrap(self.__get_instance().length)
@@ -6641,8 +6779,10 @@ class IHTMLDataTransfer(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLDataTransfer)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLDataTransfer
+		return self.__instance__.QueryInterface(kls)
 	#effectAllowed
 	def _get_effectAllowed(self):
 		return wrap(self.__get_instance().effectAllowed)
@@ -6682,8 +6822,10 @@ class IHTMLEventObj(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLEventObj)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLEventObj
+		return self.__instance__.QueryInterface(kls)
 	#returnValue
 	def _get_returnValue(self):
 		return wrap(self.__get_instance().returnValue)
@@ -6848,8 +6990,10 @@ class DispCEventObj(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.DispCEventObj)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.DispCEventObj
+		return self.__instance__.QueryInterface(kls)
 wrapperClasses['{3050F558-98B5-11CF-BB82-00AA00BDCE0B}'] = DispCEventObj
 backWrapperClasses[DispCEventObj] = '{3050F558-98B5-11CF-BB82-00AA00BDCE0B}'
 
@@ -6860,8 +7004,10 @@ class IHTMLFramesCollection2(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLFramesCollection2)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLFramesCollection2
+		return self.__instance__.QueryInterface(kls)
 	#length
 	def _get_length(self):
 		return wrap(self.__get_instance().length)
@@ -6884,8 +7030,10 @@ class IHTMLScreen(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLScreen)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLScreen
+		return self.__instance__.QueryInterface(kls)
 	#availWidth
 	def _get_availWidth(self):
 		return wrap(self.__get_instance().availWidth)
@@ -6952,8 +7100,10 @@ class IHTMLWindow2(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLWindow2)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLWindow2
+		return self.__instance__.QueryInterface(kls)
 	#defaultStatus
 	def _get_defaultStatus(self):
 		return wrap(self.__get_instance().defaultStatus)
@@ -7296,8 +7446,10 @@ class IHTMLWindow3(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLWindow3)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLWindow3
+		return self.__instance__.QueryInterface(kls)
 	#onafterprint
 	def _get_onafterprint(self):
 		return wrap(self.__get_instance().onafterprint)
@@ -7374,8 +7526,10 @@ class DispHTMLWindow2(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.DispHTMLWindow2)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.DispHTMLWindow2
+		return self.__instance__.QueryInterface(kls)
 wrapperClasses['{3050F55D-98B5-11CF-BB82-00AA00BDCE0B}'] = DispHTMLWindow2
 backWrapperClasses[DispHTMLWindow2] = '{3050F55D-98B5-11CF-BB82-00AA00BDCE0B}'
 
@@ -7386,8 +7540,10 @@ class HTMLDocumentEvents2(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.HTMLDocumentEvents2)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.HTMLDocumentEvents2
+		return self.__instance__.QueryInterface(kls)
 wrapperClasses['{3050F613-98B5-11CF-BB82-00AA00BDCE0B}'] = HTMLDocumentEvents2
 backWrapperClasses[HTMLDocumentEvents2] = '{3050F613-98B5-11CF-BB82-00AA00BDCE0B}'
 
@@ -7398,8 +7554,10 @@ class HTMLDocumentEvents(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.HTMLDocumentEvents)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.HTMLDocumentEvents
+		return self.__instance__.QueryInterface(kls)
 wrapperClasses['{3050F260-98B5-11CF-BB82-00AA00BDCE0B}'] = HTMLDocumentEvents
 backWrapperClasses[HTMLDocumentEvents] = '{3050F260-98B5-11CF-BB82-00AA00BDCE0B}'
 
@@ -7410,8 +7568,10 @@ class HTMLTextContainerEvents(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.HTMLTextContainerEvents)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.HTMLTextContainerEvents
+		return self.__instance__.QueryInterface(kls)
 wrapperClasses['{1FF6AA72-5842-11CF-A707-00AA00C0098D}'] = HTMLTextContainerEvents
 backWrapperClasses[HTMLTextContainerEvents] = '{1FF6AA72-5842-11CF-A707-00AA00C0098D}'
 
@@ -7422,8 +7582,10 @@ class HTMLTextContainerEvents2(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.HTMLTextContainerEvents2)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.HTMLTextContainerEvents2
+		return self.__instance__.QueryInterface(kls)
 wrapperClasses['{3050F624-98B5-11CF-BB82-00AA00BDCE0B}'] = HTMLTextContainerEvents2
 backWrapperClasses[HTMLTextContainerEvents2] = '{3050F624-98B5-11CF-BB82-00AA00BDCE0B}'
 
@@ -7434,8 +7596,10 @@ class IHTMLDocument(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLDocument)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLDocument
+		return self.__instance__.QueryInterface(kls)
 	#Script
 	def _get_Script(self):
 		return wrap(self.__get_instance().Script)
@@ -7453,8 +7617,10 @@ class IHTMLDocument2(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLDocument2)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLDocument2
+		return self.__instance__.QueryInterface(kls)
 	#mimeType
 	def _get_mimeType(self):
 		return wrap(self.__get_instance().mimeType)
@@ -7660,7 +7826,7 @@ class IHTMLDocument2(object):
 
 	#body
 	def _get_body(self):
-		return wrap(self.__get_instance().body)
+		return wrap(self.__get_instance(MSHTML.DispHTMLBody).body)
 	def _set_body(self, value):
 		self.__get_instance().body = unwrap(value)
 	body = property(_get_body, _set_body)
@@ -7963,8 +8129,10 @@ class IHTMLDocument3(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLDocument3)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLDocument3
+		return self.__instance__.QueryInterface(kls)
 	#oncontextmenu
 	def _get_oncontextmenu(self):
 		return wrap(self.__get_instance().oncontextmenu)
@@ -8146,8 +8314,10 @@ class IHTMLDocument4(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLDocument4)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLDocument4
+		return self.__instance__.QueryInterface(kls)
 	#media
 	def _get_media(self):
 		return wrap(self.__get_instance().media)
@@ -8223,8 +8393,10 @@ class IHTMLDocument5(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLDocument5)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLDocument5
+		return self.__instance__.QueryInterface(kls)
 	#ondeactivate
 	def _get_ondeactivate(self):
 		return wrap(self.__get_instance().ondeactivate)
@@ -8315,8 +8487,10 @@ class DispHTMLDocument(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.DispHTMLDocument)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.DispHTMLDocument
+		return self.__instance__.QueryInterface(kls)
 wrapperClasses['{3050F55F-98B5-11CF-BB82-00AA00BDCE0B}'] = DispHTMLDocument
 backWrapperClasses[DispHTMLDocument] = '{3050F55F-98B5-11CF-BB82-00AA00BDCE0B}'
 
@@ -8327,8 +8501,10 @@ class IHTMLCommentElement(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLCommentElement)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLCommentElement
+		return self.__instance__.QueryInterface(kls)
 	#text
 	def _get_text(self):
 		return wrap(self.__get_instance().text)
@@ -8353,8 +8529,10 @@ class IHTMLCommentElement2(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLCommentElement2)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLCommentElement2
+		return self.__instance__.QueryInterface(kls)
 	#length
 	def _get_length(self):
 		return wrap(self.__get_instance().length)
@@ -8404,8 +8582,10 @@ class DispHTMLCommentElement(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.DispHTMLCommentElement)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.DispHTMLCommentElement
+		return self.__instance__.QueryInterface(kls)
 wrapperClasses['{3050F50A-98B5-11CF-BB82-00AA00BDCE0B}'] = DispHTMLCommentElement
 backWrapperClasses[DispHTMLCommentElement] = '{3050F50A-98B5-11CF-BB82-00AA00BDCE0B}'
 
@@ -8416,8 +8596,10 @@ class HTMLElementEvents2(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.HTMLElementEvents2)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.HTMLElementEvents2
+		return self.__instance__.QueryInterface(kls)
 wrapperClasses['{3050F60F-98B5-11CF-BB82-00AA00BDCE0B}'] = HTMLElementEvents2
 backWrapperClasses[HTMLElementEvents2] = '{3050F60F-98B5-11CF-BB82-00AA00BDCE0B}'
 
@@ -8428,8 +8610,10 @@ class HTMLElementEvents(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.HTMLElementEvents)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.HTMLElementEvents
+		return self.__instance__.QueryInterface(kls)
 wrapperClasses['{3050F33C-98B5-11CF-BB82-00AA00BDCE0B}'] = HTMLElementEvents
 backWrapperClasses[HTMLElementEvents] = '{3050F33C-98B5-11CF-BB82-00AA00BDCE0B}'
 
@@ -8440,8 +8624,10 @@ class HTMLTableEvents(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.HTMLTableEvents)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.HTMLTableEvents
+		return self.__instance__.QueryInterface(kls)
 wrapperClasses['{3050F407-98B5-11CF-BB82-00AA00BDCE0B}'] = HTMLTableEvents
 backWrapperClasses[HTMLTableEvents] = '{3050F407-98B5-11CF-BB82-00AA00BDCE0B}'
 
@@ -8452,8 +8638,10 @@ class IHTMLTableCaption(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLTableCaption)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLTableCaption
+		return self.__instance__.QueryInterface(kls)
 	#align
 	def _get_align(self):
 		return wrap(self.__get_instance().align)
@@ -8478,8 +8666,10 @@ class IHTMLTable(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLTable)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLTable
+		return self.__instance__.QueryInterface(kls)
 	#frame
 	def _get_frame(self):
 		return wrap(self.__get_instance().frame)
@@ -8699,8 +8889,10 @@ class IHTMLTableSection(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLTableSection)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLTableSection
+		return self.__instance__.QueryInterface(kls)
 	#bgColor
 	def _get_bgColor(self):
 		return wrap(self.__get_instance().bgColor)
@@ -8749,8 +8941,10 @@ class IHTMLTableRow(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLTableRow)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLTableRow
+		return self.__instance__.QueryInterface(kls)
 	#borderColor
 	def _get_borderColor(self):
 		return wrap(self.__get_instance().borderColor)
@@ -8834,8 +9028,10 @@ class DispHTMLTable(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.DispHTMLTable)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.DispHTMLTable
+		return self.__instance__.QueryInterface(kls)
 wrapperClasses['{3050F532-98B5-11CF-BB82-00AA00BDCE0B}'] = DispHTMLTable
 backWrapperClasses[DispHTMLTable] = '{3050F532-98B5-11CF-BB82-00AA00BDCE0B}'
 
@@ -8846,8 +9042,10 @@ class DispHTMLTableRow(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.DispHTMLTableRow)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.DispHTMLTableRow
+		return self.__instance__.QueryInterface(kls)
 wrapperClasses['{3050F535-98B5-11CF-BB82-00AA00BDCE0B}'] = DispHTMLTableRow
 backWrapperClasses[DispHTMLTableRow] = '{3050F535-98B5-11CF-BB82-00AA00BDCE0B}'
 
@@ -8858,8 +9056,10 @@ class IHTMLScriptElement(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLScriptElement)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLScriptElement
+		return self.__instance__.QueryInterface(kls)
 	#defer
 	def _get_defer(self):
 		return wrap(self.__get_instance().defer)
@@ -8926,8 +9126,10 @@ class IHTMLScriptElement2(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLScriptElement2)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLScriptElement2
+		return self.__instance__.QueryInterface(kls)
 	#charset
 	def _get_charset(self):
 		return wrap(self.__get_instance().charset)
@@ -8945,8 +9147,10 @@ class IHTMLFrameBase(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLFrameBase)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLFrameBase
+		return self.__instance__.QueryInterface(kls)
 	#src
 	def _get_src(self):
 		return wrap(self.__get_instance().src)
@@ -9020,8 +9224,10 @@ class IHTMLFrameBase2(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLFrameBase2)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLFrameBase2
+		return self.__instance__.QueryInterface(kls)
 	#allowTransparency
 	def _get_allowTransparency(self):
 		return wrap(self.__get_instance().allowTransparency)
@@ -9067,8 +9273,10 @@ class DispHTMLIFrame(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.DispHTMLIFrame)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.DispHTMLIFrame
+		return self.__instance__.QueryInterface(kls)
 wrapperClasses['{3050F51B-98B5-11CF-BB82-00AA00BDCE0B}'] = DispHTMLIFrame
 backWrapperClasses[DispHTMLIFrame] = '{3050F51B-98B5-11CF-BB82-00AA00BDCE0B}'
 
@@ -9079,8 +9287,10 @@ class IMarkupContainer(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IMarkupContainer)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IMarkupContainer
+		return self.__instance__.QueryInterface(kls)
 wrapperClasses['{3050F5F9-98B5-11CF-BB82-00AA00BDCE0B}'] = IMarkupContainer
 backWrapperClasses[IMarkupContainer] = '{3050F5F9-98B5-11CF-BB82-00AA00BDCE0B}'
 
@@ -9091,8 +9301,10 @@ class IMarkupPointer(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IMarkupPointer)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IMarkupPointer
+		return self.__instance__.QueryInterface(kls)
 	#Right
 	def Right(self, *args):
 		args = map(unwrap, args)
@@ -9148,8 +9360,10 @@ class ISegment(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.ISegment)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.ISegment
+		return self.__instance__.QueryInterface(kls)
 wrapperClasses['{3050F683-98B5-11CF-BB82-00AA00BDCE0B}'] = ISegment
 backWrapperClasses[ISegment] = '{3050F683-98B5-11CF-BB82-00AA00BDCE0B}'
 
@@ -9160,8 +9374,10 @@ class IElementSegment(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IElementSegment)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IElementSegment
+		return self.__instance__.QueryInterface(kls)
 wrapperClasses['{3050F68F-98B5-11CF-BB82-00AA00BDCE0B}'] = IElementSegment
 backWrapperClasses[IElementSegment] = '{3050F68F-98B5-11CF-BB82-00AA00BDCE0B}'
 
@@ -9172,8 +9388,10 @@ class ISelectionServicesListener(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.ISelectionServicesListener)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.ISelectionServicesListener
+		return self.__instance__.QueryInterface(kls)
 	#GetTypeDetail
 	def GetTypeDetail(self, *args):
 		args = map(unwrap, args)
@@ -9194,8 +9412,10 @@ class ISelectionServices(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.ISelectionServices)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.ISelectionServices
+		return self.__instance__.QueryInterface(kls)
 	#AddElementSegment
 	def AddElementSegment(self, *args):
 		args = map(unwrap, args)
@@ -9221,8 +9441,10 @@ class IHTMLEditDesigner(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLEditDesigner)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLEditDesigner
+		return self.__instance__.QueryInterface(kls)
 	#PostHandleEvent
 	def PostHandleEvent(self, *args):
 		args = map(unwrap, args)
@@ -9248,8 +9470,10 @@ class IHTMLEditServices(object):
 	def __init__(self, item):
 		self.__dict__['__instance__'] = item
 
-	def __get_instance(self):
-		return self.__instance__.QueryInterface(MSHTML.IHTMLEditServices)
+	def __get_instance(self, kls=None):
+		if kls is None:
+			kls = MSHTML.IHTMLEditServices
+		return self.__instance__.QueryInterface(kls)
 	#MoveToSelectionAnchor
 	def MoveToSelectionAnchor(self, *args):
 		args = map(unwrap, args)
