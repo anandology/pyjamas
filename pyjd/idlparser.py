@@ -34,6 +34,23 @@ class CoClass:
                 l = l.split(' ')
                 self.classes.append(l[-1][:-1])
 
+    def cls_print(self, p):
+        print "#"*30
+        print "# %s" % self.name
+        print "#"
+
+        print "class %s(%s):" % (self.name, ',\n\t\t\t'.join(self.classes))
+        print "\tdef __init__(self, item):"
+        print "\t\t%s.__init__(self, item)" % self.classes[0]
+        print ""
+
+        c = self.classes[0]
+        if len(self.classes) > 1 and c.startswith('Disp'):
+            c = self.classes[1]
+        uuid = p.interfaces[c].uuid
+        print "coWrapperClasses['%s'] = %s" % (uuid, self.name)
+        print ""
+
 class Interface:
     def __init__(self, uuid, name, f):
         self.name = name
@@ -96,21 +113,30 @@ class Interface:
         print "\tdef __init__(self, item):"
         print "\t\tself.__dict__['__instance__'] = item"
         print ""
+        print "\tdef __get_instance(self):"
+        print "\t\treturn self.__instance__.QueryInterface(MSHTML.%s)" % self.name
 
         for p in self.props:
             print "\t#%s" % p
             print "\tdef _get_%s(self):" % p
-            print "\t\treturn wrap(self.__instance__.%s)" % p
+            print "\t\treturn wrap(self.__get_instance().%s)" % p
             print "\tdef _set_%s(self, value):" % p
-            print "\t\tself.__instance__.%s = unwrap(value)" % p
+            print "\t\tself.__get_instance().%s = unwrap(value)" % p
             print "\t%s = property(_get_%s, _set_%s)" % (p, p, p)
             print ""
 
         for f in self.functions:
-            print "\t#%s" % f
-            print "\tdef %s(self, *args):" % f
+            f_ = f
+            if f == 'print':
+                f_ = 'print_'
+            print "\t#%s" % f_
+            print "\tdef %s(self, *args):" % f_
             print "\t\targs = map(unwrap, args)"
-            print "\t\treturn wrap(self.__instance__.%s(*args))" % f
+            if f == 'print':
+                print "\t\tfn = getattr('%s', self.__get_instance())" % f
+                print "\t\treturn wrap(fn(*args))"
+            else:
+                print "\t\treturn wrap(self.__get_instance().%s(*args))" % f
             print ""
 
         print "wrapperClasses['%s'] = %s" % (self.uuid, self.name)
@@ -145,7 +171,7 @@ class IdlParser:
             l = self.f.readline()
             l = l.strip()
             if l.startswith('uuid('):
-                self.uuid = '{'+l[5:-1]+'}'
+                self.uuid = '{'+l[5:-1].upper()+'}'
             elif l.startswith(']'):
                 return
 
@@ -166,7 +192,17 @@ if __name__ == '__main__':
     p = IdlParser(sys.argv[1])
 
     print """\
+# auto-generated using idlparser %s - do not edit!
+import sys
+from comtypes.client import GetModule
+if not hasattr(sys, 'frozen'):
+    GetModule('atl.dll')
+    GetModule('shdocvw.dll')
+from comtypes.gen import SHDocVw
+from comtypes.gen import MSHTML
+
 wrapperClasses = {}
+coWrapperClasses = {}
 backWrapperClasses = {}
 def unwrap(item):
     if item is None:
@@ -178,12 +214,14 @@ def unwrap(item):
 def wrap(item):
     if item is None:
         return None
-    kls = item._iid_
+    kls = str(item._iid_)
+    if coWrapperClasses.has_key(kls):
+        return coWrapperClasses[kls](item)
     if not wrapperClasses.has_key(kls):
         return item
     return wrapperClasses[kls](item)
 
-"""
+""" % sys.argv[1]
 
     for k in p.interface_order:
         v = p.interfaces[k]
