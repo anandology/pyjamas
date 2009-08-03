@@ -5,6 +5,9 @@
 """
 version = '0.6pre2'
 
+import os
+import sys
+
 pyjsbuild = """#!%s
 
 pyjsversion = r'%s'
@@ -47,38 +50,8 @@ if __name__ == '__main__':
     pyjs.translator.main()
 """
 
-pyjdinit = """
-pyjdversion = r'%s'
-pyjdinitpth = r'%s'
-
-import os
-import sys
-import ConfigParser
-
-if "--version" in sys.argv:
-    print "Version:", pyjdversion
-    sys.exit(0)
-
-
-sys.path += [os.path.join(pyjdinitpth, 'library')]
-
-cp = os.environ.get('HOME', '.')
-cp = os.path.join(cp, ".pyjd")
-cp = os.path.join(cp, "pyjdrc")
-cfg = ConfigParser.ConfigParser()
-try:
-    cfg.read(cp)
-    try:
-        engine = cfg.get('gui', 'engine')
-    except ConfigParser.NoOptionError:
-        engine = 'hulahop'
-except:
-    engine = 'hulahop'
-if engine == 'pywebkitgtk':
-    from pywebkitgtk import *
-elif engine == 'hulahop':
-    from hula import *
-"""
+pyjdinitpth = os.path.join("pyjd", "__init__.py.in")
+pyjdinit = open(pyjdinitpth, "r").read()
 
 batcmdtxt = '''@echo off
 set CMD_LINE_ARGS=
@@ -91,9 +64,6 @@ goto setArgs
 
 python %s %%CMD_LINE_ARGS%%
 '''
-
-import os
-import sys
 
 def make_cmd(prefix, pth, pyjsversion, pyjspth, cmdname, txt):
 
