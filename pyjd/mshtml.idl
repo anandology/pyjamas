@@ -565,8 +565,8 @@ interface IHTMLStyle : IDispatch
     [propget, id(DISPID_IHTMLSTYLE_LEFT), bindable, displaybind]
     HRESULT left([retval, out] VARIANT *p);
 
-    [propget, id(DISPID_IHTMLSTYLE_POSITION), bindable, displaybind]
-    HRESULT position([retval, out] BSTR *p);
+    /*[propget, id(DISPID_IHTMLSTYLE_POSITION), bindable, displaybind]*/
+    /*HRESULT position([retval, out] BSTR *p);*/
 
     [propput, id(DISPID_IHTMLSTYLE_ZINDEX), bindable, displaybind]
     HRESULT zIndex([in] VARIANT v);
