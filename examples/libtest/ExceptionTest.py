@@ -4,13 +4,13 @@ import sys
 
 class MyException:
 
-    def toString(self):
+    def __str__(self):
         return "MyException"
 
 
 class MyException2:
 
-    def toString(self):
+    def __str__(self):
         return "MyException2"
 
 
@@ -51,7 +51,7 @@ class ExceptionTest(UnitTest):
         try:
             raise MyException()
         except MyException, e:
-            self.assertEqual(e.toString(), 'MyException',
+            self.assertEqual(e.__str__(), 'MyException',
                              "Caught exception does not match")
             return
         self.fail('MyException was not caught or raised')
@@ -60,7 +60,7 @@ class ExceptionTest(UnitTest):
         try:
             raise MyException()
         except (MyException, MyException2), e:
-            self.assertEqual(e.toString(), 'MyException',
+            self.assertEqual(e.__str__(), 'MyException',
                              "Caught exception does not match")
             return
         self.fail('MyException was not caught or raised')

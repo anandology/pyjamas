@@ -269,9 +269,6 @@ class BaseException:
     def __repr__(self):
         return self.__name__ + repr(self.args)
 
-    def toString(self):
-        return str(self)
-
 class Exception(BaseException):
     pass
 
@@ -282,9 +279,7 @@ class TypeError(StandardError):
     pass
 
 class AttributeError(StandardError):
-
-    def toString(self):
-        return "AttributeError: %s of %s" % (self.args[1], self.args[0])
+    pass
 
 class NameError(StandardError):
     pass
@@ -296,9 +291,7 @@ class ImportError(StandardError):
     pass
 
 class LookupError(StandardError):
-
-    def toString(self):
-        return self.__name__ + ": " + self.args[0]
+    pass
 
 class RuntimeError(StandardError):
     pass
@@ -812,10 +805,6 @@ class List:
     def __str__(self):
         return self.__repr__()
 
-    @compiler.noSourceTracking
-    def toString(self):
-        return self.__repr__()
-
     def __repr__(self):
         #r = []
         #for item in self:
@@ -930,10 +919,6 @@ class Tuple:
 
     @compiler.noSourceTracking
     def __str__(self):
-        return self.__repr__()
-
-    @compiler.noSourceTracking
-    def toString(self):
         return self.__repr__()
 
     def __repr__(self):
@@ -1120,10 +1105,6 @@ class Dict:
 
     @compiler.noSourceTracking
     def __str__(self):
-        return self.__repr__()
-
-    @compiler.noSourceTracking
-    def toString(self):
         return self.__repr__()
 
     def __repr__(self):

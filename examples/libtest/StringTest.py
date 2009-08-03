@@ -11,6 +11,8 @@ class StringTest(UnitTest):
         # http://webreflection.blogspot.com/2007/07/quick-fix-internet-explorer-and.html
         o = ClassWithOwnToString()
         self.assertEquals(o.toString(), 'ClassWithOwnToString as a String')
+        o = ClassWithOwnToString2()
+        self.assertEquals(o.toString(), 'ClassWithOwnToString2 as a String')
 
     def testReplace(self):
         text="this is a rather long string"
@@ -239,4 +241,9 @@ class ClassWithOwnToString(object):
 
     def toString(self):
         return 'ClassWithOwnToString as a String'
+
+class ClassWithOwnToString2(object):
+
+    def __str__(self):
+        return 'ClassWithOwnToString2 as a String'
 
