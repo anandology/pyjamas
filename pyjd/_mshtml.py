@@ -11,6 +11,7 @@ wrapperClasses = {}
 coWrapperClasses = {}
 backWrapperClasses = {}
 def unwrap(item):
+    print 'unwrap', item, type(item)
     if item is None:
         return None
     kls = item.__class__
@@ -18,8 +19,11 @@ def unwrap(item):
         return item
     return item.__instance__
 def wrap(item):
+    print 'wrap', item, type(item)
     if item is None:
         return None
+    if not hasattr(item, '_iid_'):
+        return item
     kls = str(item._iid_)
     if coWrapperClasses.has_key(kls):
         return coWrapperClasses[kls](item)
@@ -655,13 +659,6 @@ class IHTMLStyle(object):
 	def _set_listStyle(self, value):
 		self.__get_instance().listStyle = unwrap(value)
 	listStyle = property(_get_listStyle, _set_listStyle)
-
-	#position
-	def _get_position(self):
-		return wrap(self.__get_instance().position)
-	def _set_position(self, value):
-		self.__get_instance().position = unwrap(value)
-	position = property(_get_position, _set_position)
 
 	#paddingRight
 	def _get_paddingRight(self):
@@ -9264,19 +9261,19 @@ backWrapperClasses[IHTMLEditServices] = '{3050F663-98B5-11CF-BB82-00AA00BDCE0B}'
 ##############################
 # HTMLDocument
 #
-class HTMLDocument(DispHTMLDocument,
-			HTMLDocumentEvents,
-			HTMLDocumentEvents2,
-			IHTMLDocument2,
-			IHTMLDocument3,
-			IHTMLDocument4,
-			IHTMLDocument5,
+class HTMLDocument(IHTMLDOMNode2,
 			IHTMLDOMNode,
-			IHTMLDOMNode2):
+			IHTMLDocument5,
+			IHTMLDocument4,
+			IHTMLDocument3,
+			IHTMLDocument2,
+			HTMLDocumentEvents2,
+			HTMLDocumentEvents,
+			DispHTMLDocument):
 	def __init__(self, item):
 		DispHTMLDocument.__init__(self, item)
 
-coWrapperClasses['{3050F260-98B5-11CF-BB82-00AA00BDCE0B}'] = HTMLDocument
+coWrapperClasses['{3050F55F-98B5-11CF-BB82-00AA00BDCE0B}'] = HTMLDocument
 
 ##############################
 # COpsProfile
@@ -9290,26 +9287,26 @@ coWrapperClasses['{3050F401-98B5-11CF-BB82-00AA00BDCE0B}'] = COpsProfile
 ##############################
 # HTMLStyleSheet
 #
-class HTMLStyleSheet(DispHTMLStyleSheet,
+class HTMLStyleSheet(IHTMLStyleSheet2,
 			IHTMLStyleSheet,
-			IHTMLStyleSheet2):
+			DispHTMLStyleSheet):
 	def __init__(self, item):
 		DispHTMLStyleSheet.__init__(self, item)
 
-coWrapperClasses['{3050F2E3-98B5-11CF-BB82-00AA00BDCE0B}'] = HTMLStyleSheet
+coWrapperClasses['{3050F58D-98B5-11CF-BB82-00AA00BDCE0B}'] = HTMLStyleSheet
 
 ##############################
 # HTMLDOMTextNode
 #
-class HTMLDOMTextNode(DispHTMLDOMTextNode,
-			IHTMLDOMTextNode,
-			IHTMLDOMTextNode2,
+class HTMLDOMTextNode(IHTMLDOMNode2,
 			IHTMLDOMNode,
-			IHTMLDOMNode2):
+			IHTMLDOMTextNode2,
+			IHTMLDOMTextNode,
+			DispHTMLDOMTextNode):
 	def __init__(self, item):
 		DispHTMLDOMTextNode.__init__(self, item)
 
-coWrapperClasses['{3050F4B1-98B5-11CF-BB82-00AA00BDCE0B}'] = HTMLDOMTextNode
+coWrapperClasses['{3050F565-98B5-11CF-BB82-00AA00BDCE0B}'] = HTMLDOMTextNode
 
 ##############################
 # HTMLLocation
@@ -9332,44 +9329,44 @@ coWrapperClasses['{FECEAAA5-8405-11CF-8BA1-00AA00476DA6}'] = HTMLNavigator
 ##############################
 # HTMLBody
 #
-class HTMLBody(DispHTMLBody,
-			HTMLTextContainerEvents,
-			HTMLTextContainerEvents2,
-			IHTMLElement,
-			IHTMLElement2,
-			IHTMLElement3,
-			IHTMLElement4,
-			IHTMLUniqueName,
-			IHTMLDOMNode,
-			IHTMLDOMNode2,
-			IHTMLControlElement,
-			IHTMLTextContainer,
+class HTMLBody(IHTMLBodyElement2,
 			IHTMLBodyElement,
-			IHTMLBodyElement2):
+			IHTMLTextContainer,
+			IHTMLControlElement,
+			IHTMLDOMNode2,
+			IHTMLDOMNode,
+			IHTMLUniqueName,
+			IHTMLElement4,
+			IHTMLElement3,
+			IHTMLElement2,
+			IHTMLElement,
+			HTMLTextContainerEvents2,
+			HTMLTextContainerEvents,
+			DispHTMLBody):
 	def __init__(self, item):
 		DispHTMLBody.__init__(self, item)
 
-coWrapperClasses['{1FF6AA72-5842-11CF-A707-00AA00C0098D}'] = HTMLBody
+coWrapperClasses['{3050F507-98B5-11CF-BB82-00AA00BDCE0B}'] = HTMLBody
 
 ##############################
 # HTMLCommentElement
 #
-class HTMLCommentElement(DispHTMLCommentElement,
-			HTMLElementEvents,
-			HTMLElementEvents2,
-			IHTMLElement,
-			IHTMLElement2,
-			IHTMLElement3,
-			IHTMLElement4,
-			IHTMLUniqueName,
-			IHTMLDOMNode,
-			IHTMLDOMNode2,
+class HTMLCommentElement(IHTMLCommentElement2,
 			IHTMLCommentElement,
-			IHTMLCommentElement2):
+			IHTMLDOMNode2,
+			IHTMLDOMNode,
+			IHTMLUniqueName,
+			IHTMLElement4,
+			IHTMLElement3,
+			IHTMLElement2,
+			IHTMLElement,
+			HTMLElementEvents2,
+			HTMLElementEvents,
+			DispHTMLCommentElement):
 	def __init__(self, item):
 		DispHTMLCommentElement.__init__(self, item)
 
-coWrapperClasses['{3050F33C-98B5-11CF-BB82-00AA00BDCE0B}'] = HTMLCommentElement
+coWrapperClasses['{3050F50A-98B5-11CF-BB82-00AA00BDCE0B}'] = HTMLCommentElement
 
 ##############################
 # HTMLStyleSheetsCollection
@@ -9383,15 +9380,15 @@ coWrapperClasses['{3050F37E-98B5-11CF-BB82-00AA00BDCE0B}'] = HTMLStyleSheetsColl
 ##############################
 # HTMLCurrentStyle
 #
-class HTMLCurrentStyle(DispHTMLCurrentStyle,
-			IHTMLCurrentStyle,
-			IHTMLCurrentStyle2,
+class HTMLCurrentStyle(IHTMLCurrentStyle4,
 			IHTMLCurrentStyle3,
-			IHTMLCurrentStyle4):
+			IHTMLCurrentStyle2,
+			IHTMLCurrentStyle,
+			DispHTMLCurrentStyle):
 	def __init__(self, item):
 		DispHTMLCurrentStyle.__init__(self, item)
 
-coWrapperClasses['{3050F3DB-98B5-11CF-BB82-00AA00BDCE0B}'] = HTMLCurrentStyle
+coWrapperClasses['{3050F557-98B5-11CF-BB82-00AA00BDCE0B}'] = HTMLCurrentStyle
 
 ##############################
 # CMimeTypes
@@ -9405,15 +9402,15 @@ coWrapperClasses['{3050F3FC-98B5-11CF-BB82-00AA00BDCE0B}'] = CMimeTypes
 ##############################
 # HTMLStyle
 #
-class HTMLStyle(DispHTMLStyle,
-			IHTMLStyle,
-			IHTMLStyle2,
+class HTMLStyle(IHTMLStyle4,
 			IHTMLStyle3,
-			IHTMLStyle4):
+			IHTMLStyle2,
+			IHTMLStyle,
+			DispHTMLStyle):
 	def __init__(self, item):
 		DispHTMLStyle.__init__(self, item)
 
-coWrapperClasses['{3050F25E-98B5-11CF-BB82-00AA00BDCE0B}'] = HTMLStyle
+coWrapperClasses['{3050F55A-98B5-11CF-BB82-00AA00BDCE0B}'] = HTMLStyle
 
 ##############################
 # HTMLHistory

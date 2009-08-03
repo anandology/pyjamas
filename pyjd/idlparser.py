@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import sys
+import copy
 import os
 import string
 
@@ -39,14 +40,16 @@ class CoClass:
         print "# %s" % self.name
         print "#"
 
-        print "class %s(%s):" % (self.name, ',\n\t\t\t'.join(self.classes))
+        ic = copy.copy(self.classes)
+        ic.reverse()
+        print "class %s(%s):" % (self.name, ',\n\t\t\t'.join(ic))
         print "\tdef __init__(self, item):"
         print "\t\t%s.__init__(self, item)" % self.classes[0]
         print ""
 
         c = self.classes[0]
-        if len(self.classes) > 1 and c.startswith('Disp'):
-            c = self.classes[1]
+        #if len(self.classes) > 1 and c.startswith('Disp'):
+        #    c = self.classes[1]
         uuid = p.interfaces[c].uuid
         print "coWrapperClasses['%s'] = %s" % (uuid, self.name)
         print ""
@@ -214,6 +217,8 @@ def unwrap(item):
 def wrap(item):
     if item is None:
         return None
+    if not hasattr(item, '_iid_'):
+        return item
     kls = str(item._iid_)
     if coWrapperClasses.has_key(kls):
         return coWrapperClasses[kls](item)
