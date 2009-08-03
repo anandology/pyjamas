@@ -1,6 +1,9 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
+ * Added builtin import test, which will fail if the import code
+   gets to smart
+
  * The -d option now sets:
     --debug-wrap
     --source-tracking
