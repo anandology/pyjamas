@@ -14,6 +14,10 @@ data_test = cmp(data, [1,2,3])
 def changeme(lst):
     lst[0] = 5
 
+def import_sys():
+    global sys
+    import sys
+
 # setting the bases as a GetAttr expression here is by intent to test
 # GetAttr nodes in Class bases
 class VarsTest(UnitTest.UnitTest):
@@ -64,6 +68,7 @@ class VarsTest(UnitTest.UnitTest):
         self.assertEqual(foo.bar.X, 1)
 
     def testImport(self):
+        global sys
         a0 = foo.foo_value
         a1 = 2
         self.assertEqual(myfoo_value, a0)
@@ -71,3 +76,9 @@ class VarsTest(UnitTest.UnitTest):
         myfoo.foo_value = a1
         self.assertEqual(myfoo_value, a0)
         self.assertEqual(myget_foo_value(), a1)
+        import_sys()
+        try:
+            self.assertEqual(sys.__name__, 'sys')
+        except:
+            self.fail("Global module sys not available")
+
