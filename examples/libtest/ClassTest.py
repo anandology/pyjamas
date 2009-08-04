@@ -52,13 +52,14 @@ class ClassTest(UnitTest):
         # correctly assumes that a used in fail_a is on module level.
         # This has the consequence that a is undefined in javascript. This
         # could be solved by adding a lot of code.
-        #try:
-        #    ExampleClass().fail_a()
-        #    self.fail("Failed to raise error on ExampleClass().fail_a()")
-        #except (NameError, AttributeError), e:
-        #    self.assertTrue(True)
-        #except:
-        #    self.fail("Failed to raise NameError or AttributeError on ExampleClass().fail_a()")
+        # Test is enabled, to remind us of the differences with CPython
+        try:
+            ExampleClass().fail_a()
+            self.fail("Failed to raise error on ExampleClass().fail_a()")
+        except (NameError, AttributeError), e:
+            self.assertTrue(True)
+        except:
+            self.fail("Failed to raise NameError or AttributeError on ExampleClass().fail_a()")
 
         # for we just make sure the result is undefined and not the value of
         # ExampleClass.a
