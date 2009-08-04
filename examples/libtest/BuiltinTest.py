@@ -136,3 +136,9 @@ class BuiltinTest(UnitTest):
             self.assertEqual(builtin.value, builtin.get_value())
         except:
             self.fail("Import failed for builtin")
+
+    def testBitOperations(self):
+        self.assertEqual(1 << 2 - 1, 2, "shift error 1")
+        self.assertEqual((1 << 2) - 1, 3, "shift error 2")
+        self.assertEqual(1 & 3 + 1, 0, "and error 1")
+        self.assertEqual((1 & 3) + 1, 2, "and error 2")

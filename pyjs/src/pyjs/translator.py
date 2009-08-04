@@ -2199,22 +2199,22 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         return "Math.pow("+self.expr(node.left, current_klass) + "," + self.expr(node.right, current_klass) + ")"
 
     def _invert(self, node, current_klass):
-        return "~" + self.expr(node.expr, current_klass)
+        return "(" + "~" + self.expr(node.expr, current_klass) + ")"
 
     def _bitand(self, node, current_klass):
-        return " & ".join([self.expr(child, current_klass) for child in node.nodes])
+        return "(" + " & ".join([self.expr(child, current_klass) for child in node.nodes]) + ")"
 
     def _bitshiftleft(self, node, current_klass):
-        return self.expr(node.left, current_klass) + " << " + self.expr(node.right, current_klass)
+        return "(" + self.expr(node.left, current_klass) + " << " + self.expr(node.right, current_klass) + ")"
 
     def _bitshiftright(self, node, current_klass):
-        return self.expr(node.left, current_klass) + " >>> " + self.expr(node.right, current_klass)
+        return "(" + self.expr(node.left, current_klass) + " >>> " + self.expr(node.right, current_klass) + ")"
 
     def _bitxor(self,node, current_klass):
-        return " ^ ".join([self.expr(child, current_klass) for child in node.nodes])
+        return "(" + " ^ ".join([self.expr(child, current_klass) for child in node.nodes]) + ")"
 
     def _bitor(self, node, current_klass):
-        return " | ".join([self.expr(child, current_klass) for child in node.nodes])
+        return "(" + " | ".join([self.expr(child, current_klass) for child in node.nodes]) + ")"
 
     def _subscript(self, node, current_klass):
         if node.flags == "OP_APPLY":
