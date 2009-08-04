@@ -2149,6 +2149,11 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
     def _const(self, node):
         if isinstance(node.value, int):
             return str(node.value)
+        elif isinstance(node.value, long):
+            v = str(node.value)
+            if v[-1] == 'L':
+                v = v[:-1]
+            return v
         elif isinstance(node.value, float):
             return str(node.value)
         elif isinstance(node.value, basestring):
