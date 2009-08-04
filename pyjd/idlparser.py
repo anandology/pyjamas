@@ -119,7 +119,7 @@ class Interface:
         print "\tdef __get_instance_%s(self, kls=None):" % self.name
         print "\t\tif kls is None:"
         print "\t\t\tkls = MSHTML.%s" % self.name
-        print "\t\treturn self.__instance__.QueryInterface(kls)"
+        print "\t\treturn Dispatch(self.__instance__.QueryInterface(kls))"
 
         for p in self.props:
             override = ''
@@ -140,6 +140,10 @@ class Interface:
             f_ = f
             if f == 'print':
                 f_ = 'print_'
+            if self.name == 'IHTMLStyle' and f == 'setAttribute':
+                f_ = 'setProperty'
+            if self.name == 'IHTMLStyle' and f == 'getAttribute':
+                f_ = 'getProperty'
             print "\t#%s" % f_
             print "\tdef %s(self, *args):" % f_
             print "\t\targs = map(unwrap, args)"
@@ -213,6 +217,7 @@ if not hasattr(sys, 'frozen'):
     GetModule('shdocvw.dll')
 from comtypes.gen import SHDocVw
 from comtypes.gen import MSHTML
+from comtypes.client.dynamic import Dispatch, _Dispatch
 
 wrapperClasses = {}
 coWrapperClasses = {}
@@ -223,7 +228,10 @@ def unwrap(item):
     kls = item.__class__
     if not backWrapperClasses.has_key(kls):
         return item
-    return item.__instance__
+    inst = item.__instance__
+    if inst.__dict__.has_key('_comobj'):
+        inst = inst.__dict__['_comobj']
+    return inst
 def wrap(item, override=None):
     if override: # easier to pass in class than GUID
         override = backWrapperClasses[override]

@@ -154,7 +154,9 @@ def buttonClick(element):
     element.dispatchEvent(evt)
 
 def compare(elem1, elem2):
-    return elem1.isSameNode(elem2)
+    if hasattr(elem1, "isSameNode"):
+        return elem1.isSameNode(elem2)
+    return elem1 == elem2
 
 def createAnchor():
     return createElement("A")
@@ -497,7 +499,9 @@ def getParent(elem):
 
 def getStyleAttribute(elem, attr):
     try:
-        return elem.style.getProperty(mash_name_for_glib(attr))
+        if hasattr(element.style, 'getProperty'):
+            return elem.style.getProperty(mash_name_for_glib(attr))
+        return elem.style.getAttribute(attr)
     except:
         return None
 
@@ -700,14 +704,20 @@ def setIntAttribute(elem, attr, value):
 
 def setIntStyleAttribute(elem, attr, value):
     mf = get_main_frame()
-    elem.style.setProperty(mf.mash_attrib(attr), str(value), "")
+    if hasattr(elem.style, 'setProperty'):
+        elem.style.setProperty(mf.mash_attrib(attr), str(value), "")
+    else:
+        elem.style.setAttribute(mf.mash_attrib(attr), str(value), "")
 
 def setOptionText(select, text, index):
     option = select.options.item(index)
     option.textContent = text
 
 def setStyleAttribute(element, name, value):
-    element.style.setProperty(mash_name_for_glib(name), value, "")
+    if hasattr(element.style, 'setProperty'):
+        element.style.setProperty(mash_name_for_glib(name), value, "")
+    else:
+        element.style.setAttribute(name, value, "")
 
 def sinkEvents(element, bits):
     """

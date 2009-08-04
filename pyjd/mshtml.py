@@ -1,4 +1,4 @@
-import win32traceutil
+#import win32traceutil
 
 import win32con
 import sys
@@ -239,11 +239,10 @@ class Browser(EventSink):
         windll.user32.UpdateWindow(cw)
 
     def getGdomDocument(self):
-        return _mshtml.wrap(self.pBrowser.Document)
+        return self.pBrowser.Document
 
     def getGdomWindow(self):
-        return _mshtml.wrap(self.pBrowser.Document).window
-
+        return self.pBrowser.Document.window
 
     def _addXMLHttpRequestEventListener(self, node, event_name, event_fn):
         
