@@ -274,7 +274,15 @@ class ListTest(UnitTest):
     def testListComp(self):
         l1 = ['a', 'b', 'c']
         l2 = [i for i in l1]
-        self.assertTrue(l1 == l2)
+        self.assertTrue(l1 == l2, 'simple')
+
+        vec1 = [1, 3, 5]
+        vec2 = [2, 4, 6]
+        l = [3*x for x in vec1 if x >= 3]
+        self.assertTrue(l == [9,15], 'conditional')
+
+        l = [(x,y) for x in vec1 if x >= 3 for y in vec2 if y > 3]
+        self.assertTrue(l == [(3, 4), (3, 6), (5, 4), (5, 6)], 'double')
 
 class A:
     def __cmp__(self, other):
