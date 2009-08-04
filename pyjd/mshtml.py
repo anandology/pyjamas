@@ -138,19 +138,8 @@ class EventSink(object):
         print "BeforeNavigate", args
 
     def NavigateComplete(self, this, *args):
-        if self._loaded:
-            return
-        self._loaded = True
         print "NavigateComplete", this, args
-        #pDoc = wrap(this)
-        #print dir(pDoc)
-        #sys.stdout.flush()
         return
-        #div = _createDiv(doc2)
-        #print div, div.document
-        #doc2.body.appendChild(div)
-        #cast.DispHTMLBody(doc2.body).appendChild(div)
-
 
     # some DWebBrowserEvents2
     def BeforeNavigate2(self, this, *args):
@@ -161,6 +150,13 @@ class EventSink(object):
 
     def DocumentComplete(self, this, *args):
         print "DocumentComplete", args
+        if self.workaround_ignore_first_doc_complete == False:
+            # ignore first about:blank.  *sigh*...
+            # TODO: work out how to parse *args byref VARIANT
+            # in order to get at the URI.
+            self.workaround_ignore_first_doc_complete = True
+            return
+            
         self._loaded()
 
     def NewWindow2(self, this, *args):
@@ -182,7 +178,7 @@ class Browser(EventSink):
         self.application = application
         self.appdir = appdir
         self.already_initialised = False
-        self._loaded = False
+        self.workaround_ignore_first_doc_complete = False
 
         CreateWindowEx = windll.user32.CreateWindowExA
         CreateWindowEx.argtypes = [c_int, c_char_p, c_char_p, c_int, c_int, c_int, c_int, c_int, c_int, c_int, c_int, c_int]
@@ -194,7 +190,7 @@ class Browser(EventSink):
 
         self.hwnd = CreateWindowEx(0,
                               "AtlAxWin",
-                              "",
+                              "about:blank",
                               win32con.WS_OVERLAPPEDWINDOW |
                               win32con.WS_VISIBLE | 
                               win32con.WS_HSCROLL | win32con.WS_VSCROLL,
@@ -336,6 +332,8 @@ def setup(application, appdir=None, width=800, height=600):
 
     global wv
     wv = Browser(application, appdir)
+
+    wv.load_app()
 
     while 1:
         if is_loaded():
