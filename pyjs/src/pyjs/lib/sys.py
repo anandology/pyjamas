@@ -61,3 +61,4 @@ def trackstackstr(stack=None):
     return '\n'.join(stackstrings)
 
 platform = JS('$pyjs.platform')
+byteorder = 'little' # Needed in struct.py, assume all systems are little endian and not big endian

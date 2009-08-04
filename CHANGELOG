@@ -1,6 +1,12 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
+ * Added base64 module (not encode/decode file)
+
+ * Added binascii module
+
+ * Added struct module (not pack_into/unpack_from)
+
  * Added basic support for list comprehension (no ifs/multiple for)
 
  * Added builtin import test, which will fail if the import code

@@ -33,6 +33,7 @@ from MD5Test import MD5Test
 from TimeModuleTest import TimeModuleTest
 from TypeCompatibilityTest import TypeCompatibilityTest
 from UrllibModuleTest import UrllibModuleTest
+from Base64ModuleTest import Base64ModuleTest
 
 def main():
     LoopTest().run()
@@ -57,6 +58,7 @@ def main():
     TimeModuleTest().run()
     TypeCompatibilityTest().run()
     UrllibModuleTest().run()
+    Base64ModuleTest().run()
 
 if __name__ == '__main__':
     main()
