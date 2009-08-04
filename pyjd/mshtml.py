@@ -161,6 +161,8 @@ class EventSink(object):
 
     def DocumentComplete(self, this, *args):
         print "DocumentComplete", args
+        if not self.already_initialized and str(args[1]) == 'about:blank':
+            return
         self._loaded()
         print doc
         #div = doc.createElement("div")
@@ -215,7 +217,7 @@ class Browser(EventSink):
 
         hwnd = CreateWindowEx(0,
                               "AtlAxWin",
-                              win32con.NULL,
+                              "about:blank",
                               win32con.WS_OVERLAPPEDWINDOW |
                               win32con.WS_VISIBLE | 
                               win32con.WS_HSCROLL | win32con.WS_VSCROLL,
