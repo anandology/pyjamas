@@ -16,3 +16,16 @@ math.atan2 = Math.atan2;
 math.pi = Math.PI;
 math.e = Math.E;
 """)
+
+def ldexp(x, i):
+    return x * (2**i)
+
+__log2__ = log(2)
+def frexp(x):
+    global __log2__
+    if x == 0:
+        return (0.0, 0)
+    # x = m * 2**e
+    e = int(log(abs(x))/__log2__) + 1
+    m = x / (2.**e)
+    return (m,e)
