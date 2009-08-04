@@ -165,7 +165,7 @@ SCOPE_KEY = 0
 # arguments_ -> arguments__
 # etc.
 pyjs_vars_remap_names = [\
-    'arguments', 'default', 'this',
+    'arguments', 'default', 'this', 'var',
 ]
 pyjs_vars_remap = []
 for a in pyjs_vars_remap_names:
