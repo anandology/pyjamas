@@ -215,7 +215,7 @@ class Browser(EventSink):
 
         hwnd = CreateWindowEx(0,
                               "AtlAxWin",
-                              "about:blank",
+                              win32con.NULL,
                               win32con.WS_OVERLAPPEDWINDOW |
                               win32con.WS_VISIBLE | 
                               win32con.WS_HSCROLL | win32con.WS_VSCROLL,
