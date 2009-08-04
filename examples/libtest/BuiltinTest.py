@@ -88,6 +88,11 @@ class BuiltinTest(UnitTest):
             self.assertEqual(d[0], p)
             self.assertEqual(abs(d[1] - q) < 0.00001, True)
 
+    def testFloorDiv(self):
+        self.assertEqual(1, 4//3)
+        self.assertEqual(1, 5//3)
+        self.assertEqual(2, 6//3)
+
     def testAll(self):
         self.assertEqual(all([True, 1, 'a']), True)
         self.assertEqual(all([True, 1, None, 'a']), False)

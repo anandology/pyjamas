@@ -2331,6 +2331,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             return " ( " + self._sub(node, current_klass) + " ) "
         elif isinstance(node, ast.Div):
             return " ( " + self._div(node, current_klass) + " ) "
+        elif isinstance(node, ast.FloorDiv):
+            return " pyjslib.int_( " + self._div(node, current_klass) + " ) "
         elif isinstance(node, ast.Mod):
             return self._mod(node, current_klass)
         elif isinstance(node, ast.Power):
