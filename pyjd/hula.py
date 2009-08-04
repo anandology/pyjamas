@@ -107,6 +107,12 @@ class Browser(WebView):
     def getUri(self):
         return self.application
 
+    def getGdomWindow(self):
+        return self.get_dom_window()
+
+    def getGdomDocument(self):
+        return self.get_dom_window().document
+
     def _loaded(self, progress_listener):
 
         print "loaded"

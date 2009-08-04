@@ -2,6 +2,7 @@ import win32traceutil
 
 import win32con
 import sys
+import os
 from ctypes import *
 import time
 
@@ -224,7 +225,7 @@ class Browser(EventSink):
             # assume file
             uri = 'file://'+os.path.abspath(uri)
 
-	print "load_app", uri
+        print "load_app", uri
 
         self.application = uri
         v = byref(VARIANT())
@@ -234,6 +235,13 @@ class Browser(EventSink):
         cw = c_int(self.hwnd)
         windll.user32.ShowWindow(cw, c_int(win32con.SW_SHOWNORMAL))
         windll.user32.UpdateWindow(cw)
+
+    def getGdomDocument(self):
+        return _mshtml.wrap(self.pBrowser.Document)
+
+    def getGdomWindow(self):
+        return _mshtml.wrap(self.pBrowser.Document).window
+
 
     def _addXMLHttpRequestEventListener(self, node, event_name, event_fn):
         
@@ -276,8 +284,6 @@ class Browser(EventSink):
         if self.already_initialised:
             return
         self.already_initialised = True
-
-        doc = _mshtml.wrap(self.pBrowser.Document)
 
         from __pyjamas__ import pygwt_processMetas, set_main_frame
         #from __pyjamas__ import set_gtk_module

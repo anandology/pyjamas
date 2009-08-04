@@ -42,19 +42,10 @@ def get_main_frame():
     return main_frame
 
 def doc():
-    try:
-        return main_frame.getGdomDocument() # webkit
-    except:
-        return main_frame.get_dom_window().document # hulahop
+    return main_frame.getGdomDocument() 
 
 def wnd():
-    """ try to avoid using this function until a bug in pywebkitgtk
-        has been tracked down
-    """
-    try:
-        return main_frame.getDomWindow() # webkit
-    except:
-        return main_frame.get_dom_window() # hulahop
+    return main_frame.getDomWindow() 
 
 def JS(code):
     """ try to avoid using this function, it will only give you grief
