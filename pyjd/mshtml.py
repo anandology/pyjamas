@@ -214,6 +214,8 @@ class Browser(EventSink):
 
         self.conn = GetEvents(self.pBrowser, sink=self,
                         interface=SHDocVw.DWebBrowserEvents2)
+        #self.doc_events = GetEvents(self.pBrowser, sink=self,
+        #                            interface=MSHTML.HTMLDocumentEvents2)
 
     def _alert(self, txt):
         self.get_prompt_svc().alert(None, "Alert", txt)
@@ -245,6 +247,7 @@ class Browser(EventSink):
 
     def _addXMLHttpRequestEventListener(self, node, event_name, event_fn):
         
+        return None
         listener = xpcom.server.WrapObject(ContentInvoker(node, event_fn),
                                             interfaces.nsIDOMEventListener)
         print event_name, listener
@@ -253,6 +256,7 @@ class Browser(EventSink):
 
     def addEventListener(self, node, event_name, event_fn):
         
+        return None
         listener = xpcom.server.WrapObject(ContentInvoker(node, event_fn),
                                             interfaces.nsIDOMEventListener)
         node.addEventListener(event_name, listener, True)
@@ -263,6 +267,7 @@ class Browser(EventSink):
 
     def _addWindowEventListener(self, event_name, event_fn):
         
+        return None
         listener = xpcom.server.WrapObject(ContentInvoker(self.window_root,
                                                           event_fn),
                                             interfaces.nsIDOMEventListener)
