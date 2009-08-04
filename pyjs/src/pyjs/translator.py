@@ -174,6 +174,8 @@ for a in pyjs_vars_remap_names:
 # Attributes that should be remapped in classes
 pyjs_attrib_remap_names = [\
     'name', 'prototype', 'call', 'apply', 'constructor', 
+    # Specific for IE6:
+    'default',
 ]
 pyjs_attrib_remap = []
 for a in pyjs_attrib_remap_names:

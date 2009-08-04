@@ -197,7 +197,7 @@ class EventSink(object):
         v.value = True
 
 class Browser(EventSink):
-    def __init__(self, url):
+    def __init__(self, application, appdir):
         EventSink.__init__(self)
         self.platform = 'mshtml'
         self.application = application
@@ -215,7 +215,7 @@ class Browser(EventSink):
 
         hwnd = CreateWindowEx(0,
                               "AtlAxWin",
-                              "Python Window",
+                              "about:blank",
                               win32con.WS_OVERLAPPEDWINDOW |
                               win32con.WS_VISIBLE | 
                               win32con.WS_HSCROLL | win32con.WS_VSCROLL,
@@ -239,9 +239,6 @@ class Browser(EventSink):
         self.conn = GetEvents(self.pBrowser, sink=self,
                         interface=SHDocVw.DWebBrowserEvents2)
 
-        v = byref(VARIANT())
-        self.pBrowser.Navigate(url, v, v, v, v)
-
         # Show Window
         windll.user32.ShowWindow(c_int(hwnd), c_int(win32con.SW_SHOWNORMAL))
         windll.user32.UpdateWindow(c_int(hwnd))
@@ -256,8 +253,12 @@ class Browser(EventSink):
             # assume file
             uri = 'file://'+os.path.abspath(uri)
 
+	print "load_app", uri
+
         self.application = uri
-        self.load_uri(uri)
+        v = byref(VARIANT())
+        self.pBrowser.Navigate(uri, v, v, v, v)
+
 
     def _addXMLHttpRequestEventListener(self, node, event_name, event_fn):
         
@@ -335,7 +336,6 @@ def MainWin(one_event):
     return msg.wParam
     
 class ContentInvoker:
-    _com_interfaces_ = interfaces.nsIDOMEventListener
 
     def __init__(self, node, event_fn):
         self._node = node
@@ -354,10 +354,6 @@ def run(one_event=False, block=True):
     MainWin(one_event) # TODO: ignore block arg for now
 
 def setup(application, appdir=None, width=800, height=600):
-
-    win = gtk.Window(gtk.WINDOW_TOPLEVEL)
-    win.set_size_request(width, height)
-    win.connect('destroy', gtk.main_quit)
 
     global wv
     wv = Browser(application, appdir)
