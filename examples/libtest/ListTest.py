@@ -271,6 +271,11 @@ class ListTest(UnitTest):
         getlist()[getidx(0)] += 1
         self.assertEqual(l[0], 5)
 
+    def testListComp(self):
+        l1 = ['a', 'b', 'c']
+        l2 = [i for i in l1]
+        self.assertTrue(l1 == l2)
+
 class A:
     def __cmp__(self, other):
         return -1

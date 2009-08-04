@@ -2262,6 +2262,32 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.pop_lookup()
         return res.getvalue()
 
+    def _listcomp(self, node, current_klass):
+        if node.quals[0].ifs:
+            raise TranslationError(
+                "unsupported ifs (in _listcomp)", node, self.module_name)
+        if len(node.quals) > 1:
+            raise TranslationError(
+                "unsupported multiple for (in _listcomp)", node, self.module_name)
+        self.push_lookup()
+        resultlist = self.uniqid("listcomp")
+        self.add_lookup('variable', resultlist, resultlist)
+        tassign = node.quals[0].assign
+        tlist = node.quals[0].list
+        tbody = ast.Stmt([ast.Discard(ast.CallFunc(ast.Getattr(ast.Name(resultlist), 'append'), [node.expr], None, None))])
+        telse_ = None
+        tnode = ast.For(tassign, tlist, tbody, telse_, node.lineno)
+        save_output = self.output
+        self.output = StringIO()
+        print >> self.output, "function(){"
+        print >> self.output, "var %s = pyjslib.List();" % resultlist
+        self._for(tnode, current_klass)
+        print >> self.output, "return %s;}()" % resultlist,
+        captured_output = self.output
+        self.output = save_output
+        self.pop_lookup()
+        return captured_output.getvalue()
+
     def _slice(self, node, current_klass):
         if node.flags == "OP_APPLY":
             lower = "null"
@@ -2378,6 +2404,8 @@ pyjslib.getattr(%(attr_left)s, '%(attr_right)s'):\
             return self._slice(node, current_klass)
         elif isinstance(node, ast.Lambda):
             return self._lambda(node, current_klass)
+        elif isinstance(node, ast.ListComp):
+            return self._listcomp(node, current_klass)
         else:
             raise TranslationError(
                 "unsupported type (in expr)", node, self.module_name)
