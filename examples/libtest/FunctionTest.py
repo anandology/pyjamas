@@ -124,3 +124,7 @@ class FunctionTest(UnitTest):
             self.assertEqual(pmc.prop_a, 1)
             self.assertEqual(pmc.prop_b, 7)
 
+    def testSliceFunc(self):
+        s = "123 "
+        s = s[1:].rstrip()
+        self.assertEqual(s, "23")
