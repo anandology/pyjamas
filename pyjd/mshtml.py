@@ -161,30 +161,7 @@ class EventSink(object):
 
     def DocumentComplete(self, this, *args):
         print "DocumentComplete", args
-        if not self.already_initialized and str(args[1]) == 'about:blank':
-            return
         self._loaded()
-        print doc
-        #div = doc.createElement("div")
-        #print div
-        #style = div.style
-        #print style
-        #return
-
-        div = _createDiv(doc)
-        print "body", doc.body, doc.body.__instance__._iid_
-        doc.body.appendChild(div)
-        for fn in dir(doc.body):
-            print fn
-        h2 = doc.getElementsByTagName('h2')
-        h2 = h2.item(0)
-        print h2
-        for fn in dir(h2):
-            print "h2", fn
-        print h2._iid_
-        print doc._iid_
-        print div._iid_
-        print div.style._iid_
 
     def NewWindow2(self, this, *args):
         print "NewWindow2", args
@@ -215,9 +192,9 @@ class Browser(EventSink):
         atl.AtlAxWinInit()
         hInstance = kernel32.GetModuleHandleA(None)
 
-        hwnd = CreateWindowEx(0,
+        self.hwnd = CreateWindowEx(0,
                               "AtlAxWin",
-                              "about:blank",
+                              "",
                               win32con.WS_OVERLAPPEDWINDOW |
                               win32con.WS_VISIBLE | 
                               win32con.WS_HSCROLL | win32con.WS_VSCROLL,
@@ -232,7 +209,7 @@ class Browser(EventSink):
 
         # Get the IWebBrowser2 interface for the IE control.
         self.pBrowserUnk = POINTER(IUnknown)()
-        atl.AtlAxGetControl(hwnd, byref(self.pBrowserUnk))
+        atl.AtlAxGetControl(self.hwnd, byref(self.pBrowserUnk))
         # the wrap call querys for the default interface
         self.pBrowser = wrap(self.pBrowserUnk)
         self.pBrowser.RegisterAsBrowser = True
@@ -240,10 +217,6 @@ class Browser(EventSink):
 
         self.conn = GetEvents(self.pBrowser, sink=self,
                         interface=SHDocVw.DWebBrowserEvents2)
-
-        # Show Window
-        windll.user32.ShowWindow(c_int(hwnd), c_int(win32con.SW_SHOWNORMAL))
-        windll.user32.UpdateWindow(c_int(hwnd))
 
     def _alert(self, txt):
         self.get_prompt_svc().alert(None, "Alert", txt)
@@ -261,6 +234,10 @@ class Browser(EventSink):
         v = byref(VARIANT())
         self.pBrowser.Navigate(uri, v, v, v, v)
 
+        # Show Window
+        cw = c_int(self.hwnd)
+        windll.user32.ShowWindow(cw, c_int(win32con.SW_SHOWNORMAL))
+        windll.user32.UpdateWindow(cw)
 
     def _addXMLHttpRequestEventListener(self, node, event_name, event_fn):
         
