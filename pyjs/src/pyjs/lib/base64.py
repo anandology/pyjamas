@@ -2,6 +2,9 @@
 
 # Replaced references to re module
 # Replaced long with int
+# Workaround for missing "".translate()
+# Workaround for missing string muliplication
+# Workaround for javascript bit shifting is 32 bits (and behind the scenes on floats)
 
 """RFC 3548: Base16, Base32, Base64 Data Encodings"""
 
@@ -36,7 +39,11 @@ def _translate(s, altchars):
     translation = _translation[:]
     for k, v in altchars.items():
         translation[ord(k)] = v
-    return s.translate(''.join(translation))
+    #return s.translate(''.join(translation))
+    t = ''
+    for c in s:
+        t += translation[ord(c)]
+    return t
 
 
 
@@ -143,7 +150,8 @@ def b32encode(s):
     quanta, leftover = divmod(len(s), 5)
     # Pad the last quantum with zero bits if necessary
     if leftover:
-        s += ('\0' * (5 - leftover))
+        #s += ('\0' * (5 - leftover))
+        s += ("".ljust(5 - leftover, '\0'))
         quanta += 1
     for i in range(quanta):
         # c1 and c2 are 16 bits wide, c3 is 8 bits wide.  The intent of this
@@ -229,7 +237,8 @@ def b32decode(s, casefold=False, map01=None):
         val = _b32rev.get(c)
         if val is None:
             raise TypeError('Non-base32 digit found')
-        acc += _b32rev[c] << shift
+        #acc += _b32rev[c] << shift
+        acc += _b32rev[c] * (2**shift)
         shift -= 5
         if shift < 0:
             parts.append(binascii.unhexlify('%010x' % acc))
@@ -283,7 +292,7 @@ def b16decode(s, casefold=False):
     #if re.search('[^0-9A-F]', s):
     #    raise TypeError('Non-base16 digit found')
     # Replace with:
-    r = RegExp('[^0-9A-F]')
+    r = JS("""RegExp('[^0-9A-F]')""")
     if r.test(s):
         raise TypeError('Non-base16 digit found')
 

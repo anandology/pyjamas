@@ -25,14 +25,12 @@ class Base64ModuleTest(UnitTest.UnitTest):
         decodetext = base64.standard_b64decode(encodetext)
         self.assertEqual(decodetext, text)
 
-        return
         encodetext = base64.urlsafe_b64encode(text)
         self.assertEqual(encodetext, 'UHlqYW1hcyBpcyBmdW4=')
         decodetext = base64.urlsafe_b64decode(encodetext)
         self.assertEqual(decodetext, text)
 
     def testBase32(self):
-        return
         text = "Pyjamas is fun"
         
         encodetext = base64.b32encode(text)
@@ -41,7 +39,6 @@ class Base64ModuleTest(UnitTest.UnitTest):
         self.assertEqual(decodetext, text)
 
     def testBase16(self):
-        return
         text = "Pyjamas is fun"
         
         encodetext = base64.b16encode(text)

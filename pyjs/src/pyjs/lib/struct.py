@@ -1,5 +1,8 @@
 # struct.py from the pypy project
 
+# Modified for missing string multiplication
+# Modified for missing list addition ([1] + [2])
+
 """Functions to convert between Python values and C structs.
 Python strings are used to hold the data representing the C struct
 and also as format strings to describe the layout of data in the C struct.
@@ -134,7 +137,8 @@ def pack_float(number, size, le):
         sign = 1
         number *= -1
     elif number == 0.0:
-        return "\x00" * size
+        #return "\x00" * size
+        return "".ljust(size, "\x00")
     else:
         sign = 0
     if size == 4:
@@ -160,10 +164,13 @@ def pack_float(number, size, le):
             e += 1
 
         for i in range(size-2):
-            res += [ mantissa & 0xff]
+            #res += [ mantissa & 0xff]
+            res.extend([ mantissa & 0xff])
             mantissa >>= 8
-        res += [ (mantissa & (2**(15-exp)-1)) | ((e & (2**(exp-7)-1))<<(15-exp))]
-        res += [sign << 7 | e >> (exp - 7)]
+        #res += [ (mantissa & (2**(15-exp)-1)) | ((e & (2**(exp-7)-1))<<(15-exp))]
+        res.extend([ (mantissa & (2**(15-exp)-1)) | ((e & (2**(exp-7)-1))<<(15-exp))])
+        #res += [sign << 7 | e >> (exp - 7)]
+        res.extend([sign << 7 | e >> (exp - 7)])
         if le == 'big':
             res.reverse()
         return ''.join([chr(x) for x in res])
@@ -260,11 +267,13 @@ def pack(fmt,*args):
             num_s = num
 
         if cur == 'x':
-            result += ['\0'*num]
+            #result += ['\0'*num]
+            result.extend(["".ljust(num, '\0')])
         elif cur == 's':
             if isinstance(args[0], str):
                 padding = num - len(args[0])
-                result += [args[0][:num] + '\0'*padding]
+                #result += [args[0][:num] + '\0'*padding]
+                result.extend([args[0][:num] + "".ljust(padding, '\0')])
                 args.pop(0)
             else:
                 raise StructError,"arg for string format not a string"
@@ -273,12 +282,15 @@ def pack(fmt,*args):
                 padding = num - len(args[0]) - 1
 
                 if padding > 0:
-                    result += [chr(len(args[0])) + args[0][:num-1] + '\0'*padding]
+                    #result += [chr(len(args[0])) + args[0][:num-1] + '\0'*padding]
+                    result.extend([chr(len(args[0])) + args[0][:num-1] + "".ljust(padding, '\0')])
                 else:
                     if num<255:
-                        result += [chr(num-1) + args[0][:num-1]]
+                        #result += [chr(num-1) + args[0][:num-1]]
+                        result.extend([chr(num-1) + args[0][:num-1]])
                     else:
-                        result += [chr(255) + args[0][:num-1]]
+                        #result += [chr(255) + args[0][:num-1]]
+                        result.extend([chr(255) + args[0][:num-1]])
                 args.pop(0)
             else:
                 raise StructError,"arg for string format not a string"
@@ -287,7 +299,8 @@ def pack(fmt,*args):
             if len(args) < num:
                 raise StructError,"insufficient arguments to pack"
             for var in args[:num]:
-                result += [format['pack'](var,format['size'],endianness)]
+                #result += [format['pack'](var,format['size'],endianness)]
+                result.extend([format['pack'](var,format['size'],endianness)])
             args=args[num:]
         num = None
         i += 1
@@ -332,7 +345,8 @@ def unpack(fmt,data):
             j += num
         else:
             for n in range(num):
-                result += [format['unpack'](data,j,format['size'],endianness)]
+                #result += [format['unpack'](data,j,format['size'],endianness)]
+                result.extend([format['unpack'](data,j,format['size'],endianness)])
                 j += format['size']
 
     return tuple(result)
