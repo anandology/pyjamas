@@ -15,6 +15,7 @@ from ctypes.wintypes import *
 from comtypes import IUnknown
 from comtypes.automation import IDispatch, VARIANT
 from comtypes.client import wrap, GetModule
+from comtypes.client.dynamic import Dispatch
 
 #from win32com.client import *
 #cast = gencache.GetModuleForProgID('htmlfile')
@@ -172,6 +173,54 @@ class EventSink(object):
         v = cast(args[1]._.c_void_p, POINTER(VARIANT))[0]
         v.value = True
 
+def addWindowEventListener(self, event_name, cb):
+    #print self, event_name, cb
+    if cb not in self._callbacks:
+        self.connect("browser-event", cb)
+        self._callbacks.append(cb)
+    return self.addWindowEventListener(event_name, True)
+
+def addXMLHttpRequestEventListener(element, event_name, cb):
+    if not hasattr(element, "_callbacks"):
+        element._callbacks = []
+    if cb not in element._callbacks:
+        element.connect("browser-event", cb)
+        element._callbacks.append(cb)
+    return element.addEventListener(event_name)
+
+def addEventListener(element, event_name, cb):
+    if not hasattr(element, "_callbacks"):
+        element._callbacks = []
+    if cb not in element._callbacks:
+        element.connect("browser-event", cb)
+        element._callbacks.append(cb)
+    return element.addEventListener(event_name, True)
+
+class EventCaller:
+    def __init__(self, handler, name):
+        self.handler = handler
+        self.name = name
+    def __call__(self, *args):
+        callbacks = self.handler._listeners.get(self.name, [])
+        for fn in callbacks:
+            fn(*args)
+
+class EventHandler:
+    def __init__(self, pBrowser):
+        self._pBrowser = pBrowser
+        self._listeners = {}
+    def __getattr__(self, name):
+        print "EventHandler requested ", name
+        if name.startswith('_') or name == 'addEventListener':
+            return self.__dict__[name]
+        if name.startswith('On'):
+            return EventCaller(self, name[2:])
+        raise NameError, '%s requested in EventHandler'
+    def addEventListener(self, name, fn):
+        if not self._listeners.has_key(name):
+            self._listeners[name] = []
+        self._listeners[name].append(fn)
+
 class Browser(EventSink):
     def __init__(self, application, appdir):
         EventSink.__init__(self)
@@ -180,6 +229,8 @@ class Browser(EventSink):
         self.appdir = appdir
         self.already_initialised = False
         self.workaround_ignore_first_doc_complete = False
+        self.window_listeners = []
+        self.window_handler = None
 
         CreateWindowEx = windll.user32.CreateWindowExA
         CreateWindowEx.argtypes = [c_int, c_char_p, c_char_p, c_int, c_int, c_int, c_int, c_int, c_int, c_int, c_int, c_int]
@@ -214,8 +265,6 @@ class Browser(EventSink):
 
         self.conn = GetEvents(self.pBrowser, sink=self,
                         interface=SHDocVw.DWebBrowserEvents2)
-        #self.doc_events = GetEvents(self.pBrowser, sink=self,
-        #                            interface=MSHTML.HTMLDocumentEvents2)
 
     def _alert(self, txt):
         self.get_prompt_svc().alert(None, "Alert", txt)
@@ -239,10 +288,10 @@ class Browser(EventSink):
         windll.user32.UpdateWindow(cw)
 
     def getGdomDocument(self):
-        return self.pBrowser.Document
+        return Dispatch(self.pBrowser.Document)
 
     def getGdomWindow(self):
-        return self.pBrowser.Document.window
+        return Dispatch(self.pBrowser.Document.window)
 
     def _addXMLHttpRequestEventListener(self, node, event_name, event_fn):
         
@@ -266,12 +315,14 @@ class Browser(EventSink):
 
     def _addWindowEventListener(self, event_name, event_fn):
         
-        return None
-        listener = xpcom.server.WrapObject(ContentInvoker(self.window_root,
-                                                          event_fn),
-                                            interfaces.nsIDOMEventListener)
+        if self.window_handler is None:
+            self.window_handler = EventHandler(self)
+            self.window_conn = GetEvents(self.pBrowser.Document.window,
+                                        sink=self.window_handler,
+                                    interface=MSHTML.HTMLWindowEvents2)
+        self.window_handler.addEventListener(event_name, event_fn)
         self.window_root.addEventListener(event_name, listener, True)
-        return listener
+        return event_name # hmmm...
 
     def getXmlHttpRequest(self):
         xml_svc_cls = components.classes[ \
