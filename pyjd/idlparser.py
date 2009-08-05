@@ -135,6 +135,10 @@ class Interface:
                                         (self.name, p)
             print "\t%s = property(_get_%s, _set_%s)" % (p, p, p)
             print ""
+            if p.startswith('on'):
+                f = open(self.name + ".txt", "a+")
+                f.write("%s\n" % p)
+                f.close()
 
         for f in self.functions:
             f_ = f

@@ -195,31 +195,84 @@ def addEventListener(element, event_name, cb):
         element.connect("browser-event", cb)
         element._callbacks.append(cb)
     return element.addEventListener(event_name, True)
-
-class EventCaller:
-    def __init__(self, handler, name):
-        self.handler = handler
-        self.name = name
-    def __call__(self, *args):
-        callbacks = self.handler._listeners.get(self.name, [])
-        for fn in callbacks:
-            fn(*args)
-
+   
 class EventHandler:
     def __init__(self, pBrowser):
         self._pBrowser = pBrowser
         self._listeners = {}
-    def __getattr__(self, name):
-        print "EventHandler requested ", name
-        if name.startswith('_') or name == 'addEventListener':
-            return self.__dict__[name]
-        if name.startswith('On'):
-            return EventCaller(self, name[2:])
-        raise NameError, '%s requested in EventHandler'
+
+    def _event_redirect(self, name, *args):
+        callbacks = self.handler._listeners.get(name, [])
+        for fn in callbacks:
+            fn(*args)
+
     def addEventListener(self, name, fn):
         if not self._listeners.has_key(name):
             self._listeners[name] = []
         self._listeners[name].append(fn)
+
+window_event_names = \
+    ['onerror',
+    'onscroll',
+    'onload',
+    'onhelp',
+    'onresize',
+    'onfocus',
+    'onblur',
+    'onunload',
+    'onbeforeunload']
+
+html_element_event_names = \
+    ['ondragenter',
+    'onrowsinserted',
+    'onbeforecut',
+    'onscroll',
+    'oncopy',
+    'onbeforepaste',
+    'ondragover',
+    'oncellchange',
+    'ondragleave',
+    'onresize',
+    'onfocus',
+    'ondrag',
+    'onblur',
+    'ondrop',
+    'onrowsdelete',
+    'onpropertychange',
+    'onbeforeeditfocus',
+    'onbeforecopy',
+    'onpaste',
+    'oncontextmenu',
+    'ondragend',
+    'onlosecapture',
+    'oncut',
+    'onreadystatechange']
+
+fn_txt = """\
+def %s(self, *args):
+    return self._event_redirect('%s', *args)
+%s['%s'] = %s
+"""
+el_methods = {}
+for fname in html_element_event_names:
+    fn_name = 'html_element_'+fname
+    e = fn_txt % (fn_name, fname, 'el_methods', fname, fn_name)
+    print e
+    exec e in globals()
+
+print el_methods
+
+window_methods = {}
+for fname in window_event_names:
+    fn_name = 'window_'+fname
+    e = fn_txt % (fn_name, fname, 'window_methods', fname, fn_name)
+    print e
+    exec e in globals()
+
+print window_methods
+
+ElementEventHandler = type('ElementEventHandler', (EventHandler,), el_methods)
+WindowEventHandler = type('WindowtEventHandler', (EventHandler,), window_methods)
 
 class Browser(EventSink):
     def __init__(self, application, appdir):
@@ -229,8 +282,8 @@ class Browser(EventSink):
         self.appdir = appdir
         self.already_initialised = False
         self.workaround_ignore_first_doc_complete = False
-        self.window_listeners = []
         self.window_handler = None
+        self.node_handlers = {}
 
         CreateWindowEx = windll.user32.CreateWindowExA
         CreateWindowEx.argtypes = [c_int, c_char_p, c_char_p, c_int, c_int, c_int, c_int, c_int, c_int, c_int, c_int, c_int]
@@ -304,11 +357,16 @@ class Browser(EventSink):
 
     def addEventListener(self, node, event_name, event_fn):
         
-        return None
-        listener = xpcom.server.WrapObject(ContentInvoker(node, event_fn),
-                                            interfaces.nsIDOMEventListener)
-        node.addEventListener(event_name, listener, True)
-        return listener
+        if not self.node_handlers.has_key(node):
+            nh  = ElementEventHandler(self)
+            self.node_handlers[node] = nh
+            conn = GetEvents(node, sink=nh, interface=MSHTML.HTMLElementEvents2)
+        else:
+            nh = self.node_handlers[node]
+
+        nh.addEventListener(event_name, event_fn)
+
+        return nh # hmmm...
 
     def mash_attrib(self, attrib_name):
         return attrib_name
@@ -316,12 +374,11 @@ class Browser(EventSink):
     def _addWindowEventListener(self, event_name, event_fn):
         
         if self.window_handler is None:
-            self.window_handler = EventHandler(self)
+            self.window_handler = WindowEventHandler(self)
             self.window_conn = GetEvents(self.pBrowser.Document.window,
                                         sink=self.window_handler,
                                     interface=MSHTML.HTMLWindowEvents2)
         self.window_handler.addEventListener(event_name, event_fn)
-        self.window_root.addEventListener(event_name, listener, True)
         return event_name # hmmm...
 
     def getXmlHttpRequest(self):
