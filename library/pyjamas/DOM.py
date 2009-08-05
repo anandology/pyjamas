@@ -117,6 +117,7 @@ def browser_event_cb(view, event, from_window):
         event = get_main_frame().gobject_wrap(event) # webkit HACK!
     except:
         pass
+    print "browser_event_cb", event
     et = eventGetType(event)
     #print "browser_event_cb", event, et
     if et == "resize":

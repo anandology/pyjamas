@@ -201,6 +201,7 @@ def addEventListener(element, event_name, cb):
 fn_txt = """\
 def event_fn(self, *args):
     callbacks = self._listeners.get('%s', [])
+    print args
     for fn in callbacks:
         fn(*args)
 """
@@ -320,11 +321,11 @@ class Browser(EventSink):
 
     def _addWindowEventListener(self, event_name, event_fn):
         
+        print "_addWindowEventListener", event_name, event_fn
         rcvr = mshtmlevents.GetDispEventReceiver(MSHTML.HTMLWindowEvents2,
                            event_fn, "on%s" % event_name)
         rcvr.sender = self.pBrowser.Document.window
         ifc = rcvr.QueryInterface(IDispatch)
-        print handler
         v = VARIANT(ifc)
         setattr(self.pBrowser.Document.window, "on%s" % event_name, v)
         return ifc
