@@ -312,6 +312,7 @@ class Browser(EventSink):
         handler = getattr(node, "on%s" % event_name)
         print handler
         rcvr = mshtmlevents.GetDispEventReceiver(MSHTML.HTMLElementEvents2, event_fn, "on%s" % event_name)
+        rcvr.sender = node
         ifc = rcvr.QueryInterface(IDispatch)
         print ifc
         v = VARIANT(ifc)

@@ -4,6 +4,7 @@ from comtypes.hresult import *
 import comtypes.automation
 import comtypes.typeinfo
 import comtypes.connectionpoints
+import comtypes.client import wrap
 import logging
 logger = logging.getLogger(__name__)
 
@@ -227,11 +228,13 @@ class _DispEventReceiver(comtypes.COMObject):
         mth = self.dispmap.get(memid, None)
         if mth is None:
             return S_OK
+        event = ctypes.cast(this, ctypes.POINTER(comtypes.IUnknown)())
+        event = wrap(event)
         dp = pDispParams[0]
         # DISPPARAMS contains the arguments in reverse order
         args = [dp.rgvarg[i].value for i in range(dp.cArgs)]
-        print "Event", self, memid, mth, args
-        result = self.dispmap[memid](None, *args[::-1])
+        print "Event", self, event, memid, mth, args
+        result = self.dispmap[memid](event, self.sender, True)#*args[::-1])
         if pVarResult:
             pVarResult[0].value = result
         return S_OK
@@ -290,7 +293,7 @@ def GetDispEventReceiver(interface, sink, sink_name=None):
         for memid, name in _get_dispmap(itf).iteritems():
             if name == sink_name:
                 print "GetDispEventReceiver", memid, name
-                methods[memid] = sink
+                methods[0] = sink
                 continue
             # find methods to call, if not found ignore event
             for itf_name in interface_names:
