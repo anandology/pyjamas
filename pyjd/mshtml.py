@@ -12,6 +12,7 @@ import win32con
 
 from ctypes import *
 from ctypes.wintypes import *
+import comtypes
 from comtypes import IUnknown
 from comtypes.automation import IDispatch, VARIANT
 from comtypes.client import wrap, GetModule
@@ -32,7 +33,8 @@ import win32con
 from ctypes import *
 from comtypes import IUnknown
 from comtypes.automation import VARIANT
-from comtypes.client import GetEvents
+#from comtypes.client import GetEvents, ShowEvents
+import mshtmlevents 
 from comtypes.gen import SHDocVw
 from comtypes.gen import MSHTML
 
@@ -195,82 +197,34 @@ def addEventListener(element, event_name, cb):
         element.connect("browser-event", cb)
         element._callbacks.append(cb)
     return element.addEventListener(event_name, True)
-   
+
+fn_txt = """\
+def event_fn(self, *args):
+    callbacks = self._listeners.get('%s', [])
+    for fn in callbacks:
+        fn(*args)
+"""
+
 class EventHandler(object):
     def __init__(self, pBrowser):
         self._pBrowser = pBrowser
         self._listeners = {}
-
-    def _event_redirect(self, name, *args):
-        callbacks = self.handler._listeners.get(name, [])
-        for fn in callbacks:
-            fn(*args)
-
+    def __getattr__(self, name):
+        print "EventHandler requested ", name
+        if name.startswith('_') or name == 'addEventListener':
+            return self.__dict__[name]
+        idx = name.find('_on')
+        if idx >= 0:
+            if idx > 0:
+                name = name[idx+1:]
+            exec fn_txt % name
+            return comtypes.instancemethod(event_fn,
+                                           EventHandler, self)
+        raise AttributeError(name)
     def addEventListener(self, name, fn):
         if not self._listeners.has_key(name):
             self._listeners[name] = []
         self._listeners[name].append(fn)
-
-window_event_names = \
-    ['onerror',
-    'onscroll',
-    'onload',
-    'onhelp',
-    'onresize',
-    'onfocus',
-    'onblur',
-    'onunload',
-    'onbeforeunload']
-
-html_element_event_names = \
-    ['ondragenter',
-    'onrowsinserted',
-    'onbeforecut',
-    'onscroll',
-    'oncopy',
-    'onbeforepaste',
-    'ondragover',
-    'oncellchange',
-    'ondragleave',
-    'onresize',
-    'onfocus',
-    'ondrag',
-    'onblur',
-    'ondrop',
-    'onrowsdelete',
-    'onpropertychange',
-    'onbeforeeditfocus',
-    'onbeforecopy',
-    'onpaste',
-    'oncontextmenu',
-    'ondragend',
-    'onlosecapture',
-    'oncut',
-    'onreadystatechange']
-
-fn_txt = """\
-def %s(self, *args):
-    return self._event_redirect('%s', *args)
-%s['%s'] = %s
-"""
-el_methods = {}
-for fname in html_element_event_names:
-    fn_name = 'html_element_'+fname
-    e = fn_txt % (fn_name, fname, 'el_methods', fname, fn_name)
-    exec e in globals()
-
-print el_methods
-
-window_methods = {}
-for fname in window_event_names:
-    fn_name = 'window_'+fname
-    e = fn_txt % (fn_name, fname, 'window_methods', fname, fn_name)
-    exec e in globals()
-
-print window_methods
-
-ElementEventHandler = type('ElementEventHandler', (EventHandler,), el_methods)
-WindowEventHandler = type('WindowtEventHandler', (EventHandler,), window_methods)
 
 class Browser(EventSink):
     def __init__(self, application, appdir):
@@ -314,7 +268,7 @@ class Browser(EventSink):
         self.pBrowser.RegisterAsBrowser = True
         self.pBrowser.AddRef()
 
-        self.conn = GetEvents(self.pBrowser, sink=self,
+        self.conn = mshtmlevents.GetEvents(self.pBrowser, sink=self,
                         interface=SHDocVw.DWebBrowserEvents2)
 
     def _alert(self, txt):
@@ -355,10 +309,26 @@ class Browser(EventSink):
 
     def addEventListener(self, node, event_name, event_fn):
         
+        handler = getattr(node, "on%s" % event_name)
+        print handler
+        rcvr = mshtmlevents.GetDispEventReceiver(MSHTML.HTMLElementEvents2, event_fn, "on%s" % event_name)
+        ifc = rcvr.QueryInterface(IDispatch)
+        print ifc
+        v = VARIANT(ifc)
+        setattr(node, "on%s" % event_name, v)
+        return
+
         if not self.node_handlers.has_key(node):
-            nh  = ElementEventHandler(self)
+            nh  = EventHandler(self)
             self.node_handlers[node] = nh
-            conn = GetEvents(node, sink=nh, interface=MSHTML.HTMLElementEvents2)
+            print node, dir(node._comobj)
+            el = node.QueryInterface(MSHTML.IHTMLElement2)
+            print el, dir(el)
+            print MSHTML.HTMLElementEvents2, MSHTML.HTMLElementEvents2._iid_
+            mshtmlevents.ShowEvents(el, interface=MSHTML.HTMLElementEvents2)
+            return
+            nc = mshtmlevents.GetEvents(node, sink=nh, interface=MSHTML.HTMLElementEvents)
+            self.node_conns[node] = nc
         else:
             nh = self.node_handlers[node]
 
@@ -372,8 +342,11 @@ class Browser(EventSink):
     def _addWindowEventListener(self, event_name, event_fn):
         
         if self.window_handler is None:
-            self.window_handler = WindowEventHandler(self)
-            self.window_conn = GetEvents(self.pBrowser.Document.window,
+            self.window_handler = EventHandler(self)
+            mshtmlevents.ShowEvents(self.pBrowser.Document.window,
+                                    interface=MSHTML.HTMLWindowEvents2)
+            return
+            self.window_conn = mshtmlevents.GetEvents(self.pBrowser.Document.window,
                                         sink=self.window_handler,
                                     interface=MSHTML.HTMLWindowEvents2)
         self.window_handler.addEventListener(event_name, event_fn)
