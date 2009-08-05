@@ -336,7 +336,7 @@ class Browser(EventSink):
 
         if self.window_handler is None:
             self.window_handler = EventHandler(self)
-            self.window_conn = mshtmlevents.GetEvents(self.getDomDocument(),
+            self.window_conn = mshtmlevents.GetEvents(self.getDomWindow(),
                                         sink=self.window_handler,
                                     interface=MSHTML.HTMLWindowEvents2)
         self.window_handler.addEventListener(event_name, event_fn)
