@@ -231,7 +231,7 @@ class _DispEventReceiver(comtypes.COMObject):
         if mth is None:
             return S_OK
         dp = pDispParams[0]
-        print "num args", dp.cArgs, dp.cNamedArgs, dir(pDispParams)
+        print "num args", dp.cArgs, 
         # DISPPARAMS contains the arguments in reverse order
         args = [dp.rgvarg[i].value for i in range(dp.cArgs)]
         #print "Event", self, memid, mth, args
