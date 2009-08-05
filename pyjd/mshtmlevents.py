@@ -4,7 +4,7 @@ from comtypes.hresult import *
 import comtypes.automation
 import comtypes.typeinfo
 import comtypes.connectionpoints
-import comtypes.client import wrap
+from comtypes.client import wrap
 import logging
 logger = logging.getLogger(__name__)
 
