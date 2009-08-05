@@ -5,6 +5,8 @@ import comtypes.automation
 import comtypes.typeinfo
 import comtypes.connectionpoints
 from comtypes.client import wrap
+from comtypes.client.dynamic import Dispatch
+from comtypes.gen import MSHTML
 import logging
 logger = logging.getLogger(__name__)
 
@@ -224,17 +226,16 @@ class _DispEventReceiver(comtypes.COMObject):
     # as last parameter?
     def IDispatch_Invoke(self, this, memid, riid, lcid, wFlags, pDispParams,
                          pVarResult, pExcepInfo, puArgErr):
-        print "IDispatch_Invoke", memid
+        #print "IDispatch_Invoke", memid, this, riid, lcid, pDispParams
         mth = self.dispmap.get(memid, None)
         if mth is None:
             return S_OK
-        event = ctypes.cast(this, ctypes.POINTER(comtypes.IUnknown)())
-        event = wrap(event)
         dp = pDispParams[0]
+        print "num args", dp.cArgs, dp.cNamedArgs, dir(pDispParams)
         # DISPPARAMS contains the arguments in reverse order
         args = [dp.rgvarg[i].value for i in range(dp.cArgs)]
-        print "Event", self, event, memid, mth, args
-        result = self.dispmap[memid](event, self.sender, True)#*args[::-1])
+        #print "Event", self, memid, mth, args
+        result = mth(self.sender, wrap(args[0]), None)
         if pVarResult:
             pVarResult[0].value = result
         return S_OK

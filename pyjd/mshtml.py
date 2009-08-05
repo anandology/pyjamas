@@ -309,39 +309,26 @@ class Browser(EventSink):
 
     def addEventListener(self, node, event_name, event_fn):
         
-        handler = getattr(node, "on%s" % event_name)
-        print handler
         rcvr = mshtmlevents.GetDispEventReceiver(MSHTML.HTMLElementEvents2, event_fn, "on%s" % event_name)
         rcvr.sender = node
         ifc = rcvr.QueryInterface(IDispatch)
-        print ifc
-        v = VARIANT(ifc)
-        setattr(node, "on%s" % event_name, v)
-        return
-
-        if not self.node_handlers.has_key(node):
-            nh  = EventHandler(self)
-            self.node_handlers[node] = nh
-            print node, dir(node._comobj)
-            el = node.QueryInterface(MSHTML.IHTMLElement2)
-            print el, dir(el)
-            print MSHTML.HTMLElementEvents2, MSHTML.HTMLElementEvents2._iid_
-            mshtmlevents.ShowEvents(el, interface=MSHTML.HTMLElementEvents2)
-            return
-            nc = mshtmlevents.GetEvents(node, sink=nh, interface=MSHTML.HTMLElementEvents)
-            self.node_conns[node] = nc
-        else:
-            nh = self.node_handlers[node]
-
-        nh.addEventListener(event_name, event_fn)
-
-        return nh # hmmm...
+        node.attachEvent("on%s" % event_name, ifc)
+        return ifc
 
     def mash_attrib(self, attrib_name):
         return attrib_name
 
     def _addWindowEventListener(self, event_name, event_fn):
         
+        rcvr = mshtmlevents.GetDispEventReceiver(MSHTML.HTMLWindowEvents2,
+                           event_fn, "on%s" % event_name)
+        rcvr.sender = self.pBrowser.Document.window
+        ifc = rcvr.QueryInterface(IDispatch)
+        print handler
+        v = VARIANT(ifc)
+        setattr(self.pBrowser.Document.window, "on%s" % event_name, v)
+        return ifc
+
         if self.window_handler is None:
             self.window_handler = EventHandler(self)
             mshtmlevents.ShowEvents(self.pBrowser.Document.window,

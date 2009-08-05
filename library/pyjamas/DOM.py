@@ -66,7 +66,7 @@ def _dispatchEvent(sender, evt, useCap):
     listener = None
     curElem =  sender
     
-    #print "_dispatchEvent", sender, evt, evt.type
+    print "_dispatchEvent", sender, evt, evt.type
     cap = getCaptureElement()
     listener = get_listener(cap)
     if cap and listener:
