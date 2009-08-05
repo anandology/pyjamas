@@ -196,7 +196,7 @@ def addEventListener(element, event_name, cb):
         element._callbacks.append(cb)
     return element.addEventListener(event_name, True)
    
-class EventHandler:
+class EventHandler(object):
     def __init__(self, pBrowser):
         self._pBrowser = pBrowser
         self._listeners = {}
@@ -257,7 +257,6 @@ el_methods = {}
 for fname in html_element_event_names:
     fn_name = 'html_element_'+fname
     e = fn_txt % (fn_name, fname, 'el_methods', fname, fn_name)
-    print e
     exec e in globals()
 
 print el_methods
@@ -266,7 +265,6 @@ window_methods = {}
 for fname in window_event_names:
     fn_name = 'window_'+fname
     e = fn_txt % (fn_name, fname, 'window_methods', fname, fn_name)
-    print e
     exec e in globals()
 
 print window_methods
