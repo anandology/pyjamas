@@ -297,7 +297,7 @@ class Browser(EventSink):
         return Dispatch(self.pBrowser.Document)
 
     def getGdomWindow(self):
-        return Dispatch(self.pBrowser.Document.window)
+        return self.getGdomDocument().parentWindow
 
     def _addXMLHttpRequestEventListener(self, node, event_name, event_fn):
         
@@ -322,20 +322,21 @@ class Browser(EventSink):
     def _addWindowEventListener(self, event_name, event_fn):
         
         print "_addWindowEventListener", event_name, event_fn
-        rcvr = mshtmlevents.GetDispEventReceiver(MSHTML.HTMLWindowEvents2,
-                           event_fn, "on%s" % event_name)
-        rcvr.sender = self.pBrowser.Document.window
-        ifc = rcvr.QueryInterface(IDispatch)
-        v = VARIANT(ifc)
-        setattr(self.pBrowser.Document.window, "on%s" % event_name, v)
-        return ifc
+        #rcvr = mshtmlevents.GetDispEventReceiver(MSHTML.HTMLWindowEvents,
+        #                   event_fn, "on%s" % event_name)
+        #print rcvr
+        #rcvr.sender = self.getGdomWindow()
+        #print rcvr.sender
+        #ifc = rcvr.QueryInterface(IDispatch)
+        #print ifc
+        #v = VARIANT(ifc)
+        #print v
+        #setattr(self.getGdomWindow(), "on%s" % event_name, v)
+        #return ifc
 
         if self.window_handler is None:
             self.window_handler = EventHandler(self)
-            mshtmlevents.ShowEvents(self.pBrowser.Document.window,
-                                    interface=MSHTML.HTMLWindowEvents2)
-            return
-            self.window_conn = mshtmlevents.GetEvents(self.pBrowser.Document.window,
+            self.window_conn = mshtmlevents.GetEvents(self.getDomDocument(),
                                         sink=self.window_handler,
                                     interface=MSHTML.HTMLWindowEvents2)
         self.window_handler.addEventListener(event_name, event_fn)
