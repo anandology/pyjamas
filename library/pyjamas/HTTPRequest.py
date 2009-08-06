@@ -86,7 +86,7 @@ class HTTPRequest:
                 url = uri[:slash+1] + url
         print "xmlHttp", user, pwd, url, postData, handler, dir(xmlHttp)
         #try :
-        if mf.platform == 'webkit':
+        if mf.platform == 'webkit' or mf.platform == 'mshtml':
             xmlHttp.open("POST", url, True, '', '')
         else:
             # EEK!  xmlhttprequest.open in xpcom is a miserable bastard.
@@ -99,7 +99,7 @@ class HTTPRequest:
         #    xmlHttp.setRequestHeader("Set-Cookie", c)
         #    print "setting cookie", c
 
-        if mf.platform == 'webkit':
+        if mf.platform == 'webkit' or mf.platform == 'mshtml':
             mf._addXMLHttpRequestEventListener(xmlHttp, "onreadystatechange",
                                          self.onReadyStateChange)
         else:

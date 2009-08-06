@@ -226,17 +226,20 @@ class _DispEventReceiver(comtypes.COMObject):
     # as last parameter?
     def IDispatch_Invoke(self, this, memid, riid, lcid, wFlags, pDispParams,
                          pVarResult, pExcepInfo, puArgErr):
-        #print "IDispatch_Invoke", memid, this, riid, lcid, pDispParams
+        print "IDispatch_Invoke", memid, this, riid, lcid, pDispParams
         mth = self.dispmap.get(memid, None)
         if mth is None:
             return S_OK
         dp = pDispParams[0]
-        #print "num args", dp.cArgs 
+        print "num args", dp.cArgs 
         # DISPPARAMS contains the arguments in reverse order
         args = [dp.rgvarg[i].value for i in range(dp.cArgs)]
-        #print "Event", self, memid, mth, args
+        print "Event", self, memid, mth, args
+        event = None
+        if len(args) > 0:
+            event = wrap(args[0])
         try:
-            result = mth(self.sender, wrap(args[0]), None)
+            result = mth(self.sender, event, None)
         except:
             sys.stderr.write( traceback.print_exc() )
             sys.stderr.flush()

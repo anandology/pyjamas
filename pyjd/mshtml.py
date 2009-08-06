@@ -26,6 +26,7 @@ from comtypes.client.dynamic import Dispatch
 if not hasattr(sys, 'frozen'):
     GetModule('atl.dll')
     GetModule('shdocvw.dll')
+    GetModule('msxml2.dll')
 
 kernel32 = windll.kernel32
 user32 = windll.user32
@@ -38,6 +39,7 @@ from comtypes.automation import VARIANT
 #from comtypes.client import GetEvents, ShowEvents
 import mshtmlevents 
 from comtypes.gen import SHDocVw
+from comtypes.gen import MSXML2
 from comtypes.gen import MSHTML
 
 kernel32 = windll.kernel32
@@ -325,12 +327,20 @@ class Browser(EventSink):
 
     def _addXMLHttpRequestEventListener(self, node, event_name, event_fn):
         
-        return None
-        listener = xpcom.server.WrapObject(ContentInvoker(node, event_fn),
-                                            interfaces.nsIDOMEventListener)
-        print event_name, listener
-        node.addEventListener(event_name, listener, False)
-        return listener
+        print "_addXMLHttpRequestEventListener", event_name
+
+        rcvr = mshtmlevents._DispEventReceiver()
+        rcvr.dispmap = {0: event_fn}
+
+        print rcvr
+        rcvr.sender = node
+        print rcvr.sender
+        ifc = rcvr.QueryInterface(IDispatch)
+        print ifc
+        v = VARIANT(ifc)
+        print v
+        setattr(node, event_name, v)
+        return ifc
 
     def addEventListener(self, node, event_name, event_fn):
         
@@ -368,9 +378,10 @@ class Browser(EventSink):
         return event_name # hmmm...
 
     def getXmlHttpRequest(self):
-        xml_svc_cls = components.classes[ \
-            "@mozilla.org/xmlextras/xmlhttprequest;1"]
-        return xml_svc_cls.createInstance(interfaces.nsIXMLHttpRequest)
+        print "getXMLHttpRequest"
+        o = comtypes.client.CreateObject('MSXML2.XMLHTTP.3.0')
+        print "getXMLHttpRequest", o
+        return Dispatch(o)
         
     def getUri(self):
         return self.application

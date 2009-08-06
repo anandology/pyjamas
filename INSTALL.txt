@@ -13,6 +13,23 @@ are critical to pyjamas.   It goes without saying that if you overwrite
 the standard python modules with the pyjamas equivalents, you will run into
 massive problems.  Don't do it.
 
+Dependencies
+============
+
+For pyjamas javascript compilation, you need python 2 - that's it.
+
+For Pyjamas Desktop, you will need:
+
+* Win32 comtypes, or python-hulahop and python-xpcom, or a patched
+  version of pywebkitgtk and webkit-gobject: see
+  http://github.com/lkcl/webkit/16401.master
+
+  These are for the MSHTML, XULrunner and Webkit ports of Pyjamas
+  Desktop, respectively.
+
+* python-jsonrpc which can be downloaded from http://json-rpc.org
+  if you wish to use JSONRPC.
+
 Developer Sandbox Setup
 =======================
 
