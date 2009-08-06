@@ -1,10 +1,12 @@
 #import win32traceutil
 
+import traceback
 import win32con
 import sys
 import os
 from ctypes import *
 import time
+import new
 
 import _mshtml
 
@@ -200,17 +202,34 @@ def addEventListener(element, event_name, cb):
 
 fn_txt = """\
 def event_fn(self, *args):
+    print "event %s", self, args, dir(self)
+    print "event callbacks", self._listeners
     callbacks = self._listeners.get('%s', [])
-    print args
     for fn in callbacks:
         fn(*args)
 """
 
+class EventCaller:
+    def __init__(self, handler, name):
+        self.handler = handler
+        self.name = name
+    def __call__(self, *args):
+        callbacks = self.handler._listeners.get(self.name, [])
+        print "event", self.name, callbacks
+        for fn in callbacks:
+            try:
+                fn(self.handler._sender, Dispatch(args[0]), True)
+            except:
+                sys.stderr.write(traceback.print_stack())
+                sys.stderr.flush()
+
 class EventHandler(object):
-    def __init__(self, pBrowser):
-        self._pBrowser = pBrowser
+    def __init__(self, sender):
+        self._sender = sender
         self._listeners = {}
     def __getattr__(self, name):
+        if name.startswith('__') and name.endswith('__'):
+            raise AttributeError(name)
         print "EventHandler requested ", name
         if name.startswith('_') or name == 'addEventListener':
             return self.__dict__[name]
@@ -218,10 +237,12 @@ class EventHandler(object):
         if idx >= 0:
             if idx > 0:
                 name = name[idx+1:]
-            exec fn_txt % name
-            return comtypes.instancemethod(event_fn,
-                                           EventHandler, self)
+            #return EventCaller(self, name)
+            exec fn_txt % (name, name)
+            print event_fn
+            return new.instancemethod(event_fn, self)
         raise AttributeError(name)
+
     def addEventListener(self, name, fn):
         if not self._listeners.has_key(name):
             self._listeners[name] = []
@@ -334,9 +355,10 @@ class Browser(EventSink):
         #setattr(self.getGdomWindow(), "on%s" % event_name, v)
         #return ifc
 
+        wnd = self.pBrowser.Document.parentWindow
         if self.window_handler is None:
             self.window_handler = EventHandler(self)
-            self.window_conn = mshtmlevents.GetEvents(self.getDomWindow(),
+            self.window_conn = mshtmlevents.GetEvents(wnd,
                                         sink=self.window_handler,
                                     interface=MSHTML.HTMLWindowEvents2)
         self.window_handler.addEventListener(event_name, event_fn)

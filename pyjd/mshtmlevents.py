@@ -12,7 +12,6 @@ logger = logging.getLogger(__name__)
 
 class _AdviseConnection(object):
     def __init__(self, source, interface, receiver):
-        self.cookie = None
         cpc = source.QueryInterface(comtypes.connectionpoints.IConnectionPointContainer)
         self.cp = cpc.FindConnectionPoint(ctypes.byref(interface._iid_))
         logger.debug("Start advise %s", interface)
