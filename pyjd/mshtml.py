@@ -27,6 +27,7 @@ if not hasattr(sys, 'frozen'):
     GetModule('atl.dll')
     GetModule('shdocvw.dll')
     GetModule('msxml2.dll')
+    GetModule('mshtml.tlb') 
 
 kernel32 = windll.kernel32
 user32 = windll.user32
