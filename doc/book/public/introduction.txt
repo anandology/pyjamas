@@ -30,7 +30,7 @@ Widget API).  In 2008, Pyjamas was ported to the Desktop, bypassing
 all of the javascript completely.  The underlying technology used was
 Webkit, which is the same technology behind Adobe AIR, Google Chrome,
 Safari, Midori and the iPhone browser. Thanks to Webkit, Pyjamas, by
-keeping such exulted company, becomes the world's first free-software
+keeping such exalted company, becomes the world's first free-software
 Applications framework that is both cross-browser and cross-platform.
 Also, by using Webkit, the Pyjamas-Desktop port is cross-widget-set
 as well.
