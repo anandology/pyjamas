@@ -206,7 +206,11 @@ def event_fn(self, *args):
     print "event callbacks", self._listeners
     callbacks = self._listeners.get('%s', [])
     for fn in callbacks:
-        fn(*args)
+        try:
+            fn(self._sender, Dispatch(args[0]), True)
+        except:
+            sys.stderr.write( traceback.print_exc() )
+            sys.stderr.flush()
 """
 
 class EventCaller:
@@ -220,8 +224,7 @@ class EventCaller:
             try:
                 fn(self.handler._sender, Dispatch(args[0]), True)
             except:
-                sys.stderr.write(traceback.print_stack())
-                sys.stderr.flush()
+                print traceback.print_stack()
 
 class EventHandler(object):
     def __init__(self, sender):
@@ -238,7 +241,7 @@ class EventHandler(object):
             if idx > 0:
                 name = name[idx+1:]
             #return EventCaller(self, name)
-            exec fn_txt % (name, name)
+            exec fn_txt % (name[2:], name[2:])
             print event_fn
             return new.instancemethod(event_fn, self)
         raise AttributeError(name)
@@ -314,11 +317,11 @@ class Browser(EventSink):
         windll.user32.ShowWindow(cw, c_int(win32con.SW_SHOWNORMAL))
         windll.user32.UpdateWindow(cw)
 
-    def getGdomDocument(self):
+    def getDomDocument(self):
         return Dispatch(self.pBrowser.Document)
 
-    def getGdomWindow(self):
-        return self.getGdomDocument().parentWindow
+    def getDomWindow(self):
+        return self.getDomDocument().parentWindow
 
     def _addXMLHttpRequestEventListener(self, node, event_name, event_fn):
         
@@ -346,13 +349,13 @@ class Browser(EventSink):
         #rcvr = mshtmlevents.GetDispEventReceiver(MSHTML.HTMLWindowEvents,
         #                   event_fn, "on%s" % event_name)
         #print rcvr
-        #rcvr.sender = self.getGdomWindow()
+        #rcvr.sender = self.getDomWindow()
         #print rcvr.sender
         #ifc = rcvr.QueryInterface(IDispatch)
         #print ifc
         #v = VARIANT(ifc)
         #print v
-        #setattr(self.getGdomWindow(), "on%s" % event_name, v)
+        #setattr(self.getDomWindow(), "on%s" % event_name, v)
         #return ifc
 
         wnd = self.pBrowser.Document.parentWindow

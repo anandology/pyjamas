@@ -107,10 +107,10 @@ class Browser(WebView):
     def getUri(self):
         return self.application
 
-    def getGdomWindow(self):
+    def getDomWindow(self):
         return self.get_dom_window()
 
-    def getGdomDocument(self):
+    def getDomDocument(self):
         return self.get_dom_window().document
 
     def _loaded(self, progress_listener):

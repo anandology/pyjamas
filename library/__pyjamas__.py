@@ -42,7 +42,7 @@ def get_main_frame():
     return main_frame
 
 def doc():
-    return main_frame.getGdomDocument() 
+    return main_frame.getDomDocument() 
 
 def wnd():
     return main_frame.getDomWindow() 
