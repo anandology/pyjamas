@@ -27,7 +27,7 @@ def removeWindowResizeListener(listener):
     resizeListeners.remove(listener)
 
 def alert(txt):
-    #get_main_frame()._alert(txt)
+    get_main_frame()._alert(txt)
     gtk = get_gtk_module()
 
     def close(w):
@@ -58,16 +58,16 @@ def scroll(x, y):
     wnd().scroll(x, y)
 
 def getClientHeight():
-    height = wnd().innerHeight
-    if height:
-        return height
-    return doc().body.clientHeight;
+    try:
+        return wnd().innerHeight
+    except:
+        return doc().body.clientHeight;
 
 def getClientWidth():
-    width = wnd().innerWidth
-    if width:
-        return width
-    return doc().body.clientWidth;
+    try:
+        return wnd().innerWidth
+    except:
+        return doc().body.clientWidth;
 
 def setLocation(url):
     w = wnd()
