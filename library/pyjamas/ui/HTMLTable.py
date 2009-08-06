@@ -92,6 +92,7 @@ class HTMLTable(Panel):
 
         if key is None:
             return None
+        print self.widgetMap
         return self.widgetMap[key]
 
     def isCellPresent(self, row, column):
@@ -162,9 +163,9 @@ class HTMLTable(Panel):
 
         widget.removeFromParent()
         td = self.cleanCell(row, column)
-        widget_hash = hash(widget)
+        widget_hash = widget
         element = widget.getElement()
-        widgethash[element] = str(widget_hash)
+        widgethash[element] = widget_hash
         self.widgetMap[widget_hash] = widget
         self.adopt(widget, td)
 
