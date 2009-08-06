@@ -5,7 +5,6 @@ Copyright(c) 2007-08 Toby de Havilland, Some rights reserved.
 Addapted for pyjamas: Kees Bos
 """
 
-import enum
 from pyjamas.ui.DockPanel import DockPanel
 from pyjamas.ui.RootPanel import RootPanel
 from pyjamas.ui.AbsolutePanel import AbsolutePanel

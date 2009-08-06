@@ -5,8 +5,6 @@ Copyright(c) 2007-08 Toby de Havilland, Some rights reserved.
 Addapted for pyjamas: Kees Bos
 """
 
-import enum
-
 class RoleVO(object):
     username = None
     roles = []

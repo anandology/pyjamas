@@ -6,7 +6,7 @@ Addapted for pyjamas: Kees Bos
 """
 
 import puremvc.patterns.proxy
-import enum, vo, EmployeeAdmin
+import enumerate, vo, EmployeeAdmin
 
 class UserProxy(puremvc.patterns.proxy.Proxy):
     
@@ -14,9 +14,9 @@ class UserProxy(puremvc.patterns.proxy.Proxy):
     def __init__(self):
         super(UserProxy, self).__init__(UserProxy.NAME, [])
         self.data = []
-        self.addItem(vo.UserVO('lstooge','Larry', 'Stooge', "larry@stooges.com", 'ijk456',enum.DEPT_ACCT))
-        self.addItem(vo.UserVO('cstooge','Curly', 'Stooge', "curly@stooges.com", 'xyz987',enum.DEPT_SALES))
-        self.addItem(vo.UserVO('mstooge','Moe', 'Stooge', "moe@stooges.com", 'abc123',enum.DEPT_PLANT))
+        self.addItem(vo.UserVO('lstooge','Larry', 'Stooge', "larry@stooges.com", 'ijk456',enumerate.DEPT_ACCT))
+        self.addItem(vo.UserVO('cstooge','Curly', 'Stooge', "curly@stooges.com", 'xyz987',enumerate.DEPT_SALES))
+        self.addItem(vo.UserVO('mstooge','Moe', 'Stooge', "moe@stooges.com", 'abc123',enumerate.DEPT_PLANT))
 
     def getUsers(self):
         return self.data
@@ -42,9 +42,9 @@ class RoleProxy(puremvc.patterns.proxy.Proxy):
     def __init__(self):
         super(RoleProxy, self).__init__(RoleProxy.NAME, [])
         self.data = []
-        self.addItem(vo.RoleVO('lstooge', [enum.ROLE_PAYROLL,enum.ROLE_EMP_BENEFITS]))
-        self.addItem(vo.RoleVO('cstooge', [enum.ROLE_ACCT_PAY,enum.ROLE_ACCT_RCV,enum.ROLE_GEN_LEDGER]))
-        self.addItem(vo.RoleVO('mstooge', [enum.ROLE_INVENTORY,enum.ROLE_PRODUCTION,enum.ROLE_SALES,enum.ROLE_SHIPPING]))
+        self.addItem(vo.RoleVO('lstooge', [enumerate.ROLE_PAYROLL,enumerate.ROLE_EMP_BENEFITS]))
+        self.addItem(vo.RoleVO('cstooge', [enumerate.ROLE_ACCT_PAY,enumerate.ROLE_ACCT_RCV,enumerate.ROLE_GEN_LEDGER]))
+        self.addItem(vo.RoleVO('mstooge', [enumerate.ROLE_INVENTORY,enumerate.ROLE_PRODUCTION,enumerate.ROLE_SALES,enumerate.ROLE_SHIPPING]))
 
     def getRoles(self):
         print self.data
