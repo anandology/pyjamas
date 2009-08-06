@@ -430,7 +430,11 @@ def is_loaded():
     return wv.already_initialised
 
 def run(one_event=False, block=True):
-    MainWin(one_event) # TODO: ignore block arg for now
+    try:
+        MainWin(one_event) # TODO: ignore block arg for now
+    except:
+        sys.stderr.write( traceback.print_exc() )
+        sys.stderr.flush()
 
 def setup(application, appdir=None, width=800, height=600):
 
