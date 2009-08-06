@@ -392,6 +392,11 @@ class Browser(EventSink):
         if self.appdir:
             pth = os.path.abspath(self.appdir)
         sys.path.append(pth)
+        
+        self._addWindowEventListener("unload", self.on_unload_callback)
+
+    def on_unload_callback(self, *args):
+        windll.user32.PostQuitMessage(0)
 
 def MainWin(one_event):
 
@@ -400,7 +405,12 @@ def MainWin(one_event):
     pMsg = pointer(msg)
     NULL = c_int(win32con.NULL)
     
-    while windll.user32.GetMessageA( pMsg, NULL, 0, 0) != 0:
+    while 1:
+        res = windll.user32.GetMessageA( pMsg, NULL, 0, 0)
+        if res == -1:
+            return 0
+        if res == 0:
+            break 
 
         windll.user32.TranslateMessage(pMsg)
         windll.user32.DispatchMessageA(pMsg)
