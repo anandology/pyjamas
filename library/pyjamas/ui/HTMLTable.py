@@ -92,7 +92,6 @@ class HTMLTable(Panel):
 
         if key is None:
             return None
-        print self.widgetMap
         return self.widgetMap[key]
 
     def isCellPresent(self, row, column):
