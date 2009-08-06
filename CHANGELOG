@@ -12,7 +12,7 @@
  * Added basic support for list comprehension (no ifs/multiple for)
 
  * Added builtin import test, which will fail if the import code
-   gets to smart
+   gets too smart
 
  * The -d option now sets:
     --debug-wrap
