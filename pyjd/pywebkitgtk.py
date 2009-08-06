@@ -504,6 +504,9 @@ class WebBrowser(gtk.Window):
         print dir(dialog)
         dialog.run ()
 
+    def _alert(self, msg):
+        self._javascript_script_alert_cb(None, None, msg)
+
     def _javascript_script_confirm_cb(self, view, frame, message, isConfirmed):
         pass
 

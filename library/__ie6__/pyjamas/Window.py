@@ -1,8 +1,8 @@
-
+from __pyjamas__ import doc
 
 def getClientHeight():
-    return JS('$doc.body.clientHeight');
+    return doc().body.clientHeight
 
 def getClientWidth():
-    return JS('$doc.body.clientWidth');
+    return doc().body.clientWidth
 

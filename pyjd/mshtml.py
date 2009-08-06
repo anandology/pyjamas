@@ -297,7 +297,7 @@ class Browser(EventSink):
                         interface=SHDocVw.DWebBrowserEvents2)
 
     def _alert(self, txt):
-        self.get_prompt_svc().alert(None, "Alert", txt)
+        print "TODO: alert", txt
 
     def load_app(self):
 
