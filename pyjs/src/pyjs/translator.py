@@ -2452,7 +2452,7 @@ def translate(sources, output_file, module_name=None,
                 flags.add(l.strip()[7:])
         f.close()
         if tree:
-            tree = merge(tree, current_tree, flags)
+            tree = merge(module_name, tree, current_tree, flags)
         else:
             tree = current_tree
     #XXX: if we have an override the sourcefile and the tree is not the same!
@@ -2474,7 +2474,7 @@ def translate(sources, output_file, module_name=None,
     output.close()
     return t.imported_modules
 
-def merge(tree1, tree2, flags):
+def merge(module_name, tree1, tree2, flags):
     if 'FULL_OVERRIDE' in flags:
         return tree2
     for child in tree2.node:
@@ -2484,7 +2484,7 @@ def merge(tree1, tree2, flags):
             replaceClassMethods(tree1, child.name, child)
         else:
             raise TranslationError(
-                "Do not know how to merge", child)
+                "Do not know how to merge %s" % child, child, module_name)
     return tree1
 
 def replaceFunction(tree, function_name, function_node):
