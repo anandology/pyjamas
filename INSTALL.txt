@@ -20,15 +20,32 @@ For pyjamas javascript compilation, you need python 2 - that's it.
 
 For Pyjamas Desktop, you will need:
 
-* Win32 comtypes, or python-hulahop and python-xpcom, or a patched
-  version of pywebkitgtk and webkit-gobject: see
-  http://github.com/lkcl/webkit/16401.master
+* python-jsonrpc which can be downloaded from http://json-rpc.org
+  if you wish to use JSONRPC.
+
+* PyWin32 and Win32 comtypes; or python-hulahop and python-xpcom, or a patched
+  version of pywebkitgtk and webkit-gobject
 
   These are for the MSHTML, XULrunner and Webkit ports of Pyjamas
   Desktop, respectively.
 
-* python-jsonrpc which can be downloaded from http://json-rpc.org
-  if you wish to use JSONRPC.
+    Win32:
+
+    * comtypes is available here: http://sourceforge.net/projects/comtypes/
+    * PyWin32 is here: http://sourceforge.net/projects/pywin32/
+
+    XULrunner:
+
+    * python-xpcom requires XULrunner.  it's _big_.  it is recommended that
+      you use a standard gnu/linux distribution build.  if you ever manage
+      to get XULrunner and python-xpcom compiled for win32, you are officially
+      a hero: please tell everyone about it on pyjamas-dev.
+
+    Webkit:
+
+    use this code, for now:
+    * http://github.com/lkcl/webkit/16401.master
+    * http://code.google.com/p/pywebkitgtk/issues/detail?id=13
 
 Developer Sandbox Setup
 =======================
