@@ -101,6 +101,9 @@ class StringTest(UnitTest):
         result=text.strip(" sthi")
         self.assertEquals(result, expected_result2)
 
+        result=text.strip("")
+        self.assertEquals(result, text)
+
     def testUnicode(self):
         text=u"""Liebe 'hallo' "grüsse" Grüsse"""
         self.assertEqual(text, text[:])

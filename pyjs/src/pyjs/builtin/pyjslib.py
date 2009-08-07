@@ -457,13 +457,13 @@ pyjslib.String_strip = function(chars) {
 
 pyjslib.String_lstrip = function(chars) {
     if (pyjslib.isUndefined(chars)) return this.replace(/^\s+/, "");
-
+    if (chars.length == 0) return this;
     return this.replace(new RegExp("^[" + chars + "]+"), "");
 };
 
 pyjslib.String_rstrip = function(chars) {
     if (pyjslib.isUndefined(chars)) return this.replace(/\s+$/, "");
-
+    if (chars.length == 0) return this;
     return this.replace(new RegExp("[" + chars + "]+$"), "");
 };
 
