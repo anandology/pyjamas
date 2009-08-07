@@ -1,4 +1,3 @@
-from __pyjamas__ import doc
 
 def getClientHeight():
     return doc().body.clientHeight
