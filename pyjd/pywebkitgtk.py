@@ -265,6 +265,16 @@ def mash_attrib(name, joiner='-'):
             res += c
     return res
 
+def _alert(self, msg):
+    global wv
+    wv._alert(msg)
+
+def getDomDocument(self):
+    return self.getGdomDocument()
+
+def getDomWindow(self):
+    return self.getGdomDocument().window
+
 def addWindowEventListener(self, event_name, cb):
     #print self, event_name, cb
     if cb not in self._callbacks:
@@ -422,8 +432,11 @@ class WebBrowser(gtk.Window):
         main_frame.gobject_wrap = webkit.gobject_wrap
         main_frame.platform = 'webkit'
         main_frame.addEventListener = addEventListener
+        main_frame.getDomWindow = new.instancemethod(getDomWindow, main_frame)
+        main_frame.getDomDocument = new.instancemethod(getDomDocument, main_frame)
         main_frame._addXMLHttpRequestEventListener = addXMLHttpRequestEventListener
         main_frame._addWindowEventListener = new.instancemethod(addWindowEventListener, main_frame)
+        main_frame._alert = new.instancemethod(_alert, main_frame)
         main_frame.mash_attrib = mash_attrib
         set_main_frame(main_frame)
 
