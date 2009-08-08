@@ -3,16 +3,15 @@ from pyjamas.ui.TextBox import TextBox
 from pyjamas.ui.HTML import HTML
 from pyjamas.ui.Button import Button
 
-import jsdicttest.js # YUK!!!
 
 class WrapperDict:
     def __init__(self):
         d = {'hello': 'world',
              'goodbye': 2}
         JS("""
-           this.dict = new dictobj();
-           this.dict.init(d);
+           self.dict = new dictobj();
            """)
+        self.dict.init(d)
 
     def python_get_value(self, key):
         return self.dict.d[key]
@@ -21,9 +20,7 @@ class WrapperDict:
         return len(self.dict)
 
     def javascript_get_value(self, key):
-        JS("""
-        return this.dict.get_value(key);
-           """)
+        return self.dict.get_value(key)
 
 
 class TestDict:

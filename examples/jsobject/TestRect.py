@@ -3,31 +3,23 @@ from pyjamas.ui.TextBox import TextBox
 from pyjamas.ui.HTML import HTML
 from pyjamas.ui.Button import Button
 
-import jsrecttest.js # YUK!!!
 
 class Rect:
     def __init__(self, x, y):
-        JS("""
-           this.rect = new rectobj();
-           this.rect.init(x, y);
-           """)
+        JS("""self.rect = new rectobj();""")
+        self.rect.init(x, y)
 
     def add(self, r):
-        JS("""
-            this.rect.add(r.rect);
-           """)
+        self.rect.add(r.rect)
+
     def area(self):
-        JS("""
-            return this.rect.area();
-           """)
+        return self.rect.area()
 
     def get_x(self):
         return self.rect.x
 
     def get_y(self):
-        JS("""
-            return this.rect.y;
-            """)
+        return self.rect.y
 
 class TestRect:
 
