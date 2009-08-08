@@ -29,7 +29,7 @@ if engine is None:
     if sys.platform == 'win32':
         engine = 'mshtml'
     else:
-        engine = 'hulahlop'
+        engine = 'hulahop'
 if engine == 'pywebkitgtk':
     from pywebkitgtk import *
 elif engine == 'hulahop':
