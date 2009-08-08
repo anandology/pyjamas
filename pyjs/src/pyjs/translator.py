@@ -1101,7 +1101,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             # special module to help make pyjamas modules loadable in
             # the python interpreter
             return
-        if node.modname == 'javascript':
+        if node.modname == '__javascript__':
             for name in node.names:
                 ass_name = name[1] or name[0]
                 self.add_lookup("variable", ass_name, ass_name)
