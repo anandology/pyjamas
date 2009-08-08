@@ -374,6 +374,7 @@ class DateField(Composite):
         # self.sep = format[2] # is this too presumptious?
         self.calendar = Calendar()
         img = Image("icon_calendar.gif")
+        img.addStyleName("calendar-img")
         self.calendarLink = HyperlinkImage(img)
         self.todayLink = Hyperlink('Today')
         self.todayLink.addStyleName("calendar-today-link")

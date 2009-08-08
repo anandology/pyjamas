@@ -6,6 +6,7 @@
 .calendar-day-cell, .calendar-blank-cell { background:#C9DBED; }
 .calendar-cell-today { background:green; }
 .calendar-today-link { display: block; font-size: 10px; font-weight:bold; padding:0px; text-decoration: none; color:#444; }
+.calendar-img { border: 0; }
 
 .calendar td.calendar-day-cell:hover, .calendar-today-link a:hover { background: #5b80b2; color:white; }
 .calendar td.today:hover, .calendar-today-link a:hover , div a:hover { background: #5b80b2; color:white; }
