@@ -1,487 +1,439 @@
-# index.py
+﻿# Date Time Example
+# Copyright (C) 2009 Yit Choong (http://code.google.com/u/yitchoong/)
 
 from pyjamas.ui.SimplePanel import SimplePanel
-from pyjamas.ui.VerticalPanel import VerticalPanel
+from pyjamas.ui.VerticalPanel import  VerticalPanel
 from pyjamas.ui.HorizontalPanel import HorizontalPanel
-from pyjamas.ui.RootPanel import RootPanel
+from pyjamas.ui.PopupPanel import  PopupPanel
 from pyjamas.ui.Grid import Grid
+from pyjamas.ui.Composite import Composite
 from pyjamas.ui.Label import Label
+from pyjamas.ui.Hyperlink import Hyperlink
+from pyjamas.ui.HyperlinkImage import HyperlinkImage
 from pyjamas.ui.HTML import HTML
-from pyjamas.ui.HTMLPanel import HTMLPanel
 from pyjamas.ui.FocusPanel import FocusPanel
-from pyjamas.ui.Button import Button
-from pyjamas.ui.ListBox import ListBox
 from pyjamas.ui.TextBox import TextBox
-from pyjamas.ui.TextArea import TextArea
-from pyjamas.ui.MenuBar import MenuBar
-from pyjamas.ui.MenuItem import MenuItem
-from pyjamas.ui.DialogBox import DialogBox
-from Tooltip import Tooltip, TooltipListener
-from pyjamas import DOM, Window
-from datetime import Datetime
+from pyjamas.ui.Image import Image
+from pyjamas.ui import HasAlignment
+from pyjamas import DOM
 
-def navLanguage():
-    JS("""
-       if (navigator.userLanguage)
-        return navigator.userLanguage.substring(0, 2);
-       if (navigator.language) 
-        return navigator.language.substring(0, 2);
-       return 'en';
-       """)
-    
-class TodayListener:
-    def __init__(self, proxy):
-        self.proxy = proxy
-
-    def onClick(self, sender=None):
-        strDate = "%d%s%d%s%d" % (self.proxy.todayYear,
-                                  self.proxy.dateSep,
-                                  self.proxy.todayMonth + 1,
-                                  self.proxy.dateSep,
-                                  self.proxy.todayDay)
-        if self.proxy.todayMonth != self.proxy.month or \
-           self.proxy.todayYear != self.proxy.year:
-            self.proxy.monthChanged = True
-
-        self.proxy.setDate(strDate)
-
+import time
 
 class Calendar(FocusPanel):
-    daysLabels_es = ["Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"]
-    monthsNames_es = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Setiembre",
-                   "Octubre", "Noviembre", "Diciembre"]
-    daysLabels_en = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
-    monthsNames_en = ["January", "February", "March", "April", "May", "June", "July", "August", "September",
-                   "October", "November", "December"]
-    monthsDays = [31,28,31,30,31,30,31,31,30,31,30,31]
-    daysLabels = {'es': Calendar.daysLabels_es, 'en': Calendar.daysLabels_en}
-    monthsNames = {'es': Calendar.monthsNames_es , 'en': Calendar.monthsNames_en}
-    otherLabels = {'es': {'lblToday': 'Hoy', 'lblClose': 'Cerrar', 'ttBack10y': 'Atrás 10 años',
-                          'ttBack1y': 'Atrás 1 año', 'ttBack1m': 'Atrás 1 mes', 'ttFwd1m': 'Adelante 1 mes',
-                          'ttFwd1y': 'Adelante 1 año', 'ttFwd10y': 'Adelante 10 años'},
-        'en': {'lblToday': 'Today', 'lblClose': 'Close', 'ttBack10y': 'Back 10 years', 'ttBack1y': 'Back 1 year',
-               'ttBack1m': 'Back 1 month', 'ttFwd1m': 'Forward 1 month',
-                          'ttFwd1y': 'Forward 1 year', 'ttFwd10y': 'Forward 10 years'}}
-    
-    def isLeapYear(self):
-        if self.year % 4:    
-            return False
-        if not self.year % 100:
-            if not self.year % 400:
-                return True
-            else:
-                return False
-        else:
-            return True
+    def __init__(self):
+        FocusPanel.__init__(self)
+        self.monthsOfYear = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+        self.daysOfWeek = ['S','M','T','W','T','F','S']
+        yr,mth,day = time.strftime("%Y-%m-%d").split("-")
+        self.todayYear = int(yr)
+        self.todayMonth = int(mth)  # change to offset 0 as per javascript
+        self.todayDay = int(day)
 
-    def setPopupPosition(self, left, top):
+        self.currentMonth = self.todayMonth
+        self.currentYear = self.todayYear
+        self.currentDay = self.todayDay
+
+        self.selectedDateListeners = []
+
+        self.defaultGrid = None # used later
+
+        return
+
+    def addSelectedDateListener(self,listener):
+        self.selectedDateListeners.append(listener)
+
+    def removeSelectedDateListener(self,listener):
+        self.selectedDateListeners.remove(listener)
+
+    def isLeapYear(self,year):
+        if (year % 4 == 0 and year % 100 != 0) or ( year % 400 == 0):
+            return True
+        else:
+            return False
+
+    def getDaysInMonth(self,mth,year):
+        days = 0
+        if (mth == 1 or mth == 3 or mth == 5 or mth == 7 or mth == 8 or mth == 10 or mth == 12): # in (1,3,5,7,8,10,12):
+            days=31
+        elif mth == 4 or mth == 6 or mth == 8 or mth == 11: #in (4,6,8,11):
+            days = 30
+        elif (mth==2 and self.isLeapYear(year)):
+            days = 29
+        else:
+            days = 28
+        return days
+
+    def setPosition(self, left, top):
+        element = self.getElement()
+        DOM.setStyleAttribute(element, "left", "%dpx" % left)
+        DOM.setStyleAttribute(element, "top", "%dpx" % top)
+
+    def show(self, left, top):
         if left < 0:
             left = 0
         if top < 0:
             top = 0
+        self.setPosition(left,top)
+        self.drawCurrent()
+        self.setVisible(True)
 
-        element = self.getElement()
-        DOM.setStyleAttribute(element, "left", left + "px")
-        DOM.setStyleAttribute(element, "top", top + "px")
-        
-    def onMouseDown(self, sender, x, y):
-        if sender == self.lblCurrentMonthYear:
-            self.dragging = True
-            DOM.setCapture(self.lblCurrentMonthYear.getElement())
-            self.dragStartX = x
-            self.dragStartY = y
+    def drawCurrent(self):
+        yr,mth,day = time.strftime("%Y-%m-%d").split("-")
+        self.draw( int(mth), int(yr) )
+
+    def draw(self, month , year):
+        tod = time.localtime()
+        mm = tod.tm_mon
+        yy = tod.tm_year
+        # has today changed and thus changed month? cater to rare case where widget in created on last day of month &
+        # page left till next day
+        hasChangeMonth = False
+        if yy <> self.todayYear or mm <> self.todayMonth:
+            hasChangeMonth = True
+            self.todayYear = yy
+            self.todayMonth = mm
+
+        # check to see if we have drawn the full widget before
+        if self.defaultGrid is None:
+            self.drawFull(month,year)
         else:
-            FocusPanel.onMouseDown(self, sender, x, y)
-            
-    def onMouseEnter(self, sender):
-        pass
-
-    def onMouseLeave(self, sender):
-        pass
-
-    def onMouseMove(self, sender, x, y):
-        if self.dragging:
-            absX = x + self.getAbsoluteLeft()
-            absY = y + self.getAbsoluteTop()
-            self.setPopupPosition(absX - self.dragStartX, absY - self.dragStartY)
-
-    def onMouseUp(self, sender, x, y):
-        if sender == self.lblCurrentMonthYear:
-            self.dragging = False
-            DOM.releaseCapture(self.lblCurrentMonthYear.getElement())
-        else:
-            FocusPanel.onMouseUp(self, sender, x, y)
-            
-            
-    def __init__(self, visible = False, text = "", textbox = None, date = None, dateSep = "-", firstDayOfWeek = 1, 
-                 backColor = "#D4D0C8", autoHide = True):
-        
-        FocusPanel.__init__(self)
-        
-        self.monthsNames = Calendar.monthsNames[navLanguage()]
-        self.daysLabels = Calendar.daysLabels[navLanguage()]
-        self.otherLabels = Calendar.otherLabels[navLanguage()]
-        
-        self.monthChanged = True
-        
-        self.dragging = False
-        self.dragStartX = 0
-        self.dragStartY = 0
-        
-        self.year = 0
-        self.month = 0
-        self.day = 0
-        self.dayOfWeek = 0
-        self.fdomDayOfWeek = 0
-        self.todayYear = 0
-        self.todayMonth = 0
-        self.todayDay = 0
-        
-        if firstDayOfWeek > 1:
-            firstDayOfWeek = 1
-        if firstDayOfWeek < 0:
-            firstDayOfWeek = 0
-        self.firstDayOfWeek = firstDayOfWeek
-        self.dateSep = dateSep
-        self.text = text
-        self.textbox = textbox
-        
-        self.backColor = backColor
-        self.autoHide = autoHide
-
-        self.setWidth("19%")
-        
-        self.vp = VerticalPanel()
-        
-        self.titlePanel = HorizontalPanel()
-        fp = FocusPanel()
-        fp.addMouseListener(TooltipListener(self.otherLabels['ttBack10y']))
-        self.btnBack10Years = Button("&lt;&lt;&lt;", getattr(self, "minus10Years"))
-        fp.add(self.btnBack10Years)
-        self.titlePanel.add(fp)
-        fp = FocusPanel()
-        fp.addMouseListener(TooltipListener(self.otherLabels['ttBack1y']))
-        self.btnBackYear = Button("&lt;&lt;", getattr(self, "minusYear"))
-        fp.add(self.btnBackYear)
-        self.titlePanel.add(fp)
-        fp = FocusPanel()
-        fp.addMouseListener(TooltipListener(self.otherLabels['ttBack1m']))
-        self.btnBackMonth = Button("&lt;", getattr(self, "minusMonth"))
-        fp.add(self.btnBackMonth)
-        self.titlePanel.add(fp)
-        self.lblCurrentMonthYear = Label("")
-        DOM.setStyleAttribute(self.lblCurrentMonthYear.getElement(), "marginLeft", "1px")
-        DOM.setStyleAttribute(self.lblCurrentMonthYear.getElement(), "marginRight", "1px")
-        DOM.setStyleAttribute(self.lblCurrentMonthYear.getElement(), "paddingLeft", "10px")
-        DOM.setStyleAttribute(self.lblCurrentMonthYear.getElement(), "paddingRight", "10px")
-        DOM.setStyleAttribute(self.lblCurrentMonthYear.getElement(), "color", "#0D4B70")
-        DOM.setStyleAttribute(self.lblCurrentMonthYear.getElement(), "backgroundColor", "rgb(255,255,255)")
-        DOM.setStyleAttribute(self.lblCurrentMonthYear.getElement(), "fontSize", "small")
-        DOM.setStyleAttribute(self.lblCurrentMonthYear.getElement(), "cursor", "move")
-        DOM.setStyleAttribute(self.lblCurrentMonthYear.getElement(), "width", "8em")
-        DOM.setStyleAttribute(self.lblCurrentMonthYear.getElement(), "textAlign", "center")
-        self.titlePanel.add(self.lblCurrentMonthYear)
-        fp = FocusPanel()
-        fp.addMouseListener(TooltipListener(self.otherLabels['ttFwd1m']))
-        self.btnNextMonth = Button("&gt;", getattr(self, "plusMonth"))
-        fp.add(self.btnNextMonth)
-        self.titlePanel.add(fp)
-        fp = FocusPanel()
-        fp.addMouseListener(TooltipListener(self.otherLabels['ttFwd1y']))
-        self.btnNextYear = Button("&gt;&gt;", getattr(self, "plusYear"))
-        fp.add(self.btnNextYear)
-        self.titlePanel.add(fp)
-        fp = FocusPanel()
-        fp.addMouseListener(TooltipListener(self.otherLabels['ttFwd10y']))
-        self.btnNext10Years = Button("&gt;&gt;&gt;", getattr(self, "plus10Years"))
-        fp.add(self.btnNext10Years)
-        self.titlePanel.add(fp)
-                               
-        self.vp.add(self.titlePanel)
-        
-        self.daysPanel = SimplePanel()
-        self.vp.add(self.daysPanel)
-        
-        proxy = self
-
-        def autoCerrar(self, sender):
-            proxy.setVisible(False)
-            
-        id1 = HTMLPanel.createUniqueId()
-        id2 = HTMLPanel.createUniqueId()
-        self.bottomPanel = HTMLPanel("<div style='text-align: right;'><span id=" + id2 + "><span id=" + id1 + "></div>")            
-        self.btnToday = Button(self.otherLabels['lblToday'], TodayListener(self))
-        self.bottomPanel.add(self.btnToday, id1)
-        self.btnClose = Button(self.otherLabels['lblClose'], autoCerrar)
-        self.bottomPanel.add(self.btnClose, id2)
-        self.btnToday.setWidth("50%")
-        self.btnClose.setWidth("50%")
-        self.vp.add(self.bottomPanel)
-        
-        DOM.setStyleAttribute(self.vp.getElement(), "border", "1px solid")
-        DOM.setStyleAttribute(self.vp.getElement(), "padding", "2px")
-
-        self.setDate(date)
-
-        today = Datetime()
-
-        self.todayYear = today.getYear()
-        if self.todayYear < 1900:
-            self.todayYear += 1900;
-        self.todayMonth = today.getMonth()
-        self.todayDay = today.getDate()
-        self.todayDayOfWeek = today.getDay()
-        
-        DOM.setStyleAttribute(self.vp.getElement(), "backgroundColor", self.backColor)
-        self.setWidget(self.vp)
-        
-        wi = self.vp.getOffsetWidth()
-        
-        DOM.setStyleAttribute(self.getElement(), "position", "absolute")
-        
-        
-        self.lblCurrentMonthYear.addMouseListener(self)
-        self.setVisible(visible)
-    
-    def setDestination(self, textbox):
-        self.textbox = textbox
-        
-    def _rechargeDate(self):
-        strDate = "%d%s%d%s%d" % (self.year, self.dateSep, self.month + 1, self.dateSep, self.day)
-        self.setDate(strDate)
-        
-    def plus10Years(self):
-        self.year += 10
-        self.monthChanged = True
-        self._rechargeDate()
-        
-    def plusYear(self):
-        self.year += 1
-        self.monthChanged = True
-        self._rechargeDate()
-        
-    def minus10Years(self):
-        self.year -= 10
-        self.monthChanged = True
-        self._rechargeDate()
-        
-    def minusYear(self):
-        self.year -= 1
-        self.monthChanged = True
-        self._rechargeDate()
-
-    def plusMonth(self):
-        self.month += 1
-        if self.month > 11:
-            self.year += 1
-            self.month = 0
-        self.monthChanged = True
-        self._rechargeDate()
-        
-    def minusMonth(self):
-        self.month -= 1
-        if self.month < 0:
-            self.month = 11
-            self.year -= 1
-        self.monthChanged = True
-        self._rechargeDate()
-        
-    def doSomething(self, sender):
-        if self.textbox:
-            btnvalue = sender.getText()
-            texto = "%s %d" % (self.toString(), btnvalue)
-            self.textbox.setText(texto)
-        self.setVisible(False)
-        
-    def setDate(self, date):
-        year = None
-        month = None
-        day = None
-        dayOfWeek = None
-        
-        if not date:
-            today = Datetime()
-            year = today.getYear()
-            if year < 1900:
-                year += 1900;
-            month= today.getMonth()
-            day= today.getDate()
-            dayOfWeek = today.getDay()
-        else:
-            arr = date.split(self.dateSep)
-            year = int(arr[0])
-            month = int(arr[1]) - 1
-            day = int(arr[2])
-            newdate = Datetime(year, month, day);
-            dayOfWeek = newdate.getDay()
-        
-        self.year = year
-        self.month = month
-        self.day = day
-        self.dayOfWeek = dayOfWeek
-
-        d = Datetime(year, month, 1);
-        fdow = d.getDay()
-        
-        fdow -= self.firstDayOfWeek
-        if fdow < 0:
-            fdow = len(self.daysLabels) + fdow
-            
-        self.fdomDayOfWeek = fdow
-        
-        if self.monthChanged:
-            self.drawDays()
-            self.monthChanged = False
-        
-        self.paintDays()
-        
-        self.lblCurrentMonthYear.setText("%s %d" % (self.monthsNames[self.month], self.year))
-        if self.textbox:
-                self.textbox.setText(self.toString())
-
-    def drawDays(self):
-        totalDays = self.getTotalDrawDays()
-        rows = totalDays / 7
-        if totalDays % 7:
-            rows += 1
-        cols = 7
-        self.grid = Grid(rows+1, cols)
-        grid = self.grid
-        grid.setWidth("100%")
-        
-        cellformatter = grid.getCellFormatter()
-        DOM.setAttribute(grid.getElement(), "border", "1")
-        DOM.setStyleAttribute(grid.getElement(), "borderCollapse", "collapse")
-        DOM.setStyleAttribute(grid.getElement(), "cursor", "pointer")
-        grid.addTableListener(self)
-        DOM.setStyleAttribute(grid.getElement(), "backgroundColor", self.backColor)
-
-        
-        for c in range(self.firstDayOfWeek, cols):
-            grid.setText(0, c-self.firstDayOfWeek, self.daysLabels[c])
-            DOM.setStyleAttribute(cellformatter.getElement(0, c-self.firstDayOfWeek), "backgroundColor", "#0D4B70")
-            DOM.setStyleAttribute(cellformatter.getElement(0, c-self.firstDayOfWeek), "color", "white")
-            DOM.setStyleAttribute(cellformatter.getElement(0, c-self.firstDayOfWeek), "textAlign", "center")
-            DOM.setStyleAttribute(cellformatter.getElement(0, c-self.firstDayOfWeek), "fontFamily", "Courier")
-        if self.firstDayOfWeek:
-            for c in range(0, self.firstDayOfWeek):
-                grid.setText(0, c + cols - 1, self.daysLabels[c])
-                DOM.setStyleAttribute(cellformatter.getElement(0, c + cols -1), "backgroundColor", "#0D4B70")
-                DOM.setStyleAttribute(cellformatter.getElement(0, c + cols -1), "color", "white")
-                DOM.setStyleAttribute(cellformatter.getElement(0, c + cols -1), "textAlign", "center")
-                DOM.setStyleAttribute(cellformatter.getElement(0, c + cols -1), "fontFamily", "Courier")
-            
-        counter = 0
-            
-        for r in range(1, rows + 1):
-            for c in range(cols):
-                if counter  < self.fdomDayOfWeek or  counter >= totalDays:
-                    grid.setText(r,c,"")
-                else:
-                    grid.setText(r,c, str((counter + 1)  - self.fdomDayOfWeek))
-                    DOM.setStyleAttribute(cellformatter.getElement(r, c), "textAlign", "center")
-                counter += 1
-
-        self.daysPanel.setWidget(grid)
-    
-    def paintDays(self):
-        formatter = self.grid.getCellFormatter()
-        for r in range(1, self.grid.getRowCount()):
-            for c in range(7):
-                texto = self.grid.getText(r, c)
-                if texto != "":
-                    num = int(texto)
-                    if num == self.day:
-                        DOM.setStyleAttribute(formatter.getElement(r, c), "backgroundColor", "white")
-                    else:
-#                        DOM.setStyleAttribute(formatter.getElement(r, c), "backgroundColor", self.backColor)
-                        if num == self.todayDay and self.month == self.todayMonth and self.year == self.todayYear:
-                            DOM.setStyleAttribute(formatter.getElement(r, c), "color", "white")
-                            DOM.setStyleAttribute(formatter.getElement(r, c), "backgroundColor", "rgb(0,192,0)")
-                        else:
-                            DOM.setStyleAttribute(formatter.getElement(r, c), "color", "black")
-                            DOM.setStyleAttribute(formatter.getElement(r, c), "backgroundColor", self.backColor)
-    
-    def onCellClicked(self, grid, row, col):
-        texto = grid.getText(row, col)
-        if texto == "" or row == 0:
-            return
-        self.day = int(texto)
-        self._rechargeDate()
-        if self.autoHide:
-            self.setVisible(False)
-        
-    
-    def getTotalDrawDays(self):
-        monthDays = Calendar.monthsDays[self.month]
-        if self.isLeapYear() and self.month == 1:
-            monthDays += 1
-        monthDays += self.fdomDayOfWeek
-        return monthDays
-    
-    def toString(self):
-        return "%d%s%0.2d%s%0.2d" % (self.year, self.dateSep, self.month + 1, self.dateSep, self.day)
-    
-    def __str__(self):
-        return self.__repr__()
-    
-class index:
-    def onModuleLoad(self):
-        self.miFecha = None
-        
-        vp = VerticalPanel()
-        vp.setSpacing(4)
-        hp = HorizontalPanel()
-        hp.setSpacing(4)
-        hp.setVerticalAlignment("middle")
-#        DOM.setStyleAttribute(hp.getElement(), "verticalAlign", "middle")
-        vp.add(hp)
-        
-        lbl = Label("Fecha: ")
-        DOM.setStyleAttribute(lbl.getElement(), "backgroundColor", "rgb(255,255,255)")
-        DOM.setStyleAttribute(lbl.getElement(), "padding", "2px")
-        hp.add(lbl)
-
-        self.txtFecha = TextBox()
-        self.txtFecha.addClickListener(getattr(self, "mostrarCalendar"))
-        self.txtFecha.setTextAlignment("right")
-        hp.add(self.txtFecha)
-        
-        self.btnWrapper = FocusPanel()
-        DOM.setStyleAttribute(self.btnWrapper.getElement(), "backgroundColor", "transparent")
-        self.btnWrapper.addMouseListener(TooltipListener("Mostrar calendario"))
-        self.btnCalendar = Button("...")
-        self.btnCalendar.addClickListener(getattr(self, "mostrarCalendar"))
-        self.btnWrapper.setWidget(self.btnCalendar)
-        hp.add(self.btnWrapper)
-        
-        self.btnIsLeap = Button("Bisiesto?")
-        self.btnIsLeap.addClickListener(esBisiesto)
-        
-        self.calendar = Calendar(visible = False, textbox = self.txtFecha, date = None, dateSep='-',
-                                 firstDayOfWeek = 2, autoHide = True)
-        
-        proxy = self
-        
-        def esBisiesto():
-            if proxy.calendar.isLeapYear():
-                stri = "%d es bisiesto" % proxy.calendar.year
+            # ok means we are re-drawing, but first check if it is the same as the defaultGrid, if yes, just use it
+            if not hasChangeMonth and month == self.todayMonth and year == self.todayYear:
+                self.middlePanel.setWidget(self.defaultGrid)
+                self.currentMonth = self.todayMonth
+                self.currentYear = self.todayYear
             else:
-                stri = "%d NO es bisiesto" % proxy.calendar.year
-            Window.alert(stri)            
-        
-        RootPanel().add(vp)
-        RootPanel().add(self.calendar)
-        y = self.txtFecha.getAbsoluteTop() + self.txtFecha.getOffsetHeight()
-        x = self.txtFecha.getAbsoluteLeft()
-        self.calendar.setPopupPosition(x, y)
-    
-    def mostrarCalendar(self):
-#        Window.alert("Ahora te muestro el calendario...esperá un rato...")
-        self.calendar.setVisible(True)
+                # we have to redraw the grid -- bah
+                g = self.drawGrid(month,year)
+
+                if hasChangeMonth:
+                    self.defaultGrid = grid # reset the default grid as we have changed months
+
+            #
+            # what about the title panel?
+            #
+            self.titlePanel.setWidget(HTML("<b>" + self.monthsOfYear[month-1] + " " + str(year) + "</b>" ) )
+            self.setVisible(True)
+
+        return
+
+    def drawFull(self, month, year):
+        # should be called only once when we draw the calendar for the first time
+        #
+        self.vp = VerticalPanel()
+        self.vp.setSpacing(2)
+        self.vp.addStyleName("calendarbox calendar-module calendar")
+        self.setWidget(self.vp)
+        self.setVisible(False)
+        #
+        mth = int(month)
+        yr = int(year)
+
+        tp = HorizontalPanel()
+        tp.addStyleName("calendar-top-panel")
+        tp.setSpacing(5)
+
+        h1 = Hyperlink('<<')
+        h1.addClickListener( getattr(self,'onPreviousYear') )
+        h2 = Hyperlink('<')
+        h2.addClickListener( getattr(self,'onPreviousMonth') )
+        h4 = Hyperlink('>')
+        h4.addClickListener( getattr(self,'onNextMonth') )
+        h5 = Hyperlink('>>')
+        h5.addClickListener( getattr(self,'onNextYear') )
+
+        tp.add(h1)
+        tp.add(h2)
+
+        # titlePanel can be changed, whenever we draw, so keep the reference
+
+        self.titlePanel = SimplePanel()
+        self.titlePanel.setWidget(HTML("<b>" + self.monthsOfYear[mth-1] + " " + str(yr) + "</b>" ) )
+        self.titlePanel.setStyleName("calendar-center")
+
+        tp.add( self.titlePanel )
+        tp.add(h4)
+        tp.add(h5)
+        tvp = VerticalPanel()
+        tvp.setSpacing(10)
+        tvp.add(tp)
+
+        self.vp.add(tvp)
+
+        # done with top panel
+
+        self.middlePanel = SimplePanel()
+        grid = self.drawGrid(mth,yr)
+        self.middlePanel.setWidget(grid)
+        self.vp.add(self.middlePanel)
+        self.defaultGrid = grid
+        #
+        # some links & handlers
+        #
+        bh1 = Hyperlink('Yesterday')
+        bh1.addClickListener( getattr(self,'onYesterday') )
+        bh2 = Hyperlink('Today')
+        bh2.addClickListener( getattr(self,'onToday') )
+        bh3 = Hyperlink('Tomorrow')
+        bh3.addClickListener( getattr(self,'onTomorrow') )
+        bh4 = Hyperlink('Cancel')
+        bh4.addClickListener( getattr(self,'onCancel') )
+        #
+        # add code to test another way of doing the layout
+        #
+        b = HorizontalPanel()
+        b.add(bh1)
+        b.add(bh2)
+        b.add(bh3)
+        b.addStyleName("calendar-shortcuts")
+        self.vp.add(b)
+        b2 = SimplePanel()
+        b2.add(bh4)
+        b2.addStyleName("calendar-cancel")
+        self.vp.add(b2)
+
+        self.setVisible(True)
+        return
+
+    def drawGrid(self,month,year):
+        # draw the grid in the middle of the calendar
+
+        daysInMonth = self.getDaysInMonth(month, year)
+        secs = time.mktime( (year,month,1,0,0,0,0,0,-1) ) # first day of the month & year
+        struct = time.localtime(secs)
+        startPos = (struct.tm_wday + 1 ) % 7 # 0 - sunday for our needs instead 0 = monday in tm_wday
+        slots = startPos + daysInMonth - 1
+        rows = int(slots/7) + 1
+        grid = Grid(rows+1, 7) # extra row for the days in the week
+        grid.setWidth("100%")
+        grid.addTableListener(self)
+        self.middlePanel.setWidget(grid)
+        #
+        # put some content into the grid cells
+        #
+        for i in range(7):
+            grid.setText(0, i, self.daysOfWeek[i] )
+            grid.cellFormatter.addStyleName(0,i,"calendar-header")
+        #
+        # draw cells which are empty first
+        #
+        day =0
+        pos = 0
+        while pos < startPos:
+            grid.setText(1, pos , " ")
+            grid.cellFormatter.setStyleAttr(1,pos,"background","#f3f3f3")
+            grid.cellFormatter.addStyleName(1,pos,"calendar-blank-cell")
+            pos += 1
+        # now for days of the month
+        row = 1
+        day = 1
+        col = startPos
+        while day <= daysInMonth:
+            if pos % 7 == 0 and day <> 1:
+                row += 1
+            col = pos % 7
+            grid.setText(row,col, str(day) )
+            if self.currentYear == self.todayYear and self.currentMonth == self.todayMonth and day == self.todayDay:
+                grid.cellFormatter.addStyleName(row,col,"calendar-cell-today")
+            else:
+                grid.cellFormatter.addStyleName(row,col,"calendar-day-cell")
+            day += 1
+            pos += 1
+        #
+        # now blank lines on the last row
+        #
+        col += 1
+        while col < 7:
+            grid.setText(row,col," ")
+            grid.cellFormatter.setStyleAttr(row,col,"background","#f3f3f3")
+            grid.cellFormatter.addStyleName(row,col,"calendar-blank-cell")
+            col += 1
+
+        return grid
+
+    def onCellClicked(self, grid, row, col):
+        if row == 0:
+            return
+        text = grid.getText(row, col)
+        if text == "":
+            return
+        selectedDay = int(text)
+        # well if anyone is listening to the listener, fire that event
+        for listener in self.selectedDateListeners:
+            if hasattr(listener, "onDateSelected"):
+                listener.onDateSelected(self.currentYear, self.currentMonth,
+                                        selectedDay)
+            else:
+                listener(self.currentYear, self.currentMonth, selectedDay)
+        self.setVisible(False)
 
 
-if __name__ == '__main__':
-    app = index()
-    app.onModuleLoad()
+    def onPreviousYear(self,event):
+        self.drawPreviousYear()
+
+    def onPreviousMonth(self,event):
+        self.drawPreviousMonth()
+
+    def onNextMonth(self,event):
+        self.drawNextMonth()
+
+    def onNextYear(self,event):
+        self.drawNextYear()
+
+    def onDate(self, event, yy, mm, dd):
+        for listener in self.selectedDateListeners:
+            if hasattr(listener, "onDateSelected"):
+                listener.onDateSelected(yy,mm,dd)
+            else:
+                listener(yy,mm,dd)
+        self.setVisible(False)
+
+    def onYesterday(self,event):
+        yesterday = time.localtime(time.time() - 3600 * 24)
+        mm = yesterday.tm_mon
+        dd = yesterday.tm_mday
+        yy = yesterday.tm_year
+        self.onDate(event, yy, mm, dd)
+
+    def onToday(self,event):
+        tod = time.localtime()
+        mm = tod.tm_mon
+        dd = tod.tm_mday
+        yy = tod.tm_year
+        self.onDate(event, yy, mm, dd)
+
+    def onTomorrow(self,event):
+        tom = time.localtime(time.time() + 3600 * 24)
+        mm = tom.tm_mon
+        dd = tom.tm_mday
+        yy = tom.tm_year
+        self.onDate(event, yy, mm, dd)
+
+    def onCancel(self,event):
+        self.setVisible(False)
+
+    def drawCurrent(self):
+        yr,mth,day = time.strftime("%Y-%m-%d").split("-")
+        self.draw( int(mth), int(yr) )
+
+    def drawDate(self, month, year ):
+        # if year == self.currentYear and month == self.currentYear():
+            # self.drawCurrent()
+        self.currentMonth = month
+        self.currentYear = year
+        self.draw(self.currentMonth, self.currentYear)
+
+    def drawPreviousMonth(self):
+        if int(self.currentMonth) == 1:
+            self.currentMonth = 12
+            self.currentYear = int(self.currentYear) - 1
+        else:
+            self.currentMonth = int(self.currentMonth) - 1
+        self.draw(self.currentMonth, self.currentYear)
+
+    def drawNextMonth(self):
+        if int(self.currentMonth) == 12:
+            self.currentMonth = 1
+            self.currentYear = int(self.currentYear) + 1
+        else:
+            self.currentMonth = int(self.currentMonth) + 1
+        self.draw(self.currentMonth, self.currentYear)
+
+    def drawPreviousYear(self):
+        self.currentYear = int(self.currentYear) - 1
+        self.draw(self.currentMonth, self.currentYear)
+
+    def drawNextYear(self):
+        self.currentYear = int(self.currentYear) + 1
+        self.draw(self.currentMonth, self.currentYear)
+
+class DateField(Composite):
+
+    def __init__(self,format='%d-%m-%Y'):
+        self.format = format
+        self.tbox = TextBox()
+        self.tbox.setVisibleLength(10)
+        # assume valid sep is - / . or nothing
+        if format.find('-') >= 0:
+            self.sep = '-'
+        elif format.find('/') >= 0:
+            self.sep = '/'
+        elif format.find('.') >= 0:
+            self.sep = '.'
+        else:
+            self.sep = ''
+        # self.sep = format[2] # is this too presumptious?
+        self.calendar = Calendar()
+        img = Image("icon_calendar.gif")
+        img.addStyleName("calendar-img")
+        self.calendarLink = HyperlinkImage(img)
+        self.todayLink = Hyperlink('Today')
+        self.todayLink.addStyleName("calendar-today-link")
+        #
+        # lay it out
+        #
+        hp = HorizontalPanel()
+        hp.setSpacing(2)
+        vp = VerticalPanel()
+        hp.add(self.tbox)
+        vp.add(self.calendarLink)
+        vp.add(self.todayLink)
+        #vp.add(self.calendar)
+        hp.add(vp)
+
+        Composite.__init__(self)
+        self.initWidget(hp)
+        #
+        # done with layout, so now set up some listeners
+        #
+        self.tbox.addFocusListener(self) # hook to onLostFocus
+        self.calendar.addSelectedDateListener(getattr(self,"onDateSelected"))
+        self.todayLink.addClickListener(getattr(self,"onTodayClicked"))
+        self.calendarLink.addClickListener(getattr(self,"onShowCalendar"))
+
+    def getTextBox(self):
+        return self.tbox
+
+    def getCalendar(self):
+        return self.calendar
+
+    def setID(self,id):
+        self.tbox.setID(id)
+
+    def onDateSelected(self, yyyy, mm, dd):
+        secs = time.mktime((int(yyyy),int(mm),int(dd),0,0,0,0,0,-1))
+        d = time.strftime(self.format,time.localtime(secs))
+        self.tbox.setText(d)
+
+    def onLostFocus(self, sender):
+        #
+        text = self.tbox.getText().strip()
+        # if blank - leave it alone
+        if text and len(text) == 8:
+            # ok what format do we have? assume ddmmyyyy --> dd-mm-yyyy
+            self.tbox.setText( text[0:2] + self.sep + text[2:4] + self.sep + text[4:8] )
+
+    def onFocus(self, sender):
+        pass
+
+    def onTodayClicked(self):
+        today = time.strftime(self.format)
+        self.tbox.setText( today )
+
+    def onShowCalendar(self, sender):
+        p = CalendarPopup(self.calendar)
+        x = self.tbox.getAbsoluteLeft() + 10
+        y = self.tbox.getAbsoluteTop() + 10
+        p.setPopupPosition(x,y)
+        p.show()
+
+
+class CalendarPopup(PopupPanel):
+    def __init__(self, c):
+        PopupPanel.__init__(self, True)
+        p = SimplePanel()
+        p.add(c)
+        c.show(10,10)
+        p.setWidth("100%")
+        self.setWidget(p)
 
