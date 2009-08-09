@@ -270,10 +270,10 @@ def _alert(self, msg):
     wv._alert(msg)
 
 def getDomDocument(self):
-    return self.getGdomDocument()
+    return self.getWebkitDocument()
 
 def getDomWindow(self):
-    return self.getGdomDocument().window
+    return self.getWebkitDocument().window
 
 def addWindowEventListener(self, event_name, cb):
     #print self, event_name, cb
