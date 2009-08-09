@@ -1,6 +1,8 @@
 import os
 
-pyjspth = os.path.join(os.path.dirname(__file__))
+# default to None indicates 'relative paths' so that as a self-contained
+# archive, pyjs can run its tests.
+pyjspth = None
 
 path = [os.path.abspath('')]
 

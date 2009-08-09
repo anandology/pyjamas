@@ -27,8 +27,10 @@ import logging
 
 import pyjs
 
-#LIBRARY_PATH = os.path.abspath(os.path.dirname(__file__))
-LIBRARY_PATH = os.path.join(pyjs.pyjspth, "pyjs", "src", "pyjs")
+if pyjs.pyjspth is None:
+    LIBRARY_PATH = os.path.abspath(os.path.dirname(__file__))
+else:
+    LIBRARY_PATH = os.path.join(pyjs.pyjspth, "pyjs", "src", "pyjs")
 
 # this is the python function used to wrap native javascript
 NATIVE_JS_FUNC_NAME = "JS"
