@@ -465,9 +465,11 @@ class HyperlinkImage(Hyperlink):
         type = DOM.eventGetType(event)
         if type == 'mousedown' or type == 'mouseup' or type == 'mousemove' or type == 'mouseover' or type == 'mouseout':
             MouseListener.fireMouseEvent(self.mouseListeners, self, event)
+            # stop event falling through esp. for drag on image
+            DOM.eventPreventDefault(event)
             
         else:
-            Hyperlink.onBrowserEvent(self,event)        
+            Hyperlink.onBrowserEvent(self, event)
         
              
 class App:
