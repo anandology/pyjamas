@@ -1,8 +1,10 @@
-Current Release: 0.6pre2
+Current Release: 0.6~pre3
 ---------------
 
-An second alpha release is being done due to the large number of contributions:
-over 110 items are in the CHANGELOG since the 0.5p1 stable release.
+A third alpha release is being done due to the large number of contributions:
+over 125 items are in the CHANGELOG since the 0.5p1 stable release.
+The TODO list is now officially cleared: this is likely to be the last
+prerelease.  Thank you to everyone who's helped highlight issues.
 
 Pyjamas
 -------
@@ -17,15 +19,14 @@ For more information, see:
 Pyjamas-Desktop
 ---------------
 
-Pyjamas runs your application in a Web Browser; Pyjamas-Desktop runs
-exactly the same python application on the Desktop.
+Pyjamas runs your application in a Web Browser (as javascript); Pyjamas-Desktop
+runs exactly the same python application on the Desktop (as python)
 
     http://pyjd.org
 
 Release 0.6 of Pyjamas also incorporates Pyjamas-Desktop directly into
-the Pyjamas Distribution.  To use Pyjamas-Desktop there are two choices,
-with more planned (MacOSX PyObjC; Windows python-win32com MSHTML; KDE's
-PyKHTML).
+the Pyjamas Distribution.  To use Pyjamas-Desktop there are three choices,
+with more planned (MacOSX PyObjC; KDE's PyKHTML).
 
 1) - Gecko / XulRunner
 
@@ -46,4 +47,16 @@ http://github.com/lkcl/webkit/16401.master
 
 Detailed build instructions are available on http://pyjd.org
 
+3) - MSHTML (experimental!)
+
+For Windows users, all that's required, other than installing python
+and Internet Explorer, is two further packages: PyWin32 and Win32 comtypes.
+
+They can be downloaded here:
+* http://sourceforge.net/projects/comtypes/
+* http://sourceforge.net/projects/pywin32/
+
+The MSHTML version primarily works, but the differences between IE and
+other browser engines are shining through, load and clear!  Reports
+using IE8 would be appreciated.
 
