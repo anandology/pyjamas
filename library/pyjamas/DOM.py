@@ -263,7 +263,7 @@ def eventGetFromElement(evt):
         return None
 
 def eventGetKeyCode(evt):
-    return evt.which and evt.keyCode
+    return evt.which or evt.keyCode or 0
 
 def eventGetRepeat(evt):
     return evt.repeat
@@ -836,4 +836,5 @@ def insertListItem(select, item, value, index):
 
 if sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
     init()
+
 

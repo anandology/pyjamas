@@ -23,11 +23,10 @@ class FocusWidget(Widget):
 
     def __init__(self, element, **kwargs):
         self.setElement(element)
+        Widget.__init__(self, **kwargs)
         self.clickListeners = []
         self.focusListeners = []
         self.keyboardListeners = []
-
-        Widget.__init__(self, **kwargs)
         self.sinkEvents(Event.ONCLICK | Event.FOCUSEVENTS | Event.KEYEVENTS)
 
     def addClickListener(self, listener):

@@ -121,6 +121,7 @@ class Control(FocusWidget):
         pass
     def onMouseLeave(self, sender):
         pass
+
     def onKeyDown(self, sender, keycode, modifiers):
         if keycode == KeyboardListener.KEY_UP:
             new_value = self.processValue(self.value + self.step)
@@ -245,7 +246,10 @@ class InputControl(Control):
 
     def onKeyPress(self, sender, keycode, modifiers):
         if keycode == KeyboardListener.KEY_ENTER:
-            new_value = float(self.input.getText())
+            txt = self.input.getText()
+            if not txt:
+                return
+            new_value = float(txt)
             new_value = self.processValue(new_value)
             self.setControlPos(new_value)
             self.setValue(new_value)

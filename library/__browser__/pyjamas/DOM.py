@@ -123,7 +123,7 @@ def eventGetFromElement(evt):
 
 def eventGetKeyCode(evt):
     JS("""
-    return evt.which ? evt.which : evt.keyCode;
+    return evt.which ? evt.which : (evt.keyCode ? evt.keyCode : 0);
     """)
 
 def eventGetTarget(event):
