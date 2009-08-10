@@ -35,7 +35,7 @@ function __pygwt_initProgressBar() {
   tr = document.createElement("tr");
   tr.appendChild(td)
   table.appendChild(tr);
-  table.width = '0';
+  table.style.width = '0';
 
   // Outer table
   td = document.createElement("td");
@@ -63,7 +63,6 @@ function __pygwt_initProgressBar() {
   div.style.width='100%';
   div.style.height='100%';
   div.style.backgroundColor = 'FFFFFF';
-  //document.body.appendChild(div);
 
   var progress = function() {
   if (!__pygwt_isInitialized) {
@@ -76,7 +75,7 @@ function __pygwt_initProgressBar() {
       displayCounter = 0;
       if (pct <= 95) {
         pct += 5;
-        table.width = pct + "%";
+        table.style.width = pct + "%";
       }
     }
     window.setTimeout(progress, delay);
