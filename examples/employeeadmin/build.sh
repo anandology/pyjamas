@@ -2,10 +2,15 @@
 options="$@"
 
 if [ -z "$DOWNLOADS" ] ; then
-	if echo $options |grep -- '--downloads-ok'>/dev/null ; then
+	if echo $options |grep -- '--downloads-yes'>/dev/null ; then
 		DOWNLOADS=yes
 		export DOWNLOADS
-		options=`echo "$options"|sed 's/--downloads-ok//g'`
+		options=`echo "$options"|sed 's/--downloads-yes//g'`
+	fi
+	if echo $options |grep -- '--downloads-no'>/dev/null ; then
+		DOWNLOADS=no
+		export DOWNLOADS
+		options=`echo "$options"|sed 's/--downloads-no//g'`
 	fi
 fi
 
