@@ -24,7 +24,7 @@ adapting this to suit your requirements
 <title>%(title)s</title>
 </head>
 <body bgcolor="white">
-<script language="javascript" src="bootstrap.js"></script>
+<script language="javascript" src="%(bootstrap_file)s"></script>
 </body>
 </html>
 """
@@ -43,6 +43,7 @@ class BrowserLinker(linker.BaseLinker):
     def __init__(self, *args, **kwargs):
         self.multi_file = kwargs.pop('multi_file', False)
         self.cache_buster = kwargs.pop('cache_buster', False)
+        self.bootstrap_file = kwargs.pop('bootstrap_file', 'bootstrap.js')
         super(BrowserLinker, self).__init__(*args, **kwargs)
 
     def visit_start(self):
@@ -205,7 +206,9 @@ class BrowserLinker(linker.BaseLinker):
         title = 'PyJamas Auto-Generated HTML file ' + self.top_module
 
         base_html = APP_HTML_TEMPLATE % {'modulename': self.top_module,
-                                         'title': title, 'css': css}
+                                         'title': title, 'css': css,
+                                         'bootstrap_file': self.bootstrap_file,
+                                        }
 
         fh = open (file_name, 'w')
         fh.write  (base_html)
@@ -245,10 +248,17 @@ def build_script():
         help="Enable browser cache-busting (MD5 hash added to output filenames)",
         )
 
+    parser.add_option(
+        "--bootstrap-file", 
+        dest="bootstrap_file",
+        help="Specify the bootstrap code. (Used when application html file is generated)."
+        )
+
     parser.set_defaults(output="output",
                         js_includes=[],
                         library_dirs=[],
-                        platforms=(','.join(AVAILABLE_PLATFORMS))
+                        platforms=(','.join(AVAILABLE_PLATFORMS)),
+                        bootstrap_file="bootstrap.js",
                         )
     options, args = parser.parse_args()
 
@@ -284,6 +294,8 @@ def build_script():
                       js_libs=options.js_includes,
                       translator_arguments=translator_arguments,
                       multi_file=options.multi_file,
-                      cache_buster=options.cache_buster)
+                      cache_buster=options.cache_buster,
+                      bootstrap_file=options.bootstrap_file,
+                     )
     l()
     print "Built to :", os.path.abspath(options.output)

@@ -1,7 +1,9 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
- * discarded strings are not getting translated anymore
+ * Added build option --bootstrap-file and a bootstrap_progress.js
+
+ * Discarded strings are not getting translated anymore
 
  * Added --downloads-(yes/no) to buildall.sh and employeeadmin/build.sh
 
