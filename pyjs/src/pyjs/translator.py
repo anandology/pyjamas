@@ -646,14 +646,17 @@ try{var %(dbg)s_res=%(call_code)s;}catch(%(dbg)s_err){
     if (%(dbg)s_err.__name__ != 'StopIteration') {
         var save_stack = $pyjs.__last_exception_stack__;
         sys.save_exception_stack();
-        var pyjs_msg = "Module %(mod)s at line %(lineno)s :\\n" + %(dbg)s_err;
+        var pyjs_msg = "";
 
         try {
-            pyjs_msg += "\\n" + sys.trackstackstr();
+            pyjs_msg = "\\n" + sys.trackstackstr();
         } catch (s) {};
-        alert(pyjs_msg);
         $pyjs.__last_exception_stack__ = save_stack;
-        debugger;
+        if (pyjs_msg !== $pyjs.debug_msg) {
+            alert("Module %(mod)s at line %(lineno)s :\\n" + %(dbg)s_err + pyjs_msg);
+            $pyjs.debug_msg = pyjs_msg;
+            debugger;
+        }
     }
     switch (%(dbg)s_retry) {
         case 1:

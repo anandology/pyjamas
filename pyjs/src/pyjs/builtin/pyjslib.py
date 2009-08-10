@@ -1928,3 +1928,5 @@ def any(iterable):
 
 init()
 
+# Next line is needed for debug option
+import sys
