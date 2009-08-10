@@ -80,5 +80,5 @@ class VarsTest(UnitTest.UnitTest):
         try:
             self.assertEqual(sys.__name__, 'sys')
         except:
-            self.fail("Global module sys not available")
+            self.fail("Global module sys not available (bug #216)")
 

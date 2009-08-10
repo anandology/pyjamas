@@ -55,7 +55,7 @@ class ClassTest(UnitTest):
         # Test is enabled, to remind us of the differences with CPython
         try:
             ExampleClass().fail_a()
-            self.fail("Failed to raise error on ExampleClass().fail_a()")
+            self.fail("Failed to raise error on ExampleClass().fail_a() bug #217")
         except (NameError, AttributeError), e:
             self.assertTrue(True)
         except:
