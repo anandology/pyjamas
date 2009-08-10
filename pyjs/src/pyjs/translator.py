@@ -1977,8 +1977,10 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 print >>self.output, self.spacing() + expr + ";"
 
         elif isinstance(node.expr, ast.Const):
-            if node.expr.value is not None: # Empty statements generate ignore None
-                print >>self.output, self.spacing() + self._const(node.expr)
+            # we can safely remove all constants that are discarded,
+            # e.g None fo empty expressions after a unneeded ";" or
+            # mostly important to remove doc strings
+            return
         else:
             raise TranslationError(
                 "unsupported type, must be call or const (in _discard)", node.expr,  self.module_name)
