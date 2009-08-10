@@ -420,6 +420,9 @@ class WebBrowser(gtk.Window):
 
         self._browser.open(uri)
 
+    def getUri(self):
+        return self.application
+
     def init_app(self):
         # TODO: ideally, this should be done by hooking body with an "onLoad".
 
@@ -432,6 +435,7 @@ class WebBrowser(gtk.Window):
         main_frame.gobject_wrap = webkit.gobject_wrap
         main_frame.platform = 'webkit'
         main_frame.addEventListener = addEventListener
+        main_frame.getUri = self.getUri
         main_frame.getDomWindow = new.instancemethod(getDomWindow, main_frame)
         main_frame.getDomDocument = new.instancemethod(getDomDocument, main_frame)
         main_frame._addXMLHttpRequestEventListener = addXMLHttpRequestEventListener

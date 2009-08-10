@@ -5,8 +5,7 @@ import sys
 if sys.platform not in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
     from __pyjamas__ import get_main_frame
     from pyjamas import Cookies
-else:
-    from __pyjamas__ import JS
+    import pygwt
 
 handlers = {}
 
@@ -79,7 +78,7 @@ class HTTPRequest:
         mf = get_main_frame()
         xmlHttp = self.doCreateXmlHTTPRequest()
         if url[0] != '/':
-            uri = mf.getUri()
+            uri = pygwt.getModuleBaseURL()
             if url[:7] != 'file://' and url[:7] != 'http://' and \
                url[:8] != 'https://':
                 slash = uri.rfind('/')

@@ -113,7 +113,7 @@ class JSONProxy(JSONService):
         # only in the override (JSONServicePyJS.py) is JSONService.__init__
         # needed.  in here, for pyjd, things are done slightly differently.
         # (using __getattr__).
-        self._serviceURL = "http://127.0.0.1/%s" % url # TODO: allow alternate locations
+        self._serviceURL = url 
 
     def __createMethod(self, method):
         pass

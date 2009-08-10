@@ -1,4 +1,4 @@
-import sys
+from __pyjamas__ import get_main_frame, doc
 
 sNextHashId = 0
 
@@ -10,11 +10,12 @@ def getNextHashId():
 def getHashCode(o):
     JS("""
     return (o == null) ? 0 :
-        (o.$H ? o.$H : (o.$H = pygwt_getNextHashId()));
+        (o.$H ? o.$H : (o.$H = pygwt_getNextHashId()))
     """)
 
 def getModuleName():
     import os
+    import sys
     mod_name = sys.argv[0]
     mod_name = os.path.split(mod_name)[1]
     mod_name = os.path.spliext(mod_name)[0]
@@ -22,28 +23,25 @@ def getModuleName():
 
 def getModuleBaseURL():
     
-    print "getModuleBaseURL: TODO"
-    return ""
+    # get original app base
+    s = get_main_frame().getUri()
+    #s = doc().location.href
+    
+    # Pull off any hash.
+    i = s.find('#')
+    if i != -1:
+        s = s[:i]
+    
+    # Pull off any query string.
+    i = s.find('?')
+    if i != -1:
+        s = s[:i]
+    
+    # Rip off everything after the last slash.
+    i = s.rfind('/')
+    if i != -1:
+        s = s[:i]
 
+    if len(s) > 0:
+        return s + "/"
     return ""
-    JS("""
-    // this is intentionally not using $doc, because we want the module's own url
-    var s = document.location.href;
-    
-    // Pull off any hash.
-    var i = s.indexOf('#');
-    if (i != -1)
-        s = s.substring(0, i);
-    
-    // Pull off any query string.
-    i = s.indexOf('?');
-    if (i != -1)
-        s = s.substring(0, i);
-    
-    // Rip off everything after the last slash.
-    i = s.lastIndexOf('/');
-    if (i != -1)
-        s = s.substring(0, i);
-
-    return (s.length > 0) ? s + "/" : "";
-    """)
