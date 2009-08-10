@@ -21,7 +21,8 @@ class CalendarProvider:
                 self.pushResults(acceptor, startRow, self.lastPeople)
                 return
         
-        self.calService.getPeople(startRow, maxRows, CalendarProviderHandler(self, acceptor, startRow, maxRows))
+        handler = CalendarProviderHandler(self, acceptor, startRow, maxRows)
+        self.calService.getPeople(startRow, maxRows, handler)
 
     def pushResults(self, acceptor, startRow, people):
         rows = []

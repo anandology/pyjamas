@@ -1,3 +1,5 @@
+import pyjd # dummy in pyjs
+
 from pyjamas.ui.RootPanel import RootPanel
 from DayFilterWidget import DayFilterWidget
 from SchoolCalendarWidget import SchoolCalendarWidget
@@ -17,5 +19,7 @@ class DynaTable:
 
 
 if __name__ == '__main__':
+    pyjd.setup("http://127.0.0.1/examples/dynamictable/public/DynaTable.html") # dummy in pyjs
     app = DynaTable()
     app.onModuleLoad()
+    pyjd.run() # dummy in pyjd

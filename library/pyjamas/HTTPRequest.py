@@ -2,12 +2,11 @@
 # For the pyjamas/javascript version, see platform/HTTPRequestPyJS.py
 
 import sys
+import pygwt
 if sys.platform not in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
     from __pyjamas__ import get_main_frame
-    from pyjamas import Cookies
-    import pygwt
 
-handlers = {}
+handlers = None
 
 class HTTPRequest:
     # also callable as: asyncPost(self, url, postData, handler)
@@ -32,6 +31,9 @@ class HTTPRequest:
         return get_main_frame().getXmlHttpRequest()
 
     def onLoad(self, sender, event, ignorearg):
+        global handlers
+        if handlers is None:
+            handlers = {}
         xmlHttp = event.target
         localHandler = handlers.get(xmlHttp)
         del handlers[xmlHttp]
@@ -48,6 +50,9 @@ class HTTPRequest:
             localHandler.onError(responseText, status)
         
     def onReadyStateChange(self, xmlHttp, event, ignorearg):
+        global handlers
+        if handlers is None:
+            handlers = {}
         try:
             xmlHttp = get_main_frame().gobject_wrap(xmlHttp) # HACK!
         except:
@@ -104,6 +109,9 @@ class HTTPRequest:
         else:
             mf._addXMLHttpRequestEventListener(xmlHttp, "load",
                                          self.onLoad)
+        global handlers
+        if handlers is None:
+            handlers = {}
         handlers[xmlHttp] = handler
         xmlHttp.send(postData)
             
