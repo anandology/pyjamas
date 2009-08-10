@@ -193,10 +193,8 @@ class JSONParser:
 
         typ = typeof obj;
         f=s[typ];
-        o = f(obj);
+        return f(obj);
         """)
-
-        return o
 
     def parseJSON(self, str):
         JS(r"""
