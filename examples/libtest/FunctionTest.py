@@ -55,6 +55,12 @@ name = 'mapping-test'
 def call(default, arguments, this):
     return (name, default, arguments, this)
 
+def functionDefaults(s = "", l = []):
+    n = len(l)
+    s = s + "%d" % n
+    l.append(n)
+    return s, l
+
 class FunctionTest(UnitTest):
 
     def testLambda(self):
@@ -128,3 +134,12 @@ class FunctionTest(UnitTest):
         s = "123 "
         s = s[1:].rstrip()
         self.assertEqual(s, "23")
+
+    def testFunctionDefaults(self):
+        s, l = functionDefaults()
+        self.assertEqual(s, '0')
+	self.assertTrue(l == [0], "First mutable default mismatch")
+
+        s, l = functionDefaults()
+        self.assertEqual(s, '1')
+	self.assertTrue(l == [0, 1], "Second mutable default mismatch")
