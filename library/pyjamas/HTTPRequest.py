@@ -6,7 +6,7 @@ import pygwt
 if sys.platform not in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
     from __pyjamas__ import get_main_frame
 
-handlers = None
+handlers = {}
 
 class HTTPRequest:
     # also callable as: asyncPost(self, url, postData, handler)
@@ -31,9 +31,6 @@ class HTTPRequest:
         return get_main_frame().getXmlHttpRequest()
 
     def onLoad(self, sender, event, ignorearg):
-        global handlers
-        if handlers is None:
-            handlers = {}
         xmlHttp = event.target
         localHandler = handlers.get(xmlHttp)
         del handlers[xmlHttp]
@@ -50,9 +47,6 @@ class HTTPRequest:
             localHandler.onError(responseText, status)
         
     def onReadyStateChange(self, xmlHttp, event, ignorearg):
-        global handlers
-        if handlers is None:
-            handlers = {}
         try:
             xmlHttp = get_main_frame().gobject_wrap(xmlHttp) # HACK!
         except:
@@ -109,9 +103,6 @@ class HTTPRequest:
         else:
             mf._addXMLHttpRequestEventListener(xmlHttp, "load",
                                          self.onLoad)
-        global handlers
-        if handlers is None:
-            handlers = {}
         handlers[xmlHttp] = handler
         xmlHttp.send(postData)
             
@@ -128,7 +119,7 @@ class HTTPRequest:
     def asyncGetImpl(self, user, pwd, url, handler):
         mf = get_main_frame()
         if url[0] != '/':
-            uri = mf.getUri()
+            uri = pygwt.getModuleBaseURL()
             if url[:7] != 'file://' and url[:7] != 'http://' and \
                url[:8] != 'https://':
                 slash = uri.rfind('/')
