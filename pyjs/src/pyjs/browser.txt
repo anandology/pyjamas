@@ -216,38 +216,36 @@ The script selectors point to the according files.
 
     >>> print f.read()
     <html>...
-    O(["true","ie6"],"mypackage.index.ie6.2da78b3ac76b1a1c9879e3e8a9997eb0.cache.html");
-    O(["true","mozilla"],"mypackage.index.mozilla.1b658fcd34b8f530360aa5de3cd9e8c3.cache.html");...
+    O(["true","ie6"],"mypackage.index.ie6...cache.html");
+    O(["true","mozilla"],"mypackage.index.mozilla...cache.html");...
 
     >>> from pprint import pprint
-    >>> pprint(sorted(os.listdir(output)))
+    >>> out_files = os.listdir(output)
+    >>> pprint(sorted(out_files))
     ['...
-     'mypackage.index.ie6.2da78b3ac76b1a1c9879e3e8a9997eb0.cache.html',...
-     'mypackage.index.mozilla.1b658fcd34b8f530360aa5de3cd9e8c3.cache.html',
+     'mypackage.index.ie6...cache.html',...
+     'mypackage.index.mozilla...cache.html',
      ...']
 
 Also the libfiles which are generated from multifile option are upated.
 
-    >>> op = os.path.join(
-    ...     output, 'mypackage.index.ie6.2da78b3ac76b1a1c9879e3e8a9997eb0.cache.html')
+    >>> ie6_file = filter(
+    ...     lambda x: x.startswith('mypackage.index.ie6.'), out_files)[0]
+
+    >>> op = os.path.join(output, ie6_file)
     >>> f = file(op)
     >>> print f.read()
     <html>...
     <script type="text/javascript" src="_pyjs.js"></script>
     <script type="text/javascript" src="sprintf.js"></script>
-    <...pyjslib.1ce8d8c93ffffe9229371680311c5dea.js"></script>
-    <...mypackage.f739f311158b12902d5a104067d5ae18.js"></script>
-    <...mypackage.index.a730245b822aece5d56373f0c460e55b.js"></script>...
-
-
-    <script ...src="lib/pyjslib.2da78b3ac76b1a1c9879e3e8a9997eb0.js"></script>
-    <script ...src="lib/mypackage.2da78b3ac76b1a1c9879e3e8a9997eb0.js"></script>
-    <script ...src="lib/mypackage.index.a730245b822aece5d56373f0c460e55b.js">...
+    <...pyjslib...js"></script>
+    <...mypackage...js"></script>
+    <...mypackage.index...js"></script>...
 
     >>> pprint(sorted(os.listdir(os.path.join(output, 'lib'))))
-    ['mypackage.f739f311158b12902d5a104067d5ae18.js',...
-     'mypackage.index.a730245b822aece5d56373f0c460e55b.js',...
-     'pyjslib.__mozilla__.c6a71e6bbb64dd3d5a07d1f65cfdda3a.js',...
+    ['mypackage...js',...
+     'mypackage.index...js',...
+     'pyjslib.__mozilla__...js',...
 
 Overrides
 ---------
