@@ -610,6 +610,8 @@ class Translator:
         names = importName.split(".")
         if not importName in self.imported_modules:
             self.imported_modules.append(importName)
+        if importName.endswith('.js'):
+            return
         # Add all parent modules
         _importName = ''
         for name in names:
@@ -1040,6 +1042,9 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             modtype = 'module'
         for importName, importAs in names:
             if importName == '__pyjamas__':
+                continue
+            if importName.endswith(".js"):
+                self.add_imported_module(importName)
                 continue
             # "searchList" contains a list of possible module names :
             #   We create the list at compile time to save runtime.

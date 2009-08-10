@@ -19,11 +19,14 @@ def module_path(name, path):
     k = (name, tuple(sorted(path)))
     if k in _path_cache:
         return _path_cache[k]
-    parts = name.split('.')
     candidates = []
     tail = []
     packages = {}
     modules = {}
+    if name.endswith('.js'):
+        parts = [name]
+    else:
+        parts = name.split('.')
     for pn in parts:
         tail.append(pn)
         for p in path:
@@ -33,6 +36,8 @@ def module_path(name, path):
                 packages['.'.join(tail)] = os.path.join(cp, '__init__.py')
             elif os.path.exists(cp + '.py'):
                 modules['.'.join(tail)] = cp + '.py'
+            elif pn.endswith('.js') and os.path.exists(cp):
+                modules['.'.join(tail)] = cp
     res = None
     if modules:
         assert len(modules)==1
@@ -82,12 +87,13 @@ class BaseLinker(object):
         prefix = ''
         all_names = []
         for mn in module_names:
-            prefix = ''
-            for part in mn.split('.')[:-1]:
-                pn = prefix + part
-                prefix = pn + '.'
-                if pn not in all_names:
-                    all_names.append(pn)
+            if not mn.endswith(".js"):
+                prefix = ''
+                for part in mn.split('.')[:-1]:
+                    pn = prefix + part
+                    prefix = pn + '.'
+                    if pn not in all_names:
+                        all_names.append(pn)
             all_names.append(mn)
 
         for mn in all_names:
@@ -111,7 +117,9 @@ class BaseLinker(object):
     def visit_module(self, file_path, overrides, platform,
                      module_name):
         dir_name, file_name = os.path.split(file_path)
-        if file_name.split('.')[0] != module_name.split('.')[-1]:
+        if (     not file_name.endswith('.js')
+             and file_name.split('.')[0] != module_name.split('.')[-1]
+           ):
             if file_name == "__init__.py":
                 if os.path.basename(dir_name) != module_name.split('.')[-1]:
                     return
@@ -130,6 +138,7 @@ class BaseLinker(object):
                                     '%s%s.js' % (module_name, plat_suffix))
         if out_file in self.done.get(platform, []):
             return
+        
         # translate if
         #  -    no platform
         #  - or if we have an override
@@ -138,17 +147,25 @@ class BaseLinker(object):
             or (platform and overrides)
             or (out_file not in self.done.get(None,[]))
            ):
-            logging.info('Translating module:%s platform:%s out:%r' % (
-                module_name, platform or '-', out_file))
-            deps = translator.translate([file_path] +  overrides,
-                                        out_file,
-                                        module_name=module_name,
-                                        **self.translator_arguments)
-            self.dependencies[out_file] = deps
-            if '.' in module_name:
-                for i, dep in enumerate(deps):
-                    if module_path(dep, path=[dir_name]):
-                        deps[i] = '.'.join(module_name.split('.')[:-1] + [dep])
+            if file_name.endswith('.js'):
+                fp = open(out_file, 'w')
+                fp.write("/* start javascript include: %s */\n" % file_name)
+                fp.write(open(file_path, 'r').read())
+                fp.write("/* end %s */\n" % file_name)
+                deps = []
+                self.dependencies[out_file] = deps
+            else:
+                logging.info('Translating module:%s platform:%s out:%r' % (
+                    module_name, platform or '-', out_file))
+                deps = translator.translate([file_path] +  overrides,
+                                            out_file,
+                                            module_name=module_name,
+                                            **self.translator_arguments)
+                self.dependencies[out_file] = deps
+                if '.' in module_name:
+                    for i, dep in enumerate(deps):
+                        if module_path(dep, path=[dir_name]):
+                            deps[i] = '.'.join(module_name.split('.')[:-1] + [dep])
         else:
             deps = self.dependencies[out_file]
         if out_file not in self.done.setdefault(platform, []):

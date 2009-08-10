@@ -3,6 +3,7 @@ from pyjamas.ui.TextBox import TextBox
 from pyjamas.ui.HTML import HTML
 from pyjamas.ui.Button import Button
 
+import jsdicttest.js # YUK!!!
 
 class WrapperDict:
     def __init__(self):
