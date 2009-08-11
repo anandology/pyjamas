@@ -1092,6 +1092,30 @@ class Dict:
             self[k] = v
 
     @compiler.noSourceTracking
+    def pop(self, k, *d):
+        if len(d) > 1:
+            raise TypeError("pop expected at most 2 arguments, got %s" %
+                            (1 + len(d)))
+        try:
+            res = self[k]
+            del self[k]
+            return res
+        except KeyError:
+            if d:
+                return d[0]
+            else:
+                raise
+
+    @compiler.noSourceTracking
+    def popitem(self):
+        for (k, v) in self.iteritems():
+            break
+        else:
+            raise KeyError('popitem(): dictionary is empty')
+        del self[k]
+        return (k, v)
+
+    @compiler.noSourceTracking
     def getObject(self):
         """
         Return the javascript Object which this class uses to store

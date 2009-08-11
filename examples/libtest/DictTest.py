@@ -97,3 +97,26 @@ class DictTest(UnitTest):
             a += d[2][k]
         self.assertEqual(a, 6)
 
+    def testPop(self):
+        d = {'a': 1, 'b': 2, 'c': 3}
+        item = d.pop('d', 4)
+        self.assertEqual(item, 4)
+
+        try:
+            item = d.pop('d')
+            self.fail("Failed to raise KeyError on d.pop('d')")
+        except KeyError, e:
+            self.assertEqual(e[0], "d")
+
+        item = d.pop('b')
+        self.assertEqual(item, 2)
+
+        item = d.popitem()
+        self.assertTrue(item == ('a',1) or item == ('c',3), "popped invalid item %s" % str(item))
+
+        item = d.popitem()
+        try:
+            item = d.popitem()
+        except KeyError, e:
+            self.assertEqual(e[0], "popitem(): dictionary is empty")
+
