@@ -15,14 +15,14 @@ from pyjamas.ui.VerticalPanel import VerticalPanel
 from pyjamas.ui.HorizontalPanel import HorizontalPanel
 from pyjamas.ui.Hyperlink import Hyperlink
 from pyjamas.ui.Label import Label
-from pyjamas.History import History
+from pyjamas import History
 
 
 class HyperlinkDemo(SimplePanel):
     def __init__(self):
         SimplePanel.__init__(self)
 
-        History().addHistoryListener(self)
+        History.addHistoryListener(self)
 
         vPanel = VerticalPanel()
 

@@ -18,6 +18,8 @@ from pyjamas.ui import KeyboardListener
 from pyjamas.ui import Focus
 from pyjamas.ui import FocusListener
 
+from __pyjamas__ import JS
+
 class Canvas(Widget):
     def __init__(self, width, height):
         Widget.__init__(self)

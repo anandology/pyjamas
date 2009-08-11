@@ -1,3 +1,4 @@
+from __pyjamas__ import JS
 # TODO: implement safe
 def quote(s, safe=''):
     """
@@ -11,7 +12,8 @@ def quote(s, safe=''):
     '%24%25%26%2F%3F%2F%2B%20s'
 
     """
-    JS("""return encodeURIComponent(s);""")
+    from __javascript__ import encodeURIComponent
+    return encodeURIComponent(s)
 
 def urlencode(d):
     """

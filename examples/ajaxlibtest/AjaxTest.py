@@ -4,6 +4,7 @@ from pyjamas.ui.HTML import HTML
 from pyjamas import Window
 from pyjamas import DOM
 import pyjslib
+from __pyjamas__ import JS
 
 def greet(sender):
 

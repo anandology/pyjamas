@@ -34,8 +34,6 @@ else:
 
 # this is the python function used to wrap native javascript
 NATIVE_JS_FUNC_NAME = "JS"
-NATIVE_DOC_FUNC_NAME = "doc"
-NATIVE_WND_FUNC_NAME = "wnd"
 
 JS_RESERVED_WORDS = frozenset((
     'abstract',
@@ -183,12 +181,34 @@ pyjs_attrib_remap = []
 for a in pyjs_attrib_remap_names:
     pyjs_attrib_remap.append(re.compile('(.*(^|[.]))(%s_*)(([.].*)|$)' % a))
 
-# XXX: this is a hack: these should be dealt with another way
-# however, console is currently the only global name which is causing
-# problems.
-# sadly, the fix causes random problems.  see e.g. #220
-# PYJS_GLOBAL_VARS=("console",)
-PYJS_GLOBAL_VARS=()
+re_return = re.compile(r'\breturn\b')
+class __Pyjamas__(object):
+    console = "console"
+
+    def JS(self, node):
+        if isinstance(node.args[0], ast.Const):
+            if re_return.search(node.args[0].value):
+                self.has_js_return = True
+            return node.args[0].value, not re_return.search(node.args[0].value) is None
+        else:
+            raise TranslationError(
+                "native js functions only support constant strings",
+                node.node, self.module_name)
+
+    def wnd(self, node):
+        if len(node.args) != 0:
+            raise TranslationError(
+                "native wnd function doesn't support arguments",
+                node.node, self.module_name)
+        return '$wnd', False
+
+    def doc(self, node):
+        if len(node.args) != 0:
+            raise TranslationError(
+                "native doc function doesn't support arguments",
+                node.node, self.module_name)
+        return '$doc', False
+__pyjamas__ = __Pyjamas__()
 
 # This is taken from the django project.
 # Escape every ASCII character with a value less than 32.
@@ -337,8 +357,6 @@ class Translator:
             self.add_lookup("builtin", v, "pyjslib." + vf)
         for v in PYJSLIB_BUILTIN_CLASSES:
             self.add_lookup("builtin", v, "pyjslib." + v)
-        for v in PYJS_GLOBAL_VARS:
-            self.add_lookup("builtin", v, v)
         for k in PYJSLIB_BUILTIN_MAPPING.keys():
             self.add_lookup("builtin", k, PYJSLIB_BUILTIN_MAPPING[k])
 
@@ -598,10 +616,12 @@ class Translator:
     def local_js_vars_decl(self, ignore_py_vars):
         names = []
         for name in self.lookup_stack[-1].keys():
+            nametype = self.lookup_stack[-1][name][0]
             pyname = self.lookup_stack[-1][name][1]
             jsname = self.lookup_stack[-1][name][2]
             if (     not jsname.find('.') >= 0
                  and not pyname in ignore_py_vars
+                 and nametype == 'variable'
                ):
                 names.append(jsname)
         if len(names) > 0:
@@ -1112,11 +1132,22 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         if node.modname == '__pyjamas__':
             # special module to help make pyjamas modules loadable in
             # the python interpreter
+            for name in node.names:
+                ass_name = name[1] or name[0]
+                try:
+                    jsname =  getattr(__pyjamas__, name[0])
+                    if callable(jsname):
+                        self.add_lookup("__pyjamas__", ass_name, name[0])
+                    else:
+                        self.add_lookup("__pyjamas__", ass_name, jsname)
+                except AttributeError, e:
+                    #raise TranslationError("Unknown __pyjamas__ import: %s" % name, node)
+                    pass
             return
         if node.modname == '__javascript__':
             for name in node.names:
                 ass_name = name[1] or name[0]
-                self.add_lookup("variable", ass_name, ass_name)
+                self.add_lookup("__javascript__", ass_name, ass_name)
             return
         # XXX: hack for in-function checking, we should have another
         # object to check our scope
@@ -1243,33 +1274,23 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         print >>self.output, self.spacing() + "continue;"
 
 
-    re_return = re.compile(r'\breturn\b')
     def _callfunc(self, v, current_klass):
 
         if isinstance(v.node, ast.Name):
-            if v.node.name == NATIVE_JS_FUNC_NAME:
-                if isinstance(v.args[0], ast.Const):
-                    if self.re_return.search(v.args[0].value):
-                        self.has_js_return = True
-                    return v.args[0].value
-                else:
+            name_type, pyname, jsname, depth, is_local = self.lookup(v.node.name)
+            if name_type == '__pyjamas__':
+                try:
+                    raw_js = getattr(__pyjamas__, v.node.name)
+                    if callable(raw_js):
+                        raw_js, has_js_return = raw_js(v)
+                        if has_js_return:
+                            self.has_js_return = True
+                    return raw_js
+                except AttributeError, e:
                     raise TranslationError(
-                        "native js functions only support constant strings",
-                        v.node, self.module_name)
-            elif v.node.name == NATIVE_WND_FUNC_NAME:
-                if len(v.args) != 0:
-                    raise TranslationError(
-                        "native wnd function doesn't support arguments",
-                        v.node, self.module_name)
-                return '$wnd'
-            elif v.node.name == NATIVE_DOC_FUNC_NAME:
-                if len(v.args) != 0:
-                    raise TranslationError(
-                        "native doc function doesn't support arguments",
-                        v.node, self.module_name)
-                return '$doc'
+                        "Unknown __pyjamas__ function %s" % pyname,
+                         v.node, self.module_name)
             else:
-                name_type, pyname, jsname, depth, is_local = self.lookup(v.node.name)
                 if name_type is None:
                     # What to do with a (yet) unknown name?
                     # Just nothing...
@@ -1720,9 +1741,10 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
     def _isNativeFunc(self, node):
         if isinstance(node, ast.Discard):
             if isinstance(node.expr, ast.CallFunc):
-                if isinstance(node.expr.node, ast.Name) and \
-                       node.expr.node.name == NATIVE_JS_FUNC_NAME:
-                    return True
+                if isinstance(node.expr.node, ast.Name):
+                    name_type, pyname, jsname, depth, is_local = self.lookup(node.expr.node.name)
+                    if name_type == '__pyjamas__' and jsname == NATIVE_JS_FUNC_NAME:
+                        return True
         return False
 
     def _stmt(self, node, current_klass, top_level = False):
@@ -1969,22 +1991,13 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
     def _discard(self, node, current_klass):
         
         if isinstance(node.expr, ast.CallFunc):
-            if isinstance(node.expr.node, ast.Name) and node.expr.node.name == NATIVE_JS_FUNC_NAME:
-                if len(node.expr.args) != 1:
-                    raise TranslationError(
-                        "native javascript function %s must have one arg" % NATIVE_JS_FUNC_NAME,
-                        node.expr, self.module_name)
-                if not isinstance(node.expr.args[0], ast.Const):
-                    raise TranslationError(
-                        "native javascript function %s must have constant arg" % NATIVE_JS_FUNC_NAME,
-                        node.expr, self.module_name)
-                raw_js = node.expr.args[0].value
-                if self.re_return.search(raw_js):
-                    self.has_js_return = True
-                print >>self.output, raw_js
-            else:
-                expr = self._callfunc(node.expr, current_klass)
-                print >>self.output, self.spacing() + expr + ";"
+            expr = self._callfunc(node.expr, current_klass)
+            if isinstance(node.expr.node, ast.Name):
+                name_type, pyname, jsname, depth, is_local = self.lookup(node.expr.node.name)
+                if name_type == '__pyjamas__' and jsname == NATIVE_JS_FUNC_NAME:
+                    print >>self.output, expr
+                    return
+            print >>self.output, self.spacing() + expr + ";"
 
         elif isinstance(node.expr, ast.Const):
             # we can safely remove all constants that are discarded,

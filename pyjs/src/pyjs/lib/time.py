@@ -1,5 +1,7 @@
 # Check http://docs.python.org/library/time.html
 
+from __pyjamas__ import JS
+
 altzone = None
 timezone = JS("60 * (new Date()).getTimezoneOffset()")
 tzname = (None, None)

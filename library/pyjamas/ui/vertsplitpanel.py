@@ -23,6 +23,7 @@ from pyjamas.ui.splitpanel import SplitPanel
 from pyjamas import DOM
 from pyjamas.DeferredCommand import DeferredCommand
 from pyjamas.Timer import Timer
+from __pyjamas__ import JS
 
 class ImplVerticalSplitPanel:
     """ Provides a base implementation for splitter layout that relies on CSS

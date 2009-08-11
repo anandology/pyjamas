@@ -13,6 +13,7 @@ from md5 import md5
 
 if sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz',
                     'safari', 'spidermonkey']:
+    from __pyjamas__ import JS
 
     def hexstr(s):
         h = '0123456789abcdef'

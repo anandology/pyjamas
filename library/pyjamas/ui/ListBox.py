@@ -15,6 +15,7 @@ from pyjamas import DOM
 
 from pyjamas.ui.FocusWidget import FocusWidget
 from pyjamas.ui import Event
+from __pyjamas__ import console
 
 class ListBox(FocusWidget):
     def __init__(self, **kwargs):

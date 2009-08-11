@@ -8,7 +8,7 @@ from pyjamas.ui.VerticalPanel import VerticalPanel
 from pyjamas.ui.ScrollPanel import ScrollPanel
 from pyjamas import Window
 from SinkList import SinkList
-from pyjamas.History import History
+from pyjamas import History
 import Slide
 from pyjamas.HTTPRequest import HTTPRequest
 from SlideLoader import SlideListLoader
@@ -56,7 +56,7 @@ class Slideshow:
 
         Window.addWindowResizeListener(self)
 
-        History().addHistoryListener(self)
+        History.addHistoryListener(self)
         RootPanel().add(self.panel)
 
     def onWindowResized(self, width, height):
@@ -78,7 +78,7 @@ class Slideshow:
         self.description.setHTML(info.getDescription())
 
         if (affectHistory):
-            History().newItem(info.getName())
+            History.newItem(info.getName())
 
         self.sinkContainer.add(self.curSink, DockPanel.CENTER)
         self.sinkContainer.setCellWidth(self.curSink, "100%")
@@ -97,7 +97,7 @@ class Slideshow:
             self.sink_list.addSink(Slide.init(name, desc))
 
         #Show the initial screen.
-        initToken = History().getToken()
+        initToken = History.getToken()
         if len(initToken):
             self.onHistoryChanged(initToken)
         else:

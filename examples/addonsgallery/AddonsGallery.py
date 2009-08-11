@@ -9,7 +9,7 @@ from pyjamas.ui.Hyperlink import Hyperlink
 from pyjamas.ui.VerticalPanel import VerticalPanel
 from pyjamas import Window
 from SinkList import SinkList
-from pyjamas.History import History
+from pyjamas import History
 import IntroTab
 import TooltipTab
 import AutoCompleteTab
@@ -48,10 +48,10 @@ class AddonsGallery:
         self.panel.setCellVerticalAlignment(self.sink_list, HasAlignment.ALIGN_TOP)
         self.panel.setCellWidth(vp, "100%")
 
-        History().addHistoryListener(self)
+        History.addHistoryListener(self)
         RootPanel().add(self.panel)
 
-        initToken = History().getToken()
+        initToken = History.getToken()
         if len(initToken):
             self.onHistoryChanged(initToken)
         else:
@@ -70,7 +70,7 @@ class AddonsGallery:
         self.description.setHTML(info.getDescription())
 
         if (affectHistory):
-            History().newItem(info.getName())
+            History.newItem(info.getName())
 
         self.sinkContainer.add(self.curSink, DockPanel.CENTER)
         self.sinkContainer.setCellWidth(self.curSink, "100%")

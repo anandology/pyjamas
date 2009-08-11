@@ -64,6 +64,7 @@ class ClassTest(UnitTest):
         # for we just make sure the result is undefined and not the value of
         # ExampleClass.a
         if IN_BROWSER:
+            from __pyjamas__ import JS
             x = ExampleClass().fail_a()
             self.assertTrue(JS('pyjslib.isUndefined(x)'))
 

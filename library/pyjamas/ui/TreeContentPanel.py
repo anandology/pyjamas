@@ -13,6 +13,7 @@
 # limitations under the License.
 from pyjamas import DOM
 from pyjamas.ui.SimplePanel import SimplePanel
+from __pyjamas__ import console
 
 class TreeContentPanel(SimplePanel):
     def __init__(self, element, **kwargs):

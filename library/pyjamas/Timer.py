@@ -2,6 +2,7 @@
 # For the pyjamas/javascript version, see platform/TimerPyJS.py
 
 import sys
+from __pyjamas__ import JS
 
 # the following is needed because we are currently not able to override things
 # except functions and classes

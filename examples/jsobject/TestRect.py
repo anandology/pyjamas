@@ -2,7 +2,7 @@ from pyjamas.ui.RootPanel import RootPanel
 from pyjamas.ui.TextBox import TextBox
 from pyjamas.ui.HTML import HTML
 from pyjamas.ui.Button import Button
-
+from __pyjamas__ import JS
 
 class Rect:
     def __init__(self, x, y):

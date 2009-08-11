@@ -1,115 +1,83 @@
+from __pyjamas__ import JS
+
 class Datetime:
     def __init__(self, year=None, month=None, day=None, hours=None, minutes=None, seconds=None):
         JS("""	
 	if (seconds != null)
-	    this.date = new Date(year, month, day, hours, minutes, seconds);
+	    self.date = new Date(year, month, day, hours, minutes, seconds);
 	else if (minutes != null)
-	    this.date = new Date(year, month, day, hours, minutes);
+	    self.date = new Date(year, month, day, hours, minutes);
 	else if (hours != null)
-	    this.date = new Date(year, month, day, hours);
+	    self.date = new Date(year, month, day, hours);
 	else if (day != null)
-	    this.date = new Date(year, month, day);
+	    self.date = new Date(year, month, day);
 	else if (month != null)
-	    this.date = new Date(year, month);
+	    self.date = new Date(year, month);
 	else if (year != null)
     {
         if (pyjslib.isNumber(year))
         {
             /* a number on its own is a "value" */
-            this.date = new Date(year);
+            self.date = new Date(year);
         }
         else if (pyjslib.isinstance(year, Date.DateTime))
         {
             /* Datetime object */
-            this.date = new Date(year.date.valueOf());
+            self.date = new Date(year.date.valueOf());
         }
     }
 	else
-	    this.date = new Date();
+	    self.date = new Date();
         """)
 
     def getValue(self):
-        JS("""
-	return this.date.valueOf();
-	""")
+	return self.date.valueOf()
 
     def getDate(self):
-        JS("""
-	return this.date.getDate();
-	""")
+	return self.date.getDate()
 
     def getDay(self):
-        JS("""
-	return this.date.getDay();
-	""")
+	return self.date.getDay()
 	
     def getHours(self):
-        JS("""
-	return this.date.getHours();
-	""")
+	return self.date.getHours()
 	
     def getMinutes(self):
-        JS("""
-	return this.date.getMinutes();
-	""")
+	return self.date.getMinutes()
 
     def getMonth(self):
-        JS("""
-	return this.date.getMonth();
-	""")
+	return self.date.getMonth()
 
     def getSeconds(self):
-        JS("""
-	return this.date.getSeconds();
-	""")
+	return self.date.getSeconds()
 
     def getTime(self):
-        JS("""
-	return this.date.getTime();
-	""")
+	return self.date.getTime()
 
     def getYear(self):
-        JS("""
-	return this.date.getYear();
-	""")
+	return self.date.getYear()
 
     def setDate(self, value):
-        JS("""
-	this.date.setDate(value);
-	""")
+	self.date.setDate(value)
 
     def setDay(self, value):
-        JS("""
-	this.date.setDay(value);
-	""")
+	self.date.setDay(value)
 	
     def setHours(self, value):
-        JS("""
-	this.date.setHours(value);
-	""")
+	self.date.setHours(value)
 	
     def setMinutes(self, value):
-        JS("""
-	this.date.setMinutes(value);
-	""")
+	self.date.setMinutes(value)
 
     def setMonth(self, value):
-        JS("""
-	this.date.setMonth(value);
-	""")
+	self.date.setMonth(value)
 
     def setSeconds(self, value):
-        JS("""
-	this.date.setSeconds(value);
-	""")
+	self.date.setSeconds(value)
 
     def setTime(self, value):
-        JS("""
-	this.date.setTime(value);
-	""")
+	self.date.setTime(value)
 
     def setYear(self, value):
-        JS("""
-	this.date.setYear(value);
-	""")
+	self.date.setYear(value)
 

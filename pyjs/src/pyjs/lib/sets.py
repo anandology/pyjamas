@@ -1,25 +1,27 @@
+from __pyjamas__ import JS
+
 class Set:
     def __init__(self, data=None):
         JS("""
-        this.d = {};
-        this.update(data);
+        self.d = {};
+        self.update(data);
         """)
 
     def add(self, value):
-        JS("""    this.d[pyjslib.hash(value)] = value;""")
+        JS("""    self.d[pyjslib.hash(value)] = value;""")
 
     def clear(self):
-        JS("""    this.d = {};""")
+        JS("""    self.d = {};""")
 
     def __contains__(self, value):
-        JS("""    return (this.d[pyjslib.hash(value)]) ? true : false;""")
+        JS("""    return (self.d[pyjslib.hash(value)]) ? true : false;""")
 
     def discard(self, value):
-        JS("""    delete this.d[pyjslib.hash(value)];""")
+        JS("""    delete self.d[pyjslib.hash(value)];""")
 
     def issubset(self, items):
         JS("""
-        for (var i in this.d) {
+        for (var i in self.d) {
             if (!items.__contains__(i)) return false;
             }
         return true;
@@ -28,7 +30,7 @@ class Set:
     def issuperset(self, items):
         JS("""
         for (var i in items) {
-            if (!this.__contains__(i)) return false;
+            if (!self.__contains__(i)) return false;
             }
         return true;
         """)
@@ -36,22 +38,22 @@ class Set:
     def __iter__(self):
         JS("""
         var items=new pyjslib.List();
-        for (var key in this.d) items.append(this.d[key]);
+        for (var key in self.d) items.append(self.d[key]);
         return items.__iter__();
         """)
 
     def __len__(self):
         JS("""
         var size=0;
-        for (var i in this.d) size++;
+        for (var i in self.d) size++;
         return size;
         """)
 
     def pop(self):
         JS("""
-        for (var key in this.d) {
-            var value = this.d[key];
-            delete this.d[key];
+        for (var key in self.d) {
+            var value = self.d[key];
+            delete self.d[key];
             return value;
             }
         """)
@@ -63,7 +65,7 @@ class Set:
         JS("""
         if (pyjslib.isArray(data)) {
             for (var i in data) {
-                this.d[pyjslib.hash(data[i])]=data[i];
+                self.d[pyjslib.hash(data[i])]=data[i];
             }
         }
         else if (pyjslib.isIteratable(data)) {
@@ -72,7 +74,7 @@ class Set:
             try {
                 while (true) {
                     var item=iter.next();
-                    this.d[pyjslib.hash(item)]=item;
+                    self.d[pyjslib.hash(item)]=item;
                 }
             }
             catch (e) {

@@ -1,3 +1,4 @@
+from __pyjamas__ import JS
 JS("""
 /*
  *  md5.jvs 1.0b 27/06/96

@@ -292,7 +292,8 @@ def b16decode(s, casefold=False):
     #if re.search('[^0-9A-F]', s):
     #    raise TypeError('Non-base16 digit found')
     # Replace with:
-    r = JS("""RegExp('[^0-9A-F]')""")
+    from __javascript__ import RegExp
+    r = RegExp('[^0-9A-F]')
     if r.test(s):
         raise TypeError('Non-base16 digit found')
 

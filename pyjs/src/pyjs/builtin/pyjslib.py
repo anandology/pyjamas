@@ -16,6 +16,8 @@
 
 # must declare import _before_ importing sys
 
+from __pyjamas__ import JS
+
 class object:
     pass
 

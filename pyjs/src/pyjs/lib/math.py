@@ -1,3 +1,4 @@
+from __pyjamas__ import JS
 JS("""
 math.ceil = Math.ceil;
 math.fabs = Math.abs;

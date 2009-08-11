@@ -12,6 +12,7 @@ data = ""
 
 def write_web(text):
     global data
+    from __pyjamas__ import JS
     data += text
     JS(" write.element.innerHTML = write.data; ")
 
@@ -19,6 +20,7 @@ def writebr_web(text):
     write(text + "<br />\n")
 
 def init_web():
+    from __pyjamas__ import JS
     JS(""" write.element = $doc.createElement("div");
            $doc.body.appendChild(write. element); """)
 

@@ -1,3 +1,6 @@
+
+from __pyjamas__ import JS
+
 # a dictionary of module override names (platform-specific)
 overrides = None # to be updated by app, on compile
 

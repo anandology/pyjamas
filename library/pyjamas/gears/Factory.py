@@ -18,6 +18,7 @@
 from pyjamas.gears.database.Database import GearsDatabase
 #from pyjamas.gears.localserver import LocalServer
 #from pyjamas.gears.workerpool import WorkerPool
+from __pyjamas__ import JS
 
 JS("""
 // Copyright 2007 Google Inc. All Rights Reserved.

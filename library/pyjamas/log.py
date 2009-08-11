@@ -1,9 +1,10 @@
 # Use this to output (cumulatively) text at the bottom of the HTML page
 
 from pyjamas import DOM
+from __pyjamas__ import doc
 
 def getBodyElement():
-    JS(" return $doc.body; ")
+    return doc().body
 
 def write(text):
     add_elem()

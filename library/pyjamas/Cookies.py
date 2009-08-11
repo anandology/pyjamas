@@ -2,9 +2,9 @@
 # For the pyjamas/javascript version, see platform/CookiesPyJS.py
 
 import sys
+from __pyjamas__ import JS, doc
 if sys.platform not in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
     from Cookie import SimpleCookie
-    from __pyjamas__ import doc
     import urllib
     import datetime
     from string import strip

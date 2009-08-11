@@ -8,7 +8,7 @@
 closingListeners = []
 resizeListeners = []
 
-from __pyjamas__ import doc, wnd, get_gtk_module, get_main_frame
+from __pyjamas__ import JS, doc, wnd, get_gtk_module, get_main_frame
 from pyjamas import Location
 
 def init_listeners():

@@ -30,6 +30,8 @@
 * of this, but it's unclear whether that would really be useful.
 """
 
+from __pyjamas__ import JS
+
 class GearsDatabase:
 
     def __init__(self, db):
