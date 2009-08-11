@@ -404,9 +404,9 @@ class Translator:
             elif isinstance(child, ast.Class):
                 self._class(child)
             elif isinstance(child, ast.Import):
-                self._import(child, False, True)
+                self._import(child, None, True, True)
             elif isinstance(child, ast.From):
-                self._from(child, False, True)
+                self._from(child, None, True, True)
             elif isinstance(child, ast.Discard):
                 self._discard(child, None)
             elif isinstance(child, ast.Assign):
@@ -1054,14 +1054,13 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             print >>self.output, self.dedent() + "});"
 
 
-    def _import(self, node, local=False, root=False):
+    def _import(self, node, current_klass, top_level = False, root_level = False):
         # XXX: hack for in-function checking, we should have another
         # object to check our scope
-        local = local and self.option_stack
-        self._doImport(node.names, local, root, True)
+        self._doImport(node.names, current_klass, top_level, root_level, True)
 
-    def _doImport(self, names, local, root, assignBase):
-        if root:
+    def _doImport(self, names, current_klass, top_level, root_level, assignBase):
+        if root_level:
             modtype = 'root-module'
         else:
             modtype = 'module'
@@ -1099,8 +1098,8 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                             importName,
                             self.raw_module_name,
                             )
-                print >> self.output, self.spacing(), stmt
-                self.add_lookup(modtype, importName, importName)
+                print >> self.output, self.spacing() + stmt
+                self._lhsFromName(importName, top_level, current_klass, modtype)
                 self.add_imported_module(importName)
             if assignBase:
                 # get the name in scope
@@ -1109,26 +1108,15 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                     ass_name = importAs
                 else:
                     ass_name = package_name
-                var = self.lookup(ass_name)
-                if var[0] != 'variable' or local:
-                    if local:
-                        jsname_mod = ass_name
-                        jsname = ass_name
-                        lhs = 'var %s =' % jsname
-                        lhs = '%s =' %  jsname
-                    else:
-                        jsname_mod = '.'.join((self.raw_module_name, package_name))
-                        jsname = '.'.join((self.raw_module_name, ass_name))
-                        lhs = '%s =' %  jsname
-                    if importAs:
-                        mod_name = importName
-                    else:
-                        mod_name = ass_name
-                    stmt = '%s $pyjs.__modules__.%s;'% (lhs, mod_name)
-                    print >> self.output, self.spacing(), stmt
-                    self.add_lookup(modtype, ass_name, jsname)
+                lhs = self._lhsFromName(ass_name, top_level, current_klass, modtype)
+                if importAs:
+                    mod_name = importName
+                else:
+                    mod_name = ass_name
+                stmt = '%s = $pyjs.__modules__.%s;'% (lhs, mod_name)
+                print >> self.output, self.spacing() + stmt
 
-    def _from(self, node, local=False, root=False):
+    def _from(self, node, current_klass, top_level = False, root_level = False):
         if node.modname == '__pyjamas__':
             # special module to help make pyjamas modules loadable in
             # the python interpreter
@@ -1151,21 +1139,13 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             return
         # XXX: hack for in-function checking, we should have another
         # object to check our scope
-        local = local and self.option_stack
         for name in node.names:
             sub = node.modname + '.' + name[0]
-            self._doImport(((sub, None),), local, root, False)
+            self._doImport(((sub, None),), current_klass, top_level, root_level, False)
             ass_name = name[1] or name[0]
-            if local:
-                lhs = 'var %s =' % ass_name
-                jsname = ass_name
-                self.add_lookup("variable", ass_name, ass_name)
-            else:
-                jsname = "%s.%s" % (self.raw_module_name, ass_name)
-                lhs = '%s =' %  jsname
-                self.add_lookup("variable", ass_name, jsname)
+            lhs = self._lhsFromName(ass_name, top_level, current_klass)
             rhs = '.'.join(('$pyjs', '__modules__', node.modname, name[0]))
-            print >> self.output, self.spacing(), "%s %s;" % (lhs, rhs)
+            print >> self.output, self.spacing() + "%s = %s;" % (lhs, rhs)
 
     def _function(self, node, local=False):
         self.push_options()
@@ -1787,9 +1767,9 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         elif isinstance(node, ast.Raise):
             self._raise(node, current_klass)
         elif isinstance(node, ast.Import):
-            self._import(node, True)
+            self._import(node, current_klass, top_level)
         elif isinstance(node, ast.From):
-            self._from(node, True)
+            self._from(node, current_klass, top_level)
         else:
             raise TranslationError(
                 "unsupported type (in _stmt)", node, self.module_name)
@@ -1877,6 +1857,26 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         print >>self.output, self.spacing() + lhs + " " + op + " " + rhs + ";"
 
 
+    def _lhsFromName(self, name, top_level, current_klass, set_name_type = 'variable'):
+        name_type, pyname, jsname, depth, is_local = self.lookup(name)
+        if is_local:
+            lhs = jsname
+            self.add_lookup(set_name_type, name, jsname)
+        elif top_level:
+            if current_klass:
+                #lhs = "var " + name + " = " + current_klass.name_ + "." + name
+                lhs = current_klass.name_ + "." + name
+            else:
+                vname = self.modpfx() + name
+                vname = self.add_lookup(set_name_type, name, vname)
+                #lhs = "var " + name + " = " + vname
+                lhs = vname
+        else:
+            vname = self.add_lookup(set_name_type, name, name)
+            lhs = "var " + vname
+            lhs = vname
+        return lhs
+
     def _assign(self, node, current_klass, top_level = False):
         if len(node.nodes) != 1:
             tempvar = '__temp'+str(node.lineno)
@@ -1901,26 +1901,6 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                     "unsupported type (in _assign)", v.expr, self.module_name)
             return lhs
 
-        def _lhsFromName(v, top_level, current_klass):
-            name_type, pyname, jsname, depth, is_local = self.lookup(v.name)
-            if is_local:
-                lhs = jsname
-                self.add_lookup('variable', v.name, jsname)
-            elif top_level:
-                if current_klass:
-                    #lhs = "var " + v.name + " = " + current_klass.name_ + "." + v.name
-                    lhs = current_klass.name_ + "." + v.name
-                else:
-                    vname = self.modpfx() + v.name
-                    vname = self.add_lookup('variable', v.name, vname)
-                    #lhs = "var " + v.name + " = " + vname
-                    lhs = vname
-            else:
-                vname = self.add_lookup("variable", v.name, v.name)
-                lhs = "var " + vname
-                lhs = vname
-            return lhs
-
         dbg = 0
         v = node.nodes[0]
         if isinstance(v, ast.AssAttr):
@@ -1934,7 +1914,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
         elif isinstance(v, ast.AssName):
             rhs = self.expr(node.expr, current_klass)
-            lhs = _lhsFromName(v, top_level, current_klass)
+            lhs = self._lhsFromName(v.name, top_level, current_klass)
             if v.flags == "OP_ASSIGN":
                 op = "="
             else:
@@ -1963,7 +1943,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 if isinstance(child, ast.AssAttr):
                     lhs = _lhsFromAttr(child, current_klass)
                 elif isinstance(child, ast.AssName):
-                    lhs = _lhsFromName(child, top_level, current_klass)
+                    lhs = self._lhsFromName(child.name, top_level, current_klass)
                 elif isinstance(child, ast.Subscript):
                     if child.flags == "OP_ASSIGN":
                         obj = self.expr(child.expr, current_klass)

@@ -104,8 +104,8 @@ modules are there.
     		pyjslib.__import__(['z'], 'z', 'imports');
     		x = $pyjs.__modules__.z;
     		x();
-    		var y = $pyjs.__modules__.x.z.y;
-    		var pp = $pyjs.__modules__.x.z.p;
+    		y = $pyjs.__modules__.x.z.y;
+    		pp = $pyjs.__modules__.x.z.p;
     		return null;
     	};
     	imports.main.__name__ = 'main';
@@ -194,7 +194,7 @@ do nothing. TODO: fix this
     pyjslib.__import__(['pack3.sub', 'pack3'], 'pack3.sub', 'baseclass');
     pub = $pyjs.__modules__.pack3.sub;
     pyjslib.__import__(['pack3.z', 'pack3'], 'pack3.z', 'baseclass');
-    var y = $pyjs.__modules__.pack3.z;
+    y = $pyjs.__modules__.pack3.z;
     pyjslib.printFunc([pack3], 1);
     return null;
     };

@@ -43,7 +43,7 @@ By default the javascript code is compiled to a subdirectory in the
 output directory.
 
     >>> sorted(os.listdir(os.path.join(output, 'lib')))
-    ['mypackage.index.js', 'mypackage.js', 'pyjslib.__mozilla__.js', 'pyjslib.js']
+    ['mypackage.index.js', 'mypackage.js', 'pyjslib.__mozilla__.js', 'pyjslib.js', 'sys.js']
 
     >>> out_file = os.path.join(output, 'mypackage.index.ie6.cache.html')
     >>> print file(out_file).read()
@@ -188,6 +188,7 @@ script tags into the generated cache.html file.
     <script type="text/javascript" src="_pyjs.js"></script>
     <script type="text/javascript" src="sprintf.js"></script>
     <script type="text/javascript" src="lib/pyjslib.js"></script>
+    <script type="text/javascript" src="lib/sys.js"></script>
     <script type="text/javascript" src="lib/mypackage.js"></script>
     <script type="text/javascript" src="lib/mypackage.index.js"></script>
     <BLANKLINE>
