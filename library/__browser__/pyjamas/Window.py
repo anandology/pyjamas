@@ -81,7 +81,6 @@ def onError(msg, url, linenumber):
     dialog.className='errordialog'
     # Note: $pyjs.trackstack is a global javascript array
     # XXX: we should not have a sys dependency here!
-    import sys
     tracestr = sys.trackstackstr(JS("$pyjs.trackstack.slice(0,-1)"))
     tracestr = tracestr.replace("\n", "<br />\n&nbsp;&nbsp;&nbsp;")
     dialog.innerHTML='&nbsp;<b style="color:red">JavaScript Error: </b>' + \
@@ -108,13 +107,8 @@ def init_listeners():
         resizeListeners = []
 
 def init():
-    # Currently, the handling of global is not quite right
-    # Temporary hack
     global sys
-    def import_sys():
-        import sys
-        return sys
-    sys = import_sys()
+    import sys
 
     init_listeners()
     JS("""
