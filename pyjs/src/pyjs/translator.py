@@ -621,7 +621,7 @@ class Translator:
             jsname = self.lookup_stack[-1][name][2]
             if (     not jsname.find('.') >= 0
                  and not pyname in ignore_py_vars
-                 and nametype == 'variable'
+                 and not nametype in ['__pyjamas__', '__javascript__']
                ):
                 names.append(jsname)
         if len(names) > 0:
