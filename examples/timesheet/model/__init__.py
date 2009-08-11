@@ -1,0 +1,2 @@
+import puremvc.patterns.proxy
+
