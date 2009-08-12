@@ -3,7 +3,6 @@ import os
 SYSTEM_FILES = set(
         ('_pyjs.js',
          'bootstrap.js',
-         'sprintf.js',
         )
         )
 

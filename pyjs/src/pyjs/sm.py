@@ -65,7 +65,6 @@ class SpidermonkeyLinker(linker.BaseLinker):
     def visit_start(self):
         super(SpidermonkeyLinker, self).visit_start()
         self.js_libs.append('_pyjs.js')
-        self.js_libs.append('sprintf.js')
         self.merged_public = set()
 
     def merge_resources(self, dir_name):

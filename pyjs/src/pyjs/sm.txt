@@ -36,7 +36,6 @@ compiles just one.
     >>> print open(out_file).read()
     var...
     load('...pyjslib.__spidermonkey__.js', ...
-    load('.../public/_pyjs.js', '...sprintf.js');
     <BLANKLINE>
     pyjslib('pyjslib');
     pyjslib.__import__(['LibTest'], 'LibTest', 'LibTest', '__main__');

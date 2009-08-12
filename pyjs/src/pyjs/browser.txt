@@ -186,7 +186,6 @@ script tags into the generated cache.html file.
     --></script>
     <BLANKLINE>
     <script type="text/javascript" src="_pyjs.js"></script>
-    <script type="text/javascript" src="sprintf.js"></script>
     <script type="text/javascript" src="lib/pyjslib.js"></script>
     <script type="text/javascript" src="lib/sys.js"></script>
     <script type="text/javascript" src="lib/mypackage.js"></script>
@@ -238,7 +237,6 @@ Also the libfiles which are generated from multifile option are upated.
     >>> print f.read()
     <html>...
     <script type="text/javascript" src="_pyjs.js"></script>
-    <script type="text/javascript" src="sprintf.js"></script>
     <...pyjslib...js"></script>
     <...mypackage...js"></script>
     <...mypackage.index...js"></script>...

@@ -50,7 +50,6 @@ class BrowserLinker(linker.BaseLinker):
         super(BrowserLinker, self).visit_start()
         self.boilerplate_path = None
         self.js_libs.append('_pyjs.js')
-        self.js_libs.append('sprintf.js')
         self.merged_public = set()
         self.app_files = {}
         self.renamed_libs = {}
