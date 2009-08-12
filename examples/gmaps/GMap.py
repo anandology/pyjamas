@@ -4,6 +4,7 @@ from pyjamas.ui.SimplePanel import SimplePanel
 import pyjamas.DOM
 from pyjamas.JSONService import JSONProxy
 from pyjamas import Window
+from __pyjamas__ import JS
 
 ### GOOGLE MAPS WRAPPERS ###
 def GMap2(el, options):

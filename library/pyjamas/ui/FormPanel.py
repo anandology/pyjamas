@@ -17,6 +17,7 @@ if sys.platform not in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
     from __pyjamas__ import get_main_frame
 
 from pyjamas import DOM
+from __pyjamas__ import JS
 
 from pyjamas.ui.SimplePanel import SimplePanel
 from pyjamas.ui import Event

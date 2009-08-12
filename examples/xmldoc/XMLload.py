@@ -10,6 +10,7 @@ from pyjamas.ui.VerticalPanel import VerticalPanel
 from pyjamas.ui.ScrollPanel import ScrollPanel
 from pyjamas import Window
 from pyjamas.HTTPRequest import HTTPRequest
+from __pyjamas__ import JS
 
 def create_xml_doc(text):
     JS("""

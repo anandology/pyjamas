@@ -19,6 +19,7 @@
  */
 """
 
+from __pyjamas__ import JS
 from pyjamas.ui.splitpanel import SplitPanel
 from pyjamas import DOM
 from pyjamas.DeferredCommand import DeferredCommand

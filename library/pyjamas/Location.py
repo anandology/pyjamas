@@ -1,3 +1,5 @@
+from __pyjamas__ import JS
+
 def makeUrlDict(s):
     dict = {}
     pairs = s.split("&")

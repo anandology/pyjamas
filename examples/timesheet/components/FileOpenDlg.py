@@ -15,7 +15,7 @@ from pyjamas.ui.DockPanel import DockPanel
 from pyjamas.ui.Frame import Frame
 import pyjamas.DOM as DOM
 
-
+from __pyjamas__ import doc
 from pyjamas.Window import alert
 import sys
 

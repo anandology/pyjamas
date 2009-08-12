@@ -12,6 +12,7 @@ from pyjamas.ui.Widget import Widget
 
 from pyjamas import DOM
 from pyjamas import Window
+from __pyjamas__ import wnd
 
 #############################################################################
 
@@ -133,9 +134,7 @@ def prompt(msg, defaultReply=""):
 
         We return the entered text, or None if the user cancelled.
     """
-    JS("""
-       return $wnd.prompt(msg, defaultReply);
-    """)
+    return wnd().prompt(msg, defaultReply);
 
 #############################################################################
 

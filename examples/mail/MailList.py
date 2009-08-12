@@ -123,7 +123,6 @@ class MailList(Composite):
                 self.table.getRowFormatter().removeStyleName(row + 1, "mail-SelectedRow")
 
     def update(self):
-        #JS("t0 = (new Date()).getTime();")
         # Update the older/newer buttons & label.
         count = MailItems().getMailItemCount()
         max = self.startIndex + MailList.VISIBLE_EMAIL_COUNT
@@ -163,5 +162,3 @@ class MailList(Composite):
         # Select the first row if none is selected.
         if (self.selectedRow == -1):
             self.selectRow(0)
-        #JS("t1 = (new Date()).getTime();")
-        #self.table.setHTML(i, 0, (t1-t0))

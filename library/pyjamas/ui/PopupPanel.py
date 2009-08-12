@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from pyjamas import DOM
-
+from __pyjamas__ import JS
 from pyjamas.ui.SimplePanel import SimplePanel
 from pyjamas.ui.RootPanel import RootPanel
 from pyjamas.ui import MouseListener

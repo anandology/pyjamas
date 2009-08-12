@@ -16,6 +16,7 @@ from pyjamas.Cookies import getCookie
 
 import sys
 from pyjamas.Window import alert
+from __pyjamas__ import wnd
 
 import base64
 
