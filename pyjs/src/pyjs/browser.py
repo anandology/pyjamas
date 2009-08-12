@@ -268,7 +268,13 @@ def build_script():
                         platforms=(','.join(AVAILABLE_PLATFORMS)),
                         bootstrap_file="bootstrap.js",
                         )
-    options, args = parser.parse_args()
+    options, _args = parser.parse_args()
+    args = []
+    for a in _args:
+        if a.lower().endswith('.py'):
+            args.append(a[:-3])
+        else:
+            args.append(a)
 
     if options.log_level is not None:
         import logging
