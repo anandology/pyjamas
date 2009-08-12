@@ -1,7 +1,9 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
- * Added javascript inclusion via --include-static-js and __pyjamas__.include
+ * Added debugger() to __pyjamas__
+
+ * Added javascript inclusion via --include-static-js and __pyjamas__.include()
 
  * Added dict pop and popitem, thanks to Beni Cherniavsky
 

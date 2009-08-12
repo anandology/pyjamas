@@ -232,6 +232,13 @@ class __Pyjamas__(object):
                 "jsinclude function only support constant strings",
                 node.node)
 
+    def debugger(self, node):
+        if len(node.args) != 0:
+            raise TranslationError(
+                "debugger function doesn't support arguments",
+                node.node)
+        return 'debugger', False
+
 
 __pyjamas__ = __Pyjamas__()
 

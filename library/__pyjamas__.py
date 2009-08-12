@@ -78,3 +78,6 @@ class console:
     def error(msg):
         print "TODO CONSOLE:", msg
 
+def debugger():
+    pass
+
