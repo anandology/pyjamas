@@ -121,13 +121,21 @@ class BrowserLinker(linker.BaseLinker):
         done = self.done[platform]
 
         if self.multi_file:
-            js_libs = list(self.js_libs)
+            js_libs = list(self.js_libs) + list(self.js_static_libs)
             for p in done:
                 js_libs.append(p[len(self.output)+1:])
             app_code = ''
         else:
             js_libs = self.js_libs
             app_code = StringIO()
+            for p in self.js_static_libs:
+                f = file(p)
+                app_code.write("""
+/* start included javascript: %s */
+%s
+/* end %s */
+""" % (p, f.read(), p))
+                f.close()
             for p in done:
                 f = file(p)
                 app_code.write(f.read())
@@ -256,6 +264,7 @@ def build_script():
 
     parser.set_defaults(output="output",
                         js_includes=[],
+                        js_static_includes=[],
                         library_dirs=[],
                         platforms=(','.join(AVAILABLE_PLATFORMS)),
                         bootstrap_file="bootstrap.js",
@@ -292,6 +301,7 @@ def build_script():
                       platforms=app_platforms,
                       path=pyjs.path,
                       js_libs=options.js_includes,
+                      js_static_libs=options.js_static_includes,
                       translator_arguments=translator_arguments,
                       multi_file=options.multi_file,
                       cache_buster=options.cache_buster,

@@ -1,6 +1,8 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
+ * Added javascript inclusion via --include-static-js and __pyjamas__.include
+
  * Added build option --bootstrap-file and a bootstrap_progress.js
 
  * Discarded strings are not getting translated anymore

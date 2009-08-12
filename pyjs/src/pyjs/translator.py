@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python, dir(e)
 # Copyright 2006 James Tauber and contributors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -186,28 +186,53 @@ class __Pyjamas__(object):
     console = "console"
 
     def JS(self, node):
-        if isinstance(node.args[0], ast.Const):
-            if re_return.search(node.args[0].value):
-                self.has_js_return = True
+        if len(node.args) != 1:
+            raise TranslationError(
+                "JS function requires one argument",
+                node.node)
+        if (     isinstance(node.args[0], ast.Const)
+             and isinstance(node.args[0].value, str)
+           ):
             return node.args[0].value, not re_return.search(node.args[0].value) is None
         else:
             raise TranslationError(
-                "native js functions only support constant strings",
-                node.node, self.module_name)
+                "JS function only support constant strings",
+                node.node)
 
     def wnd(self, node):
         if len(node.args) != 0:
             raise TranslationError(
-                "native wnd function doesn't support arguments",
-                node.node, self.module_name)
+                "wnd function doesn't support arguments",
+                node.node)
         return '$wnd', False
 
     def doc(self, node):
         if len(node.args) != 0:
             raise TranslationError(
-                "native doc function doesn't support arguments",
-                node.node, self.module_name)
+                "doc function doesn't support arguments",
+                node.node)
         return '$doc', False
+
+    def jsinclude(self, node):
+        if len(node.args) != 1:
+            raise TranslationError(
+                "jsinclude function requires one argument",
+                node.node)
+        if (     isinstance(node.args[0], ast.Const)
+             and isinstance(node.args[0].value, str)
+           ):
+            try:
+                data = open(node.args[0].value, 'r').read()
+            except IOError, e:
+                raise TranslationError(
+                    "Cannot include file '%s': %s" % (node.args[0].value, e))
+            return data, False
+        else:
+            raise TranslationError(
+                "jsinclude function only support constant strings",
+                node.node)
+
+
 __pyjamas__ = __Pyjamas__()
 
 # This is taken from the django project.
@@ -251,12 +276,16 @@ class Klass:
 
 
 class TranslationError(Exception):
-    def __init__(self, message, node, module_name=''):
+    def __init__(self, msg, node, module_name=''):
         if node:
             lineno = node.lineno
         else:
             lineno = "Unknown"
-        self.message = "%s line %s:\n%s\n%s" % (module_name, lineno, message, node)
+        self.msg = msg
+        self.node = node
+        self.module_name = module_name
+        self.lineno = lineno
+        self.message = "%s line %s:\n%s\n%s" % (module_name, lineno, msg, node)
 
     def __str__(self):
         return self.message
@@ -1270,6 +1299,8 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                     raise TranslationError(
                         "Unknown __pyjamas__ function %s" % pyname,
                          v.node, self.module_name)
+                except TranslationError, e:
+                    raise TranslationError(e.msg, v, self.module_name)
             else:
                 if name_type is None:
                     # What to do with a (yet) unknown name?

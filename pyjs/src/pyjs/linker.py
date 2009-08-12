@@ -55,7 +55,7 @@ class BaseLinker(object):
     platform_parents = {}
 
     def __init__(self, top_module, output='output',
-                 debug=False, js_libs=[], platforms=[], path=[],
+                 debug=False, js_libs=[], js_static_libs=[], platforms=[], path=[],
                  translator_arguments={},
                  compile_inplace=False):
         self.js_path = os.path.abspath(output)
@@ -64,6 +64,7 @@ class BaseLinker(object):
         self.top_module = top_module
         self.output = os.path.abspath(output)
         self.js_libs = list(js_libs)
+        self.js_static_libs = list(js_static_libs)
         self.translator_arguments = translator_arguments
         self.compile_inplace = compile_inplace
         self.top_module_path = None
@@ -205,6 +206,9 @@ def add_linker_options(parser):
     parser.add_option("-j", "--include-js", dest="js_includes",
                       action="append", default=[],
                       help="javascripts to load into the same frame as the rest of the script")
+    parser.add_option("--include-static-js", dest="js_static_includes",
+                      action="append", default=[],
+                      help="javascripts to include into the static code")
     parser.add_option("-I", "--library_dir", dest="library_dirs",
                       default=[],
                       action="append", help="additional paths appended to PYJSPATH")
