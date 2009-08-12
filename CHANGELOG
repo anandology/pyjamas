@@ -3,6 +3,8 @@
 
  * Added javascript inclusion via --include-static-js and __pyjamas__.include
 
+ * Added dict pop and popitem, thanks to Beni Cherniavsky
+
  * Added build option --bootstrap-file and a bootstrap_progress.js
 
  * Discarded strings are not getting translated anymore
