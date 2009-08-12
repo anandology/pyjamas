@@ -1,0 +1,9 @@
+This is a port of Google's Hello example.
+
+To build, first read the top-level README (run boostrap and buildout)
+
+Then, run ./build.sh or:
+
+    ../../bin/pyjsbuild Hello.py
+
+and then open output/Hello.html in a web browser.
