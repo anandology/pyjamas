@@ -39,6 +39,15 @@ class ListTest(UnitTest):
         self.assertTrue(value[-1:][0] is 4)
         self.assertTrue(len(value[-1:3]) is 0)
 
+    def testListAdd(self):
+
+        l1 = [1, 2]
+        l2 = [3, 4]
+
+        added = l1 + l2
+
+        self.assertTrue( added == [1,2,3,4], "TODO: #222 - a lot of work implementing __coerce__ etc.")
+
     def testDelete(self):
         value = [0, 1, 2, 3, 4]
         del value[4]
