@@ -26,7 +26,7 @@ class ImplHorizontalSplitPanel:
     def __init__(self, panel):
         
         self.panel = panel
-        self.isResizeInProgress = false
+        self.isResizeInProgress = False
         self.splitPosition = 0
 
         elem = panel.getElement()
@@ -62,7 +62,7 @@ class ImplHorizontalSplitPanel:
         self.onResize()
 
     def onDetach(self):
-        DOM.setElementAttribute(self.panel.container, "onresize", null)
+        DOM.setElementAttribute(self.panel.container, "onresize", None)
 
     def onTimer(self, sender):
         self.setSplitPositionUsingPixels(       self.splitPosition)
@@ -70,7 +70,7 @@ class ImplHorizontalSplitPanel:
 
     def onSplitterResize(self, px):
         if not self.isResizeInProgress:
-            self.isResizeInProgress = true
+            self.isResizeInProgress = True
             Timer(self, 20)
         self.splitPosition = px
 
