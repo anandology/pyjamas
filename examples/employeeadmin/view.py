@@ -8,7 +8,7 @@ Addapted for pyjamas: Kees Bos
 import puremvc.interfaces
 import puremvc.patterns.mediator
 
-import model, enumerate, EmployeeAdmin, vo
+import model, consts, EmployeeAdmin, vo
 
 from pyjamas.Window import alert
 
@@ -44,7 +44,7 @@ class UserFormMediator(puremvc.patterns.mediator.Mediator, puremvc.interfaces.IM
         self.viewComponent.mediator = self
         
         self.userProxy = self.facade.retrieveProxy(model.UserProxy.NAME)
-        self.viewComponent.updateDepartmentCombo(enumerate.DeptList, enumerate.DEPT_NONE_SELECTED)
+        self.viewComponent.updateDepartmentCombo(consts.DeptList, consts.DEPT_NONE_SELECTED)
         
     def listNotificationInterests(self):
         return [
@@ -192,7 +192,7 @@ class RolePanelMediator(puremvc.patterns.mediator.Mediator, puremvc.interfaces.I
         self.viewComponent.mediator = self
 
         self.roleProxy = self.facade.retrieveProxy(model.RoleProxy.NAME)
-        self.viewComponent.updateRoleCombo(enumerate.RoleList, enumerate.ROLE_NONE_SELECTED)
+        self.viewComponent.updateRoleCombo(consts.RoleList, consts.ROLE_NONE_SELECTED)
         
     def getRolePanel(self):
         return viewComponent

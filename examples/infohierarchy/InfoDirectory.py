@@ -1,3 +1,5 @@
+import pyjd
+
 from pyjamas.ui.RootPanel import RootPanel
 from pyjamas.ui.HTML import HTML
 from pyjamas.ui.Label import Label
@@ -353,7 +355,7 @@ class InfoDirectory:
 
         self.horzpanel1 = HorizontalPanel()
         self.horzpanel1.setSize("100%", "100%")
-        self.horzpanel1.setBorderWidth("1px")
+        self.horzpanel1.setBorderWidth(1)
         self.horzpanel1.setSpacing("10px")
 
         self.rp = RightPanel()
@@ -475,5 +477,8 @@ class InfoServicePython(JSONProxy):
 
 
 if __name__ == '__main__':
+    pyjd.setup("http://127.0.0.1/examples/infohierarchy/public/InfoDirectory.html")
     app = InfoDirectory()
     app.onModuleLoad()
+    pyjd.run()
+

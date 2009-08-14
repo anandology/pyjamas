@@ -21,6 +21,9 @@ class Trees(Composite):
         
     def protoise_tree(self, data):
 
+        if not data:
+            return []
+
         res = []
         for i in range(len(data)):
             d = data[i]

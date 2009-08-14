@@ -73,16 +73,33 @@ class HTTPRequest:
         else :
             localHandler.onError(responseText, status)
         
+    def _convertUrlToAbsolute(self, url):
+
+        uri = pygwt.getModuleBaseURL()
+        if url[0] == '/':
+            # url is /somewhere.
+            sep = uri.find('://')
+            if not uri.startswith('file://'):
+                
+                slash = uri.find('/', sep+3)
+                if slash > 0:
+                    uri = uri[:slash]
+
+            return "%s%s" % (uri, url)
+
+        else:
+            if url[:7] != 'file://' and url[:7] != 'http://' and \
+               url[:8] != 'https://':
+                slash = uri.rfind('/')
+                return uri[:slash+1] + url
+
+        return url
+
     def asyncPostImpl(self, user, pwd, url, postData, handler, 
                             return_xml, content_type):
         mf = get_main_frame()
         xmlHttp = self.doCreateXmlHTTPRequest()
-        if url[0] != '/':
-            uri = pygwt.getModuleBaseURL()
-            if url[:7] != 'file://' and url[:7] != 'http://' and \
-               url[:8] != 'https://':
-                slash = uri.rfind('/')
-                url = uri[:slash+1] + url
+        url = self._convertUrlToAbsolute(url)
         print "xmlHttp", user, pwd, url, postData, handler, dir(xmlHttp)
         #try :
         if mf.platform == 'webkit' or mf.platform == 'mshtml':
@@ -119,12 +136,7 @@ class HTTPRequest:
 
     def asyncGetImpl(self, user, pwd, url, handler):
         mf = get_main_frame()
-        if url[0] != '/':
-            uri = pygwt.getModuleBaseURL()
-            if url[:7] != 'file://' and url[:7] != 'http://' and \
-               url[:8] != 'https://':
-                slash = uri.rfind('/')
-                url = uri[:slash+1] + url
+        url = self._convertUrlToAbsolute(url)
         xmlHttp = self.doCreateXmlHTTPRequest()
         print dir(xmlHttp)
         print user, pwd, url, handler
