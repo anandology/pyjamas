@@ -129,9 +129,12 @@ class ImplHorizontalSplitPanel:
         self.panel.setElemWidth(rightElem, newRightWidth + "px")
 
     def addResizeListener(self, container):
+
+        resizefn = getattr(self, "onResize")
+
         JS("""
             container.onresize = function() {
-           __horizsplitpanel_ImplHorizontalSplitPanel.onResize();
+               resizefn();
                                       }
         """)
 
