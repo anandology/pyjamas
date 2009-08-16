@@ -415,6 +415,8 @@ class Browser(EventSink):
             return
         self.already_initialised = True
 
+        self._addWindowEventListener("unload", self.on_unload_callback)
+
         from __pyjamas__ import pygwt_processMetas, set_main_frame
         set_main_frame(self)
 
@@ -423,8 +425,6 @@ class Browser(EventSink):
             pth = os.path.abspath(self.appdir)
         sys.path.append(pth)
         
-        self._addWindowEventListener("unload", self.on_unload_callback)
-
     def on_unload_callback(self, *args):
         windll.user32.PostQuitMessage(0)
 
