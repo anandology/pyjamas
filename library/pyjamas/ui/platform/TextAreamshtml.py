@@ -1,6 +1,6 @@
 class TextArea:
     def getCursorPos(self):
-        try:
+        try :
             elem = self.getElement()
             tr = elem.document.selection.createRange()
             tr2 = tr.duplicate()
