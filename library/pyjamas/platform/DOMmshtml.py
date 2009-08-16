@@ -1,3 +1,18 @@
+
+def _dispatchEvent(sender, evt, useCap):
+    if evt.returnValue is None:
+        evt.returnValue = True
+        if not previewEvent(evt):
+            return
+
+    curElem = sender
+    while curElem and not get_listener(curElem):
+        curElem = curElem.parentElement
+    
+    listener = get_listener(curElem)
+    if listener:
+        dispatchEvent(evt, curElem, listener)
+
 #def TODOinit():
 #    JS("""
 #    // Set up event dispatchers.

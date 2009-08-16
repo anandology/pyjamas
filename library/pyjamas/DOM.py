@@ -70,13 +70,13 @@ def _dispatchEvent(sender, evt, useCap):
     cap = getCaptureElement()
     listener = get_listener(cap)
     if cap and listener:
-        #print "_dispatchEvent", cap, listener
+        print "_dispatchEvent", cap, listener
         dispatchEvent(evt, cap, listener)
         evt.stopPropagation()
         return
 
     while curElem and not get_listener(curElem):
-        #print "no parent listener", curElem, getParent(curElem)
+        print "no parent listener", curElem, getParent(curElem)
         curElem = getParent(curElem)
     if curElem and getNodeType(curElem) != 1:
         curElem = None
@@ -134,9 +134,9 @@ def browser_event_cb(view, event, from_window):
 def _dispatchCapturedEvent(event):
 
     if not previewEvent(event):
-        #print "dce, stop propagation"
+        print "dce, stop propagation"
         event.stopPropagation()
-        event.preventDefault()
+        eventPreventDefault(event)
         return False
     return True
 
@@ -777,7 +777,7 @@ def sinkEvents(element, bits):
         mf.addEventListener(element, "contextmenu", cb)
 
 def toString(elem):
-    temp = elem.clone_node(True)
+    temp = elem.cloneNode(True)
     tempDiv = createDiv()
     tempDiv.appendChild(temp)
     outer = getInnerHTML(tempDiv)
@@ -813,7 +813,7 @@ def dispatchEventImpl(event, element, listener):
     if element == sCaptureElem:
         if eventGetType(event) == "losecapture":
             sCaptureElem = None
-    #print "dispatchEventImpl", listener, eventGetType(event)
+    print "dispatchEventImpl", listener, eventGetType(event)
     prevCurrentEvent = currentEvent
     currentEvent = event
     listener.onBrowserEvent(event)
