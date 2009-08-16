@@ -16,7 +16,7 @@ class TextBoxBase:
             tr = elem.document.selection.createRange()
             if tr.parentElement().uniqueID != elem.uniqueID:
                 return 0
-            return len(tr.text)
+            return tr.text and len(tr.text) or 0
         except:
             print traceback.print_exc()
             return 0
