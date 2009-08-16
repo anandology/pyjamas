@@ -1,3 +1,5 @@
+import pyjd
+
 from pyjamas.ui.Label import Label
 from pyjamas.ui.RootPanel import RootPanel
 
@@ -13,5 +15,7 @@ class BrowserDetect:
 
 
 if __name__ == '__main__':
+    pyjd.setup("./BrowserDetect.html")
     app = BrowserDetect()
     app.onModuleLoad()
+    pyjd.run()

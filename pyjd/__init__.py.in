@@ -36,3 +36,7 @@ elif engine == 'hulahop':
     from hula import *
 elif engine == 'mshtml':
     from mshtml import *
+
+import importers
+importers._test_revamp()
+
