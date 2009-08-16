@@ -1,6 +1,9 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
+ * Added platform overrides system... to pyjd!  MSHTML, hulahop and pywebkitgtk
+   can now have their own platform-specific overrides.
+
  * Added debugger() to __pyjamas__
 
  * Added javascript inclusion via --include-static-js and __pyjamas__.include()
