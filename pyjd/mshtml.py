@@ -233,7 +233,8 @@ class EventCaller:
             try:
                 fn(self.handler._sender, Dispatch(args[0]), True)
             except:
-                print traceback.print_stack()
+                sys.stderr.write( traceback.print_exc() )
+                sys.stderr.flush()
 
 class EventHandler(object):
     def __init__(self, sender):
@@ -351,6 +352,19 @@ class Browser(EventSink):
 
     def addEventListener(self, node, event_name, event_fn):
         
+        rcvr = mshtmlevents._DispEventReceiver()
+        rcvr.dispmap = {0: event_fn}
+
+        print rcvr
+        rcvr.sender = node
+        print rcvr.sender
+        ifc = rcvr.QueryInterface(IDispatch)
+        print ifc
+        v = VARIANT(ifc)
+        print v
+        setattr(node, "on"+event_name, v)
+        return ifc
+
         rcvr = mshtmlevents.GetDispEventReceiver(MSHTML.HTMLElementEvents2, event_fn, "on%s" % event_name)
         rcvr.sender = node
         ifc = rcvr.QueryInterface(IDispatch)
@@ -402,9 +416,7 @@ class Browser(EventSink):
         self.already_initialised = True
 
         from __pyjamas__ import pygwt_processMetas, set_main_frame
-        #from __pyjamas__ import set_gtk_module
         set_main_frame(self)
-        #set_gtk_module(gtk)
 
         (pth, app) = os.path.split(self.application)
         if self.appdir:

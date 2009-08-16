@@ -56,13 +56,19 @@ def init():
     mf._addWindowEventListener("keydown", browser_event_cb)
     mf._addWindowEventListener("keypress", browser_event_cb)
 
+def _dispatchWindowEvent(sender, evt, useCap):
+    pass
+
 def _dispatchEvent(sender, evt, useCap):
     
-    try:
-        sender = get_main_frame().gobject_wrap(sender) # webkit HACK!
-        evt = get_main_frame().gobject_wrap(evt) # webkit HACK!
-    except:
-        pass
+    if evt is None:
+        evt = wnd().event
+    else:
+        try:
+            sender = get_main_frame().gobject_wrap(sender) # webkit HACK!
+            evt = get_main_frame().gobject_wrap(evt) # webkit HACK!
+        except:
+            pass
     listener = None
     curElem =  sender
     

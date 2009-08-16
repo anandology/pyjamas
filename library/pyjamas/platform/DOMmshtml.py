@@ -1,5 +1,8 @@
 
-def _dispatchEvent(sender, evt, useCap):
+
+def _dispatchWindowEvent(sender, event, useCap):
+    evt = wnd().event
+    print "_dispatchWindowEvent", sender, evt, evt.returnValue
     if evt.returnValue is None:
         evt.returnValue = True
         if not previewEvent(evt):
@@ -8,7 +11,7 @@ def _dispatchEvent(sender, evt, useCap):
     cap = getCaptureElement()
     listener = get_listener(cap)
     if cap and listener:
-        print "_dispatchEvent", cap, listener
+        print "_dispatchWindowEvent", cap, listener
         dispatchEvent(evt, cap, listener)
         evt.stopPropagation()
         return
@@ -57,6 +60,32 @@ def _dispatchEvent(sender, evt, useCap):
 #    doc().body.onblur        =
 #    doc().body.ondblclick    = $wnd.__dispatchEvent
 #    """)
+
+def init():
+    
+    mf = get_main_frame()
+    mf._addWindowEventListener("click", browser_event_cb)
+    mf._addWindowEventListener("change", browser_event_cb)
+    mf._addWindowEventListener("mouseout", browser_event_cb)
+    mf._addWindowEventListener("mousedown", browser_event_cb)
+    mf._addWindowEventListener("mouseup", browser_event_cb)
+    mf._addWindowEventListener("resize", browser_event_cb)
+    mf._addWindowEventListener("keyup", browser_event_cb)
+    mf._addWindowEventListener("keydown", browser_event_cb)
+    mf._addWindowEventListener("keypress", browser_event_cb)
+
+    body = doc().body
+
+    mf.addEventListener(element, "click", _dispatchWindowEvent)
+    mf.addEventListener(element, "mousedown", _dispatchWindowEvent)
+    mf.addEventListener(element, "mouseup", _dispatchWindowEvent)
+    mf.addEventListener(element, "mousemove", _dispatchWindowEvent)
+    mf.addEventListener(element, "keydown", _dispatchWindowEvent)
+    mf.addEventListener(element, "keyup", _dispatchWindowEvent)
+    mf.addEventListener(element, "keypress", _dispatchWindowEvent)
+    mf.addEventListener(element, "focus", _dispatchWindowEvent)
+    mf.addEventListener(element, "blur", _dispatchWindowEvent)
+    mf.addEventListener(element, "dblclick", _dispatchWindowEvent)
 
 def compare(elem1, elem2):
     if not elem1 and not elem2:
@@ -191,3 +220,4 @@ def eventGetKeyCode(evt):
     if hasattr(evt, "keyCode"):
         return evt.keyCode
     return 0
+
