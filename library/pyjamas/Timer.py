@@ -19,6 +19,7 @@ global timers
 timers = None
 
 def init():
+    global timers
     timers = []
 
 init()
