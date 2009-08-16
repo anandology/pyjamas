@@ -80,6 +80,21 @@ class PlatformParser:
 
         return os.path.join(os.path.dirname(file_name), self.platform_dir, platform_file_name)
 
+class TranslationError(Exception):
+    def __init__(self, msg, node, module_name=''):
+        if node:
+            lineno = node.lineno
+        else:
+            lineno = "Unknown"
+        self.msg = msg
+        self.node = node
+        self.module_name = module_name
+        self.lineno = lineno
+        self.message = "%s line %s:\n%s\n%s" % (module_name, lineno, msg, node)
+
+    def __str__(self):
+        return self.message
+
 def merge(module_name, tree1, tree2):
     for child in tree2.node:
         if isinstance(child, ast.Function):
