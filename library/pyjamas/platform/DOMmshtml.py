@@ -5,6 +5,14 @@ def _dispatchEvent(sender, evt, useCap):
         if not previewEvent(evt):
             return
 
+    cap = getCaptureElement()
+    listener = get_listener(cap)
+    if cap and listener:
+        print "_dispatchEvent", cap, listener
+        dispatchEvent(evt, cap, listener)
+        evt.stopPropagation()
+        return
+
     curElem = sender
     while curElem and not get_listener(curElem):
         curElem = curElem.parentElement
