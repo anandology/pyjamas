@@ -7,7 +7,6 @@ class TextBoxBase:
                 return -1
             return -tr.move("character", -65535)
         except:
-            print traceback.print_exc()
             return 0
 
     def getSelectionLength(self):
@@ -18,7 +17,6 @@ class TextBoxBase:
                 return 0
             return tr.text and len(tr.text) or 0
         except:
-            print traceback.print_exc()
             return 0
 
     def setSelectionRange(self, pos, length):
@@ -30,6 +28,5 @@ class TextBoxBase:
             tr.moveEnd('character', length)
             tr.select()
         except :
-            print traceback.print_exc()
             pass
 
