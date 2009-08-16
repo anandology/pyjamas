@@ -5,7 +5,9 @@ import sys
 from __pyjamas__ import JS
 
 global timeout_add
+global timeout_end
 timeout_add = None
+timeout_end = None
 
 # the following is needed because we are currently not able to override things
 # except functions and classes
@@ -44,13 +46,22 @@ class Timer:
         pass
 
     def notify(self, *args):
+        if not self.notify_fn:
+            return False
         if self.notify_fn.func_code.co_argcount == 2:
             self.notify_fn(self.timer_id)
         else:
             self.notify_fn()
+        return False
 
     def cancel(self):
-        print "Timer.cancel: TODO"
+        if not timeout_end:
+            print "TODO: cancel timer", self.timer_id
+            self.notify_fn = None # hmmm....
+            return
+        if self.timer_id is not None:
+            timeout_end(self.timer_id)
+            self.timer_id = None
 
     def run(self):
         pass

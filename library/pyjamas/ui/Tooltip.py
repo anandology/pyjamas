@@ -37,9 +37,9 @@ class Tooltip(PopupPanel):
         tooltip_hide_timer = Timer(self.hide_delay, self)
         PopupPanel.show(self)
 
-    def hide(self):
+    def hide(self, autoClosed=False):
         self.tooltip_show_timer.cancel()
-        PopupPanel.hide(self)
+        PopupPanel.hide(self, autoClosed)
 
     def onTimer(self, tooltip_id):
         global tooltip_hide_timer
