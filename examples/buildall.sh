@@ -38,4 +38,5 @@ fi
 (cd widgets; ./build.sh $options)
 (cd ajaxlibtest; ./build.sh $options)
 (cd xmldoc; ./build.sh $options)
+(cd lightout; ./build.sh $options)
 (cd employeeadmin; ./build.sh $options)
