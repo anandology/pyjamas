@@ -596,7 +596,7 @@ def walkChildren(elem):
 
 def isOrHasChild(parent, child):
     while child:
-        if parent == child:
+        if compare(parent, child):
             return True
         child = child.parentNode;
         if not child:
@@ -796,6 +796,7 @@ def dispatchEvent(event, element, listener):
 
 def previewEvent(evt):
     ret = True
+    print sEventPreviewStack
     if len(sEventPreviewStack) > 0:
         preview = sEventPreviewStack[len(sEventPreviewStack) - 1]
         

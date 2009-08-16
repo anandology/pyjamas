@@ -8,6 +8,9 @@ from ctypes import *
 import time
 import new
 
+# these three are required pre-imported, for pyjamas to work
+# with the pyjd imputil etc.  awful, i know...
+import timer 
 import encodings
 import encodings.cp437
 

@@ -1,8 +1,9 @@
 
 
-def _dispatchWindowEvent(sender, event, useCap):
+def _dispatchEvent(sender, event, useCap):
     evt = wnd().event
-    print "_dispatchWindowEvent", sender, evt, evt.returnValue
+    print "_dispatchEvent", sender, evt, evt.returnValue
+
     if evt.returnValue is None:
         evt.returnValue = True
         if not previewEvent(evt):
@@ -11,7 +12,7 @@ def _dispatchWindowEvent(sender, event, useCap):
     cap = getCaptureElement()
     listener = get_listener(cap)
     if cap and listener:
-        print "_dispatchWindowEvent", cap, listener
+        print "_dispatchEvent capture", cap, listener
         dispatchEvent(evt, cap, listener)
         evt.stopPropagation()
         return
@@ -64,28 +65,31 @@ def _dispatchWindowEvent(sender, event, useCap):
 def init():
     
     mf = get_main_frame()
-    mf._addWindowEventListener("click", browser_event_cb)
-    mf._addWindowEventListener("change", browser_event_cb)
-    mf._addWindowEventListener("mouseout", browser_event_cb)
-    mf._addWindowEventListener("mousedown", browser_event_cb)
-    mf._addWindowEventListener("mouseup", browser_event_cb)
-    mf._addWindowEventListener("resize", browser_event_cb)
-    mf._addWindowEventListener("keyup", browser_event_cb)
-    mf._addWindowEventListener("keydown", browser_event_cb)
-    mf._addWindowEventListener("keypress", browser_event_cb)
+    mf._addEventListener("click", browser_event_cb)
+    mf._addEventListener("change", browser_event_cb)
+    mf._addEventListener("mouseout", browser_event_cb)
+    mf._addEventListener("mousedown", browser_event_cb)
+    mf._addEventListener("mouseup", browser_event_cb)
+    mf._addEventListener("resize", browser_event_cb)
+    mf._addEventListener("keyup", browser_event_cb)
+    mf._addEventListener("keydown", browser_event_cb)
+    mf._addEventListener("keypress", browser_event_cb)
 
+    # this is somewhat cheating, but hey.  if someone
+    # ever tries to wrap body with a Widget, and attaches
+    # events to it, whoops...
     body = doc().body
 
-    mf.addEventListener(element, "click", _dispatchWindowEvent)
-    mf.addEventListener(element, "mousedown", _dispatchWindowEvent)
-    mf.addEventListener(element, "mouseup", _dispatchWindowEvent)
-    mf.addEventListener(element, "mousemove", _dispatchWindowEvent)
-    mf.addEventListener(element, "keydown", _dispatchWindowEvent)
-    mf.addEventListener(element, "keyup", _dispatchWindowEvent)
-    mf.addEventListener(element, "keypress", _dispatchWindowEvent)
-    mf.addEventListener(element, "focus", _dispatchWindowEvent)
-    mf.addEventListener(element, "blur", _dispatchWindowEvent)
-    mf.addEventListener(element, "dblclick", _dispatchWindowEvent)
+    mf.addEventListener(body, "click", _dispatchEvent)
+    mf.addEventListener(body, "mousedown", _dispatchEvent)
+    mf.addEventListener(body, "mouseup", _dispatchEvent)
+    mf.addEventListener(body, "mousemove", _dispatchEvent)
+    mf.addEventListener(body, "keydown", _dispatchEvent)
+    mf.addEventListener(body, "keyup", _dispatchEvent)
+    mf.addEventListener(body, "keypress", _dispatchEvent)
+    mf.addEventListener(body, "focus", _dispatchEvent)
+    mf.addEventListener(body, "blur", _dispatchEvent)
+    mf.addEventListener(body, "dblclick", _dispatchEvent)
 
 def compare(elem1, elem2):
     if not elem1 and not elem2:
@@ -173,9 +177,14 @@ def isOrHasChild(parent, child):
     return False
 
 def releaseCapture(elem):
+    global sCaptureElem
+    if sCaptureElem and compare(elem, sCaptureElem):
+        sCaptureElem = None
     elem.releaseCapture()
 
 def setCapture(elem):
+    global sCaptureElem
+    sCaptureElem = elem
     elem.setCapture()
 
 def setInnerText(elem, text):

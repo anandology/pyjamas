@@ -91,15 +91,17 @@ class PopupPanel(SimplePanel):
                             )
                     and (not self.modal or self._event_targets_popup(event))
                    )
-        elif type == "mousedown":
+        elif (   type == "mousedown"
+              or type == "blur"
+             ):
             if DOM.getCaptureElement() is not None:
                 return True
             if self.autoHide and not self._event_targets_popup(event):
                 self.hide(True)
                 return True
         elif (   type == "mouseup"
-              or type == "mousemove"
               or type == "click"
+              or type == "mousemove"
               or type == "dblclick"
              ):
             if DOM.getCaptureElement() is not None:
