@@ -8,6 +8,9 @@ from ctypes import *
 import time
 import new
 
+import encodings
+import encodings.cp437
+
 import _mshtml
 
 import win32con
@@ -23,11 +26,17 @@ from comtypes.client.dynamic import Dispatch
 #from win32com.client import *
 #cast = gencache.GetModuleForProgID('htmlfile')
 
+import comtypes.gen
+
 if not hasattr(sys, 'frozen'):
-    GetModule('atl.dll')
-    GetModule('shdocvw.dll')
-    GetModule('msxml2.dll')
-    GetModule('mshtml.tlb') 
+    _atl = GetModule('atl.dll')
+    _shdv = GetModule('shdocvw.dll')
+    _msxml2 = GetModule('msxml2.dll')
+    _mshtml = GetModule('mshtml.tlb') 
+
+from comtypes.gen import SHDocVw
+from comtypes.gen import MSXML2
+from comtypes.gen import MSHTML
 
 kernel32 = windll.kernel32
 user32 = windll.user32
@@ -39,9 +48,6 @@ from comtypes import IUnknown
 from comtypes.automation import VARIANT
 #from comtypes.client import GetEvents, ShowEvents
 import mshtmlevents 
-from comtypes.gen import SHDocVw
-from comtypes.gen import MSXML2
-from comtypes.gen import MSHTML
 
 kernel32 = windll.kernel32
 user32 = windll.user32

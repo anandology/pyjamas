@@ -15,16 +15,11 @@
 
 
 import sys
-from types import StringType
 import compiler
 from compiler import ast, syntax
 from compiler import misc # good grief, this doesn't look good
 import os
 import copy
-from cStringIO import StringIO
-import re
-import hashlib
-import logging
 import imp
 
 from compiler.pycodegen import ModuleCodeGenerator

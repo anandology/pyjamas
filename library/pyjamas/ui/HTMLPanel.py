@@ -45,7 +45,10 @@ class HTMLPanel(ComplexPanel):
         return "HTMLPanel_%d" % HTMLPanel_sUid
 
     def getElementById(self, element, id):
-        element_id = DOM.getAttribute(element, "id")
+        try:
+            element_id = DOM.getAttribute(element, "id")
+        except:
+            element_id = None
         if element_id is not None and element_id == id:
             return element
 
