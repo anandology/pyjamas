@@ -30,6 +30,7 @@ fi
 (cd gridedit; ./build.sh $options)
 (cd infohierarchy; ./build.sh $options)
 (cd jsobject; ./build.sh $options)
+(cd jsimport; ./build.sh $options)
 (cd showcase; python compile.py $options)
 (cd slideshow; ./build.sh $options)
 (cd splitpanel; ./build.sh $options)
@@ -40,3 +41,4 @@ fi
 (cd xmldoc; ./build.sh $options)
 (cd lightout; ./build.sh $options)
 (cd employeeadmin; ./build.sh $options)
+

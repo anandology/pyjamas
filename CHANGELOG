@@ -1,6 +1,8 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
+ * Added jsimport example (direct from kees's commit message :)
+
  * Added __pyjamas__.jsimport(path, mode, location)
 
  * remove dependency of pywin32 in pyjd MSHTML port.
