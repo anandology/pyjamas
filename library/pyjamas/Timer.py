@@ -18,6 +18,11 @@ if sys.platform not in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
 global timers
 timers = None
 
+def set_timer(interval, fn):
+    pass
+def kill_timer(timer):
+    pass
+
 def init():
     global timers
     timers = []

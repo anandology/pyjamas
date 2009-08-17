@@ -8,7 +8,7 @@ import new
 
 # these three are required pre-imported, for pyjamas to work
 # with the pyjd imputil etc.  awful, i know...
-import timer 
+import threading
 import encodings
 import encodings.cp437
 
