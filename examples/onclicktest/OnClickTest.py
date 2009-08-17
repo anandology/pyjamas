@@ -1,3 +1,5 @@
+import pyjd # dummy in pyjs
+
 from pyjamas.ui.Button import Button
 from pyjamas.ui.RootPanel import RootPanel
 from pyjamas import Window
@@ -23,5 +25,7 @@ class OnClickTest:
 
 
 if __name__ == '__main__':
+    pyjd.setup("./OnClickTest.html") # dummy in pyjs
     app = OnClickTest()
     app.onModuleLoad()
+    pyjd.run() # dummy in pyjs
