@@ -63,9 +63,9 @@ modules are there.
     ...                      source_tracking=False,
     ...                      line_tracking=False,
     ...                      store_source=False)
-    [...
+    ([...
 
-    ['x.z.y', 'x', 'x.z', 'x.z.p', 'a.b', 'a', 'a.b.c', 'z']
+    (['a', 'x.z.y', 'x', 'x.z', 'x.z.p', 'a.b', 'a.b.c', 'z'], set([]))
 
     >>> print file(out_file).read()
     /* start module: imports */
@@ -421,7 +421,7 @@ the override file.
     ...                      line_tracking=False,
     ...                      store_source=False)
     >>> deps
-    []
+    ([], set([]))
     >>> print file(out_file).read()
     /...('this is o1 override full')], 1);...
 

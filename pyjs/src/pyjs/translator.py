@@ -185,7 +185,7 @@ re_return = re.compile(r'\breturn\b')
 class __Pyjamas__(object):
     console = "console"
 
-    def JS(self, node):
+    def JS(self, translator, node):
         if len(node.args) != 1:
             raise TranslationError(
                 "JS function requires one argument",
@@ -199,21 +199,21 @@ class __Pyjamas__(object):
                 "JS function only support constant strings",
                 node.node)
 
-    def wnd(self, node):
+    def wnd(self, translator, node):
         if len(node.args) != 0:
             raise TranslationError(
                 "wnd function doesn't support arguments",
                 node.node)
         return '$wnd', False
 
-    def doc(self, node):
+    def doc(self, translator, node):
         if len(node.args) != 0:
             raise TranslationError(
                 "doc function doesn't support arguments",
                 node.node)
         return '$doc', False
 
-    def jsinclude(self, node):
+    def jsinclude(self, translator, node):
         if len(node.args) != 1:
             raise TranslationError(
                 "jsinclude function requires one argument",
@@ -229,10 +229,57 @@ class __Pyjamas__(object):
             return data, False
         else:
             raise TranslationError(
-                "jsinclude function only support constant strings",
+                "jsinclude function only supports constant strings",
                 node.node)
 
-    def debugger(self, node):
+    def jsimport(self, translator, node):
+        # jsimport(path, mode, location)
+        # mode = [default|static|dynamic] (default: depends on build argument -m)
+        # location = [early|middle|late] (only relevant for static)
+        if len(node.args) == 0 or len(node.args) > 3:
+            raise TranslationError(
+                "jsimport function requires at least one, and at most three arguments",
+                node.node)
+        for arg in node.args:
+            if not isinstance(arg, ast.Const):
+                raise TranslationError(
+                    "jsimport function only supports constant arguments",
+                node.node)
+        if not isinstance(node.args[0].value, str):
+            raise TranslationError(
+                "jsimport path argument must be a string",
+                node.node)
+        path = node.args[0].value
+        if len(node.args) < 2:
+            mode = 'default'
+        else:
+            if isinstance(node.args[1].value, str):
+                mode = node.args[1].value
+            else:
+                raise TranslationError(
+                    "jsimport path argument must be a string",
+                    node.node)
+            if not mode in ['default', 'static', 'dynamic']:
+                raise TranslationError(
+                    "jsimport mode argument must be default, static or dynamic",
+                node.node)
+        if len(node.args) < 3:
+            location = 'middle'
+        else:
+            if isinstance(node.args[2].value, str):
+                location = node.args[2].value
+            else:
+                raise TranslationError(
+                    "jsimport path argument must be a string",
+                    node.node)
+            if not location in ['early', 'middle', 'late']:
+                raise TranslationError(
+                    "jsimport location argument must be early, middle or late",
+                node.node)
+        translator.add_imported_js(path, mode, location)
+        return '', False
+
+    def debugger(self, translator, node):
         if len(node.args) != 0:
             raise TranslationError(
                 "debugger function doesn't support arguments",
@@ -663,6 +710,9 @@ class Translator:
         if len(names) > 0:
             return self.spacing() + "var %s;" % ','.join(names)
         return ''
+
+    def add_imported_js(self, path, mode, location):
+        self.imported_js.add((path, mode, location))
 
     def add_imported_module(self, importName):
         names = importName.split(".")
@@ -1298,7 +1348,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                 try:
                     raw_js = getattr(__pyjamas__, v.node.name)
                     if callable(raw_js):
-                        raw_js, has_js_return = raw_js(v)
+                        raw_js, has_js_return = raw_js(self, v)
                         if has_js_return:
                             self.has_js_return = True
                     return raw_js
@@ -2520,7 +2570,7 @@ def translate(sources, output_file, module_name=None,
                    store_source = store_source,
                   )
     output.close()
-    return t.imported_modules
+    return t.imported_modules, t.imported_js
 
 def merge(module_name, tree1, tree2, flags):
     if 'FULL_OVERRIDE' in flags:

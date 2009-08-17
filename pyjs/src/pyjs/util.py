@@ -42,3 +42,20 @@ def copytree_exists(src, dst, symlinks=False,
             errors.append((srcname, dstname, why))
     if errors:
         print errors
+
+def copy_exists(srcname, dstname, symlinks=False):
+    if not os.path.exists(srcname):
+        return
+    errors = []
+    try:
+        if symlinks and os.path.islink(srcname):
+            linkto = os.readlink(srcname)
+            os.symlink(linkto, dstname)
+        else:
+            shutil.copyfile(srcname, dstname)
+            shutil.copystat(srcname, dstname)
+    except (IOError, os.error), why:
+        errors.append((srcname, dstname, why))
+    if errors:
+        print errors
+

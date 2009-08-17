@@ -49,7 +49,8 @@ class BrowserLinker(linker.BaseLinker):
     def visit_start(self):
         super(BrowserLinker, self).visit_start()
         self.boilerplate_path = None
-        self.js_libs.append('_pyjs.js')
+        self.early_static_app_libs.append('_pyjs.js')
+        #self.js_libs.append('_pyjs.js')
         self.merged_public = set()
         self.app_files = {}
         self.renamed_libs = {}
@@ -90,6 +91,15 @@ class BrowserLinker(linker.BaseLinker):
                 util.copytree_exists(public_folder,
                                      self.output)
                 self.merged_public.add(dir_name)
+        for libs in [self.js_libs, self.dynamic_js_libs,
+                     self.static_js_libs, self.early_static_js_libs, self.late_static_js_libs]:
+            for lib in libs:
+                if not lib in self.merged_public:
+                    for path in self.path:
+                        if os.path.exists(lib) and os.path.isfile(lib):
+                            util.copy_exists(lib, os.path.join(self.output, os.path.basename(lib)))
+                            self.merged_public.add(lib)
+                            break
 
     def find_boilerplate(self, name):
         if not self.top_module_path:
@@ -116,45 +126,71 @@ class BrowserLinker(linker.BaseLinker):
         # TODO: cache busting
         template = self.read_boilerplate('all.cache.html')
         name_parts = [self.top_module, platform, 'cache.html']
-
         done = self.done[platform]
+        len_ouput_dir = len(self.output)+1
+
+        app_name = self.top_module
+        platform_name = platform.lower()
+        dynamic = 0,
+        app_headers = ''
+        available_modules = self.visited_modules[platform]
+        early_static_app_libs = [] + self.early_static_app_libs
+        static_app_libs = []
+        dynamic_app_libs = []
+        dynamic_js_libs = [] + self.dynamic_js_libs
+        static_js_libs = [] + self.static_js_libs
+        early_static_js_libs = [] + self.early_static_js_libs
+        late_static_js_libs = [] + self.late_static_js_libs
+        dynamic_modules = []
+
+        def static_code(libs, msg = None):
+            code = []
+            for lib in libs:
+                fname = lib
+                if not os.path.isfile(fname):
+                    fname = os.path.join(self.output, lib)
+                if not os.path.isfile(fname):
+                    raise RuntimeError('File not found %r' % lib)
+                if fname[len_ouput_dir:] == self.output:
+                    name = fname[len_ouput_dir:]
+                else:
+                    name = os.path.basename(lib)
+                if not msg is None:
+                    code.append("/* start %s: %s */" % (msg, name))
+                f = file(fname)
+                code.append(f.read())
+                if not msg is None:
+                    code.append("/* end %s */" % (name,))
+            return "\n".join(code)
+
+        def js_modname(path):
+            return 'js@'+os.path.basename(path)+'.'+hashlib.md5(path).hexdigest()
 
         if self.multi_file:
-            js_libs = list(self.js_libs) + list(self.js_static_libs)
-            for p in done:
-                js_libs.append(p[len(self.output)+1:])
-            app_code = ''
+            dynamic_js_libs += [m for m in list(self.js_libs) if not m in static_js_libs]
+            dynamic_app_libs = [m for m in done if not m in early_static_app_libs]
         else:
-            js_libs = self.js_libs
-            app_code = StringIO()
-            for p in self.js_static_libs:
-                f = file(p)
-                app_code.write("""
-/* start included javascript: %s */
-%s
-/* end %s */
-""" % (p, f.read(), p))
-                f.close()
-            for p in done:
-                f = file(p)
-                app_code.write(f.read())
-                f.close()
-            app_code = app_code.getvalue()
-        scripts = ['<script type="text/javascript" src="%s"></script>'%script \
-                   for script in js_libs]
-        app_body = '\n'.join(scripts)
+            static_js_libs += [m for m in list(self.js_libs) if not m in dynamic_js_libs]
+            static_app_libs = [m for m in done if not m in early_static_app_libs]
 
-        deps = []
-        file_contents = template % dict(
-            app_name = self.top_module,
-            early_app_libs = '',
-            app_libs = app_code,
-            app_body = app_body,
-            platform = platform.lower(),
-            available_modules = self.visited_modules[platform],
-            dynamic = 0,
-            app_headers = ''
-        )
+        import hashlib
+        dynamic_modules = available_modules + [js_modname(lib) for lib in dynamic_js_libs]
+        available_modules += early_static_app_libs + dynamic_modules
+        if len(dynamic_modules) > 0:
+            dynamic_modules = "['" + "','".join(dynamic_modules) + "']"
+        else:
+            dynamic_modules = "[]"
+        appscript = """<script type="text/javascript" src="%(path)s"></script>"""
+        jsscript = """<script type="text/javascript" src="%(path)s" onload="$pyjs.script_onload('%(modname)s')" onreadystatechange="$pyjs.script_onreadystate('%(modname)s')"></script>"""
+        dynamic_app_libs = '\n'.join([appscript % {'path': lib[len_ouput_dir:]} for lib in dynamic_app_libs])
+        dynamic_js_libs = '\n'.join([jsscript % {'path': lib, 'modname': js_modname(lib)} for lib in dynamic_js_libs])
+        early_static_app_libs = static_code(early_static_app_libs)
+        static_app_libs = static_code(static_app_libs)
+        early_static_js_libs = static_code(early_static_js_libs, "javascript lib")
+        static_js_libs = static_code(static_js_libs, "javascript lib")
+        late_static_js_libs = static_code(late_static_js_libs, "javascript lib")
+
+        file_contents = template % locals()
         if self.cache_buster:
             import hashlib
             md5 = hashlib.md5(file_contents).hexdigest()
@@ -306,7 +342,6 @@ def build_script():
                       platforms=app_platforms,
                       path=pyjs.path,
                       js_libs=options.js_includes,
-                      js_static_libs=options.js_static_includes,
                       translator_arguments=translator_arguments,
                       multi_file=options.multi_file,
                       cache_buster=options.cache_buster,
