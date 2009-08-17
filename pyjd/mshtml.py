@@ -296,6 +296,11 @@ class Browser(EventSink):
     def on_unload_callback(self, *args):
         PostQuitMessage(0)
 
+global timer_q
+timer_q = []
+
+WM_USER_TIMER = RegisterWindowMessage("Timer Notify")
+
 def MainWin(one_event):
 
     # Pump Messages
@@ -309,6 +314,13 @@ def MainWin(one_event):
         if res == 0:
             break 
 
+        if timer_q:
+            fn = timer_q.pop()
+            fn()
+
+        if msg.message == WM_USER_TIMER:
+            continue
+
         TranslateMessage(pMsg)
         DispatchMessage(pMsg)
 
@@ -319,6 +331,10 @@ def MainWin(one_event):
     
 global wv
 wv = None
+
+def add_timer_queue(fn):
+    timer_q.append(fn)
+    PostMessage(c_int(wv.hwnd), UINT(WM_USER_TIMER), WPARAM(0), LPARAM(0xffff))
 
 def is_loaded():
     return wv.already_initialised

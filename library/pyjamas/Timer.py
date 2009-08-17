@@ -52,6 +52,9 @@ class Timer:
         pass
 
     def notify(self, *args):
+        self._notify(*args)
+
+    def _notify(self, *args):
         if not self.notify_fn:
             return False
         if self.notify_fn.func_code.co_argcount == 2:
