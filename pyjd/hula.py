@@ -54,6 +54,18 @@ class Browser(WebView):
         print "_alert", txt
         #self.get_prompt_svc().alert(None, "Alert", txt)
 
+        def close(w):
+            dialog.destroy()
+        dialog = gtk.Dialog("Alert", None, gtk.DIALOG_DESTROY_WITH_PARENT)
+        label = gtk.Label(txt)
+        dialog.vbox.add(label)
+        label.show()
+        button = gtk.Button("OK")
+        dialog.action_area.pack_start (button, True, True, 0)
+        button.connect("clicked", close)
+        button.show()
+        dialog.run ()
+
     def get_prompt_svc(self):
 
         prompt_svc_cls = components.classes[ \

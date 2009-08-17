@@ -504,10 +504,9 @@ class WebBrowser(gtk.Window):
     def _javascript_script_alert_cb(self, view, frame, message):
 
         print "alert", message
-        return
+
         def close(w):
             dialog.destroy()
-        #win = GetRootWindow()
         dialog = gtk.Dialog("Alert", None, gtk.DIALOG_DESTROY_WITH_PARENT)
         #dialog.Modal = True;
         label = gtk.Label(message)
@@ -518,7 +517,6 @@ class WebBrowser(gtk.Window):
         button.connect("clicked", close)
         button.show()
         #dialog.Response += new ResponseHandler (on_dialog_response)
-        print dir(dialog)
         dialog.run ()
 
     def _alert(self, msg):

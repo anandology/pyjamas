@@ -1,4 +1,4 @@
-# This is the gtk-dependent Window module.
+# This is the pyjd Window module.
 # For the pyjamas/javascript version, see __browser__.pyjamas.Window
 
 """
@@ -8,7 +8,7 @@
 closingListeners = []
 resizeListeners = []
 
-from __pyjamas__ import JS, doc, wnd, get_gtk_module, get_main_frame
+from __pyjamas__ import JS, doc, wnd, get_main_frame
 from pyjamas import Location
 
 def init_listeners():
@@ -28,19 +28,6 @@ def removeWindowResizeListener(listener):
 
 def alert(txt):
     get_main_frame()._alert(txt)
-    gtk = get_gtk_module()
-
-    def close(w):
-        dialog.destroy()
-    dialog = gtk.Dialog("Alert", None, gtk.DIALOG_DESTROY_WITH_PARENT)
-    label = gtk.Label(txt)
-    dialog.vbox.add(label)
-    label.show()
-    button = gtk.Button("OK")
-    dialog.action_area.pack_start (button, True, True, 0)
-    button.connect("clicked", close)
-    button.show()
-    dialog.run ()
 
 def confirm(msg):
     return wnd().confirm(msg)
