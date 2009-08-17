@@ -176,9 +176,50 @@ The current release is 0.5.  Latest source code in development
 is available from sourceforge subversion,
 <a href="http://sourceforge.net/svn/?group_id=239074">here</a>.
 
+<h2>Developer advice, and setting up a development environment</h2>
+
+<p>
+Web application development can be tricky: it can come as a bit of a shock
+when compared to python app development to learn that web browsers do not
+come with <i>any</i> proper debugging assistance whatsoever, by default.
+You <b>will</b> need to install and/or enable a debugger in the browsers
+that you use:
+</p>
+
+<ul>
+<li /> For Firefox, install both Venkman and Firebug.
+<li /> For IE, install the "Microsoft Script Debugger".
+<li /> For Safari, go to the settings and enable "Development".
+<li /> Opera users, you are extremely lucky: opera has stack tracing by default.
+</ul>
+
+<p>
+You should also note that the Pyjamas compiler has a "-d" option which
+will enable a python-like stack trace when a javascript exception occurs.
+The amount of javascript generated can be FIVE times larger, so only enable
+this during development.
+</p>
+
+<p>
+Lastly, it is worth reiterating that Pyjamas-Desktop runs as pure python:
+you should give serious consideration to running the application under
+Pyjamas-Desktop alongside developing it for the browser.  The availability
+of python runtime stack traces and the simple fact that the standard python
+interpreter is much better at catching certain kinds of errors than 
+(brain-damaged) browsers has generally found to make life much much easier.
+</p>
+
 <h2>News</h2>
 
 <ul>
+<li /><b>17th August 2009</b> The MSHTML Pyjamas-Desktop port takes
+shape!  Various interesting technical challenges have been mostly
+overcome, to bring IE's engine to the mix.  This is <i>not</i> the
+same approach as, for example,
+<a href="http://www.appcelerator.com/appcelerator-platform/titanium-architecture/">Titanium</a>, which enables &lt;script type="text/python" /&gt;.
+The MSHTML port of Pyjamas Desktop actually embeds an IWebBrowser2
+Active-X instance into a Win32 window, provides access to the Document
+of the IWebBrowser2 using Python/COM, and goes from there.
 <li /><b>6th July 2009</b> Pyjamas compiles the Python version of
 <a href="http://trac.puremvc.org/PureMVC_Python/">PureMVC</a>.  Kees Bos
 improved the pyjamas compiler to the point where PureMVC would compile
