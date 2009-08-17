@@ -192,7 +192,7 @@ class Browser(EventSink):
 
         # Show Window
         cw = c_int(self.hwnd)
-        ShowWindow(cw, c_int(SW_SHOWNORMAL))
+        ShowWindow(cw, c_int(SW_SHOW))
         UpdateWindow(cw)
 
     def getDomDocument(self):
@@ -310,7 +310,7 @@ def MainWin(one_event):
             break 
 
         TranslateMessage(pMsg)
-        DispatchMessageA(pMsg)
+        DispatchMessage(pMsg)
 
         if one_event:
             break
