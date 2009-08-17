@@ -3,6 +3,10 @@
 
  * Added __pyjamas__.jsimport(path, mode, location)
 
+ * remove dependency of pywin32 in pyjd MSHTML port.
+
+ * improved event handling of pyjd MSHTML port.
+
  * Added platform overrides system... to pyjd!  MSHTML, hulahop and pywebkitgtk
    can now have their own platform-specific overrides.
 

@@ -27,6 +27,8 @@ Laszlo Krekacs - khiraly@gmail.com
 Stefan Schwarzer - <sschwarzer@sschwarzer.net>
 Radoslav Kirov
 Beni Kerniavsky
+Henk Punt
+
 
 
 Erik gets a special mention for the contribution of the "Showcase".
@@ -53,6 +55,8 @@ Radoslav created a couple of examples, lightout and processingjs
 
 James - thank you for kick-starting this project.
 
+Henk Punt, for pyjd/windows.py - this saved an enormous dependency
+(pywin32, at 5mb) for the MSHTML port.
 
 And of course, a huge amount of thanks goes to Google and the engineers
 there that produced GWT, on which pyjamas is originally based.

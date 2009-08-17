@@ -50,11 +50,10 @@ Detailed build instructions are available on http://pyjd.org
 3) - MSHTML (experimental!)
 
 For Windows users, all that's required, other than installing python
-and Internet Explorer, is two further packages: PyWin32 and Win32 comtypes.
+and Internet Explorer, is one further packages: Win32 "comtypes".
 
-They can be downloaded here:
+It can be downloaded here:
 * http://sourceforge.net/projects/comtypes/
-* http://sourceforge.net/projects/pywin32/
 
 The MSHTML version primarily works, but the differences between IE and
 other browser engines are shining through, load and clear!  Reports

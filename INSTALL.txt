@@ -23,7 +23,7 @@ For Pyjamas Desktop, you will need:
 * python-jsonrpc which can be downloaded from http://json-rpc.org
   if you wish to use JSONRPC.
 
-* PyWin32 and Win32 comtypes; or python-hulahop and python-xpcom, or a patched
+* Win32 comtypes; or python-hulahop and python-xpcom, or a patched
   version of pywebkitgtk and webkit-gobject
 
   These are for the MSHTML, XULrunner and Webkit ports of Pyjamas
@@ -32,7 +32,6 @@ For Pyjamas Desktop, you will need:
     Win32:
 
     * comtypes is available here: http://sourceforge.net/projects/comtypes/
-    * PyWin32 is here: http://sourceforge.net/projects/pywin32/
 
     XULrunner:
 
