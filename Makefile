@@ -30,6 +30,7 @@ debian-build:
 	         --exclude=debian \
 	         --exclude=./deb \
 	         --exclude=output \
+	         --exclude=PureMVC_Python* \
 	         --exclude=build \
 	         --exclude=./bin \
 	         --exclude=fckeditor \
