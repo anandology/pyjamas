@@ -1,5 +1,8 @@
 def set_timer(interval, fn):
-    return pyjd.threading.Timer(interval / 1000.0, fn)
+    t = pyjd.threading.Timer(interval / 1000.0, fn)
+    t.start()
+    return t
+
 def kill_timer(timer):
     timer.cancel()
 
