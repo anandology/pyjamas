@@ -1984,6 +1984,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 lhs = self._getattr(v, current_klass)
             elif isinstance(v.expr, ast.Subscript):
                 lhs = self._subscript(v.expr, current_klass) + "." + attr_name
+            elif isinstance(v.expr, ast.CallFunc):
+                lhs = self._callfunc(v.expr, current_klass) + "." + attr_name
             else:
                 raise TranslationError(
                     "unsupported type (in _assign)", v.expr, self.module_name)
