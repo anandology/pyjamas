@@ -29,7 +29,11 @@ def exc_info():
     le = JS('$pyjs.__last_exception__')
     if not le:
         return (None, None, None)
-    return (le.error.__class__, le.error, None)
+    if not hasattr(le.error, '__class__'):
+        cls = None
+    else:
+        cls = le.error.__class__
+    return (cls, le.error, None)
 
 def exc_clear():
     JS('$pyjs.__last_exception__ = null;')
