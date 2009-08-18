@@ -60,6 +60,10 @@ def load(url, onreadystatechange=None, on_load_fn=None, async=False):
     if onreadystatechange is None:
         def onreadystatechange(evnt):
             if req.readyState==4 and (req.status == 200 or req.status == 0):
+<<<<<<< HEAD:library/dynamic.py
+=======
+                debugger()
+>>>>>>> Added start of ajax/dynamic module: dynamic.py:library/dynamic.py
                 str = req.responseText
                 wnd().status = ('Loaded ' + url)
                 if not on_load_fn is None:
@@ -166,6 +170,10 @@ def ajax_eval(url, on_load_fn, async):
 
 __imported__ = {}
 def ajax_import(url, namespace=None, names=None):
+<<<<<<< HEAD:library/dynamic.py
+=======
+    debugger()
+>>>>>>> Added start of ajax/dynamic module: dynamic.py:library/dynamic.py
     if __imported__.has_key(url):
         module = __imported__[url]
     else:
@@ -183,11 +191,15 @@ $pyjs$moduleObject={};
 %s
 return $pyjs$moduleObject;
 })();""" % (req.responseText, "\n".join(name_getter))
+<<<<<<< HEAD:library/dynamic.py
         try:
             module = eval(script)
         except:
             e = sys.exc_info()
             raise AjaxError("Error in %s: %s" % (url, e[1]))
+=======
+        module = eval(script)
+>>>>>>> Added start of ajax/dynamic module: dynamic.py:library/dynamic.py
         __imported__[url] = module
     inject(module, namespace, names)
 
