@@ -45,4 +45,5 @@ fi
 (cd datefield; ./build.sh $options)
 (cd svgtest; ./build.sh $options)
 (cd canvasprocessing; ./build.sh $options)
+(cd toggle; ./build.sh $options)
 
