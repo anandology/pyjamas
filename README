@@ -26,8 +26,9 @@ Known bugs: http://code.google.com/p/pyjamas/issues
 Pyjamas-Desktop
 ---------------
 
-Pyjamas runs your application in a Web Browser (as javascript);Pyjamas-Desktop
-runs exactly the same python application on the Desktop (as python)
+Pyjamas runs your application in a Web Browser (as javascript);
+Pyjamas-Desktop runs exactly the same python application on the
+Desktop (as python)
 
     http://pyjd.org
 
@@ -35,7 +36,7 @@ Release 0.6 of Pyjamas also incorporates Pyjamas-Desktop directly into
 the Pyjamas Distribution.  To use Pyjamas-Desktop there are three choices,
 with more planned [MacOSX PyObjC; KDE's PyKHTML].
 
-1) - Gecko / XulRunner
+1) - XULRunner
 
 install hulahop and python-xpcom.  hulahop is distributed with
 both Debian and Ubuntu; python-xpcom is part of XULRunner and is
@@ -43,6 +44,10 @@ also distributed with both Debian and Ubuntu.  Other users should
 investigate the installation instructions for python-xpcom and
 hulahop for the operating system of their choice on the appropriate
 web sites.
+
+GNU/Linux, FreeBSD and other POSIX systems are strongly advised
+to use XULRunner for Pyjamas-Desktop: it is the most stable of the
+PyJD ports.
 
 2) - PyWebKitGtk
 
@@ -52,12 +57,13 @@ http://code.google.com/p/pywebkitgtk/issues/detail?id=13
 you will need a patched version of webkit:
 http://github.com/lkcl/webkit/16401.master
 
-Detailed build instructions are available on http://pyjd.org
+Detailed build instructions are available here:
+http://wiki.github.com/lkcl/webkit/helping-with-16401master
 
 3) - MSHTML (experimental!)
 
 For Windows users, all that's required, other than installing python
-and Internet Explorer, is one further packages: Win32 "comtypes".
+and Internet Explorer, is one further package: Win32 "comtypes".
 
 Win32 "comtypes" can be downloaded here:
 * http://sourceforge.net/projects/comtypes/
