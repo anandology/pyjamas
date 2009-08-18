@@ -1,0 +1,31 @@
+.on {
+  padding: 10px;
+  background-color: #C8C506;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.off {
+  padding: 10px;
+  background-color: #111;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.grid {
+    border-collapse:collapse;
+    /*border: 1px black;*/
+    padding: 0px;
+    margin: 0px;
+}
+
+#footer{
+	position:relative;
+	left:-100px;
+	text-align:right;
+	color:#555;
+	font:italic 10px Arial;
+	}
+
