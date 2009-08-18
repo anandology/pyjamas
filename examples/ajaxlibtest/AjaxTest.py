@@ -4,13 +4,10 @@ from pyjamas.ui.HTML import HTML
 from pyjamas import Window
 from pyjamas import DOM
 import pyjslib
-from __pyjamas__ import JS
+from __pyjamas__ import JS, doc
+import dynamic
 
 def greet(sender):
-
-    JS("head = document.getElementsByTagName('head')[0];")
-    html = DOM.getInnerHTML(head)
-    Window.alert("You should see test.cache.js at the end:\n" + html)
 
     JS("""
        test_fn();
@@ -26,11 +23,8 @@ class AjaxTest:
         RootPanel().add(b)
 
         # dynamically loads public/test.cache.js.
-        # note that this does NOT check that the module
-        # has actually loaded.  you will need to see e.g.
-        # pyjslib.import_wait for that.
 
-        pyjslib.import_module(None, None, "test")
+        dynamic.ajax_import("test.cache.js", names = ['test_fn'])
 
 if __name__ == '__main__':
     x = AjaxTest()
