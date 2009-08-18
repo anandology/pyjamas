@@ -148,7 +148,11 @@ def eval(str):
         str = "pyjs_execScript=" + str
         wnd().execScript(str)
         ret = wnd().pyjs_execScript
-        delattr(wnd(), 'pyjs_execScript')
+        try:
+            # fails for IE6
+            delattr(wnd(), 'pyjs_execScript')
+        except:
+            wnd().pyjs_execScript = None
         return ret
     from __javascript__ import eval
     return eval(str)
