@@ -33,3 +33,61 @@ From http://code.google.com/p/pyjamas/issues, for 0.6 release:
 
 49  Defect      __pygwt_onBadProperty is not defined        
 
+Python Builtins TODO
+---------------
+
+#234 from Beni Cherniavsky:
+
+Python builtins missing under pyjs:
+
+Easy to implement:
+    apply (somewhat deprecated)
+    basestring (String should do the job?)
+    bin (new in 2.6)
+    bytes (alias to str in 2.6)
+    globals
+    next
+    print (under from __future__ import print_function)
+    reduce
+    reversed
+    sorted
+    zip
+
+Requive work to implement:
+    buffer (deprecated, irrelevant)
+    bytearray (new in 2.6)
+    coerce (somewhat deprecated)
+    complex
+    format
+    frozenset
+    id
+    intern
+    iter
+    locals
+    long
+    property
+    set
+    unichr
+    unicode
+    vars
+    xrange
+    zip
+
+Easy but not needed without interactive prompt:
+    copyright
+    credits
+    exit
+    help
+    license
+    quit
+
+Very hard / impossible within PyJS:
+    compile [lkcl: can be done with skulpt]
+    eval (very hard) [lkcl: can be done with skulpt]
+    execfile (very hard)
+    file
+    input
+    open
+    raw_input
+    reload
+
