@@ -24,13 +24,13 @@ def compare(elem1, elem2):
 
 def eventGetButton(evt):
     JS("""
-    var button = evt.button;
-    if(button == 0) {
-        return 1;
-    } else if (button == 1) {
+    var button = evt.which;
+    if(button == 2) {
         return 4;
+    } else if (button == 3) {
+        return 2;
     } else {
-        return button;
+        return button || 0;
     }
     """)
 

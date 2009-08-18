@@ -24,7 +24,7 @@ class Toggle:
         self.image_down = Image("./images/logo.png")
         self.image_down3 = Image("./images/logo.png")
         self.toggle = ToggleButton(self.image_up, self.image_down, self)
-        self.toggle2 = ToggleButton("up", "down")
+        self.toggle2 = ToggleButton("up", "down", getattr(self, "onToggleUD"))
         self.push = PushButton(self.image_up3, self.image_down3)
         
         self.vpanel = VerticalPanel()
@@ -42,6 +42,9 @@ class Toggle:
         RootPanel().add(self.vpanel)
         self.i = False
         
+    def onToggleUD(self, sender):
+            self.label.setText(" Toggle2 isdown: "+str(self.toggle2.isDown()))
+
     def onClick(self, sender):
         if sender == self.button:
             if self.i: 

@@ -79,3 +79,25 @@ def getAbsoluteTop(elem):
     }
     return top;
     """)
+
+def eventGetButton(evt):
+    JS("""
+    var button = evt.which;
+    if(button == 2) {
+        return 4;
+    } else if (button == 3) {
+        return 2;
+    } else {
+        return button || 0;
+    }
+    """)
+
+def buttonClick(elem):
+    JS("""
+        var evt = $doc.createEvent('MouseEvents');
+        evt.initMouseEvent('click', true, true, null, 1, 0,
+                    0, 0, 0, false, false, false, false, 0, null);
+
+        elem.dispatchEvent(evt);
+    """)
+

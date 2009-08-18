@@ -16,8 +16,8 @@
     This module contains flags and integer values used by the event system.
 """
 
-BUTTON_LEFT   = 0
-BUTTON_MIDDLE = 1
+BUTTON_LEFT   = 1
+BUTTON_MIDDLE = 4
 BUTTON_RIGHT  = 2
 
 ONBLUR        = 0x01000
