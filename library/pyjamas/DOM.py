@@ -72,17 +72,17 @@ def _dispatchEvent(sender, evt, useCap):
     listener = None
     curElem =  sender
     
-    print "_dispatchEvent", sender, evt, evt.type
+    #print "_dispatchEvent", sender, evt, evt.type
     cap = getCaptureElement()
     listener = get_listener(cap)
     if cap and listener:
-        print "_dispatchEvent", cap, listener
+        #print "_dispatchEvent", cap, listener
         dispatchEvent(evt, cap, listener)
         evt.stopPropagation()
         return
 
     while curElem and not get_listener(curElem):
-        print "no parent listener", curElem, getParent(curElem)
+        #print "no parent listener", curElem, getParent(curElem)
         curElem = getParent(curElem)
     if curElem and getNodeType(curElem) != 1:
         curElem = None
@@ -123,7 +123,7 @@ def browser_event_cb(view, event, from_window):
         event = get_main_frame().gobject_wrap(event) # webkit HACK!
     except:
         pass
-    print "browser_event_cb", event
+    #print "browser_event_cb", event
     et = eventGetType(event)
     #print "browser_event_cb", event, et
     if et == "resize":
@@ -140,7 +140,7 @@ def browser_event_cb(view, event, from_window):
 def _dispatchCapturedEvent(event):
 
     if not previewEvent(event):
-        print "dce, stop propagation"
+        #print "dce, stop propagation"
         event.stopPropagation()
         eventPreventDefault(event)
         return False
@@ -796,7 +796,7 @@ def dispatchEvent(event, element, listener):
 
 def previewEvent(evt):
     ret = True
-    print sEventPreviewStack
+    #print sEventPreviewStack
     if len(sEventPreviewStack) > 0:
         preview = sEventPreviewStack[len(sEventPreviewStack) - 1]
         
@@ -820,7 +820,7 @@ def dispatchEventImpl(event, element, listener):
     if element == sCaptureElem:
         if eventGetType(event) == "losecapture":
             sCaptureElem = None
-    print "dispatchEventImpl", listener, eventGetType(event)
+    #print "dispatchEventImpl", listener, eventGetType(event)
     prevCurrentEvent = currentEvent
     currentEvent = event
     listener.onBrowserEvent(event)
