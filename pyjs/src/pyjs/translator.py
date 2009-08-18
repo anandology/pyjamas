@@ -422,7 +422,7 @@ class Translator:
         self.store_source = store_source
 
         self.imported_modules = []
-        self.imported_js = set()
+        self.imported_js = []
         self.local_prefix = None
         self.track_lines = {}
         self.stacksize_depth = 0
@@ -712,7 +712,7 @@ class Translator:
         return ''
 
     def add_imported_js(self, path, mode, location):
-        self.imported_js.add((path, mode, location))
+        self.imported_js.append((path, mode, location))
 
     def add_imported_module(self, importName):
         names = importName.split(".")
@@ -2859,9 +2859,6 @@ class AppTranslator:
         for module in t.imported_modules:
             if module not in self.library_modules:
                 self.library_modules.append(module)
-                #imported_js.update(set(t.imported_js))
-                #imported_modules_str += self._translate(
-                #    module, False, debug=debug, imported_js=imported_js)
 
         return imported_modules_str + module_str
 
@@ -2870,12 +2867,12 @@ class AppTranslator:
                   library_modules=[]):
         app_code = StringIO()
         lib_code = StringIO()
-        imported_js = set()
+        imported_js = []
         self.library_modules = []
         self.overrides = {}
         for library in library_modules:
             if library.endswith(".js"):
-                imported_js.add(library)
+                imported_js.append(library)
                 continue
             self.library_modules.append(library)
             if self.verbose:
