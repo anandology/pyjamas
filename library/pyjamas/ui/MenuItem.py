@@ -42,7 +42,6 @@ class MenuItem(UIObject):
         self.subMenu = None
 
         self.setElement(DOM.createTD())
-        self.sinkEvents(Event.ONCLICK | Event.ONMOUSEOVER | Event.ONMOUSEOUT)
 
         kwargs['SelectionStyle'] = False
         if asHTML:
@@ -58,6 +57,7 @@ class MenuItem(UIObject):
         if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-MenuItem"
 
         UIObject.__init__(self, **kwargs)
+        self.sinkEvents(Event.ONCLICK | Event.ONMOUSEOVER | Event.ONMOUSEOUT)
 
     def getCommand(self):
         return self.command
