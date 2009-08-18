@@ -76,7 +76,12 @@ class FormPanel(SimplePanel):
 
         SimplePanel.__init__(self, element, **kwargs)
 
-        self.sinkEvents(Event.ONLOAD)
+        try:
+            self.sinkEvents(Event.ONLOAD)
+        except:
+            # MSHTML doesn't have form.onload,
+            # it has onreadystatechange.
+            pass
 
     def addFormHandler(self, handler):
         self.formHandlers.append(handler)
@@ -86,7 +91,10 @@ class FormPanel(SimplePanel):
 
     # FormPanelImpl.getEncoding
     def getEncoding(self):
-        return self.getElement().enctype
+        elem = self.getElement()
+        if hasattr(elem, 'enctype'):
+            return elem.enctype
+        return elem.encoding
 
     def getMethod(self):
         return DOM.getAttribute(self.getElement(), "method")
@@ -154,7 +162,8 @@ class FormPanel(SimplePanel):
     # FormPanelImpl.setEncoding
     def setEncoding(self, encodingType):
         form = self.getElement()
-        form.enctype = encodingType
+        if hasattr(form, 'enctype'):
+            form.enctype = encodingType
         form.encoding = encodingType
 
     def setMethod(self, method):
