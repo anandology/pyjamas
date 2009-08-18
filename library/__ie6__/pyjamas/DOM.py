@@ -71,24 +71,42 @@ def eventToString(evt):
     return "[object Event]";
     """)
 
+def getBodyOffsetTop():
+    JS("""
+    return $doc.body.parentElement.clientTop;
+    """)
+
+def getBodyOffsetLeft():
+    JS("""
+    return $doc.body.parentElement.clientLeft;
+    """)
+
 def getAbsoluteLeft(elem):
     JS("""
-    var scrollLeft = $doc.documentElement.scrollLeft;
-    if(scrollLeft == 0){
-        scrollLeft = $doc.body.scrollLeft
+    // getBoundingClientRect() throws a JS exception if the elem is not attached
+    // to the document, so we wrap it in a try/catch block
+    var zoomMultiple = $doc.body.parentElement.offsetWidth / 
+                       $doc.body.offsetWidth;
+    try {
+        return Math.floor((elem.getBoundingClientRect().left / zoomMultiple) +
+                            $doc.body.parentElement.scrollLeft );
+    } catch (e) {
+        return 0;
     }
-    
-    return (elem.getBoundingClientRect().left + scrollLeft) - 2;
     """)
 
 def getAbsoluteTop(elem):
     JS("""
-    var scrollTop = $doc.documentElement.scrollTop;
-    if(scrollTop == 0){
-        scrollTop = $doc.body.scrollTop
+    // getBoundingClientRect() throws a JS exception if the elem is not attached
+    // to the document, so we wrap it in a try/catch block
+    var zoomMultiple = $doc.body.parentElement.offsetWidth / 
+                       $doc.body.offsetWidth;
+    try {
+        return Math.floor((elem.getBoundingClientRect().top / zoomMultiple) +
+                            $doc.body.parentElement.scrollTop );
+    } catch (e) {
+        return 0;
     }
-    
-    return (elem.getBoundingClientRect().top +  scrollTop) - 2;
     """)
 
 

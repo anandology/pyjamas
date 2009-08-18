@@ -134,6 +134,11 @@ class PopupPanel(SimplePanel):
         if top < 0:
             top = 0
 
+        # Account for the difference between absolute position and the
+        # body's positioning context.
+        left -= DOM.getBodyOffsetLeft()
+        top -= DOM.getBodyOffsetTop()
+
         element = self.getElement()
         DOM.setStyleAttribute(element, "left", "%dpx" % left)
         DOM.setStyleAttribute(element, "top", "%dpx" % top)

@@ -14,28 +14,68 @@ def toString(elem):
 
 def getAbsoluteLeft(elem):
     JS("""
-    var left = 0;
-    while (elem) {
-        left += elem.offsetLeft - elem.scrollLeft;
-    
-        var parent = elem.offsetParent;
-        if (parent && (parent.tagName == 'BODY') && (elem.style.position == 'absolute'))
-            break;
-        elem = parent;
+    // Unattached elements and elements (or their ancestors) with style
+    // 'display: none' have no offsetLeft.
+    if (elem.offsetLeft == null) {
+      return 0;
     }
-    return left + $doc.body.scrollLeft;
+
+    var left = 0;
+    var curr = elem.parentNode;
+    if (curr) {
+      // This intentionally excludes body which has a null offsetParent.
+      while (curr.offsetParent) {
+        left -= curr.scrollLeft;
+        curr = curr.parentNode;
+      }
+    }
+    
+    while (elem) {
+      left += elem.offsetLeft;
+
+      // Safari bug: a top-level absolutely positioned element includes the
+      // body's offset position already.
+      var parent = elem.offsetParent;
+      if (parent && (parent.tagName == 'BODY') &&
+          (elem.style.position == 'absolute')) {
+        break;
+      }
+
+      elem = parent;
+    }
+    return left;
     """)
 
 def getAbsoluteTop(elem):
     JS("""
-    var top = 0;
-    while (elem) {
-        top += elem.offsetTop - elem.scrollTop;
-    
-        var parent = elem.offsetParent;
-        if (parent && (parent.tagName == 'BODY') && (elem.style.position == 'absolute'))
-            break;
-        elem = parent;
+    // Unattached elements and elements (or their ancestors) with style
+    // 'display: none' have no offsetTop.
+    if (elem.offsetTop == null) {
+      return 0;
     }
-    return top + $doc.body.scrollTop;
+
+    var top = 0;
+    var curr = elem.parentNode;
+    if (curr) {
+      // This intentionally excludes body which has a null offsetParent.
+      while (curr.offsetParent) {
+        top -= curr.scrollTop;
+        curr = curr.parentNode;
+      }
+    }
+    
+    while (elem) {
+      top += elem.offsetTop;
+
+      // Safari bug: a top-level absolutely positioned element includes the
+      // body's offset position already.
+      var parent = elem.offsetParent;
+      if (parent && (parent.tagName == 'BODY') &&
+          (elem.style.position == 'absolute')) {
+        break;
+      }
+
+      elem = parent;
+    }
+    return top;
     """)

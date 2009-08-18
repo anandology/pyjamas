@@ -1,6 +1,10 @@
                     Changes made to Pyjamas since 0.5p1
                     -----------------------------------
 
+ * Resolved getAbsoluteTop and getAbsoluteLeft in pyjd hulahop, pyjd
+   pywebkitgtk, Safari, Mozilla (including 3.5), webkit but NOT IE6
+   and NOT pyjd MSHTML.
+
  * Added jsimport example (direct from kees's commit message :)
 
  * Added __pyjamas__.jsimport(path, mode, location)

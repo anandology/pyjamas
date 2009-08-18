@@ -65,6 +65,7 @@ def getAbsoluteLeft(elem):
         // Please note, their implementation has 1px offset.
 
         var left = Math.ceil(elem.getBoundingClientRect().left);
+        return left + elem.ownerDocument.getViewportElement().scrollLeft;
     } catch (e) {
         var left = $doc.getBoxObjectFor(elem).x;
     }
@@ -107,6 +108,7 @@ def getAbsoluteTop(elem):
     try {
         // Firefox 3 expects getBoundingClientRect
         var top = Math.ceil(elem.getBoundingClientRect().top);
+        return top + elem.ownerDocument.getViewportElement().scrollTop;
     } catch (e) {
         var top = $doc.getBoxObjectFor(elem).y;
     }

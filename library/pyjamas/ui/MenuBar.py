@@ -149,9 +149,13 @@ class MenuBar(Widget):
         self.popup.addPopupListener(self)
 
         if self.vertical:
-            self.popup.setPopupPosition(item.getAbsoluteLeft() + item.getOffsetWidth(), item.getAbsoluteTop())
+            self.popup.setPopupPosition(self.getAbsoluteLeft() + 
+                                        self.getOffsetWidth() - 1,
+                                        item.getAbsoluteTop())
         else:
-            self.popup.setPopupPosition(item.getAbsoluteLeft(), item.getAbsoluteTop() + item.getOffsetHeight())
+            self.popup.setPopupPosition(item.getAbsoluteLeft(),
+                   self.getAbsoluteTop() +
+                   self.getOffsetHeight() - 1)
 
         self.shownChildMenu = item.getSubMenu()
         sub_menu = item.getSubMenu()

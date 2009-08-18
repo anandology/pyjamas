@@ -338,29 +338,29 @@ def iframeGetSrc(elem):
 
 def getAbsoluteLeft(elem):
     left = 0
+    curr = elem
+    while curr.offsetParent:
+        left -= curr.scrollLeft
+        curr = curr.parentNode
+
     while elem:
         left += elem.offsetLeft - elem.scrollLeft;
-        parent = elem.offsetParent;
-        if parent and parent.tagName == 'BODY' and \
-            hasattr(elem, 'style') and \
-            getStyleAttribute(elem, 'position') == 'absolute':
-            break
-        elem = parent
+        elem = elem.offsetParent;
     
-    return left + doc().body.scrollLeft;
+    return left
 
 def getAbsoluteTop(elem):
     top = 0
+    curr = elem
+    while curr.offsetParent:
+        top -= curr.scrollTop
+        curr = curr.parentNode
+
     while elem:
         top += elem.offsetTop - elem.scrollTop;
-        parent = elem.offsetParent;
-        if parent and parent.tagName == 'BODY' and \
-            hasattr(elem, 'style') and \
-            getStyleAttribute(elem, 'position') == 'absolute':
-            break
-        elem = parent
+        elem = elem.offsetParent;
     
-    return top + doc().body.scrollTop;
+    return top 
 
 def getAttribute(elem, attr):
     mf = get_main_frame()
@@ -839,6 +839,11 @@ def insertListItem(select, item, value, index):
     else:
         insertChild(select, option, index)
 
+def getBodyOffsetTop():
+    return 0
+
+def getBodyOffsetLeft():
+    return 0
 
 
 if sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
