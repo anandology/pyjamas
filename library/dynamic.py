@@ -130,7 +130,7 @@ def activate_javascript(txt):
     fileref.text = txt
     fileref.type = "text/javascript"
     fileref.language = "javascript"
-    #fileref.defer = true
+    #fileref.defer = True
 
     #debug = DOM.createElement('pre')
     #debug.innerHTML = 'test'
@@ -138,7 +138,7 @@ def activate_javascript(txt):
     #var bodyels = doc().getElementsByTagName("body")
     #bodyels[bodyels.length-1].appendChild(debug)
 
-    fileref = fileref.cloneNode(true)
+    fileref = fileref.cloneNode(True)
 
     doc().getElementsByTagName("head").item(0).appendChild(fileref)
 
@@ -177,6 +177,7 @@ def ajax_import(url, namespace=None, names=None):
         for name in names:
             name_getter.append("$pyjs$moduleObject['%s'] = %s;" % (name, name))
         
+        debugger()
         script = """(function ( ) {
 $pyjs$moduleObject={};
 %s;
@@ -314,7 +315,7 @@ def ajax_dlink(idname, url, on_load_fn):
 
     xhtoj = createHttpRequest()
     xhtoj.onreadystatechange = onreadystatechange
-    xhtoj.open("GET", url , true )
+    xhtoj.open("GET", url , True )
     xhtoj.send("")
 
     return 0
