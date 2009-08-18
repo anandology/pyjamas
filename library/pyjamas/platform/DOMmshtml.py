@@ -17,7 +17,6 @@ def _dispatchEvent(sender, event, useCap):
     if cap and listener:
         print "_dispatchEvent capture", cap, listener
         dispatchEvent(evt, cap, listener)
-        evt.stopPropagation()
         return
 
     curElem = sender
