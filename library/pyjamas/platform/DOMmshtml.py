@@ -133,14 +133,14 @@ def getAbsoluteTop(elem):
 
 
 def getChild(elem, index):
-    return elem.children[index]
+    return elem.children.item(index)
 
 def getChildCount(elem):
     return elem.children.length
 
 def getChildIndex(parent, child):
     for i in range(parent.children.length):
-        if child.uniqueID == parent.children[i].uniqueID:
+        if child.uniqueID == parent.children.item(i).uniqueID:
             return i
     return -1
 
@@ -160,7 +160,7 @@ def insertChild(parent, child, index):
     if index == parent.children.length:
         parent.appendChild(child)
     else:
-        parent.insertBefore(child, parent.children[index])
+        parent.insertBefore(child, parent.children.item(index))
 
 def insertListItem(select, text, value, index):
     newOption = doc().createElement("Option")

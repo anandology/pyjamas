@@ -1,4 +1,4 @@
-class TextArea:
+class TextArea(TextBoxBase):
     def getCursorPos(self):
         try :
             elem = self.getElement()

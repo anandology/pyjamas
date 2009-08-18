@@ -1,4 +1,4 @@
-class TextBoxBase:
+class TextBoxBase(FocusWidget):
     def getCursorPos(self):
         try :
             elem = self.getElement()
