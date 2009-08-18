@@ -23,8 +23,6 @@ from comtypes.automation import IDispatch, VARIANT
 from comtypes.client import wrap, GetModule
 from comtypes.client.dynamic import Dispatch
 
-import mshtmlevents 
-
 import comtypes.gen
 
 if not hasattr(sys, 'frozen'):
@@ -38,6 +36,9 @@ from comtypes.gen import MSXML2
 from comtypes.gen import MSHTML
 
 atl = windll.atl                  # If this fails, you need atl.dll
+
+# do this after gen stuff, above
+import mshtmlevents 
 
 class EventSink(object):
     # some DWebBrowserEvents
