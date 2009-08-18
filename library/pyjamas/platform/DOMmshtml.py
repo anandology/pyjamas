@@ -67,15 +67,15 @@ def _dispatchEvent(sender, event, useCap):
 def init():
     
     mf = get_main_frame()
-    mf._addEventListener("click", browser_event_cb)
-    mf._addEventListener("change", browser_event_cb)
-    mf._addEventListener("mouseout", browser_event_cb)
-    mf._addEventListener("mousedown", browser_event_cb)
-    mf._addEventListener("mouseup", browser_event_cb)
-    mf._addEventListener("resize", browser_event_cb)
-    mf._addEventListener("keyup", browser_event_cb)
-    mf._addEventListener("keydown", browser_event_cb)
-    mf._addEventListener("keypress", browser_event_cb)
+    mf._addWindowEventListener("click", browser_event_cb)
+    mf._addWindowEventListener("change", browser_event_cb)
+    mf._addWindowEventListener("mouseout", browser_event_cb)
+    mf._addWindowEventListener("mousedown", browser_event_cb)
+    mf._addWindowEventListener("mouseup", browser_event_cb)
+    mf._addWindowEventListener("resize", browser_event_cb)
+    mf._addWindowEventListener("keyup", browser_event_cb)
+    mf._addWindowEventListener("keydown", browser_event_cb)
+    mf._addWindowEventListener("keypress", browser_event_cb)
 
     # this is somewhat cheating, but hey.  if someone
     # ever tries to wrap body with a Widget, and attaches
