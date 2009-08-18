@@ -8,12 +8,12 @@ class FormPanel(SimplePanel):
             self._onload_listener = mf.addEventListener(iframe, "readystatechange",
                                                         self._onload)
 
-        self._onsubmit_listener = mf.addEventListener(form, "onsubmit",
+        self._onsubmit_listener = mf.addEventListener(form, "submit",
                                                     self._onsubmit)
 
     # FormPanelImpl.unhookEvents
     def unhookEvents(self, iframe, form):
         # these might be wrong, need testing.
         iframe.removeEventListener("readystatechange", self._onload_listener, True)
-        form.removeEventListener("onsubmit", self._onsubmit_listener, True)
+        form.removeEventListener("submit", self._onsubmit_listener, True)
 
