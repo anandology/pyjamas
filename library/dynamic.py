@@ -2,10 +2,11 @@
 # Warning: this is an alpha module and might be removed/renamed in
 # later pyjamas versions
 #
-from __pyjamas__ import wnd, doc
+from __pyjamas__ import wnd, doc, JS
 from __javascript__ import ActiveXObject, XMLHttpRequest
 from pyjamas import DOM
 from __pyjamas__ import debugger
+import sys
 
 
 class AjaxError(RuntimeError):
@@ -182,7 +183,11 @@ $pyjs$moduleObject={};
 %s
 return $pyjs$moduleObject;
 })();""" % (req.responseText, "\n".join(name_getter))
-        module = eval(script)
+        try:
+            module = eval(script)
+        except:
+            e = sys.exc_info()
+            raise AjaxError("Error in %s: %s" % (url, e[1]))
         __imported__[url] = module
     inject(module, namespace, names)
 
