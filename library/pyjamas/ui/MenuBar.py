@@ -83,7 +83,6 @@ class MenuBar(Widget):
         Widget.onBrowserEvent(self, event)
 
         item = self.findItem(DOM.eventGetTarget(event))
-        print "item", item, DOM.eventGetType(event)
         if item is None:
             return False
 
