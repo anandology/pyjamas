@@ -14,5 +14,5 @@ class FormPanel(SimplePanel):
     # FormPanelImpl.unhookEvents
     def unhookEvents(self, iframe, form):
         iframe.onreadystatechange = None
-        iframe.onsubmit = None
+        form.onsubmit = None
 
