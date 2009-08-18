@@ -70,7 +70,7 @@ class FocusWidget(Widget):
         self.keyboardListeners.remove(listener)
 
     def setAccessKey(self, key):
-        DOM.setAttribute(self.getElement(), "accessKey", "" + key)
+        DOM.setAttribute(self.getElement(), "accessKey", str(key))
 
     def setEnabled(self, enabled):
         DOM.setBooleanAttribute(self.getElement(), "disabled", not enabled)

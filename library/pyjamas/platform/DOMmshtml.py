@@ -1,7 +1,10 @@
 
 
 def _dispatchEvent(sender, event, useCap):
-    evt = wnd().event
+    if not event:
+        evt = wnd().event
+    else:
+        evt = event
     print "_dispatchEvent", sender, evt, evt.returnValue
 
     if evt.returnValue is None:

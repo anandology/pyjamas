@@ -224,13 +224,9 @@ class Browser(EventSink):
         rcvr = mshtmlevents._DispEventReceiver()
         rcvr.dispmap = {0: event_fn}
 
-        print rcvr
         rcvr.sender = node
-        print rcvr.sender
         ifc = rcvr.QueryInterface(IDispatch)
-        print ifc
         v = VARIANT(ifc)
-        print v
         setattr(node, "on"+event_name, v)
         return ifc
 
