@@ -59,7 +59,6 @@ def load(url, onreadystatechange=None, on_load_fn=None, async=False):
     if onreadystatechange is None:
         def onreadystatechange(evnt):
             if req.readyState==4 and (req.status == 200 or req.status == 0):
-                debugger()
                 str = req.responseText
                 wnd().status = ('Loaded ' + url)
                 if not on_load_fn is None:
@@ -166,7 +165,6 @@ def ajax_eval(url, on_load_fn, async):
 
 __imported__ = {}
 def ajax_import(url, namespace=None, names=None):
-    debugger()
     if __imported__.has_key(url):
         module = __imported__[url]
     else:
