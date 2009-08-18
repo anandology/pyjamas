@@ -1,32 +1,39 @@
 Current Release: 0.6
 ---------------
 
-A third alpha release is being done due to the large number of contributions:
-over 125 items are in the CHANGELOG since the 0.5p1 stable release.
-The TODO list is now officially cleared: this is likely to be the last
-prerelease.  Thank you to everyone who's helped highlight issues.
+With over 140 items in the CHANGELOG since the 0.5p1 stable release,
+Pyjamas 0.6 is finally out.  Thank you to everyone who's helped
+highlight issues.
 
 Pyjamas
 -------
 
 Pyjamas is a port of Google Web Toolkit to Python, and thus enables
-the development of AJAX applications in Python.
+the development of Rich Media AJAX applications in Python, with no
+need for special browser plugins.  Pyjamas contains a stand-alone
+python-to-javascript compiler, and also a Widget Set API that looks
+very similar to Desktop Widget Set APIs (such as PyQT4 or PyGTK2).
 
 For more information, see:
 
     http://pyjs.org
+    http://pyjs.org/FAQ.html
+    http://pyjs.org/features.html
+
+Known bugs: http://code.google.com/p/pyjamas/issues
+            #227, #228, #229, #230 and #232
 
 Pyjamas-Desktop
 ---------------
 
-Pyjamas runs your application in a Web Browser (as javascript); Pyjamas-Desktop
+Pyjamas runs your application in a Web Browser (as javascript);Pyjamas-Desktop
 runs exactly the same python application on the Desktop (as python)
 
     http://pyjd.org
 
 Release 0.6 of Pyjamas also incorporates Pyjamas-Desktop directly into
 the Pyjamas Distribution.  To use Pyjamas-Desktop there are three choices,
-with more planned (MacOSX PyObjC; KDE's PyKHTML).
+with more planned [MacOSX PyObjC; KDE's PyKHTML].
 
 1) - Gecko / XulRunner
 
@@ -52,10 +59,13 @@ Detailed build instructions are available on http://pyjd.org
 For Windows users, all that's required, other than installing python
 and Internet Explorer, is one further packages: Win32 "comtypes".
 
-It can be downloaded here:
+Win32 "comtypes" can be downloaded here:
 * http://sourceforge.net/projects/comtypes/
 
-The MSHTML version primarily works, but the differences between IE and
-other browser engines are shining through, load and clear!  Reports
-using IE8 would be appreciated.
+The MSHTML version primarily works.  Reports using IE8's MSHTML
+engine would be appreciated.
+
+Known bugs: the use of Tab to cycle through Keyboard Focus elements
+            is ineffective; onkeyup and onkeydown events are unresponsive,
+            but oddly onkeypress event handling works.
 
