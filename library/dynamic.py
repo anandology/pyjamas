@@ -144,7 +144,12 @@ def activate_javascript(txt):
 
 def eval(str):
     if hasattr(wnd(), "execScript"):
-        return wnd().execScript(str)
+        from __javascript__ import pyjs_execScript
+        str = "pyjs_execScript=" + str
+        wnd().execScript(str)
+        ret = wnd().pyjs_execScript
+        delattr(wnd(), 'pyjs_execScript')
+        return ret
     from __javascript__ import eval
     return eval(str)
 
@@ -177,7 +182,6 @@ def ajax_import(url, namespace=None, names=None):
         for name in names:
             name_getter.append("$pyjs$moduleObject['%s'] = %s;" % (name, name))
         
-        debugger()
         script = """(function ( ) {
 $pyjs$moduleObject={};
 %s;
