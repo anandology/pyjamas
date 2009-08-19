@@ -219,7 +219,11 @@ same approach as, for example,
 <a href="http://www.appcelerator.com/appcelerator-platform/titanium-architecture/">Titanium</a>, which enables &lt;script type="text/python" /&gt;.
 The MSHTML port of Pyjamas Desktop actually embeds an IWebBrowser2
 Active-X instance into a Win32 window, provides access to the Document
-of the IWebBrowser2 using Python/COM, and goes from there.
+of the IWebBrowser2 using Python/COM, and goes from there.  In other
+words, other than the python
+<a href="http://sf.net/projects/comtypes">"comtypes"</a> package, which
+is only 140k, and IE itself, there are no additional dependencies required
+to get pyjamas applications running under MSHTML.
 <li /><b>6th July 2009</b> Pyjamas compiles the Python version of
 <a href="http://trac.puremvc.org/PureMVC_Python/">PureMVC</a>.  Kees Bos
 improved the pyjamas compiler to the point where PureMVC would compile
