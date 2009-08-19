@@ -9,8 +9,10 @@ from pyjamas.ui.ListBox import ListBox
 from pyjamas.ui.Hidden import Hidden
 from pyjamas.ui.Button import Button
 from pyjamas.ui.HTMLPanel import HTMLPanel
+from pyjamas.ui.DockPanel import DockPanel
 from pyjamas.ui.DialogBox import DialogBox
 from pyjamas.ui import KeyboardListener
+from pyjamas.ui import HasAlignment
 
 from pyjamas.JSONService import JSONProxy
 
@@ -32,8 +34,8 @@ class HTMLDialog(DialogBox):
         dock.setSpacing(4)
 
         dock.add(closeButton, DockPanel.SOUTH)
-        dock.add(msg, DockPanel.NORTH)
-        dock.add(iframe, DockPanel.CENTER)
+        #dock.add(msg, DockPanel.NORTH)
+        dock.add(htp, DockPanel.CENTER)
 
         dock.setCellHorizontalAlignment(closeButton, HasAlignment.ALIGN_RIGHT)
         dock.setCellWidth(htp, "100%")
@@ -114,7 +116,7 @@ class WebPage:
 
     def onClick(self, sender):
         if sender == self.view:
-            name = self.todoTextname.getText()
+            name = self.todoTextName.getText()
             html = self.todoTextArea.getHTML()
             if not html:
                 return
