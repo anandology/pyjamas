@@ -47,6 +47,10 @@ class ListBox(FocusWidget):
         return DOM.getAttribute(self.getElement(), "name")
 
     def getSelectedIndex(self):
+        """ returns the selected item's index on a single-select
+            listbox.  returns -1 if no item is selected.
+            for multi-select, use repeated calls to isItemSelected.
+        """
         return DOM.getIntAttribute(self.getElement(), "selectedIndex")
 
     def getValue(self, index):
