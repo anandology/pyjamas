@@ -83,7 +83,7 @@ function pyjs_kwargs_call(obj, func, star_args, dstar_args, args)
         }
     }
     for (++_idx; _idx < __args__.length; _idx++, idx++) {
-        aname = __args__[_idx];
+        aname = __args__[_idx][0];
         a = args[0][aname];
         if (typeof args[idx] == 'undefined') {
             _args.push(a);

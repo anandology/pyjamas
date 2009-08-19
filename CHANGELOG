@@ -1,6 +1,10 @@
                     Changes made to Pyjamas since 0.6
                     ---------------------------------
 
+ * Added support for *args/**kwargs for lambda
+
+ * Added support mutable default in functions
+
  * Added keyword args to list.sort (thanks to Beni Cherniavsky)
 
  * Fixed toggle example and button handling #236

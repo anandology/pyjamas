@@ -64,8 +64,6 @@ def functionDefaults(s = "", l = []):
 class FunctionTest(UnitTest):
 
     def testLambda(self):
-        # NOTE: kwargs and varargs are currently not supported and
-        # raise a TranslationError
         f = lambda x: x
         self.assertEqual(f(1), 1)
         f = lambda x=1: x
@@ -80,6 +78,17 @@ class FunctionTest(UnitTest):
         f = lambda x: h.handle(x)
         self.assertTrue(f(5))
         self.assertFalse(f(4))
+
+        f = lambda a, b=1, **kw: (a,b,kw)
+        v = f(b = 2, c = 3, a = 1)
+        self.assertEqual(v[0], 1)
+        self.assertEqual(v[1], 2)
+        self.assertEqual(v[2]['c'], 3)
+
+        f = lambda a, b=1, *args: (a, b, args)
+        v = f(1,2,3,4)
+        self.assertEqual(v[2][0], 3)
+        self.assertEqual(v[2][1], 4)
 
     def testProcedure(self):
         self.assertTrue(aFunctionReturningNone() is None,
@@ -138,8 +147,14 @@ class FunctionTest(UnitTest):
     def testFunctionDefaults(self):
         s, l = functionDefaults()
         self.assertEqual(s, '0')
-	self.assertTrue(l == [0], "First mutable default mismatch")
+        self.assertTrue(l == [0], "First mutable default mismatch")
 
         s, l = functionDefaults()
         #self.assertEqual(s, '1') # can be enabled when the next line is fixed
-	self.assertTrue(l == [0, 1], "Second mutable default mismatch bug #214")
+        self.assertTrue(l == [0, 1], "Second mutable default mismatch bug #214")
+
+        inittest = 1
+        def f(inittest = inittest):
+            return inittest
+        self.assertEqual(f(), inittest)
+

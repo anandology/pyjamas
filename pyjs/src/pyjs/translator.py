@@ -486,7 +486,7 @@ class Translator:
             self.has_js_return = False
             self.track_lineno(child)
             if isinstance(child, ast.Function):
-                self._function(child, False)
+                self._function(child, None, False)
             elif isinstance(child, ast.Class):
                 self._class(child)
             elif isinstance(child, ast.Import):
@@ -779,7 +779,7 @@ try{var %(dbg)s_res=%(call_code)s;}catch(%(dbg)s_err){
 }return %(dbg)s_res})()""" % locals()
         return call_code
 
-    def func_args(self, node, function_name, bind_type, args, stararg, dstararg):
+    def func_args(self, node, current_klass, function_name, bind_type, args, stararg, dstararg):
         if bind_type == 'static':
             bind_type = 0
         elif bind_type == 'bound':
@@ -788,17 +788,24 @@ try{var %(dbg)s_res=%(call_code)s;}catch(%(dbg)s_err){
             bind_type = 2
         else:
             raise TranslationError("Unknown bind type: %s" % bind_type, node)
-        args = repr(args)[1:]
-        org_args = args
+        _args = []
+        default_pos = len(args) - len(node.defaults)
+        for idx, arg in enumerate(args):
+            if idx < default_pos:
+                _args.append("['%s']" % arg)
+            else:
+                default_value = self.expr(node.defaults[idx-default_pos], current_klass)
+                _args.append("""['%s', %s]""" % (arg, default_value))
+        args = ",".join(_args)
         if dstararg:
-            args = "'%s',%s" % (dstararg, args)
+            args = "['%s'],%s" % (dstararg, args)
         else:
             args = "null,%s" % args
         if stararg:
             args = "'%s',%s" % (stararg, args)
         else:
             args = "null,%s" % args
-        args = '[' + args
+        args = '[' + args + ']'
         # remove any empty tail
         if args.endswith(',]'):
             args = args[:-2] + ']'
@@ -1050,7 +1057,8 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                 default_value = self.expr(default_node, current_klass)
                 default_name = arg_names[default_pos]
                 default_pos += 1
-                print >> output, self.spacing() + "if (typeof %s == 'undefined') %s=%s;" % (default_name, default_name, default_value)
+                #print >> output, self.spacing() + "if (typeof %s == 'undefined') %s=%s;" % (default_name, default_name, default_value)
+                print >> output, self.spacing() + "if (typeof %s == 'undefined') %s=arguments.callee.__args__[%d][1];" % (default_name, default_name, default_pos+1)
 
     def _varargs_handler(self, node, varargname, start):
         if node.kwargs:
@@ -1236,7 +1244,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             rhs = '.'.join(('$pyjs', '__modules__', node.modname, name[0]))
             print >> self.output, self.spacing() + "%s = %s;" % (lhs, rhs)
 
-    def _function(self, node, local=False):
+    def _function(self, node, current_klass, local=False):
         self.push_options()
         save_has_js_return = self.has_js_return
         self.has_js_return = False
@@ -1314,7 +1322,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         print >>self.output, self.dedent() + "};"
         print >>self.output, self.spacing() + "%s.__name__ = '%s';\n" % (function_name, node.name)
 
-        self.func_args(node, function_name, 'static', declared_arg_names, varargname, kwargname)
+        self.func_args(node, current_klass, function_name, 'static', declared_arg_names, varargname, kwargname)
 
         #self._kwargs_parser(node, function_name, normal_arg_names, None)
         self.has_js_return = save_has_js_return
@@ -1798,7 +1806,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             bind_type = 'static'
         elif classmethod:
             bind_type = 'class'
-        self.func_args(node, None, bind_type, declared_arg_names, varargname, kwargname)
+        self.func_args(node, current_klass, None, bind_type, declared_arg_names, varargname, kwargname)
 
         #if staticmethod:
         #    self._kwargs_parser(node, method_name, normal_arg_names, current_klass, True)
@@ -1846,7 +1854,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         elif isinstance(node, ast.Pass):
             pass
         elif isinstance(node, ast.Function):
-            self._function(node, True)
+            self._function(node, current_klass, True)
         elif isinstance(node, ast.Printnl):
            self._print(node, current_klass)
         elif isinstance(node, ast.Print):
@@ -2354,26 +2362,12 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         return self.track_call("new pyjslib.Tuple([" + ", ".join([self.expr(x, current_klass) for x in node.nodes]) + "])", node.lineno)
 
     def _lambda(self, node, current_klass):
-        if node.varargs:
-            raise TranslationError(
-                "varargs are not supported in Lambdas", node, self.module_name)
-        if node.kwargs:
-            raise TranslationError(
-                "kwargs are not supported in Lambdas", node, self.module_name)
-        res = StringIO()
-        arg_names = list(node.argnames)
-        self.push_lookup()
-        for arg in arg_names:
-            self.add_lookup('variable', arg, arg)
-        function_args = ", ".join(arg_names)
-        for child in node.getChildNodes():
-            expr = self.expr(child, None)
-        print >> res, "function (%s){" % function_args
-        self._default_args_handler(node, arg_names, None, None,
-                                   output=res)
-        print >> res, 'return %s;}' % expr
-        self.pop_lookup()
-        return res.getvalue()
+        function_name = self.uniqid("$lambda")
+        print >> self.output, "var",
+        code_node = ast.Stmt([ast.Return(node.code, node.lineno)], node.lineno)
+        func_node = ast.Function(None, function_name, node.argnames, node.defaults, node.flags, None, code_node, node.lineno)
+        self._function(func_node, current_klass, True)
+        return function_name
 
     def _listcomp(self, node, current_klass):
         self.push_lookup()
