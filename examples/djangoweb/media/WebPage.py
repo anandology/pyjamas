@@ -12,6 +12,7 @@ from pyjamas.ui.HTMLPanel import HTMLPanel
 from pyjamas.ui.DockPanel import DockPanel
 from pyjamas.ui.ScrollPanel import ScrollPanel
 from pyjamas.ui.DialogBox import DialogBox
+from pyjamas.ui.Composite import Composite
 from pyjamas.ui import KeyboardListener
 from pyjamas.ui import HasAlignment
 
@@ -21,6 +22,7 @@ from pyjamas.Timer import Timer
 from RichTextEditor import RichTextEditor
 
 from pyjamas import Window
+from pyjamas import History
 
 class HTMLDialog(DialogBox):
     def __init__(self, name, html):
@@ -54,12 +56,15 @@ class HTMLDialog(DialogBox):
     def onClick(self, sender):
         self.hide()
 
-class WebPage:
-    def onModuleLoad(self):
+class WebPageEdit(Composite):
+    def __init__(self):
+        Composite.__init__(self)
+
         self.remote = DataService()
         panel = VerticalPanel(Width="100%")
 
         self.view = Button("View", self)
+        self.new = Button("New", self)
         self.todoId = None
         self.todoTextName = TextBox()
         self.todoTextName.addKeyboardListener(self)
@@ -82,8 +87,9 @@ class WebPage:
         panel.add(Label("Click to Edit:"))
         panel.add(self.todoList)
         panel.add(self.view)
+        panel.add(self.new)
 
-        RootPanel().add(panel)
+        self.setWidget(panel)
 
         self.remote.getPages(self)
 
@@ -121,7 +127,12 @@ class WebPage:
 
 
     def onClick(self, sender):
-        if sender == self.view:
+        if sender == self.new:
+            self.todoId = None
+            self.todoTextName.setText('')
+            self.todoTextArea.setHTML('')
+            return
+        elif sender == self.view:
             name = self.todoTextName.getText()
             html = self.todoTextArea.getHTML()
             if not html:
@@ -162,17 +173,50 @@ class WebPage:
     def onRemoteError(self, code, message, request_info):
         self.status.setHTML("Server Error or Invalid Response: ERROR " + str(code) + " - " + str(message))
 
+class WebApp:
+    def onModuleLoad(self):
+
+        #Show the initial screen.
+        initToken = History().getToken()
+        if len(initToken):
+            if initToken == 'admin':
+                RootPanel().add(WebPageEdit())
+                return
+        else:
+            initToken = 'index'
+
+        self.htp = HTMLPanel()
+        self.remote = DataService()
+        self.onHistoryChanged(initToken)
+        RootPanel().add(self.htp)
+        self.htp.setWidth("100%")
+
+    def onHistoryChanged(self, token):
+        self.remote.getPageByName(token, self)
+
+    def onRemoteResponse(self, response, request_info):
+        if (request_info.method == 'getPageByName' or
+           request_info.method == 'getPage'):
+            item = response[0]
+            Window.setTitle(item['fields']['name'])
+            self.htp.setHTML(item['fields']['text'])
+
+    def onRemoteError(self, code, message, request_info):
+        self.htp.setHTML("Server Error or Invalid Response: ERROR " + str(code) + " - " + str(message))
+
+
 class DataService(JSONProxy):
     def __init__(self):
         JSONProxy.__init__(self, "/services/",
                  ["getPage", "updatePage",
                   "getPages", "addPage",
+                  "getPageByName",
                   "deletePage"])
 
 if __name__ == "__main__":
     pyjd.setup("http://127.0.0.1:8000/site_media/WebPage.html")
 
-    app = WebPage()
+    app = WebApp()
     app.onModuleLoad()
     pyjd.run()
 

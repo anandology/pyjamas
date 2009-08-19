@@ -10,6 +10,10 @@ def getPage (request, num):
 	return json_convert([Page.objects.get(id=num)])
 
 @jsonremote(service)
+def getPageByName (request, name):
+	return json_convert([Page.objects.get(name=name)])
+
+@jsonremote(service)
 def getPages (request):
 	return json_convert(Page.objects.all())
 
