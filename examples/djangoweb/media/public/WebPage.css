@@ -4,3 +4,20 @@
     padding: 4px;
 }
 
+.gwt-CheckBox {
+  font-size: smaller;
+}
+
+.gwt-DialogBox {
+  sborder: 8px solid #C3D9FF;
+  border: 2px outset;
+  background-color: white;
+}
+
+.gwt-DialogBox .Caption {
+  background-color: #C3D9FF;
+  padding: 3px;
+  margin: 2px;
+  font-weight: bold;
+  cursor: default;
+}

@@ -9,7 +9,7 @@ from pyjamas.ui.ListBox import ListBox
 from pyjamas.ui.Hidden import Hidden
 from pyjamas.ui.Button import Button
 from pyjamas.ui.HTMLPanel import HTMLPanel
-from pyjamas.ui.PopupPanel import PopupPanel
+from pyjamas.ui.DialogBox import DialogBox
 from pyjamas.ui import KeyboardListener
 
 from pyjamas.JSONService import JSONProxy
@@ -19,14 +19,29 @@ from RichTextEditor import RichTextEditor
 
 from pyjamas import Window
 
-class HTMLPopup(PopupPanel):
-    def __init__(self, html):
-        PopupPanel.__init__(self, True)
+class HTMLDialog(DialogBox):
+    def __init__(self, name, html):
+        DialogBox.__init__(self)
+        self.setText(name)
 
-        contents = HTMLPanel(html)
-        self.setWidget(contents)
+        closeButton = Button("Close", self)
 
-        self.setStyleName("ks-popups-Popup")
+        htp = HTMLPanel(html)
+
+        dock = DockPanel()
+        dock.setSpacing(4)
+
+        dock.add(closeButton, DockPanel.SOUTH)
+        dock.add(msg, DockPanel.NORTH)
+        dock.add(iframe, DockPanel.CENTER)
+
+        dock.setCellHorizontalAlignment(closeButton, HasAlignment.ALIGN_RIGHT)
+        dock.setCellWidth(htp, "100%")
+        dock.setWidth("100%")
+        self.setWidget(dock)
+
+    def onClick(self, sender):
+        self.hide()
 
 class WebPage:
     def onModuleLoad(self):
@@ -99,10 +114,11 @@ class WebPage:
 
     def onClick(self, sender):
         if sender == self.view:
+            name = self.todoTextname.getText()
             html = self.todoTextArea.getHTML()
             if not html:
                 return
-            p = HTMLPopup(html)
+            p = HTMLDialog(name, html)
             p.setPopupPosition(10, 10)
             p.setWidth(Window.getClientWidth()-20)
             p.setHeight(Window.getClientHeight()-20)
