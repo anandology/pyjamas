@@ -104,7 +104,9 @@ class ImportManager:
             top_module = self._import_top_module(parts[0])
             if not top_module:
                 # the topmost module wasn't found at all.
-                raise ImportError, 'No module named ' + fqname
+                # try previous importer.
+                return self.previous_importer(fqname, globals, locals, fromlist, level)
+                #raise ImportError, 'No module named ' + fqname
 
         # fast-path simple imports
         if len(parts) == 1:
@@ -152,6 +154,9 @@ class ImportManager:
 
         if mod:
             return mod
+
+        # ok, pass through to previous importer
+        return self.previous_importer(fqname, globals, locals, fromlist, level)
 
         # If the importer does not exist, then we have to bail. A missing
         # importer means that something else imported the module, and we have
