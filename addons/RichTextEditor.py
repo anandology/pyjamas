@@ -23,7 +23,6 @@ JS("""
    $wnd.FCKeditor_OnComplete = function(editorInstance )
    {
        pyjsObject = $doc.getElementById(editorInstance.Name.substr(3)).__listener;
-       log.writebr("pyjsObject is %o", pyjsObject);
        if(pyjsObject)
            pyjsObject.onFCKLoaded(editorInstance);
    }
@@ -31,14 +30,21 @@ JS("""
 
 
 class RichTextEditor(Widget):
-    def __init__(self, initialValue="", target="", method="POST"):
-        Widget.__init__(self);
+
+    def __init__(self, initialValue="", target="", method="POST", **kwargs):
+
         self.id = "rte" + hash(self)
-        fck = createFCK("fck" + self.id)
-        fck.Height = "600px"
+
         self.setElement(DOM.createForm())
-        DOM.setAttribute(self.element, "method", "POST")
+        DOM.setAttribute(self.element, "method", method)
         DOM.setAttribute(self.element, "target", target)
+
+        if not kwargs.has_key('ID'): kwargs['ID'] = self.id
+        if not kwargs.has_key('StyleName'): kwargs['StyleName'] = "gwt-RichTextEditor"
+        if not kwargs.has_key('Height'): kwargs['Height'] = "600px"
+        if not kwargs.has_key('Width'): kwargs['Width'] = "100%"
+        Widget.__init__(self, **kwargs)
+
         JS("""
            var rte = this;
            this.element.onsubmit = function() {
@@ -46,18 +52,20 @@ class RichTextEditor(Widget):
                return false;
            }
         """)
-        self.setID(self.id)
-        self.addStyleName("gwt-RichTextEditor")
+
+        fck = createFCK("fck" + self.id)
+        fck.Height = self.getHeight()
+        fck.Width = self.getWidth()
         fck.Value = initialValue
         fck.BasePath = "fckeditor/"
         fck.Config.CustomConfigurationsPath = "../../fckconfig.js"
         fck.pyjsObject = self
+
         self.loaded = False
         self.saveListeners = []
         self.pendingHTML = None
+
         html = fck.CreateHtml()
-        #log.writebr("fck html = %s", html)
-        html = html
         DOM.setInnerHTML(self.getElement(), html)
 
     def addSaveListener(self, listener):
@@ -110,7 +118,7 @@ class RichTextEditor(Widget):
         """
         log.writebr("onSave() in %s", Window.getLocation().getHref())
         for listener in self.saveListeners:
-            if listener.onSave:
+            if hasattr(listener, "onSave"):
                 listener.onSave(self)
             else:
                 listener(self)
@@ -121,7 +129,7 @@ class RichTextEditor(Widget):
         Call this to change the html showing in the editor.
         """
         if self.loaded:
-            self.fck.SetHTML(html);
+            self.fck.SetHTML(html)
         else:
             self.pendingHTML = html
 
