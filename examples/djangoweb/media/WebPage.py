@@ -10,6 +10,7 @@ from pyjamas.ui.Hidden import Hidden
 from pyjamas.ui.Button import Button
 from pyjamas.ui.HTMLPanel import HTMLPanel
 from pyjamas.ui.DockPanel import DockPanel
+from pyjamas.ui.ScrollPanel import ScrollPanel
 from pyjamas.ui.DialogBox import DialogBox
 from pyjamas.ui import KeyboardListener
 from pyjamas.ui import HasAlignment
@@ -28,27 +29,27 @@ class HTMLDialog(DialogBox):
 
         closeButton = Button("Close", self)
 
-        self.htp = HTMLPanel(html)
+        htp = HTMLPanel(html)
+        self.sp = ScrollPanel(htp)
 
         dock = DockPanel()
         dock.setSpacing(4)
 
         dock.add(closeButton, DockPanel.SOUTH)
-        #dock.add(msg, DockPanel.NORTH)
-        dock.add(self.htp, DockPanel.CENTER)
+        dock.add(self.sp, DockPanel.CENTER)
 
         dock.setCellHorizontalAlignment(closeButton, HasAlignment.ALIGN_RIGHT)
-        dock.setCellWidth(self.htp, "100%")
+        dock.setCellWidth(self.sp, "100%")
         dock.setWidth("100%")
         self.setWidget(dock)
 
     def setWidth(self, width):
         DialogBox.setWidth(self, "%dpx" % width)
-        self.htp.setWidth("%dpx" % (width-20))
+        self.sp.setWidth("%dpx" % (width-20))
 
     def setHeight(self, height):
         DialogBox.setHeight(self, "%dpx" % height)
-        self.htp.setHeight("%dpx" % (height-30))
+        self.sp.setHeight("%dpx" % (height-65))
 
     def onClick(self, sender):
         self.hide()
@@ -111,9 +112,6 @@ class WebPage:
         if rid<0:
             self.status.setHTML("Server Error or Invalid Response")
             return
-
-        self.todoId = None
-        self.todoTextName.setText('')
 
     def onKeyPress(self, sender, keyCode, modifiers):
         """
