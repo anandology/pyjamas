@@ -119,7 +119,7 @@ class Bookreader:
         self.curSink.onShow()
         
     def loadSinks(self):
-        HTTPRequest().asyncGet("contents.txt", ChapterListLoader(self))
+        HTTPRequest().asyncPost("contents.txt", "", ChapterListLoader(self))
 
     def setChapters(self, chapters):
         for l in chapters:
