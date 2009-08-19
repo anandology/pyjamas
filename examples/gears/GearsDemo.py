@@ -22,8 +22,8 @@ class DbTest():
         RootPanel().add(self.g)
         self.b.addClickListener(self)
 
-        self.db = Factory.createDatabase()
         try:
+            self.db = Factory.createDatabase()
             self.db.open('database-demo')
             self.db.execute('create table if not exists Demo' +
                        ' (Phrase varchar(255), Timestamp int)')
