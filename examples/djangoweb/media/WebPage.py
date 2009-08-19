@@ -28,19 +28,27 @@ class HTMLDialog(DialogBox):
 
         closeButton = Button("Close", self)
 
-        htp = HTMLPanel(html)
+        self.htp = HTMLPanel(html)
 
         dock = DockPanel()
         dock.setSpacing(4)
 
         dock.add(closeButton, DockPanel.SOUTH)
         #dock.add(msg, DockPanel.NORTH)
-        dock.add(htp, DockPanel.CENTER)
+        dock.add(self.htp, DockPanel.CENTER)
 
         dock.setCellHorizontalAlignment(closeButton, HasAlignment.ALIGN_RIGHT)
-        dock.setCellWidth(htp, "100%")
+        dock.setCellWidth(self.htp, "100%")
         dock.setWidth("100%")
         self.setWidget(dock)
+
+    def setWidth(self, width):
+        DialogBox.setWidth(self, "%dpx" % width)
+        self.htp.setWidth("%dpx" % (width-20))
+
+    def setHeight(self, height):
+        DialogBox.setHeight(self, "%dpx" % height)
+        self.htp.setHeight("%dpx" % (height-30))
 
     def onClick(self, sender):
         self.hide()
@@ -122,8 +130,8 @@ class WebPage:
                 return
             p = HTMLDialog(name, html)
             p.setPopupPosition(10, 10)
-            p.setWidth(Window.getClientWidth()-20)
-            p.setHeight(Window.getClientHeight()-20)
+            p.setWidth(Window.getClientWidth()-40)
+            p.setHeight(Window.getClientHeight()-40)
             p.show()
             return
 
