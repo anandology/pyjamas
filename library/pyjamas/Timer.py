@@ -12,7 +12,6 @@ timeout_end = None
 # the following is needed because we are currently not able to override things
 # except functions and classes
 if sys.platform not in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
-    from gobject import timeout_add
     import pyjd
 
 global timers

@@ -272,9 +272,6 @@ def _alert(self, msg):
 def getDomDocument(self):
     return self.getWebkitDocument()
 
-def getDomWindow(self):
-    return self.getWebkitDocument().window
-
 def addWindowEventListener(self, event_name, cb):
     #print self, event_name, cb
     if cb not in self._callbacks:
@@ -436,7 +433,6 @@ class WebBrowser(gtk.Window):
         main_frame.platform = 'webkit'
         main_frame.addEventListener = addEventListener
         main_frame.getUri = self.getUri
-        main_frame.getDomWindow = new.instancemethod(getDomWindow, main_frame)
         main_frame.getDomDocument = new.instancemethod(getDomDocument, main_frame)
         main_frame._addXMLHttpRequestEventListener = addXMLHttpRequestEventListener
         main_frame._addWindowEventListener = new.instancemethod(addWindowEventListener, main_frame)
