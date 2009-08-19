@@ -44,7 +44,7 @@ def import_module(path, parent_module, module_name, dynamic=1, async=False, init
         importName += '.'
     return None
 
-# FIXME: dynamic=1, async=False are useless here (?). Only dynamic modules 
+# FIXME: dynamic=1, async=False are useless here (?). Only dynamic modules
 # are loaded with load_module and it's always "async"
 @noSourceTracking
 def load_module(path, parent_module, module_name, dynamic=1, async=False):
@@ -149,7 +149,7 @@ class Modload:
     # (1) $pyjs.modules.pyjamas
     # (2) $pyjs.modules.pyjamas.ui
     # (3) $pyjs.modules.pyjamas.ui.Widget
-    # Therefore, all modules are collected and sorted on the depth (i.e. the 
+    # Therefore, all modules are collected and sorted on the depth (i.e. the
     # number of dots in it)
     # As long as we don't move on to the next depth unless all modules of the
     # previous depth are loaded, we won't trun into unchainable modules
@@ -186,7 +186,7 @@ class Modload:
             load_module(self.path, self.parent_mod, app, self.dynamic, True);
 
         if len(self.depths) == 0:
-            # This is the last depth. Start the main module after loading these 
+            # This is the last depth. Start the main module after loading these
             # modules.
             load_module_wait(self.app_imported_fn, self.parent_mod, self.modules[depth], self.dynamic)
         else:
@@ -536,6 +536,9 @@ def cmp(a,b):
     return 0;
     """)
 
+# For list.sort()
+__cmp = cmp
+
 @noSourceTracking
 def bool(v):
     # this needs to stay in native code without any dependencies here,
@@ -692,23 +695,23 @@ class List:
     def reverse(self):
         JS("""    this.l.reverse();""")
 
-    def sort(self, compareFunc=None, keyFunc=None, reverse=False):
-        if not compareFunc:
-            compareFunc = cmp
-        if keyFunc and reverse:
+    def sort(self, cmp=None, key=None, reverse=False):
+        if not cmp:
+            cmp = __cmp
+        if key and reverse:
             def thisSort1(a,b):
-                return -compareFunc(keyFunc(a), keyFunc(b))
+                return -cmp(key(a), key(b))
             self.l.sort(thisSort1)
-        elif keyFunc:
+        elif key:
             def thisSort2(a,b):
-                return compareFunc(keyFunc(a), keyFunc(b))
+                return cmp(key(a), key(b))
             self.l.sort(thisSort2)
         elif reverse:
             def thisSort3(a,b):
-                return -compareFunc(a, b)
+                return -cmp(a, b)
             self.l.sort(thisSort3)
         else:
-            self.l.sort(compareFunc)
+            self.l.sort(cmp)
 
     @noSourceTracking
     def getArray(self):
@@ -876,23 +879,23 @@ class Tuple:
     def reverse(self):
         JS("""    this.l.reverse();""")
 
-    def sort(self, compareFunc=None, keyFunc=None, reverse=False):
-        if not compareFunc:
-            compareFunc = cmp
-        if keyFunc and reverse:
+    def sort(self, cmp=None, key=None, reverse=False):
+        if not cmp:
+            cmp = cmp
+        if key and reverse:
             def thisSort1(a,b):
-                return -compareFunc(keyFunc(a), keyFunc(b))
+                return -cmp(key(a), key(b))
             self.l.sort(thisSort1)
-        elif keyFunc:
+        elif key:
             def thisSort2(a,b):
-                return compareFunc(keyFunc(a), keyFunc(b))
+                return cmp(key(a), key(b))
             self.l.sort(thisSort2)
         elif reverse:
             def thisSort3(a,b):
-                return -compareFunc(a, b)
+                return -cmp(a, b)
             self.l.sort(thisSort3)
         else:
-            self.l.sort(compareFunc)
+            self.l.sort(cmp)
 
     @noSourceTracking
     def getArray(self):
@@ -1676,20 +1679,20 @@ def sprintf(strng, args):
                 JS("""
                 subst = re_exp.exec(String(param.toExponential(precision)));
                 if (subst[3].length == 1) {
-        	    subst = subst[1] + subst[2] + '0' + subst[3];
-		} else {
-        	    subst = subst[1] + subst[2] + subst[3];
-		}""")
+                    subst = subst[1] + subst[2] + '0' + subst[3];
+                } else {
+                    subst = subst[1] + subst[2] + subst[3];
+                }""")
             elif conversion == 'E':
                 if precision is None:
                     precision = 6
                 JS("""
                 subst = re_exp.exec(String(param.toExponential(precision)).toUpperCase());
                 if (subst[3].length == 1) {
-        	    subst = subst[1] + subst[2] + '0' + subst[3];
-		} else {
-        	    subst = subst[1] + subst[2] + subst[3];
-		}""")
+                    subst = subst[1] + subst[2] + '0' + subst[3];
+                } else {
+                    subst = subst[1] + subst[2] + subst[3];
+                }""")
             elif conversion == 'f':
                 if precision is None:
                     precision = 6
@@ -1895,4 +1898,3 @@ def any(iterable):
         if element:
             return True
     return False
-

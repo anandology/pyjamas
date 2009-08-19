@@ -52,8 +52,8 @@ class object:
 def __import__(searchList, path, context, module_name=None):
     available = JS("$pyjs.available_modules_dict")
     if isUndefined(available):
-        # Convert the $pyjs.available_modules js array to 
-        # a Python dictionary. Lookups in the dictionary with has_key are 
+        # Convert the $pyjs.available_modules js array to
+        # a Python dictionary. Lookups in the dictionary with has_key are
         # way faster than a __contains__ lookup in a list.
         # This hack needs attention if the $pyjs.available_modules gets
         # updated after creation of the dictionary
@@ -100,7 +100,7 @@ def __import__(searchList, path, context, module_name=None):
     JS("$pyjs.track.module = save_track_module;")
 
 
-# FIXME: dynamic=1, async=False are useless here (?). Only dynamic modules 
+# FIXME: dynamic=1, async=False are useless here (?). Only dynamic modules
 # are loaded with load_module and it's always "async"
 @compiler.noSourceTracking
 def load_module(path, parent_module, module_name, dynamic=1, async=False):
@@ -195,7 +195,7 @@ class Modload:
     # (1) $pyjs.modules.pyjamas
     # (2) $pyjs.modules.pyjamas.ui
     # (3) $pyjs.modules.pyjamas.ui.Widget
-    # Therefore, all modules are collected and sorted on the depth (i.e. the 
+    # Therefore, all modules are collected and sorted on the depth (i.e. the
     # number of dots in it)
     # As long as we don't move on to the next depth unless all modules of the
     # previous depth are loaded, we won't trun into unchainable modules
@@ -230,7 +230,7 @@ class Modload:
             load_module(self.path, self.parent_mod, app, self.dynamic, True);
 
         if len(self.depths) == 0:
-            # This is the last depth. Start the main module after loading these 
+            # This is the last depth. Start the main module after loading these
             # modules.
             load_module_wait(self.app_imported_fn, self.parent_mod, self.modules[depth], self.dynamic)
         else:
@@ -617,6 +617,9 @@ def cmp(a,b):
     return 0;
     """)
 
+# for List.sort()
+__cmp = cmp
+
 @compiler.noSourceTracking
 def bool(v):
     # this needs to stay in native code without any dependencies here,
@@ -778,23 +781,23 @@ class List:
     def reverse(self):
         JS("""    this.l.reverse();""")
 
-    def sort(self, compareFunc=None, keyFunc=None, reverse=False):
-        if not compareFunc:
-            compareFunc = cmp
-        if keyFunc and reverse:
+    def sort(self, cmp=None, key=None, reverse=False):
+        if cmp is None:
+            cmp = __cmp
+        if key and reverse:
             def thisSort1(a,b):
-                return -compareFunc(keyFunc(a), keyFunc(b))
+                return -cmp(key(a), key(b))
             self.l.sort(thisSort1)
-        elif keyFunc:
+        elif key:
             def thisSort2(a,b):
-                return compareFunc(keyFunc(a), keyFunc(b))
+                return cmp(key(a), key(b))
             self.l.sort(thisSort2)
         elif reverse:
             def thisSort3(a,b):
-                return -compareFunc(a, b)
+                return -cmp(a, b)
             self.l.sort(thisSort3)
         else:
-            self.l.sort(compareFunc)
+            self.l.sort(cmp)
 
     @compiler.noSourceTracking
     def getArray(self):
@@ -1179,8 +1182,8 @@ def _super(type_, object_or_type = None):
             return obj[name].apply(object_or_type,args);
         };
         fnwrap.__name__ = name;
-    	fnwrap.__args__ = obj.__args__;
-    	fnwrap.__bind_type__ = obj.__bind_type__;
+        fnwrap.__args__ = obj.__args__;
+        fnwrap.__bind_type__ = obj.__bind_type__;
         return fnwrap;
     }
     for (var m in fn) {

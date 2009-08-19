@@ -58,6 +58,37 @@ class ListTest(UnitTest):
         self.assertTrue(len(value) is 3)
         self.assertTrue(value[2] is 2)
 
+    def testSortNoKwArgs(self):
+        l1 = ['c', 'd', 'a', 'b']
+        l1.sort()
+        self.assertTrue(l1[0] == 'a')
+        self.assertTrue(l1[1] == 'b')
+        self.assertTrue(l1[2] == 'c')
+        self.assertTrue(l1[3] == 'd')
+
+        l2 = ['C', 'd', 'A', 'b']
+        def toLower(x):
+            return x.lower()
+        l2.sort(None, toLower)
+        self.assertTrue(l2[0] == 'A')
+        self.assertTrue(l2[1] == 'b')
+        self.assertTrue(l2[2] == 'C')
+        self.assertTrue(l2[3] == 'd')
+
+        l3 = ['C', 'd', 'A', 'b']
+        l3.sort(None, toLower, True)
+        self.assertTrue(l3[0] == 'd')
+        self.assertTrue(l3[1] == 'C')
+        self.assertTrue(l3[2] == 'b')
+        self.assertTrue(l3[3] == 'A')
+
+        l4 = ['c', 'd', 'a', 'b']
+        l4.sort(None, None, True)
+        self.assertTrue(l4[0] == 'd')
+        self.assertTrue(l4[1] == 'c')
+        self.assertTrue(l4[2] == 'b')
+        self.assertTrue(l4[3] == 'a')
+
     def testPop(self):
         a = ['a']
         b = ['b']
@@ -94,21 +125,21 @@ class ListTest(UnitTest):
         l2 = ['C', 'd', 'A', 'b']
         def toLower(x):
             return x.lower()
-        l2.sort(None, toLower)
+        l2.sort(key=toLower)
         self.assertTrue(l2[0] == 'A')
         self.assertTrue(l2[1] == 'b')
         self.assertTrue(l2[2] == 'C')
         self.assertTrue(l2[3] == 'd')
 
         l3 = ['C', 'd', 'A', 'b']
-        l3.sort(None, toLower, True)
+        l3.sort(key=toLower, reverse=True)
         self.assertTrue(l3[0] == 'd')
         self.assertTrue(l3[1] == 'C')
         self.assertTrue(l3[2] == 'b')
         self.assertTrue(l3[3] == 'A')
 
         l4 = ['c', 'd', 'a', 'b']
-        l4.sort(None, None, True)
+        l4.sort(reverse=True)
         self.assertTrue(l4[0] == 'd')
         self.assertTrue(l4[1] == 'c')
         self.assertTrue(l4[2] == 'b')
