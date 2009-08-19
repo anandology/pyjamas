@@ -109,7 +109,7 @@ def load_module(path, parent_module, module_name, dynamic=1, async=False):
 
     JS("""
         var cache_file;
-        var module = $pyjs.modules_hash[module_name];
+        var module = $pyjs.modules_loaded[module_name];
         if (typeof module == 'function') {
             return true;
         }
@@ -145,7 +145,7 @@ def load_module(path, parent_module, module_name, dynamic=1, async=False):
         pyjs_load_script(cache_file, onload_fn, async);
 
         try {
-            loaded = (typeof $pyjs.modules_hash[module_name] == 'function');
+            loaded = (typeof $pyjs.modules_loaded[module_name] == 'function');
         } catch ( e ) {
         }
         if (loaded) {
@@ -168,7 +168,7 @@ def load_module_wait(proceed_fn, parent_mod, module_list, dynamic):
         //write_dom(".");
         var loaded = true;
         for (var i in module_list) {
-            if (typeof $pyjs.modules_hash[module_list[i]] != 'function') {
+            if (typeof $pyjs.modules_loaded[module_list[i]] != 'function') {
                 loaded = false;
                 break;
             }

@@ -531,16 +531,15 @@ class Translator:
         if self.source_tracking and self.store_source:
             for l in self.track_lines.keys():
                 print >> self.output, self.spacing() + '''%s.__track_lines__[%d] = "%s";''' % (raw_module_name, l, self.track_lines[l].replace('"', '\"'))
-        print >>self.output, captured_output,
+        print >> self.output, captured_output,
 
         if attribute_checking:
             print >> self.output, self.spacing() + "} catch ($pyjs_attr_err) {throw pyjslib._errorMapping($pyjs_attr_err)};"
 
         print >> self.output, self.spacing() + "return this;"
         print >> self.output, self.spacing() + "}; /* end %s */"  % module_name
-        print >>self.output, self.spacing() + "$pyjs.modules_hash['"+module_name+"'] = $pyjs.loaded_modules['"+module_name+"'];"
         print >> self.output, "\n"
-        print >>self.output, self.spacing(), "/* end module: %s */" % module_name
+        print >> self.output, self.spacing(), "/* end module: %s */" % module_name
         print >> self.output, "\n"
 
         # print out the deps and check for wrong imports
