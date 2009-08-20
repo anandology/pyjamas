@@ -1,4 +1,15 @@
-A very brief walk through of how to get this running:
+The WebPage application allows editing of basic web pages.
+Its closest equivalent is "googlepages".  The application is -
+surprise - pure javascript.  Therefore, once a page has been loaded
+from the server via the django JSONRPC service, it need not ever
+be loaded again (unless the user refreshes the whole site).
+
+When editing pages, Links containing "#pagename" are converted into
+pyjamas Hyperlink widgets.  Hyperlink widgets trigger onHistoryChanged.
+As the "History" technique is used, browser history (back, forward)
+is preserved.
+
+A very brief walk through of how to get WebPage running:
 
 Create the db:
 
@@ -12,6 +23,11 @@ Create the tables:
     * cd djangoweb
     * python manage.py syncdb
 
+Add fckeditor
+
+    * go find fckeditor on the internet
+    * copy fckeditor (or symlink) to public/fckeditor
+
 Build the javascript:
 
     * vim media/build.sh
@@ -24,4 +40,9 @@ Run the server:
 
 Test it out:
 
-    * In your browser, goto: http://127.0.0.1:8000/site_media/output/WebPage.html
+    * To enter the "admin" interface, goto:
+      http://127.0.0.1:8000/site_media/output/WebPage.html?#admin
+
+    * To "view" the site: In your browser, goto:
+      http://127.0.0.1:8000/site_media/output/WebPage.html
+
