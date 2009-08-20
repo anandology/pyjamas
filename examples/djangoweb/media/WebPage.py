@@ -75,7 +75,7 @@ class WebApp:
 
 class DataService(JSONProxy):
     def __init__(self):
-        JSONProxy.__init__(self, "/services/",
+        JSONProxy.__init__(self, "/services/pages/",
                  ["getPage", "updatePage",
                   "getPages", "addPage",
                   "getPageByName",

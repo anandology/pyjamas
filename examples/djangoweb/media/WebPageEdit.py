@@ -29,7 +29,7 @@ class WebPageEdit(Composite):
         self.todoTextName = TextBox()
         self.todoTextName.addKeyboardListener(self)
 
-        self.todoTextArea = RichTextEditor()
+        self.todoTextArea = RichTextEditor(basePath="/fckeditor/")
         self.todoTextArea.setWidth("100%")
         self.todoTextArea.addSaveListener(self)
 
