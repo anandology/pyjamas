@@ -31,7 +31,8 @@ JS("""
 
 class RichTextEditor(Widget):
 
-    def __init__(self, initialValue="", target="", method="POST", **kwargs):
+    def __init__(self, initialValue="", target="", method="POST", 
+                        basePath=None, **kwargs):
 
         self.id = "rte" + hash(self)
 
@@ -53,11 +54,15 @@ class RichTextEditor(Widget):
            }
         """)
 
+        if basePath is None:
+            basePath = "fckeditor/"
+        if not basePath.endswith("/"):
+            basePath += "/"
         fck = createFCK("fck" + self.id)
         fck.Height = self.getHeight()
         fck.Width = self.getWidth()
         fck.Value = initialValue
-        fck.BasePath = "fckeditor/"
+        fck.BasePath = basePath
         fck.Config.CustomConfigurationsPath = "../../fckconfig.js"
         fck.pyjsObject = self
 

@@ -24,7 +24,7 @@ class Hyperlink(Widget):
         self.clickListeners = []
         self.targetHistoryToken = ""
 
-        self.nodiv = nodiv
+        self.usediv = usediv
         self.anchorElem = DOM.createAnchor()
         if self.usediv:
             self.setElement(DOM.createDiv())

@@ -1,7 +1,7 @@
 # Create your views here.
 
 from jsonrpc import *
-from webpages.models import Page 
+from djangoweb.webpages.models import Page 
 
 service = JSONRPCService()
 
