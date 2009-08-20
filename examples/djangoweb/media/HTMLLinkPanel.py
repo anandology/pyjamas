@@ -32,6 +32,8 @@ class HTMLLinkPanel(HTMLPanel):
             index = DOM.getChildIndex(parent, el)
             parent.removeChild(el)
             hl = Hyperlink(TargetHistoryToken=token,
-                           HTML=html)
+                           HTML=html,
+                           usediv=False)
+            DOM.setStyleAttribute(hl.getElement(), "float", "left")
             self.insert(hl, parent, index)
 
