@@ -17,6 +17,42 @@ from pyjamas.ui.ComplexPanel import ComplexPanel
 
 HTMLPanel_sUid = 0
 
+def getElementsByTagName(element, tagname):
+    try:
+        element_tagname = element.nodeName # DOM.getAttribute(element, "nodeName")
+        element_tagname = str(element_tagname).lower()
+    except:
+        element_tagname = None
+    if element_tagname is not None and element_tagname == tagname:
+        return [element]
+
+    res = []
+    child = DOM.getFirstChild(element)
+    while child is not None:
+        for el in getElementsByTagName(child, tagname):
+            res.append(el)
+        child = DOM.getNextSibling(child)
+
+    return res
+
+def getElementById(element, id):
+    try:
+        element_id = DOM.getAttribute(element, "id")
+    except:
+        element_id = None
+    if element_id is not None and element_id == id:
+        return element
+
+    child = DOM.getFirstChild(element)
+    while child is not None:
+        ret = getElementById(child, id)
+        if ret is not None:
+            return ret
+        child = DOM.getNextSibling(child)
+
+    return None
+
+
 class HTMLPanel(ComplexPanel):
     def __init__(self, html, **kwargs):
         # NOTE! don't set a default style on this panel, because the
@@ -31,11 +67,14 @@ class HTMLPanel(ComplexPanel):
         DOM.setInnerHTML(self.getElement(), html)
 
     def add(self, widget, id):
-        element = self.getElementById(self.getElement(), id)
+        element = getElementById(self.getElement(), id)
         if element is None:
             # throw new NoSuchElementException()
             return
         ComplexPanel.add(self, widget, element)
+
+    def findTags(self, tagname):
+        return getElementsByTagName(self.getElement(), tagname)
 
     @staticmethod
     def createUniqueId():
@@ -43,22 +82,4 @@ class HTMLPanel(ComplexPanel):
 
         HTMLPanel_sUid += 1
         return "HTMLPanel_%d" % HTMLPanel_sUid
-
-    def getElementById(self, element, id):
-        try:
-            element_id = DOM.getAttribute(element, "id")
-        except:
-            element_id = None
-        if element_id is not None and element_id == id:
-            return element
-
-        child = DOM.getFirstChild(element)
-        while child is not None:
-            ret = self.getElementById(child, id)
-            if ret is not None:
-                return ret
-            child = DOM.getNextSibling(child)
-
-        return None
-
 

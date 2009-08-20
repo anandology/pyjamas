@@ -13,8 +13,12 @@ from pyjamas.ui.DockPanel import DockPanel
 from pyjamas.ui.ScrollPanel import ScrollPanel
 from pyjamas.ui.DialogBox import DialogBox
 from pyjamas.ui.Composite import Composite
+from pyjamas.ui.Hyperlink import Hyperlink
 from pyjamas.ui import KeyboardListener
 from pyjamas.ui import HasAlignment
+
+from pyjamas import log
+from pyjamas import DOM
 
 from pyjamas.JSONService import JSONProxy
 
@@ -23,6 +27,41 @@ from RichTextEditor import RichTextEditor
 
 from pyjamas import Window
 from pyjamas import History
+from pyjamas.Location import Location
+
+class HTMLLinkPanel(HTMLPanel):
+    def __init__(self, sink, html="", title="", **kwargs):
+        self.sink = sink
+        self.title = title
+        HTMLPanel.__init__(self, html, **kwargs)
+
+    def replaceLinks(self):
+        """ replaces <a href="#pagename">sometext</a> with:
+            Hyperlink("sometext", "pagename")
+        """
+        tags = self.findTags("a")
+        pageloc = Window.getLocation()
+        pagehref = pageloc.getPageHref()
+        for el in tags:
+            href = el.href
+            #log.writebr("found %s" % href)
+            l = href.split("#")
+            if len(l) != 2:
+                continue
+            if l[0] != pagehref:
+                continue
+            token = l[1]
+            #log.writebr("token is %s" % token)
+            if not token:
+                continue
+            html = DOM.getInnerHTML(el)
+            parent = DOM.getParent(el)
+            index = DOM.getChildIndex(parent, el)
+            #log.writebr("html %s index %d" % (html, index))
+            parent.removeChild(el)
+            hl = Hyperlink(TargetHistoryToken=token,
+                           HTML="hyperlink " + html)
+            self.insert(hl, parent, index)
 
 class HTMLDialog(DialogBox):
     def __init__(self, name, html):
@@ -64,7 +103,7 @@ class WebPageEdit(Composite):
         panel = VerticalPanel(Width="100%")
 
         self.view = Button("View", self)
-        self.new = Button("New", self)
+        self.newpage = Button("New", self)
         self.todoId = None
         self.todoTextName = TextBox()
         self.todoTextName.addKeyboardListener(self)
@@ -87,7 +126,7 @@ class WebPageEdit(Composite):
         panel.add(Label("Click to Edit:"))
         panel.add(self.todoList)
         panel.add(self.view)
-        panel.add(self.new)
+        panel.add(self.newpage)
 
         self.setWidget(panel)
 
@@ -127,7 +166,7 @@ class WebPageEdit(Composite):
 
 
     def onClick(self, sender):
-        if sender == self.new:
+        if sender == self.newpage:
             self.todoId = None
             self.todoTextName.setText('')
             self.todoTextArea.setHTML('')
@@ -185,24 +224,52 @@ class WebApp:
         else:
             initToken = 'index'
 
-        self.htp = HTMLPanel()
         self.remote = DataService()
+
+        self.dock = DockPanel()
+        self.dock.setWidth("100%")
+        self.pages = {}
+        self.current_page = None
+        RootPanel().add(self.dock)
+
+        History.addHistoryListener(self)
         self.onHistoryChanged(initToken)
-        RootPanel().add(self.htp)
-        self.htp.setWidth("100%")
+
+    def createPage(self, ref, html, title):
+        htp = HTMLLinkPanel(self, html, title)
+        htp.replaceLinks()
+        htp.setWidth("100%")
+        self.pages[ref] = htp
 
     def onHistoryChanged(self, token):
+        #log.writebr("onHistoryChanged %s" % token)
+        if self.pages.has_key(token):
+            self.setPage(token)
+            return
         self.remote.getPageByName(token, self)
+
+    def setPage(self, ref):
+        
+        htp = self.pages[ref]
+        if htp == self.current_page:
+            return
+        Window.setTitle(htp.title)
+        if self.current_page:
+            self.dock.remove(self.current_page)
+        self.dock.add(htp, DockPanel.CENTER)
+        self.current_page = htp
 
     def onRemoteResponse(self, response, request_info):
         if (request_info.method == 'getPageByName' or
            request_info.method == 'getPage'):
             item = response[0]
-            Window.setTitle(item['fields']['name'])
-            self.htp.setHTML(item['fields']['text'])
+            html = item['fields']['text']
+            token = item['fields']['name']
+            self.createPage(token, html, token)
+            self.setPage(token)
 
     def onRemoteError(self, code, message, request_info):
-        self.htp.setHTML("Server Error or Invalid Response: ERROR " + str(code) + " - " + str(message))
+        RootPanel().add(HTML("Server Error or Invalid Response: ERROR " + str(code) + " - " + str(message)))
 
 
 class DataService(JSONProxy):
