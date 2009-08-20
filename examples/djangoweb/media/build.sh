@@ -6,4 +6,6 @@ rm -fr output/
 
 options="$*"
 if [ -z $options ] ; then options="-O";fi
-../../../bin/pyjsbuild $options  -j public/fckeditor/fckeditor.js WebPage
+../../../bin/pyjsbuild $options \
+                       --bootstrap-file=bootstrap_progress.js \
+                       -j public/fckeditor/fckeditor.js WebPage

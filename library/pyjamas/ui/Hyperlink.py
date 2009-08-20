@@ -20,16 +20,16 @@ from pyjamas.ui import Event
 class Hyperlink(Widget):
 
     def __init__(self, text="", asHTML=False, targetHistoryToken="",
-                       usediv=True, **kwargs):
+                       Element=None, **kwargs):
         self.clickListeners = []
         self.targetHistoryToken = ""
 
-        self.usediv = usediv
-        self.anchorElem = DOM.createAnchor()
-        if self.usediv:
+        if not Element:
+            self.anchorElem = DOM.createAnchor()
             self.setElement(DOM.createDiv())
             DOM.appendChild(self.getElement(), self.anchorElem)
         else:
+            self.anchorElem = Element
             self.setElement(self.anchorElem)
 
         if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-Hyperlink"

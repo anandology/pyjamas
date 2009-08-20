@@ -1,6 +1,6 @@
 # Django settings for pyjsDemo project.
 import os
-STATIC = str(os.path.join(os.path.dirname(__file__), 'media').replace('\\','/'))
+STATIC = str(os.path.join(os.path.dirname(__file__), 'media/output').replace('\\','/'))
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG

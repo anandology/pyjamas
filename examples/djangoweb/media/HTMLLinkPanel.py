@@ -28,11 +28,11 @@ class HTMLLinkPanel(HTMLPanel):
             if not token:
                 continue
             html = DOM.getInnerHTML(el)
-            parent = DOM.getParent(el)
-            index = DOM.getChildIndex(parent, el)
-            parent.removeChild(el)
+            #parent = DOM.getParent(el)
+            #index = DOM.getChildIndex(parent, el)
+            #parent.removeChild(el)
             hl = Hyperlink(TargetHistoryToken=token,
                            HTML=html,
-                           usediv=False)
-            self.insert(hl, parent, index)
+                           Element=el)
+            #self.insert(hl, parent, index)
 
