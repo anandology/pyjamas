@@ -3,6 +3,7 @@ from pyjamas.ui.Hyperlink import Hyperlink
 
 from pyjamas import Window
 from pyjamas import DOM
+from pyjamas import log
 
 class HTMLLinkPanel(HTMLPanel):
     def __init__(self, sink, html="", title="", **kwargs):
@@ -28,11 +29,12 @@ class HTMLLinkPanel(HTMLPanel):
             if not token:
                 continue
             html = DOM.getInnerHTML(el)
-            #parent = DOM.getParent(el)
-            #index = DOM.getChildIndex(parent, el)
-            #parent.removeChild(el)
+            parent = DOM.getParent(el)
+            index = DOM.getChildIndex(parent, el)
+            parent.removeChild(el)
+            log.writebr("token: %s html: %s" % (token, html))
             hl = Hyperlink(TargetHistoryToken=token,
-                           HTML=html,
-                           Element=el)
-            #self.insert(hl, parent, index)
+                           HTML=html)
+                           #Element=el)
+            self.insert(hl, parent, index)
 

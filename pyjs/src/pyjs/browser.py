@@ -25,6 +25,7 @@ adapting this to suit your requirements
 </head>
 <body bgcolor="white">
 <script language="javascript" src="%(bootstrap_file)s"></script>
+<iframe id='__pygwt_historyFrame' style='width:0;height:0;border:0'></iframe>
 </body>
 </html>
 """
