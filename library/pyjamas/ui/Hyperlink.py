@@ -25,12 +25,10 @@ class Hyperlink(Widget):
         self.targetHistoryToken = ""
 
         if not Element:
-            self.anchorElem = DOM.createAnchor()
-            self.setElement(DOM.createDiv())
-            DOM.appendChild(self.getElement(), self.anchorElem)
-        else:
-            self.anchorElem = Element
-            self.setElement(self.anchorElem)
+            Element = DOM.createDiv()
+        self.anchorElem = DOM.createAnchor()
+        self.setElement(Element)
+        DOM.appendChild(self.getElement(), self.anchorElem)
 
         if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-Hyperlink"
         if text:
