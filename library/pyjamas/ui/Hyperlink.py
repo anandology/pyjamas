@@ -26,11 +26,11 @@ class Hyperlink(Widget):
 
         self.nodiv = nodiv
         self.anchorElem = DOM.createAnchor()
-        if self.nodiv:
-            self.setElement(self.anchorElem)
-        else:
+        if self.usediv:
             self.setElement(DOM.createDiv())
             DOM.appendChild(self.getElement(), self.anchorElem)
+        else:
+            self.setElement(self.anchorElem)
 
         if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-Hyperlink"
         if text:
