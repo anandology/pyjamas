@@ -2,8 +2,24 @@
 
 from jsonrpc import *
 from djangoweb.webpages.models import Page 
+from django.shortcuts import render_to_response
+from django.template import RequestContext
 
 service = JSONRPCService()
+
+def index(request):
+    pth = request.path.split('#')
+    if len(pth) == 2:
+        name = pth[1]
+    else:
+        name = 'index'
+	page = Page.objects.get(name=name)
+    args = {'title': page.name,
+            'noscript': page.text
+            }
+    context_instance=RequestContext(request)
+    context_instance.autoescape=False
+    return render_to_response('index.html', args, context_instance)
 
 @jsonremote(service)
 def getPage (request, num):
