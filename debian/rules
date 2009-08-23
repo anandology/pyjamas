@@ -64,7 +64,7 @@ install: build
 
 	# shuffle things around...
 	#mv debian/pyjamas-build/usr/share/pyjamas/pygtkweb \
-	    tmp
+	#    tmp
 	mkdir -p debian/pyjamas-ui/usr/share
 	mv debian/pyjamas-build/usr/share/pyjamas debian/pyjamas-ui/usr/share/
 
