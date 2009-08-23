@@ -79,23 +79,6 @@ Description: Python Pyjamas Web Widget Set library
  This package contains the User-Interface Widgets that are common
  to both Pyjamas and Pyjamas-Desktop.
 
-Package: pyjamas-pygtkweb
-Architecture: all
-Depends: pyjamas-pyjs, ${misc:Depends}
-Description: Pyjamas Implementation of PyGTK compatible widget set
- Pyjamas is a stand-alone Python to Javascript compiler, an AJAX
- framework / library and a Desktop-like Widget set.
- .
- Pyjamas is typically used for the development of "Web 2.0" RIAs,
- where the application can be almost exclusively written in Python,
- instead of Javascript, yet compiled to run in the user's browser.
- Pyjamas Desktop is the desktop version, where the exact same
- application can also be run stand-alone on the desktop.
- .
- The pyjamas-pygtkweb package contains an experimental implementation of
- gtk which allows (very basic!) gtk applications to be compiled to
- javascript and executed in a web browser.
-
 Package: pyjamas-doc
 Section: doc
 Architecture: all

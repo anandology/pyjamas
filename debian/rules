@@ -63,7 +63,7 @@ install: build
 	    tmp
 
 	# shuffle things around...
-	mv debian/pyjamas-build/usr/share/pyjamas/pygtkweb \
+	#mv debian/pyjamas-build/usr/share/pyjamas/pygtkweb \
 	    tmp
 	mkdir -p debian/pyjamas-ui/usr/share
 	mv debian/pyjamas-build/usr/share/pyjamas debian/pyjamas-ui/usr/share/
@@ -83,9 +83,9 @@ binary-indep: build install
 	dh_installdocs -ppyjamas-ui 
 	dh_installdocs -ppyjamas 
 	dh_installdocs -ppyjamas-desktop
-	dh_installdocs -ppyjamas-pygtkweb
+	#dh_installdocs -ppyjamas-pygtkweb
 	dh_installexamples -ppyjamas-doc tmp/examples/*
-	dh_installexamples -ppyjamas-pygtkweb tmp/pygtkweb/*
+	#dh_installexamples -ppyjamas-pygtkweb tmp/pygtkweb/*
 	dh_install -ppyjamas-pyjs bin/pyjsbuild /usr/bin
 	dh_installman -ppyjamas-pyjs debian/pyjsbuild.1
 
@@ -100,7 +100,7 @@ binary-indep: build install
 	mv /tmp/pyjd.public debian/pyjamas-desktop/usr/share/python-support/pyjamas-desktop.public
 
 	dh_link 
-	dh_compress -Xexamples -Xpygtkweb
+	dh_compress -Xexamples # -Xpygtkweb
 	dh_fixperms 
 	dh_installdeb 
 	dh_shlibdeps 
