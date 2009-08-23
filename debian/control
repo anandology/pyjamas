@@ -8,7 +8,7 @@ Homepage: http://pyjs.org
 
 Package: pyjamas
 Architecture: all
-Depends: pyjamas-ui, pyjamas-pyjs, pyjamas-desktop
+Depends: ${misc:Depends}, pyjamas-ui, pyjamas-pyjs, pyjamas-desktop
 Recommends: pyjamas-doc
 Description: Python web widget toolkit and Python-to-Javascript compiler
  Pyjamas is a stand-alone Python to Javascript compiler, an AJAX
@@ -47,7 +47,7 @@ Description: Python web widget toolkit and Python-to-Javascript compiler
 
 Package: pyjamas-desktop
 Architecture: all
-Depends: python, python-hulahop, python-xpcom
+Depends: python, ${misc:Depends}, python-hulahop, python-xpcom, ${python:Depends}
 Recommends: pyjamas-ui
 Description: Python web widget toolkit (Desktop version)
  Pyjamas Desktop is the desktop version of Pyjamas, the 
@@ -65,7 +65,7 @@ Description: Python web widget toolkit (Desktop version)
 
 Package: pyjamas-ui
 Architecture: all
-Depends: python, ${misc:Depends}, ${python:Depends}
+Depends: ${misc:Depends}
 Description: Python Pyjamas Web Widget Set library
  Pyjamas is a stand-alone Python to Javascript compiler, an AJAX
  framework / library and a Desktop-like Widget set.
@@ -81,7 +81,7 @@ Description: Python Pyjamas Web Widget Set library
 
 Package: pyjamas-pygtkweb
 Architecture: all
-Depends: python, ${misc:Depends}, ${python:Depends}
+Depends: pyjamas-pyjs, ${misc:Depends}
 Description: Pyjamas Implementation of PyGTK compatible widget set
  Pyjamas is a stand-alone Python to Javascript compiler, an AJAX
  framework / library and a Desktop-like Widget set.
@@ -99,7 +99,7 @@ Description: Pyjamas Implementation of PyGTK compatible widget set
 Package: pyjamas-doc
 Section: doc
 Architecture: all
-Depends: python, ${misc:Depends}, ${python:Depends}
+Depends: ${misc:Depends}
 Description: Python web widget set 
  Pyjamas is a stand-alone Python to Javascript compiler, an AJAX
  framework / library and a Desktop-like Widget set.
