@@ -65,7 +65,7 @@ Description: Python web widget toolkit (Desktop version)
 
 Package: pyjamas-ui
 Architecture: all
-Depends: ${misc:Depends}
+Depends: python, ${misc:Depends}, ${python:Depends}${misc:Depends}
 Description: Python Pyjamas Web Widget Set library
  Pyjamas is a stand-alone Python to Javascript compiler, an AJAX
  framework / library and a Desktop-like Widget set.
