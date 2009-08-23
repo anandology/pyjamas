@@ -80,6 +80,7 @@ Description: Python web widget set library
  to both Pyjamas and Pyjamas-Desktop.
 
 Package: pyjamas-doc
+Section: doc
 Architecture: all
 Depends: python, ${misc:Depends}, ${python:Depends}
 Description: Python web widget set 

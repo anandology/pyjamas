@@ -74,6 +74,9 @@ binary-indep: build install
 	dh_installchangelogs
 	dh_installchangelogs -ppyjamas CHANGELOG
 	dh_installdocs -ppyjamas-doc doc/*
+	dh_installdocs -ppyjamas-ui 
+	dh_installdocs -ppyjamas 
+	dh_installdocs -ppyjamas-desktop
 	dh_installexamples -ppyjamas-doc tmp/examples/*
 	dh_install -ppyjamas-pyjs bin/pyjsbuild /usr/bin
 	dh_installman -ppyjamas-pyjs debian/pyjsbuild.1
