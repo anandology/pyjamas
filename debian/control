@@ -8,8 +8,8 @@ Homepage: http://pyjs.org
 
 Package: pyjamas
 Architecture: all
-Depends: python, ${misc:Depends}, ${python:Depends}
-Recommends: pyjamas-desktop
+Depends: pyjamas-ui, pyjamas-pyjs, pyjamas-desktop
+Recommends: pyjamas-doc
 Description: Python web widget toolkit and Python-to-Javascript compiler
  Pyjamas is a stand-alone Python to Javascript compiler, an AJAX
  framework / library and a Desktop-like Widget set.
@@ -35,12 +35,23 @@ Description: Python web widget toolkit and Python-to-Javascript compiler
  All these are directly available, rather than requiring additional
  components.
 
+Package: pyjamas-pyjs
+Architecture: all
+Depends: python, ${misc:Depends}, ${python:Depends}
+Recommends: pyjamas-ui
+Description: Python web widget toolkit and Python-to-Javascript compiler
+ Pyjamas is a stand-alone Python to Javascript compiler, an AJAX
+ framework / library and a Desktop-like Widget set.
+ .
+ This package contains the stand-alone python-to-javascript compiler.
+
 Package: pyjamas-desktop
 Architecture: all
-Depends: python, pyjamas, python-hulahop, python-xpcom
+Depends: python, python-hulahop, python-xpcom
+Recommends: pyjamas-ui
 Description: Python web widget toolkit (Desktop version)
- Pyjamas Desktop is the desktop version of Pyjamas, the AJAX
- Web Widget framework.
+ Pyjamas Desktop is the desktop version of Pyjamas, the 
+ Web Widget application framework.
  .
  Pyjamas is typically used for the development of "Web 2.0" RIAs,
  where the application can be almost exclusively written in Python,
@@ -51,13 +62,28 @@ Description: Python web widget toolkit (Desktop version)
  and executes it directly, through the standard Python Interpreter,
  unmodified.  The Pyjamas Infrastructure then uses XULRunner as the
  Browser Engine, to render the application's widgets.
+
+Package: pyjamas-ui
+Architecture: all
+Depends: python, ${misc:Depends}, ${python:Depends}
+Description: Python web widget set library
+ Pyjamas is a stand-alone Python to Javascript compiler, an AJAX
+ framework / library and a Desktop-like Widget set.
  .
- The Pyjamas User-Interface Widget Set is startlingly similar to
- that of Python-Qt4 and Python-Gtk2, with the distinct advantage
- that applications run in all major web browsers, with absolutely
- no plugins required (only Javascript need be enabled).  Additional
- advantages over the use of standard Desktop Widget sets are that
- Pyjamas provides direct access to the full set of HTML features -
- CSS, NPAPI Plugins such as Adobe Flash, and SVG 2D Canvas - even
- in the Desktop version.  All these features are directly available
- rather than requiring additional components.
+ Pyjamas is typically used for the development of "Web 2.0" RIAs,
+ where the application can be almost exclusively written in Python,
+ instead of Javascript, yet compiled to run in the user's browser.
+ Pyjamas Desktop is the desktop version, where the exact same
+ application can also be run stand-alone on the desktop.
+ .
+ This package contains the User-Interface Widgets that are common
+ to both Pyjamas and Pyjamas-Desktop.
+
+Package: pyjamas-doc
+Architecture: all
+Depends: python, ${misc:Depends}, ${python:Depends}
+Description: Python web widget set 
+ Pyjamas is a stand-alone Python to Javascript compiler, an AJAX
+ framework / library and a Desktop-like Widget set.
+ .
+ This package contains the documentation and the examples.

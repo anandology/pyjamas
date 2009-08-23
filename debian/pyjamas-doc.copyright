@@ -1,0 +1,77 @@
+This package was debianized by Luke Kenneth Casson Leighton <lkcl@lkcl.net>
+on Thu, 30 Jul 2009 21:20
+
+It was downloaded from http://pyjs.org
+
+Upstream Authors:
+
+    Luke Kenneth Casson Leighton <lkcl@lkcl.net>
+    James Tauber
+    Google, Inc.
+    Willie Gollino - wgollino@yahoo.com
+    Dobes Vandermeer - dobesv@gmail.com
+    Bernd Dorn - <bernd.dorn@lovelysystems.com>
+    Jürgen Kartnaller - <kartnaller@lovelysystems.com>
+    Luis Pamirez
+    Erik Westra - ewestra [at] gmail [dot] com
+
+Other Contributors:
+
+    Vicente J. Ruiz Jurado - vjrj@ourproject.org
+    Gerard Labadie - gerard.labadie@gmail.com
+    Stephan Diehl - stephan.diehl@gmx.net
+    John Lehman - j1o1h1n@gmail.com
+    G Clinch
+    Kees Boss
+    Radoslav Kirov
+    Beni Kerniavsky
+    Henk Punt (for pyjd/windows.py)
+
+Copyright:
+
+    Copyright (C) 2008, 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
+    Copyright (C) 2006, 2007 James Tauber
+    Copyright (C) 2006 Google, Inc.
+    Copyright (c) 2003 Henk Punt
+
+Licenses:
+
+    Apache 2 - /usr/share/common-licenses/Apache-2.0
+    --------
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+
+    GPLv2 - /usr/share/common-licenses/GPL-2
+    -----
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public
+    License along with this library; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston MA  02110-1301 USA
+
+
+
+The Debian packaging is (C) 2009, Luke Kenneth Casson Leighton <lkcl@lkcl.net>
+and is licensed under the Apache 2.0 License.
+
+

@@ -61,6 +61,7 @@ install: build
 	mkdir -p tmp
 	mv  debian/pyjamas-build/usr/share/pyjamas/examples \
 	    tmp
+	mv debian/pyjamas-build/usr/share/pyjamas debian/pyjamas-ui/usr/share/
 	# replace ../../bin/pyjsbuild with pyjsbuild
 	sed -i -e's/..\/..\/bin\///' tmp/examples/*/build.sh
 
@@ -70,14 +71,16 @@ binary-indep: build install
 
 	dh_testdir 
 	dh_testroot 
-	dh_installchangelogs  CHANGELOG
-	dh_installdocs doc/*
-	dh_installexamples tmp/examples/*
-	dh_install bin/pyjsbuild /usr/bin
-	dh_installman debian/pyjsbuild.1
+	dh_installchangelogs
+	dh_installchangelogs -ppyjamas CHANGELOG
+	dh_installdocs -ppyjamas-doc doc/*
+	dh_installexamples -ppyjamas-doc tmp/examples/*
+	dh_install -ppyjamas-pyjs bin/pyjsbuild /usr/bin
+	dh_installman -ppyjamas-pyjs debian/pyjsbuild.1
 
-	dh_pysupport 
-	dh_pysupport /usr/share/pyjamas
+	dh_pysupport -ppyjamas-pyjs /usr/share/pyshared/pyjs
+	dh_pysupport -ppyjamas-desktop /usr/share/pyshared/pyjd
+	dh_pysupport -ppyjamas-ui /usr/share/pyjamas
 
 	# weeeird... something to do with dh_pysupport, how do you get it
 	# to stop interfering (when doing dh_pysupport for two packages??)
