@@ -46,5 +46,6 @@ debian-build:
 	cp -aux debian deb/pyjamas-${VERSION}
 	cd deb/pyjamas-${VERSION} && dpkg-buildpackage -rfakeroot
 	cd deb && lintian pyjamas_${VERSION}-${DEBSUBVERSION}_all.deb
+	cd deb && lintian pyjamas-desktop_${VERSION}-${DEBSUBVERSION}_all.deb
 	cd deb && lintian pyjamas_${VERSION}-${DEBSUBVERSION}.dsc
 

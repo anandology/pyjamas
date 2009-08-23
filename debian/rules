@@ -29,6 +29,7 @@ build-stamp: configure-stamp
 	# Add here commands to compile the package.
 	python bootstrap.py /usr/share/pyshared /usr/share/pyjamas .
 	python run_bootstrap_first_then_setup.py build
+	python run_bootstrap_first_then_pyjd_setup.py build
 
 	touch $@
 
@@ -50,12 +51,15 @@ install: build
 	dh_prep
 	dh_installdirs
 
-	# Add here commands to install the package into debian/pyjamas.
-	python run_bootstrap_first_then_setup.py install --root=debian/pyjamas
+	# commands to install the package into debian/pyjamas.
+	python run_bootstrap_first_then_setup.py install --root=debian/pyjamas-build
+
+	# commands to install the package into debian/pyjamas-desktop
+	python run_bootstrap_first_then_pyjd_setup.py install --root=debian/pyjamas-desktop
 
 	# move examples out way.
 	mkdir -p tmp
-	mv  debian/pyjamas/usr/share/pyjamas/examples \
+	mv  debian/pyjamas-build/usr/share/pyjamas/examples \
 	    tmp
 	# replace ../../bin/pyjsbuild with pyjsbuild
 	sed -i -e's/..\/..\/bin\///' tmp/examples/*/build.sh
@@ -71,8 +75,16 @@ binary-indep: build install
 	dh_installexamples tmp/examples/*
 	dh_install bin/pyjsbuild /usr/bin
 	dh_installman debian/pyjsbuild.1
+
 	dh_pysupport 
 	dh_pysupport /usr/share/pyjamas
+
+	# weeeird... something to do with dh_pysupport, how do you get it
+	# to stop interfering (when doing dh_pysupport for two packages??)
+	rm -fr debian/pyjamas-desktop/usr/share/pyshared/pyjs
+	grep -v pyjs debian/pyjamas-desktop/usr/share/python-support/pyjamas-desktop.public > /tmp/pyjd.public
+	mv /tmp/pyjd.public debian/pyjamas-desktop/usr/share/python-support/pyjamas-desktop.public
+
 	dh_link 
 	dh_compress -Xexamples
 	dh_fixperms 
