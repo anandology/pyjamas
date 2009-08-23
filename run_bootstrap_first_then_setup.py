@@ -24,12 +24,14 @@ bp_data_files = glob.glob(os.path.join("builder", "boilerplate", "*"))
 test_files = glob.glob(os.path.join("pyjs", "tests", "*"))
 stub_files = glob.glob(os.path.join("stubs", "*"))
 addons_data_files = glob.glob(os.path.join("addons", "*.py"))
+pywebgtk_data_files = glob.glob(os.path.join("pywebgtk", "*.py"))
 
 data_files = [
     (os.path.join(datadir, "builder", "boilerplate"), bp_data_files),
     (os.path.join(datadir, "pyjs", "tests"), test_files),
     (os.path.join(datadir, "stubs"), stub_files),
-    (os.path.join(datadir, "addons"), addons_data_files)
+    (os.path.join(datadir, "stubs"), stub_files),
+    (os.path.join(datadir, "pywebgtk"), pywebgtk_data_files)
 ]
 
 # main purpose of this function is to exclude "output" which
