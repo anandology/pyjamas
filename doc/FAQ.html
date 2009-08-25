@@ -654,13 +654,32 @@ Yep.  Someone didn't bother to check that python-hulahop actually
 worked, in Ubuntu 9 before uploading it.  You'll need to rebuild
 the python-hulahop package, from source:
 <pre>
->https://bugs.launchpad.net/ubuntu/+source/sugar-hulahop/+bug/390475
-> 
-> Just to be clear I'm running from svn and it works on Ubuntu if you
-> rebuild python-hulahop to get the python 2.6 bindings you don't need
-> to set the python path to xulrunner.
+&gt;https://bugs.launchpad.net/ubuntu/+source/sugar-hulahop/+bug/390475
+&gt; 
+&gt; Just to be clear I'm running from svn and it works on Ubuntu if you
+&gt; rebuild python-hulahop to get the python 2.6 bindings you don't need
+&gt; to set the python path to xulrunner.
 
 nice one michael - thank you for investigating.
+</pre>
+
+Also, it turns out, that there is this:
+<pre>
+i just tried this morning, this works _without_ compiling anything:
+
+apt-get install python2.5
+export PYTHONPATH="/usr/lib/xulrunner-1.9.0.13/python"
+/usr/lib/xulrunner-1.9.0.13/run_mozilla.sh /usr/bin/python2.5
+&gt;&gt;&gt;import hulahop
+&gt;&gt;&gt; import xpcom
+</pre>
+
+So, the implications are that, in order to run under pyjd, you'd need
+to do this:
+<pre>
+cd pyjamas/examples/helloworld
+export PYTHONPATH="/usr/lib/xulrunner-1.9.0.13/python"
+/usr/lib/xulrunner-1.9.0.13/run_mozilla.sh /usr/bin/python2.5 Hello.py
 </pre>
 </p>
 </body>
