@@ -2,7 +2,7 @@ Source: pyjamas
 Section: python
 Priority: extra
 Maintainer: Luke Kenneth Casson Leighton <lkcl@lkcl.net>
-Build-Depends: debhelper (>= 7), python-support (>= 0.5.3), python, sed (>= 4.1.5)
+Build-Depends: debhelper (>= 7), python-support (>= 0.5.3), python
 Standards-Version: 3.8.1
 Homepage: http://pyjs.org
 
@@ -47,7 +47,7 @@ Description: Python web widget toolkit and Python-to-Javascript compiler
 
 Package: pyjamas-desktop
 Architecture: all
-Depends: python, ${misc:Depends}, python-hulahop, python-xpcom, ${python:Depends}
+Depends: python, ${misc:Depends}, python-hulahop, ${python:Depends}
 Recommends: pyjamas-ui
 Description: Python web widget toolkit (Desktop version)
  Pyjamas Desktop is the desktop version of Pyjamas, the 
