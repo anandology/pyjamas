@@ -62,19 +62,14 @@ install: build
 	# replace ../../bin/pyjsbuild with pyjsbuild
 	sed -i -e's/..\/..\/bin\///' tmp/examples/*/build.sh
 
-	# install copyright file
-	cp debian/copyright debian/pyjamas-ui/usr/share/doc/pyjamas-ui
-	cp debian/copyright debian/pyjamas/usr/share/doc/pyjamas
-	cp debian/copyright debian/pyjamas-desktop/usr/share/doc/pyjamas-desktop
-	cp debian/copyright debian/pyjamas-pyjs/usr/share/doc/pyjamas-pyjs
-
 binary-indep: build install
 
 	dh_testdir 
 	dh_testroot 
+	dh_installdocs
 	dh_installchangelogs
 	dh_installchangelogs -ppyjamas CHANGELOG
-	dh_installexamples -ppyjamas-doc tmp/examples/*
+	#dh_installexamples -ppyjamas-doc tmp/examples/*
 	dh_install -ppyjamas-pyjs bin/pyjsbuild /usr/bin
 	dh_installman -ppyjamas-pyjs debian/pyjsbuild.1
 
