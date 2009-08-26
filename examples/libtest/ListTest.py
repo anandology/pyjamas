@@ -58,6 +58,19 @@ class ListTest(UnitTest):
         self.assertTrue(len(value) is 3)
         self.assertTrue(value[2] is 2)
 
+        try:
+            del value[3]
+            self.fail("Failed to raise error on 'del value[3]'")
+        except IndexError, e:
+            self.assertEqual(e[0], "list assignment index out of range")
+
+        try:
+            del value[-4]
+            self.fail("Failed to raise error on 'del value[-4]'")
+        except IndexError, e:
+            self.assertEqual(e[0], "list assignment index out of range")
+
+
     def testSortNoKwArgs(self):
         l1 = ['c', 'd', 'a', 'b']
         l1.sort()
@@ -98,21 +111,41 @@ class ListTest(UnitTest):
 
         value = [a, b, c, d, e]
 
+        try:
+            x = value.pop(5)
+            self.fail("Failed to raise error on 'value.pop(5)'")
+        except IndexError, err:
+            self.assertEqual(err[0], "pop index out of range")
+
+        try:
+            x = value.pop(-6)
+            self.fail("Failed to raise error on 'value.pop(-6)'")
+        except IndexError, err:
+            self.assertEqual(err[0], "pop index out of range")
+
         x = value.pop(4)
-        self.assertTrue(x==e)
-        self.assertTrue(len(value) is 4)
+        self.assertTrue(x==e, "x==e")
+        self.assertTrue(len(value) is 4, "len(value) is 4")
 
         x = value.pop(-1)
-        self.assertTrue(x==d)
-        self.assertTrue(len(value) is 3)
+        self.assertTrue(x==d, "x==d")
+        self.assertTrue(len(value) is 3, "len(value) is 3")
 
         x = value.pop()
-        self.assertTrue(x==c)
-        self.assertTrue(len(value) is 2)
+        self.assertTrue(x==c, "x==c")
+        self.assertTrue(len(value) is 2, "len(value) is 2")
 
         x = value.pop(0)
-        self.assertTrue(x==a)
-        self.assertTrue(len(value) is 1)
+        self.assertTrue(x==a, "x==a")
+        self.assertTrue(len(value) is 1, "len(value) is 1")
+
+        x = value.pop()
+        try:
+            x = value.pop()
+            self.fail("Failed to raise error on 'value.pop()'")
+        except IndexError, err:
+            self.assertEqual(err[0], "pop from empty list")
+
 
     def testSort(self):
         l1 = ['c', 'd', 'a', 'b']

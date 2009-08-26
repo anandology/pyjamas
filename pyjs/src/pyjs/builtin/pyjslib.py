@@ -544,6 +544,17 @@ String.prototype.center = function(width, fillchar) {
     return new Array(left+1).join(fillchar) + this + new Array(right+1).join(fillchar);
 };
 
+String.prototype.__getslice__ = function(lower, upper) {
+    if (lower < 0) {
+       lower = this.length + lower;
+    }
+    if (upper < 0) {
+       upper = this.length + upper;
+    }
+    if (pyjslib.isNull(upper)) upper=this.length;
+    return this.substring(lower, upper);
+}
+
 String.prototype.__getitem__ = function(idx) {
     if (idx < 0) idx += this.length;
     if (idx < 0 || idx > this.length) {
@@ -551,6 +562,10 @@ String.prototype.__getitem__ = function(idx) {
     }
     return this.charAt(idx);
 };
+
+String.prototype.__setitem__ = function(idx, val) {
+    throw(pyjslib.TypeError("'str' object does not support item assignment"));
+}
 
 String.prototype.upper = String.prototype.toUpperCase;
 String.prototype.lower = String.prototype.toLowerCase;
@@ -673,7 +688,9 @@ class List:
     def remove(self, value):
         JS("""
         var index=this.index(value);
-        if (index<0) return false;
+        if (index<0) {
+            throw(pyjslib.ValueError("list.remove(x): x not in list"));
+        }
         this.l.splice(index, 1);
         return true;
         """)
@@ -697,7 +714,13 @@ class List:
     @compiler.noSourceTracking
     def pop(self, index = -1):
         JS("""
-        if (index<0) index = this.l.length + index;
+        if (index<0) index += this.l.length;
+        if (index < 0 || index >= this.l.length) {
+            if (this.l.length == 0) {
+                throw(pyjslib.IndexError("pop from empty list"));
+            }
+            throw(pyjslib.IndexError("pop index out of range"));
+        }
         var a = this.l[index];
         this.l.splice(index, 1);
         return a;
@@ -717,7 +740,7 @@ class List:
         return 0
 
     @compiler.noSourceTracking
-    def slice(self, lower, upper):
+    def __getslice__(self, lower, upper):
         JS("""
         if (upper==null) return pyjslib.List(this.l.slice(lower));
         return pyjslib.List(this.l.slice(lower, upper));
@@ -726,17 +749,32 @@ class List:
     @compiler.noSourceTracking
     def __getitem__(self, index):
         JS("""
-        if (index<0) index = this.l.length + index;
+        if (index < 0) index += this.l.length;
+        if (index < 0 || index >= this.l.length) {
+            throw(pyjslib.IndexError("list index out of range"));
+        }
         return this.l[index];
         """)
 
     @compiler.noSourceTracking
     def __setitem__(self, index, value):
-        JS("""    this.l[index]=value;""")
+        JS("""
+        if (index < 0) index += this.l.length;
+        if (index < 0 || index >= this.l.length) {
+            throw(pyjslib.IndexError("list assignment index out of range"));
+        }
+        this.l[index]=value;
+        """)
 
     @compiler.noSourceTracking
     def __delitem__(self, index):
-        JS("""    this.l.splice(index, 1);""")
+        JS("""
+        if (index < 0) index += this.l.length;
+        if (index < 0 || index >= this.l.length) {
+            throw(pyjslib.IndexError("list assignment index out of range"));
+        }
+        this.l.splice(index, 1);
+        """)
 
     @compiler.noSourceTracking
     def __len__(self):
@@ -860,7 +898,7 @@ class Tuple:
         return 0
 
     @compiler.noSourceTracking
-    def slice(self, lower, upper):
+    def __getslice__(self, lower, upper):
         JS("""
         if (upper==null) return pyjslib.Tuple(this.l.slice(lower));
         return pyjslib.Tuple(this.l.slice(lower, upper));
@@ -1208,15 +1246,8 @@ def range(start, stop = None, step = 1):
 @compiler.noSourceTracking
 def slice(object, lower, upper):
     JS("""
-    if (pyjslib.isString(object)) {
-        if (lower < 0) {
-           lower = object.length + lower;
-        }
-        if (upper < 0) {
-           upper = object.length + upper;
-        }
-        if (pyjslib.isNull(upper)) upper=object.length;
-        return object.substring(lower, upper);
+    if (typeof object.__getslice__ == 'function') {
+        return object.__getslice__(lower, upper);
     }
     if (pyjslib.isObject(object) && object.slice)
         return object.slice(lower, upper);
@@ -1551,7 +1582,7 @@ def hash(obj):
 
     if (obj.$H) return obj.$H;
     if (obj.__hash__) return obj.__hash__();
-    if (obj.constructor == String || obj.constructor == Number || obj.constructor == Date) return obj;
+    if (obj.constructor == String || obj.constructor == Number || obj.constructor == Date) return '$'+obj;
 
     try {
         obj.$H = ++pyjslib.next_hash_id;
