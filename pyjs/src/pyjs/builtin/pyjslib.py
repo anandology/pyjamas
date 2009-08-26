@@ -313,10 +313,11 @@ class IndexError(LookupError):
 class NotImplementedError(RuntimeError):
     pass
 
-# There seems to be an bug in Chrome with accessing the message
-# property, on which an error is thrown
-# Hence the declaration of 'var message' and the wrapping in try..catch
 def init():
+
+    # There seems to be an bug in Chrome with accessing the message
+    # property, on which an error is thrown
+    # Hence the declaration of 'var message' and the wrapping in try..catch
     JS("""
 pyjslib._errorMapping = function(err) {
     if (err instanceof(ReferenceError) || err instanceof(TypeError)) {
@@ -329,18 +330,26 @@ pyjslib._errorMapping = function(err) {
     }
     return err;
 };
-
+""")
+    # The TryElse 'error' is used to implement the else in try-except-else
+    # (to raise an exception when there wasn't any)
+    JS("""
 pyjslib.TryElse = function () { };
 pyjslib.TryElse.prototype = new Error();
 pyjslib.TryElse.__name__ = 'TryElse';
 pyjslib.TryElse.message = 'TryElse';
-
+""")
+    # StopIteration is used to get out of an iteration loop
+    JS("""
 pyjslib.StopIteration = function () { };
 pyjslib.StopIteration.prototype = new Error();
 pyjslib.StopIteration.__name__ = 'StopIteration';
 pyjslib.StopIteration.message = 'StopIteration';
+""")
 
-pyjslib.String_find = function(sub, start, end) {
+    # Patching of the standard javascript String object
+    JS("""
+String.prototype.find = function(sub, start, end) {
     var pos=this.indexOf(sub, start);
     if (pyjslib.isUndefined(end)) return pos;
 
@@ -348,7 +357,7 @@ pyjslib.String_find = function(sub, start, end) {
     return pos;
 };
 
-pyjslib.String_join = function(data) {
+String.prototype.join = function(data) {
     var text="";
 
     if (data.constructor == Array) {
@@ -374,11 +383,12 @@ pyjslib.String_join = function(data) {
     return text;
 };
 
-pyjslib.String_isdigit = function() {
+String.prototype.isdigit = function() {
     return (this.match(/^\d+$/g) != null);
 };
 
-pyjslib.String_replace = function(old, replace, count) {
+String.prototype.__replace=String.prototype.replace;
+String.prototype.replace = function(old, replace, count) {
     var do_max=false;
     var start=0;
     var new_str="";
@@ -401,11 +411,11 @@ pyjslib.String_replace = function(old, replace, count) {
     return new_str;
 };
 
-pyjslib.String___contains__ = function(s){
+String.prototype.__contains__ = function(s){
     return this.indexOf(s)>=0;
 };
 
-pyjslib.String_split = function(sep, maxsplit) {
+String.prototype.split = function(sep, maxsplit) {
     var items=new pyjslib.List();
     var do_max=false;
     var subject=this;
@@ -437,7 +447,7 @@ pyjslib.String_split = function(sep, maxsplit) {
     return items;
 };
 
-pyjslib.String___iter__ = function() {
+String.prototype.__iter__ = function() {
     var i = 0;
     var s = this;
     return {
@@ -453,23 +463,23 @@ pyjslib.String___iter__ = function() {
     };
 };
 
-pyjslib.String_strip = function(chars) {
+String.prototype.strip = function(chars) {
     return this.lstrip(chars).rstrip(chars);
 };
 
-pyjslib.String_lstrip = function(chars) {
+String.prototype.lstrip = function(chars) {
     if (pyjslib.isUndefined(chars)) return this.replace(/^\s+/, "");
     if (chars.length == 0) return this;
     return this.replace(new RegExp("^[" + chars + "]+"), "");
 };
 
-pyjslib.String_rstrip = function(chars) {
+String.prototype.rstrip = function(chars) {
     if (pyjslib.isUndefined(chars)) return this.replace(/\s+$/, "");
     if (chars.length == 0) return this;
     return this.replace(new RegExp("[" + chars + "]+$"), "");
 };
 
-pyjslib.String_startswith = function(prefix, start, end) {
+String.prototype.startswith = function(prefix, start, end) {
     // FIXME: accept tuples as suffix (since 2.5)
     if (pyjslib.isUndefined(start)) start = 0;
     if (pyjslib.isUndefined(end)) end = this.length;
@@ -479,7 +489,7 @@ pyjslib.String_startswith = function(prefix, start, end) {
     return false;
 };
 
-pyjslib.String_endswith = function(suffix, start, end) {
+String.prototype.endswith = function(suffix, start, end) {
     // FIXME: accept tuples as suffix (since 2.5)
     if (pyjslib.isUndefined(start)) start = 0;
     if (pyjslib.isUndefined(end)) end = this.length;
@@ -489,7 +499,7 @@ pyjslib.String_endswith = function(suffix, start, end) {
     return false;
 };
 
-pyjslib.String_ljust = function(width, fillchar) {
+String.prototype.ljust = function(width, fillchar) {
     if (typeof(width) != 'number' ||
         parseInt(width) != width) {
         throw (pyjslib.TypeError("an integer is required"));
@@ -503,7 +513,7 @@ pyjslib.String_ljust = function(width, fillchar) {
     return this + new Array(width+1 - this.length).join(fillchar);
 };
 
-pyjslib.String_rjust = function(width, fillchar) {
+String.prototype.rjust = function(width, fillchar) {
     if (typeof(width) != 'number' ||
         parseInt(width) != width) {
         throw (pyjslib.TypeError("an integer is required"));
@@ -517,7 +527,7 @@ pyjslib.String_rjust = function(width, fillchar) {
     return new Array(width + 1 - this.length).join(fillchar) + this;
 };
 
-pyjslib.String_center = function(width, fillchar) {
+String.prototype.center = function(width, fillchar) {
     if (typeof(width) != 'number' ||
         parseInt(width) != width) {
         throw (pyjslib.TypeError("an integer is required"));
@@ -534,7 +544,7 @@ pyjslib.String_center = function(width, fillchar) {
     return new Array(left+1).join(fillchar) + this + new Array(right+1).join(fillchar);
 };
 
-pyjslib.String___getitem__ = function(idx) {
+String.prototype.__getitem__ = function(idx) {
     if (idx < 0) idx += this.length;
     if (idx < 0 || idx > this.length) {
         throw(pyjslib.IndexError("string index out of range"));
@@ -542,32 +552,14 @@ pyjslib.String___getitem__ = function(idx) {
     return this.charAt(idx);
 };
 
-pyjslib.abs = Math.abs;
-
-String.prototype.__getitem__ = pyjslib.String___getitem__;
 String.prototype.upper = String.prototype.toUpperCase;
 String.prototype.lower = String.prototype.toLowerCase;
-String.prototype.find=pyjslib.String_find;
-String.prototype.join=pyjslib.String_join;
-String.prototype.isdigit=pyjslib.String_isdigit;
-String.prototype.__iter__=pyjslib.String___iter__;
-String.prototype.__contains__=pyjslib.String___contains__;
-
-String.prototype.__replace=String.prototype.replace;
-String.prototype.replace=pyjslib.String_replace;
-
-String.prototype.split=pyjslib.String_split;
-String.prototype.strip=pyjslib.String_strip;
-String.prototype.lstrip=pyjslib.String_lstrip;
-String.prototype.rstrip=pyjslib.String_rstrip;
-String.prototype.startswith=pyjslib.String_startswith;
-String.prototype.endswith=pyjslib.String_endswith;
-String.prototype.ljust=pyjslib.String_ljust;
-String.prototype.rjust=pyjslib.String_rjust;
-String.prototype.center=pyjslib.String_center;
-
-var str = String;
 """)
+
+    JS("""
+pyjslib.abs = Math.abs;
+""")
+# end of function init()
 
 class Class:
     def __init__(self, name):

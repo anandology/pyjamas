@@ -284,8 +284,8 @@ PYJSLIB_BUILTIN_CLASSES=[
     "TypeError",
     "ValueError",
 
-    "list",
     "dict",
+    "list",
     "object",
     "tuple",
     ]
