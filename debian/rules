@@ -1,6 +1,7 @@
 #!/usr/bin/make -f
 # -*- makefile -*-
 
+# this is apparently for ubuntu weirdness.
 -include /usr/share/python/python.mk
 ifeq (,$(py_sitename))
   py_sitename = site-packages
@@ -8,8 +9,6 @@ ifeq (,$(py_sitename))
   py_sitename_sh = $(py_sitename)
   py_libdir_sh = $(py_libdir)
 endif
-
-
 
 
 
@@ -43,10 +42,12 @@ install: build
 	dh_installdirs
 
 	# install the package into debian/pyjamas.
-	python run_bootstrap_first_then_setup.py install --root=debian/pyjamas-build
+	python run_bootstrap_first_then_setup.py install \
+	                  $(py_setup_install_args) --root=debian/pyjamas-build
 
 	# install the package into debian/pyjamas-desktop
-	python run_bootstrap_first_then_pyjd_setup.py install --root=debian/pyjamas-desktop
+	python run_bootstrap_first_then_pyjd_setup.py install \
+	                  $(py_setup_install_args) --root=debian/pyjamas-desktop
 
 	# move examples out way.
 	mkdir -p tmp
@@ -69,7 +70,6 @@ binary-indep: build install
 	dh_installdocs
 	dh_installchangelogs
 	dh_installchangelogs -ppyjamas CHANGELOG
-	#dh_installexamples -ppyjamas-doc tmp/examples/*
 	dh_install -ppyjamas-pyjs bin/pyjsbuild /usr/bin
 	dh_installman -ppyjamas-pyjs debian/pyjsbuild.1
 
@@ -80,11 +80,14 @@ binary-indep: build install
 	# weeeird... something to do with dh_pysupport, how do you get it
 	# to stop interfering (when doing dh_pysupport for two packages??)
 	rm -fr debian/pyjamas-desktop/usr/share/pyshared/pyjs
-	grep -v pyjs debian/pyjamas-desktop/usr/share/python-support/pyjamas-desktop.public > /tmp/pyjd.public
-	mv /tmp/pyjd.public debian/pyjamas-desktop/usr/share/python-support/pyjamas-desktop.public
+	grep -v pyjs \
+	   debian/pyjamas-desktop/usr/share/python-support/pyjamas-desktop.public \
+	   > /tmp/pyjd.public
+	mv /tmp/pyjd.public \
+	   debian/pyjamas-desktop/usr/share/python-support/pyjamas-desktop.public
 
 	dh_link 
-	dh_compress -Xexamples # -Xpygtkweb
+	dh_compress -Xexamples 
 	dh_fixperms 
 	dh_installdeb 
 	dh_shlibdeps 
@@ -92,7 +95,6 @@ binary-indep: build install
 	dh_md5sums 
 	dh_builddeb 
 
-# Build architecture-dependent files here.
 binary-arch: build install
 
 binary: binary-indep 

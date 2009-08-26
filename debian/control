@@ -2,7 +2,8 @@ Source: pyjamas
 Section: python
 Priority: extra
 Maintainer: Luke Kenneth Casson Leighton <lkcl@lkcl.net>
-Build-Depends: debhelper (>= 7), python-support (>= 0.5.3), python
+Build-Depends: debhelper (>= 7), python
+Build-Depends-Indep: python-support (>= 0.5.3)
 Standards-Version: 3.8.3
 Homepage: http://pyjs.org
 
