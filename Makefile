@@ -45,10 +45,10 @@ debian-build:
 	tar -C deb/pyjamas-${VERSION} -xvzf deb/pyjamas_$(VERSION).orig.tar.gz
 	cp -aux debian deb/pyjamas-${VERSION}
 	cd deb/pyjamas-${VERSION} && dpkg-buildpackage -rfakeroot
-	cd deb && lintian pyjamas_${VERSION}-${DEBSUBVERSION}_all.deb
-	cd deb && lintian pyjamas-desktop_${VERSION}-${DEBSUBVERSION}_all.deb
-	cd deb && lintian pyjamas-doc_${VERSION}-${DEBSUBVERSION}_all.deb
-	cd deb && lintian pyjamas-ui_${VERSION}-${DEBSUBVERSION}_all.deb
-	cd deb && lintian pyjamas_${VERSION}-${DEBSUBVERSION}.dsc
-#	cd deb && lintian pyjamas-pygtkweb_${VERSION}-${DEBSUBVERSION}_all.deb
+	cd deb && lintian -l pyjamas_${VERSION}-${DEBSUBVERSION}_all.deb
+	cd deb && lintian -l pyjamas-desktop_${VERSION}-${DEBSUBVERSION}_all.deb
+	cd deb && lintian -l pyjamas-doc_${VERSION}-${DEBSUBVERSION}_all.deb
+	cd deb && lintian -l pyjamas-ui_${VERSION}-${DEBSUBVERSION}_all.deb
+	cd deb && lintian -l pyjamas_${VERSION}-${DEBSUBVERSION}.dsc
+#	cd deb && lintian -l pyjamas-pygtkweb_${VERSION}-${DEBSUBVERSION}_all.deb
 

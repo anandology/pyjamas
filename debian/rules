@@ -1,32 +1,24 @@
 #!/usr/bin/make -f
 # -*- makefile -*-
-# Sample debian/rules that uses debhelper.
-# This file was originally written by Joey Hess and Craig Small.
-# As a special exception, when this file is copied by dh-make into a
-# dh-make output file, you may use that output file without restriction.
-# This special exception was added by Craig Small in version 0.37 of dh-make.
 
-# Uncomment this to turn on verbose mode.
-#export DH_VERBOSE=1
-
-
+-include /usr/share/python/python.mk
+ifeq (,$(py_sitename))
+  py_sitename = site-packages
+  py_libdir = /usr/lib/python$(subst python,,$(1))/site-packages
+  py_sitename_sh = $(py_sitename)
+  py_libdir_sh = $(py_libdir)
+endif
 
 
 
-configure: configure-stamp
-configure-stamp:
-	dh_testdir
-	# Add here commands to configure the package.
 
-	touch configure-stamp
 
 
 build: build-stamp
 
-build-stamp: configure-stamp  
+build-stamp: 
 	dh_testdir
 
-	# Add here commands to compile the package.
 	python bootstrap.py /usr/share/pyshared /usr/share/pyjamas .
 	python run_bootstrap_first_then_setup.py build
 	python run_bootstrap_first_then_pyjd_setup.py build
@@ -36,11 +28,10 @@ build-stamp: configure-stamp
 clean: 
 	dh_testdir
 	dh_testroot
-	rm -f build-stamp configure-stamp
+	rm -f build-stamp 
 
 	rm -fr tmp # remove examples
 
-	# Add here commands to clean up after the build process.
 	python run_bootstrap_first_then_setup.py clean
 
 	dh_clean 
@@ -51,10 +42,10 @@ install: build
 	dh_prep
 	dh_installdirs
 
-	# commands to install the package into debian/pyjamas.
+	# install the package into debian/pyjamas.
 	python run_bootstrap_first_then_setup.py install --root=debian/pyjamas-build
 
-	# commands to install the package into debian/pyjamas-desktop
+	# install the package into debian/pyjamas-desktop
 	python run_bootstrap_first_then_pyjd_setup.py install --root=debian/pyjamas-desktop
 
 	# move examples out way.
@@ -72,7 +63,6 @@ install: build
 	sed -i -e's/..\/..\/bin\///' tmp/examples/*/build.sh
 
 
-# Build architecture-independent files here.
 binary-indep: build install
 
 	dh_testdir 
@@ -112,4 +102,4 @@ binary-indep: build install
 binary-arch: build install
 
 binary: binary-indep 
-.PHONY: build clean binary-indep binary-arch binary install configure
+.PHONY: build clean binary-indep binary-arch binary install 
