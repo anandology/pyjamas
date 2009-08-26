@@ -4,7 +4,7 @@ import re
 import logging
 
 DEFAULT_SKIP_FILES=re.compile(
-    r"^(.*%(sep)s)?("
+    r"^(.*\%(sep)s)?("
     r"(\..*)|"
     r"(#.*#)|"
     r"(.*~)|"
