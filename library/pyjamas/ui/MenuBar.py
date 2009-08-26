@@ -46,7 +46,6 @@ class MenuBar(Widget):
         DOM.appendChild(outer, table)
         self.setElement(outer)
         Widget.__init__(self, **kwargs)
-        self.sinkEvents(Event.ONCLICK | Event.ONMOUSEOVER | Event.ONMOUSEOUT)
 
     # also callable as:
     #   addItem(item)
