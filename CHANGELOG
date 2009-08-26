@@ -1,6 +1,10 @@
                     Changes made to Pyjamas since 0.6
                     ---------------------------------
 
+ * Javascript keywords are possible/allowed as attibutes/modules
+
+ * All builtins can be overridden
+
  * Added support for *args/**kwargs for lambda
 
  * Added support mutable default in functions

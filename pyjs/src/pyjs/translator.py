@@ -35,130 +35,265 @@ else:
 # this is the python function used to wrap native javascript
 NATIVE_JS_FUNC_NAME = "JS"
 
-JS_RESERVED_WORDS = frozenset((
-    'abstract',
-    'as',
-    'boolean',
+# See http://www.quackit.com/javascript/javascript_reserved_words.cfm
+JavaScript_Reserved_Words = frozenset((
     'break',
-    'byte',
     'case',
-    'catch',
-    'char',
-    'class',
+    'comment',
     'continue',
-    'const',
-    'debugger',
     'default',
     'delete',
     'do',
-    'double',
     'else',
-    'enum',
     'export',
-    'extends',
-    'false',
-    'final',
-    'finally',
-    'float',
     'for',
     'function',
-    'goto',
     'if',
-    'implements',
     'import',
     'in',
-    'instanceof',
+    'label',
+    'new',
+    'return',
+    'switch',
+    'this',
+    'typeof',
+    'var',
+    'void',
+    'while',
+    'with',
+))
+
+ECMAScipt_Reserved_Words = frozenset((
+    'catch',
+    'class',
+    'const',
+    'debugger',
+    'enum',
+    'extends',
+    'finally',
+    'super',
+    'throw',
+    'try',
+))
+
+Java_Keywords = frozenset((# (Reserved by JavaScript)
+    'abstract',
+    'boolean',
+    'byte',
+    'char',
+    'double',
+    'false',
+    'final',
+    'float',
+    'goto',
+    'implements',
+    'instanceOf',
     'int',
     'interface',
-    'is',
     'long',
-    'namespace',
     'native',
-    'new',
     'null',
     'package',
     'private',
     'protected',
     'public',
-    'return',
     'short',
     'static',
-    'super',
-    'switch',
     'synchronized',
-    'this',
-    'throw',
-	'throws',
+    'throws',
     'transient',
     'true',
-    'try',
-    'typeof',
-    'use',
-    'var',
-    'void',
-    'volatile',
-    'while',
-    'with',
+))
+
+Other_JavaScript_Keywords = frozenset((
+    'Anchor',
+    'Area',
+    'Array',
+    'Boolean',
+    'Button',
+    'Checkbox',
+    'Date',
+    'Document',
+    'Element',
+    'FileUpload',
+    'Form',
+    'Frame',
+    'Function',
+    'Hidden',
+    'History',
+    'Image',
+    'Infinity',
+    'JavaArray',
+    'JavaClass',
+    'JavaObject',
+    'JavaPackage',
+    'Link',
+    'Location',
+    'Math',
+    'MimeType',
+    'NaN',
+    'Navigator',
+    'Number',
+    'Object',
+    'Option',
+    'Packages',
+    'Password',
+    'Plugin',
+    'Radio',
+    'RegExp',
+    'Reset',
+    'Select',
+    'String',
+    'Submit',
+    'Text',
+    'Textarea',
+    'Window',
+    'alert',
+    'arguments',
+    'assign',
+    'blur',
+    'callee',
+    'caller',
+    'captureEvents',
+    'clearInterval',
+    'clearTimeout',
+    'close',
+    'closed',
+    'confirm',
+    'constructor',
+    'defaultStatus',
+    'document',
+    'escape',
+    'eval',
+    'find',
+    'focus',
+    'frames',
+    'getClass',
+    'history',
+    'home',
+    'innerHeight',
+    'innerWidth',
+    'isFinite',
+    'isNan',
+    'java',
+    'length',
+    'location',
+    'locationbar',
+    'menubar',
+    'moveBy',
+    'moveTo',
+    'name',
+    'navigate',
+    'navigator',
+    'netscape',
+    'onBlur',
+    'onError',
+    'onFocus',
+    'onLoad',
+    'onUnload',
+    'open',
+    'opener',
+    'outerHeight',
+    'outerWidth',
+    'pageXoffset',
+    'pageYoffset',
+    'parent',
+    'parseFloat',
+    'parseInt',
+    'personalbar',
+    'print',
+    'prompt',
+    'prototype',
+    'ref',
+    'releaseEvents',
+    'resizeBy',
+    'resizeTo',
+    'routeEvent',
+    'scroll',
+    'scrollBy',
+    'scrollTo',
+    'scrollbars',
+    'self',
+    'setInterval',
+    'setTimeout',
+    'status',
+    'statusbar',
+    'stop',
+    'sun',
+    'taint',
+    'toString',
+    'toolbar',
+    'top',
+    'unescape',
+    'untaint',
+    'unwatch',
+    'valueOf',
+    'watch',
+    'window',
+))
+
+PYJSLIB_BUILTIN_FUNCTIONS=frozenset((
+    "abs",
+    "all",
+    "any",
+    "bool",
+    "callable",
+    "chr",
+    "cmp",
+    "delattr",
+    "dir",
+    "divmod",
+    "enumerate",
+    "filter",
+    "float",
+    "getattr",
+    "hasattr",
+    "hash",
+    "hex",
+    "int",
+    "isinstance",
+    "len",
+    "map",
+    "max",
+    "min",
+    "oct",
+    "ord",
+    "pow",
+    "range",
+    "repr",
+    "round",
+    "setattr",
+    "str",
+    "super",
+    "type",
     ))
 
-PYJSLIB_BUILTIN_FUNCTIONS=("cmp",
-                           "map",
-                           "filter",
-                           "dir",
-                           "getattr",
-                           "setattr",
-                           "hasattr",
-                           "delattr",
-                           "int",
-                           "float",
-                           "str",
-                           "repr",
-                           "range",
-                           "len",
-                           "hash",
-                           "abs",
-                           "ord",
-                           "chr",
-                           "enumerate",
-                           "min",
-                           "max",
-                           "bool",
-                           "type",
-                           "pow",
-                           "hex",
-                           "oct",
-                           "round",
-                           "divmod",
-                           "all",
-                           "any",
-                           "callable",
-                           "isinstance")
+PYJSLIB_BUILTIN_CLASSES=[
+    "AttributeError",
+    "BaseException",
+    "Exception",
+    "ImportError",
+    "IndexError",
+    "KeyError",
+    "LookupError",
+    "NameError",
+    "NotImplementedError",
+    "RuntimeError",
+    "StandardError",
+    "StopIteration",
+    "TypeError",
+    "ValueError",
 
-PYJSLIB_BUILTIN_CLASSES=("BaseException",
-                         "Exception",
-                         "StandardError",
-                         "StopIteration",
-                         "AttributeError",
-                         "TypeError",
-                         "KeyError",
-                         "LookupError",
-                         "NameError",
-                         "ValueError",
-                         "IndexError",
-                         "ImportError",
-                         "RuntimeError",
-                         "NotImplementedError",
-                         "list",
-                         "dict",
-                         "object",
-                         "tuple",
-                        )
+    "list",
+    "dict",
+    "object",
+    "tuple",
+    ]
 
 PYJSLIB_BUILTIN_MAPPING = {\
     'True' : 'true',
     'False': 'false',
     'None': 'null',
-    'super': 'pyjslib._super',
 }
 
 SCOPE_KEY = 0
@@ -167,21 +302,28 @@ SCOPE_KEY = 0
 # arguments -> arguments_
 # arguments_ -> arguments__
 # etc.
-pyjs_vars_remap_names = [\
-    'arguments', 'default', 'this', 'var',
-]
+# arguments is one of Other_JavaScript_Keywords, but is used 
+# in function/method initialization and therefore forbidden
+pyjs_vars_remap_names = ['arguments',]
 pyjs_vars_remap = []
 for a in pyjs_vars_remap_names:
+    pyjs_vars_remap.append(re.compile('^%s$' % a))
+for a in JavaScript_Reserved_Words:
+    pyjs_vars_remap.append(re.compile('^%s$' % a))
+for a in ECMAScipt_Reserved_Words:
     pyjs_vars_remap.append(re.compile('^%s$' % a))
 
 # Attributes that should be remapped in classes
 pyjs_attrib_remap_names = [\
-    'name', 'prototype', 'call', 'apply', 'constructor', 
-    # Specific for IE6:
-    'default',
+    'name', 'prototype', 'call', 'apply', 'constructor',
 ]
 pyjs_attrib_remap = []
 for a in pyjs_attrib_remap_names:
+    pyjs_attrib_remap.append(re.compile('(.*(^|[.]))(%s_*)(([.].*)|$)' % a))
+# Specific for IE6:
+for a in JavaScript_Reserved_Words:
+    pyjs_attrib_remap.append(re.compile('(.*(^|[.]))(%s_*)(([.].*)|$)' % a))
+for a in ECMAScipt_Reserved_Words:
     pyjs_attrib_remap.append(re.compile('(.*(^|[.]))(%s_*)(([.].*)|$)' % a))
 
 re_return = re.compile(r'\breturn\b')
@@ -310,18 +452,13 @@ def escapejs(value):
         value = value.replace(bad, good)
     return value
 
-def uuprefix(name, leave_alone=0):
-    name = name.split(".")
-    name = name[:leave_alone] + map(lambda x: "__%s" % x, name[leave_alone:])
-    return '.'.join(name)
 
 class Klass:
 
     klasses = {}
 
-    def __init__(self, name, name_):
+    def __init__(self, name):
         self.name = name
-        self.name_ = name_
         self.klasses[name] = self
         self.functions = set()
 
@@ -400,6 +537,7 @@ class Translator:
                  store_source=True,
                 ):
 
+        self.js_module_name = self.jsname("variable", module_name)
         if module_name:
             self.module_prefix = module_name + "."
         else:
@@ -434,51 +572,39 @@ class Translator:
         self.indent_level = 0
         self.__unique_ids__ = {}
 
-        for v in PYJSLIB_BUILTIN_FUNCTIONS:
-            # rename reserved words, pyjslib has to handle this internally
-            if v in JS_RESERVED_WORDS:
-                vf = v + '_'
-            else:
-                vf = v
-            self.add_lookup("builtin", v, "pyjslib." + vf)
-        for v in PYJSLIB_BUILTIN_CLASSES:
-            self.add_lookup("builtin", v, "pyjslib." + v)
-        for k in PYJSLIB_BUILTIN_MAPPING.keys():
-            self.add_lookup("builtin", k, PYJSLIB_BUILTIN_MAPPING[k])
-
         if '.' in module_name:
             vdec = ''
         else:
-            if module_name in JS_RESERVED_WORDS:
-                raise TranslationError(
-                    "reserved word used for top-level module %r" % module_name,
-                    mod, self.module_name)
+            #if module_name != self.jsname(module_name):
+            #    raise TranslationError(
+            #        "reserved word used for top-level module %r" % module_name,
+            #        mod, self.module_name)
 
             vdec = 'var '
         print >>self.output, self.spacing() + "/* start module: %s */" % module_name
-        print >>self.output, self.spacing() + '%s%s = $pyjs.loaded_modules["%s"] = function (__mod_name__) {' % (vdec, module_name, module_name)
+        print >>self.output, self.indent() + '%s%s = $pyjs.loaded_modules["%s"] = function (__mod_name__) {' % (vdec, self.js_module_name, module_name)
 
-        print >>self.output, self.spacing() + "if("+module_name+".__was_initialized__) return %s;"% module_name
-        print >>self.output, self.spacing() + module_name+".__was_initialized__ = true;"
+        print >>self.output, self.spacing() + "if("+self.js_module_name+".__was_initialized__) return %s;"% self.js_module_name
+        print >>self.output, self.spacing() + self.js_module_name+".__was_initialized__ = true;"
         print >>self.output, self.spacing() + "if (__mod_name__ == null) __mod_name__ = '%s';" % (mn)
-        lhs = "%s.__name__" % raw_module_name
-        self.add_lookup('variable', '__name__', lhs)
+        lhs = "%s.__name__" % self.js_module_name
+        self.add_lookup('builtin', '__name__', lhs)
         print >>self.output, self.spacing() + "var __name__ = %s = __mod_name__;" % (lhs)
         if self.source_tracking:
-            print >> self.output, self.spacing() + "%s.__track_lines__ = new Array();" % raw_module_name
-
-        save_output = self.output
-        self.output = StringIO()
-
-        decl = mod_var_name_decl(raw_module_name)
-        if decl:
-            print >>self.output, self.spacing() + decl
+            print >> self.output, self.spacing() + "%s.__track_lines__ = new Array();" % self.js_module_name
+        name = raw_module_name.split(".")
+        if len(name) > 1:
+            jsname = self.jsname("variable", name[-1])
+            print >>self.output, self.spacing() + "var %s = %s;" % (jsname, self.js_module_name)
 
         if self.attribute_checking and not raw_module_name in ['sys', 'pyjslib']:
             attribute_checking = True
             print >>self.output, self.indent() + 'try {'
         else:
             attribute_checking = False
+
+        save_output = self.output
+        self.output = StringIO()
 
         mod.lineno = 1
         self.track_lineno(mod, True)
@@ -530,16 +656,16 @@ class Translator:
         self.output = save_output
         if self.source_tracking and self.store_source:
             for l in self.track_lines.keys():
-                print >> self.output, self.spacing() + '''%s.__track_lines__[%d] = "%s";''' % (raw_module_name, l, self.track_lines[l].replace('"', '\"'))
+                print >> self.output, self.spacing() + '''%s.__track_lines__[%d] = "%s";''' % (self.js_module_name, l, self.track_lines[l].replace('"', '\"'))
         print >> self.output, captured_output,
 
         if attribute_checking:
-            print >> self.output, self.spacing() + "} catch ($pyjs_attr_err) {throw pyjslib._errorMapping($pyjs_attr_err)};"
+            print >> self.output, self.dedent() + "} catch ($pyjs_attr_err) {throw pyjslib._errorMapping($pyjs_attr_err)};"
 
         print >> self.output, self.spacing() + "return this;"
-        print >> self.output, self.spacing() + "}; /* end %s */"  % module_name
+        print >> self.output, self.dedent() + "}; /* end %s */"  % module_name
         print >> self.output, "\n"
-        print >> self.output, self.spacing(), "/* end module: %s */" % module_name
+        print >> self.output, self.spacing() + "/* end module: %s */" % module_name
         print >> self.output, "\n"
 
         # print out the deps and check for wrong imports
@@ -660,14 +786,21 @@ class Translator:
     def pop_lookup(self):
         return self.lookup_stack.pop()
 
-    def add_lookup(self, name_type, pyname, jsname, depth = -1):
-        if name_type == 'variable':
+    def jsname(self, name_type, jsname):
+        if name_type != 'builtin' or name_type == 'variable':
             if jsname.find('.') >= 0:
                 jsname = self.attrib_remap(jsname)
+                jsname = jsname.split('.', 1)
+                jsname = self.vars_remap(jsname[0]) + '.' + jsname[1]
             else:
                 jsname = self.vars_remap(jsname)
         else:
-            jsname = self.attrib_remap(jsname)
+            if jsname.find('.') >= 0:
+                jsname = self.attrib_remap(jsname)
+        return jsname
+
+    def add_lookup(self, name_type, pyname, jsname, depth = -1):
+        jsname = self.jsname(name_type, jsname)
         self.lookup_stack[depth][pyname] = (name_type, pyname, jsname)
         return jsname
 
@@ -686,6 +819,19 @@ class Translator:
                 name_type, pyname, jsname = self.lookup_stack[depth][name]
                 break
             depth -= 1
+        if depth < 0:
+            if name in PYJSLIB_BUILTIN_FUNCTIONS:
+                name_type = 'builtin'
+                pyname = name
+                jsname = self.jsname("variable", "pyjslib.%s" % name)
+            elif name in PYJSLIB_BUILTIN_CLASSES:
+                name_type = 'builtin'
+                pyname = name
+                jsname = self.jsname("variable", "pyjslib.%s" % name)
+            elif PYJSLIB_BUILTIN_MAPPING.has_key(name):
+                name_type = 'builtin'
+                pyname = name
+                jsname = PYJSLIB_BUILTIN_MAPPING[name]
         return (name_type, pyname, jsname, depth, max_depth == depth and not name_type is None)
 
     def scopeName(self, name, depth, local):
@@ -1209,7 +1355,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                     mod_name = importName
                 else:
                     mod_name = ass_name
-                stmt = '%s = $pyjs.__modules__.%s;'% (lhs, mod_name)
+                stmt = "%s = $pyjs.__modules__['%s'];"% (lhs, mod_name)
                 print >> self.output, self.spacing() + stmt
 
     def _from(self, node, current_klass, top_level = False, root_level = False):
@@ -1240,7 +1386,8 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             self._doImport(((sub, None),), current_klass, top_level, root_level, False)
             ass_name = name[1] or name[0]
             lhs = self._lhsFromName(ass_name, top_level, current_klass)
-            rhs = '.'.join(('$pyjs', '__modules__', node.modname, name[0]))
+            modnames = ["'%s'" % name for name in ('%s.%s' % (node.modname, name[0])).split('.')]
+            rhs = "$pyjs.__modules__[%s]" % (']['.join(modnames))
             print >> self.output, self.spacing() + "%s = %s;" % (lhs, rhs)
 
     def _function(self, node, current_klass, local=False):
@@ -1621,8 +1768,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         return self.expr(v.expr, current_klass) + "." + v.attrname + "." + attr_name
 
     def _class(self, node):
-        class_name = self.modpfx() + uuprefix(node.name, 1)
-        current_klass = Klass(class_name, class_name)
+        class_name = self.modpfx() + node.name
+        current_klass = Klass(class_name)
         current_klass.__md5__ = self.md5(node)
         init_method = None
         for child in node.code:
@@ -1962,8 +2109,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             self.add_lookup(set_name_type, name, jsname)
         elif top_level:
             if current_klass:
-                #lhs = "var " + name + " = " + current_klass.name_ + "." + name
-                lhs = current_klass.name_ + "." + name
+                lhs = current_klass.name + "." + name
             else:
                 vname = self.modpfx() + name
                 vname = self.add_lookup(set_name_type, name, vname)
@@ -2433,7 +2579,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         elif isinstance(node, ast.Div):
             return " ( " + self._div(node, current_klass) + " ) "
         elif isinstance(node, ast.FloorDiv):
-            return " pyjslib.int_( " + self._div(node, current_klass) + " ) "
+            return " pyjslib.int( " + self._div(node, current_klass) + " ) "
         elif isinstance(node, ast.Mod):
             return self._mod(node, current_klass)
         elif isinstance(node, ast.Power):

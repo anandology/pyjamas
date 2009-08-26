@@ -1159,9 +1159,8 @@ class Dict:
 
 dict = Dict
 
-# IE6 doesn't like pyjslib.super
 @compiler.noSourceTracking
-def _super(type_, object_or_type = None):
+def super(type_, object_or_type = None):
     # This is a partially implementation: only super(type, object)
     if not _issubtype(object_or_type, type_):
         raise TypeError("super(type, obj): obj must be an instance or subtype of type")
@@ -1341,13 +1340,13 @@ def repr(x):
     """)
 
 @compiler.noSourceTracking
-def float_(text):
+def float(text):
     JS("""
     return parseFloat(text);
     """)
 
 @compiler.noSourceTracking
-def int_(text, radix=None):
+def int(text, radix=None):
     _radix = radix
     JS("""
     if (radix === null) {
@@ -1377,7 +1376,7 @@ def len(object):
 def isinstance(object_, classinfo):
     if isUndefined(object_):
         return False
-    JS("""if (classinfo.__name__ == 'int_') {
+    JS("""if (classinfo.__name__ == 'int') {
             return pyjslib.isNumber(object_); /* XXX TODO: check rounded? */
             }
         """)

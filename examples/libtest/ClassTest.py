@@ -447,6 +447,19 @@ class ClassTest(UnitTest):
             self.assertEqual(pmc.prop_a, 1)
             self.assertEqual(pmc.prop_b, 7)
 
+    def testImportKeywords(self):
+        import imports.enum.super
+        self.assertEqual(imports.enum.super.var, 1)
+        self.assertEqual(imports.enum.super.function(), 2)
+
+        from imports import enumerate
+        self.assertEqual(enumerate.list, 1)
+
+        from imports.enumerate import dict
+        self.assertEqual(dict(), (1,2))
+
+
+
 class PassMeAClass(object):
     def __init__(self):
         pass
