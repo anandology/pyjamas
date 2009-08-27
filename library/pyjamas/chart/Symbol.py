@@ -948,11 +948,11 @@ class Symbol(object):
         RGBA_PATTERN = \
                 "rgba[(]" + RGB + "[,]" + RGB + "[,]" + RGB + "[,]" + A + "[)]"
         result = rgba
-        if None != rgba  and  rgba.startsWith("rgba("):
+        if None != rgba  and  rgba.startswith("rgba("):
             if rgba.matches(RGBA_PATTERN):
                 FIRST_PAREN = 4
-                lastComma = rgba.lastIndexOf(",")
-                result = "rgb" + rgba.substring(FIRST_PAREN, lastComma) + ")"
+                lastComma = rgba.rfind(",")
+                result = "rgb" + rgba[FIRST_PAREN, lastComma] + ")"
             
             else:
                 raise IllegalArgumentException(
@@ -983,7 +983,7 @@ class Symbol(object):
         self.getParent().invalidate()
         self.backgroundColor = backgroundColor
         # don't want to keep collapsing whenever we render, so save it:
-        self.backgroundColorCSS = collapseRGBAToRGB(backgroundColor)
+        self.backgroundColorCSS = self.collapseRGBAToRGB(backgroundColor)
     
     
     """* Specifies the baseline value for this symbol. Use a
