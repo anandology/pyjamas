@@ -25,8 +25,8 @@ import pyjd
 """
     
 # convenience method to create a short, class-name-based title
-def getTitle(self, obj):
-    result = obj.getClass().getName()
+def getTitle(obj):
+    result = obj.__class__.__name__
     result = result[:result.rfind(".")+1]
     return "<h4><br>" + result + "</h4>"
 

@@ -2080,9 +2080,9 @@ class Y2Axis(Axis):
         self.gridlinesId = Y2GRIDLINES_ID
         self.axisId = Y2AXIS_ID
         self.axisPosition = 1
-        setTickLocation(DEFAULT_TICK_LOCATION)
-        setTickThickness(DEFAULT_TICK_THICKNESS)
-        setTickLength(DEFAULT_TICK_LENGTH)
+        self.setTickLocation(DEFAULT_TICK_LOCATION)
+        self.setTickThickness(DEFAULT_TICK_THICKNESS)
+        self.setTickLength(DEFAULT_TICK_LENGTH)
 
     def clientToModel(clientCoordinate):
         yPixel = (Window.getScrollTop() + clientCoordinate -
