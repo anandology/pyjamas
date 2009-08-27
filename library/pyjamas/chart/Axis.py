@@ -510,15 +510,15 @@ class Axis:
         ** @see #getDataMax getDataMax
         *"""
 
-        if not (axisMax!=axisMax):
+        if not (self.axisMax!=self.axisMax):
             # x!=x is a faster isNaN
-            return axisMax
+            return self.axisMax
 
         elif GChart.NAI != self.tickCount:
-            return getDataMax()
+            return self.getDataMax()
 
         else:
-            return max(getDataMax(), getTickMax())
+            return max(self.getDataMax(), self.getTickMax())
 
 
     def getAxisMin(self):
@@ -537,15 +537,15 @@ class Axis:
         **
         ** @see #setAxisMin setAxisMin
         *"""
-        if not (axisMin!=axisMin):
+        if not (self.axisMin!=self.axisMin):
             # x!=x is a faster isNaN
-            return axisMin; # explicitly set
+            return self.axisMin; # explicitly set
 
         elif GChart.NAI != self.tickCount:
-            return getDataMin()
+            return self.getDataMin()
 
         else:
-            return min(getDataMin(), getTickMin())
+            return min(self.getDataMin(), self.getTickMin())
 
 
 
@@ -781,7 +781,7 @@ class Axis:
         ** @see #setTicksPerGridline setTicksPerGridline
         **
         *"""
-        return ticksPerGridline
+        return self.ticksPerGridline
 
     def getTicksPerLabel(self):
         """*
@@ -793,7 +793,7 @@ class Axis:
         ** @see #setTicksPerLabel setTicksPerLabel
         **
         *"""
-        return ticksPerLabel
+        return self.ticksPerLabel
 
 
     def getTickLength(self):
@@ -804,7 +804,7 @@ class Axis:
         *
         * @see #setTickLength setTickLength
         """
-        return tickLength
+        return self.tickLength
 
 
     # GChart adds a pixel to even, centered, tick lengths (only
@@ -1686,7 +1686,7 @@ class Axis:
         self.chartDecorationsChanged = True
         if ticksPerLabel <= 0:
             raise IllegalArgumentException("ticksPerLabel=" +
-            ticksPerLabel + "; ticksPerLabel must be > 0")
+                        ticksPerLabel + "; ticksPerLabel must be > 0")
 
         self.ticksPerLabel = ticksPerLabel
 
@@ -1785,7 +1785,7 @@ class Axis:
                     position = ((l.min * ((self.tickCount-1)-i) + i * l.max)/
                                 (self.tickCount-1.0))
                 self.addTickAsPoint(position,
-                            (0 == i % ticksPerLabel) and
+                            (0 == i % self.ticksPerLabel) and
                                     formatAsTickLabel(position) or None,
                             None,
                             GChart.NAI, GChart.NAI)
@@ -1809,8 +1809,8 @@ class Axis:
     def _getAxisLimits(self, result):
         # so we get 1-unit changes between adjacent ticks
         DEFAULT_AXIS_RANGE = DEFAULT_TICK_COUNT-1
-        min = getAxisMin()
-        max = getAxisMax()
+        min = self.getAxisMin()
+        max = self.getAxisMax()
         # Adjust min/max so that special cases, like one-point
         # charts, do not have axes that shrink down to a point,
         # which would create numerical and visual difficulties.
