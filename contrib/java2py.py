@@ -65,6 +65,9 @@ def countspaces(txt):
 
 def java2pythonlinebyline(txt):
     if txt.find('if (') >= 0:
+        if not txt.strip().endswith("{"):
+            print txt
+            error # deliberate error on lines with no {
         txt = txt.replace('if (', 'if ')
         txt = txt.replace('!', 'not ')
         txt = txt.replace('not =', '!=') # whoops
@@ -77,6 +80,8 @@ def java2pythonlinebyline(txt):
         txt = txt.replace('try {', 'try:')
     elif txt.find('} catch') >= 0:
         txt = txt.replace('} catch', 'except')
+    elif txt.find('finally {') >= 0:
+        txt = txt.replace('finally {', 'except:')
     elif txt.find('while (') >= 0:
         txt = txt.replace('while (', 'while ')
         txt = txt.replace(') {', ':')
@@ -114,6 +119,8 @@ def java2pythonlinebyline(txt):
     return txt
 
 def redofunctions(txt):
+    if txt.strip().startswith("#"):
+        return txt
     if not txt.endswith("{"):
         return txt
     lbr = txt.find("(")
@@ -127,6 +134,9 @@ def redofunctions(txt):
     pre = txt[count:lbr]
     args = txt[lbr+1:rbr]
 
+    if pre.strip() == 'switch':
+        return txt
+
     is_exception = 0
     if pre.find("except") >= 0:
         is_exception = 1
@@ -137,7 +147,7 @@ def redofunctions(txt):
         elif len(pre) == 2:
             pre = pre[-1] # drop the first word (return type)
         else:
-            print txt
+            print txt, pre
             error # deliberately cause error - investigate 3-word thingies!
 
     args = map(string.strip, args.split(','))
@@ -149,6 +159,7 @@ def redofunctions(txt):
         if len(arg) == 2:
             newargs.append(arg[1]) # drop first word (arg type)
         else:
+            print txt
             print pre, args, arg
             error # deliberately cause error - find out why arg no type
     if count != 0 and not is_exception:
@@ -169,6 +180,8 @@ def reindent(txt):
         l = l.strip()
         if l.startswith("}"):
             indent -= 1
+            if indent < 0:
+                res += "INDENT ERROR"
         res += '    ' * indent + l + "\n"
         if l.endswith("{"):
             indent += 1
