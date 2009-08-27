@@ -1,6 +1,10 @@
                     Changes made to Pyjamas since 0.6
                     ---------------------------------
 
+ * Added first port of GChart - http://code.google.com/p/gchart.
+   java2py.py converted, then manual update.  Passes syntax check
+   but that's about it...
+
  * Added property()
 
  * Added staticmethod()
