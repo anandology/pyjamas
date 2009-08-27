@@ -21,6 +21,7 @@ import NumberFormat
 import DateTimeFormat
 import GChart
 import Double
+import TickLocation
 
 from GChartConsts import DEFAULT_TICK_LOCATION
 from GChartConsts import DEFAULT_TICK_COUNT
@@ -147,10 +148,10 @@ class Axis:
 
         c = self.getSystemCurve(self.ticksId)
         if self.isHorizontalAxis:
-            c.addPoint(tickPosition, axisPosition*Double.MAX_VALUE)
+            c.addPoint(tickPosition, self.axisPosition*Double.MAX_VALUE)
 
         else:
-            c.addPoint(axisPosition*Double.MAX_VALUE, tickPosition)
+            c.addPoint(self.axisPosition*Double.MAX_VALUE, tickPosition)
 
 
         # unlabeled tick--we are done, so return to save time
@@ -161,18 +162,18 @@ class Axis:
         p = c.getPoint()
         if self.isHorizontalAxis:
             # below tick on X, above it on (the future) X2
-            p.setAnnotationLocation( (axisPosition < 0) and AnnotationLocation.SOUTH or AnnotationLocation.NORTH)
+            p.setAnnotationLocation( (self.axisPosition < 0) and AnnotationLocation.SOUTH or AnnotationLocation.NORTH)
             if tickLabelPadding != 0:
                 # padding < 0 is rare but allowed
-                p.setAnnotationYShift(axisPosition*tickLabelPadding)
+                p.setAnnotationYShift(self.axisPosition*tickLabelPadding)
                 # else stick with default of 0 y-shift
 
 
         else:
             # to left of tick mark on Y, to right of it on Y2
-            p.setAnnotationLocation( (axisPosition < 0) and AnnotationLocation.WEST or AnnotationLocation.EAST)
+            p.setAnnotationLocation( (self.axisPosition < 0) and AnnotationLocation.WEST or AnnotationLocation.EAST)
             if tickLabelPadding != 0:
-                p.setAnnotationXShift(axisPosition*tickLabelPadding)
+                p.setAnnotationXShift(self.axisPosition*tickLabelPadding)
 
             # else stick with default of 0 x-shift
 
@@ -806,9 +807,9 @@ class Axis:
     # GChart adds a pixel to even, centered, tick lengths (only
     # odd-length HTML ticks can be exactly centered on 1px axis)
     def getActualTickLength(self):
-        result = tickLength
-        if (TickLocation.CENTERED == tickLocation  and
-            0 == (tickLength % 2)  and  tickLength > 0):
+        result = self.tickLength
+        if (TickLocation.CENTERED == self.tickLocation  and
+            0 == (self.tickLength % 2)  and  self.tickLength > 0):
             result += 1
 
         return result
@@ -1727,12 +1728,12 @@ class Axis:
         self.chartDecorationsChanged = True
         sym = self.getSystemCurve(self.ticksId).getSymbol()
         if self.isHorizontalAxis:
-            sym.setSymbolType(tickLocation.getXAxisSymbolType(axisPosition))
-            sym.setHeight(getActualTickLength())
+            sym.setSymbolType(tickLocation.getXAxisSymbolType(self.axisPosition))
+            sym.setHeight(self.getActualTickLength())
 
         else:
-            sym.setSymbolType(tickLocation.getYAxisSymbolType(axisPosition))
-            sym.setWidth(getActualTickLength())
+            sym.setSymbolType(tickLocation.getYAxisSymbolType(self.axisPosition))
+            sym.setWidth(self.getActualTickLength())
 
 
 
@@ -1938,8 +1939,8 @@ class XAxis(Axis):
 
     def clientToModel(clientCoordinate):
         xPixel = (Window.getScrollLeft() + clientCoordinate -
-                plotPanel.getAbsoluteLeft())
-        result = plotPanel.xChartPixelToX(xPixel)
+                self.plotPanel.getAbsoluteLeft())
+        result = self.plotPanel.xChartPixelToX(xPixel)
         return result
 
     def getAxisLabelThickness(self):
@@ -2003,7 +2004,7 @@ class XAxis(Axis):
 
 
     def getMouseCoordinate(self):
-        result = plotPanel.xChartPixelToX(plotPanel.getXMouse())
+        result = self.plotPanel.xChartPixelToX(self.plotPanel.getXMouse())
         return result
 
 
@@ -2029,34 +2030,34 @@ class XAxis(Axis):
 
 
     def modelToClient(self, modelCoordinate):
-        xPixel = plotPanel.xToChartPixel(modelCoordinate)
-        result = (plotPanel.getAbsoluteLeft()
+        xPixel = self.plotPanel.xToChartPixel(modelCoordinate)
+        result = (self.plotPanel.getAbsoluteLeft()
                         - Window.getScrollLeft() + xPixel )
         return result
 
     def modelToPixel(self, modelCoordinate):
-        result = plotPanel.xToChartPixel(modelCoordinate)
+        result = self.plotPanel.xToChartPixel(modelCoordinate)
         return result
 
     def modelToPlotAreaPixel(self, modelCoordinate):
-        result = plotPanel.xToPixel(modelCoordinate)
+        result = self.plotPanel.xToPixel(modelCoordinate)
         return result
 
     def pixelToModel(self, pixelCoordinate):
-        result = plotPanel.xChartPixelToX(pixelCoordinate)
+        result = self.plotPanel.xChartPixelToX(pixelCoordinate)
         return result
 
     def plotAreaPixelToModel(self, pixelCoordinate):
-        result = plotPanel.xPixelToX(pixelCoordinate)
+        result = self.plotPanel.xPixelToX(pixelCoordinate)
         return result
 
-    def setTickLength(tickLength):
+    def setTickLength(self, tickLength):
         self.chartDecorationsChanged = True
         self.tickLength = tickLength
         self.getSystemCurve(self.ticksId).getSymbol().setHeight(
-        getActualTickLength())
+        self.getActualTickLength())
 
-    def setTickThickness(tickThickness):
+    def setTickThickness(self, tickThickness):
         self.tickThickness = tickThickness
         self.getSystemCurve(self.ticksId).getSymbol().setWidth(tickThickness)
 
@@ -2082,8 +2083,8 @@ class Y2Axis(Axis):
 
     def clientToModel(clientCoordinate):
         yPixel = (Window.getScrollTop() + clientCoordinate -
-                        plotPanel.getAbsoluteTop())
-        result = plotPanel.yChartPixelToY2(yPixel)
+                        self.plotPanel.getAbsoluteTop())
+        result = self.plotPanel.yChartPixelToY2(yPixel)
         return result
 
     def getDataMax(self):
@@ -2127,37 +2128,37 @@ class Y2Axis(Axis):
 
 
     def getMouseCoordinate(self):
-        result = plotPanel.yChartPixelToY2(plotPanel.getYMouse())
+        result = self.plotPanel.yChartPixelToY2(self.plotPanel.getYMouse())
         return result
 
 
-    def modelToClient(modelCoordinate):
-        yPixel = plotPanel.yToChartPixel(modelCoordinate, True)
-        result = plotPanel.getAbsoluteTop() - Window.getScrollTop() + yPixel
+    def modelToClient(self, modelCoordinate):
+        yPixel = self.plotPanel.yToChartPixel(modelCoordinate, True)
+        result = self.plotPanel.getAbsoluteTop() - Window.getScrollTop() + yPixel
         return result
 
-    def modelToPixel(modelCoordinate):
-        result = plotPanel.yToChartPixel(modelCoordinate, True)
+    def modelToPixel(self, modelCoordinate):
+        result = self.plotPanel.yToChartPixel(modelCoordinate, True)
         return result
 
-    def modelToPlotAreaPixel(modelCoordinate):
-        result = plotPanel.yToPixel(modelCoordinate, True)
+    def modelToPlotAreaPixel(self, modelCoordinate):
+        result = self.plotPanel.yToPixel(modelCoordinate, True)
         return result
 
-    def pixelToModel(pixelCoordinate):
-        result = plotPanel.yChartPixelToY2(pixelCoordinate)
+    def pixelToModel(self, pixelCoordinate):
+        result = self.plotPanel.yChartPixelToY2(pixelCoordinate)
         return result
 
-    def plotAreaPixelToModel(pixelCoordinate):
-        result = plotPanel.yPixelToY2(pixelCoordinate)
+    def plotAreaPixelToModel(self, pixelCoordinate):
+        result = self.plotPanel.yPixelToY2(pixelCoordinate)
         return result
 
-    def setTickLength(tickLength):
+    def setTickLength(self, tickLength):
         self.chartDecorationsChanged = True
         self.tickLength = tickLength
-        self.getSystemCurve(self.ticksId).getSymbol().setWidth(getActualTickLength())
+        self.getSystemCurve(self.ticksId).getSymbol().setWidth(self.getActualTickLength())
 
-    def setTickThickness(tickThickness):
+    def setTickThickness(self, tickThickness):
         self.tickThickness = tickThickness
         self.getSystemCurve(self.ticksId).getSymbol().setHeight(tickThickness)
 
@@ -2182,8 +2183,8 @@ class YAxis(Axis):
 
     def clientToModel(clientCoordinate):
         yPixel = (Window.getScrollTop() + clientCoordinate -
-                        plotPanel.getAbsoluteTop())
-        result = plotPanel.yChartPixelToY(yPixel)
+                        self.plotPanel.getAbsoluteTop())
+        result = self.plotPanel.yChartPixelToY(yPixel)
         return result
 
     def getDataMax(self):
@@ -2228,39 +2229,39 @@ class YAxis(Axis):
 
 
     def getMouseCoordinate(self):
-        result = plotPanel.yChartPixelToY(plotPanel.getYMouse())
+        result = self.plotPanel.yChartPixelToY(self.plotPanel.getYMouse())
         return result
 
 
 
-    def modelToClient(modelCoordinate):
-        yPixel = plotPanel.yToChartPixel(modelCoordinate, False)
-        result = plotPanel.getAbsoluteTop() - Window.getScrollTop() + yPixel
+    def modelToClient(self, modelCoordinate):
+        yPixel = self.plotPanel.yToChartPixel(modelCoordinate, False)
+        result = self.plotPanel.getAbsoluteTop() - Window.getScrollTop() + yPixel
         return result
 
-    def modelToPixel(modelCoordinate):
-        result = plotPanel.yToChartPixel(modelCoordinate, False)
+    def modelToPixel(self, modelCoordinate):
+        result = self.plotPanel.yToChartPixel(modelCoordinate, False)
         return result
 
-    def modelToPlotAreaPixel(modelCoordinate):
-        result = plotPanel.yToPixel(modelCoordinate, False)
+    def modelToPlotAreaPixel(self, modelCoordinate):
+        result = self.plotPanel.yToPixel(modelCoordinate, False)
         return result
 
-    def pixelToModel(pixelCoordinate):
-        result = plotPanel.yChartPixelToY(pixelCoordinate)
+    def pixelToModel(self, pixelCoordinate):
+        result = self.plotPanel.yChartPixelToY(pixelCoordinate)
         return result
 
-    def plotAreaPixelToModel(pixelCoordinate):
-        result = plotPanel.yPixelToY(pixelCoordinate)
+    def plotAreaPixelToModel(self, pixelCoordinate):
+        result = self.plotPanel.yPixelToY(pixelCoordinate)
         return result
 
-    def setTickLength(tickLength):
+    def setTickLength(self, tickLength):
         self.chartDecorationsChanged = True
         self.tickLength = tickLength
         self.getSystemCurve(self.ticksId).getSymbol().setWidth(
-                                getActualTickLength())
+                                self.getActualTickLength())
 
-    def setTickThickness(tickThickness):
+    def setTickThickness(self, tickThickness):
         self.tickThickness = tickThickness
         self.getSystemCurve(self.ticksId).getSymbol().setHeight(tickThickness)
 
