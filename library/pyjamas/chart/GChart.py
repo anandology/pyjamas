@@ -1716,7 +1716,7 @@ class GChart (Composite):
     * @see #getXAxis getXAxis
     """
     def getY2Axis(self):
-        return y2Axis
+        return self.y2Axis
 
     """*
     * Returns the (left) y-axis associated with this chart. Use the
@@ -1729,7 +1729,7 @@ class GChart (Composite):
     * @see #getY2Axis getY2Axis
     """
     def getYAxis(self):
-        return yAxis
+        return self.yAxis
 
     """*
     * Returns the number of y-pixels in the region of the chart
@@ -1741,7 +1741,7 @@ class GChart (Composite):
     *
     """
     def getYChartSize(self):
-        return yChartSize
+        return self.yChartSize
 
 
     """*
@@ -1772,13 +1772,13 @@ class GChart (Composite):
     *
     """
     def getYChartSizeDecorated(self):
-        result = (getYChartSize() +
-                    getXAxis().getAxisLabelThickness() +
-                    getXAxis().getTickLabelThickness() +
-                    getXAxis().getTickSpace() +
-                    getXAxis().getTickLabelPadding() +
-                    getChartTitleThickness() +
-                    getChartFootnotesThickness())
+        result = (self.getYChartSize() +
+                    self.getXAxis().getAxisLabelThickness() +
+                    self.getXAxis().getTickLabelThickness() +
+                    self.getXAxis().getTickSpace() +
+                    self.getXAxis().getTickLabelPadding() +
+                    self.getChartTitleThickness() +
+                    self.getChartFootnotesThickness())
 
         return result
 
