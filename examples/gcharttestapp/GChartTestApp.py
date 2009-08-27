@@ -70,17 +70,19 @@ def rnd(self):
 * HTML/hash code, so you must run the test via the Compile/Browse button.
 *
 """
-    
+ 
+from GChartTestAppUtil import getTitle
+
 class AddOneChart:
     def __init__(self, gchart, needsUpdate=True):
         self.gchart = gchart
         self.needsUpdate = needsUpdate
     
     def execute(self):
-        RootPanel.get("testappcharts").add(HTML(getTitle(gchart)))
-        RootPanel.get("testappcharts").add(gchart)
+        RootPanel().get("testappcharts").add(HTML(getTitle(self.gchart)))
+        RootPanel().get("testappcharts").add(self.gchart)
         if self.needsUpdate:
-            gchart.update()
+            self.gchart.update()
         
 
 
@@ -371,7 +373,7 @@ def onModuleLoad():
 
     addChart(TestGChart00())
     
-    RootPanel.get("loadingMessage").setVisible(False)
+    RootPanel().get("loadingMessage").setVisible(False)
     
     
     
