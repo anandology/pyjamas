@@ -101,6 +101,7 @@ from GChartConsts import N_POST_SYSTEM_CURVES
 
 
 
+import Double
 import AnnotationLocation
 import SymbolType
 import TickLocation

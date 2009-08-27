@@ -19,6 +19,7 @@
 
 
 import math
+import re
 
 from pyjamas import DOM
 from pyjamas import Window
@@ -949,7 +950,8 @@ class Symbol(object):
                 "rgba[(]" + RGB + "[,]" + RGB + "[,]" + RGB + "[,]" + A + "[)]"
         result = rgba
         if None != rgba  and  rgba.startswith("rgba("):
-            if rgba.matches(RGBA_PATTERN):
+            rp = re.compile(RGBA_PATTERN)
+            if rp.match(rgba):
                 FIRST_PAREN = 4
                 lastComma = rgba.rfind(",")
                 result = "rgb" + rgba[FIRST_PAREN, lastComma] + ")"
@@ -1035,7 +1037,7 @@ class Symbol(object):
     def setBorderColor(self, borderColor):
         self.getParent().invalidate()
         self.borderColor = borderColor
-        self.borderColorCSS = collapseRGBAToRGB(borderColor)
+        self.borderColorCSS = self.collapseRGBAToRGB(borderColor)
     
     
     """*
