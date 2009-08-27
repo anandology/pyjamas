@@ -97,54 +97,6 @@ class Curve:
         self.bandThickness = Double.NaN
 
     """*
-    * Adds a point to the curve, at the end of the current
-    * list of points, with the specified
-    * coordinates in model-units (arbitrary, application-specific,
-    * units).
-    * <p>
-    *
-    * GChart gives a special interpretation to the following values:
-    * <p>
-    *
-    * <ol>
-    *
-    * <li> If <tt>-Double.MAX_VALUE</tt> is specified for either x or y,
-    * the point acts as if it were placed at the minimum visible
-    * x or y position within the plot area.
-    * <p>
-    *
-    * <li> Similarly, if <tt>Double.MAX_VALUE</tt> is specified for
-    * either x or y, the point acts as if it were placed at the
-    * maximum visible x or y position within the plot area.  <p>
-    *
-    * <p>
-    * <li>If <tt>Double.NaN</tt> is specified for either x or y, the
-    * point is created, but it will not be visible in the
-    * charting region.
-    *
-    * <p>
-    * <i>Tip:</i> Connecting lines to/from such
-    * <tt>Double.NaN</tt> points are elided, so you can use such a
-    * point to create a break in an otherwise connected curve.
-    *
-    * </ol>
-    *
-    *
-    * @param x the x-coordinate of the point
-    * @param y the y-coordinate of the point
-    *
-    * @see #getPoint getPoint
-    * @see #addPoint(int,double,double) addPoint(int,double,double)
-    * @see #removePoint removePoint
-    * @see #clearPoints clearPoints
-    * @see #getNPoints getNPoints
-    """
-    def addPoint(self, x, y):
-        self.invalidate()
-        points.add(Point(x, y))
-    
-    
-    """*
     * Adds a point at the specified position in the point
     * sequence, increasing the indexes of existing points at or after
     * the specified position by 1.
@@ -159,9 +111,17 @@ class Curve:
     * @see #clearPoints clearPoints
     * @see #getNPoints getNPoints
     """
-    def addPoint(self, iPoint, x, y):
+    def addPoint(self, arg1, arg2, arg3=None):
         self.invalidate()
-        points.add(iPoint, Point(x, y))
+        if arg3 is None:
+            x = arg1
+            y = arg2
+            self.points.append(Point(x, y))
+        else:
+            iPoint = arg1
+            x = arg2
+            y = arg3
+            self.points.insert(iPoint, Point(x, y))
     
     
     """*
@@ -179,7 +139,7 @@ class Curve:
             plotPanel.touch(None)
         
         self.invalidate()
-        points.clear()
+        self.points.clear()
     
     
     
@@ -341,16 +301,17 @@ class Curve:
 
     def bandSeparatePoints(self):
         self.bandThickness = \
-            getSymbol().getSymbolType().getBandThickness(plotPanel,
-                                                         getSymbol(),onY2())
-        nBands = getNBands(self.bandThickness)
+            getSymbol().getSymbolType().getBandThickness(self.plotPanel,
+                                                         self.getSymbol(),
+                                                         self.onY2())
+        nBands = self.getNBands(self.bandThickness)
         
         if self.bandList is None  or  len(self.bandList) != nBands:
             self.bandList = [GChart.NAI] * nBands
         
-        for iPoint in range(getNPoints()):
-            iBand = getBand(iPoint, self.bandThickness)
-            p = getPoint(iPoint)
+        for iPoint in range(self.getNPoints()):
+            iBand = self.getBand(iPoint, self.bandThickness)
+            p = self.getPoint(iPoint)
             if GChart.NAI == iBand:
                 # point isn't rendered at all, so isn't in a band (a next
                 # link pointing to self means "I'm not in any band"). To let
@@ -516,7 +477,7 @@ class Curve:
     **
     *"""
     def getLegendLabel(self):
-        return legendHTML
+        return self.legendHTML
     
     
     """*
@@ -531,7 +492,7 @@ class Curve:
     * @see #clearPoints clearPoints
     """
     def getNPoints(self):
-        return points.size()
+        return len(self.points)
     
     
     """*
@@ -542,7 +503,7 @@ class Curve:
     *
     """
     def getParent(self):
-        return GChart.this
+        return self.chart
     
     """*
     * Convenience method equivalent to <tt>getPoint(getNPoints()-1)</tt>.
@@ -591,12 +552,12 @@ class Curve:
     * @see #getNPoints getNPoints
     """
     def getPoint(self, iPoint):
-        if iPoint < 0  or  iPoint >= points.size():
+        if iPoint < 0  or  iPoint >= len(self.points):
             raise IllegalArgumentException(
             "Point index iPoint=" + iPoint + ". " +
             "is either < 0 or >= the number of points on the curve.")
         
-        return points.get(iPoint)
+        return self.points.get(iPoint)
     
     
     
@@ -622,7 +583,7 @@ class Curve:
     * @see #getNPoints getNPoints
     """
     def getPointIndex(self, point):
-        result = points.indexOf(point)
+        result = self.points.index(point)
         if -1 == result:
             result = GChart.NAI
         
@@ -716,7 +677,7 @@ class Curve:
         if plotPanel.touchedPoint == getPoint(iPoint):
             plotPanel.touch(None)
         
-        points.remove(iPoint)
+        self.points.remove(iPoint)
     
     
     """*
@@ -924,7 +885,7 @@ class Curve:
     
     # renders the specified point of this curve on the given panel
     def realizePoint(self, pp, grp, arp, iPoint):
-        p = points.get(iPoint)
+        p = self.points[iPoint]
         x = p.getX()
         y = p.getY()
         # skip points at undefined locations
@@ -934,7 +895,7 @@ class Curve:
         prevX = Double.NaN
         prevY = Double.NaN
         if iPoint > 0:
-            prevP = points.get(iPoint-1)
+            prevP = self.points[iPoint-1]
             prevX = prevP.getX()
             prevY = prevP.getY()
         
@@ -942,7 +903,7 @@ class Curve:
         nextY = Double.NaN
         nextP = None
         if iPoint < getNPoints()-1:
-            nextP = points.get(iPoint+1)
+            nextP = self.points[iPoint+1]
             nextX = nextP.getX()
             nextY = nextP.getY()
         
