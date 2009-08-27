@@ -251,11 +251,11 @@ class Axis:
     """
     def addTick(self, tickPosition, tickLabel, widthUpperBound, heightUpperBound):
         self.chartDecorationsChanged = True
-        if GChart.NAI != tickCount:
+        if GChart.NAI != self.tickCount:
             # clear out any auto-generated ticks
             cTicks = self.getSystemCurve(self.ticksId)
             cTicks.clearPoints()
-            tickCount = GChart.NAI
+            self.tickCount = GChart.NAI
 
         self.addTickAsPoint(tickPosition, tickLabel, None, widthUpperBound,
                         heightUpperBound)
@@ -322,11 +322,11 @@ class Axis:
         *  @see #DEFAULT_WIDGET_HEIGHT_UPPERBOUND DEFAULT_WIDGET_HEIGHT_UPPERBOUND
         *"""
         self.chartDecorationsChanged = True
-        if GChart.NAI != tickCount:
+        if GChart.NAI != self.tickCount:
             # clear out any auto-generated ticks
             cTicks = self.getSystemCurve(self.ticksId)
             cTicks.clearPoints()
-            tickCount = GChart.NAI
+            self.tickCount = GChart.NAI
 
         self.addTickAsPoint(tickPosition, None, tickWidget, widthUpperBound,
                             heightUpperBound)
@@ -350,7 +350,7 @@ class Axis:
         *
         """
         self.chartDecorationsChanged = True
-        tickCount = GChart.NAI
+        self.tickCount = GChart.NAI
         c = self.getSystemCurve(self.ticksId)
         c.clearPoints()
 
@@ -514,7 +514,7 @@ class Axis:
             # x!=x is a faster isNaN
             return axisMax
 
-        elif GChart.NAI != tickCount:
+        elif GChart.NAI != self.tickCount:
             return getDataMax()
 
         else:
@@ -541,7 +541,7 @@ class Axis:
             # x!=x is a faster isNaN
             return axisMin; # explicitly set
 
-        elif GChart.NAI != tickCount:
+        elif GChart.NAI != self.tickCount:
             return getDataMin()
 
         else:
@@ -1776,14 +1776,14 @@ class Axis:
         # x, y ticks are drawn even
         # if no curves are on these axes
         if XTICKS_ID == self.ticksId  or  YTICKS_ID == self.ticksId  or  0 < getNCurvesVisibleOnAxis():
-            l = getAxisLimits()
-            for i in range(tickCount):
+            l = self.getAxisLimits()
+            for i in range(self.tickCount):
                 # linear interpolation between min and max
-                if (tickCount == 1):
+                if (self.tickCount == 1):
                     position = l.max
                 else:
-                    position = ((l.min * ((tickCount-1)-i) + i * l.max)/
-                                (tickCount-1.0))
+                    position = ((l.min * ((self.tickCount-1)-i) + i * l.max)/
+                                (self.tickCount-1.0))
                 self.addTickAsPoint(position,
                             (0 == i % ticksPerLabel) and
                                     formatAsTickLabel(position) or None,
@@ -1806,7 +1806,7 @@ class Axis:
                 cGridlines.addPoint(p.getX(), p.getY())
 
 
-    def getAxisLimits(self, result):
+    def _getAxisLimits(self, result):
         # so we get 1-unit changes between adjacent ticks
         DEFAULT_AXIS_RANGE = DEFAULT_TICK_COUNT-1
         min = getAxisMin()
@@ -1838,12 +1838,12 @@ class Axis:
         result.max = max
 
     def getAxisLimits(self):
-        getAxisLimits(self.currentLimits)
+        self._getAxisLimits(self.currentLimits)
         return self.currentLimits
 
 
     def rememberLimits(self):
-        getAxisLimits(self.previousLimits)
+        self._getAxisLimits(self.previousLimits)
 
     def limitsChanged(self):
         return not getAxisLimits().equals(self.previousLimits)
