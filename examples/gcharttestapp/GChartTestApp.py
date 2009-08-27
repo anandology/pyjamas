@@ -1,7 +1,7 @@
 import pyjd
 pyjd.setup("./public/GChartTestApp.html")
 
-from pyjamas import DeferredCommand
+from pyjamas.DeferredCommand import DeferredCommand
 from pyjamas.ui.HTML import HTML
 from pyjamas.ui.RootPanel import RootPanel
 from pyjamas.Canvas2D import Canvas
@@ -86,10 +86,10 @@ class AddOneChart:
 
 
 def addChart(gchart):
-    DeferredCommand.addCommand(AddOneChart(gchart, True))
+    DeferredCommand.add(AddOneChart(gchart, True))
 
 def addChartNoUpdate(gchart):
-    DeferredCommand.addCommand(AddOneChart(gchart, False))
+    DeferredCommand.add(AddOneChart(gchart, False))
 
 class GWTCanvasBasedCanvasFactory :
     def create(self):
@@ -109,7 +109,7 @@ def onModuleLoad():
     #    addChart(GChartExample11(0,7,False))
     #    addChart(GChartExample11(0,8,False))
     #    addChart(TestGChart40())
-    #    DeferredCommand.addCommand(Command() { void execute() {
+    #    DeferredCommand.add(Command() { void execute() {
     #    RootPanel.get().add(TestGChart41a())
     #  }})
     
@@ -160,7 +160,7 @@ def onModuleLoad():
     #      addChart(GChartExample23(True, False))
     #      addChart(GChartExample23(True, True))
     #addChart(GChartExample24())
-    #DeferredCommand.addCommand(Command() {
+    #DeferredCommand.add(Command() {
     #    def execute(self):
     #        RootPanel.get().add(GChartExample25())
     #    
@@ -233,7 +233,7 @@ def onModuleLoad():
     #    addChart(TestGChart20())
     #    addChart(TestGChart20a())
     #    # extra layer to stop "this script is taking too long" browser msg
-    #    DeferredCommand.addCommand(Command() < void execute() <
+    #    DeferredCommand.add(Command() < void execute() <
     #    addChart(TestGChart21())
     #    addChart(TestGChart22(False))
     #    addChart(TestGChart22(True))
@@ -276,7 +276,7 @@ def onModuleLoad():
     #    addChart(TestGChart31())
     #    addChart(TestGChart32())
     ## Not a GCchart, a ScrollPanel that contains a Gchart:
-    #    DeferredCommand.addCommand(Command() < void execute() <
+    #    DeferredCommand.add(Command() < void execute() <
     #      RootPanel.get().add(TestGChart33())
     #    >>)
     #     addChart(TestGChart34())
@@ -291,10 +291,10 @@ def onModuleLoad():
     #        addChart(TestGChart38(GChart.TouchedPointUpdateOption.TOUCHED_POINT_LOCKED))
     #        addChart(TestGChart38(GChart.TouchedPointUpdateOption.TOUCHED_POINT_UPDATED))
     #        addChart(TestGChart39())
-    #        DeferredCommand.addCommand(Command() < void execute() <
+    #        DeferredCommand.add(Command() < void execute() <
     #            RootPanel.get().add(TestGChart41())
     #        >>)
-    #        DeferredCommand.addCommand(Command() < void execute() <
+    #        DeferredCommand.add(Command() < void execute() <
     #            RootPanel.get().add(TestGChart41a())
     #        >>)
     #      addChart(TestGChart42())
@@ -305,7 +305,7 @@ def onModuleLoad():
     #    	addChart(TestGChart45(2))
     #      addChart(TestGChart45(3))
     #      addChart(TestGChart45(4))
-    #      DeferredCommand.addCommand(Command() < void execute() <
+    #      DeferredCommand.add(Command() < void execute() <
     #      RootPanel.get().add(TestGChart46())
     #  >>)
     #      addChart(TestGChart47(0,1,5))
@@ -357,10 +357,10 @@ def onModuleLoad():
     #      addChart(TestGChart53())
     #    >>)
     #    addChart(TestGChart54())
-    #  DeferredCommand.addCommand(Command() < void execute() <
+    #  DeferredCommand.add(Command() < void execute() <
     #      RootPanel.get().add(TestGChart55())
     #  >>)
-    #  DeferredCommand.addCommand(Command() < void execute() <
+    #  DeferredCommand.add(Command() < void execute() <
     #      RootPanel.get().add(TestGChart55a())
     #  >>)
     #  addChart(TestGChart56())
