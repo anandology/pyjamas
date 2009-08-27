@@ -598,9 +598,9 @@ class GChart (Composite):
 
         self.wasUnloaded = False
         self.addSystemCurves();  # must come first: later lines use system curves
-        self.xAxis = XAxis()
-        self.yAxis = YAxis()
-        self.y2Axis = Y2Axis()
+        self.xAxis = XAxis(self)
+        self.yAxis = YAxis(self)
+        self.y2Axis = Y2Axis(self)
         self.setXChartSize(xChartSize)
         self.setYChartSize(yChartSize)
         # Note: plotPanel (where real chart resides) won't get

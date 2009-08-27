@@ -18,13 +18,14 @@
 """
 
 import NumberFormat
-import DateFormat
+import DateTimeFormat
 import GChart
 import Double
 
 from GChartConsts import DEFAULT_TICK_LOCATION
 from GChartConsts import DEFAULT_TICK_COUNT
-#from GChartConsts import 
+from GChartConsts import DEFAULT_WIDGET_WIDTH_UPPERBOUND 
+from GChartConsts import DEFAULT_WIDGET_HEIGHT_UPPERBOUND
 from GChartConsts import DEFAULT_TICK_LABEL_FONT_COLOR
 from GChartConsts import DEFAULT_TICK_LABEL_FONTSIZE
 from GChartConsts import DEFAULT_TICK_LABEL_FONT_STYLE
@@ -57,7 +58,8 @@ class AxisLimits:
         return (al.min == min  and  al.max == max)
 
 class Axis:
-    def __init__(self):
+    def __init__(self, chart):
+        self.chart = chart
         self.tickLocation = DEFAULT_TICK_LOCATION
         self.nCurvesVisibleOnAxis = 0;  # # of developer curves on axis.
         # (count does not include system or
@@ -95,6 +97,9 @@ class Axis:
 
         # is axis itself visible (has no impact ticks or their labels)
         self.axisVisible = True
+
+    def getChart(self):
+        return self.chart
 
     def incrementCurves(self):
         self.nCurvesVisibleOnAxis += 1
@@ -1909,8 +1914,8 @@ class Axis:
 """
 
 class XAxis(Axis):
-    def __init__(self):
-        super.__init__(self)
+    def __init__(self, chart):
+        Axis.__init__(self, chart)
         isHorizontalAxis = True
         ticksId = XTICKS_ID
         gridlinesId = XGRIDLINES_ID
@@ -2054,8 +2059,8 @@ class XAxis(Axis):
 """
 
 class Y2Axis(Axis):
-    def __init__(self):
-        super.__init__(self)
+    def __init__(self, chart):
+        Axis.__init__(self, chart)
         isHorizontalAxis = False
         ticksId = Y2TICKS_ID
         gridlinesId = Y2GRIDLINES_ID
@@ -2154,8 +2159,8 @@ class Y2Axis(Axis):
 """
 
 class YAxis(Axis):
-    def __init__(self):
-        super.__init__(self)
+    def __init__(self, chart):
+        Axis.__init__(self, chart)
         self.isHorizontalAxis = False
         self.ticksId = YTICKS_ID
         self.gridlinesId = YGRIDLINES_ID
@@ -2173,9 +2178,9 @@ class YAxis(Axis):
 
     def getDataMax(self):
         result = -Double.MAX_VALUE
-        nCurves = getNCurves()
+        nCurves = self.getNCurves()
         for i in range(nCurves):
-            c = getSystemCurve(i)
+            c = self.getChart().getSystemCurve(i)
             if not c.isVisible():
                 continue
 
