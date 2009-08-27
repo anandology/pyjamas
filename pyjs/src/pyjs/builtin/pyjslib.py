@@ -16,7 +16,9 @@
 
 # must declare import _before_ importing sys
 
-from __pyjamas__ import JS
+from __pyjamas__ import JS, setCompilerOptions
+
+setCompilerOptions("noBoundMethods", "noDescriptors", "noAttributeChecking", "noSourceTracking", "noLineTracking", "noStoreSource")
 
 class object:
     pass
@@ -269,6 +271,7 @@ class BaseException:
             return str(self.message)
         return repr(self.args)
 
+    @compiler.noDescriptors
     def __repr__(self):
         return self.__name__ + repr(self.args)
 

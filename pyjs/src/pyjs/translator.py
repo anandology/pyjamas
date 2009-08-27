@@ -325,6 +325,10 @@ for a in JavaScript_Reserved_Words:
 for a in ECMAScipt_Reserved_Words:
     pyjs_attrib_remap.append(re.compile('(.*(^|[.]))(%s_*)(([.].*)|$)' % a))
 
+debug_options = {}
+speed_options = {}
+pythonic_options = {}
+
 re_return = re.compile(r'\breturn\b')
 class __Pyjamas__(object):
     console = "console"
@@ -430,6 +434,28 @@ class __Pyjamas__(object):
                 node.node)
         return 'debugger', False
 
+    def setCompilerOptions(self, translator, node):
+        global speed_options, pythonic_options
+        for arg in node.args:
+            if not isinstance(arg, ast.Const) or not isinstance(arg.value, str):
+                raise TranslationError(
+                    "jsimport function only supports constant string arguments",
+                node.node)
+            option = arg.value
+            if translator.decorator_compiler_options.has_key(option):
+                var, val = translator.decorator_compiler_options[option]
+                setattr(translator, var, val)
+            elif option == "Speed":
+                for var in speed_options:
+                    setattr(translator, var, speed_options[var])
+            elif option == "Strict":
+                for var in pythonic_options:
+                    setattr(translator, var, pythonic_options[var])
+            else:
+                raise TranslationError(
+                    "setCompilerOptions invalid option '%s'" % option,
+                    node.node)
+        return '', False
 
 __pyjamas__ = __Pyjamas__()
 
@@ -3073,9 +3099,7 @@ class AppTranslator:
         return lib_code.getvalue(), app_code.getvalue()
 
 def add_compile_options(parser):
-    debug_options = {}
-    speed_options = {}
-    pythonic_options = {}
+    global debug_options, speed_options, pythonic_options
 
     parser.add_option("--debug-wrap",
                       dest="debug",

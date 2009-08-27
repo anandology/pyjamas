@@ -1,6 +1,8 @@
                     Changes made to Pyjamas since 0.6
                     ---------------------------------
 
+ * Added __pyjamas__.setCompilerOptions()
+
  * Added descriptors (enables old style decorators)
 
  * Added del cls.attr
