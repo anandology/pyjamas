@@ -1607,7 +1607,7 @@ class SymbolType:
 
 
         result = xLeft + symWidth
-        if Math.abs(xLeft - xPx) > Math.abs(result - xPx):
+        if abs(xLeft - xPx) > abs(result - xPx):
             result = xLeft
 
         return result
@@ -1656,7 +1656,7 @@ class SymbolType:
 
 
         result = yTop+symHeight
-        if Math.abs(yTop - yPx) > Math.abs(result - yPx):
+        if abs(yTop - yPx) > abs(result - yPx):
             result = yTop
 
 
@@ -1928,7 +1928,7 @@ class SymbolType:
         GChart.setBackgroundColor(result, backgroundColor)
         GChart.setBorderColor(result, borderColor)
         GChart.setBorderStyle(result, symbol.getBorderStyle())
-        GChart.setBorderWidth(result, Math.abs(cappedBW))
+        GChart.setBorderWidth(result, abs(cappedBW))
         result.setPixelSize(int(Math.round(width)),
                             int(Math.round(height)))
         return result
@@ -2181,7 +2181,7 @@ class SymbolType:
                 if (borderWidth >= 0):
                     externalLineWidth = thickness
                 else:
-                    externalLineWidth = (thickness + 2*Math.abs(borderWidth))
+                    externalLineWidth = (thickness + 2*abs(borderWidth))
                 if (borderWidth >= 0):
                     internalLineWidth = Math.max(thickness-2*borderWidth,0)
                 else:
@@ -2290,7 +2290,7 @@ class SymbolType:
                     if (borderWidth >= 0):
                         lineWidth = borderWidth
                     else:
-                        lineWidth = 2*Math.abs(borderWidth)
+                        lineWidth = 2*abs(borderWidth)
                     borderColor = symbol.getBorderColor()
                     backgroundColor = symbol.getBackgroundColor()
 
@@ -2602,7 +2602,7 @@ class LineSymbolType (SymbolType):
                                         Double.NaN, Double.NaN,
                                         nextXPx, nextYPx,
                                         thickness,
-                                        Math.abs(nextYPx - yPx)+EPS)
+                                        abs(nextYPx - yPx)+EPS)
 
             elif deltaY == 0:
                 # special case of horizontal line
@@ -2615,7 +2615,7 @@ class LineSymbolType (SymbolType):
                                         yPx,
                                         Double.NaN, Double.NaN,
                                         nextXPx, nextYPx,
-                                        Math.abs(nextXPx - xPx)+EPS,
+                                        abs(nextXPx - xPx)+EPS,
                                         thickness)
 
             elif dXIsShorter:
@@ -2631,7 +2631,7 @@ class LineSymbolType (SymbolType):
                 yi = yiPrev
                 # round up to err on side of providing more detail
                 N = int (Math.ceil((xMax-xMin)/spacing))
-                dy = Math.abs((yAtXMax - yAtXMin)/N)+EPS
+                dy = abs((yAtXMax - yAtXMin)/N)+EPS
                 for i in range(1, N):
                     xi = xMin + i*(xMax - xMin)/N
                     yi = yAtXMin + i * (yAtXMax - yAtXMin)/N
@@ -2659,7 +2659,7 @@ class LineSymbolType (SymbolType):
                 xi = xiPrev
                 yi = yiPrev
                 N = int (Math.ceil((yMax-yMin)/spacing))
-                dx = Math.abs((xAtYMax - xAtYMin)/N)+ EPS
+                dx = abs((xAtYMax - xAtYMin)/N)+ EPS
                 for i in range(1, N):
                     yi = yMin + i*(yMax - yMin)/N
                     xi = xAtYMin + i * (xAtYMax - xAtYMin)/N
@@ -3206,7 +3206,7 @@ class PieSliceSymbolType (SymbolType):
             if borderWidth >= 0:
                 adjustedBorderWidth = borderWidth 
             else:
-                adjustedBorderWidth = 2*Math.abs(borderWidth)
+                adjustedBorderWidth = 2*abs(borderWidth)
 
             """
             * With incubator's <tt>GWTCanvas</tt>, IE7 & Chrome draw
@@ -3395,7 +3395,7 @@ class PieSliceSymbolType (SymbolType):
                         # ALWAYS rely on the (mathematically correct)
                         # fact that problematic bars always connect p[1]
                         # and p[2].
-                        if Math.abs(theta0-theta1) <= Math.PI  or  angleInRange(angle(xi-xPx, yPx-(0.3*p[j]+0.7*p[j-1])), theta0,theta1):
+                        if abs(theta0-theta1) <= Math.PI  or  angleInRange(angle(xi-xPx, yPx-(0.3*p[j]+0.7*p[j-1])), theta0,theta1):
                             # widening of EPS pixels on either side fills in
                             # tiny intra-slice gaps (that can otherwise appear
                             # due to roundoff) by making each bar a tad bigger.
@@ -3479,7 +3479,7 @@ class PieSliceSymbolType (SymbolType):
 
                     for j in range(1, nP):
                         # c.f. comment on corresponding vertical code above.
-                        if Math.abs(theta0-theta1) <= Math.PI  or  angleInRange(angle((0.3*p[j]+0.7*p[j-1])-xPx, yPx-yi), theta0,theta1):
+                        if abs(theta0-theta1) <= Math.PI  or  angleInRange(angle((0.3*p[j]+0.7*p[j-1])-xPx, yPx-yi), theta0,theta1):
                             # widening of EPS pixels on either side fills in
                             # tiny intra-slice gaps that can sometimes appear
                             # by making slices just a tad bigger.

@@ -543,10 +543,10 @@ class AnnotationRenderingPanel (PartitionedAbsolutePanel):
 
         widthUpperBound = annotation.getWidthUpperBound()
         upLeftX = loc.getUpperLeftX(xCenter,
-        widthUpperBound, Math.abs(symWidth))
+        widthUpperBound, abs(symWidth))
         heightUpperBound = annotation.getHeightUpperBound()
         upLeftY = loc.getUpperLeftY(yCenter,
-        heightUpperBound, Math.abs(symHeight))
+        heightUpperBound, abs(symHeight))
 
 
         alignedLabel = getNextOrNewAlignedLabel(
@@ -691,7 +691,7 @@ class ReusableImage (Image):
 
             else:
                 DOM.setStyleAttribute(getElement(),
-                "borderWidth", Math.abs(newCappedBorderWidthX2/2)+"px")
+                "borderWidth", abs(newCappedBorderWidthX2/2)+"px")
 
             cappedBorderWidthX2 = newCappedBorderWidthX2
 

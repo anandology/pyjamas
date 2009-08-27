@@ -1164,7 +1164,7 @@ class Curve:
         symType = sym.getSymbolType()
         # in obscure cases, canvas could clip without this extra wiggle room
         extraSpace = sym.getFillThickness()
-        extraSpace += Math.abs(sym.getBorderWidth())
+        extraSpace += abs(sym.getBorderWidth())
         left0 = symType.getEdgeLeft(pp, sym, minX, onY2)
         left1 = symType.getEdgeLeft(pp, sym, maxX, onY2)
         right0 = symType.getEdgeRight(pp, sym, minX, onY2)
