@@ -92,6 +92,9 @@ from GChartConsts import XLABEL_ID
 from GChartConsts import FOOTNOTES_ID
 from GChartConsts import HOVER_CURSOR_ID
 from GChartConsts import HOVER_ANNOTATION_ID
+from GChartConsts import N_PRE_SYSTEM_CURVES 
+from GChartConsts import N_POST_SYSTEM_CURVES
+
 
 
 import AnnotationLocation
@@ -216,7 +219,7 @@ class GChart (Composite):
         # Must be first: other methods assume sys curves exist
         for i in range(N_SYSTEM_CURVES):
             c = Curve(i)
-            self.curves.append(c)
+            self.curves[i] = c
             # Required rendering panels are added lazily, later on
 
 
@@ -547,7 +550,7 @@ class GChart (Composite):
         self.blankImageURL = None
         self.chartDecorationsChanged = True
         # collection of curves associated with this chart.
-        self.curves = []
+        self.curves = {}
         self.fontFamily = USE_CSS
         self.footnotesThickness = NAI
         self.legendBackgroundColor = DEFAULT_LEGEND_BACKGROUND_COLOR
@@ -827,7 +830,7 @@ class GChart (Composite):
 
         internalIndex = self.internalCurveIndex(iCurve)
         c = Curve(internalIndex)
-        self.curves.append(internalIndex, c)
+        self.curves[internalIndex] = c
         # curves are initially added to the x, y axes.
         getXAxis().incrementCurves()
         getYAxis().incrementCurves()

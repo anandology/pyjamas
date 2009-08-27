@@ -37,7 +37,7 @@ class Curve:
     EXTRA_BANDS = 2;   # far left, right (top, bottom) bands
 
     def isValidated(self):
-        return isValidated
+        return self.isValidated
     
     """
     * TestGChart14d revealed that curves.indexOf(curve) could, due to its
@@ -81,6 +81,7 @@ class Curve:
     *
     """
     def __init__(self, indexOf=GChart.NAI):
+        self.wasCanvasRendered = False
         self.isVisible = True
         self.legendHTML = None
         self.points = []
@@ -651,7 +652,7 @@ class Curve:
     **
     *"""
     def getSymbol(self):
-        return symbol
+        return self.symbol
     
     
     """*
@@ -667,7 +668,7 @@ class Curve:
     **
     """
     def getYAxis(self):
-        return yAxisId
+        return self.yAxisId
     
     
     """* Is this curve visible on the chart and legend key,
@@ -678,7 +679,7 @@ class Curve:
     ** @see #setVisible setVisible
     *"""
     def isVisible(self):
-        return isVisible
+        return self.isVisible
     
     """* Convenience method equivalent to <tt>getYAxis()==Y2_AXIS</tt>.
     *
@@ -687,7 +688,7 @@ class Curve:
     * @see #getYAxis getYAxis
     """
     def onY2(self):
-        return yAxisId == Y2_AXIS
+        return self.yAxisId == Y2_AXIS
     
     """*
     * Removes the point at the specified index.
@@ -876,9 +877,9 @@ class Curve:
     def setYAxis(self, axisId):
         self.invalidate()
         if isSystemCurve():
-            yAxisId = axisId
+            self.yAxisId = axisId
         
-        elif axisId != yAxisId:
+        elif axisId != self.yAxisId:
             if axisId == Y2_AXIS:
                 # from Y to Y2
                 GChart.self.getYAxis().decrementCurves()
@@ -889,7 +890,7 @@ class Curve:
                 GChart.self.getY2Axis().decrementCurves()
                 GChart.self.getYAxis().incrementCurves()
             
-            yAxisId = axisId
+            self.yAxisId = axisId
         
     
     
@@ -970,8 +971,8 @@ class Curve:
     def invalidate(self):
         # The guard isn't just for speed; it keeps us out of trouble
         # when the system curves are being added/configured initially
-        if isValidated:
-            isValidated = False
+        if self.isValidated:
+            self.isValidated = False
             # for efficiency, all background curves use a single rendering
             # panel, so invalidating one background curve invalidates them all
             if self.indexOf < N_PRE_SYSTEM_CURVES:
@@ -1154,13 +1155,12 @@ class Curve:
     
     
     # keeps track of if last rendering was canvas-based or not
-    wasCanvasRendered = False
     def setWasCanvasRendered(self, wasCanvasRendered):
         self.wasCanvasRendered = wasCanvasRendered
     
     # is curve currently canvas rendered and up-to-date
     def isCanvasRendered(self):
-        return isValidated  and  wasCanvasRendered
+        return self.isValidated  and  self.wasCanvasRendered
     
     
  # end of class GChart.Curve
