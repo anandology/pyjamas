@@ -146,7 +146,7 @@ class Axis:
     def addTickAsPoint(self, tickPosition, tickLabel, tickWidget, widthUpperBound, heightUpperBound):
 
         c = self.getSystemCurve(self.ticksId)
-        if isHorizontalAxis:
+        if self.isHorizontalAxis:
             c.addPoint(tickPosition, axisPosition*Double.MAX_VALUE)
 
         else:
@@ -159,7 +159,7 @@ class Axis:
 
         #add an annotation representing the tick label
         p = c.getPoint()
-        if isHorizontalAxis:
+        if self.isHorizontalAxis:
             # below tick on X, above it on (the future) X2
             p.setAnnotationLocation( (axisPosition < 0) and AnnotationLocation.SOUTH or AnnotationLocation.NORTH)
             if tickLabelPadding != 0:
@@ -1726,7 +1726,7 @@ class Axis:
         self.tickLocation = tickLocation
         self.chartDecorationsChanged = True
         sym = self.getSystemCurve(self.ticksId).getSymbol()
-        if isHorizontalAxis:
+        if self.isHorizontalAxis:
             sym.setSymbolType(tickLocation.getXAxisSymbolType(axisPosition))
             sym.setHeight(getActualTickLength())
 
@@ -1848,7 +1848,7 @@ class Axis:
     """ similar to getTickText, except for the tick position """
     def getTickPosition(self, c, iTick):
         result
-        if isHorizontalAxis:
+        if self.isHorizontalAxis:
             result = c.getPoint(iTick).getX()
 
         else:
@@ -1926,7 +1926,7 @@ class Axis:
 class XAxis(Axis):
     def __init__(self, chart):
         Axis.__init__(self, chart)
-        isHorizontalAxis = True
+        self.isHorizontalAxis = True
         self.ticksId = XTICKS_ID
         self.gridlinesId = XGRIDLINES_ID
         self.axisId = XAXIS_ID
@@ -2071,7 +2071,7 @@ class XAxis(Axis):
 class Y2Axis(Axis):
     def __init__(self, chart):
         Axis.__init__(self, chart)
-        isHorizontalAxis = False
+        self.isHorizontalAxis = False
         self.ticksId = Y2TICKS_ID
         self.gridlinesId = Y2GRIDLINES_ID
         self.axisId = Y2AXIS_ID
