@@ -53,9 +53,7 @@ from pyjamas.ui  import Event
 from pyjamas.ui.AbsolutePanel import AbsolutePanel
 from pyjamas.ui.Composite import Composite
 from pyjamas.ui.Grid import Grid
-from pyjamas.ui.HasHTML import HasHTML
 from pyjamas.ui import HasHorizontalAlignment
-from pyjamas.ui.HasText import HasText
 from pyjamas.ui import HasVerticalAlignment
 from pyjamas.ui.HTML import HTML
 from pyjamas.ui.Image import Image

@@ -1431,7 +1431,7 @@ class SymbolType:
 
 class HBarBaseline (SymbolType):
     def __init__(self, wm, hm):
-        super(wm, hm, 0.5, 0.5, 0, 0,  True)
+        SymbolType.__init__(self, wm, hm, 0.5, 0.5, 0, 0,  True)
 
     def defaultFillSpacing(self):
         return DEFAULT_BAR_FILL_SPACING
@@ -1458,7 +1458,7 @@ class HBarBaseline (SymbolType):
  # end of class HBarBaseline
 class HBarLeft (SymbolType):
     def __init__(self, wm, hm):
-        super(wm, hm, 0.5, 0.5, 0.5, 0.5,  True)
+        SymbolType.__init__(self, wm, hm, 0.5, 0.5, 0.5, 0.5,  True)
 
     def defaultFillSpacing(self):
         return DEFAULT_BAR_FILL_SPACING
@@ -1480,7 +1480,7 @@ class HBarLeft (SymbolType):
 
 class HBarRight (SymbolType):
     def __init__(self, wm, hm):
-        super(wm, hm, 0.5, 0.5, 0.5, 0.5, True)
+        SymbolType.__init__(self, wm, hm, 0.5, 0.5, 0.5, 0.5, True)
 
 
     def defaultFillSpacing(self):
@@ -1506,7 +1506,7 @@ class LineSymbolType (SymbolType):
     def __init__(self):
         # same constructor as BOX_CENTER, which centers line segments on
         # the points that they represent, as required.
-        super(0, 0, 0, 0, 0, 0)
+        SymbolType.__init__(self, 0, 0, 0, 0, 0, 0)
 
 
     # fillSpacing to use when a symbol's fillSpacing is
@@ -1753,7 +1753,7 @@ class PieSliceSymbolType (SymbolType):
     def __init__(self, horizontallyShaded, verticallyShaded, optimallyShaded, pixelPadLeft, pixelPadRight, pixelPadTop, pixelPadBottom):
         # same as BOX_SOUTHEAST (allows shading bars to be
         # easily positions by their upper left corners):
-        super(1,1, pixelPadLeft, pixelPadRight,
+        SymbolType.__init__(self, 1,1, pixelPadLeft, pixelPadRight,
                 pixelPadTop, pixelPadBottom)
 
         self.horizontallyShaded = horizontallyShaded
@@ -2537,7 +2537,7 @@ class PieSliceSymbolType (SymbolType):
 
 class VBarBottom (SymbolType):
     def __init__(self, wm, hm):
-        super(wm, hm,0.5,0.5,0.5,0.5, False)
+        SymbolType.__init__(self, wm, hm,0.5,0.5,0.5,0.5, False)
 
     def defaultFillSpacing(self):
         return DEFAULT_BAR_FILL_SPACING
@@ -2557,7 +2557,7 @@ class VBarBottom (SymbolType):
  # end of class VBarBottom
 class VBarBaseline (SymbolType):
     def __init__(self, wm, hm):
-        super(wm, hm, 0, 0, 0.5, 0.5, False)
+        SymbolType.__init__(self, wm, hm, 0, 0, 0.5, 0.5, False)
 
     def defaultFillSpacing(self):
         return DEFAULT_BAR_FILL_SPACING
@@ -2585,7 +2585,7 @@ class VBarBaseline (SymbolType):
 *"""
 class VBarTop (SymbolType):
     def __init__(self, wm, hm):
-        super(wm, hm, 0.5, 0.5, 0.5, 0.5, False)
+        SymbolType.__init__(self, wm, hm, 0.5, 0.5, 0.5, 0.5, False)
 
     def defaultFillSpacing(self):
         return DEFAULT_BAR_FILL_SPACING
@@ -3639,7 +3639,7 @@ class SymbolTypeXGrid (SymbolType):
 
 
 
-XGRIDLINE = SymbolTypeXGrid(0,0,0,0,0.5,0.5,FALSE)
+XGRIDLINE = SymbolTypeXGrid(0,0,0,0,0.5,0.5,False)
 """*
 ** Represents a single y-axis (or y2-axis) grid-line. You
 ** can use this symbol to draw a single horizontal line (or
@@ -3662,7 +3662,7 @@ class SymbolTypeYGrid (SymbolType):
 
 
 
-YGRIDLINE = SymbolTypeYGrid(0,0,0.5,0.5,0,0, TRUE)
+YGRIDLINE = SymbolTypeYGrid(0,0,0.5,0.5,0,0, True)
 
 """*
 **  @deprecated

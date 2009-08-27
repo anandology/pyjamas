@@ -63,7 +63,53 @@ from pyjamas.ui.Widget import Widget
 
 import AnnotationLocation
 import SymbolType
-from GChartUtil import formatAsHovertext
+import TickLocation
+from GChartUtil import formatAsHovertext, YAxisId, setOverflow
+from GChartWidgets import PlotPanel
+
+import pygwt
+
+global canvasFactory
+
+"""*
+*
+* Tells GChart how to create the canvas widgets it needs
+* (specifically, widgets that implement GChart's
+* <tt>GChartCanvasLite</tt> interface) to render your
+* charts using an external vector graphics library.  <p>
+*
+* You must define a class that implements
+* <tt>GChartCanvasFactory</tt> and then pass an instance of that
+* class to this method, if you want to have the fast, crisply drawn
+* connecting lines, polygonal areas, and 2-D pie slices that only a
+* vector graphics library can provide.
+* <p>
+*
+* @see GChartCanvasFactory GChartCanvasFactory
+* @see GChartCanvasLite GChartCanvasLite
+* @see #getCanvasFactory getCanvasFactory
+* @see GChart.Symbol#setFillSpacing setFillSpacing
+* @see GChart.Symbol#setFillThickness setFillThickness
+*
+"""
+def setCanvasFactory(factory):
+    global canvasFactory
+    canvasFactory = factory
+
+
+"""*
+* Returns the GChart class' canvas factory, or <tt>None</tt>
+* if no canvas factory has been specified.
+*
+* @return the previously specified canvas factory
+*
+* @see #setCanvasFactory setCanvasFactory
+*
+"""
+def getCanvasFactory():
+    global canvasFactory
+    return canvasFactory
+
 
 """*
 * Convenience method that, given a plain text label, returns an
@@ -642,12 +688,12 @@ DEFAULT_Y_CHARTSIZE = 300; # pixels
 
 """*
 ** In analogy to how it uses <tt>Double.NaN</tt> (Not a
-** Number), GChart uses <tt>GChart.NAI</tt> (Not an Integer) to
+** Number), GChart uses <tt>NAI</tt> (Not an Integer) to
 ** represent integers whose values have not been explicitly
 ** specified.
 **
 *"""
-NAI = 2L ** 31
+NAI = 2 ** 31
 
 """*
 * Due to a well-known bug (see, for example, <a
@@ -783,13 +829,13 @@ DEFAULT_BLANK_IMAGE_URL = "gchart.gif"
 ** Convenience constant equal to:
 **
 ** <pre>
-** GWT.getModuleBaseURL()+GChart.DEFAULT_BLANK_IMAGE_URL
+** pygwt.getModuleBaseURL()+GChart.DEFAULT_BLANK_IMAGE_URL
 ** </pre>
 **
 ** @see #setBlankImageURL setBlankImageURL
 **
 *"""
-DEFAULT_BLANK_IMAGE_URL_FULLPATH = GWT.getModuleBaseURL()+GChart.DEFAULT_BLANK_IMAGE_URL
+DEFAULT_BLANK_IMAGE_URL_FULLPATH = pygwt.getModuleBaseURL()+DEFAULT_BLANK_IMAGE_URL
 DEFAULT_GRID_HEIGHT = DEFAULT_TICK_THICKNESS
 DEFAULT_GRID_WIDTH = DEFAULT_TICK_THICKNESS
 GRID_BORDER_STYLE = "solid"
@@ -807,7 +853,7 @@ DEFAULT_GRID_COLOR = "black"
 ** the bottom of the chart allocated for footnotes, per
 ** <tt>&lt;br&gt;</tt> or <tt>&lt;li&gt;</tt> delimited HTML line. This
 ** default is only used when the footnote thickness is set to
-** <tt>GChart.NAI</tt> (the default).
+** <tt>NAI</tt> (the default).
 **
 ** @see #setChartFootnotesThickness setChartFootnotesThickness
 **
@@ -820,7 +866,7 @@ DEFAULT_FOOTNOTES_THICKNESS = 15
 ** the top of the chart allocated for the chart's title, per
 ** <tt>&lt;br&gt;</tt> or <tt>&lt;li&gt;</tt> delimited HTML line. This default
 ** is only used when the title thickness is set to
-** <tt>GChart.NAI</tt>.
+** <tt>NAI</tt>.
 **
 **
 ** @see #setChartTitleThickness setChartTitleThickness
@@ -872,46 +918,8 @@ FOOTNOTES_ID = 15-N_SYSTEM_CURVES
 HOVER_CURSOR_ID = 16-N_SYSTEM_CURVES
 HOVER_ANNOTATION_ID = 17-N_SYSTEM_CURVES
 
-
 class GChart (Composite):
 
-
-    """*
-    *
-    * Tells GChart how to create the canvas widgets it needs
-    * (specifically, widgets that implement GChart's
-    * <tt>GChartCanvasLite</tt> interface) to render your
-    * charts using an external vector graphics library.  <p>
-    *
-    * You must define a class that implements
-    * <tt>GChartCanvasFactory</tt> and then pass an instance of that
-    * class to this method, if you want to have the fast, crisply drawn
-    * connecting lines, polygonal areas, and 2-D pie slices that only a
-    * vector graphics library can provide.
-    * <p>
-    *
-    * @see GChartCanvasFactory GChartCanvasFactory
-    * @see GChartCanvasLite GChartCanvasLite
-    * @see #getCanvasFactory getCanvasFactory
-    * @see GChart.Symbol#setFillSpacing setFillSpacing
-    * @see GChart.Symbol#setFillThickness setFillThickness
-    *
-    """
-    def setCanvasFactory(self, factory):
-        self.canvasFactory = factory
-
-
-    """*
-    * Returns the GChart class' canvas factory, or <tt>None</tt>
-    * if no canvas factory has been specified.
-    *
-    * @return the previously specified canvas factory
-    *
-    * @see #setCanvasFactory setCanvasFactory
-    *
-    """
-    def getCanvasFactory(self):
-        return self.canvasFactory
 
 
 
@@ -1290,7 +1298,8 @@ class GChart (Composite):
     * @see #setYChartSize setYChartSize
     * @see #setChartSize setChartSize
     """
-    def __init__(self, xChartSize, yChartSize, **kwargs):
+    def __init__(self, xChartSize=DEFAULT_X_CHARTSIZE,
+                       yChartSize=DEFAULT_Y_CHARTSIZE, **kwargs):
 
         self.hoverParameterInterpreter = None
         self.hoverTouchingEnabled = True
@@ -1311,12 +1320,12 @@ class GChart (Composite):
         # collection of curves associated with this chart.
         self.curves = []
         self.fontFamily = USE_CSS
-        self.footnotesThickness = GChart.NAI
+        self.footnotesThickness = NAI
         self.legendBackgroundColor = DEFAULT_LEGEND_BACKGROUND_COLOR
         self.legendBorderColor = DEFAULT_LEGEND_BORDER_COLOR
         self.legendBorderWidth = DEFAULT_LEGEND_BORDER_WIDTH
         self.legendBorderStyle = DEFAULT_LEGEND_BORDER_STYLE
-        self.legendThickness = GChart.NAI
+        self.legendThickness = NAI
 
         self.isLegendVisible = True
 
@@ -1337,7 +1346,7 @@ class GChart (Composite):
         self.optimizeForMemory = False
         self.clipToPlotArea = False
         self.clipToDecoratedChart = False
-        self.titleThickness = GChart.NAI
+        self.titleThickness = NAI
 
         Composite.__init__(self, **kwargs)
 
@@ -1365,16 +1374,6 @@ class GChart (Composite):
         * curves.
         """
         self.setStyleName("gchart-GChart")
-
-    """*
-    * Convenience no-arg constructor equivalent to
-    * <tt>GChart(DEFAULT_X_CHARTSIZE,DEFAULT_Y_CHARTSIZE)</tt>.
-    *
-    * @see #GChart(int,int) GChart(int,int)
-    *
-    """
-    def __init__(self):
-        this(DEFAULT_X_CHARTSIZE, DEFAULT_Y_CHARTSIZE)
 
 
 
@@ -1528,7 +1527,7 @@ class GChart (Composite):
     """
     def internalCurveIndex(self, externalIndex):
         result
-        if GChart.NAI == externalIndex:
+        if NAI == externalIndex:
             # -1 is the "no such curve" index used by an ArrayList
             result = -1
 
@@ -1555,7 +1554,7 @@ class GChart (Composite):
     def externalCurveIndex(self, internalIndex):
         result
         if internalIndex < 0:
-            result = GChart.NAI
+            result = NAI
 
         elif internalIndex < N_PRE_SYSTEM_CURVES:
             # one of the sys curves that comes before user's curves
@@ -1754,7 +1753,7 @@ class GChart (Composite):
         if None == getChartFootnotes():
             result = 0
 
-        elif GChart.NAI != self.footnotesThickness:
+        elif NAI != self.footnotesThickness:
             result = self.footnotesThickness
 
         elif hasattr(getChartFootnotes(), 'getHTML'):
@@ -1807,7 +1806,7 @@ class GChart (Composite):
         if None == getChartTitle():
             result = 0
 
-        elif GChart.NAI != self.titleThickness:
+        elif NAI != self.titleThickness:
             result = self.titleThickness
 
         elif hasattr(getChartTitle(), 'getHTML'):
@@ -1859,7 +1858,7 @@ class GChart (Composite):
 
         result = None
         # NAI means mouse is at some unknown, off-the-chart, position
-        if x == GChart.NAI  or  y == GChart.NAI:
+        if x == NAI  or  y == NAI:
             return result
 
         dBest = Double.MAX_VALUE; # dist. to closest symbol
@@ -1879,7 +1878,7 @@ class GChart (Composite):
             symType = sym.getSymbolType()
             onY2 = c.onY2()
             iClosest = c.getClosestTouchingPoint(x, y)
-            if GChart.NAI == iClosest:
+            if NAI == iClosest:
                 continue; # no hits on this curve
 
 
@@ -2023,13 +2022,13 @@ class GChart (Composite):
     * curves) of the specified curve.
     * <p>
     *
-    * Returns <i>GChart.NAI</i> if the specified curve is not found on
+    * Returns <i>NAI</i> if the specified curve is not found on
     * this GChart's curve list.
     *
     * <p>
     * @param curve whose list position is to be retrieved
     * @return position of curve in GChart's curve list, or
-    *        <i>GChart.NAI</i> if not on this chart's curve list.
+    *        <i>NAI</i> if not on this chart's curve list.
     *
     * @see #getCurve() getCurve()
     * @see #getCurve(int) getCurve(int)
@@ -2206,7 +2205,7 @@ class GChart (Composite):
     def getLegendThickness(self):
         result = 0
         if self.isLegendVisible()  and  0 < getNVisibleCurvesOnLegend():
-            if GChart.NAI == self.legendThickness:
+            if NAI == self.legendThickness:
                 result = getDefaultLegendThickness()
 
             else:
@@ -2723,7 +2722,7 @@ class GChart (Composite):
             raise IllegalArgumentException("Curve cannot be None.")
 
         index = getCurveIndex(curve)
-        if index == GChart.NAI:
+        if index == NAI:
             raise IllegalArgumentException("Curve is not one of this GChart's curves.")
 
 
@@ -2776,14 +2775,14 @@ class GChart (Composite):
     ** <p>
     **
     ** <pre>
-    **   GWT.getModuleBaseURL() + "gchart.gif"
+    **   pygwt.getModuleBaseURL() + "gchart.gif"
     ** </pre>
     ** <p>
     **
     ** <small> Earlier versions used "gchart.gif" as this default url.
     ** <a href="http:#groups.google.com/group/Google-Web-Toolkit/msg/4be3f19dc14f958a">
     ** This GWT forum post by Dean S. Jones</a> identified the
-    ** need to add the <tt>GWT.getModuleBaseURL()</tt> prefix.
+    ** need to add the <tt>pygwt.getModuleBaseURL()</tt> prefix.
     ** </small>
     ** <p>
     **
@@ -3151,7 +3150,7 @@ class GChart (Composite):
     ** in effect has a 0 thickness, in that case.
     ** <p>
     **
-    ** If you set the footnotes thickness to <tt>GChart.NAI</tt>
+    ** If you set the footnotes thickness to <tt>NAI</tt>
     ** (the default) GChart will use a thickness based on
     ** the estimated number of (<tt>&lt;br&gt;</tt> or
     ** <tt>&lt;li&gt;</tt>
@@ -3159,11 +3158,11 @@ class GChart (Composite):
     **
     ** @param thickness the thickness (height) of the rectangle
     ** that contains the footnotes, in pixels, or
-    ** <tt>GChart.NAI</tt> to use the default thickness.
+    ** <tt>NAI</tt> to use the default thickness.
     **
     ** @see #getChartFootnotesThickness getChartFootnotesThickness
     ** @see #setChartFootnotesLeftJustified setChartFootnotesLeftJustified
-    ** @see GChart#NAI GChart.NAI
+    ** @see NAI NAI
     ** @see #DEFAULT_FOOTNOTES_THICKNESS
     ** DEFAULT_FOOTNOTES_THICKNESS
     **
@@ -3232,7 +3231,7 @@ class GChart (Composite):
     ** widget is <tt>None</tt>, since the title-holding
     ** region is entirely eliminated in that case.
     **
-    ** If you set the title thickness to <tt>GChart.NAI</tt>
+    ** If you set the title thickness to <tt>NAI</tt>
     ** (the default) GChart will use a thickness that is
     ** based on the the number of <tt>&lt;br&gt;</tt> or
     ** <tt>&lt;li&gt;</tt> delimited HTML lines if the title Widget
@@ -3240,10 +3239,10 @@ class GChart (Composite):
     **
     ** @param thickness the thickness (height) of the rectangle
     ** that contains the title, in pixels, or
-    ** <tt>GChart.NAI</tt> to use the default thickness.
+    ** <tt>NAI</tt> to use the default thickness.
     **
     ** @see #getChartTitleThickness getChartTitleThickness
-    ** @see GChart#NAI GChart.NAI
+    ** @see NAI NAI
     ** @see #DEFAULT_TITLE_THICKNESS
     ** DEFAULT_TITLE_THICKNESS
     **
@@ -3612,7 +3611,7 @@ class GChart (Composite):
     **
     ** <p>
     **
-    ** If the legend thickness is set to <tt>GChart.NAI</tt>
+    ** If the legend thickness is set to <tt>NAI</tt>
     ** (the default) GChart uses an heuristic to set the legend
     ** thickness based on the number of characters in each
     ** curve's legend label.
@@ -3620,7 +3619,7 @@ class GChart (Composite):
     **
     ** @param legendThickness the thickness (width) of the rectangle
     ** that contains the legend key, in pixels, or
-    ** <tt>GChart.NAI</tt> to use a built-in heurstic
+    ** <tt>NAI</tt> to use a built-in heurstic
     ** to determine the legend width.
     **
     ** @see #getLegendThickness getLegendThickness

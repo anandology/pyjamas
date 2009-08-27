@@ -61,8 +61,8 @@ from pyjamas.ui.SimplePanel import SimplePanel
 from pyjamas.ui.UIObject import UIObject
 from pyjamas.ui.Widget import Widget
 
-
-
+import GChart
+import Double
 
 """
 * This class' sole purpose is to work around a FF 2
@@ -253,6 +253,17 @@ class PartitionedAbsolutePanel (Composite):
 
  # end of class PartitionedAbsolutePanel
 
+class AlignedLabel(Grid):
+    def __init__(self, **kwargs):
+        Grid.__init__(self, 1, 1, **kwargs)
+        self.getCellFormatter().setWordWrap(0,0,False)
+        self.setCellPadding(0)
+        self.setCellSpacing(0)
+        self.setBorderWidth(0)
+
+
+
+
 
 class Rectangle(object):
     # a (pixel graphics coords) rectangle
@@ -280,22 +291,22 @@ class Rectangle(object):
 *
 """
 class NonoccludingReusuableAlignedLabel (AlignedLabel):
-    fontSize = GChart.NAI
-    fontStyle = USE_CSS
-    fontWeight = USE_CSS
-    fontColor = USE_CSS
-    labelText = None
-    isHTML = False
-    labelWidget = None
-    innerGrid = AlignedLabel()
-
     def getInnerGrid(self):
-        return innerGrid
-
+        return self.innerGrid
 
     def __init__(self):
-        super()
-        setWidget(0, 0, innerGrid)
+        self.fontSize = GChart.NAI
+        self.fontStyle = GChart.USE_CSS
+        self.fontWeight = GChart.USE_CSS
+        self.fontColor = GChart.USE_CSS
+        self.labelText = None
+        self.isHTML = False
+        self.labelWidget = None
+        self.innerGrid = AlignedLabel()
+
+        AlignedLabel.__init__(self)
+
+        self.setWidget(0, 0, self.innerGrid)
         """
         * The basic technique being used in the lines below is
         * illustrated by this excerpt from p 317 of "CSS, The
@@ -346,10 +357,9 @@ class NonoccludingReusuableAlignedLabel (AlignedLabel):
         *
         """
 
-        DOM.setStyleAttribute(getElement(),
-        "visibility","hidden")
-        DOM.setStyleAttribute(innerGrid.getElement(),
-        "visibility", "visible")
+        DOM.setStyleAttribute(getElement(), "visibility","hidden")
+        DOM.setStyleAttribute(self.innerGrid.getElement(),
+                              "visibility", "visible")
 
 
     """
@@ -369,7 +379,9 @@ class NonoccludingReusuableAlignedLabel (AlignedLabel):
     *
     """
 
-    def setReusableProperties(self, fontSize, fontStyle, fontWeight, fontColor, hAlign, vAlign, labelText, isHTML, labelWidget):
+    def setReusableProperties(self, fontSize, fontStyle, fontWeight, fontColor,
+                                    hAlign, vAlign, labelText,
+                                    isHTML, labelWidget):
 
         if self.fontSize != fontSize:
             DOM.setIntStyleAttribute(innerGrid.getElement(), "fontSize", fontSize)
@@ -456,7 +468,7 @@ class AnnotationRenderingPanel (PartitionedAbsolutePanel):
         * constraint and thus can be clipped to the plot area.
         *
         """
-        GChart.setOverflow(this, "visible")
+        GChart.setOverflow(self, "visible")
         self.setPixelSize(0,0)
 
 
@@ -605,21 +617,19 @@ class AnnotationRenderingPanel (PartitionedAbsolutePanel):
 *
 """
 class ReusableImage (Image):
-    backgroundColor = USE_CSS
-    borderColor = USE_CSS
-    borderStyle= USE_CSS
-    # the capped border width, times two (to allow half-pixel widths)
-    cappedBorderWidthX2 = GChart.NAI
-    width = GChart.NAI
-    height = GChart.NAI
-    x = GChart.NAI
-    y = GChart.NAI
-    url = None
-
     def __init__(self):
-        super()
+        self.backgroundColor = GChart.USE_CSS
+        self.borderColor = GChart.USE_CSS
+        self.borderStyle= GChart.USE_CSS
+        # the capped border width, times two (to allow half-pixel widths)
+        self.cappedBorderWidthX2 = GChart.NAI
+        self.width = GChart.NAI
+        self.height = GChart.NAI
+        self.x = GChart.NAI
+        self.y = GChart.NAI
         self.url = None
 
+        Image.__init__(self)
 
 
     def setReusableProperties(self, backgroundColor, borderColor, borderStyle, borderWidth, dWidth, dHeight, xD, yD, url):
@@ -700,7 +710,7 @@ class ReusableImage (Image):
             # At first, use AbsolutePanel's official API
             # (to insulate us from any future AbsolutePanel
             # changes)
-            setImagePosition(this, newX, newY)
+            self.setImagePosition(self, newX, newY)
             self.x = newX
             self.y = newY
 
@@ -1015,27 +1025,27 @@ class PlotPanel (AbsolutePanel):
         yMouse = GChart.NAI
         # first rendering panel is reserved for chart decorations,
         # and its overflow outside of the plot panel is never hidden
-        graphicsPanel = AbsolutePanel()
-        annotationPanel = AbsolutePanel()
+        self.graphicsPanel = AbsolutePanel()
+        self.annotationPanel = AbsolutePanel()
 
         AbsolutePanel.__init__(self, **kwargs)
 
         # allows labels, symbols, that extend a tad off the
         # chart proper to still appear on the chart; AbsolutePanel
         # default is to truncate these.
-        GChart.setOverflow(this, "visible")
-        GChart.setOverflow(graphicsPanel, "visible")
-        GChart.setOverflow(annotationPanel, "visible")
+        GChart.setOverflow(self, "visible")
+        GChart.setOverflow(self.graphicsPanel, "visible")
+        GChart.setOverflow(self.annotationPanel, "visible")
         # these sub-panels have no size themselves, they are merely
         # there to segregate the graphical and annotation part of chart
-        graphicsPanel.setPixelSize(0,0)
-        annotationPanel.setPixelSize(0,0)
+        self.graphicsPanel.setPixelSize(0,0)
+        self.annotationPanel.setPixelSize(0,0)
         # this order assures all the annotations are on top of all the graphics
-        self.add(graphicsPanel, 0, 0)
-        self.add(annotationPanel, 0, 0)
+        self.add(self.graphicsPanel, 0, 0)
+        self.add(self.annotationPanel, 0, 0)
         # events for hover selection feedback, click event handling
-        sinkEvents(Event.ONMOUSEMOVE | Event.ONMOUSEOUT |
-                    Event.ONCLICK | Event.ONMOUSEOVER)
+        self.sinkEvents(Event.ONMOUSEMOVE | Event.ONMOUSEOUT |
+                        Event.ONCLICK | Event.ONMOUSEOVER)
 
 
     """
@@ -1066,8 +1076,8 @@ class PlotPanel (AbsolutePanel):
             w.setPixelSize(getXChartSize(), getYChartSize())
             GChart.setOverflow(w, "hidden")
 
-        graphicsPanel.insert(w, graphicsPanel.getElement(), rpIndex, domInsert)
-        graphicsPanel.setWidgetPosition(w, 0, 0)
+        self.graphicsPanel.insert(w, self.graphicsPanel.getElement(), rpIndex, domInsert)
+        self.graphicsPanel.setWidgetPosition(w, 0, 0)
 
 
     """
@@ -1085,8 +1095,8 @@ class PlotPanel (AbsolutePanel):
     def addAnnotationRenderingPanel(self, rpIndex):
         domInsert = True
         w = AnnotationRenderingPanel()
-        annotationPanel.insert(w, annotationPanel.getElement(), rpIndex, domInsert)
-        annotationPanel.setWidgetPosition(w, 0, 0)
+        self.annotationPanel.insert(w, self.annotationPanel.getElement(), rpIndex, domInsert)
+        self.annotationPanel.setWidgetPosition(w, 0, 0)
 
 
     """
@@ -1100,10 +1110,10 @@ class PlotPanel (AbsolutePanel):
     *
     """
     def removeGraphicsRenderingPanel(self, rpIndex):
-        graphicsPanel.remove(rpIndex)
+        self.graphicsPanel.remove(rpIndex)
 
     def removeAnnotationRenderingPanel(self, rpIndex):
-        annotationPanel.remove(rpIndex)
+        self.annotationPanel.remove(rpIndex)
 
 
     """
@@ -1112,24 +1122,24 @@ class PlotPanel (AbsolutePanel):
     *
     """
     def getGraphicsRenderingPanel(self, rpIndex):
-        if 0 == graphicsPanel.getWidgetCount():
+        if 0 == self.graphicsPanel.getWidgetCount():
             # for lazy addition
             # smaller,faster if all background curves put on single panel
             for i in range(N_PRE_SYSTEM_CURVES-1, curves.size()):
                 rpInd = getRenderingPanelIndex(i)
                 addGraphicsRenderingPanel(rpInd)
 
-        return graphicsPanel.getWidget(rpIndex)
+        return self.graphicsPanel.getWidget(rpIndex)
 
     def getAnnotationRenderingPanel(self, rpIndex):
-        if 0 == annotationPanel.getWidgetCount():
+        if 0 == self.annotationPanel.getWidgetCount():
             # for lazy addition
             # smaller,faster if all background curves put on single panel
             for i in range(N_PRE_SYSTEM_CURVES-1, curves.size()):
                 rpInd = getRenderingPanelIndex(i)
                 addAnnotationRenderingPanel(rpInd)
 
-        return annotationPanel.getWidget(rpIndex)
+        return self.annotationPanel.getWidget(rpIndex)
 
 
     def getClientX(self):
@@ -1326,13 +1336,13 @@ class PlotPanel (AbsolutePanel):
         setPixelSize(getXChartSizeDecoratedQuickly(),
                         getYChartSizeDecoratedQuickly())
 
-        setWidgetPosition(graphicsPanel, yAxisEnsembleWidth, topMargin)
-        setWidgetPosition(annotationPanel, yAxisEnsembleWidth, topMargin)
+        setWidgetPosition(self.graphicsPanel, yAxisEnsembleWidth, topMargin)
+        setWidgetPosition(self.annotationPanel, yAxisEnsembleWidth, topMargin)
 
         # if there are any existing graphical rendering panels, bring
         # their clipping specs into agreement with the chartspecs
         for i in range(getRenderingPanelCount()):
-            grp = graphicsPanel.getWidget(i)
+            grp = self.graphicsPanel.getWidget(i)
             if DECORATIVE_RENDERING_PANEL_INDEX == i  or  isHoverFeedbackRenderingPanel(i)  or  not getClipToPlotArea():
                 grp.setPixelSize(0, 0)
                 GChart.setOverflow(grp, "visible")
@@ -2081,7 +2091,7 @@ class PlotPanel (AbsolutePanel):
     *
     """
     def getRenderingPanelCount(self):
-        result = graphicsPanel.getWidgetCount()
+        result = self.graphicsPanel.getWidgetCount()
         return result
 
     def getXChartSize(self):

@@ -1,4 +1,5 @@
 import pyjd
+pyjd.setup("./public/GChartTestApp.html")
 
 from pyjamas import DeferredCommand
 from pyjamas.ui.HTML import HTML
@@ -95,7 +96,7 @@ class GWTCanvasBasedCanvasFactory :
         return Canvas()
 
 
-def onModuleLoad(self):
+def onModuleLoad():
     
     GChart.setCanvasFactory(GWTCanvasBasedCanvasFactory())
     
@@ -376,6 +377,5 @@ def onModuleLoad(self):
     
     
 
-pyjd.setup("./public/GChartTestApp.html")
 onModuleLoad()
 pyjd.run()
