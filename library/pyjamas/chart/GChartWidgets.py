@@ -626,10 +626,10 @@ class ReusableImage (Image):
 
         # Round two edges, and define width to be their difference.
         # (rounding this way assures bars align with gridlines, etc.)
-        newX = int ( Math.round(xD) )
-        newW = int ( Math.round(xD + dWidth) - newX )
-        newY = int ( Math.round(yD) )
-        newH = int ( Math.round(yD + dHeight) - newY )
+        newX = int ( round(xD) )
+        newW = int ( round(xD + dWidth) - newX )
+        newY = int ( round(yD) )
+        newH = int ( round(yD + dHeight) - newY )
         thickness = min(newW, newH) 
         # Don't allow borders that would exceed specified width or
         # height. So, if smaller of width, height is at least twice the
@@ -879,8 +879,8 @@ class GraphicsRenderingPanel (AbsolutePanel):
                 canvasWidth = canvasHeight = 0
 
             else:
-                width = int( Math.round(canvasRegion.width) )
-                height = int( Math.round(canvasRegion.height) )
+                width = int( round(canvasRegion.width) )
+                height = int( round(canvasRegion.height) )
                 # if exactly same size, just clear...seems to save a little time
                 if width == canvasWidth  and  height == canvasHeight:
                     canvas.clear(); # reuse same canvas
@@ -891,8 +891,8 @@ class GraphicsRenderingPanel (AbsolutePanel):
                     canvasWidth = width
                     canvasHeight = height
 
-                x0 = int( Math.round(canvasRegion.x) )
-                y0 = int( Math.round(canvasRegion.y) )
+                x0 = int( round(canvasRegion.x) )
+                y0 = int( round(canvasRegion.y) )
                 # workaround problem with special meaning of (-1,-1) to
                 # setWidgetPosition (makes position off by one pixel).
                 if x0 == -1  and  y0 == -1:

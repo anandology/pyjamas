@@ -439,11 +439,11 @@ class Axis:
             result = self.dateFormat.format(transDate)
 
         elif self.tickLabelFormatType == LOG10INVERSE_FORMAT_TYPE:
-            value = Math.pow(10., value)
+            value = pow(10., value)
             result = self.numberFormat.format(value)
 
         elif self.tickLabelFormatType == LOG2INVERSE_FORMAT_TYPE:
-            value = Math.pow(2., value)
+            value = pow(2., value)
             result = self.numberFormat.format(value)
 
         else:
@@ -505,20 +505,20 @@ class Axis:
 
         elif hasattr(getAxisLabel(), 'getHTML'):
             charWidth = htmlWidth( getAxisLabel().getHTML())
-            result = int ( Math.round((charWidth + EXTRA_CHARWIDTH) *
+            result = int ( round((charWidth + EXTRA_CHARWIDTH) *
                             getTickLabelFontSize() *
                             TICK_CHARWIDTH_TO_FONTSIZE_LOWERBOUND))
 
         elif hasattr(getAxisLabel(), "getText"):
             text = getAxisLabel().getText()
-            result = int (Math.round((EXTRA_CHARWIDTH +
+            result = int (round((EXTRA_CHARWIDTH +
                             (text and len(text) or 0)) *
                             getTickLabelFontSize() *
                             TICK_CHARWIDTH_TO_FONTSIZE_LOWERBOUND))
 
         else:
             # non-text widget. Not a clue, just use def width
-            result = int ( Math.round(
+            result = int ( round(
                             (DEF_CHARWIDTH + EXTRA_CHARWIDTH) *
                             getTickLabelFontSize() *
                             TICK_CHARWIDTH_TO_FONTSIZE_LOWERBOUND) )
@@ -552,7 +552,7 @@ class Axis:
             return getDataMax()
 
         else:
-            return Math.max(getDataMax(), getTickMax())
+            return max(getDataMax(), getTickMax())
 
 
     def getAxisMin(self):
@@ -579,7 +579,7 @@ class Axis:
             return getDataMin()
 
         else:
-            return Math.min(getDataMin(), getTickMin())
+            return min(getDataMin(), getTickMin())
 
 
 
@@ -795,11 +795,11 @@ class Axis:
             for i in range(nTicks):
                 tt = c.getPoint(i).getAnnotationText()
                 if None != tt:
-                    maxLength = Math.max(maxLength,
+                    maxLength = max(maxLength,
                             Annotation.getNumberOfCharsWide(tt))
 
 
-            result = int (Math.round(maxLength * tickLabelFontSize *
+            result = int (round(maxLength * tickLabelFontSize *
                                 TICK_CHARWIDTH_TO_FONTSIZE_LOWERBOUND))
 
         return result
@@ -1901,7 +1901,7 @@ class Axis:
         c = getSystemCurve(ticksId)
         nTicks = c.getNPoints()
         for i in range(nTicks):
-            result = Math.max(result, getTickPosition(c, i))
+            result = max(result, getTickPosition(c, i))
         return result
 
 
@@ -1911,7 +1911,7 @@ class Axis:
         c = getSystemCurve(ticksId)
         nTicks = c.getNPoints()
         for i in range(nTicks):
-            result = Math.min(result, getTickPosition(c, i))
+            result = min(result, getTickPosition(c, i))
         return result
 
 
@@ -1926,11 +1926,11 @@ class Axis:
             result = x1
 
         else:
-            result = Math.max(x1, x2)
+            result = max(x1, x2)
 
         return result
 
-    # Same as Math.min, except treats NaN/MAX_VALUE values as "not there"
+    # Same as min, except treats NaN/MAX_VALUE values as "not there"
     def minIgnoreNaNAndMaxValue(self, x1, x2):
         if (x1!=x1)  or  Double.MAX_VALUE == x1  or  -Double.MAX_VALUE == x1:
             # x!=x is a faster isNaN
@@ -1940,7 +1940,7 @@ class Axis:
             result = x1
 
         else:
-            result = Math.min(x1, x2)
+            result = min(x1, x2)
 
         return result
 
@@ -1992,12 +1992,12 @@ class XAxis(Axis):
 
         elif isinstance(getAxisLabel(), HasHTML):
             charHeight = htmlHeight( ((HasHTML) (getAxisLabel())).getHTML())
-            result = int (Math.round((EXTRA_CHARHEIGHT+charHeight) *
+            result = int (round((EXTRA_CHARHEIGHT+charHeight) *
                                 getTickLabelFontSize() *
                                 TICK_CHARHEIGHT_TO_FONTSIZE_LOWERBOUND))
 
         else:
-            result = int (Math.round(
+            result = int (round(
                         (EXTRA_CHARHEIGHT + DEF_CHARHEIGHT) *
                         getTickLabelFontSize() *
                         TICK_CHARWIDTH_TO_FONTSIZE_LOWERBOUND))
@@ -2059,7 +2059,7 @@ class XAxis(Axis):
             # right, since multi-line HTML can now be used, but user
             # can explicitly change tick label thickness with
             # multi-line, HTML based, ticks, so OK for now.
-            result = int (Math.round(
+            result = int (round(
                             TICK_CHARHEIGHT_TO_FONTSIZE_LOWERBOUND *
                             tickLabelFontSize))
 

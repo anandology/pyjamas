@@ -18,7 +18,7 @@
 """
 
 
-
+import math
 
 from pyjamas import DOM
 from pyjamas import Window
@@ -800,7 +800,7 @@ class Symbol(object):
     def getPieSliceRadius(self, pp, onY2):
         w = getWidth(pp);      # needed to decode model
         h = getHeight(pp,onY2);# width,height into pixels
-        result = Math.sqrt(w*w + h*h)/2.
+        result = math.sqrt(w*w + h*h)/2.
         # Tweak radius to assure it is an even multiple of the fill
         # spacing. Makes it possible to assure regular band spacing
         # across pie at the expense of less precise control of pie
@@ -809,7 +809,7 @@ class Symbol(object):
         if 0 == spacing:
             spacing = 1
         
-        nBands = int ( Math.round(result/spacing) )
+        nBands = int ( round(result/spacing) )
         result = nBands * spacing
         return result
     
@@ -817,11 +817,11 @@ class Symbol(object):
     # defines first, second edge angle in standard radian units
     def getPieSliceTheta0(self):
         
-        result = (0.75 - getDecodedPieSliceOrientation())*2*Math.PI
+        result = (0.75 - getDecodedPieSliceOrientation())*2*math.pi
         return result
     
     def getPieSliceTheta1(self):
-        return getPieSliceTheta0() - 2.*Math.PI*getPieSliceSize()
+        return getPieSliceTheta0() - 2.*math.pi*getPieSliceSize()
     
     
     """*

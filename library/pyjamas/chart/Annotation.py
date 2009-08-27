@@ -239,7 +239,7 @@ class Annotation:
             result = heightUpperBound
         
         else:
-            result = int (Math.ceil(fontSize *
+            result = int (ceil(fontSize *
                             numberOfLinesHigh *
                             CHARHEIGHT_TO_FONTSIZE_UPPERBOUND))
         
@@ -252,7 +252,7 @@ class Annotation:
             result = widthUpperBound
         
         else:
-            result = int ( Math.ceil(fontSize *
+            result = int ( ceil(fontSize *
                                 numberOfCharsWide *
                                 CHARWIDTH_TO_FONTSIZE_UPPERBOUND))
         

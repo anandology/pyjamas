@@ -214,7 +214,7 @@ def indexOfBr(s, iStart=0):
         result1 = iBr1
 
     else:
-        result1 = Math.min(iBr1, iBr2)
+        result1 = min(iBr1, iBr2)
 
 
     if -1 == iBr3:
@@ -224,7 +224,7 @@ def indexOfBr(s, iStart=0):
         result2 = iBr3
 
     else:
-        result2 = Math.min(iBr3, iBr4)
+        result2 = min(iBr3, iBr4)
 
 
     if -1 == iBr5:
@@ -234,7 +234,7 @@ def indexOfBr(s, iStart=0):
         result3 = iBr5
 
     else:
-        result3 = Math.min(iBr5, iBr6)
+        result3 = min(iBr5, iBr6)
 
 
 
@@ -246,7 +246,7 @@ def indexOfBr(s, iStart=0):
         result = result1
 
     else:
-        result = Math.min(result1, result2)
+        result = min(result1, result2)
 
 
 
@@ -254,7 +254,7 @@ def indexOfBr(s, iStart=0):
         result = result3
 
     elif -1 != result3:
-        result = Math.min(result, result3)
+        result = min(result, result3)
 
 
 

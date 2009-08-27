@@ -260,7 +260,7 @@ class Curve:
             
             else:
                 # inside a normal, chart-covering, band
-                result = 1 + int ( Math.floor(yPx/bandThickness) )
+                result = 1 + int ( floor(yPx/bandThickness) )
             
         
         else:
@@ -273,7 +273,7 @@ class Curve:
             
             else:
                 # within one of the real bands covering the chart
-                result = 1 + int ( Math.floor(xPx/bandThickness) )
+                result = 1 + int ( floor(xPx/bandThickness) )
             
         
         return result
@@ -287,10 +287,10 @@ class Curve:
     def getNBands(self, bandThickness):
         result = EXTRA_BANDS
         if getSymbol().isHorizontallyBanded():
-            result += int ( Math.ceil(getYChartSize()/bandThickness))
+            result += int ( ceil(getYChartSize()/bandThickness))
         
         else :
-            result += int ( Math.ceil(getXChartSize()/bandThickness) )
+            result += int ( ceil(getXChartSize()/bandThickness) )
         
         return result
     
@@ -469,9 +469,9 @@ class Curve:
             bottom = top + brushHeight
             top -= self.bandThickness/2.
             bottom += self.bandThickness/2.
-            iBandFirst = int( Math.max(0, Math.min(nBands-1,1+Math.floor(
+            iBandFirst = int( max(0, min(nBands-1,1+floor(
                                         top / self.bandThickness))))
-            iBandLast = int ( Math.max(0, Math.min(nBands-1, 1+Math.floor(
+            iBandLast = int ( max(0, min(nBands-1, 1+floor(
                                         bottom / self.bandThickness))))
         
         else:
@@ -480,9 +480,9 @@ class Curve:
             right = left + brushWidth
             left -= self.bandThickness/2.0
             right += self.bandThickness/2.0
-            iBandFirst = int( Math.max(0, Math.min(nBands-1, 1+Math.floor(
+            iBandFirst = int( max(0, min(nBands-1, 1+floor(
                                         left / self.bandThickness))))
-            iBandLast = int( Math.max(0, Math.min(nBands-1, 1+Math.floor(
+            iBandLast = int( max(0, min(nBands-1, 1+floor(
                                         right / self.bandThickness))))
         
         
@@ -1093,67 +1093,67 @@ class Curve:
         
         # apply "at min/max" keyword, clipping imposed limits
         if pointAtXAxisMin:
-            minX = Math.min(minX, pp.getXMin())
+            minX = min(minX, pp.getXMin())
         
         if isClippedToPlotArea:
-            minX = Math.max(minX, pp.getXMin())
+            minX = max(minX, pp.getXMin())
         
         elif isClippedToDecoratedChart:
-            minX = Math.max(minX, getXAxis().pixelToModel(0))
+            minX = max(minX, getXAxis().pixelToModel(0))
         
         
         if pointAtXAxisMax:
-            maxX = Math.max(maxX, pp.getXMax())
+            maxX = max(maxX, pp.getXMax())
         
         if isClippedToPlotArea:
-            maxX = Math.min(maxX, pp.getXMax())
+            maxX = min(maxX, pp.getXMax())
         
         elif isClippedToDecoratedChart:
-            maxX = Math.min(maxX, getXAxis().pixelToModel(
+            maxX = min(maxX, getXAxis().pixelToModel(
             pp.getXChartSizeDecoratedQuickly()))
         
         
         onY2 = onY2()
         if onY2:
             if pointAtYAxisMin:
-                minY = Math.min(minY, pp.getY2Min())
+                minY = min(minY, pp.getY2Min())
             
             if isClippedToPlotArea:
-                minY = Math.max(minY, pp.getY2Min())
+                minY = max(minY, pp.getY2Min())
             
             elif isClippedToDecoratedChart:
-                minY = Math.max(minY, getY2Axis().pixelToModel(
+                minY = max(minY, getY2Axis().pixelToModel(
                 pp.getYChartSizeDecoratedQuickly()))
             
             if pointAtYAxisMax:
-                maxY = Math.max(maxY, pp.getY2Max())
+                maxY = max(maxY, pp.getY2Max())
             
             if isClippedToPlotArea:
-                maxY = Math.min(maxY, pp.getY2Max())
+                maxY = min(maxY, pp.getY2Max())
             
             elif isClippedToDecoratedChart:
-                maxY = Math.min(maxY, getY2Axis().pixelToModel(0))
+                maxY = min(maxY, getY2Axis().pixelToModel(0))
             
         
         else:
             if pointAtYAxisMin:
-                minY = Math.min(minY, pp.getYMin())
+                minY = min(minY, pp.getYMin())
             
             if isClippedToPlotArea:
-                minY = Math.max(minY, pp.getYMin())
+                minY = max(minY, pp.getYMin())
             
             elif isClippedToDecoratedChart:
-                minY = Math.max(minY, GChart.self.getYAxis().pixelToModel(
+                minY = max(minY, GChart.self.getYAxis().pixelToModel(
                 pp.getYChartSizeDecoratedQuickly()))
             
             if pointAtYAxisMax:
-                maxY = Math.max(maxY, pp.getYMax())
+                maxY = max(maxY, pp.getYMax())
             
             if isClippedToPlotArea:
-                maxY = Math.min(maxY, pp.getYMax())
+                maxY = min(maxY, pp.getYMax())
             
             elif isClippedToDecoratedChart:
-                maxY = Math.min(maxY, GChart.self.getYAxis().pixelToModel(0))
+                maxY = min(maxY, GChart.self.getYAxis().pixelToModel(0))
             
         
         
@@ -1175,14 +1175,14 @@ class Curve:
         top1 = symType.getEdgeTop(pp, sym, maxY, onY2)
         
         # baseline bars can flip order, so smallest x could be 'right', etc.
-        xPxMin = Math.min(Math.min(left0, left1),
-                            Math.min(right0, right1))
-        xPxMax = Math.max(Math.max(left0, left1),
-                            Math.max(right0, right1))
-        yPxMin = Math.min(Math.min(bottom0, bottom1),
-                            Math.min(top0, top1))
-        yPxMax = Math.max(Math.max(bottom0, bottom1),
-                            Math.max(top0, top1))
+        xPxMin = min(min(left0, left1),
+                            min(right0, right1))
+        xPxMax = max(max(left0, left1),
+                            max(right0, right1))
+        yPxMin = min(min(bottom0, bottom1),
+                            min(top0, top1))
+        yPxMax = max(max(bottom0, bottom1),
+                            max(top0, top1))
         result.x = xPxMin - extraSpace
         result.y = yPxMin - extraSpace
         result.width = xPxMax - xPxMin + 1 + 2*extraSpace

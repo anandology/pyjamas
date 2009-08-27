@@ -165,14 +165,14 @@ class AnnotationLocation:
     * this annotation.
     """
     def getUpperLeftX(self, x, w, symbolW):
-        result = int (Math.round(x +
+        result = int (round(x +
                     (self.widthMultiplier * (w + symbolW) - w)/2.) )
         return result
     
     
     """ analogous to getUpperLeftX, except for the y-coordinate """
     def getUpperLeftY(self, y, h, symbolH):
-        result = int (Math.round(y +
+        result = int (round(y +
                     (self.heightMultiplier * (h + symbolH) - h)/2.))
         return result
     
@@ -229,8 +229,8 @@ class AnnotationLocation:
         # (for cosines) enough to warrant use of a "centered"
         # annotation location.
         LOOKS_VERTICAL_OR_HORIZONTAL_DELTA = 0.1
-        sinTheta = Math.sin(thetaMid)
-        cosTheta = Math.cos(thetaMid)
+        sinTheta = math.sin(thetaMid)
+        cosTheta = math.cos(thetaMid)
         if cosTheta < -LOOKS_VERTICAL_OR_HORIZONTAL_DELTA:
             pieTransformedWidthMultiplier = -self.heightMultiplier
         elif cosTheta > LOOKS_VERTICAL_OR_HORIZONTAL_DELTA:

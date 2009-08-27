@@ -4379,9 +4379,9 @@ class GChart (Composite):
             c = getSystemCurve(i)
             if c.isVisible()  and  c.getLegendLabel()!=None:
                 symBorderFraction = (c.getSymbol().getBorderWidth()/
-                                Math.max(
-                                Math.max(1.0,c.getSymbol().getFillThickness()),
-                                Math.max(c.getSymbol().getWidth(pp),
+                                max(
+                                max(1.0,c.getSymbol().getFillThickness()),
+                                max(c.getSymbol().getWidth(pp),
                                 c.getSymbol().getHeight(pp, c.onY2()))))
                 icon = c.getSymbol().getSymbolType().createIconImage(
                                         c.getSymbol(), getLegendFontSize(),
@@ -4417,7 +4417,7 @@ class GChart (Composite):
         for i in range(nCurves):
             c = getSystemCurve(i)
             if c.isVisible()  and  None != c.getLegendLabel():
-                maxLen = Math.max(maxLen,
+                maxLen = max(maxLen,
                 htmlWidth(c.getLegendLabel()))
 
 

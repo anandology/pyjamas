@@ -17,7 +17,7 @@
 *
 """
 
-
+import math
 
 
 from pyjamas import DOM
@@ -168,11 +168,11 @@ class SymbolType:
     def getBandThickness(self, pp, sym, onY2):
         result
         if sym.isHorizontallyBanded():
-            result = Math.max(MIN_BAND_SIZE,
+            result = max(MIN_BAND_SIZE,
             sym.getHeight(pp, onY2))
 
         else:
-            result = Math.max(MIN_BAND_SIZE, sym.getWidth(pp))
+            result = max(MIN_BAND_SIZE, sym.getWidth(pp))
 
         return result
 
@@ -1704,10 +1704,10 @@ class SymbolType:
 
 
         # note: symWidth can be negative.
-        if Math.max(xLeft, xLeft + symWidth) < left:
+        if max(xLeft, xLeft + symWidth) < left:
             return False;  # symbol is entirely to left of rectangle
 
-        elif Math.min(xLeft, xLeft + symWidth) > right:
+        elif min(xLeft, xLeft + symWidth) > right:
             return False; # symbol is entirely to right of rectangle
 
         # else brush and symbol have overlapping x-intervals
@@ -1748,10 +1748,10 @@ class SymbolType:
 
 
         # note: symHeight can be negative.
-        if Math.max(yTop, yTop + symHeight) < top:
+        if max(yTop, yTop + symHeight) < top:
             return False; # symbol is entirely above rectangle
 
-        elif Math.min(yTop, yTop + symHeight) > bottom:
+        elif min(yTop, yTop + symHeight) > bottom:
             return False; # symbol is entirely below the rectangle
 
         # else rectangle and symbol have overlapping y-intervals
@@ -1816,19 +1816,19 @@ class SymbolType:
     def getIconBorderWidth(self, legendFontSize, symBorderFraction):
         result = 0
         if symBorderFraction > 0:
-            result = int( Math.max(1.0, Math.floor(
-                                    symBorderFraction * Math.min(
+            result = int( max(1.0, floor(
+                                    symBorderFraction * min(
                                     getIconWidth(legendFontSize),
                                     getIconHeight(legendFontSize)))))
 
         return result
 
     def getIconHeight(self, legendFontSize):
-        return int (Math.round(0.75*legendFontSize))
+        return int (round(0.75*legendFontSize))
 
 
     def getIconWidth(self, legendFontSize):
-        return int (Math.round(0.75*legendFontSize))
+        return int (round(0.75*legendFontSize))
 
 
 
@@ -1929,8 +1929,8 @@ class SymbolType:
         GChart.setBorderColor(result, borderColor)
         GChart.setBorderStyle(result, symbol.getBorderStyle())
         GChart.setBorderWidth(result, abs(cappedBW))
-        result.setPixelSize(int(Math.round(width)),
-                            int(Math.round(height)))
+        result.setPixelSize(int(round(width)),
+                            int(round(height)))
         return result
 
     # creates small image of symbol (used in the chart legend).
@@ -2115,7 +2115,7 @@ class SymbolType:
 
     # Distance from the point (x1, y1) to the point (x2, y2)
     def distance(self, x1, y1, x2, y2):
-        result = Math.sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1))
+        result = math.sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1))
         return result
 
     """
@@ -2183,7 +2183,7 @@ class SymbolType:
                 else:
                     externalLineWidth = (thickness + 2*abs(borderWidth))
                 if (borderWidth >= 0):
-                    internalLineWidth = Math.max(thickness-2*borderWidth,0)
+                    internalLineWidth = max(thickness-2*borderWidth,0)
                 else:
                     internalLineWidth = thickness
                 borderColor = symbol.getBorderColor()
@@ -2347,7 +2347,7 @@ class SymbolType:
                 spacing = 1;  # based filling can get to continuous
 
             d = distance(xPx,yPx,nextXPx,nextYPx)
-            nChunks = int(Math.round(d/spacing))
+            nChunks = int(round(d/spacing))
             if nChunks > 1:
                 deltaX = nextXPx - xPx
                 deltaY = nextYPx - yPx
@@ -2377,13 +2377,13 @@ class SymbolType:
                     # not too hard to see the improved alignment on
                     # GChartExample03, for example.
                     if dXIsLonger:
-                        xi = Math.round(xPx + deltaX * i)
-                        yi = Math.round(yPx + deltaY*(xi - xPx))
+                        xi = round(xPx + deltaX * i)
+                        yi = round(yPx + deltaY*(xi - xPx))
 
                     else:
                         # delta y is longer
-                        yi = Math.round(yPx + deltaY * i)
-                        xi = Math.round(xPx + deltaX*(yi - yPx))
+                        yi = round(yPx + deltaY * i)
+                        xi = round(xPx + deltaX*(yi - yPx))
 
 
 
@@ -2446,7 +2446,7 @@ class HBarBaseline (SymbolType):
 
 
     def getIconHeight(self, legendFontSize):
-        return int (Math.round(legendFontSize/2.))
+        return int (round(legendFontSize/2.))
 
     def getIconWidth(self, legendFontSize):
         return legendFontSize
@@ -2467,7 +2467,7 @@ class HBarLeft (SymbolType):
         return x - xMin
 
     def getIconHeight(self, legendFontSize):
-        return int (Math.round(legendFontSize/2.))
+        return int (round(legendFontSize/2.))
 
     def getIconWidth(self, legendFontSize):
         return legendFontSize
@@ -2490,7 +2490,7 @@ class HBarRight (SymbolType):
         return xMax - x
 
     def getIconHeight(self, legendFontSize):
-        return int ( Math.round(legendFontSize/2.))
+        return int ( round(legendFontSize/2.))
 
     def getIconWidth(self, legendFontSize):
         return legendFontSize
@@ -2520,7 +2520,7 @@ class LineSymbolType (SymbolType):
         return 3; # leaves room for a 1px border and a center
 
     def getIconWidth(self, legendFontSize):
-        return Math.max(3, legendFontSize)
+        return max(3, legendFontSize)
 
     """
     * Draws an approximate line from x,y to nextX, nextY, using an
@@ -2630,7 +2630,7 @@ class LineSymbolType (SymbolType):
                 xi = xiPrev
                 yi = yiPrev
                 # round up to err on side of providing more detail
-                N = int (Math.ceil((xMax-xMin)/spacing))
+                N = int (ceil((xMax-xMin)/spacing))
                 dy = abs((yAtXMax - yAtXMin)/N)+EPS
                 for i in range(1, N):
                     xi = xMin + i*(xMax - xMin)/N
@@ -2658,7 +2658,7 @@ class LineSymbolType (SymbolType):
                 yiPrev = yMin
                 xi = xiPrev
                 yi = yiPrev
-                N = int (Math.ceil((yMax-yMin)/spacing))
+                N = int (ceil((yMax-yMin)/spacing))
                 dx = abs((xAtYMax - xAtYMin)/N)+ EPS
                 for i in range(1, N):
                     yi = yMin + i*(yMax - yMin)/N
@@ -2776,7 +2776,7 @@ class PieSliceSymbolType (SymbolType):
     *
     """
     def getBandThickness(self, pp, sym, onY2):
-        result = Math.max(MIN_BAND_SIZE,
+        result = max(MIN_BAND_SIZE,
         2*sym.getPieSliceRadius(pp, onY2))
         return result
 
@@ -2814,7 +2814,7 @@ class PieSliceSymbolType (SymbolType):
     *
     """
     def getBrushHeight(self, sym):
-        result = Math.max(sym.getBrushHeight(),
+        result = max(sym.getBrushHeight(),
         sym.getBrushWidth())
         return result
 
@@ -2825,7 +2825,7 @@ class PieSliceSymbolType (SymbolType):
 
     # @override (see comment on getBrushHeight above)
     def getBrushWidth(self, sym):
-        result = Math.max(sym.getBrushHeight(),
+        result = max(sym.getBrushHeight(),
         sym.getBrushWidth())
         return result
 
@@ -2851,17 +2851,17 @@ class PieSliceSymbolType (SymbolType):
         tmp = 0
         # points where each edge intersects the arc could be
         # extremal points--include them too.
-        tmp = Math.cos(tMin)
+        tmp = math.cos(tMin)
         xMin = min(xMin , tmp)
         xMax = max(xMax , tmp)
-        tmp = Math.sin(tMin)
+        tmp = math.sin(tMin)
         yMin = min(yMin , tmp)
         yMax = max(yMax , tmp)
 
-        tmp = Math.cos(tMax)
+        tmp = math.cos(tMax)
         xMin = min(xMin , tmp)
         xMax = max(xMax , tmp)
-        tmp = Math.sin(tMax)
+        tmp = math.sin(tMax)
         yMin = min(yMin , tmp)
         yMax = max(yMax , tmp)
 
@@ -2870,14 +2870,14 @@ class PieSliceSymbolType (SymbolType):
         # either due north, due south, due east or due west)
         # include those points in determining the min/max x
         # and min/max y included in the slice:
-        halfPi = Math.PI/2.
-        i = int (Math.ceil(tMin/halfPi))
+        halfPi = math.pi/2.
+        i = int (ceil(tMin/halfPi))
         while i*halfPi < tMax:
             t = i*halfPi
-            tmp =  Math.cos(t)
+            tmp =  math.cos(t)
             xMin = min(xMin , tmp)
             xMax = max(xMax , tmp)
-            tmp = Math.sin(t)
+            tmp = math.sin(t)
             yMin = min(yMin , tmp)
             yMax = max(yMax , tmp)
             i += 1
@@ -2943,7 +2943,7 @@ class PieSliceSymbolType (SymbolType):
     # intersects a given vertical line, or NaN if none.
     def yWherePieEdgeIntersectsVerticalLine(self, xOfVerticalLine, xPieCenter, yPieCenter, pieRadius, pieEdgeAngle):
         result = Double.NaN
-        dxToArc = pieRadius*Math.cos(pieEdgeAngle)
+        dxToArc = pieRadius*math.cos(pieEdgeAngle)
         if dxToArc != 0:
             # The fraction of the way (from pie center to pie perimeter
             # along the pie slice edge) that you must go to reach the point
@@ -2952,7 +2952,7 @@ class PieSliceSymbolType (SymbolType):
             # line bisects the pie slice edge.
             t = (xOfVerticalLine-xPieCenter)/dxToArc
             if GChart.withinRange(t,0,1):
-                result = yPieCenter - t * pieRadius * Math.sin(pieEdgeAngle)
+                result = yPieCenter - t * pieRadius * math.sin(pieEdgeAngle)
 
         return result
 
@@ -2963,7 +2963,7 @@ class PieSliceSymbolType (SymbolType):
                                              xPieCenter, yPieCenter, 
                                              pieRadius, pieEdgeAngle):
         result = Double.NaN
-        dyToArc = pieRadius*Math.sin(pieEdgeAngle)
+        dyToArc = pieRadius*math.sin(pieEdgeAngle)
         if dyToArc != 0:
             # The fraction of the way (from pie center to pie perimeter
             # along the pie slice edge) that you must go to reach the point
@@ -2972,7 +2972,7 @@ class PieSliceSymbolType (SymbolType):
             # line bisects the pie slice edge.
             t = (yPieCenter - yOfHorizontalLine)/dyToArc
             if GChart.withinRange(t,0,1):
-                result = xPieCenter + t * pieRadius * Math.cos(pieEdgeAngle)
+                result = xPieCenter + t * pieRadius * math.cos(pieEdgeAngle)
 
         return result
 
@@ -2993,23 +2993,23 @@ class PieSliceSymbolType (SymbolType):
         result = Double.NaN
         if x == 0:
             if y > 0:
-                result = Math.PI/2.
+                result = math.pi/2.
 
             elif y < 0:
-                result = 3*Math.PI/2.
+                result = 3*math.pi/2.
 
 
         elif x> 0  and  y >= 0:
-            result = Math.atan(y/x)
+            result = math.atan(y/x)
 
         elif x<0  and  y >= 0:
-            result = Math.PI - Math.atan(-y/x)
+            result = math.pi - math.atan(-y/x)
 
         elif x <0  and  y < 0:
-            result = Math.PI + Math.atan(y/x)
+            result = math.pi + math.atan(y/x)
 
         elif x > 0  and  y < 0:
-            result = 2*Math.PI- Math.atan(-y/x)
+            result = 2*math.pi- math.atan(-y/x)
 
 
         return result
@@ -3026,7 +3026,7 @@ class PieSliceSymbolType (SymbolType):
         # multiples of 2*Pi less than the standard range
         # this loop brings angle into same range as thetas
         while angle > theta1:
-            angle -= 2*Math.PI
+            angle -= 2*math.pi
 
 
         result = GChart.withinRange(angle, theta0, theta1)
@@ -3097,7 +3097,7 @@ class PieSliceSymbolType (SymbolType):
         thetaMax = symbol.getPieSliceTheta0()
         thetaMin = symbol.getPieSliceTheta1()
         rPiePlus = (symbol.getPieSliceRadius(pp, onY2) +
-                        0.5*Math.max(brushWidth, brushHeight))
+                        0.5*max(brushWidth, brushHeight))
 
         """
         * Enforce a minimum slice angle for hit testing
@@ -3222,14 +3222,14 @@ class PieSliceSymbolType (SymbolType):
             *
             """
             MIN_DTHETA = 1./1000
-            MAX_DTHETA = 2*Math.PI - MIN_DTHETA
+            MAX_DTHETA = 2*math.pi - MIN_DTHETA
 
             # canvas measures angles clockwise from +x-axis
             # our angles are counter-clockwise from +x-axis
             dTheta = theta0 - theta1
-            angleStart = 2*Math.PI-theta0
+            angleStart = 2*math.pi-theta0
             angleEnd = (angleStart +
-                    Math.max(MIN_DTHETA, Math.min(dTheta, MAX_DTHETA)))
+                    max(MIN_DTHETA, min(dTheta, MAX_DTHETA)))
 
             if dTheta >= MIN_DTHETA  or  borderWidth < 0:
                 canvas.beginPath()
@@ -3298,7 +3298,7 @@ class PieSliceSymbolType (SymbolType):
             prevYPx = pp.yToPixel(prevY, onY2)
             nextXPx = pp.xToPixel(nextX)
             nextYPx = pp.yToPixel(nextY, onY2)
-            nBands = int ( Math.round(r/spacing) )
+            nBands = int ( round(r/spacing) )
             """ Holds positions at which the current vertical or
             * horizontal "gridline-like band" intersects the outter
             * perimeter of the current pie slice. These positions
@@ -3321,11 +3321,11 @@ class PieSliceSymbolType (SymbolType):
             isFullPie = (symbol.getPieSliceSize() == 1.0)
             # perform any vertical shading that may be required:
             if nBands > 0  and  (verticallyShaded  or  (optimallyShaded  and  optimalIsVertical)):
-                for i in range(int(Math.round(nBands*sl.xMin)),
+                for i in range(int(round(nBands*sl.xMin)),
                                int(sl.xMax*nBands)):
                     nP = 0
                     dxPx = r*(i+0.5)/nBands
-                    dyPx = Math.sqrt(r*r - dxPx*dxPx)
+                    dyPx = math.sqrt(r*r - dxPx*dxPx)
                     # x of vertical line bisecting the shading band
                     xi = xPx + dxPx
                     # y-positions where this band crosses circle perimeter
@@ -3395,7 +3395,7 @@ class PieSliceSymbolType (SymbolType):
                         # ALWAYS rely on the (mathematically correct)
                         # fact that problematic bars always connect p[1]
                         # and p[2].
-                        if abs(theta0-theta1) <= Math.PI  or  angleInRange(angle(xi-xPx, yPx-(0.3*p[j]+0.7*p[j-1])), theta0,theta1):
+                        if abs(theta0-theta1) <= math.pi  or  angleInRange(angle(xi-xPx, yPx-(0.3*p[j]+0.7*p[j-1])), theta0,theta1):
                             # widening of EPS pixels on either side fills in
                             # tiny intra-slice gaps (that can otherwise appear
                             # due to roundoff) by making each bar a tad bigger.
@@ -3420,11 +3420,11 @@ class PieSliceSymbolType (SymbolType):
             # basically the same as the code for vertical shading
             # above (w appropriate transposition/adjustments).
             if nBands > 0  and  (horizontallyShaded  or  (optimallyShaded  and  not optimalIsVertical)):
-                for i in range( int ( Math.round(-nBands*sl.yMax)),
+                for i in range( int ( round(-nBands*sl.yMax)),
                                 int ( -nBands * sl.yMin) ):
                     nP = 0
                     dyPx = r*(i+0.5)/nBands
-                    dxPx = Math.sqrt(r*r - dyPx*dyPx)
+                    dxPx = math.sqrt(r*r - dyPx*dyPx)
                     # y of the horizontal line bisecting the shading band
                     yi = yPx + dyPx
 
@@ -3479,7 +3479,7 @@ class PieSliceSymbolType (SymbolType):
 
                     for j in range(1, nP):
                         # c.f. comment on corresponding vertical code above.
-                        if abs(theta0-theta1) <= Math.PI  or  angleInRange(angle((0.3*p[j]+0.7*p[j-1])-xPx, yPx-yi), theta0,theta1):
+                        if abs(theta0-theta1) <= math.pi  or  angleInRange(angle((0.3*p[j]+0.7*p[j-1])-xPx, yPx-yi), theta0,theta1):
                             # widening of EPS pixels on either side fills in
                             # tiny intra-slice gaps that can sometimes appear
                             # by making slices just a tad bigger.
@@ -3512,8 +3512,8 @@ class PieSliceSymbolType (SymbolType):
             thetaMid = (theta0+theta1)/2.
             dX = annotation.getXShift()
             dY = annotation.getYShift()
-            sinTheta = Math.sin(thetaMid)
-            cosTheta = Math.cos(thetaMid)
+            sinTheta = math.sin(thetaMid)
+            cosTheta = math.cos(thetaMid)
             loc = annotation.getLocation()
             if None == loc:
                 loc = defaultAnnotationLocation()
@@ -3549,7 +3549,7 @@ class VBarBottom (SymbolType):
         return legendFontSize
 
     def getIconWidth(self, legendFontSize):
-        return int (Math.round(legendFontSize/2.) )
+        return int (round(legendFontSize/2.) )
 
  # end of class VBarBottom
 class VBarBaseline (SymbolType):
@@ -3574,7 +3574,7 @@ class VBarBaseline (SymbolType):
         return legendFontSize
 
     def getIconWidth(self, legendFontSize):
-        return int (Math.round(legendFontSize/2.) )
+        return int (round(legendFontSize/2.) )
 
  # end of class VBarBaseline
 """* Use vertical bars that extend from the top of the chart
@@ -3597,7 +3597,7 @@ class VBarTop (SymbolType):
         return legendFontSize
 
     def getIconWidth(self, legendFontSize):
-        return int ( Math.round(legendFontSize/2.))
+        return int ( round(legendFontSize/2.))
 
  # end of class VBarTop
 
