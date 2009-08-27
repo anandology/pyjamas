@@ -3150,8 +3150,8 @@ class GChart (Composite):
     """
     def getTouchedCurve(self):
         result = None
-        if None != getTouchedPoint():
-            result = getTouchedPoint().getParent()
+        if None != self.getTouchedPoint():
+            result = self.getTouchedPoint().getParent()
 
         return result
 

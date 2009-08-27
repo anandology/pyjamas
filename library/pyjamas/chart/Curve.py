@@ -140,7 +140,8 @@ class Curve:
             plotPanel.touch(None)
         
         self.invalidate()
-        self.points.clear()
+        del self.points
+        self.points = []
     
     
     
