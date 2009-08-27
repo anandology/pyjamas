@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # Copyright 2006 James Tauber and contributors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -517,6 +516,8 @@ class Translator:
         'noAttributeChecking': ('attribute_checking', False),
         'BoundMethods': ('bound_methods', True),
         'noBoundMethods': ('bound_methods', False),
+        'Descriptors': ('descriptors', True),
+        'noDescriptors': ('descriptors', False),
         'SourceTracking': ('source_tracking', True),
         'noSourceTracking': ('source_tracking', False),
         'LineTracking': ('line_tracking', True),
@@ -532,6 +533,7 @@ class Translator:
                  function_argument_checking=True,
                  attribute_checking=True,
                  bound_methods=True,
+                 descriptors=True,
                  source_tracking=True,
                  line_tracking=True,
                  store_source=True,
@@ -558,6 +560,7 @@ class Translator:
         self.function_argument_checking = function_argument_checking
         self.attribute_checking = attribute_checking
         self.bound_methods = bound_methods
+        self.descriptors = descriptors
         self.source_tracking = source_tracking
         self.line_tracking = line_tracking
         self.store_source = store_source
@@ -647,6 +650,8 @@ class Translator:
                 self._raise(child, None)
             elif isinstance(child, ast.Stmt):
                 self._stmt(child, None, True)
+            elif isinstance(child, ast.AssAttr):
+                self._assattr(child, None)
             else:
                 raise TranslationError(
                     "unsupported type (in __init__)",
@@ -697,13 +702,13 @@ class Translator:
     def push_options(self):
         self.option_stack.append((\
             self.debug, self.print_statements, self.function_argument_checking,
-            self.attribute_checking, self.bound_methods,
+            self.attribute_checking, self.bound_methods, self.descriptors,
             self.source_tracking, self.line_tracking, self.store_source,
         ))
     def pop_options(self):
         (\
             self.debug, self.print_statements, self.function_argument_checking,
-            self.attribute_checking, self.bound_methods,
+            self.attribute_checking, self.bound_methods, self.descriptors,
             self.source_tracking, self.line_tracking, self.store_source,
         ) = self.option_stack.pop()
 
@@ -2015,6 +2020,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             self._import(node, current_klass, top_level)
         elif isinstance(node, ast.From):
             self._from(node, current_klass, top_level)
+        elif isinstance(node, ast.AssAttr):
+            self._assattr(node, current_klass)
         else:
             raise TranslationError(
                 "unsupported type (in _stmt)", node, self.module_name)
@@ -2121,6 +2128,20 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             lhs = vname
         return lhs
 
+    def _lhsFromAttr(self, v, current_klass):
+        if isinstance(v.expr, ast.Name):
+            lhs = self._name(v.expr, current_klass)
+        elif isinstance(v.expr, ast.Getattr):
+            lhs = '.'.join(self._getattr(v, current_klass).split('.')[:-1])
+        elif isinstance(v.expr, ast.Subscript):
+            lhs = self._subscript(v.expr, current_klass)
+        elif isinstance(v.expr, ast.CallFunc):
+            lhs = self._callfunc(v.expr, current_klass)
+        else:
+            raise TranslationError(
+                "unsupported type (in _assign)", v.expr, self.module_name)
+        return lhs
+
     def _assign(self, node, current_klass, top_level = False):
         if len(node.nodes) != 1:
             tempvar = '__temp'+str(node.lineno)
@@ -2131,32 +2152,21 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                self._assign(tnode2, current_klass, top_level)
             return
 
-        def _lhsFromAttr(v, current_klass):
-            attr_name = self.attrib_remap(v.attrname)
-            if isinstance(v.expr, ast.Name):
-                obj = v.expr.name
-                lhs = self._name(v.expr, current_klass) + "." + attr_name
-            elif isinstance(v.expr, ast.Getattr):
-                lhs = self._getattr(v, current_klass)
-            elif isinstance(v.expr, ast.Subscript):
-                lhs = self._subscript(v.expr, current_klass) + "." + attr_name
-            elif isinstance(v.expr, ast.CallFunc):
-                lhs = self._callfunc(v.expr, current_klass) + "." + attr_name
-            else:
-                raise TranslationError(
-                    "unsupported type (in _assign)", v.expr, self.module_name)
-            return lhs
-
         dbg = 0
         v = node.nodes[0]
         if isinstance(v, ast.AssAttr):
+            attr_name = self.attrib_remap(v.attrname)
             rhs = self.expr(node.expr, current_klass)
-            lhs = _lhsFromAttr(v, current_klass)
+            lhs = self._lhsFromAttr(v, current_klass)
             if v.flags == "OP_ASSIGN":
                 op = "="
             else:
                 raise TranslationError(
                     "unsupported flag (in _assign)", v, self.module_name)
+            if self.descriptors:
+                print >>self.output, self.spacing() + "pyjslib.setattr(%s, '%s', %s);" % (lhs, attr_name, rhs)
+                return
+            lhs += '.' + attr_name
 
         elif isinstance(v, ast.AssName):
             rhs = self.expr(node.expr, current_klass)
@@ -2187,7 +2197,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 rhs = self.track_call(tempName + ".__getitem__(" + str(index) + ")", v.lineno)
 
                 if isinstance(child, ast.AssAttr):
-                    lhs = _lhsFromAttr(child, current_klass)
+                    lhs = self._lhsFromAttr(child, current_klass) + '.' + self.attrib_remap(child.attrname)
                 elif isinstance(child, ast.AssName):
                     lhs = self._lhsFromName(child.name, top_level, current_klass)
                 elif isinstance(child, ast.Subscript):
@@ -2492,6 +2502,15 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             raise TranslationError(
                 "unsupported flag (in _subscript)", node, self.module_name)
 
+    def _assattr(self, node, current_klass):
+        attr_name = self.attrib_remap(node.attrname)
+        lhs = self._lhsFromAttr(node, current_klass)
+        if node.flags == "OP_DELETE":
+            print >>self.output, self.spacing() + "pyjslib.delattr(%s, '%s');" % (lhs, attr_name)
+        else:
+            raise TranslationError(
+                "unsupported flag (in _assign)", v, self.module_name)
+
     def _list(self, node, current_klass):
         return self.track_call("new pyjslib.List([" + ", ".join([self.expr(x, current_klass) for x in node.nodes]) + "])", node.lineno)
 
@@ -2624,9 +2643,13 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                     'attr_left': attr_left, 
                     'attr_right': attr_right,
                 }
-            if self.bound_methods:
+            if self.bound_methods or self.descriptors:
+                if not self.descriptors:
+                    getattr_condition = "typeof %(attr)s == 'function' && %(attr_left)s.__is_instance__"
+                else:
+                    getattr_condition = "%(attr_left)s !== null && %(attr_left)s.__is_instance__"
                 attr_code = """\
-(typeof %(attr)s == 'function' && %(attr_left)s.__is_instance__?\
+(""" + getattr_condition + """?\
 pyjslib.getattr(%(attr_left)s, '%(attr_right)s'):\
 %(attr)s)\
 """
@@ -2639,7 +2662,7 @@ pyjslib.getattr(%(attr_left)s, '%(attr_right)s'):\
                 attr = attr_code
             else:
                 if attr.find('(') < 0 and not self.debug:
-                    attr = """(%(attr)s===undefined?(function(){throw new TypeError('%(attr)s is undefined')})():%(attr_code)s)""" % pdict
+                    attr = """(typeof %(attr)s=='undefined'?(function(){throw new TypeError('%(attr)s is undefined')})():%(attr_code)s)""" % pdict
                 else:
                     attr_ = attr
                     if self.source_tracking or self.debug:
@@ -2649,7 +2672,7 @@ pyjslib.getattr(%(attr_left)s, '%(attr_right)s'):\
                         attr_ = self._getattr(node, current_klass)
                         self.source_tracking = _source_tracking
                         self.debug = _debug
-                    attr = "(function(){var $pyjs__testval="+attr+";return ($pyjs__testval===undefined?(function(){throw new TypeError('"+attr_.replace("'", "\\'")+" is undefined')})():$pyjs__testval)})()"
+                    attr = "(function(){var $pyjs__testval="+attr+";return (typeof $pyjs__testval=='undefined'?(function(){throw new TypeError('"+attr_.replace("'", "\\'")+" is undefined')})():$pyjs__testval)})()"
             return attr
         elif isinstance(node, ast.List):
             return self._list(node, current_klass)
@@ -2674,6 +2697,7 @@ def translate(sources, output_file, module_name=None,
               function_argument_checking=True,
               attribute_checking=True,
               bound_methods=True,
+              descriptors=True,
               source_tracking=True,
               line_tracking=True,
               store_source=True,
@@ -2709,6 +2733,7 @@ def translate(sources, output_file, module_name=None,
                    function_argument_checking = function_argument_checking,
                    attribute_checking = attribute_checking,
                    bound_methods = bound_methods,
+                   descriptors = descriptors,
                    source_tracking = source_tracking,
                    line_tracking = line_tracking,
                    store_source = store_source,
@@ -2923,6 +2948,7 @@ class AppTranslator:
                  function_argument_checking=True,
                  attribute_checking=True,
                  bound_methods=True,
+                 descriptors=True,
                  source_tracking=True,
                  line_tracking=True,
                  store_source=True,
@@ -2939,6 +2965,7 @@ class AppTranslator:
         self.function_argument_checking = function_argument_checking
         self.attribute_checking = attribute_checking
         self.bound_methods = bound_methods
+        self.descriptors = descriptors
         self.source_tracking = source_tracking
         self.line_tracking = line_tracking
         self.store_source = store_source
@@ -2993,6 +3020,7 @@ class AppTranslator:
                        function_argument_checking = self.function_argument_checking,
                        attribute_checking = self.attribute_checking,
                        bound_methods = self.bound_methods,
+                       descriptors = self.descriptors,
                        source_tracking = self.source_tracking,
                        line_tracking = self.line_tracking,
                        store_source = self.store_source,
@@ -3112,6 +3140,19 @@ def add_compile_options(parser):
     speed_options['bound_methods'] = False
     pythonic_options['bound_methods'] = True
 
+    parser.add_option("--no-descriptors",
+                      dest = "descriptors",
+                      action="store_false",
+                      help = "Do not generate code for descriptor calling",
+                     )
+    parser.add_option("--descriptors",
+                      dest = "descriptors",
+                      action="store_true",
+                      help = "Generate code for descriptor calling",
+                     )
+    speed_options['descriptors'] = False
+    pythonic_options['descriptors'] = True
+
     parser.add_option("--no-source-tracking",
                       dest = "source_tracking",
                       action="store_false",
@@ -3180,6 +3221,7 @@ def add_compile_options(parser):
                         function_argument_checking = False,
                         attribute_checking = False,
                         bound_methods = True,
+                        descriptors = False,
                         source_tracking = False,
                         line_tracking = False,
                         store_source = False,

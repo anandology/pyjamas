@@ -1,6 +1,10 @@
                     Changes made to Pyjamas since 0.6
                     ---------------------------------
 
+ * Added descriptors (enables old style decorators)
+
+ * Added del cls.attr
+
  * More checks in list methods
 
  * Javascript keywords are possible/allowed as attibutes/modules

@@ -458,6 +458,26 @@ class ClassTest(UnitTest):
         from imports.enumerate import dict
         self.assertEqual(dict(), (1,2))
 
+    def testDescriptors(self):
+        global revealAccessLog
+        decorated = Decorated()
+        revealAccessLog = None
+
+        self.assertEqual(decorated.x, 10)
+        self.assertEqual(revealAccessLog, "Retrieving var 'x'")
+
+        decorated.x = 5
+        self.assertEqual(revealAccessLog, "Updating var 'x': 5")
+        self.assertEqual(decorated.x, 5)
+
+        del decorated.x
+        self.assertEqual(revealAccessLog, "Deleting var 'x'")
+        try:
+            x = decorated.x
+            self.fail("Failed to raise error for 'del decorated.x'")
+        except AttributeError, e:
+            self.assertTrue(True)
+            #self.assertEqual(e[0], "'RevealAccess' object has no attribute 'val'")
 
 
 class PassMeAClass(object):
@@ -702,4 +722,25 @@ def gregister(className, classe):
 def ggetObject(className, *args, **kargs):
     classe = gclasses[className]
     return classe(*args, **kargs)
+
+revealAccessLog = None
+class RevealAccess(object):
+    def __init__(self, initval=None, name='var'):
+        self.val = initval
+        self.name = name
+    def __get__(self, obj, objtype=None):
+        global revealAccessLog
+        revealAccessLog = 'Retrieving %s' % self.name
+        return self.val
+    def __set__(self, obj, val):
+        global revealAccessLog
+        revealAccessLog = 'Updating %s: %s' % (self.name, val)
+        self.val = val
+    def __delete__(self, obj):
+        global revealAccessLog
+        revealAccessLog = 'Deleting %s' % self.name
+        del self.val
+
+class Decorated(object):
+    x = RevealAccess(10, "var 'x'")
 

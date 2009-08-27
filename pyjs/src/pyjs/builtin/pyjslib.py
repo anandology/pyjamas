@@ -261,6 +261,7 @@ class BaseException:
     def __getitem__(self, index):
         return self.args.__getitem__(index)
 
+    @compiler.noDescriptors
     def __str__(self):
         if len(self.args) is 0:
             return ''
@@ -1451,8 +1452,15 @@ def getattr(obj, name, default_value=None):
         return default_value;
         }
     }
-    if (!pyjslib.isFunction(obj[name])) return obj[name];
     var method = obj[name];
+    if (method !== null && typeof method.__get__ == 'function') {
+        if (obj.__is_instance__) {
+            return method.__get__(obj, obj.__class__);
+        } else {
+            return method.__get__(null, obj.__class__);
+        }
+    }
+    if (!pyjslib.isFunction(obj[name])) return obj[name];
     var fnwrap = function() {
         var args = [];
         for (var i = 0; i < arguments.length; i++) {
@@ -1470,12 +1478,16 @@ def getattr(obj, name, default_value=None):
 def delattr(obj, name):
     JS("""
     if (!pyjslib.isObject(obj)) {
-       throw pyjslib.AttributeError("'"+typeof(obj)+"' object has no attribute '"+name+"%s'")
+       throw pyjslib.AttributeError("'"+typeof(obj)+"' object has no attribute '"+name+"'")
     }
     if ((pyjslib.isUndefined(obj[name])) ||(typeof(obj[name]) == "function") ){
         throw pyjslib.AttributeError(obj.__name__+" instance has no attribute '"+ name+"'");
     }
-    delete obj[name];
+    if (typeof obj[name].__delete__ == 'function') {
+        obj[name].__delete__(obj);
+    } else {
+        delete obj[name];
+    }
     """)
 
 @compiler.noSourceTracking
@@ -1483,8 +1495,13 @@ def setattr(obj, name, value):
     JS("""
     if (!pyjslib.isObject(obj)) return null;
 
-    obj[name] = value;
-
+    if (   typeof obj[name] != 'undefined'
+        && obj[name] !== null
+        && typeof obj[name].__set__ == 'function') {
+        obj[name].__set__(obj, value);
+    } else {
+        obj[name] = value;
+    }
     """)
 
 @compiler.noSourceTracking
