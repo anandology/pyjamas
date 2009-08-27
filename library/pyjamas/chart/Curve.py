@@ -17,51 +17,8 @@
 *
 """
 
-
-
-
-from pyjamas import DOM
-from pyjamas import Window
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-from pyjamas.ui import Event
-from pyjamas.ui.AbsolutePanel import AbsolutePanel
-from pyjamas.ui.Composite import Composite
-from pyjamas.ui.Grid import Grid
-from pyjamas.ui import HasHorizontalAlignment
-from pyjamas.ui import HasVerticalAlignment
-from pyjamas.ui.HTML import HTML
-from pyjamas.ui.Image import Image
-from pyjamas.ui.SimplePanel import SimplePanel
-from pyjamas.ui.UIObject import UIObject
-from pyjamas.ui.Widget import Widget
-
 import GChart
+import Double
 from Symbol import Symbol
 
 """*
@@ -130,7 +87,7 @@ class Curve:
         # symbol defines how every point on this curve is rendered
         self.symbol = Symbol(self)
         
-        self.yAxisId = Y_AXIS
+        self.yAxisId = GChart.Y_AXIS
         self.isValidated = False
         self.indexOf = indexOf
     
@@ -246,8 +203,7 @@ class Curve:
         if xPx!=xPx:
             return result; # NaN points not in any band
         
-        yPx = symType.getCenterY(
-        plotPanel, getSymbol(), iPoint, onY2())
+        yPx = symType.getCenterY( plotPanel, getSymbol(), iPoint, onY2())
         if yPx!=yPx:
             return result; # NaN points not in any band
         
@@ -883,7 +839,7 @@ class Curve:
         
         
         if self.isVisible != isVisible:
-            if getYAxis() == Y_AXIS:
+            if self.getYAxis() == GChart.Y_AXIS:
                 yaxis = GChart.self.getYAxis()
             else:
                 yaxis = GChart.self.getY2Axis()

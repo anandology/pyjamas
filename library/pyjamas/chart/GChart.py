@@ -63,6 +63,7 @@ from pyjamas.ui.Widget import Widget
 
 from GChartConsts import NAI, DEFAULT_X_CHARTSIZE, DEFAULT_Y_CHARTSIZE
 from GChartConsts import USE_CSS
+from GChartConsts import Y_AXIS
 from GChartConsts import DEFAULT_SYMBOL_BORDER_COLORS
 from GChartConsts import DEFAULT_LEGEND_BACKGROUND_COLOR
 from GChartConsts import N_SYSTEM_CURVES
@@ -73,6 +74,25 @@ from GChartConsts import DEFAULT_FONT_COLOR
 from GChartConsts import DEFAULT_LEGEND_FONTSIZE
 from GChartConsts import DEFAULT_FONT_STYLE
 from GChartConsts import DEFAULT_FONT_WEIGHT
+from GChartConsts import PLOTAREA_ID
+from GChartConsts import TITLE_ID
+from GChartConsts import YAXIS_ID
+from GChartConsts import YTICKS_ID
+from GChartConsts import YGRIDLINES_ID
+from GChartConsts import YLABEL_ID
+from GChartConsts import Y2AXIS_ID
+from GChartConsts import Y2TICKS_ID
+from GChartConsts import Y2GRIDLINES_ID
+from GChartConsts import Y2LABEL_ID
+from GChartConsts import LEGEND_ID
+from GChartConsts import XAXIS_ID
+from GChartConsts import XTICKS_ID
+from GChartConsts import XGRIDLINES_ID
+from GChartConsts import XLABEL_ID
+from GChartConsts import FOOTNOTES_ID
+from GChartConsts import HOVER_CURSOR_ID
+from GChartConsts import HOVER_ANNOTATION_ID
+
 
 import AnnotationLocation
 import SymbolType
@@ -196,12 +216,12 @@ class GChart (Composite):
         # Must be first: other methods assume sys curves exist
         for i in range(N_SYSTEM_CURVES):
             c = Curve(i)
-            self.curves.add(c)
+            self.curves.append(c)
             # Required rendering panels are added lazily, later on
 
 
         # define (or default) properties, points on, system curves
-        c = getSystemCurve(PLOTAREA_ID)
+        c = self.getSystemCurve(PLOTAREA_ID)
         c.getSymbol().setSymbolType(SymbolType.BOX_SOUTHEAST)
         c.getSymbol().setBackgroundColor(DEFAULT_PLOTAREA_BACKGROUND_COLOR)
         c.getSymbol().setBorderColor(DEFAULT_PLOTAREA_BORDER_COLOR)
@@ -211,14 +231,14 @@ class GChart (Composite):
         c.getSymbol().setHoverSelectionEnabled(False)
         c.addPoint(-Double.MAX_VALUE,Double.MAX_VALUE)
 
-        c = getSystemCurve(TITLE_ID)
+        c = self.getSystemCurve(TITLE_ID)
         c.getSymbol().setSymbolType(SymbolType.ANCHOR_NORTHWEST)
         c.getSymbol().setHoverAnnotationEnabled(False)
         c.getSymbol().setHoverSelectionEnabled(False)
         c.addPoint(0,0)
         c.getPoint().setAnnotationLocation(AnnotationLocation.CENTER)
 
-        c = getSystemCurve(YAXIS_ID)
+        c = self.getSystemCurve(YAXIS_ID)
         c.getSymbol().setSymbolType(SymbolType.XGRIDLINE)
         c.getSymbol().setBackgroundColor(DEFAULT_GRID_COLOR)
         c.getSymbol().setBorderColor(DEFAULT_GRID_COLOR)
@@ -230,7 +250,7 @@ class GChart (Composite):
         c.getSymbol().setHoverSelectionEnabled(False)
         c.addPoint(-Double.MAX_VALUE,-Double.MAX_VALUE)
 
-        c = getSystemCurve(YTICKS_ID)
+        c = self.getSystemCurve(YTICKS_ID)
         c.getSymbol().setSymbolType(SymbolType.BOX_WEST)
         c.getSymbol().setBackgroundColor(DEFAULT_GRID_COLOR)
         c.getSymbol().setBorderColor(DEFAULT_GRID_COLOR)
@@ -240,7 +260,7 @@ class GChart (Composite):
         c.getSymbol().setHoverSelectionEnabled(False)
         # points, annotation locations added when ticks are
 
-        c = getSystemCurve(YGRIDLINES_ID)
+        c = self.getSystemCurve(YGRIDLINES_ID)
         c.getSymbol().setSymbolType(SymbolType.YGRIDLINE)
         c.getSymbol().setBackgroundColor(DEFAULT_GRID_COLOR)
         c.getSymbol().setBorderColor(DEFAULT_GRID_COLOR)
@@ -251,14 +271,14 @@ class GChart (Composite):
         c.getSymbol().setHoverAnnotationEnabled(False)
         c.getSymbol().setHoverSelectionEnabled(False)
 
-        c = getSystemCurve(YLABEL_ID)
+        c = self.getSystemCurve(YLABEL_ID)
         c.getSymbol().setSymbolType(SymbolType.ANCHOR_WEST)
         c.getSymbol().setHoverAnnotationEnabled(False)
         c.getSymbol().setHoverSelectionEnabled(False)
         c.addPoint(0,0)
         c.getPoint().setAnnotationLocation(AnnotationLocation.CENTER)
 
-        c = getSystemCurve(Y2AXIS_ID)
+        c = self.getSystemCurve(Y2AXIS_ID)
         c.setYAxis(Y2_AXIS)
         c.getSymbol().setSymbolType(SymbolType.XGRIDLINE)
         c.getSymbol().setBackgroundColor(DEFAULT_GRID_COLOR)
@@ -271,7 +291,7 @@ class GChart (Composite):
         c.getSymbol().setHoverSelectionEnabled(False)
         c.addPoint(Double.MAX_VALUE,-Double.MAX_VALUE)
 
-        c = getSystemCurve(Y2TICKS_ID)
+        c = self.getSystemCurve(Y2TICKS_ID)
         c.setYAxis(Y2_AXIS)
         c.getSymbol().setSymbolType(SymbolType.BOX_EAST)
         c.getSymbol().setBackgroundColor(DEFAULT_GRID_COLOR)
@@ -281,7 +301,7 @@ class GChart (Composite):
         c.getSymbol().setHoverAnnotationEnabled(False)
         c.getSymbol().setHoverSelectionEnabled(False)
 
-        c = getSystemCurve(Y2GRIDLINES_ID)
+        c = self.getSystemCurve(Y2GRIDLINES_ID)
         c.setYAxis(Y2_AXIS)
         c.getSymbol().setSymbolType(SymbolType.YGRIDLINE)
         c.getSymbol().setBackgroundColor(DEFAULT_GRID_COLOR)
@@ -293,21 +313,21 @@ class GChart (Composite):
         c.getSymbol().setHoverAnnotationEnabled(False)
         c.getSymbol().setHoverSelectionEnabled(False)
 
-        c = getSystemCurve(Y2LABEL_ID)
+        c = self.getSystemCurve(Y2LABEL_ID)
         c.getSymbol().setSymbolType(SymbolType.ANCHOR_EAST)
         c.getSymbol().setHoverAnnotationEnabled(False)
         c.getSymbol().setHoverSelectionEnabled(False)
         c.addPoint(0,0)
         c.getPoint().setAnnotationLocation(AnnotationLocation.CENTER)
 
-        c = getSystemCurve(LEGEND_ID)
+        c = self.getSystemCurve(LEGEND_ID)
         c.getSymbol().setSymbolType(SymbolType.ANCHOR_EAST)
         c.getSymbol().setHoverAnnotationEnabled(False)
         c.getSymbol().setHoverSelectionEnabled(False)
         c.addPoint(0,0)
         c.getPoint().setAnnotationLocation(AnnotationLocation.CENTER)
 
-        c = getSystemCurve(XAXIS_ID)
+        c = self.getSystemCurve(XAXIS_ID)
         c.getSymbol().setSymbolType(SymbolType.YGRIDLINE)
         c.getSymbol().setBackgroundColor(DEFAULT_GRID_COLOR)
         c.getSymbol().setBorderColor(DEFAULT_GRID_COLOR)
@@ -320,7 +340,7 @@ class GChart (Composite):
         c.addPoint(-Double.MAX_VALUE,-Double.MAX_VALUE)
 
         # tick thickness and length get set in the axis constructors
-        c = getSystemCurve(XTICKS_ID)
+        c = self.getSystemCurve(XTICKS_ID)
         c.getSymbol().setSymbolType(SymbolType.BOX_SOUTH)
         c.getSymbol().setBackgroundColor(DEFAULT_GRID_COLOR)
         c.getSymbol().setBorderColor(DEFAULT_GRID_COLOR)
@@ -329,7 +349,7 @@ class GChart (Composite):
         c.getSymbol().setHoverAnnotationEnabled(False)
         c.getSymbol().setHoverSelectionEnabled(False)
 
-        c = getSystemCurve(XGRIDLINES_ID)
+        c = self.getSystemCurve(XGRIDLINES_ID)
         c.getSymbol().setSymbolType(SymbolType.XGRIDLINE)
         c.getSymbol().setBackgroundColor(DEFAULT_GRID_COLOR)
         c.getSymbol().setBorderColor(DEFAULT_GRID_COLOR)
@@ -340,21 +360,21 @@ class GChart (Composite):
         c.getSymbol().setHoverAnnotationEnabled(False)
         c.getSymbol().setHoverSelectionEnabled(False)
 
-        c = getSystemCurve(XLABEL_ID)
+        c = self.getSystemCurve(XLABEL_ID)
         c.getSymbol().setSymbolType(SymbolType.ANCHOR_SOUTH)
         c.getSymbol().setHoverAnnotationEnabled(False)
         c.getSymbol().setHoverSelectionEnabled(False)
         c.addPoint(0,0)
         c.getPoint().setAnnotationLocation(AnnotationLocation.CENTER)
 
-        c = getSystemCurve(FOOTNOTES_ID)
+        c = self.getSystemCurve(FOOTNOTES_ID)
         c.getSymbol().setSymbolType(SymbolType.ANCHOR_SOUTHWEST)
         c.getSymbol().setHoverAnnotationEnabled(False)
         c.getSymbol().setHoverSelectionEnabled(False)
         c.addPoint(0,0)
         c.getPoint().setAnnotationLocation(AnnotationLocation.CENTER)
 
-        c = getSystemCurve(HOVER_ANNOTATION_ID)
+        c = self.getSystemCurve(HOVER_ANNOTATION_ID)
         c.setVisible(False); # initially no hover annotation
         c.getSymbol().setSymbolType(SymbolType.NONE)
         c.getSymbol().setHoverAnnotationEnabled(False)
@@ -362,7 +382,7 @@ class GChart (Composite):
         c.addPoint(Double.NaN,Double.NaN)
         c.getPoint().setAnnotationLocation(AnnotationLocation.CENTER)
 
-        c = getSystemCurve(HOVER_CURSOR_ID)
+        c = self.getSystemCurve(HOVER_CURSOR_ID)
         c.setVisible(False); # initially no hover selection
         c.getSymbol().setSymbolType(SymbolType.NONE)
         c.getSymbol().setHoverAnnotationEnabled(False)
@@ -390,30 +410,30 @@ class GChart (Composite):
 
 
         # x-axis label
-        getSystemCurve(XLABEL_ID).getPoint(0).setAnnotationWidget(
+        self.getSystemCurve(XLABEL_ID).getPoint(0).setAnnotationWidget(
         getXAxis().getAxisLabel(), getXChartSize(),
         getXAxis().getAxisLabelThickness())
-        getSystemCurve(XLABEL_ID).getPoint(0).setAnnotationYShift(
+        self.getSystemCurve(XLABEL_ID).getPoint(0).setAnnotationYShift(
         - getXAxis().getTickLabelThickness(False)
         - getXAxis().getTickSpace()
         - getXAxis().getTickLabelPadding()
         - getXAxis().getAxisLabelThickness()/2)
 
         # y-axis label
-        getSystemCurve(YLABEL_ID).getPoint(0).setAnnotationWidget(
+        self.getSystemCurve(YLABEL_ID).getPoint(0).setAnnotationWidget(
         getYAxis().getAxisLabel(),
         getYAxis().getAxisLabelThickness(), getYChartSize())
-        getSystemCurve(YLABEL_ID).getPoint(0).setAnnotationXShift(
+        self.getSystemCurve(YLABEL_ID).getPoint(0).setAnnotationXShift(
         - getYAxis().getTickLabelThickness(False)
         - getYAxis().getTickSpace()
         - getYAxis().getTickLabelPadding()
         - getYAxis().getAxisLabelThickness()/2)
 
         # y2-axis label
-        getSystemCurve(Y2LABEL_ID).getPoint(0).setAnnotationWidget(
+        self.getSystemCurve(Y2LABEL_ID).getPoint(0).setAnnotationWidget(
         getY2Axis().getAxisLabel(),
         getY2Axis().getAxisLabelThickness(), getYChartSize())
-        getSystemCurve(Y2LABEL_ID).getPoint(0).setAnnotationXShift(
+        self.getSystemCurve(Y2LABEL_ID).getPoint(0).setAnnotationXShift(
         + getY2Axis().getTickLabelThickness(False)
         + getY2Axis().getTickSpace()
         + getY2Axis().getTickLabelPadding()
@@ -424,9 +444,9 @@ class GChart (Composite):
         if self.isLegendVisible()  and  0 < getNVisibleCurvesOnLegend():
             legend = createLegend(self.plotPanel)
 
-        getSystemCurve(LEGEND_ID).getPoint(0).setAnnotationWidget(
+        self.getSystemCurve(LEGEND_ID).getPoint(0).setAnnotationWidget(
                                 legend, getLegendThickness(), getYChartSize())
-        getSystemCurve(LEGEND_ID).getPoint(0).setAnnotationXShift(
+        self.getSystemCurve(LEGEND_ID).getPoint(0).setAnnotationXShift(
                                 + getY2Axis().getTickLabelThickness(False)
                                 + getY2Axis().getTickSpace()
                                 + getY2Axis().getTickLabelPadding()
@@ -439,35 +459,35 @@ class GChart (Composite):
                            - getYAxis().getTickSpace()
                            - getYAxis().getTickLabelPadding())
         shiftToHorizontalMidpoint = shiftToLeftEdge + xChartSizeDecorated/2
-        getSystemCurve(TITLE_ID).getPoint(0).setAnnotationWidget(
+        self.getSystemCurve(TITLE_ID).getPoint(0).setAnnotationWidget(
                                     getChartTitle(), xChartSizeDecorated,
                                     getChartTitleThickness())
-        getSystemCurve(TITLE_ID).getPoint(0).setAnnotationYShift(
+        self.getSystemCurve(TITLE_ID).getPoint(0).setAnnotationYShift(
                                         getChartTitleThickness()/2)
-        getSystemCurve(TITLE_ID).getPoint(0).setAnnotationXShift(
+        self.getSystemCurve(TITLE_ID).getPoint(0).setAnnotationXShift(
                                         shiftToHorizontalMidpoint)
 
         # footnotes
-        getSystemCurve(FOOTNOTES_ID).getPoint(0).setAnnotationWidget(
+        self.getSystemCurve(FOOTNOTES_ID).getPoint(0).setAnnotationWidget(
                                     getChartFootnotes(), xChartSizeDecorated,
                                     getChartFootnotesThickness())
-        getSystemCurve(FOOTNOTES_ID).getPoint(0).setAnnotationYShift(
+        self.getSystemCurve(FOOTNOTES_ID).getPoint(0).setAnnotationYShift(
                                     - getXAxis().getTickLabelThickness(False)
                                     - getXAxis().getTickSpace()
                                     - getXAxis().getTickLabelPadding()
                                     - getXAxis().getAxisLabelThickness()
                                     - getChartFootnotesThickness()/2 )
         if getChartFootnotesLeftJustified():
-            getSystemCurve(FOOTNOTES_ID).getPoint(0).setAnnotationXShift(
+            self.getSystemCurve(FOOTNOTES_ID).getPoint(0).setAnnotationXShift(
                                             shiftToLeftEdge)
-            getSystemCurve(FOOTNOTES_ID).getPoint(0).setAnnotationLocation(
+            self.getSystemCurve(FOOTNOTES_ID).getPoint(0).setAnnotationLocation(
                                             AnnotationLocation.EAST)
 
         else:
             # footnotes centered
-            getSystemCurve(FOOTNOTES_ID).getPoint(0).setAnnotationXShift(
+            self.getSystemCurve(FOOTNOTES_ID).getPoint(0).setAnnotationXShift(
             shiftToHorizontalMidpoint)
-            getSystemCurve(FOOTNOTES_ID).getPoint(0).setAnnotationLocation(
+            self.getSystemCurve(FOOTNOTES_ID).getPoint(0).setAnnotationLocation(
             AnnotationLocation.CENTER)
 
 
@@ -475,22 +495,22 @@ class GChart (Composite):
         # add points to ticks and gridlines curves in accord with chart specs
 
         # x & y axis can be present even if no curves mapped to them
-        getSystemCurve(XAXIS_ID).setVisible(getXAxis().getAxisVisible())
+        self.getSystemCurve(XAXIS_ID).setVisible(getXAxis().getAxisVisible())
         getXAxis().populateGridlines()
-        getSystemCurve(YAXIS_ID).setVisible(getYAxis().getAxisVisible())
+        self.getSystemCurve(YAXIS_ID).setVisible(getYAxis().getAxisVisible())
         getYAxis().populateGridlines()
 
         # y2 axis is present only if at least 1 curve is on it.
         if hasY2Axis():
             getY2Axis().populateGridlines()
-            getSystemCurve(Y2AXIS_ID).setVisible(getY2Axis().getAxisVisible())
-            getSystemCurve(Y2TICKS_ID).setVisible(True)
-            getSystemCurve(Y2GRIDLINES_ID).setVisible(True)
+            self.getSystemCurve(Y2AXIS_ID).setVisible(getY2Axis().getAxisVisible())
+            self.getSystemCurve(Y2TICKS_ID).setVisible(True)
+            self.getSystemCurve(Y2GRIDLINES_ID).setVisible(True)
 
         else:
-            getSystemCurve(Y2AXIS_ID).setVisible(False)
-            getSystemCurve(Y2TICKS_ID).setVisible(False)
-            getSystemCurve(Y2GRIDLINES_ID).setVisible(False)
+            self.getSystemCurve(Y2AXIS_ID).setVisible(False)
+            self.getSystemCurve(Y2TICKS_ID).setVisible(False)
+            self.getSystemCurve(Y2GRIDLINES_ID).setVisible(False)
 
 
 
@@ -735,7 +755,6 @@ class GChart (Composite):
     *
     """
     def internalCurveIndex(self, externalIndex):
-        result
         if NAI == externalIndex:
             # -1 is the "no such curve" index used by an ArrayList
             result = -1
@@ -761,7 +780,6 @@ class GChart (Composite):
     *
     """
     def externalCurveIndex(self, internalIndex):
-        result
         if internalIndex < 0:
             result = NAI
 
@@ -807,9 +825,9 @@ class GChart (Composite):
             raise IllegalArgumentException(
             "iCurve = " + iCurve +"; iCurve may not be negative.")
 
-        internalIndex = internalCurveIndex(iCurve)
+        internalIndex = self.internalCurveIndex(iCurve)
         c = Curve(internalIndex)
-        self.curves.add(internalIndex, c)
+        self.curves.append(internalIndex, c)
         # curves are initially added to the x, y axes.
         getXAxis().incrementCurves()
         getYAxis().incrementCurves()
@@ -1076,7 +1094,7 @@ class GChart (Composite):
         # allows us to use simple sequential search across curves
         nCurves = self.getNCurves()
         for iCurve in range(nCurves):
-            c = getSystemCurve(iCurve)
+            c = self.getSystemCurve(iCurve)
             if not c.isVisible():
                 continue
 
@@ -1185,7 +1203,7 @@ class GChart (Composite):
             raise IllegalStateException(
             "You must add at least 1 curve before invoking getCurve()")
 
-        result = getSystemCurve(N-1)
+        result = self.getSystemCurve(N-1)
         return result
 
 
@@ -1215,13 +1233,13 @@ class GChart (Composite):
             raise IllegalArgumentException(
             "iCurve = " + iCurve +"; iCurve may not be negative.")
 
-        result = getSystemCurve(iCurve)
+        result = self.getSystemCurve(iCurve)
         return result
 
 
     # Version of getCurve that allows sys curve (negative id) access
     def getSystemCurve(self, iCurve):
-        internalIndex = internalCurveIndex(iCurve)
+        internalIndex = self.internalCurveIndex(iCurve)
         result = self.curves.get(internalIndex)
         return result
 
@@ -1249,7 +1267,7 @@ class GChart (Composite):
     """
     def getCurveIndex(self, curve):
         internalIndex = curve.getIndexOf()
-        result = externalCurveIndex(internalIndex)
+        result = self.externalCurveIndex(internalIndex)
         return result
 
     def getInternalCurveIndex(self, curve):
@@ -1290,7 +1308,7 @@ class GChart (Composite):
     *"""
 
     def getGridColor(self):
-        cGridlines = getSystemCurve(XGRIDLINES_ID)
+        cGridlines = self.getSystemCurve(XGRIDLINES_ID)
         result = cGridlines.getSymbol().getBorderColor()
         return result
 
@@ -1463,7 +1481,7 @@ class GChart (Composite):
     ** @see #setPlotAreaBackgroundColor setPlotAreaBackgroundColor
     *"""
     def getPlotAreaBackgroundColor(self):
-        c = getSystemCurve(PLOTAREA_ID)
+        c = self.getSystemCurve(PLOTAREA_ID)
         result = c.getSymbol().getBackgroundColor()
         return result
 
@@ -1478,7 +1496,7 @@ class GChart (Composite):
     ** @see #setPlotAreaBorderColor setPlotAreaBorderColor
     *"""
     def getPlotAreaBorderColor(self):
-        c = getSystemCurve(PLOTAREA_ID)
+        c = self.getSystemCurve(PLOTAREA_ID)
         result = c.getSymbol().getBorderColor()
         return result
 
@@ -1492,7 +1510,7 @@ class GChart (Composite):
     ** @see #setPlotAreaBorderWidth setPlotAreaBorderWidth
     *"""
     def getPlotAreaBorderWidth(self):
-        c = getSystemCurve(PLOTAREA_ID)
+        c = self.getSystemCurve(PLOTAREA_ID)
         result = c.getSymbol().getBorderWidth()
         return result
 
@@ -1507,7 +1525,7 @@ class GChart (Composite):
     ** @see #setPlotAreaBorderStyle setPlotAreaBorderStyle
     *"""
     def getPlotAreaBorderStyle(self):
-        c = getSystemCurve(PLOTAREA_ID)
+        c = self.getSystemCurve(PLOTAREA_ID)
         result = c.getSymbol().getBorderStyle()
         return result
 
@@ -1525,7 +1543,7 @@ class GChart (Composite):
     *
     """
     def getPlotAreaImageURL(self):
-        c = getSystemCurve(PLOTAREA_ID)
+        c = self.getSystemCurve(PLOTAREA_ID)
         result = c.getSymbol().getImageURL()
         return result
 
@@ -1878,14 +1896,14 @@ class GChart (Composite):
         * the otherwise dangling reference to the touched point).
         *
         """
-        if self.plotPanel.touchedPoint is not None  and  self.plotPanel.touchedPoint.getParent() == getSystemCurve(iCurve):
+        if self.plotPanel.touchedPoint is not None  and  self.plotPanel.touchedPoint.getParent() == self.getSystemCurve(iCurve):
 
             self.plotPanel.touch(None)
 
 
         # remove the rendering panel that corresponds to this curve
         # (must keep the two lists in synch or 1-to-1 mapping breaks)
-        internalIndex = internalCurveIndex(iCurve)
+        internalIndex = self.internalCurveIndex(iCurve)
         if 0 != self.plotPanel.getRenderingPanelCount():
             rpIndex = getRenderingPanelIndex(internalIndex)
             self.plotPanel.removeGraphicsRenderingPanel(rpIndex)
@@ -1904,7 +1922,7 @@ class GChart (Composite):
 
         c.clearIndex()
         # else before 1st update, no rendering panels created yet
-        self.curves.remove(internalIndex)
+        self.curves.pop(internalIndex)
         # adjust ArrayList indexes to account for newly removed element
         for i in range(internalIndex, len(self.curves)):
             self.curves.get(i).decrementIndex()
@@ -2652,15 +2670,15 @@ class GChart (Composite):
     def setGridColor(self, cssColor):
         #TODO: support line style for dotted/dashed gridlines lines,
         # allow tick and grid colors to be specified separately, etc.
-        getSystemCurve(XGRIDLINES_ID).getSymbol().setBorderColor(cssColor)
-        getSystemCurve(YGRIDLINES_ID).getSymbol().setBorderColor(cssColor)
-        getSystemCurve(Y2GRIDLINES_ID).getSymbol().setBorderColor(cssColor)
-        getSystemCurve(XAXIS_ID).getSymbol().setBorderColor(cssColor)
-        getSystemCurve(YAXIS_ID).getSymbol().setBorderColor(cssColor)
-        getSystemCurve(Y2AXIS_ID).getSymbol().setBorderColor(cssColor)
-        getSystemCurve(XTICKS_ID).getSymbol().setBorderColor(cssColor)
-        getSystemCurve(YTICKS_ID).getSymbol().setBorderColor(cssColor)
-        getSystemCurve(Y2TICKS_ID).getSymbol().setBorderColor(cssColor)
+        self.getSystemCurve(XGRIDLINES_ID).getSymbol().setBorderColor(cssColor)
+        self.getSystemCurve(YGRIDLINES_ID).getSymbol().setBorderColor(cssColor)
+        self.getSystemCurve(Y2GRIDLINES_ID).getSymbol().setBorderColor(cssColor)
+        self.getSystemCurve(XAXIS_ID).getSymbol().setBorderColor(cssColor)
+        self.getSystemCurve(YAXIS_ID).getSymbol().setBorderColor(cssColor)
+        self.getSystemCurve(Y2AXIS_ID).getSymbol().setBorderColor(cssColor)
+        self.getSystemCurve(XTICKS_ID).getSymbol().setBorderColor(cssColor)
+        self.getSystemCurve(YTICKS_ID).getSymbol().setBorderColor(cssColor)
+        self.getSystemCurve(Y2TICKS_ID).getSymbol().setBorderColor(cssColor)
 
     """*
     ** Sets the background color of the chart's legend.
@@ -2957,7 +2975,7 @@ class GChart (Composite):
     ** @see #getPlotAreaBackgroundColor getPlotAreaBackgroundColor
     *"""
     def setPlotAreaBackgroundColor(self, cssColor):
-        c = getSystemCurve(PLOTAREA_ID)
+        c = self.getSystemCurve(PLOTAREA_ID)
         c.getSymbol().setBackgroundColor(cssColor)
 
 
@@ -2979,7 +2997,7 @@ class GChart (Composite):
     ** @see #getPlotAreaBorderColor getPlotAreaBorderColor
     *"""
     def setPlotAreaBorderColor(self, cssColor):
-        c = getSystemCurve(PLOTAREA_ID)
+        c = self.getSystemCurve(PLOTAREA_ID)
         c.getSymbol().setBorderColor(cssColor)
 
     """*
@@ -2993,7 +3011,7 @@ class GChart (Composite):
     ** @see #getPlotAreaBorderWidth getPlotAreaBorderWidth
     *"""
     def setPlotAreaBorderWidth(self, width):
-        c = getSystemCurve(PLOTAREA_ID)
+        c = self.getSystemCurve(PLOTAREA_ID)
         c.getSymbol().setBorderWidth(width)
 
     """*
@@ -3011,7 +3029,7 @@ class GChart (Composite):
     ** @see #setPlotAreaBorderColor setPlotAreaBorderColor
     *"""
     def setPlotAreaBorderStyle(self, borderStyle):
-        c = getSystemCurve(PLOTAREA_ID)
+        c = self.getSystemCurve(PLOTAREA_ID)
         c.getSymbol().setBorderStyle(borderStyle)
 
 
@@ -3066,7 +3084,7 @@ class GChart (Composite):
     """
 
     def setPlotAreaImageURL(self, imageURL):
-        c = getSystemCurve(PLOTAREA_ID)
+        c = self.getSystemCurve(PLOTAREA_ID)
         c.getSymbol().setImageURL(imageURL)
 
 
@@ -3229,7 +3247,7 @@ class GChart (Composite):
     def setXChartSize(self, xChartSize):
         self.chartDecorationsChanged = True
         self.xChartSize = xChartSize
-        c = getSystemCurve(PLOTAREA_ID)
+        c = self.getSystemCurve(PLOTAREA_ID)
         c.getSymbol().setWidth(xChartSize)
 
 
@@ -3257,7 +3275,7 @@ class GChart (Composite):
     def setYChartSize(self, yChartSize):
         self.chartDecorationsChanged = True
         self.yChartSize = yChartSize
-        c = getSystemCurve(PLOTAREA_ID)
+        c = self.getSystemCurve(PLOTAREA_ID)
         c.getSymbol().setHeight(yChartSize)
 
 
@@ -3586,7 +3604,7 @@ class GChart (Composite):
         GChart.setBackgroundColor(result, getLegendBackgroundColor())
         nCurves = self.getNCurves()
         for i in range(nCurves):
-            c = getSystemCurve(i)
+            c = self.getSystemCurve(i)
             if c.isVisible()  and  c.getLegendLabel()!=None:
                 symBorderFraction = (c.getSymbol().getBorderWidth()/
                                 max(
@@ -3625,7 +3643,7 @@ class GChart (Composite):
         maxLen = 0
         nCurves = self.getNCurves()
         for i in range(nCurves):
-            c = getSystemCurve(i)
+            c = self.getSystemCurve(i)
             if c.isVisible()  and  None != c.getLegendLabel():
                 maxLen = max(maxLen,
                 htmlWidth(c.getLegendLabel()))
@@ -3640,7 +3658,7 @@ class GChart (Composite):
         result = 0
         nCurves = self.getNCurves()
         for i in range(nCurves):
-            if getSystemCurve(i).isVisible()  and  getSystemCurve(i).getLegendLabel() is not None:
+            if self.getSystemCurve(i).isVisible()  and  self.getSystemCurve(i).getLegendLabel() is not None:
                 result += 1
 
         return result
@@ -3726,7 +3744,7 @@ class GChart (Composite):
     def invalidateAccessibleCurves(self):
         nCurves = self.getNCurves()
         for i in range(nCurves):
-            getSystemCurve(i).invalidate()
+            self.getSystemCurve(i).invalidate()
 
 
 
@@ -3734,7 +3752,7 @@ class GChart (Composite):
     def invalidateAllSlices(self):
         nCurves = self.getNCurves()
         for i in range(nCurves):
-            c = getSystemCurve(i)
+            c = self.getSystemCurve(i)
             if isinstance(c.getSymbol().getSymbolType(),
                           SymbolType.PieSliceSymbolType):
                 c.invalidate()
@@ -3750,7 +3768,7 @@ class GChart (Composite):
 
         nCurves = self.getNCurves()
         for i in range(iFirstCurve, nCurves):
-            c = getSystemCurve(i)
+            c = self.getSystemCurve(i)
             if isinstance(c.getSymbol().getSymbolType(),
                           SymbolType.PieSliceSymbolType):
                 c.invalidate()
@@ -3767,7 +3785,7 @@ class GChart (Composite):
         setLastPieSliceOrientation(getInitialPieSliceOrientation())
         nCurves = self.getNCurves()
         for i in range(nCurves):
-            c = getSystemCurve(i)
+            c = self.getSystemCurve(i)
             # keep track of default next orientation for pie slices
             # (must do this even if we don't have to redraw slice)
             if isinstance(c.getSymbol().getSymbolType(),
@@ -3791,7 +3809,7 @@ class GChart (Composite):
         """
         nCurves = self.getNCurves()
         for i in range(-N_SYSTEM_CURVES, nCurves):
-            c = getSystemCurve(i)
+            c = self.getSystemCurve(i)
             self.realizeCurve(c)
 
 
