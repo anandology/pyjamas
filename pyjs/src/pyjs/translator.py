@@ -262,6 +262,7 @@ PYJSLIB_BUILTIN_FUNCTIONS=frozenset((
     "repr",
     "round",
     "setattr",
+    "staticmethod",
     "str",
     "super",
     "type",
@@ -286,6 +287,7 @@ PYJSLIB_BUILTIN_CLASSES=[
     "dict",
     "list",
     "object",
+    "property",
     "tuple",
     ]
 
@@ -1846,6 +1848,12 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             elif isinstance(child, ast.Function):
                 self.local_prefix = None
                 self._method(child, current_klass, class_name, class_name, local_prefix)
+                self.push_lookup(private_scope)
+                name = "%s.%s" % (local_prefix, child.name)
+                jsname = self.add_lookup('method', child.name, name)
+                #self.add_lookup('method', child.name, jsname)
+                self.add_lookup('method', child.name, "pyjslib.staticmethod(%s)" % jsname)
+                private_scope = self.pop_lookup()
             elif isinstance(child, ast.Assign):
                 self.local_prefix = local_prefix
                 self.push_lookup(private_scope)

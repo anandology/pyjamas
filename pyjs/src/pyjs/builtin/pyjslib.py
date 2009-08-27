@@ -1193,6 +1193,46 @@ class Dict:
 
 dict = Dict
 
+class property(object):
+    # From: http://users.rcn.com/python/download/Descriptor.htm
+    def __init__(self, fget=None, fset=None, fdel=None, doc=None):
+        self.fget = fget
+        self.fset = fset
+        self.fdel = fdel
+        self.__doc__ = doc
+
+    def __get__(self, obj, objtype=None):
+        if obj is None:
+            return self
+        if self.fget is None:
+            raise AttributeError, "unreadable attribute"
+        return self.fget(obj)
+
+    def __set__(self, obj, value):
+        if self.fset is None:
+            raise AttributeError, "can't set attribute"
+        self.fset(obj, value)
+
+    def __delete__(self, obj):
+        if self.fdel is None:
+            raise AttributeError, "can't delete attribute"
+        self.fdel(obj)
+
+def staticmethod(func):
+    JS("""
+    var fnwrap = function() {
+        var args = [];
+        for (var i = 0; i < arguments.length; i++) {
+          args.push(arguments[i]);
+        }
+        return func.apply(null,args);
+    };
+    fnwrap.__name__ = name;
+    fnwrap.__args__ = func.__args__;
+    fnwrap.__bind_type__ = 0;
+    return fnwrap;
+    """)
+
 @compiler.noSourceTracking
 def super(type_, object_or_type = None):
     # This is a partially implementation: only super(type, object)

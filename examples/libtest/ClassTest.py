@@ -479,6 +479,18 @@ class ClassTest(UnitTest):
             self.assertTrue(True)
             #self.assertEqual(e[0], "'RevealAccess' object has no attribute 'val'")
 
+    def testProperty(self):
+        p = OldStylePropertyDecorating()
+
+        p.x = 1
+        self.assertEqual(p._x, 1)
+        self.assertEqual(p.x, 1)
+        del p.x
+        try:
+            x = p._x
+        except AttributeError, e:
+            self.assertTrue(True)
+
 
 class PassMeAClass(object):
     def __init__(self):
@@ -743,4 +755,16 @@ class RevealAccess(object):
 
 class Decorated(object):
     x = RevealAccess(10, "var 'x'")
+
+class OldStylePropertyDecorating(object):
+    def __init__(self):
+        self._x = None
+
+    def getx(self):
+        return self._x
+    def setx(self, value):
+        self._x = value
+    def delx(self):
+        del self._x
+    x = property(getx, setx, delx, "I'm the 'x' property.")
 

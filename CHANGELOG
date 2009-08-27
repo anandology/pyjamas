@@ -1,6 +1,10 @@
                     Changes made to Pyjamas since 0.6
                     ---------------------------------
 
+ * Added property()
+
+ * Added staticmethod()
+
  * Added __pyjamas__.setCompilerOptions()
 
  * Added descriptors (enables old style decorators)
