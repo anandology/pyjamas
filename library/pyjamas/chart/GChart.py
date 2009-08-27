@@ -1642,7 +1642,7 @@ class GChart (Composite):
     * @see #getY2Axis getY2Axis
     """
     def getXAxis(self):
-        return xAxis
+        return self.xAxis
 
 
     """*
@@ -1655,7 +1655,7 @@ class GChart (Composite):
     *
     """
     def getXChartSize(self):
-        return xChartSize
+        return self.xChartSize
 
 
     """*
@@ -1687,16 +1687,16 @@ class GChart (Composite):
     *
     """
     def getXChartSizeDecorated(self):
-        result = (getXChartSize() +
-                    getYAxis().getAxisLabelThickness() +
-                    getYAxis().getTickLabelThickness() +
-                    getYAxis().getTickSpace() +
-                    getYAxis().getTickLabelPadding() +
-                    getY2Axis().getAxisLabelThickness() +
-                    getY2Axis().getTickLabelThickness() +
-                    getY2Axis().getTickSpace() +
-                    getYAxis().getTickLabelPadding() +
-                    getLegendThickness())
+        result = (self.getXChartSize() +
+                    self.getYAxis().getAxisLabelThickness() +
+                    self.getYAxis().getTickLabelThickness() +
+                    self.getYAxis().getTickSpace() +
+                    self.getYAxis().getTickLabelPadding() +
+                    self.getY2Axis().getAxisLabelThickness() +
+                    self.getY2Axis().getTickLabelThickness() +
+                    self.getY2Axis().getTickSpace() +
+                    self.getYAxis().getTickLabelPadding() +
+                    self.getLegendThickness())
         return result
 
 

@@ -136,7 +136,7 @@ class Curve:
     * @see #getNPoints getNPoints
     """
     def clearPoints(self):
-        if this == getTouchedCurve():
+        if self == self.getParent().getTouchedCurve():
             plotPanel.touch(None)
         
         self.invalidate()

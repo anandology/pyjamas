@@ -1757,8 +1757,8 @@ class Axis:
         pass
 
     def maybePopulateTicks(self):
-        if tickCount != GChart.NAI:
-            populateTicks()
+        if self.tickCount != GChart.NAI:
+            self.populateTicks()
 
 
 
