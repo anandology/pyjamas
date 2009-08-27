@@ -49,14 +49,12 @@ from pyjamas import Window
 
 
 
-from pyjamas import Event
+from pyjamas.ui import Event
 from pyjamas.ui.AbsolutePanel import AbsolutePanel
 from pyjamas.ui.Composite import Composite
 from pyjamas.ui.Grid import Grid
-from pyjamas.ui.HasHTML import HasHTML
-from pyjamas.ui.HasHorizontalAlignment import HasHorizontalAlignment
-from pyjamas.ui.HasText import HasText
-from pyjamas.ui.HasVerticalAlignment import HasVerticalAlignment
+from pyjamas.ui import HasHorizontalAlignment
+from pyjamas.ui import HasVerticalAlignment
 from pyjamas.ui.HTML import HTML
 from pyjamas.ui.Image import Image
 from pyjamas.ui.SimplePanel import SimplePanel
@@ -1073,7 +1071,7 @@ def htmlWidth(self, sIn):
 
 # number of <br> delimited lines in an HTML string
 def htmlHeight(self, s):
-    BR_LEN = "<br>".length()
+    BR_LEN = len("<br>")
     iBr = 0
     result = 1
     if None != s:
@@ -2034,9 +2032,9 @@ class GChart (Composite):
         elif GChart.NAI != self.footnotesThickness:
             result = self.footnotesThickness
 
-        elif isintance(getChartFootnotes(), HasHTML):
+        elif hasattr(getChartFootnotes(), 'getHTML'):
             result = DEFAULT_FOOTNOTES_THICKNESS * (EXTRA_HEIGHT +
-                        htmlHeight( (getChartFootnotes())).getHTML())
+                        htmlHeight( getChartFootnotes().getHTML()) )
 
         else:
             result = DEFAULT_FOOTNOTES_THICKNESS* (DEF_HEIGHT + EXTRA_HEIGHT)
@@ -2087,9 +2085,9 @@ class GChart (Composite):
         elif GChart.NAI != self.titleThickness:
             result = self.titleThickness
 
-        elif isinstance(getChartTitle(), HasHTML):
+        elif hasattr(getChartTitle(), 'getHTML'):
             result = DEFAULT_TITLE_THICKNESS * (EXTRA_HEIGHT +
-                    htmlHeight( (getChartTitle())).getHTML() )
+                    htmlHeight( getChartTitle().getHTML() ))
 
         else:
             result = DEFAULT_TITLE_THICKNESS* (EXTRA_HEIGHT + DEF_HEIGHT)

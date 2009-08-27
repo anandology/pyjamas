@@ -49,14 +49,12 @@ from pyjamas import Window
 
 
 
-from pyjamas import Event
+from pyjamas.ui import Event
 from pyjamas.ui.AbsolutePanel import AbsolutePanel
 from pyjamas.ui.Composite import Composite
 from pyjamas.ui.Grid import Grid
-from pyjamas.ui.HasHTML import HasHTML
-from pyjamas.ui.HasHorizontalAlignment import HasHorizontalAlignment
-from pyjamas.ui.HasText import HasText
-from pyjamas.ui.HasVerticalAlignment import HasVerticalAlignment
+from pyjamas.ui import HasHorizontalAlignment
+from pyjamas.ui import HasVerticalAlignment
 from pyjamas.ui.HTML import HTML
 from pyjamas.ui.Image import Image
 from pyjamas.ui.SimplePanel import SimplePanel
@@ -505,15 +503,14 @@ class Axis:
         elif GChart.NAI != axisLabelThickness:
             result = axisLabelThickness
 
-        elif isinstance(getAxisLabel(), HasHTML):
-            charWidth = htmlWidth(
-                    ((HasHTML) (getAxisLabel())).getHTML())
+        elif hasattr(getAxisLabel(), 'getHTML'):
+            charWidth = htmlWidth( getAxisLabel().getHTML())
             result = int ( Math.round((charWidth + EXTRA_CHARWIDTH) *
                             getTickLabelFontSize() *
                             TICK_CHARWIDTH_TO_FONTSIZE_LOWERBOUND))
 
-        elif isinstance(getAxisLabel(), HasText):
-            text = ((HasText) (getAxisLabel())).getText()
+        elif hasattr(getAxisLabel(), "getText"):
+            text = getAxisLabel().getText()
             result = int (Math.round((EXTRA_CHARWIDTH +
                             (text and len(text) or 0)) *
                             getTickLabelFontSize() *

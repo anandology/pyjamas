@@ -49,14 +49,14 @@ from pyjamas import Window
 
 
 
-from pyjamas import Event
+from pyjamas.ui import Event
 from pyjamas.ui.AbsolutePanel import AbsolutePanel
 from pyjamas.ui.Composite import Composite
 from pyjamas.ui.Grid import Grid
 from pyjamas.ui.HasHTML import HasHTML
-from pyjamas.ui.HasHorizontalAlignment import HasHorizontalAlignment
+from pyjamas.ui import HasHorizontalAlignment
 from pyjamas.ui.HasText import HasText
-from pyjamas.ui.HasVerticalAlignment import HasVerticalAlignment
+from pyjamas.ui import HasVerticalAlignment
 from pyjamas.ui.HTML import HTML
 from pyjamas.ui.Image import Image
 from pyjamas.ui.SimplePanel import SimplePanel
