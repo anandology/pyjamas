@@ -115,6 +115,7 @@ class JSONProxy(JSONService):
         # needed.  in here, for pyjd, things are done slightly differently.
         # (using __getattr__).
         self._serviceURL = url 
+        self.methods = methods
 
     def __createMethod(self, method):
         pass
@@ -122,5 +123,7 @@ class JSONProxy(JSONService):
         pass
 
     def __getattr__(self, name):
+        if not name in self.methods:
+            raise AttributeError("no such method %s" % name) 
         return ServiceProxy(self._serviceURL, name)
 
