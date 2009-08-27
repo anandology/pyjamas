@@ -23,32 +23,6 @@
 from pyjamas import DOM
 from pyjamas import Window
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 from pyjamas.ui import Event
 from pyjamas.ui.AbsolutePanel import AbsolutePanel
 from pyjamas.ui.Composite import Composite
@@ -112,8 +86,10 @@ import Double
 import AnnotationLocation
 import SymbolType
 import TickLocation
+import TouchedPointUpdateOption
 
 from Curve import Curve
+import GChartUtil 
 from GChartUtil import formatAsHovertext, YAxisId, setOverflow
 from GChartWidgets import PlotPanel
 
@@ -1821,7 +1797,7 @@ class GChart (Composite):
     * @see Curve#setYAxis Curve.setYAxis
     """
     def hasY2Axis(self):
-        result = getY2Axis().getNCurvesVisibleOnAxis() > 0
+        result = self.getY2Axis().getNCurvesVisibleOnAxis() > 0
         return result
 
     """*
@@ -1836,7 +1812,7 @@ class GChart (Composite):
     *
     """
     def hasYAxis(self):
-        result = getYAxis().getNCurvesVisibleOnAxis() > 0
+        result = self.getYAxis().getNCurvesVisibleOnAxis() > 0
         return result
 
     """*
@@ -3524,25 +3500,25 @@ class GChart (Composite):
     def assembleChart(self):
 
         if self.chartDecorationsChanged  or  xAxis.limitsChanged()  or  yAxis.limitsChanged()  or  y2Axis.limitsChanged():
-            self.plotPanel.reset(xChartSize, yChartSize,
-            hasYAxis(), hasY2Axis(),
-            xAxis, yAxis, y2Axis)
-            GChart.setFontFamily(this,getFontFamily())
-            GChart.setBackgroundColor(this, getBackgroundColor())
-            GChart.setBorderColor(this, getBorderColor())
-            GChart.setBorderStyle(this,getBorderStyle())
-            GChart.setBorderWidth(this, getBorderWidth())
-            GChart.setPadding(this,getPadding())
-            GChart.setOverflow(this, (getClipToDecoratedChart() and
+            self.plotPanel.reset(self.xChartSize, self.yChartSize,
+                        self.hasYAxis(), self.hasY2Axis(),
+                        self.xAxis, self.yAxis, self.y2Axis)
+            GChartUtil.setFontFamily(this,getFontFamily())
+            GChartUtil.setBackgroundColor(this, getBackgroundColor())
+            GChartUtil.setBorderColor(this, getBorderColor())
+            GChartUtil.setBorderStyle(this,getBorderStyle())
+            GChartUtil.setBorderWidth(this, getBorderWidth())
+            GChartUtil.setPadding(this,getPadding())
+            GChartUtil.setOverflow(this, (getClipToDecoratedChart() and
                                         "hidden" or "visible"))
 
             self.setPixelSize(self.plotPanel.getXChartSizeDecoratedQuickly(),
-            self.plotPanel.getYChartSizeDecoratedQuickly())
-            updateDecorations(self.plotPanel.getXChartSizeDecoratedQuickly())
-            xAxis.rememberLimits()
-            yAxis.rememberLimits()
-            y2Axis.rememberLimits()
-            invalidateEveryCurve()
+                            self.plotPanel.getYChartSizeDecoratedQuickly())
+            self.updateDecorations(self.plotPanel.getXChartSizeDecoratedQuickly())
+            self.xAxis.rememberLimits()
+            self.yAxis.rememberLimits()
+            self.y2Axis.rememberLimits()
+            self.invalidateEveryCurve()
             self.chartDecorationsChanged = False
 
         # actually renders chart, including internal curves used
