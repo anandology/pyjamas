@@ -35,6 +35,9 @@ from GChartConsts import DEFAULT_TICK_LABEL_FORMAT
 from GChartConsts import DEFAULT_TICK_LENGTH
 from GChartConsts import DEFAULT_TICK_LOCATION
 from GChartConsts import DEFAULT_TICK_THICKNESS
+from GChartConsts import Y2TICKS_ID
+from GChartConsts import Y2GRIDLINES_ID
+from GChartConsts import Y2AXIS_ID
 from GChartConsts import YTICKS_ID
 from GChartConsts import YGRIDLINES_ID
 from GChartConsts import YAXIS_ID
