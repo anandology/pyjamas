@@ -108,6 +108,9 @@ class Axis:
     def getChart(self):
         return self.chart
 
+    def getSystemCurve(self, idx):
+        return self.chart.getSystemCurve(idx)
+
     def incrementCurves(self):
         self.nCurvesVisibleOnAxis += 1
 
@@ -142,7 +145,7 @@ class Axis:
     # adds a labeled tick mark via this Axis' special system tick curve
     def addTickAsPoint(self, tickPosition, tickLabel, tickWidget, widthUpperBound, heightUpperBound):
 
-        c = getSystemCurve(ticksId)
+        c = self.getSystemCurve(self.ticksId)
         if isHorizontalAxis:
             c.addPoint(tickPosition, axisPosition*Double.MAX_VALUE)
 
@@ -246,7 +249,7 @@ class Axis:
         self.chartDecorationsChanged = True
         if GChart.NAI != tickCount:
             # clear out any auto-generated ticks
-            cTicks = getSystemCurve(ticksId)
+            cTicks = self.getSystemCurve(self.ticksId)
             cTicks.clearPoints()
             tickCount = GChart.NAI
 
@@ -317,7 +320,7 @@ class Axis:
         self.chartDecorationsChanged = True
         if GChart.NAI != tickCount:
             # clear out any auto-generated ticks
-            cTicks = getSystemCurve(ticksId)
+            cTicks = self.getSystemCurve(self.ticksId)
             cTicks.clearPoints()
             tickCount = GChart.NAI
 
@@ -344,7 +347,7 @@ class Axis:
         """
         self.chartDecorationsChanged = True
         tickCount = GChart.NAI
-        c = getSystemCurve(ticksId)
+        c = self.getSystemCurve(self.ticksId)
         c.clearPoints()
 
 
@@ -653,7 +656,7 @@ class Axis:
         *"""
         result = tickCount
         if GChart.NAI == tickCount:
-            c = getSystemCurve(ticksId)
+            c = self.getSystemCurve(self.ticksId)
             result = c.getNPoints()
 
         return result
@@ -749,7 +752,7 @@ class Axis:
             if needsPopulation:
                 self.maybePopulateTicks()
 
-            c = getSystemCurve(ticksId)
+            c = self.getSystemCurve(self.ticksId)
             nTicks = c.getNPoints()
             for i in range(nTicks):
                 tt = c.getPoint(i).getAnnotationText()
@@ -1287,7 +1290,7 @@ class Axis:
     *"""
     def setTickCount(self, tickCount):
         self.chartDecorationsChanged = True
-        getSystemCurve(ticksId).clearPoints(); # eliminate user specified ticks
+        self.getSystemCurve(self.ticksId).clearPoints(); # eliminate user specified ticks
         self.tickCount = tickCount
 
     """*
@@ -1313,7 +1316,7 @@ class Axis:
     def setTickLabelFontWeight(self, cssWeight):
         self.chartDecorationsChanged = True
         # assure that any existing ticks are updated with weight
-        c = getSystemCurve(ticksId)
+        c = self.getSystemCurve(self.ticksId)
         nPoints = c.getNPoints()
         for i in range(nPoints):
             c.getPoint(i).setAnnotationFontWeight(cssWeight)
@@ -1346,7 +1349,7 @@ class Axis:
     *"""
     def setTickLabelFontColor(self, cssColor):
         self.chartDecorationsChanged = True
-        c = getSystemCurve(ticksId)
+        c = self.getSystemCurve(self.ticksId)
         nPoints = c.getNPoints()
         for i in range(nPoints):
             c.getPoint(i).setAnnotationFontColor(cssColor)
@@ -1376,7 +1379,7 @@ class Axis:
     *"""
     def setTickLabelFontStyle(self, cssStyle):
         self.chartDecorationsChanged = True
-        c = getSystemCurve(ticksId)
+        c = self.getSystemCurve(self.ticksId)
         nPoints = c.getNPoints()
         for i in range(nPoints):
             c.getPoint(i).setAnnotationFontStyle(cssStyle)
@@ -1407,7 +1410,7 @@ class Axis:
 
     def setTickLabelFontSize(self, tickLabelFontSize):
         self.chartDecorationsChanged = True
-        c = getSystemCurve(ticksId)
+        c = self.getSystemCurve(self.ticksId)
         nPoints = c.getNPoints()
         for i in range(nPoints):
             c.getPoint(i).setAnnotationFontSize(tickLabelFontSize)
@@ -1722,7 +1725,7 @@ class Axis:
     def setTickLocation(self, tickLocation):
         self.tickLocation = tickLocation
         self.chartDecorationsChanged = True
-        sym = self.getChart().getSystemCurve(ticksId).getSymbol()
+        sym = self.getSystemCurve(self.ticksId).getSymbol()
         if isHorizontalAxis:
             sym.setSymbolType(tickLocation.getXAxisSymbolType(axisPosition))
             sym.setHeight(getActualTickLength())
@@ -1757,7 +1760,7 @@ class Axis:
 
     # fills in the tick positions when auto-generated.
     def populateTicks(self):
-        getSystemCurve(ticksId).clearPoints()
+        self.getSystemCurve(self.ticksId).clearPoints()
         #TODO: It should be possible to control the visibility of each axis,
         # including ticks and tick labels, independent of the specifications of
         # the tick marks on that axis, and independent of if any curves are
@@ -1768,7 +1771,7 @@ class Axis:
         # dummy curve to the axis, etc. to control axis visibility is needed.
         # x, y ticks are drawn even
         # if no curves are on these axes
-        if XTICKS_ID == ticksId  or  YTICKS_ID == ticksId  or  0 < getNCurvesVisibleOnAxis():
+        if XTICKS_ID == self.ticksId  or  YTICKS_ID == self.ticksId  or  0 < getNCurvesVisibleOnAxis():
             l = getAxisLimits()
             for i in range(tickCount):
                 # linear interpolation between min and max
@@ -1789,8 +1792,8 @@ class Axis:
 
     # fills in the gridlines; ticks are assumed already populated
     def populateGridlines(self):
-        cTicks = getSystemCurve(ticksId)
-        cGridlines = getSystemCurve(gridlinesId)
+        cTicks = self.getSystemCurve(self.ticksId)
+        cGridlines = self.getSystemCurve(gridlinesId)
         cGridlines.clearPoints()
         nTicks = cTicks.getNPoints()
         for iTick in range(nTicks):
@@ -1857,7 +1860,7 @@ class Axis:
     # returns the largest, explicitly specified, tick position
     def getTickMax(self):
         result = -Double.MAX_VALUE
-        c = getSystemCurve(ticksId)
+        c = self.getSystemCurve(self.ticksId)
         nTicks = c.getNPoints()
         for i in range(nTicks):
             result = max(result, getTickPosition(c, i))
@@ -1867,7 +1870,7 @@ class Axis:
     # returns the smallest, explicitly specified, tick position
     def getTickMin(self):
         result = Double.MAX_VALUE
-        c = getSystemCurve(ticksId)
+        c = self.getSystemCurve(self.ticksId)
         nTicks = c.getNPoints()
         for i in range(nTicks):
             result = min(result, getTickPosition(c, i))
@@ -1924,10 +1927,10 @@ class XAxis(Axis):
     def __init__(self, chart):
         Axis.__init__(self, chart)
         isHorizontalAxis = True
-        ticksId = XTICKS_ID
-        gridlinesId = XGRIDLINES_ID
-        axisId = XAXIS_ID
-        axisPosition = -1
+        self.ticksId = XTICKS_ID
+        self.gridlinesId = XGRIDLINES_ID
+        self.axisId = XAXIS_ID
+        self.axisPosition = -1
         self.setTickLocation(DEFAULT_TICK_LOCATION)
         self.setTickThickness(DEFAULT_TICK_THICKNESS)
         self.setTickLength(DEFAULT_TICK_LENGTH)
@@ -1967,7 +1970,7 @@ class XAxis(Axis):
         result = -Double.MAX_VALUE
         nCurves = getNCurves()
         for i in range(nCurves):
-            c = getSystemCurve(i)
+            c = self.getSystemCurve(i)
             if not c.isVisible():
                 continue
 
@@ -1985,7 +1988,7 @@ class XAxis(Axis):
         result = Double.MAX_VALUE
         nCurves = getNCurves()
         for i in range(nCurves):
-            c = getSystemCurve(i)
+            c = self.getSystemCurve(i)
             if not c.isVisible():
                 continue
 
@@ -2050,12 +2053,12 @@ class XAxis(Axis):
     def setTickLength(tickLength):
         self.chartDecorationsChanged = True
         self.tickLength = tickLength
-        getSystemCurve(ticksId).getSymbol().setHeight(
+        self.getSystemCurve(self.ticksId).getSymbol().setHeight(
         getActualTickLength())
 
     def setTickThickness(tickThickness):
         self.tickThickness = tickThickness
-        getSystemCurve(ticksId).getSymbol().setWidth(tickThickness)
+        self.getSystemCurve(self.ticksId).getSymbol().setWidth(tickThickness)
 
 
 
@@ -2069,10 +2072,10 @@ class Y2Axis(Axis):
     def __init__(self, chart):
         Axis.__init__(self, chart)
         isHorizontalAxis = False
-        ticksId = Y2TICKS_ID
-        gridlinesId = Y2GRIDLINES_ID
-        axisId = Y2AXIS_ID
-        axisPosition = 1
+        self.ticksId = Y2TICKS_ID
+        self.gridlinesId = Y2GRIDLINES_ID
+        self.axisId = Y2AXIS_ID
+        self.axisPosition = 1
         setTickLocation(DEFAULT_TICK_LOCATION)
         setTickThickness(DEFAULT_TICK_THICKNESS)
         setTickLength(DEFAULT_TICK_LENGTH)
@@ -2087,7 +2090,7 @@ class Y2Axis(Axis):
         result = -Double.MAX_VALUE
         nCurves = getNCurves()
         for i in range(nCurves):
-            c = getSystemCurve(i)
+            c = self.getSystemCurve(i)
             if not c.isVisible():
                 continue
 
@@ -2107,7 +2110,7 @@ class Y2Axis(Axis):
         result = Double.MAX_VALUE
         nCurves = getNCurves()
         for i in range(nCurves):
-            c = getSystemCurve(i)
+            c = self.getSystemCurve(i)
             if not c.isVisible():
                 continue
 
@@ -2152,11 +2155,11 @@ class Y2Axis(Axis):
     def setTickLength(tickLength):
         self.chartDecorationsChanged = True
         self.tickLength = tickLength
-        getSystemCurve(ticksId).getSymbol().setWidth(getActualTickLength())
+        self.getSystemCurve(self.ticksId).getSymbol().setWidth(getActualTickLength())
 
     def setTickThickness(tickThickness):
         self.tickThickness = tickThickness
-        getSystemCurve(ticksId).getSymbol().setHeight(tickThickness)
+        self.getSystemCurve(self.ticksId).getSymbol().setHeight(tickThickness)
 
 
 """* The left y-axis of a GChart.
@@ -2187,7 +2190,7 @@ class YAxis(Axis):
         result = -Double.MAX_VALUE
         nCurves = self.getNCurves()
         for i in range(nCurves):
-            c = self.getChart().getSystemCurve(i)
+            c = self.getSystemCurve(i)
             if not c.isVisible():
                 continue
 
@@ -2207,7 +2210,7 @@ class YAxis(Axis):
         result = Double.MAX_VALUE
         nCurves = getNCurves()
         for i in range(nCurves):
-            c = getSystemCurve(i)
+            c = self.getSystemCurve(i)
             if not c.isVisible():
                 continue
 
@@ -2254,10 +2257,10 @@ class YAxis(Axis):
     def setTickLength(tickLength):
         self.chartDecorationsChanged = True
         self.tickLength = tickLength
-        getSystemCurve(ticksId).getSymbol().setWidth(
-        getActualTickLength())
+        self.getSystemCurve(self.ticksId).getSymbol().setWidth(
+                                getActualTickLength())
 
     def setTickThickness(tickThickness):
         self.tickThickness = tickThickness
-        getSystemCurve(ticksId).getSymbol().setHeight(tickThickness)
+        self.getSystemCurve(self.ticksId).getSymbol().setHeight(tickThickness)
 
