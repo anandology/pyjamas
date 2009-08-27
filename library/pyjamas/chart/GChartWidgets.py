@@ -998,7 +998,9 @@ class GraphicsRenderingPanel (AbsolutePanel):
 DECORATIVE_RENDERING_PANEL_INDEX = 0
 
 class PlotPanel (AbsolutePanel):
-    def __init__(self, **kwargs):
+    def __init__(self, chart, **kwargs):
+
+        self.chart = chart
 
         # keep track of last touched point & hover widget
         self.touchedPoint = None
@@ -1298,9 +1300,9 @@ class PlotPanel (AbsolutePanel):
     def reset(self, xChartSize, yChartSize, hasYAxis, hasY2Axis, xAxis, yAxis, y2Axis):
 
         # these must come first (getTickLabelThickness(False) needs them)
-        getXAxis().maybePopulateTicks()
-        getYAxis().maybePopulateTicks()
-        getY2Axis().maybePopulateTicks()
+        self.chart.getXAxis().maybePopulateTicks()
+        self.chart.getYAxis().maybePopulateTicks()
+        self.chart.getY2Axis().maybePopulateTicks()
 
         self.xChartSize = xChartSize
         self.yChartSize = yChartSize

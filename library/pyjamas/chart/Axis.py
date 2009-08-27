@@ -641,7 +641,7 @@ class Axis:
         * @see Axis#setVisible setVisible
         *
         """
-        return nCurvesVisibleOnAxis
+        return self.nCurvesVisibleOnAxis
 
     def getTickCount(self):
         """*
@@ -658,8 +658,8 @@ class Axis:
         ** @see #clearTicks clearTicks
         **
         *"""
-        result = tickCount
-        if GChart.NAI == tickCount:
+        result = self.tickCount
+        if GChart.NAI == self.tickCount:
             c = self.getSystemCurve(self.ticksId)
             result = c.getNPoints()
 

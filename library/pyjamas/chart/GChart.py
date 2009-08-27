@@ -563,7 +563,7 @@ class GChart (Composite):
         * AbsolutePanel as the ticks/plots facilitates self.
         *
         """
-        self.plotPanel =  PlotPanel()
+        self.plotPanel =  PlotPanel(self)
         self.padding = USE_CSS
         self.optimizeForMemory = False
         self.clipToPlotArea = False
