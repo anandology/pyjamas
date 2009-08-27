@@ -722,6 +722,16 @@ class Symbol(object):
         return self.hovertextChunks
     
     
+    """* Returns the <tt>GChart</tt> that contains this
+    ** <tt>Symbol</tt>.
+    **
+    ** @return a reference to the <tt>GChart</tt> that
+    **   contains this <tt>Symbol</tt> (its "parent")
+    **
+    *"""
+    def getChart(self):
+        return self.parent.chart
+    
     """* Returns the <tt>Curve</tt> that contains this
     ** <tt>Symbol</tt>.
     **
@@ -2339,10 +2349,13 @@ class Symbol(object):
         #      throwExceptionOnAnchorMouse(symbolType)
         self.getParent().invalidate()
         # will invalidate dependent slices if it was previously a pie slice
-        invalidateDependentSlices(getCurveIndex(self.getParent()))
+        idx = self.getChart().getCurveIndex(self.getParent())
+        self.getChart().invalidateDependentSlices(idx)
         self.symbolType = symbolType
         # will invalidate dependent slices if it is now a pie slice
-        invalidateDependentSlices(getCurveIndex(self.getParent()))
+        idx = self.getChart().getCurveIndex(self.getParent())
+        self.getChart().invalidateDependentSlices(idx)
+
     
     
     

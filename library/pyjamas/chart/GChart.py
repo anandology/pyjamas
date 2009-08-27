@@ -74,6 +74,10 @@ from GChartConsts import DEFAULT_FONT_COLOR
 from GChartConsts import DEFAULT_LEGEND_FONTSIZE
 from GChartConsts import DEFAULT_FONT_STYLE
 from GChartConsts import DEFAULT_FONT_WEIGHT
+from GChartConsts import DEFAULT_PLOTAREA_BACKGROUND_COLOR
+from GChartConsts import DEFAULT_PLOTAREA_BORDER_COLOR
+from GChartConsts import DEFAULT_PLOTAREA_BORDER_STYLE
+from GChartConsts import DEFAULT_PLOTAREA_BORDER_WIDTH
 from GChartConsts import PLOTAREA_ID
 from GChartConsts import TITLE_ID
 from GChartConsts import YAXIS_ID
@@ -218,7 +222,7 @@ class GChart (Composite):
     def addSystemCurves(self):
         # Must be first: other methods assume sys curves exist
         for i in range(N_SYSTEM_CURVES):
-            c = Curve(i)
+            c = Curve(self, i)
             self.curves[i] = c
             # Required rendering panels are added lazily, later on
 
@@ -829,7 +833,7 @@ class GChart (Composite):
             "iCurve = " + iCurve +"; iCurve may not be negative.")
 
         internalIndex = self.internalCurveIndex(iCurve)
-        c = Curve(internalIndex)
+        c = Curve(self, internalIndex)
         self.curves[internalIndex] = c
         # curves are initially added to the x, y axes.
         getXAxis().incrementCurves()
@@ -1891,7 +1895,7 @@ class GChart (Composite):
             "iCurve = " + iCurve +"; iCurve may not be negative.")
 
 
-        invalidateDependentSlices(iCurve)
+        self.invalidateDependentSlices(iCurve)
 
         """
         * Simulate user moving away from point before it is deleted (this
@@ -3766,7 +3770,7 @@ class GChart (Composite):
     # depend on the orientation of the given curve
     def invalidateDependentSlices(self, iFirstCurve):
         # only user defined curve can have slice dependency relationships
-        if isSystemCurveIndex(iFirstCurve):
+        if self.isSystemCurveIndex(iFirstCurve):
             return
 
         nCurves = self.getNCurves()
@@ -3785,7 +3789,7 @@ class GChart (Composite):
 
     # Defines the default pie slice orientations for every pie-slice curve
     def setDefaultPieSliceOrientations(self):
-        setLastPieSliceOrientation(getInitialPieSliceOrientation())
+        self.setLastPieSliceOrientation(getInitialPieSliceOrientation())
         nCurves = self.getNCurves()
         for i in range(nCurves):
             c = self.getSystemCurve(i)
@@ -3794,10 +3798,10 @@ class GChart (Composite):
             if isinstance(c.getSymbol().getSymbolType(),
                             SymbolType.PieSliceSymbolType):
                 c.getSymbol().setDefaultPieSliceOrientation(
-                getLastPieSliceOrientation())
-                setLastPieSliceOrientation(
-                c.getSymbol().getDecodedPieSliceOrientation()
-                + c.getSymbol().getPieSliceSize())
+                                self.getLastPieSliceOrientation())
+                self.setLastPieSliceOrientation(
+                                c.getSymbol().getDecodedPieSliceOrientation()
+                                + c.getSymbol().getPieSliceSize())
 
 
 
@@ -3805,7 +3809,7 @@ class GChart (Composite):
 
     def realizePlotPanel(self):
 
-        setDefaultPieSliceOrientations()
+        self.setDefaultPieSliceOrientations()
         """
         * Render both system curves (those with negative ids that
         * are used to render title, ticks, etc.) and ordinary curves.

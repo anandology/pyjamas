@@ -80,7 +80,8 @@ class Curve:
     * methods.
     *
     """
-    def __init__(self, indexOf=GChart.NAI):
+    def __init__(self, chart, indexOf=GChart.NAI):
+        self.chart = chart
         self.wasCanvasRendered = False
         self.isVisible = True
         self.legendHTML = None
