@@ -688,6 +688,7 @@ class Translator:
         if self.source_tracking and self.store_source:
             for l in self.track_lines.keys():
                 print >> self.output, self.spacing() + '''%s.__track_lines__[%d] = "%s";''' % (self.js_module_name, l, self.track_lines[l].replace('"', '\"'))
+        print >> self.output, self.local_js_vars_decl([])
         print >> self.output, captured_output,
 
         if attribute_checking:
@@ -2170,9 +2171,9 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
     def _assign(self, node, current_klass, top_level = False):
         if len(node.nodes) != 1:
-            tempvar = '__temp'+str(node.lineno)
+            tempvar = self.uniqid("$assign")
             tnode = ast.Assign([ast.AssName(tempvar, "OP_ASSIGN", node.lineno)], node.expr, node.lineno)
-            self._assign(tnode, current_klass, top_level)
+            self._assign(tnode, current_klass, False)
             for v in node.nodes:
                tnode2 = ast.Assign([v], ast.Name(tempvar, node.lineno), node.lineno)
                self._assign(tnode2, current_klass, top_level)
