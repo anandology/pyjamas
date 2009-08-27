@@ -61,9 +61,7 @@ from pyjamas.ui.SimplePanel import SimplePanel
 from pyjamas.ui.UIObject import UIObject
 from pyjamas.ui.Widget import Widget
 
-
-EXTRA_BANDS = 2;   # far left, right (top, bottom) bands
-
+import GChart
 
 """*
 * Represents a curve on a chart, which includes
@@ -77,6 +75,9 @@ EXTRA_BANDS = 2;   # far left, right (top, bottom) bands
 *
 """
 class Curve:
+
+    EXTRA_BANDS = 2;   # far left, right (top, bottom) bands
+
     def isValidated(self):
         return isValidated
     
@@ -121,7 +122,7 @@ class Curve:
     * methods.
     *
     """
-    def __init__(self, indexOf=CGhart.NAI):
+    def __init__(self, indexOf=GChart.NAI):
         self.isVisible = True
         self.legendHTML = None
         self.points = []
