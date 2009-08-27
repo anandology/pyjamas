@@ -3450,7 +3450,7 @@ class GChart (Composite):
     ** @see #isUpdateNeeded isUpdateNeeded
     **
     *"""
-    def update(self, option):
+    def update(self, option=None):
 
         """
         * This method defines each curve's default pie slice
@@ -3464,7 +3464,14 @@ class GChart (Composite):
         * Therefore, this line must come first.
         *
         """
-        assembleChart()
+        if option is None:
+            if self.getHoverTouchingEnabled():
+                option = TouchedPointUpdateOption.TOUCHED_POINT_UPDATED
+
+            else:
+                option = TouchedPointUpdateOption.TOUCHED_POINT_LOCKED
+
+        self.assembleChart()
 
         if TouchedPointUpdateOption.TOUCHED_POINT_LOCKED == option:
             # must re-touch (point position, hover-config can change)
@@ -3512,14 +3519,6 @@ class GChart (Composite):
     * @see #setHoverTouchingEnabled setHoverTouchingEnabled
     *
     """
-    def update(self):
-        if getHoverTouchingEnabled():
-            update(TouchedPointUpdateOption.TOUCHED_POINT_UPDATED)
-
-        else:
-            update(TouchedPointUpdateOption.TOUCHED_POINT_LOCKED)
-
-
 
     # constructs the chart within the chart panel from current specs
     def assembleChart(self):
