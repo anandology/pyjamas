@@ -18,6 +18,7 @@
 """
 
 import math
+import Double
 
 
 from pyjamas import DOM
@@ -62,8 +63,12 @@ from pyjamas.ui.UIObject import UIObject
 from pyjamas.ui.Widget import Widget
 
 
+import AnnotationLocation
+from GChartUtil import validateMultipliers
 
-
+# Use smallest min band size, since I expect per band
+# cost to be small compared to per-point hit testing.
+MIN_BAND_SIZE = 1
 
 """*
 ** Specifies the type of symbol used by a curve. GChart
@@ -152,10 +157,6 @@ class SymbolType:
     * See the <tt>bandSeparatePoints</tt> method for more info.
     *
     """
-    isHorizontallyBanded = None
-    # Use smallest min band size, since I expect per band
-    # cost to be small compared to per-point hit testing.
-    MIN_BAND_SIZE = 1
     #      isHorizontallyBanded() {return isHorizontallyBanded; }
 
     """ Thickness (in pixels) of hit-test-bands used with this
@@ -168,8 +169,7 @@ class SymbolType:
     def getBandThickness(self, pp, sym, onY2):
         result
         if sym.isHorizontallyBanded():
-            result = max(MIN_BAND_SIZE,
-            sym.getHeight(pp, onY2))
+            result = max(MIN_BAND_SIZE, sym.getHeight(pp, onY2))
 
         else:
             result = max(MIN_BAND_SIZE, sym.getWidth(pp))
@@ -191,997 +191,6 @@ class SymbolType:
     def getBrushWidth(self, sym):
         result = sym.getBrushWidth()
         return result
-
-    """
-    * This symbol type provides a convenient anchor point at
-    * one of the standard 9 named positions within the plot
-    * area.  The actual x,y of the points using this symbol
-    * type is ignored.  Useful for placing annotations around
-    * and along the perimeter of the plot panel.<p>
-    *
-    * For example, chart decorations such as axis labels and
-    * footnotes internally use symbols of this type (with
-    * appropriate setAnnotationXShift or setAnnotationYShift
-    * adjustments to position the decoration appropriately
-    * relative to the anchor point). End-users can use a curve
-    * with this symbol type, along with a single point and
-    * appropriate widget-based annotation, to place a table in
-    * the upper left corner of the plot area, etc.
-    *
-    """
-
-    """*
-    ** Points on curves with this symbol type are positioned
-    ** at the center of the plot area, and do not have a
-    ** visible symbol.<p>
-    **
-    **
-    ** Use this symbol type, along with the
-    ** <tt>setAnnotationLocation</tt>, <tt>setAnnotationXShift</tt> and
-    ** <tt>setAnnotationYShift</tt> methods, to position
-    ** annotations relative to the center of the plot area.
-    **
-    ** @see Curve.Point#setAnnotationLocation setAnnotationLocation
-    ** @see Curve.Point#setAnnotationXShift setAnnotationXShift
-    ** @see Curve.Point#setAnnotationYShift setAnnotationYShift
-    **
-    *"""
-    ANCHOR_CENTER = AnnotationAnchor(AnnotationLocation.CENTER)
-
-    """*
-    ** Points on curves with this symbol type are positioned
-    ** at the center of the right edge of the plot area, and
-    ** do not have a visible symbol.<p>
-    **
-    ** Use this symbol type, along with the
-    ** <tt>setAnnotationLocation</tt>, <tt>setAnnotationXShift</tt> and
-    ** <tt>setAnnotationYShift</tt> methods, to position
-    ** annotations relative to the center of the right
-    ** edge of the plot area.
-    **
-    ** @see Curve.Point#setAnnotationLocation setAnnotationLocation
-    ** @see Curve.Point#setAnnotationXShift setAnnotationXShift
-    ** @see Curve.Point#setAnnotationYShift setAnnotationYShift
-    **
-    *"""
-    ANCHOR_EAST = AnnotationAnchor(AnnotationLocation.EAST)
-
-    """*
-    ** When passed to the <tt>setHoverAnnotationSymbolType</tt>
-    ** method, this symbol type enables
-    ** <tt>setTitle</tt>-like, "anchored at the mouse cursor"
-    ** hover annotation positioning. Specifically, hover annotions act as
-    ** if they were annotations of 1px x 1px
-    ** points placed at the current mouse cursor position.
-    ** <p>
-    **
-    ** Because this and its related symbol types,
-    ** <tt>ANCHOR_MOUSE_SNAP_TO_X</tt> and
-    ** <tt>ANCHOR_MOUSE_SNAP_TO_Y</tt>, are intended only to
-    ** facilitate positioning of hover-induced pop-up annotations
-    ** (via the <tt>setHoverAnnotationSymbolType</tt> method) I
-    ** cannot imagine a scenario where it would make sense to use
-    ** them as the symbol type of an ordinary, user defined, curve
-    ** (if you find a use for this, please let me know).
-    **
-    **
-    ** @see #ANCHOR_MOUSE_SNAP_TO_X ANCHOR_MOUSE_SNAP_TO_X
-    ** @see #ANCHOR_MOUSE_SNAP_TO_Y ANCHOR_MOUSE_SNAP_TO_Y
-    ** @see Symbol#setHoverLocation setHoverLocation
-    ** @see Symbol#setHoverAnnotationSymbolType setHoverAnnotationSymbolType
-    ** @see Symbol#setHovertextTemplate setHovertextTemplate
-    ** @see Symbol#setHoverXShift setHoverXShift
-    ** @see Symbol#setHoverYShift setHoverYShift
-    ** @see Symbol#setHoverWidget setHoverWidget
-    *"""
-    ANCHOR_MOUSE = AnnotationAnchor( AnnotationLocation.AT_THE_MOUSE)
-
-    """*
-    * The same as the ANCHOR_MOUSE symbol type, except that
-    * the x coordinate of the rendered symbol is taken from
-    * the x coordinate of the point, rather than the x
-    * coordinate of the mouse.
-    *
-    * @see #ANCHOR_MOUSE ANCHOR_MOUSE
-    * @see #ANCHOR_MOUSE_SNAP_TO_Y ANCHOR_MOUSE_SNAP_TO_Y
-    *
-    """
-    ANCHOR_MOUSE_SNAP_TO_X = AnnotationAnchor(AnnotationLocation.AT_THE_MOUSE_SNAP_TO_X)
-    """*
-    * The same as the ANCHOR_MOUSE symbol type, except that
-    * the y coordinate of the rendered symbol is taken from
-    * the y coordinate of the point, rather than the y
-    * coordinate of the mouse.
-    *
-    * @see #ANCHOR_MOUSE ANCHOR_MOUSE
-    * @see #ANCHOR_MOUSE_SNAP_TO_X ANCHOR_MOUSE_SNAP_TO_X
-    *
-    """
-    ANCHOR_MOUSE_SNAP_TO_Y = AnnotationAnchor(AnnotationLocation.AT_THE_MOUSE_SNAP_TO_Y)
-    """*
-    ** Points on curves with this symbol type are positioned
-    ** at the center of the top edge of the plot area, and do
-    ** not have a visible symbol.<p>
-    **
-    ** Use this symbol type, along with the
-    ** <tt>setAnnotationLocation</tt>, <tt>setAnnotationXShift</tt> and
-    ** <tt>setAnnotationYShift</tt> methods, to position
-    ** annotations relative to the center of the top edge of
-    ** the plot area.
-    **
-    ** @see Curve.Point#setAnnotationLocation setAnnotationLocation
-    ** @see Curve.Point#setAnnotationXShift setAnnotationXShift
-    ** @see Curve.Point#setAnnotationYShift setAnnotationYShift
-    **
-    *"""
-    ANCHOR_NORTH = AnnotationAnchor(AnnotationLocation.NORTH)
-    """*
-    ** Points on curves with this symbol type are positioned
-    ** at the upper right corner of the plot area, and do not
-    ** have a visible symbol.<p>
-    **
-    ** Use this symbol type, along with the
-    ** <tt>setAnnotationLocation</tt>, <tt>setAnnotationXShift</tt> and
-    ** <tt>setAnnotationYShift</tt> methods, to position
-    ** annotations relative to the upper right corner of the
-    ** plot area.
-    **
-    ** @see Curve.Point#setAnnotationLocation setAnnotationLocation
-    ** @see Curve.Point#setAnnotationXShift setAnnotationXShift
-    ** @see Curve.Point#setAnnotationYShift setAnnotationYShift
-    **
-    *"""
-    ANCHOR_NORTHEAST = AnnotationAnchor(AnnotationLocation.NORTHEAST)
-
-    """*
-    ** Points on curves with this symbol type are positioned
-    ** at the upper left corner of the plot area, and do not
-    ** have a visible symbol.<p>
-    **
-    ** Use this symbol type, along with the
-    ** <tt>setAnnotationLocation</tt>, <tt>setAnnotationXShift</tt> and
-    ** <tt>setAnnotationYShift</tt> methods, to position
-    ** annotations relative to the upper left corner of the
-    ** plot area.
-    **
-    ** @see Curve.Point#setAnnotationLocation setAnnotationLocation
-    ** @see Curve.Point#setAnnotationXShift setAnnotationXShift
-    ** @see Curve.Point#setAnnotationYShift setAnnotationYShift
-    **
-    *"""
-    ANCHOR_NORTHWEST = AnnotationAnchor(AnnotationLocation.NORTHWEST)
-
-    """*
-    ** Points on curves with this symbol type are positioned
-    ** at the center of the bottom edge of the plot area, and
-    ** do not have a visible symbol.<p>
-    **
-    ** Use this symbol type, along with the
-    ** <tt>setAnnotationLocation</tt>, <tt>setAnnotationXShift</tt> and
-    ** <tt>setAnnotationYShift</tt> methods, to position
-    ** annotations relative to the center of the bottom edge
-    ** of the plot area.
-    **
-    ** @see Curve.Point#setAnnotationLocation setAnnotationLocation
-    ** @see Curve.Point#setAnnotationXShift setAnnotationXShift
-    ** @see Curve.Point#setAnnotationYShift setAnnotationYShift
-    **
-    *"""
-    ANCHOR_SOUTH = AnnotationAnchor(AnnotationLocation.SOUTH)
-
-
-    """*
-    ** Points on curves with this symbol type are positioned
-    ** at the lower right corner of the plot area, and do not
-    ** have a visible symbol.<p>
-    **
-    ** Use this symbol type, along with the
-    ** <tt>setAnnotationLocation</tt>, <tt>setAnnotationXShift</tt> and
-    ** <tt>setAnnotationYShift</tt> methods, to position
-    ** annotations relative to the lower right corner of the
-    ** plot area.
-    **
-    ** @see Curve.Point#setAnnotationLocation setAnnotationLocation
-    ** @see Curve.Point#setAnnotationXShift setAnnotationXShift
-    ** @see Curve.Point#setAnnotationYShift setAnnotationYShift
-    **
-    *"""
-    ANCHOR_SOUTHEAST = AnnotationAnchor(AnnotationLocation.SOUTHEAST)
-
-
-    """*
-    ** Points on curves with this symbol type are positioned
-    ** at the lower left corner of the plot area, and do not
-    ** have a visible symbol.<p>
-    **
-    ** Use this symbol type, along with the
-    ** <tt>setAnnotationLocation</tt>, <tt>setAnnotationXShift</tt> and
-    ** <tt>setAnnotationYShift</tt> methods, to position
-    ** annotations relative to the lower left corner of the
-    ** plot area.
-    **
-    ** @see Curve.Point#setAnnotationLocation setAnnotationLocation
-    ** @see Curve.Point#setAnnotationXShift setAnnotationXShift
-    ** @see Curve.Point#setAnnotationYShift setAnnotationYShift
-    **
-    *"""
-    ANCHOR_SOUTHWEST = AnnotationAnchor(AnnotationLocation.SOUTHWEST)
-
-    """*
-    ** Points on curves with this symbol type are positioned
-    ** at the center of the left edge of the plot area, and do
-    ** not have a visible symbol.<p>
-    **
-    ** Use this symbol type, along with the
-    ** <tt>setAnnotationLocation</tt>, <tt>setAnnotationXShift</tt> and
-    ** <tt>setAnnotationYShift</tt> methods, to position
-    ** annotations relative to the center of the left edge of
-    ** the plot area.
-    **
-    ** @see Curve.Point#setAnnotationLocation setAnnotationLocation
-    ** @see Curve.Point#setAnnotationXShift setAnnotationXShift
-    ** @see Curve.Point#setAnnotationYShift setAnnotationYShift
-    **
-    *"""
-    ANCHOR_WEST = AnnotationAnchor(AnnotationLocation.WEST)
-
-    """* Use rectangles horizontally and vertically centered
-    ** on each point of the curve """
-    BOX_CENTER = SymbolType(0,0,0,0,0,0)
-    """* Use rectangles just to the right of, and
-    ** vertically centered on, each point of the curve """
-    BOX_EAST = SymbolType(1, 0, 0.5, -0.5, 0, 0)
-    """* Use rectangles just above, and horizontally centered
-    ** on, each point of the curve """
-    BOX_NORTH = SymbolType(0, -1,0,0,-0.5,0.5)
-
-    """* Use rectangles just above, and to the right of,
-    ** each point of the curve """
-    BOX_NORTHEAST = SymbolType(1, -1, 0.5,-0.5,-0.5,0.5)
-
-    """* Use rectangles just above and to the left of,
-    ** each point of the curve """
-    BOX_NORTHWEST = SymbolType(-1, -1, -0.5, 0.5, -0.5, 0.5)
-
-    """* Use rectangles just below, and horizontally centered
-    ** on, each point of the curve """
-    BOX_SOUTH = SymbolType(0, 1, 0, 0, 0.5, -0.5)
-
-    """* Use rectangles just below, and to the right of,
-    ** each point of the curve """
-    BOX_SOUTHEAST = SymbolType(1, 1, 0.5, -0.5, 0.5, -0.5)
-
-    """* Use rectangles just below, and to the left of,
-    ** each point of the curve """
-    BOX_SOUTHWEST = SymbolType(-1, 1, -0.5, 0.5, 0.5, -0.5)
-
-    """* Use rectangles just to the left of, and vertically centered
-    ** on, each point of the curve """
-    BOX_WEST = SymbolType(-1, 0, -0.5, 0.5, 0, 0)
-    """*
-    ** Use horizontal bars that extend from the x,y position
-    ** associated with each point, to the x position defined
-    ** by the host <tt>Symbol</tt>'s baseline property, and that are
-    ** vertically centered on the data point.
-    **
-    ** @see Symbol#setBaseline setBaseline
-    ** @see #HBAR_BASELINE_CENTER HBAR_BASELINE_CENTER
-    ** @see #HBAR_BASELINE_SOUTH HBAR_BASELINE_SOUTH
-    ** @see #HBAR_BASELINE_NORTH HBAR_BASELINE_NORTH
-    ** @see #VBAR_BASELINE_CENTER VBAR_BASELINE_CENTER
-    ** @see #VBAR_BASELINE_EAST VBAR_BASELINE_EAST
-    ** @see #VBAR_BASELINE_WEST VBAR_BASELINE_WEST
-    ** @see Symbol Symbol
-    **
-    *"""
-    HBAR_BASELINE_CENTER = HBarBaseline(0,0)
-    """*
-    ** Use horizontal bars that extend from the x,y position
-    ** associated with each point, to the x position defined
-    ** by the host <tt>Symbol</tt>'s baseline property, and whose
-    ** bottom edge passes through the data point.
-    **
-    ** @see Symbol#setBaseline setBaseline
-    ** @see #HBAR_BASELINE_CENTER HBAR_BASELINE_CENTER
-    ** @see #HBAR_BASELINE_SOUTH HBAR_BASELINE_SOUTH
-    ** @see #HBAR_BASELINE_NORTH HBAR_BASELINE_NORTH
-    ** @see #VBAR_BASELINE_CENTER VBAR_BASELINE_CENTER
-    ** @see #VBAR_BASELINE_EAST VBAR_BASELINE_EAST
-    ** @see #VBAR_BASELINE_WEST VBAR_BASELINE_WEST
-    ** @see Symbol Symbol
-    **
-    *"""
-    HBAR_BASELINE_NORTH = HBarBaseline(0,-1)
-    """*
-    ** Use horizontal bars that extend from the x,y position
-    ** associated with each point, to the x position defined
-    ** by the host <tt>Symbol</tt>'s baseline property, and whose
-    ** top edge passes through the data point.
-    **
-    ** @see Symbol#setBaseline setBaseline
-    ** @see #HBAR_BASELINE_CENTER HBAR_BASELINE_CENTER
-    ** @see #HBAR_BASELINE_SOUTH HBAR_BASELINE_SOUTH
-    ** @see #HBAR_BASELINE_NORTH HBAR_BASELINE_NORTH
-    ** @see #VBAR_BASELINE_CENTER VBAR_BASELINE_CENTER
-    ** @see #VBAR_BASELINE_EAST VBAR_BASELINE_EAST
-    ** @see #VBAR_BASELINE_WEST VBAR_BASELINE_WEST
-    **
-    *"""
-    HBAR_BASELINE_SOUTH = HBarBaseline(0,1)
-    """* Use horizontal bars that extend from the right y-axis
-    ** to each point on the curve, and that are vertically
-    ** centered on the point.
-    *"""
-    HBAR_EAST = HBarRight(1,0)
-    line  = LineSymbolType()
-    """*
-    ** @deprecated
-    **
-    ** As of version 2.4, this symbol has been redefined to
-    ** be synonomous with the LINE symbol type.
-    ** <p>
-    **
-    ** Prior to v2.4, this symbol drew a horizontal bar from
-    ** each point to the x coordinate of the next point.  Some
-    ** applications may need to use a revised point set in
-    ** order to produce the same curves using <tt>LINE</tt>
-    ** that they used to produce with this symbol.  <p>
-    **
-    ** See the discussion within the {@link #VBAR_NEXT
-    ** VBAR_NEXT} symbol for more information about why
-    ** support for these vertically and horizontally constrained
-    ** connecting line symbol types was dropped.
-    **
-    ** @see #LINE LINE
-    ** @see #HBAR_PREV HBAR_PREV
-    ** @see #VBAR_PREV VBAR_PREV
-    ** @see #VBAR_NEXT VBAR_NEXT
-    **
-    *"""
-    HBAR_NEXT = line
-    """* Use horizontal bars that extend from the right y-axis
-    ** to each point on the curve, and that are vertically
-    ** just above the point.
-    *"""
-    HBAR_NORTHEAST = HBarRight(1,-1)
-
-
-    """* Use horizontal bars that extend from the left y-axis
-    ** to each point on the curve, and that are vertically
-    ** just above point.
-    *"""
-    HBAR_NORTHWEST  = HBarLeft(-1,-1)
-    """*
-    ** @deprecated
-    **
-    ** As of version 2.4, this symbol has been redefined to
-    ** be synonymous with the LINE symbol type.
-    ** <p>
-    **
-    ** Prior to v2.4, this symbol drew a horizontal bar from
-    ** each point to the x coordinate of the previous point.
-    ** Some applications may need to use a revised point set
-    ** in order to produce the same curves using <tt>LINE</tt>
-    ** that they used to produce with this symbol.  <p>
-    **
-    ** See the discussion within the {@link #VBAR_NEXT
-    ** VBAR_NEXT} symbol for more information about why
-    ** support for these vertically and horizontally constrained
-    ** connecting line symbol types was dropped.
-    **
-    ** @see #LINE LINE
-    ** @see #HBAR_NEXT HBAR_NEXT
-    ** @see #VBAR_PREV VBAR_PREV
-    ** @see #VBAR_NEXT VBAR_NEXT
-    **
-    **
-    *"""
-    HBAR_PREV = line
-    """* Use horizontal bars that extend from the right y-axis
-    ** to each point on the curve, and that are vertically
-    ** just below the point.
-    *"""
-    HBAR_SOUTHEAST = HBarRight(1,1)
-    """* Use horizontal bars that extend from the left y-axis
-    ** to each point on the curve, and that are vertically
-    ** just below the point.
-    *"""
-    HBAR_SOUTHWEST  = HBarLeft(-1,1)
-
-    """* Use horizontal bars that extend from the left y-axis
-    ** to each point on the curve, and that are vertically
-    ** centered on the point.
-    *"""
-    HBAR_WEST  = HBarLeft(-1,0)
-
-
-    """*
-    ** This symbol type draws a continuous straight line between
-    ** successive individual data points.  By default, the line is
-    ** drawn via an appropriate series of rectangular HTML elements,
-    ** which can produce a "stair-step" look at certain angles.
-    **
-    ** <small><blockquote> <i>Tip:</i> You can get
-    ** order-of-magnitude faster, and crisper, line charts by
-    ** adding an external vector graphics library to GChart
-    ** via the <tt>setCanvasFactory</tt> method.</small> <p>
-    **
-    ** Apart from this connecting line, the individual data
-    ** points are displayed exactly as they would have been
-    ** displayed via BOX_CENTER.  <p>
-    **
-    ** Produces a connecting line similar to what could be
-    ** produced via BOX_CENTER with a fill spacing of 1px,
-    ** except that it uses a more efficient representation
-    ** that merges vertical or horizontal "dot blocks" into
-    ** single HTML elements whenever possible.
-    ** <p>
-    **
-    ** To produce a line without showing the individual data
-    ** points as separate rectangular symbols, set width and
-    ** height to match your symbol's specified
-    ** <tt>fillThickness</tt>.
-    **
-    ** @see #BOX_CENTER BOX_CENTER
-    ** @see #setCanvasFactory setCanvasFactory
-    ** @see Symbol#setFillThickness setFillThickness
-    **
-    **
-    **
-    *"""
-    LINE = line
-
-    """* @deprecated
-    **
-    ** In GChart 2.3, you had to use this special symbol type
-    ** to get GChart to use an external canvas library to
-    ** draw crisp connecting lines.
-    ** <p>
-    **
-    ** As of GChart 2.5, the <tt>LINE</tt> symbol type will,
-    ** by default, be rendered with whatever external canvas
-    ** library you provide to GChart via the
-    ** <tt>setCanvasFactory</tt> method.
-    **
-    ** <p>
-    **
-    ** So now, <tt>LINE_CANVAS</tt> is just another name
-    ** for <tt>LINE</tt>. Please replace <tt>LINE_CANVAS</tt> with
-    ** <tt>LINE</tt> in your code.
-    ** <p>
-    **
-    ** <small> Note that <tt>LINE</tt> only draws continuous lines if
-    ** fill spacing (<tt>setFillSpacing</tt>) is <tt>0</tt>. With
-    ** fill spacing > 0, it uses the old HTML-rendering method. Since
-    ** <tt>0</tt> is now the default fill spacing for the
-    ** <tt>LINE</tt> symbol type, normally <tt>LINE</tt> works
-    ** exactly like <tt>LINE_CANVAS</tt> did. But, if you had
-    ** explicitly set the fill spacing, you may have to remove this
-    ** specification, or set it to <tt>0</tt>, to get the same
-    ** behavior you had before with <tt>LINE_CANVAS</tt>.  <p>
-    ** </small>
-    **
-    ** @see #LINE LINE
-    ** @see #setCanvasFactory setCanvasFactory
-    ** @see Symbol#setFillSpacing setFillSpacing
-    **
-    *"""
-    LINE_CANVAS  = line
-    """*
-    ** A symbol type that does not draw any main symbol. Use
-    ** this symbol type for curves whose points exist solely
-    ** for the purpose of positioning their associated
-    ** annotations. Note that if <tt>fillThickness</tt> is
-    ** non-zero, any connecting dots between the points will
-    ** still be drawn.  <p>
-    **
-    ** Equivalent to using the <tt>BOX_CENTER</tt> symbol
-    ** type, but with the host symbol's width and height both
-    ** set to zero, so that no box symbol is ever visible.
-    ** <p>
-    **
-    ** On Disabling hover selection feedback via <tt>NONE</tt>:
-    ** <p>
-    **
-    ** <blockquote><small>
-    ** Note that if the border width of the host symbol is negative,
-    ** consistent with a 0 x 0 px <tt>BOX_CENTER</tt> symbol type, an
-    ** external border will still appear around the
-    ** <tt>SymbolType.NONE</tt> symbol. Because the default hover
-    ** selection border width is <tt>-1</tt>, when passing
-    ** <tt>SymbolType.NONE</tt> to
-    ** <tt>setHoverSelectionSymbolType</tt>, you generally will also
-    ** need to add a code line such as:
-    **
-    ** <pre>
-    **   getCurve().getSymbol().setHoverSelectionBorderWidth(0)
-    ** </pre>
-    ** <p>
-    **
-    ** If your intention is to disable hover selection feedback,
-    ** it's probably easier to just use
-    ** <tt>setHoverSelectionEnabled(False)</tt>, rather than
-    ** setting the hover selection symbol type to <tt>NONE</tt>.
-    **
-    **</small></blockquote>
-    **
-    ** @see #BOX_CENTER BOX_CENTER
-    ** @see Symbol#setFillThickness setFillThickness
-    ** @see Symbol#setHoverSelectionSymbolType
-    ** setHoverSelectionSymbolType
-    ** @see Symbol#setHoverSelectionEnabled setHoverSelectionEnabled
-    *"""
-    class SymbolTypeNone (SymbolType):
-        def getAdjustedWidth(self, width, x, xPrev, xNext, xMin, xMax, xMid):
-            return 0
-
-        def getAdjustedHeight(self, height, y, yPrev, yNext, yMin, yMax, yMid):
-            return 0
-
-        def getIconHeight(self, legendFontSize):
-            return 0
-
-        def getIconWidth(self, legendFontSize):
-            return 0
-
-
-
-    NONE = SymbolTypeNone(0, 0, 0, 0, 0, 0)
-    """*
-    ** Draws a pie slice whose area is shaded using horizontal
-    ** bars.
-    **
-    ** <p>
-    ** The vertical distance between corresponding edges of
-    ** successive bars is governed by the symbol's fill
-    ** spacing property; the height of each bar is defined by
-    ** the symbol's fill thickness property; the border and
-    ** background of each shading bar are defined by the
-    ** symbol's border color, border width, border style, and background
-    ** color properties.
-    **
-    ** <p> The radius of the pie slice (length of the non-arc
-    ** sides of the slice) is chosen such that a circle with
-    ** this radius circumscribes the host <tt>Symbol</tt>'s
-    ** width/height determined rectangle. The slice pivot point
-    ** is defined by each point's x,y position, and the
-    ** orientation and size of the slice by the corresponding
-    ** properties (see links below) of the host <tt>Symbol</tt>.
-    **
-    ** @see Symbol#setFillSpacing setFillSpacing
-    ** @see Symbol#setFillThickness setFillThickness
-    ** @see Symbol#setBorderColor setBorderColor
-    ** @see Symbol#setBorderWidth setBorderWidth
-    ** @see Symbol#setBackgroundColor setBackgroundColor
-    ** @see Symbol#setPieSliceOrientation setPieSliceOrientation
-    ** @see Symbol#setPieSliceSize setPieSliceSize
-    ** @see Curve.Point#setX setX
-    ** @see Curve.Point#setY setY
-    ** @see #PIE_SLICE_VERTICAL_SHADING PIE_SLICE_VERTICAL_SHADING
-    ** @see #PIE_SLICE_HATCHED_SHADING PIE_SLICE_HATCHED_SHADING
-    ** @see #PIE_SLICE_OPTIMAL_SHADING PIE_SLICE_OPTIMAL_SHADING
-    ** @see Symbol Symbol
-    **
-    **
-    *"""
-    PIE_SLICE_HORIZONTAL_SHADING = PieSliceSymbolType(True, False, False, 0, 0, 0, 0)
-    """*
-    ** Draws a pie slice whose area is shaded using vertical
-    ** bars.
-    ** <p>
-    **
-    ** The horizontal distance between corresponding edges of
-    ** successive bars is governed
-    ** by the symbol's fill spacing property; the width
-    ** of each bar is defined by the symbol's fill thickness
-    ** property; the border and background of each
-    ** shading bar are defined by the symbol's border color,
-    ** border width, and background color properties.
-    **
-    ** <p> The radius of the pie slice (length of the non-arc
-    ** sides of the slice) is chosen such that a circle with
-    ** this radius circumscribes the host <tt>Symbol</tt>'s
-    ** width/height determined rectangle. The slice pivot point
-    ** is defined by each point's x,y position, and the
-    ** orientation and size of the slice by the corresponding
-    ** properties (see links below) of the host <tt>Symbol</tt>.
-    **
-    ** @see Symbol#setFillSpacing setFillSpacing
-    ** @see Symbol#setFillThickness setFillThickness
-    ** @see Symbol#setBorderColor setBorderColor
-    ** @see Symbol#setBorderWidth setBorderWidth
-    ** @see Symbol#setBackgroundColor setBackgroundColor
-    ** @see Symbol#setPieSliceOrientation setPieSliceOrientation
-    ** @see Symbol#setPieSliceSize setPieSliceSize
-    ** @see Curve.Point#setX setX
-    ** @see Curve.Point#setY setY
-    ** @see #PIE_SLICE_HORIZONTAL_SHADING PIE_SLICE_HORIZONTAL_SHADING
-    ** @see #PIE_SLICE_HATCHED_SHADING PIE_SLICE_HATCHED_SHADING
-    ** @see #PIE_SLICE_OPTIMAL_SHADING PIE_SLICE_OPTIMAL_SHADING
-    ** @see Symbol Symbol
-    **
-    **
-    *"""
-    PIE_SLICE_VERTICAL_SHADING = PieSliceSymbolType(False, True, False, 0, 0, 0, 0)
-    """*
-    ** Draws a pie slice whose area is shaded using both vertical
-    ** and horizontal bars, which produces a "cross-hatched"
-    ** pattern.
-    ** <p>
-    **
-    ** The distance between corresponding edges of successive
-    ** bars is governed by the symbol's fill spacing
-    ** property; the thickness of each bar is defined by the
-    ** symbol's fill thickness property; the border and
-    ** background of each shading bar are defined by the
-    ** symbol's border color, border width, border style, and background
-    ** color properties.
-    **
-    ** <p> The radius of the pie slice (length of the non-arc
-    ** sides of the slice) is chosen such that a circle with
-    ** this radius circumscribes the host <tt>Symbol</tt>'s
-    ** width/height determined rectangle. The slice pivot point
-    ** (i.e. pie center) is defined by each point's x,y position, and the
-    ** orientation and size of the slice by the corresponding
-    ** properties (see links below) of the host <tt>Symbol</tt>.
-    **
-    ** @see Symbol#setFillSpacing setFillSpacing
-    ** @see Symbol#setFillThickness setFillThickness
-    ** @see Symbol#setBorderColor setBorderColor
-    ** @see Symbol#setBorderWidth setBorderWidth
-    ** @see Symbol#setBackgroundColor setBackgroundColor
-    ** @see Symbol#setPieSliceOrientation setPieSliceOrientation
-    ** @see Symbol#setPieSliceSize setPieSliceSize
-    ** @see Curve.Point#setX setX
-    ** @see Curve.Point#setY setY
-    ** @see #PIE_SLICE_VERTICAL_SHADING PIE_SLICE_VERTICAL_SHADING
-    ** @see #PIE_SLICE_HORIZONTAL_SHADING PIE_SLICE_HORIZONTAL_SHADING
-    ** @see #PIE_SLICE_OPTIMAL_SHADING PIE_SLICE_OPTIMAL_SHADING
-    ** @see Symbol Symbol
-    **
-    **
-    *"""
-    PIE_SLICE_HATCHED_SHADING = PieSliceSymbolType(True, True, False, 0, 0, 0, 0)
-    """*
-    ** Draw a pie slice whose area is shaded using either
-    ** vertical bars or horizontal bars--whichever
-    ** renders the slice more efficiently. Specifically, pie
-    ** slices that are wider than they are tall use horizontal
-    ** shading and pie slices that are taller than they are
-    ** wide use vertical shading. These choices minimize the
-    ** the number of shading bars (and thus memory and time)
-    ** required to render the pie slice.
-    **
-    ** <p>
-    **
-    ** The distance between corresponding edges of successive
-    ** bars is governed by the symbol's fill spacing property
-    ** the thickness of each bar is defined by the symbol's
-    ** fill thickness property; the border and background of
-    ** each shading bar are defined by the symbol's border
-    ** color, border width, and background color properties.
-    ** <p>
-    **
-    ** The pie slice radius is always determined by the
-    ** formula:
-    **
-    ** <p>
-    ** <blockquote>
-    **   <pre>
-    **   sqrt(symbolWidth^2+symbolHeight^2)/2
-    **   </pre>
-    ** </blockquote>
-    **
-    ** <p>
-    ** Here <tt>symbolWidth</tt> and <tt>symbolHeight</tt> are the pie
-    ** slice symbol's width and height, in pixels.
-    ** <p>
-    **
-    ** Note that this formula implies that the pie slice
-    ** radius is the one associated with the circle that
-    ** circumscribes the symbol, that is, the smallest circle
-    ** that is big enough to completely contain the symbol's
-    ** width/height defined bounding rectangle. Equivalently,
-    ** the length of the pie slice radius equals the half the
-    ** length of the diagonal across the symbol's bounding
-    ** rectangle.
-    **
-    ** <p>
-    **
-    ** To assure an integral number of shading bars and thus
-    ** improve the visual look of the pie chart, GChart
-    ** automatically rounds the radius to the nearest
-    ** multiple of the specified <tt>fillSpacing</tt>.  For
-    ** example, if the radius computed from the above formula
-    ** were 96 pixels and the <tt>fillSpacing</tt> were 10
-    ** pixels, GChart would actually use a radius of 100 pixels.
-    **
-    ** <p>
-    **
-    ** <i>Tip:</i> To produce a pie slice with a radius, r, set
-    ** the symbol's height to 0, and its width to 2*r (or
-    ** visa-versa). To specify the radius in pixels, use the
-    ** symbol's <tt>setWidth</tt> and <tt>setHeight</tt>
-    ** methods; to specify the radius in "model units" (which
-    ** scale up or down with the chart dimensions) use
-    ** <tt>setModelWidth</tt> and <tt>setModelHeight</tt> instead.
-    **
-    ** <p>
-    **
-    **
-    ** <p>
-    ** The slice pivot point (i.e. pie center)
-    ** is defined by each point's x,y position, and the
-    ** orientation and size of the slice by the
-    ** <tt>setPieSliceOrientation</tt> and
-    ** <tt>setPieSliceSize</tt> methods
-    ** of the host <tt>Symbol</tt>.
-    ** <p>
-    **
-    ** Creating a pie chart from such pie slices requires
-    ** that you define a separate curve for each slice,
-    ** as illustrated in the code below:
-    **
-    ** {@code.sample ..\..\..\..\..\..\gcharttestapp\src\com\googlecode\gchart\gcharttestapp\client\GChartExample09.java}
-    **
-    ** <p>
-    **
-    ** Which produces this: <p>
-    **
-    ** <img
-    ** src="{@docRoot}/com/googlecode/gchart/client/doc-files/gchartexample09.png">
-    **
-    ** <p> Note how, because
-    ** <tt>PIE_SLICE_OPTIMAL_SHADING</tt> was used, vertical
-    ** or horizontal shading is automatically selected so as
-    ** to minimize the number of shading bars in each slice.
-    **
-    ** @see Symbol Symbol
-    ** @see Symbol#setFillSpacing setFillSpacing
-    ** @see Symbol#setFillThickness setFillThickness
-    ** @see Symbol#setBorderColor setBorderColor
-    ** @see Symbol#setBorderWidth setBorderWidth
-    ** @see Symbol#setBackgroundColor setBackgroundColor
-    ** @see Symbol#setPieSliceOrientation setPieSliceOrientation
-    ** @see Symbol#setPieSliceSize setPieSliceSize
-    ** @see Symbol#setWidth setWidth
-    ** @see Symbol#setHeight setHeight
-    ** @see Symbol#setModelWidth setModelWidth
-    ** @see Symbol#setModelHeight setModelHeight
-    ** @see Curve.Point#setX setX
-    ** @see Curve.Point#setY setY
-    ** @see #PIE_SLICE_VERTICAL_SHADING PIE_SLICE_VERTICAL_SHADING
-    ** @see #PIE_SLICE_HORIZONTAL_SHADING PIE_SLICE_HORIZONTAL_SHADING
-    ** @see #PIE_SLICE_HATCHED_SHADING PIE_SLICE_HATCHED_SHADING
-    **
-    *"""
-    PIE_SLICE_OPTIMAL_SHADING = PieSliceSymbolType(False, False, True, 0, 0, 0, 0)
-
-    """*
-    ** Use vertical bars that extend from the x,y position
-    ** associated with each point, to the y position defined
-    ** by the host <tt>Symbol</tt>'s baseline property, and that are
-    ** horizontally centered on the data point.
-    **
-    ** @see Symbol Symbol
-    ** @see Symbol#setBaseline setBaseline
-    ** @see #HBAR_BASELINE_CENTER HBAR_BASELINE_CENTER
-    ** @see #HBAR_BASELINE_SOUTH HBAR_BASELINE_SOUTH
-    ** @see #HBAR_BASELINE_NORTH HBAR_BASELINE_NORTH
-    ** @see #VBAR_BASELINE_CENTER VBAR_BASELINE_CENTER
-    ** @see #VBAR_BASELINE_EAST VBAR_BASELINE_EAST
-    ** @see #VBAR_BASELINE_WEST VBAR_BASELINE_WEST
-    **
-    *"""
-    VBAR_BASELINE_CENTER = VBarBaseline(0,0)
-    """*
-    ** Use vertical bars that extend from the x,y position
-    ** associated with each point, to the y position defined
-    ** by the host <tt>Symbol</tt>'s baseline property, and whose
-    ** right edge passes through the data point.
-    **
-    ** @see Symbol Symbol
-    ** @see Symbol#setBaseline setBaseline
-    ** @see #HBAR_BASELINE_CENTER HBAR_BASELINE_CENTER
-    ** @see #HBAR_BASELINE_SOUTH HBAR_BASELINE_SOUTH
-    ** @see #HBAR_BASELINE_NORTH HBAR_BASELINE_NORTH
-    ** @see #VBAR_BASELINE_CENTER VBAR_BASELINE_CENTER
-    ** @see #VBAR_BASELINE_EAST VBAR_BASELINE_EAST
-    ** @see #VBAR_BASELINE_WEST VBAR_BASELINE_WEST
-    **
-    *"""
-    VBAR_BASELINE_WEST = VBarBaseline(-1,0)
-    """*
-    ** Use vertical bars that extend from the x,y position
-    ** associated with each point, to the y position defined
-    ** by the host <tt>Symbol</tt>'s baseline property, and whose
-    ** left edge passes through the data point.
-    **
-    ** @see Symbol#setBaseline setBaseline
-    ** @see #HBAR_BASELINE_CENTER HBAR_BASELINE_CENTER
-    ** @see #HBAR_BASELINE_SOUTH HBAR_BASELINE_SOUTH
-    ** @see #HBAR_BASELINE_NORTH HBAR_BASELINE_NORTH
-    ** @see #VBAR_BASELINE_CENTER VBAR_BASELINE_CENTER
-    ** @see #VBAR_BASELINE_EAST VBAR_BASELINE_EAST
-    ** @see #VBAR_BASELINE_WEST VBAR_BASELINE_WEST
-    **
-    *"""
-    VBAR_BASELINE_EAST = VBarBaseline(1,0)
-    """*
-    ** @deprecated
-    **
-    ** As of version 2.4, this symbol has been redefined to
-    ** be synonomous with the LINE symbol type.
-    ** <p>
-    **
-    ** Prior to v2.4, this symbol drew a vertical bar from
-    ** each point to the y coordinate of the next point. Some
-    ** applications may need to use a revised point set in
-    ** order to produce the same curves with <tt>LINE</tt>
-    ** that they used to produce with this symbol.
-    ** <p>
-    **
-    ** Support was dropped because:
-    **
-    ** <p>
-    ** <ol>
-    **
-    **   <li>Continued support would have complicated
-    ** implementation of the hover feedback system
-    ** introduced with v2.4 (these are the only symbols whose
-    ** hit-testing-related size depends on preceding or
-    ** subsequent points).<p>
-    **
-    **   <li>With the introduction of
-    ** <tt>LINE</tt> the main reason for this, and related,
-    ** vertically (or horizontally) constrained line drawing
-    ** symbol types had been eliminated (had <tt>LINE</tt>
-    ** existed at the beginning, these constrained line drawing
-    ** symbol types would never have been added).
-    ** <p>
-    **
-    ** </ol>
-    ** <p>
-    **
-    ** Finally, note that if lines are vertical or horizontal,
-    ** and solidly connected, <tt>LINE</tt> automatically
-    ** collapses them into a single element, so no
-    ** element-based efficiency losses need be associated with
-    ** replacing curves using such rectilinear symbol types
-    ** with equivalent curves rendered via the
-    ** <tt>LINE</tt> symbol type.
-    ** <p>
-    **
-    **
-    ** @see #HBAR_PREV HBAR_PREV
-    ** @see #HBAR_NEXT HBAR_NEXT
-    ** @see #LINE LINE
-    ** @see #VBAR_PREV VBAR_PREV
-    **
-    *"""
-    VBAR_NEXT = line
-
-    """* Use vertical bars that extend from the top of the chart
-    ** to each point on the curve, and are horizontally
-    ** centered on the point.
-    *"""
-    VBAR_NORTH = VBarTop(0, -1)
-    """* Use vertical bars that extend from the top of the chart
-    ** to each point on the curve, and are horizontally
-    ** to the right of the point.
-    *"""
-    VBAR_NORTHEAST = VBarTop(1, -1)
-
-    """* Use vertical bars that extend from the top of the chart
-    ** to each point on the curve, and are horizontally
-    ** to the left of the point.
-    *"""
-    VBAR_NORTHWEST = VBarTop(-1, -1)
-    """*
-    ** @deprecated
-    **
-    ** As of version 2.4, this symbol has been redefined to
-    ** be synonomous with the LINE symbol type.
-    ** <p>
-    **
-    ** Prior to v2.4, this symbol drew a vertical bar from
-    ** each point to the y coordinate of the previous point.
-    ** Some applications may need to use a revised point set
-    ** in order to produce the same curves using <tt>LINE</tt>
-    ** that they used to produce with this symbol.  <p>
-    **
-    ** See the discussion within the {@link #VBAR_NEXT
-    ** VBAR_NEXT} symbol for more information about why
-    ** support for these vertically and horizontally constrained
-    ** connecting line symbol types was dropped.
-    **
-    ** @see #LINE LINE
-    ** @see #HBAR_PREV HBAR_PREV
-    ** @see #HBAR_NEXT HBAR_NEXT
-    ** @see #VBAR_NEXT VBAR_NEXT
-    **
-    *"""
-
-    VBAR_PREV = line
-
-    """* Use vertical bars that extend from the x-axis
-    ** to each point on the curve, and that are horizontally
-    ** centered on the point.
-    *"""
-    VBAR_SOUTH = VBarBottom(0, 1)
-    """* Use vertical bars that extend from the x-axis
-    ** to each point on the curve, and that are horizontally
-    ** to the right of the point.
-    *"""
-    VBAR_SOUTHEAST = VBarBottom(1, 1)
-
-    """* Use vertical bars that extend from the x-axis
-    ** to each point on the curve, and that are horizontally
-    ** to the left of the point.
-    *"""
-    VBAR_SOUTHWEST = VBarBottom(-1, 1)
-    """*
-    ** Represents a single x-axis grid-line. You can use
-    ** this symbol to draw a single vertical bar
-    ** across the chart.
-    **
-    *"""
-    class SymbolTypeXGrid (SymbolType):
-        def getAdjustedHeight(self, height, y, yPrev, yNext, yMin, yMax, yMid):
-            return yMax - yMin
-
-        def getUpperLeftY(self, height, y, yPrev, yNext, yMin, yMax, yMid, yMouse):
-            return yMin
-
-        def getIconHeight(self, legendFontSize):
-            return legendFontSize
-
-        def getIconWidth(self, legendFontSize):
-            return 1
-
-
-
-    XGRIDLINE = SymbolTypeXGrid(0,0,0,0,0.5,0.5,FALSE)
-    """*
-    ** Represents a single y-axis (or y2-axis) grid-line. You
-    ** can use this symbol to draw a single horizontal line (or
-    ** bar) across the chart, for example, to display an upper
-    ** bound or control limit.
-    **
-    *"""
-    class SymbolTypeYGrid (SymbolType):
-        def getAdjustedWidth(self, width, x, xPrev, xNext, xMin, xMax, xMid):
-            return xMax - xMin
-
-        def getUpperLeftX(self, width, x, xPrev, xNext, xMin, xMax, xMid, xMouse):
-            return xMin
-
-        def getIconHeight(self, legendFontSize):
-            return 1
-
-        def getIconWidth(self, legendFontSize):
-            return legendFontSize
-
-
-
-    YGRIDLINE = SymbolTypeYGrid(0,0,0.5,0.5,0,0, TRUE)
-
-    """*
-    **  @deprecated
-    **
-    ** This symbol is the same as <tt>YGRIDLINE</tt> and
-    ** was added by mistake in version 1.
-    ** (the y-axis isn't defined by the symbol type, but
-    **  rather by the curve's <tt>setYAxis</tt> method).
-    ** <p>
-    ** Please use <tt>YGRIDLINE</tt> instead.
-    **
-    ** @see #YGRIDLINE YGRIDLINE
-    ** @see GChart.Curve#setYAxis setYAxis
-    **
-    *"""
-
-    Y2GRIDLINE = YGRIDLINE
 
     # play similar role as same-named fields of AnnotationLocation
     """
@@ -1215,7 +224,10 @@ class SymbolType:
 
     # symbols are part of the internals of a GChart,
     # so only we should instantiate them.
-    def __init__(self, widthMultiplier, heightMultiplier, pixelPadLeft, pixelPadRight, pixelPadTop, pixelPadBottom, isHorizontallyBanded):
+    def __init__(self, widthMultiplier, heightMultiplier,
+                        pixelPadLeft, pixelPadRight, 
+                        pixelPadTop, pixelPadBottom,
+                        isHorizontallyBanded=1):
         validateMultipliers(widthMultiplier, heightMultiplier)
         self.widthMultiplier = widthMultiplier
         self.heightMultiplier = heightMultiplier
@@ -1224,15 +236,6 @@ class SymbolType:
         self.pixelPadTop = pixelPadTop
         self.pixelPadBottom = pixelPadBottom
         self.isHorizontallyBanded = isHorizontallyBanded
-
-
-    def __init__(self, widthMultiplier, heightMultiplier, pixelPadLeft, pixelPadRight, pixelPadTop, pixelPadBottom):
-        this(widthMultiplier,heightMultiplier,
-                pixelPadLeft,
-                pixelPadRight,
-                pixelPadTop,
-                pixelPadBottom, None)
-
 
 
     def getAdjustedHeight(self, height, y, yPrev, yNext, yMin, yMax, yMid):
@@ -2243,7 +1246,7 @@ class SymbolType:
                 *
                 """
                 closeStrokeAndFill = False
-                if Boolean.FALSE == isHorizontallyBanded:
+                if False == isHorizontallyBanded:
                     if prevX != prevX  or  prevY != prevY:
                         # 1st point, or 1st point after a break in the line
                         oppositeEdge = getEdgeOppositeVertically(
@@ -2428,7 +1431,7 @@ class SymbolType:
 
 class HBarBaseline (SymbolType):
     def __init__(self, wm, hm):
-        super(wm, hm, 0.5, 0.5, 0, 0,  Boolean.TRUE)
+        super(wm, hm, 0.5, 0.5, 0, 0,  True)
 
     def defaultFillSpacing(self):
         return DEFAULT_BAR_FILL_SPACING
@@ -2455,7 +1458,7 @@ class HBarBaseline (SymbolType):
  # end of class HBarBaseline
 class HBarLeft (SymbolType):
     def __init__(self, wm, hm):
-        super(wm, hm, 0.5, 0.5, 0.5, 0.5,  Boolean.TRUE)
+        super(wm, hm, 0.5, 0.5, 0.5, 0.5,  True)
 
     def defaultFillSpacing(self):
         return DEFAULT_BAR_FILL_SPACING
@@ -2477,7 +1480,7 @@ class HBarLeft (SymbolType):
 
 class HBarRight (SymbolType):
     def __init__(self, wm, hm):
-        super(wm, hm, 0.5, 0.5, 0.5, 0.5, Boolean.TRUE)
+        super(wm, hm, 0.5, 0.5, 0.5, 0.5, True)
 
 
     def defaultFillSpacing(self):
@@ -3534,7 +2537,7 @@ class PieSliceSymbolType (SymbolType):
 
 class VBarBottom (SymbolType):
     def __init__(self, wm, hm):
-        super(wm, hm,0.5,0.5,0.5,0.5, Boolean.FALSE)
+        super(wm, hm,0.5,0.5,0.5,0.5, False)
 
     def defaultFillSpacing(self):
         return DEFAULT_BAR_FILL_SPACING
@@ -3554,7 +2557,7 @@ class VBarBottom (SymbolType):
  # end of class VBarBottom
 class VBarBaseline (SymbolType):
     def __init__(self, wm, hm):
-        super(wm, hm, 0, 0, 0.5, 0.5, Boolean.FALSE)
+        super(wm, hm, 0, 0, 0.5, 0.5, False)
 
     def defaultFillSpacing(self):
         return DEFAULT_BAR_FILL_SPACING
@@ -3582,7 +2585,7 @@ class VBarBaseline (SymbolType):
 *"""
 class VBarTop (SymbolType):
     def __init__(self, wm, hm):
-        super(wm, hm, 0.5, 0.5, 0.5, 0.5, Boolean.FALSE)
+        super(wm, hm, 0.5, 0.5, 0.5, 0.5, False)
 
     def defaultFillSpacing(self):
         return DEFAULT_BAR_FILL_SPACING
@@ -3604,7 +2607,7 @@ class VBarTop (SymbolType):
 class AnnotationAnchor (SymbolType):
     #AnnotationLocation location
     def __init__(self, location):
-        super(0, 0, 0, 0, 0, 0)
+        SymbolType.__init__(self, 0, 0, 0, 0, 0, 0)
         self.location = location
 
     # actual curve symbol zero-sized so it does not
@@ -3686,4 +2689,995 @@ class AnnotationAnchor (SymbolType):
         return result
 
 
+
+"""
+* This symbol type provides a convenient anchor point at
+* one of the standard 9 named positions within the plot
+* area.  The actual x,y of the points using this symbol
+* type is ignored.  Useful for placing annotations around
+* and along the perimeter of the plot panel.<p>
+*
+* For example, chart decorations such as axis labels and
+* footnotes internally use symbols of this type (with
+* appropriate setAnnotationXShift or setAnnotationYShift
+* adjustments to position the decoration appropriately
+* relative to the anchor point). End-users can use a curve
+* with this symbol type, along with a single point and
+* appropriate widget-based annotation, to place a table in
+* the upper left corner of the plot area, etc.
+*
+"""
+
+"""*
+** Points on curves with this symbol type are positioned
+** at the center of the plot area, and do not have a
+** visible symbol.<p>
+**
+**
+** Use this symbol type, along with the
+** <tt>setAnnotationLocation</tt>, <tt>setAnnotationXShift</tt> and
+** <tt>setAnnotationYShift</tt> methods, to position
+** annotations relative to the center of the plot area.
+**
+** @see Curve.Point#setAnnotationLocation setAnnotationLocation
+** @see Curve.Point#setAnnotationXShift setAnnotationXShift
+** @see Curve.Point#setAnnotationYShift setAnnotationYShift
+**
+*"""
+ANCHOR_CENTER = AnnotationAnchor(AnnotationLocation.CENTER)
+
+"""*
+** Points on curves with this symbol type are positioned
+** at the center of the right edge of the plot area, and
+** do not have a visible symbol.<p>
+**
+** Use this symbol type, along with the
+** <tt>setAnnotationLocation</tt>, <tt>setAnnotationXShift</tt> and
+** <tt>setAnnotationYShift</tt> methods, to position
+** annotations relative to the center of the right
+** edge of the plot area.
+**
+** @see Curve.Point#setAnnotationLocation setAnnotationLocation
+** @see Curve.Point#setAnnotationXShift setAnnotationXShift
+** @see Curve.Point#setAnnotationYShift setAnnotationYShift
+**
+*"""
+ANCHOR_EAST = AnnotationAnchor(AnnotationLocation.EAST)
+
+"""*
+** When passed to the <tt>setHoverAnnotationSymbolType</tt>
+** method, this symbol type enables
+** <tt>setTitle</tt>-like, "anchored at the mouse cursor"
+** hover annotation positioning. Specifically, hover annotions act as
+** if they were annotations of 1px x 1px
+** points placed at the current mouse cursor position.
+** <p>
+**
+** Because this and its related symbol types,
+** <tt>ANCHOR_MOUSE_SNAP_TO_X</tt> and
+** <tt>ANCHOR_MOUSE_SNAP_TO_Y</tt>, are intended only to
+** facilitate positioning of hover-induced pop-up annotations
+** (via the <tt>setHoverAnnotationSymbolType</tt> method) I
+** cannot imagine a scenario where it would make sense to use
+** them as the symbol type of an ordinary, user defined, curve
+** (if you find a use for this, please let me know).
+**
+**
+** @see #ANCHOR_MOUSE_SNAP_TO_X ANCHOR_MOUSE_SNAP_TO_X
+** @see #ANCHOR_MOUSE_SNAP_TO_Y ANCHOR_MOUSE_SNAP_TO_Y
+** @see Symbol#setHoverLocation setHoverLocation
+** @see Symbol#setHoverAnnotationSymbolType setHoverAnnotationSymbolType
+** @see Symbol#setHovertextTemplate setHovertextTemplate
+** @see Symbol#setHoverXShift setHoverXShift
+** @see Symbol#setHoverYShift setHoverYShift
+** @see Symbol#setHoverWidget setHoverWidget
+*"""
+ANCHOR_MOUSE = AnnotationAnchor( AnnotationLocation.AT_THE_MOUSE)
+
+"""*
+* The same as the ANCHOR_MOUSE symbol type, except that
+* the x coordinate of the rendered symbol is taken from
+* the x coordinate of the point, rather than the x
+* coordinate of the mouse.
+*
+* @see #ANCHOR_MOUSE ANCHOR_MOUSE
+* @see #ANCHOR_MOUSE_SNAP_TO_Y ANCHOR_MOUSE_SNAP_TO_Y
+*
+"""
+ANCHOR_MOUSE_SNAP_TO_X = AnnotationAnchor(AnnotationLocation.AT_THE_MOUSE_SNAP_TO_X)
+"""*
+* The same as the ANCHOR_MOUSE symbol type, except that
+* the y coordinate of the rendered symbol is taken from
+* the y coordinate of the point, rather than the y
+* coordinate of the mouse.
+*
+* @see #ANCHOR_MOUSE ANCHOR_MOUSE
+* @see #ANCHOR_MOUSE_SNAP_TO_X ANCHOR_MOUSE_SNAP_TO_X
+*
+"""
+ANCHOR_MOUSE_SNAP_TO_Y = AnnotationAnchor(AnnotationLocation.AT_THE_MOUSE_SNAP_TO_Y)
+"""*
+** Points on curves with this symbol type are positioned
+** at the center of the top edge of the plot area, and do
+** not have a visible symbol.<p>
+**
+** Use this symbol type, along with the
+** <tt>setAnnotationLocation</tt>, <tt>setAnnotationXShift</tt> and
+** <tt>setAnnotationYShift</tt> methods, to position
+** annotations relative to the center of the top edge of
+** the plot area.
+**
+** @see Curve.Point#setAnnotationLocation setAnnotationLocation
+** @see Curve.Point#setAnnotationXShift setAnnotationXShift
+** @see Curve.Point#setAnnotationYShift setAnnotationYShift
+**
+*"""
+ANCHOR_NORTH = AnnotationAnchor(AnnotationLocation.NORTH)
+"""*
+** Points on curves with this symbol type are positioned
+** at the upper right corner of the plot area, and do not
+** have a visible symbol.<p>
+**
+** Use this symbol type, along with the
+** <tt>setAnnotationLocation</tt>, <tt>setAnnotationXShift</tt> and
+** <tt>setAnnotationYShift</tt> methods, to position
+** annotations relative to the upper right corner of the
+** plot area.
+**
+** @see Curve.Point#setAnnotationLocation setAnnotationLocation
+** @see Curve.Point#setAnnotationXShift setAnnotationXShift
+** @see Curve.Point#setAnnotationYShift setAnnotationYShift
+**
+*"""
+ANCHOR_NORTHEAST = AnnotationAnchor(AnnotationLocation.NORTHEAST)
+
+"""*
+** Points on curves with this symbol type are positioned
+** at the upper left corner of the plot area, and do not
+** have a visible symbol.<p>
+**
+** Use this symbol type, along with the
+** <tt>setAnnotationLocation</tt>, <tt>setAnnotationXShift</tt> and
+** <tt>setAnnotationYShift</tt> methods, to position
+** annotations relative to the upper left corner of the
+** plot area.
+**
+** @see Curve.Point#setAnnotationLocation setAnnotationLocation
+** @see Curve.Point#setAnnotationXShift setAnnotationXShift
+** @see Curve.Point#setAnnotationYShift setAnnotationYShift
+**
+*"""
+ANCHOR_NORTHWEST = AnnotationAnchor(AnnotationLocation.NORTHWEST)
+
+"""*
+** Points on curves with this symbol type are positioned
+** at the center of the bottom edge of the plot area, and
+** do not have a visible symbol.<p>
+**
+** Use this symbol type, along with the
+** <tt>setAnnotationLocation</tt>, <tt>setAnnotationXShift</tt> and
+** <tt>setAnnotationYShift</tt> methods, to position
+** annotations relative to the center of the bottom edge
+** of the plot area.
+**
+** @see Curve.Point#setAnnotationLocation setAnnotationLocation
+** @see Curve.Point#setAnnotationXShift setAnnotationXShift
+** @see Curve.Point#setAnnotationYShift setAnnotationYShift
+**
+*"""
+ANCHOR_SOUTH = AnnotationAnchor(AnnotationLocation.SOUTH)
+
+
+"""*
+** Points on curves with this symbol type are positioned
+** at the lower right corner of the plot area, and do not
+** have a visible symbol.<p>
+**
+** Use this symbol type, along with the
+** <tt>setAnnotationLocation</tt>, <tt>setAnnotationXShift</tt> and
+** <tt>setAnnotationYShift</tt> methods, to position
+** annotations relative to the lower right corner of the
+** plot area.
+**
+** @see Curve.Point#setAnnotationLocation setAnnotationLocation
+** @see Curve.Point#setAnnotationXShift setAnnotationXShift
+** @see Curve.Point#setAnnotationYShift setAnnotationYShift
+**
+*"""
+ANCHOR_SOUTHEAST = AnnotationAnchor(AnnotationLocation.SOUTHEAST)
+
+
+"""*
+** Points on curves with this symbol type are positioned
+** at the lower left corner of the plot area, and do not
+** have a visible symbol.<p>
+**
+** Use this symbol type, along with the
+** <tt>setAnnotationLocation</tt>, <tt>setAnnotationXShift</tt> and
+** <tt>setAnnotationYShift</tt> methods, to position
+** annotations relative to the lower left corner of the
+** plot area.
+**
+** @see Curve.Point#setAnnotationLocation setAnnotationLocation
+** @see Curve.Point#setAnnotationXShift setAnnotationXShift
+** @see Curve.Point#setAnnotationYShift setAnnotationYShift
+**
+*"""
+ANCHOR_SOUTHWEST = AnnotationAnchor(AnnotationLocation.SOUTHWEST)
+
+"""*
+** Points on curves with this symbol type are positioned
+** at the center of the left edge of the plot area, and do
+** not have a visible symbol.<p>
+**
+** Use this symbol type, along with the
+** <tt>setAnnotationLocation</tt>, <tt>setAnnotationXShift</tt> and
+** <tt>setAnnotationYShift</tt> methods, to position
+** annotations relative to the center of the left edge of
+** the plot area.
+**
+** @see Curve.Point#setAnnotationLocation setAnnotationLocation
+** @see Curve.Point#setAnnotationXShift setAnnotationXShift
+** @see Curve.Point#setAnnotationYShift setAnnotationYShift
+**
+*"""
+ANCHOR_WEST = AnnotationAnchor(AnnotationLocation.WEST)
+
+"""* Use rectangles horizontally and vertically centered
+** on each point of the curve """
+BOX_CENTER = SymbolType(0,0,0,0,0,0)
+"""* Use rectangles just to the right of, and
+** vertically centered on, each point of the curve """
+BOX_EAST = SymbolType(1, 0, 0.5, -0.5, 0, 0)
+"""* Use rectangles just above, and horizontally centered
+** on, each point of the curve """
+BOX_NORTH = SymbolType(0, -1,0,0,-0.5,0.5)
+
+"""* Use rectangles just above, and to the right of,
+** each point of the curve """
+BOX_NORTHEAST = SymbolType(1, -1, 0.5,-0.5,-0.5,0.5)
+
+"""* Use rectangles just above and to the left of,
+** each point of the curve """
+BOX_NORTHWEST = SymbolType(-1, -1, -0.5, 0.5, -0.5, 0.5)
+
+"""* Use rectangles just below, and horizontally centered
+** on, each point of the curve """
+BOX_SOUTH = SymbolType(0, 1, 0, 0, 0.5, -0.5)
+
+"""* Use rectangles just below, and to the right of,
+** each point of the curve """
+BOX_SOUTHEAST = SymbolType(1, 1, 0.5, -0.5, 0.5, -0.5)
+
+"""* Use rectangles just below, and to the left of,
+** each point of the curve """
+BOX_SOUTHWEST = SymbolType(-1, 1, -0.5, 0.5, 0.5, -0.5)
+
+"""* Use rectangles just to the left of, and vertically centered
+** on, each point of the curve """
+BOX_WEST = SymbolType(-1, 0, -0.5, 0.5, 0, 0)
+"""*
+** Use horizontal bars that extend from the x,y position
+** associated with each point, to the x position defined
+** by the host <tt>Symbol</tt>'s baseline property, and that are
+** vertically centered on the data point.
+**
+** @see Symbol#setBaseline setBaseline
+** @see #HBAR_BASELINE_CENTER HBAR_BASELINE_CENTER
+** @see #HBAR_BASELINE_SOUTH HBAR_BASELINE_SOUTH
+** @see #HBAR_BASELINE_NORTH HBAR_BASELINE_NORTH
+** @see #VBAR_BASELINE_CENTER VBAR_BASELINE_CENTER
+** @see #VBAR_BASELINE_EAST VBAR_BASELINE_EAST
+** @see #VBAR_BASELINE_WEST VBAR_BASELINE_WEST
+** @see Symbol Symbol
+**
+*"""
+HBAR_BASELINE_CENTER = HBarBaseline(0,0)
+"""*
+** Use horizontal bars that extend from the x,y position
+** associated with each point, to the x position defined
+** by the host <tt>Symbol</tt>'s baseline property, and whose
+** bottom edge passes through the data point.
+**
+** @see Symbol#setBaseline setBaseline
+** @see #HBAR_BASELINE_CENTER HBAR_BASELINE_CENTER
+** @see #HBAR_BASELINE_SOUTH HBAR_BASELINE_SOUTH
+** @see #HBAR_BASELINE_NORTH HBAR_BASELINE_NORTH
+** @see #VBAR_BASELINE_CENTER VBAR_BASELINE_CENTER
+** @see #VBAR_BASELINE_EAST VBAR_BASELINE_EAST
+** @see #VBAR_BASELINE_WEST VBAR_BASELINE_WEST
+** @see Symbol Symbol
+**
+*"""
+HBAR_BASELINE_NORTH = HBarBaseline(0,-1)
+"""*
+** Use horizontal bars that extend from the x,y position
+** associated with each point, to the x position defined
+** by the host <tt>Symbol</tt>'s baseline property, and whose
+** top edge passes through the data point.
+**
+** @see Symbol#setBaseline setBaseline
+** @see #HBAR_BASELINE_CENTER HBAR_BASELINE_CENTER
+** @see #HBAR_BASELINE_SOUTH HBAR_BASELINE_SOUTH
+** @see #HBAR_BASELINE_NORTH HBAR_BASELINE_NORTH
+** @see #VBAR_BASELINE_CENTER VBAR_BASELINE_CENTER
+** @see #VBAR_BASELINE_EAST VBAR_BASELINE_EAST
+** @see #VBAR_BASELINE_WEST VBAR_BASELINE_WEST
+**
+*"""
+HBAR_BASELINE_SOUTH = HBarBaseline(0,1)
+"""* Use horizontal bars that extend from the right y-axis
+** to each point on the curve, and that are vertically
+** centered on the point.
+*"""
+HBAR_EAST = HBarRight(1,0)
+line  = LineSymbolType()
+"""*
+** @deprecated
+**
+** As of version 2.4, this symbol has been redefined to
+** be synonomous with the LINE symbol type.
+** <p>
+**
+** Prior to v2.4, this symbol drew a horizontal bar from
+** each point to the x coordinate of the next point.  Some
+** applications may need to use a revised point set in
+** order to produce the same curves using <tt>LINE</tt>
+** that they used to produce with this symbol.  <p>
+**
+** See the discussion within the {@link #VBAR_NEXT
+** VBAR_NEXT} symbol for more information about why
+** support for these vertically and horizontally constrained
+** connecting line symbol types was dropped.
+**
+** @see #LINE LINE
+** @see #HBAR_PREV HBAR_PREV
+** @see #VBAR_PREV VBAR_PREV
+** @see #VBAR_NEXT VBAR_NEXT
+**
+*"""
+HBAR_NEXT = line
+"""* Use horizontal bars that extend from the right y-axis
+** to each point on the curve, and that are vertically
+** just above the point.
+*"""
+HBAR_NORTHEAST = HBarRight(1,-1)
+
+
+"""* Use horizontal bars that extend from the left y-axis
+** to each point on the curve, and that are vertically
+** just above point.
+*"""
+HBAR_NORTHWEST  = HBarLeft(-1,-1)
+"""*
+** @deprecated
+**
+** As of version 2.4, this symbol has been redefined to
+** be synonymous with the LINE symbol type.
+** <p>
+**
+** Prior to v2.4, this symbol drew a horizontal bar from
+** each point to the x coordinate of the previous point.
+** Some applications may need to use a revised point set
+** in order to produce the same curves using <tt>LINE</tt>
+** that they used to produce with this symbol.  <p>
+**
+** See the discussion within the {@link #VBAR_NEXT
+** VBAR_NEXT} symbol for more information about why
+** support for these vertically and horizontally constrained
+** connecting line symbol types was dropped.
+**
+** @see #LINE LINE
+** @see #HBAR_NEXT HBAR_NEXT
+** @see #VBAR_PREV VBAR_PREV
+** @see #VBAR_NEXT VBAR_NEXT
+**
+**
+*"""
+HBAR_PREV = line
+"""* Use horizontal bars that extend from the right y-axis
+** to each point on the curve, and that are vertically
+** just below the point.
+*"""
+HBAR_SOUTHEAST = HBarRight(1,1)
+"""* Use horizontal bars that extend from the left y-axis
+** to each point on the curve, and that are vertically
+** just below the point.
+*"""
+HBAR_SOUTHWEST  = HBarLeft(-1,1)
+
+"""* Use horizontal bars that extend from the left y-axis
+** to each point on the curve, and that are vertically
+** centered on the point.
+*"""
+HBAR_WEST  = HBarLeft(-1,0)
+
+
+"""*
+** This symbol type draws a continuous straight line between
+** successive individual data points.  By default, the line is
+** drawn via an appropriate series of rectangular HTML elements,
+** which can produce a "stair-step" look at certain angles.
+**
+** <small><blockquote> <i>Tip:</i> You can get
+** order-of-magnitude faster, and crisper, line charts by
+** adding an external vector graphics library to GChart
+** via the <tt>setCanvasFactory</tt> method.</small> <p>
+**
+** Apart from this connecting line, the individual data
+** points are displayed exactly as they would have been
+** displayed via BOX_CENTER.  <p>
+**
+** Produces a connecting line similar to what could be
+** produced via BOX_CENTER with a fill spacing of 1px,
+** except that it uses a more efficient representation
+** that merges vertical or horizontal "dot blocks" into
+** single HTML elements whenever possible.
+** <p>
+**
+** To produce a line without showing the individual data
+** points as separate rectangular symbols, set width and
+** height to match your symbol's specified
+** <tt>fillThickness</tt>.
+**
+** @see #BOX_CENTER BOX_CENTER
+** @see #setCanvasFactory setCanvasFactory
+** @see Symbol#setFillThickness setFillThickness
+**
+**
+**
+*"""
+LINE = line
+
+"""* @deprecated
+**
+** In GChart 2.3, you had to use this special symbol type
+** to get GChart to use an external canvas library to
+** draw crisp connecting lines.
+** <p>
+**
+** As of GChart 2.5, the <tt>LINE</tt> symbol type will,
+** by default, be rendered with whatever external canvas
+** library you provide to GChart via the
+** <tt>setCanvasFactory</tt> method.
+**
+** <p>
+**
+** So now, <tt>LINE_CANVAS</tt> is just another name
+** for <tt>LINE</tt>. Please replace <tt>LINE_CANVAS</tt> with
+** <tt>LINE</tt> in your code.
+** <p>
+**
+** <small> Note that <tt>LINE</tt> only draws continuous lines if
+** fill spacing (<tt>setFillSpacing</tt>) is <tt>0</tt>. With
+** fill spacing > 0, it uses the old HTML-rendering method. Since
+** <tt>0</tt> is now the default fill spacing for the
+** <tt>LINE</tt> symbol type, normally <tt>LINE</tt> works
+** exactly like <tt>LINE_CANVAS</tt> did. But, if you had
+** explicitly set the fill spacing, you may have to remove this
+** specification, or set it to <tt>0</tt>, to get the same
+** behavior you had before with <tt>LINE_CANVAS</tt>.  <p>
+** </small>
+**
+** @see #LINE LINE
+** @see #setCanvasFactory setCanvasFactory
+** @see Symbol#setFillSpacing setFillSpacing
+**
+*"""
+LINE_CANVAS  = line
+"""*
+** A symbol type that does not draw any main symbol. Use
+** this symbol type for curves whose points exist solely
+** for the purpose of positioning their associated
+** annotations. Note that if <tt>fillThickness</tt> is
+** non-zero, any connecting dots between the points will
+** still be drawn.  <p>
+**
+** Equivalent to using the <tt>BOX_CENTER</tt> symbol
+** type, but with the host symbol's width and height both
+** set to zero, so that no box symbol is ever visible.
+** <p>
+**
+** On Disabling hover selection feedback via <tt>NONE</tt>:
+** <p>
+**
+** <blockquote><small>
+** Note that if the border width of the host symbol is negative,
+** consistent with a 0 x 0 px <tt>BOX_CENTER</tt> symbol type, an
+** external border will still appear around the
+** <tt>SymbolType.NONE</tt> symbol. Because the default hover
+** selection border width is <tt>-1</tt>, when passing
+** <tt>SymbolType.NONE</tt> to
+** <tt>setHoverSelectionSymbolType</tt>, you generally will also
+** need to add a code line such as:
+**
+** <pre>
+**   getCurve().getSymbol().setHoverSelectionBorderWidth(0)
+** </pre>
+** <p>
+**
+** If your intention is to disable hover selection feedback,
+** it's probably easier to just use
+** <tt>setHoverSelectionEnabled(False)</tt>, rather than
+** setting the hover selection symbol type to <tt>NONE</tt>.
+**
+**</small></blockquote>
+**
+** @see #BOX_CENTER BOX_CENTER
+** @see Symbol#setFillThickness setFillThickness
+** @see Symbol#setHoverSelectionSymbolType
+** setHoverSelectionSymbolType
+** @see Symbol#setHoverSelectionEnabled setHoverSelectionEnabled
+*"""
+class SymbolTypeNone (SymbolType):
+    def getAdjustedWidth(self, width, x, xPrev, xNext, xMin, xMax, xMid):
+        return 0
+
+    def getAdjustedHeight(self, height, y, yPrev, yNext, yMin, yMax, yMid):
+        return 0
+
+    def getIconHeight(self, legendFontSize):
+        return 0
+
+    def getIconWidth(self, legendFontSize):
+        return 0
+
+
+
+NONE = SymbolTypeNone(0, 0, 0, 0, 0, 0)
+"""*
+** Draws a pie slice whose area is shaded using horizontal
+** bars.
+**
+** <p>
+** The vertical distance between corresponding edges of
+** successive bars is governed by the symbol's fill
+** spacing property; the height of each bar is defined by
+** the symbol's fill thickness property; the border and
+** background of each shading bar are defined by the
+** symbol's border color, border width, border style, and background
+** color properties.
+**
+** <p> The radius of the pie slice (length of the non-arc
+** sides of the slice) is chosen such that a circle with
+** this radius circumscribes the host <tt>Symbol</tt>'s
+** width/height determined rectangle. The slice pivot point
+** is defined by each point's x,y position, and the
+** orientation and size of the slice by the corresponding
+** properties (see links below) of the host <tt>Symbol</tt>.
+**
+** @see Symbol#setFillSpacing setFillSpacing
+** @see Symbol#setFillThickness setFillThickness
+** @see Symbol#setBorderColor setBorderColor
+** @see Symbol#setBorderWidth setBorderWidth
+** @see Symbol#setBackgroundColor setBackgroundColor
+** @see Symbol#setPieSliceOrientation setPieSliceOrientation
+** @see Symbol#setPieSliceSize setPieSliceSize
+** @see Curve.Point#setX setX
+** @see Curve.Point#setY setY
+** @see #PIE_SLICE_VERTICAL_SHADING PIE_SLICE_VERTICAL_SHADING
+** @see #PIE_SLICE_HATCHED_SHADING PIE_SLICE_HATCHED_SHADING
+** @see #PIE_SLICE_OPTIMAL_SHADING PIE_SLICE_OPTIMAL_SHADING
+** @see Symbol Symbol
+**
+**
+*"""
+PIE_SLICE_HORIZONTAL_SHADING = PieSliceSymbolType(True, False, False, 0, 0, 0, 0)
+"""*
+** Draws a pie slice whose area is shaded using vertical
+** bars.
+** <p>
+**
+** The horizontal distance between corresponding edges of
+** successive bars is governed
+** by the symbol's fill spacing property; the width
+** of each bar is defined by the symbol's fill thickness
+** property; the border and background of each
+** shading bar are defined by the symbol's border color,
+** border width, and background color properties.
+**
+** <p> The radius of the pie slice (length of the non-arc
+** sides of the slice) is chosen such that a circle with
+** this radius circumscribes the host <tt>Symbol</tt>'s
+** width/height determined rectangle. The slice pivot point
+** is defined by each point's x,y position, and the
+** orientation and size of the slice by the corresponding
+** properties (see links below) of the host <tt>Symbol</tt>.
+**
+** @see Symbol#setFillSpacing setFillSpacing
+** @see Symbol#setFillThickness setFillThickness
+** @see Symbol#setBorderColor setBorderColor
+** @see Symbol#setBorderWidth setBorderWidth
+** @see Symbol#setBackgroundColor setBackgroundColor
+** @see Symbol#setPieSliceOrientation setPieSliceOrientation
+** @see Symbol#setPieSliceSize setPieSliceSize
+** @see Curve.Point#setX setX
+** @see Curve.Point#setY setY
+** @see #PIE_SLICE_HORIZONTAL_SHADING PIE_SLICE_HORIZONTAL_SHADING
+** @see #PIE_SLICE_HATCHED_SHADING PIE_SLICE_HATCHED_SHADING
+** @see #PIE_SLICE_OPTIMAL_SHADING PIE_SLICE_OPTIMAL_SHADING
+** @see Symbol Symbol
+**
+**
+*"""
+PIE_SLICE_VERTICAL_SHADING = PieSliceSymbolType(False, True, False, 0, 0, 0, 0)
+"""*
+** Draws a pie slice whose area is shaded using both vertical
+** and horizontal bars, which produces a "cross-hatched"
+** pattern.
+** <p>
+**
+** The distance between corresponding edges of successive
+** bars is governed by the symbol's fill spacing
+** property; the thickness of each bar is defined by the
+** symbol's fill thickness property; the border and
+** background of each shading bar are defined by the
+** symbol's border color, border width, border style, and background
+** color properties.
+**
+** <p> The radius of the pie slice (length of the non-arc
+** sides of the slice) is chosen such that a circle with
+** this radius circumscribes the host <tt>Symbol</tt>'s
+** width/height determined rectangle. The slice pivot point
+** (i.e. pie center) is defined by each point's x,y position, and the
+** orientation and size of the slice by the corresponding
+** properties (see links below) of the host <tt>Symbol</tt>.
+**
+** @see Symbol#setFillSpacing setFillSpacing
+** @see Symbol#setFillThickness setFillThickness
+** @see Symbol#setBorderColor setBorderColor
+** @see Symbol#setBorderWidth setBorderWidth
+** @see Symbol#setBackgroundColor setBackgroundColor
+** @see Symbol#setPieSliceOrientation setPieSliceOrientation
+** @see Symbol#setPieSliceSize setPieSliceSize
+** @see Curve.Point#setX setX
+** @see Curve.Point#setY setY
+** @see #PIE_SLICE_VERTICAL_SHADING PIE_SLICE_VERTICAL_SHADING
+** @see #PIE_SLICE_HORIZONTAL_SHADING PIE_SLICE_HORIZONTAL_SHADING
+** @see #PIE_SLICE_OPTIMAL_SHADING PIE_SLICE_OPTIMAL_SHADING
+** @see Symbol Symbol
+**
+**
+*"""
+PIE_SLICE_HATCHED_SHADING = PieSliceSymbolType(True, True, False, 0, 0, 0, 0)
+"""*
+** Draw a pie slice whose area is shaded using either
+** vertical bars or horizontal bars--whichever
+** renders the slice more efficiently. Specifically, pie
+** slices that are wider than they are tall use horizontal
+** shading and pie slices that are taller than they are
+** wide use vertical shading. These choices minimize the
+** the number of shading bars (and thus memory and time)
+** required to render the pie slice.
+**
+** <p>
+**
+** The distance between corresponding edges of successive
+** bars is governed by the symbol's fill spacing property
+** the thickness of each bar is defined by the symbol's
+** fill thickness property; the border and background of
+** each shading bar are defined by the symbol's border
+** color, border width, and background color properties.
+** <p>
+**
+** The pie slice radius is always determined by the
+** formula:
+**
+** <p>
+** <blockquote>
+**   <pre>
+**   sqrt(symbolWidth^2+symbolHeight^2)/2
+**   </pre>
+** </blockquote>
+**
+** <p>
+** Here <tt>symbolWidth</tt> and <tt>symbolHeight</tt> are the pie
+** slice symbol's width and height, in pixels.
+** <p>
+**
+** Note that this formula implies that the pie slice
+** radius is the one associated with the circle that
+** circumscribes the symbol, that is, the smallest circle
+** that is big enough to completely contain the symbol's
+** width/height defined bounding rectangle. Equivalently,
+** the length of the pie slice radius equals the half the
+** length of the diagonal across the symbol's bounding
+** rectangle.
+**
+** <p>
+**
+** To assure an integral number of shading bars and thus
+** improve the visual look of the pie chart, GChart
+** automatically rounds the radius to the nearest
+** multiple of the specified <tt>fillSpacing</tt>.  For
+** example, if the radius computed from the above formula
+** were 96 pixels and the <tt>fillSpacing</tt> were 10
+** pixels, GChart would actually use a radius of 100 pixels.
+**
+** <p>
+**
+** <i>Tip:</i> To produce a pie slice with a radius, r, set
+** the symbol's height to 0, and its width to 2*r (or
+** visa-versa). To specify the radius in pixels, use the
+** symbol's <tt>setWidth</tt> and <tt>setHeight</tt>
+** methods; to specify the radius in "model units" (which
+** scale up or down with the chart dimensions) use
+** <tt>setModelWidth</tt> and <tt>setModelHeight</tt> instead.
+**
+** <p>
+**
+**
+** <p>
+** The slice pivot point (i.e. pie center)
+** is defined by each point's x,y position, and the
+** orientation and size of the slice by the
+** <tt>setPieSliceOrientation</tt> and
+** <tt>setPieSliceSize</tt> methods
+** of the host <tt>Symbol</tt>.
+** <p>
+**
+** Creating a pie chart from such pie slices requires
+** that you define a separate curve for each slice,
+** as illustrated in the code below:
+**
+** {@code.sample ..\..\..\..\..\..\gcharttestapp\src\com\googlecode\gchart\gcharttestapp\client\GChartExample09.java}
+**
+** <p>
+**
+** Which produces this: <p>
+**
+** <img
+** src="{@docRoot}/com/googlecode/gchart/client/doc-files/gchartexample09.png">
+**
+** <p> Note how, because
+** <tt>PIE_SLICE_OPTIMAL_SHADING</tt> was used, vertical
+** or horizontal shading is automatically selected so as
+** to minimize the number of shading bars in each slice.
+**
+** @see Symbol Symbol
+** @see Symbol#setFillSpacing setFillSpacing
+** @see Symbol#setFillThickness setFillThickness
+** @see Symbol#setBorderColor setBorderColor
+** @see Symbol#setBorderWidth setBorderWidth
+** @see Symbol#setBackgroundColor setBackgroundColor
+** @see Symbol#setPieSliceOrientation setPieSliceOrientation
+** @see Symbol#setPieSliceSize setPieSliceSize
+** @see Symbol#setWidth setWidth
+** @see Symbol#setHeight setHeight
+** @see Symbol#setModelWidth setModelWidth
+** @see Symbol#setModelHeight setModelHeight
+** @see Curve.Point#setX setX
+** @see Curve.Point#setY setY
+** @see #PIE_SLICE_VERTICAL_SHADING PIE_SLICE_VERTICAL_SHADING
+** @see #PIE_SLICE_HORIZONTAL_SHADING PIE_SLICE_HORIZONTAL_SHADING
+** @see #PIE_SLICE_HATCHED_SHADING PIE_SLICE_HATCHED_SHADING
+**
+*"""
+PIE_SLICE_OPTIMAL_SHADING = PieSliceSymbolType(False, False, True, 0, 0, 0, 0)
+
+"""*
+** Use vertical bars that extend from the x,y position
+** associated with each point, to the y position defined
+** by the host <tt>Symbol</tt>'s baseline property, and that are
+** horizontally centered on the data point.
+**
+** @see Symbol Symbol
+** @see Symbol#setBaseline setBaseline
+** @see #HBAR_BASELINE_CENTER HBAR_BASELINE_CENTER
+** @see #HBAR_BASELINE_SOUTH HBAR_BASELINE_SOUTH
+** @see #HBAR_BASELINE_NORTH HBAR_BASELINE_NORTH
+** @see #VBAR_BASELINE_CENTER VBAR_BASELINE_CENTER
+** @see #VBAR_BASELINE_EAST VBAR_BASELINE_EAST
+** @see #VBAR_BASELINE_WEST VBAR_BASELINE_WEST
+**
+*"""
+VBAR_BASELINE_CENTER = VBarBaseline(0,0)
+"""*
+** Use vertical bars that extend from the x,y position
+** associated with each point, to the y position defined
+** by the host <tt>Symbol</tt>'s baseline property, and whose
+** right edge passes through the data point.
+**
+** @see Symbol Symbol
+** @see Symbol#setBaseline setBaseline
+** @see #HBAR_BASELINE_CENTER HBAR_BASELINE_CENTER
+** @see #HBAR_BASELINE_SOUTH HBAR_BASELINE_SOUTH
+** @see #HBAR_BASELINE_NORTH HBAR_BASELINE_NORTH
+** @see #VBAR_BASELINE_CENTER VBAR_BASELINE_CENTER
+** @see #VBAR_BASELINE_EAST VBAR_BASELINE_EAST
+** @see #VBAR_BASELINE_WEST VBAR_BASELINE_WEST
+**
+*"""
+VBAR_BASELINE_WEST = VBarBaseline(-1,0)
+"""*
+** Use vertical bars that extend from the x,y position
+** associated with each point, to the y position defined
+** by the host <tt>Symbol</tt>'s baseline property, and whose
+** left edge passes through the data point.
+**
+** @see Symbol#setBaseline setBaseline
+** @see #HBAR_BASELINE_CENTER HBAR_BASELINE_CENTER
+** @see #HBAR_BASELINE_SOUTH HBAR_BASELINE_SOUTH
+** @see #HBAR_BASELINE_NORTH HBAR_BASELINE_NORTH
+** @see #VBAR_BASELINE_CENTER VBAR_BASELINE_CENTER
+** @see #VBAR_BASELINE_EAST VBAR_BASELINE_EAST
+** @see #VBAR_BASELINE_WEST VBAR_BASELINE_WEST
+**
+*"""
+VBAR_BASELINE_EAST = VBarBaseline(1,0)
+"""*
+** @deprecated
+**
+** As of version 2.4, this symbol has been redefined to
+** be synonomous with the LINE symbol type.
+** <p>
+**
+** Prior to v2.4, this symbol drew a vertical bar from
+** each point to the y coordinate of the next point. Some
+** applications may need to use a revised point set in
+** order to produce the same curves with <tt>LINE</tt>
+** that they used to produce with this symbol.
+** <p>
+**
+** Support was dropped because:
+**
+** <p>
+** <ol>
+**
+**   <li>Continued support would have complicated
+** implementation of the hover feedback system
+** introduced with v2.4 (these are the only symbols whose
+** hit-testing-related size depends on preceding or
+** subsequent points).<p>
+**
+**   <li>With the introduction of
+** <tt>LINE</tt> the main reason for this, and related,
+** vertically (or horizontally) constrained line drawing
+** symbol types had been eliminated (had <tt>LINE</tt>
+** existed at the beginning, these constrained line drawing
+** symbol types would never have been added).
+** <p>
+**
+** </ol>
+** <p>
+**
+** Finally, note that if lines are vertical or horizontal,
+** and solidly connected, <tt>LINE</tt> automatically
+** collapses them into a single element, so no
+** element-based efficiency losses need be associated with
+** replacing curves using such rectilinear symbol types
+** with equivalent curves rendered via the
+** <tt>LINE</tt> symbol type.
+** <p>
+**
+**
+** @see #HBAR_PREV HBAR_PREV
+** @see #HBAR_NEXT HBAR_NEXT
+** @see #LINE LINE
+** @see #VBAR_PREV VBAR_PREV
+**
+*"""
+VBAR_NEXT = line
+
+"""* Use vertical bars that extend from the top of the chart
+** to each point on the curve, and are horizontally
+** centered on the point.
+*"""
+VBAR_NORTH = VBarTop(0, -1)
+"""* Use vertical bars that extend from the top of the chart
+** to each point on the curve, and are horizontally
+** to the right of the point.
+*"""
+VBAR_NORTHEAST = VBarTop(1, -1)
+
+"""* Use vertical bars that extend from the top of the chart
+** to each point on the curve, and are horizontally
+** to the left of the point.
+*"""
+VBAR_NORTHWEST = VBarTop(-1, -1)
+"""*
+** @deprecated
+**
+** As of version 2.4, this symbol has been redefined to
+** be synonomous with the LINE symbol type.
+** <p>
+**
+** Prior to v2.4, this symbol drew a vertical bar from
+** each point to the y coordinate of the previous point.
+** Some applications may need to use a revised point set
+** in order to produce the same curves using <tt>LINE</tt>
+** that they used to produce with this symbol.  <p>
+**
+** See the discussion within the {@link #VBAR_NEXT
+** VBAR_NEXT} symbol for more information about why
+** support for these vertically and horizontally constrained
+** connecting line symbol types was dropped.
+**
+** @see #LINE LINE
+** @see #HBAR_PREV HBAR_PREV
+** @see #HBAR_NEXT HBAR_NEXT
+** @see #VBAR_NEXT VBAR_NEXT
+**
+*"""
+
+VBAR_PREV = line
+
+"""* Use vertical bars that extend from the x-axis
+** to each point on the curve, and that are horizontally
+** centered on the point.
+*"""
+VBAR_SOUTH = VBarBottom(0, 1)
+"""* Use vertical bars that extend from the x-axis
+** to each point on the curve, and that are horizontally
+** to the right of the point.
+*"""
+VBAR_SOUTHEAST = VBarBottom(1, 1)
+
+"""* Use vertical bars that extend from the x-axis
+** to each point on the curve, and that are horizontally
+** to the left of the point.
+*"""
+VBAR_SOUTHWEST = VBarBottom(-1, 1)
+"""*
+** Represents a single x-axis grid-line. You can use
+** this symbol to draw a single vertical bar
+** across the chart.
+**
+*"""
+class SymbolTypeXGrid (SymbolType):
+    def getAdjustedHeight(self, height, y, yPrev, yNext, yMin, yMax, yMid):
+        return yMax - yMin
+
+    def getUpperLeftY(self, height, y, yPrev, yNext, yMin, yMax, yMid, yMouse):
+        return yMin
+
+    def getIconHeight(self, legendFontSize):
+        return legendFontSize
+
+    def getIconWidth(self, legendFontSize):
+        return 1
+
+
+
+XGRIDLINE = SymbolTypeXGrid(0,0,0,0,0.5,0.5,FALSE)
+"""*
+** Represents a single y-axis (or y2-axis) grid-line. You
+** can use this symbol to draw a single horizontal line (or
+** bar) across the chart, for example, to display an upper
+** bound or control limit.
+**
+*"""
+class SymbolTypeYGrid (SymbolType):
+    def getAdjustedWidth(self, width, x, xPrev, xNext, xMin, xMax, xMid):
+        return xMax - xMin
+
+    def getUpperLeftX(self, width, x, xPrev, xNext, xMin, xMax, xMid, xMouse):
+        return xMin
+
+    def getIconHeight(self, legendFontSize):
+        return 1
+
+    def getIconWidth(self, legendFontSize):
+        return legendFontSize
+
+
+
+YGRIDLINE = SymbolTypeYGrid(0,0,0.5,0.5,0,0, TRUE)
+
+"""*
+**  @deprecated
+**
+** This symbol is the same as <tt>YGRIDLINE</tt> and
+** was added by mistake in version 1.
+** (the y-axis isn't defined by the symbol type, but
+**  rather by the curve's <tt>setYAxis</tt> method).
+** <p>
+** Please use <tt>YGRIDLINE</tt> instead.
+**
+** @see #YGRIDLINE YGRIDLINE
+** @see GChart.Curve#setYAxis setYAxis
+**
+*"""
+
+Y2GRIDLINE = YGRIDLINE
 

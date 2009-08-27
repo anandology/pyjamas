@@ -61,7 +61,7 @@ from pyjamas.ui.SimplePanel import SimplePanel
 from pyjamas.ui.UIObject import UIObject
 from pyjamas.ui.Widget import Widget
 
-from GChartUtil import *
+from GChartUtil import validateMultipliers
 
 
 """*
