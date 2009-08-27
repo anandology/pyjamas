@@ -17,52 +17,10 @@
 *
 """
 
-
-
-
-from pyjamas import DOM
-from pyjamas import Window
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-from pyjamas.ui import Event
-from pyjamas.ui.AbsolutePanel import AbsolutePanel
-from pyjamas.ui.Composite import Composite
-from pyjamas.ui.Grid import Grid
-from pyjamas.ui import HasHorizontalAlignment
-from pyjamas.ui import HasVerticalAlignment
-from pyjamas.ui.HTML import HTML
-from pyjamas.ui.Image import Image
-from pyjamas.ui.SimplePanel import SimplePanel
-from pyjamas.ui.UIObject import UIObject
-from pyjamas.ui.Widget import Widget
-
-
-
+from GChartConsts import DEFAULT_WIDGET_WIDTH_UPPERBOUND
+from GChartConsts import DEFAULT_WIDGET_HEIGHT_UPPERBOUND
+import GChart
+import Annotation
 
 """*
 ** Represents a single point on one of the chart's
@@ -85,7 +43,8 @@ class Point:
     def setINextInBand(iNext):
         self.iNextInBand = iNext
 
-    def __init__(self, x, y):
+    def __init__(self, curve, x, y):
+        self.curve = curve
         self.x = x
         self.y = y
         self.iNextInBand = GChart.NAI
@@ -241,7 +200,7 @@ class Point:
     **
     *"""
     def getParent(self):
-        return Curve.this
+        return self.curve
 
     """* Returns the x-coordinate of this point in "model units"
     ** (arbitrary, application-specific, units).
@@ -772,10 +731,10 @@ class Point:
 
 
     def getAnnotation(self):
-        if annotation is None:
+        if self.annotation is None:
             self.annotation = Annotation()
 
-        return annotation
+        return self.annotation
 
     """*
     * Retrieves the expanded hovertext associated with this

@@ -19,53 +19,14 @@
 
 
 
+import GChart
+from GChartUtil import htmlWidth
 
-from pyjamas import DOM
-from pyjamas import Window
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-from pyjamas.ui import Event
-from pyjamas.ui.AbsolutePanel import AbsolutePanel
-from pyjamas.ui.Composite import Composite
-from pyjamas.ui.Grid import Grid
-from pyjamas.ui.HasHTML import HasHTML
-from pyjamas.ui import HasHorizontalAlignment
-from pyjamas.ui.HasText import HasText
-from pyjamas.ui import HasVerticalAlignment
-from pyjamas.ui.HTML import HTML
-from pyjamas.ui.Image import Image
-from pyjamas.ui.SimplePanel import SimplePanel
-from pyjamas.ui.UIObject import UIObject
-from pyjamas.ui.Widget import Widget
-
-
-
-
+from GChartConsts import DEFAULT_FONT_COLOR
+from GChartConsts import DEFAULT_ANNOTATION_FONTSIZE
+from GChartConsts import DEFAULT_WIDGET_WIDTH_UPPERBOUND
+from GChartConsts import DEFAULT_WIDGET_HEIGHT_UPPERBOUND
+from GChartConsts import CHARHEIGHT_TO_FONTSIZE_UPPERBOUND
 
 """
 * Annotates (labels) a chart symbol. Users access this class via

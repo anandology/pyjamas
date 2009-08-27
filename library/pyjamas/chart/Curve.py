@@ -19,6 +19,7 @@
 
 import GChart
 import Double
+from Point import Point
 from Symbol import Symbol
 
 """*
@@ -116,12 +117,12 @@ class Curve:
         if arg3 is None:
             x = arg1
             y = arg2
-            self.points.append(Point(x, y))
+            self.points.append(Point(self, x, y))
         else:
             iPoint = arg1
             x = arg2
             y = arg3
-            self.points.insert(iPoint, Point(x, y))
+            self.points.insert(iPoint, Point(self, x, y))
     
     
     """*
@@ -506,36 +507,6 @@ class Curve:
         return self.chart
     
     """*
-    * Convenience method equivalent to <tt>getPoint(getNPoints()-1)</tt>.
-    * <p>
-    * This method makes code more readable for the common case when
-    * you first add a point to the end of a curve, and then modify that
-    * point's attributes, as illustrated below:
-    * <p>
-    * <pre>
-    class MyChart extends GChart:
-        def MyChart(self):
-            addCurve()
-            for int i=0; i < 10; i++:
-                getCurve().addPoint(i,i)
-                getCurve().getPoint().setAnnotationText("Point " + i)
-            
-            update()
-        
-    
-    * </pre>
-    *
-    * @return the point on the curve with the highest integer index
-    *
-    * @see #getPoint(int) getPoint(int)
-    * @see #getNPoints() getNPoints()
-    *
-    """
-    def getPoint(self):
-        return getPoint(getNPoints()-1)
-    
-    
-    """*
     * Returns a reference to the point at the specified
     * index.  The returned reference can be used to modify
     * various properties of the point, such as
@@ -551,13 +522,16 @@ class Curve:
     * @see #clearPoints clearPoints
     * @see #getNPoints getNPoints
     """
-    def getPoint(self, iPoint):
+    def getPoint(self, iPoint=None):
+        if iPoint is None:
+            iPoint = self.getNPoints()-1
+
         if iPoint < 0  or  iPoint >= len(self.points):
             raise IllegalArgumentException(
             "Point index iPoint=" + iPoint + ". " +
             "is either < 0 or >= the number of points on the curve.")
         
-        return self.points.get(iPoint)
+        return self.points[iPoint]
     
     
     
