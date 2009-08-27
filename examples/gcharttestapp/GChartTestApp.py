@@ -86,10 +86,10 @@ class AddOneChart:
 
 
 def addChart(gchart):
-    DeferredCommand.add(AddOneChart(gchart, True))
+    DeferredCommand().add(AddOneChart(gchart, True))
 
 def addChartNoUpdate(gchart):
-    DeferredCommand.add(AddOneChart(gchart, False))
+    DeferredCommand().add(AddOneChart(gchart, False))
 
 class GWTCanvasBasedCanvasFactory :
     def create(self):
