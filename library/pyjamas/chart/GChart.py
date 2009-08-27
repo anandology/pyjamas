@@ -65,6 +65,7 @@ from GChartConsts import NAI, DEFAULT_X_CHARTSIZE, DEFAULT_Y_CHARTSIZE
 from GChartConsts import USE_CSS
 from GChartConsts import DEFAULT_SYMBOL_BORDER_COLORS
 from GChartConsts import DEFAULT_LEGEND_BACKGROUND_COLOR
+from GChartConsts import N_SYSTEM_CURVES
 from GChartConsts import DEFAULT_LEGEND_BORDER_COLOR
 from GChartConsts import DEFAULT_LEGEND_BORDER_WIDTH
 from GChartConsts import DEFAULT_LEGEND_BORDER_STYLE

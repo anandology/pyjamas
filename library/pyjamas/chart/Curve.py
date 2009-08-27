@@ -62,6 +62,7 @@ from pyjamas.ui.UIObject import UIObject
 from pyjamas.ui.Widget import Widget
 
 import GChart
+from Symbol import Symbol
 
 """*
 * Represents a curve on a chart, which includes

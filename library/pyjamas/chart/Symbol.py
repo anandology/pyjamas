@@ -62,7 +62,10 @@ from pyjamas.ui.UIObject import UIObject
 from pyjamas.ui.Widget import Widget
 
 
-
+import GChartConsts
+import Double
+import GChart
+import AnnotationLocation
 
 """*
 ** Defines a chart curve symbol. Each point on a curve
@@ -80,21 +83,21 @@ class Symbol(object):
         self.parent = parent
     
         self.annotation = None
-        self.backgroundColor = DEFAULT_SYMBOL_BACKGROUND_COLOR
+        self.backgroundColor = GChartConsts.DEFAULT_SYMBOL_BACKGROUND_COLOR
         # same as backgroundColor, but with extended RGBA collapsed to plain RGA
-        self.backgroundColorCSS = DEFAULT_SYMBOL_BACKGROUND_COLOR
+        self.backgroundColorCSS = GChartConsts.DEFAULT_SYMBOL_BACKGROUND_COLOR
         baseline = Double.NaN
         self.borderColor = "black"
         self.borderColorCSS = "black"
-        self.borderStyle = DEFAULT_SYMBOL_BORDER_STYLE
-        self.borderWidth = DEFAULT_SYMBOL_BORDER_WIDTH
-        self.brushHeight = DEFAULT_BRUSH_HEIGHT
+        self.borderStyle = GChartConsts.DEFAULT_SYMBOL_BORDER_STYLE
+        self.borderWidth = GChartConsts.DEFAULT_SYMBOL_BORDER_WIDTH
+        self.brushHeight = GChartConsts.DEFAULT_BRUSH_HEIGHT
         self.brushLocation = AnnotationLocation.CENTER
-        self.brushWidth = DEFAULT_BRUSH_WIDTH
+        self.brushWidth = GChartConsts.DEFAULT_BRUSH_WIDTH
         self.fillHasHovertext = True
         self.fillSpacing = Double.NaN
         self.fillThickness = GChart.NAI
-        self.height = DEFAULT_SYMBOL_HEIGHT
+        self.height = GChartConsts.DEFAULT_SYMBOL_HEIGHT
         self.hovertextTemplate=None
         # holds specification for the hover annotation. Actual
         # hover annotation is generated on the fly when they hover
@@ -138,9 +141,9 @@ class Symbol(object):
         # slices, by default, fill the entire pie (useful for drawing disks)
         self.pieSliceSize = 1
 
-        self.symbolType = DEFAULT_SYMBOL_TYPE
+        self.symbolType = GChartConsts.DEFAULT_SYMBOL_TYPE
 
-        self.width = DEFAULT_SYMBOL_WIDTH
+        self.width = GChartConsts.DEFAULT_SYMBOL_WIDTH
         self.xScaleFactor = 1.0
         self.yScaleFactor = 1.0
     
@@ -2046,8 +2049,9 @@ class Symbol(object):
     *
     """
     def setHoverWidget(self, annotationWidget):
-        setHoverWidget(annotationWidget, DEFAULT_WIDGET_WIDTH_UPPERBOUND,
-        DEFAULT_WIDGET_HEIGHT_UPPERBOUND)
+        setHoverWidget(annotationWidget,
+                      GChartConsts.DEFAULT_WIDGET_WIDTH_UPPERBOUND,
+                      GChartConsts.DEFAULT_WIDGET_HEIGHT_UPPERBOUND)
     
     
     """*
