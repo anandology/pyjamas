@@ -761,7 +761,7 @@ class Curve:
         *
         """
         
-        if getIndexOf() == GChart.NAI:
+        if self.getIndexOf() == GChart.NAI:
             self.isVisible = isVisible
             return
         
@@ -770,7 +770,7 @@ class Curve:
         
         # hover selection feedback curves (which are system curves)
         # never impact curve counts, need to refresh decorations, etc.
-        if isSystemCurve():
+        if self.isSystemCurve():
             self.isVisible = isVisible
             return
         
@@ -812,7 +812,7 @@ class Curve:
     *"""
     def setYAxis(self, axisId):
         self.invalidate()
-        if isSystemCurve():
+        if self.isSystemCurve():
             self.yAxisId = axisId
         
         elif axisId != self.yAxisId:
@@ -832,12 +832,12 @@ class Curve:
     
     # Is this specific curve actually clipped to the plot area?
     def getActuallyClippedToPlotArea(self):
-        result = getClipToPlotArea()
+        result = self.getClipToPlotArea()
         if result:
             # decorative, hover feedback curves are never clipped
-            rpIndex = getRenderingPanelIndex(getIndexOf())
+            rpIndex = self.getRenderingPanelIndex(self.getIndexOf())
             if (PlotPanel.DECORATIVE_RENDERING_PANEL_INDEX == rpIndex  or  
-                isHoverFeedbackRenderingPanel(rpIndex)):
+                self.isHoverFeedbackRenderingPanel(rpIndex)):
                 result = False
             
         
@@ -854,7 +854,7 @@ class Curve:
     def isSystemCurve(self):
         # negative curve indexes are reserved for system curves
         result = ((self.indexOf != GChart.NAI)  and 
-                    externalCurveIndex(self.indexOf) < 0)
+                    self.getParent().externalCurveIndex(self.indexOf) < 0)
         return result
     
     # renders the specified point of this curve on the given panel

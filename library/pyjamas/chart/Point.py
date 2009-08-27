@@ -20,7 +20,7 @@
 from GChartConsts import DEFAULT_WIDGET_WIDTH_UPPERBOUND
 from GChartConsts import DEFAULT_WIDGET_HEIGHT_UPPERBOUND
 import GChart
-import Annotation
+from Annotation import Annotation
 
 """*
 ** Represents a single point on one of the chart's

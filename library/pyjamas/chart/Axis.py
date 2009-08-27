@@ -17,51 +17,21 @@
 *
 """
 
+import NumberFormat
+import DateFormat
+import GChart
+import Double
 
-
-
-from pyjamas import DOM
-from pyjamas import Window
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-from pyjamas.ui import Event
-from pyjamas.ui.AbsolutePanel import AbsolutePanel
-from pyjamas.ui.Composite import Composite
-from pyjamas.ui.Grid import Grid
-from pyjamas.ui import HasHorizontalAlignment
-from pyjamas.ui import HasVerticalAlignment
-from pyjamas.ui.HTML import HTML
-from pyjamas.ui.Image import Image
-from pyjamas.ui.SimplePanel import SimplePanel
-from pyjamas.ui.UIObject import UIObject
-from pyjamas.ui.Widget import Widget
-
-
+from GChartConsts import DEFAULT_TICK_LOCATION
+from GChartConsts import DEFAULT_TICK_COUNT
+#from GChartConsts import 
+from GChartConsts import DEFAULT_TICK_LABEL_FONT_COLOR
+from GChartConsts import DEFAULT_TICK_LABEL_FONTSIZE
+from GChartConsts import DEFAULT_TICK_LABEL_FONT_STYLE
+from GChartConsts import DEFAULT_TICK_LABEL_FONT_WEIGHT
+from GChartConsts import DEFAULT_TICK_LABEL_FORMAT
+from GChartConsts import DEFAULT_TICK_LENGTH
+from GChartConsts import DEFAULT_TICK_THICKNESS
 
 
 """*
@@ -299,7 +269,9 @@ class Axis:
         addTick(tickPosition, tickLabel, GChart.NAI, GChart.NAI)
 
 
-    def addTick(self, tickPosition, tickWidget, widthUpperBound, heightUpperBound):
+    def addTick(self, tickPosition, tickWidget,
+                    widthUpperBound=DEFAULT_WIDGET_WIDTH_UPPERBOUND,
+                    heightUpperBound=DEFAULT_WIDGET_HEIGHT_UPPERBOUND):
         """*
         *  Adds a widget-defined tick label at the specified
         *  position, whose width and height are within
@@ -341,31 +313,6 @@ class Axis:
                             heightUpperBound)
 
 
-
-    def addTick(self, tickPosition, tickWidget):
-        """*
-        *  Adds a Widget-defined tick label at the specified
-        *  position. Convenience method equivalent to
-        *  <tt>addTick(tickPosition, tickWidget,
-        *  DEFAULT_WIDGET_WIDTH_UPPERBOUND,
-        *  DEFAULT_WIDGET_HEIGHT_UPPERBOUND)</tt>.
-        *
-        * @param tickPosition the position, in model units, along
-        *   this axis at which the tick is displayed.
-        *   For example, if the axis range goes from 0 to 1,
-        *   a tick at position 0.5 would appear in the middle of
-        *   the axis.
-        *
-        * @param tickWidget the label for this tick, as defined
-        *  by any GWT Widget.
-        *
-        * @see #addTick(double,Widget,int,int)
-        * addTick(double,Widget,int,int)
-        *
-        """
-        addTick(tickPosition, tickWidget,
-                    DEFAULT_WIDGET_WIDTH_UPPERBOUND,
-                    DEFAULT_WIDGET_HEIGHT_UPPERBOUND)
 
     def clearTicks(self):
         """*

@@ -98,7 +98,14 @@ from GChartConsts import HOVER_CURSOR_ID
 from GChartConsts import HOVER_ANNOTATION_ID
 from GChartConsts import N_PRE_SYSTEM_CURVES 
 from GChartConsts import N_POST_SYSTEM_CURVES
-
+from GChartConsts import DEFAULT_GRID_COLOR
+from GChartConsts import GRID_BORDER_STYLE
+from GChartConsts import GRID_BORDER_WIDTH
+from GChartConsts import DEFAULT_GRID_WIDTH
+from GChartConsts import DEFAULT_GRID_HEIGHT
+from GChartConsts import TICK_BORDER_STYLE
+from GChartConsts import TICK_BORDER_WIDTH
+from GChartConsts import Y2_AXIS
 
 
 import Double
@@ -111,6 +118,7 @@ from GChartUtil import formatAsHovertext, YAxisId, setOverflow
 from GChartWidgets import PlotPanel
 
 import pygwt
+from Axis import XAxis, YAxis, Y2Axis
 
 global canvasFactory
 
@@ -429,23 +437,24 @@ class GChart (Composite):
 
         # y-axis label
         self.getSystemCurve(YLABEL_ID).getPoint(0).setAnnotationWidget(
-        getYAxis().getAxisLabel(),
-        getYAxis().getAxisLabelThickness(), getYChartSize())
+                                getYAxis().getAxisLabel(),
+                                getYAxis().getAxisLabelThickness(),
+                                getYChartSize())
         self.getSystemCurve(YLABEL_ID).getPoint(0).setAnnotationXShift(
-        - getYAxis().getTickLabelThickness(False)
-        - getYAxis().getTickSpace()
-        - getYAxis().getTickLabelPadding()
-        - getYAxis().getAxisLabelThickness()/2)
+                                - getYAxis().getTickLabelThickness(False)
+                                - getYAxis().getTickSpace()
+                                - getYAxis().getTickLabelPadding()
+                                - getYAxis().getAxisLabelThickness()/2)
 
         # y2-axis label
         self.getSystemCurve(Y2LABEL_ID).getPoint(0).setAnnotationWidget(
         getY2Axis().getAxisLabel(),
         getY2Axis().getAxisLabelThickness(), getYChartSize())
         self.getSystemCurve(Y2LABEL_ID).getPoint(0).setAnnotationXShift(
-        + getY2Axis().getTickLabelThickness(False)
-        + getY2Axis().getTickSpace()
-        + getY2Axis().getTickLabelPadding()
-        + getY2Axis().getAxisLabelThickness()/2)
+                            + getY2Axis().getTickLabelThickness(False)
+                            + getY2Axis().getTickSpace()
+                            + getY2Axis().getTickLabelPadding()
+                            + getY2Axis().getAxisLabelThickness()/2)
 
         # legend
         legend = None
