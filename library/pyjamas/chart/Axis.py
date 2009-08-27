@@ -32,7 +32,14 @@ from GChartConsts import DEFAULT_TICK_LABEL_FONT_STYLE
 from GChartConsts import DEFAULT_TICK_LABEL_FONT_WEIGHT
 from GChartConsts import DEFAULT_TICK_LABEL_FORMAT
 from GChartConsts import DEFAULT_TICK_LENGTH
+from GChartConsts import DEFAULT_TICK_LOCATION
 from GChartConsts import DEFAULT_TICK_THICKNESS
+from GChartConsts import YTICKS_ID
+from GChartConsts import YGRIDLINES_ID
+from GChartConsts import YAXIS_ID
+from GChartConsts import XTICKS_ID
+from GChartConsts import XGRIDLINES_ID
+from GChartConsts import XAXIS_ID
 
 
 """*
@@ -816,7 +823,7 @@ class Axis:
         *         <tt>TickLocation.CENTERED</tt>
         *
         """
-        return tickLocation
+        return self.tickLocation
 
 
 
@@ -1715,7 +1722,7 @@ class Axis:
     def setTickLocation(self, tickLocation):
         self.tickLocation = tickLocation
         self.chartDecorationsChanged = True
-        sym = getSystemCurve(ticksId).getSymbol()
+        sym = self.getChart().getSystemCurve(ticksId).getSymbol()
         if isHorizontalAxis:
             sym.setSymbolType(tickLocation.getXAxisSymbolType(axisPosition))
             sym.setHeight(getActualTickLength())
@@ -1921,9 +1928,9 @@ class XAxis(Axis):
         gridlinesId = XGRIDLINES_ID
         axisId = XAXIS_ID
         axisPosition = -1
-        setTickLocation(DEFAULT_TICK_LOCATION)
-        setTickThickness(DEFAULT_TICK_THICKNESS)
-        setTickLength(DEFAULT_TICK_LENGTH)
+        self.setTickLocation(DEFAULT_TICK_LOCATION)
+        self.setTickThickness(DEFAULT_TICK_THICKNESS)
+        self.setTickLength(DEFAULT_TICK_LENGTH)
 
 
     def clientToModel(clientCoordinate):
@@ -1936,14 +1943,14 @@ class XAxis(Axis):
         EXTRA_CHARHEIGHT = 2; # 1-char space above & below
         DEF_CHARHEIGHT = 1
         result = 0
-        if None == getAxisLabel():
+        if None == self.getAxisLabel():
             result = 0
 
-        elif GChart.NAI != axisLabelThickness:
-            result = axisLabelThickness
+        elif GChart.NAI != self.axisLabelThickness:
+            result = self.axisLabelThickness
 
-        elif isinstance(getAxisLabel(), HasHTML):
-            charHeight = htmlHeight( ((HasHTML) (getAxisLabel())).getHTML())
+        elif hasattr(self.getAxisLabel(), "getHTML"):
+            charHeight = htmlHeight( getAxisLabel().getHTML())
             result = int (round((EXTRA_CHARHEIGHT+charHeight) *
                                 getTickLabelFontSize() *
                                 TICK_CHARHEIGHT_TO_FONTSIZE_LOWERBOUND))
