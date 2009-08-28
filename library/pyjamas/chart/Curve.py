@@ -144,7 +144,7 @@ class Curve:
     """
     def clearPoints(self):
         if self == self.getParent().getTouchedCurve():
-            plotPanel.touch(None)
+            self.chart.plotPanel.touch(None)
         
         self.invalidate()
         del self.points
@@ -170,11 +170,11 @@ class Curve:
     def getBand(self, iPoint, bandThickness):
         result = GChart.NAI
         symType = self.getSymbol().getSymbolType()
-        xPx = symType.getCenterX(plotPanel, self.getSymbol(), iPoint)
+        xPx = symType.getCenterX(self.chart.plotPanel, self.getSymbol(), iPoint)
         if xPx!=xPx:
             return result; # NaN points not in any band
         
-        yPx = symType.getCenterY( plotPanel, self.getSymbol(), iPoint, onY2())
+        yPx = symType.getCenterY( chart.plotPanel, self.getSymbol(), iPoint, onY2())
         if yPx!=yPx:
             return result; # NaN points not in any band
         
@@ -431,11 +431,11 @@ class Curve:
                         " brushHeight=" +brushHeight + " bandThickness=" + self.bandThickness)
                     
                 p  = getPoint(iPoint)
-                if symType.isIntersecting(plotPanel, getSymbol(), iPoint, onY2(), xBrush, yBrush, brushWidth, brushHeight):
+                if symType.isIntersecting(self.chart.plotPanel, getSymbol(), iPoint, onY2(), xBrush, yBrush, brushWidth, brushHeight):
                     # this point touches the brush (keep it if closest)
-                    xPoint = symType.getCenterX(plotPanel,
+                    xPoint = symType.getCenterX(self.chart.plotPanel,
                                                 getSymbol(), iPoint)
-                    yPoint = symType.getCenterY(plotPanel,
+                    yPoint = symType.getCenterY(self.chart.plotPanel,
                                                 getSymbol(), iPoint, onY2())
                     dx = getSymbol().xScaleFactor*(xPoint-xBrush)
                     dy = getSymbol().yScaleFactor*(yPoint-yBrush)
@@ -656,8 +656,8 @@ class Curve:
         # simulate user moving away from point before it is deleted
         # (this assures that any required hoverCleanup gets called,
         #  and clears the otherwise dangling reference to the point)
-        if plotPanel.touchedPoint == getPoint(iPoint):
-            plotPanel.touch(None)
+        if self.chart.plotPanel.touchedPoint == self.getPoint(iPoint):
+            self.chart.plotPanel.touch(None)
         
         self.points.remove(iPoint)
     
@@ -677,13 +677,13 @@ class Curve:
         if None == p:
             raise IllegalArgumentException("p cannot be None.")
         
-        index = getPointIndex(p)
+        index = self.getPointIndex(p)
         if GChart.NAI == index:
             raise IllegalArgumentException("p must be a point on this curve " +
                                     "(whose curveIndex is " + 
-                                    getParent().getCurveIndex(this) + ")")
+                                    self.getParent().getCurveIndex(this) + ")")
         
-        removePoint(index)
+        self.removePoint(index)
     
     """*
     ** @deprecated

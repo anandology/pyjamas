@@ -278,7 +278,7 @@ class SymbolType:
             nextX = c.getPoint(iPoint+1).getX()
 
 
-        result = getCenterX(pp, symbol, prevX, x, nextX)
+        result = self.getCenterX(pp, symbol, prevX, x, nextX)
 
         return result
 
@@ -318,13 +318,13 @@ class SymbolType:
         nextYPx = pp.yToPixel(nextY, onY2)
         height = symbol.getHeight(pp, onY2)
 
-        symHeight = getAdjustedHeight(height, yPx,
+        symHeight = self.getAdjustedHeight(height, yPx,
         prevYPx, nextYPx, yMinPx, yMaxPx, yMidPx)
         if (Double.isNaN(symHeight)):
             return Double.NaN
 
 
-        yTop = getUpperLeftY(height, yPx,
+        yTop = self.getUpperLeftY(height, yPx,
         prevYPx, nextYPx,
         yMinPx, yMaxPx, yMidPx,
         pp.getYMousePlotArea())
@@ -360,7 +360,7 @@ class SymbolType:
             nextY = c.getPoint(iPoint+1).getY()
 
 
-        result = getCenterY(pp, symbol, prevY, y, nextY, onY2)
+        result = self.getCenterY(pp, symbol, prevY, y, nextY, onY2)
 
         return result
 
@@ -384,14 +384,14 @@ class SymbolType:
         nextXPx = Double.NaN
         width = symbol.getWidth(pp)
 
-        symWidth = getAdjustedWidth(width, xPx,
+        symWidth = self.getAdjustedWidth(width, xPx,
         prevXPx, nextXPx,
         xMinPx, xMaxPx, xMidPx)
         if (Double.isNaN(symWidth)):
             return Double.NaN
 
 
-        xLeft = getUpperLeftX(width, xPx,
+        xLeft = self.getUpperLeftX(width, xPx,
                                 prevXPx, nextXPx,
                                 xMinPx, xMaxPx, xMidPx,
                                 pp.getXMousePlotArea())
