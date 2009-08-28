@@ -549,7 +549,7 @@ class GChart (Composite):
         self.legendBorderStyle = DEFAULT_LEGEND_BORDER_STYLE
         self.legendThickness = NAI
 
-        self.isLegendVisible = True
+        self.legendVisible = True
 
         self.legendFontColor = DEFAULT_FONT_COLOR
         self.legendFontSize = DEFAULT_LEGEND_FONTSIZE
@@ -1824,7 +1824,7 @@ class GChart (Composite):
     * @see #setLegendVisible setLegendVisible
     """
     def isLegendVisible(self):
-        return self.isLegendVisible
+        return self.legendVisible
 
 
 
@@ -2864,9 +2864,9 @@ class GChart (Composite):
     * @see #isLegendVisible isLegendVisible
     * @see Curve#setLegendLabel setLegendLabel
     """
-    def setLegendVisible(self, isLegendVisible):
+    def setLegendVisible(self, legendVisible):
         self.chartDecorationsChanged = True
-        self.isLegendVisible = isLegendVisible
+        self.legendVisible = legendVisible
 
 
     """*
