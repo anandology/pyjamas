@@ -1315,7 +1315,7 @@ class SymbolType:
                 # 1px is as close as HTML-element
                 spacing = 1;  # based filling can get to continuous
 
-            d = distance(xPx,yPx,nextXPx,nextYPx)
+            d = self.distance(xPx,yPx,nextXPx,nextYPx)
             nChunks = int(round(d/spacing))
             if nChunks > 1:
                 deltaX = nextXPx - xPx
@@ -1335,8 +1335,6 @@ class SymbolType:
                     # point; forward interpolation (usually) lets us
                     # place the "main" symbol for the original point on
                     # top of these interpolated symbols, in one pass.
-                    xi
-                    yi
 
                     # Rounding to the longer dimension first, then
                     # using that pixelated position to determine other

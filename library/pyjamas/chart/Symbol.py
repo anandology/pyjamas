@@ -1229,9 +1229,9 @@ class Symbol(object):
     def setFillSpacing(self, fillSpacing):
         self.getParent().invalidate()
         # x!=x is a faster isNaN
-        if not (self.Double.isNaN(fillSpacing))  and  fillSpacing != 0  and  fillSpacing < 1:
+        if not (Double.isNaN(fillSpacing))  and  fillSpacing != 0  and  fillSpacing < 1:
             raise IllegalArgumentException(
-            "fillSpacing="+self.fillSpacing+"; "+
+            "fillSpacing="+fillSpacing+"; "+
             "fillSpacing must either be >= 1, or else " +
             "equal to either 0 or Double.NaN.")
         
