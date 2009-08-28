@@ -63,6 +63,8 @@ from pyjamas.ui.Widget import Widget
 
 from GChartConsts import N_PRE_SYSTEM_CURVES
 from GChartConsts import TRANSPARENT_BORDER_COLOR
+from GChartConsts import HOVER_ANNOTATION_ID
+from GChartConsts import HOVER_CURSOR_ID
 
 import GChart
 import Double
