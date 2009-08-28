@@ -3504,13 +3504,13 @@ class GChart (Composite):
             self.plotPanel.reset(self.xChartSize, self.yChartSize,
                         self.hasYAxis(), self.hasY2Axis(),
                         self.xAxis, self.yAxis, self.y2Axis)
-            GChartUtil.setFontFamily(this,getFontFamily())
-            GChartUtil.setBackgroundColor(this, getBackgroundColor())
-            GChartUtil.setBorderColor(this, getBorderColor())
-            GChartUtil.setBorderStyle(this,getBorderStyle())
-            GChartUtil.setBorderWidth(this, getBorderWidth())
-            GChartUtil.setPadding(this,getPadding())
-            GChartUtil.setOverflow(this, (getClipToDecoratedChart() and
+            GChartUtil.setFontFamily(self,getFontFamily())
+            GChartUtil.setBackgroundColor(self, getBackgroundColor())
+            GChartUtil.setBorderColor(self, getBorderColor())
+            GChartUtil.setBorderStyle(self,getBorderStyle())
+            GChartUtil.setBorderWidth(self, getBorderWidth())
+            GChartUtil.setPadding(self,getPadding())
+            GChartUtil.setOverflow(self, (getClipToDecoratedChart() and
                                         "hidden" or "visible"))
 
             self.setPixelSize(self.plotPanel.getXChartSizeDecoratedQuickly(),
@@ -3788,8 +3788,6 @@ class GChart (Composite):
                 self.setLastPieSliceOrientation(
                                 c.getSymbol().getDecodedPieSliceOrientation()
                                 + c.getSymbol().getPieSliceSize())
-
-
 
 
 
