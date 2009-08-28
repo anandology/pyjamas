@@ -17,6 +17,8 @@
 *
 """
 
+import math
+
 import GChart
 import Double
 from Point import Point
@@ -214,10 +216,10 @@ class Curve:
     def getNBands(self, bandThickness):
         result = EXTRA_BANDS
         if self.getSymbol().isHorizontallyBanded():
-            result += int ( ceil(self.getYChartSize()/bandThickness))
+            result += int ( math.ceil(self.getYChartSize()/bandThickness))
         
         else :
-            result += int ( ceil(self.getXChartSize()/bandThickness) )
+            result += int ( math.ceil(self.getXChartSize()/bandThickness) )
         
         return result
     
