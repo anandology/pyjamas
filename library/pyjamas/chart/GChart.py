@@ -3528,7 +3528,7 @@ class GChart (Composite):
 
         # actually renders chart, including internal curves used
         # to represent the decorations (title, axis labels, etc.)
-        realizePlotPanel()
+        self.realizePlotPanel()
 
         # To avoid order-of-magnitude FF2 performance hit on busy pages,
         # first time, must add plotPanel only AFTER building chart
