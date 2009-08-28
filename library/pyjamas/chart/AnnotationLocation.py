@@ -63,6 +63,29 @@ from pyjamas.ui.Widget import Widget
 
 from GChartUtil import validateMultipliers
 
+# retrieves a location given its multipliers
+def getAnnotationLocation(widthMultiplier, heightMultiplier):
+    locationMap = [
+        [NORTHWEST, NORTH, NORTHEAST],
+        [WEST, CENTER, EAST],
+        [SOUTHWEST, SOUTH, SOUTHEAST]]
+    # assumes both multiplier are -1, 0, or 1
+    result = locationMap[heightMultiplier+1][widthMultiplier+1]
+    return result
+    
+    
+# Negative width or height "turn the symbol inside-out",
+# requiring a corresponding "reflection" of annotation
+# location (only needed for baseline-based bar symbols)
+def transform(a, signWidth, signHeight):
+    result = a
+    if signWidth < 0  or  signHeight < 0:
+        result = getAnnotationLocation(
+                    signWidth*a.widthMultiplier,
+                    signHeight*a.heightMultiplier)
+    
+    return result
+
 
 """*
 ** Defines the location of a data point's annotation or hover
@@ -109,29 +132,6 @@ class AnnotationLocation:
         validateMultipliers(widthMultiplier, heightMultiplier)
         self.widthMultiplier = widthMultiplier
         self.heightMultiplier = heightMultiplier
-    
-    # retrieves a location given its multipliers
-    def getAnnotationLocation(self, widthMultiplier, heightMultiplier):
-        locationMap = [
-            [NORTHWEST, NORTH, NORTHEAST],
-            [WEST, CENTER, EAST],
-            [SOUTHWEST, SOUTH, SOUTHEAST]]
-        # assumes both multiplier are -1, 0, or 1
-        result = locationMap[heightMultiplier+1][widthMultiplier+1]
-        return result
-        
-        
-    # Negative width or height "turn the symbol inside-out",
-    # requiring a corresponding "reflection" of annotation
-    # location (only needed for baseline-based bar symbols)
-    def transform(self, a, signWidth, signHeight):
-        result = a
-        if signWidth < 0  or  signHeight < 0:
-            result = self.getAnnotationLocation(
-                        signWidth*a.widthMultiplier,
-                        signHeight*a.heightMultiplier)
-        
-        return result
     
     # These define the alignment of the label within it's
     # containing 1 x 1 Grid. For example, if this
