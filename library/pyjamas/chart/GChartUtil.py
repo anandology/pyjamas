@@ -27,7 +27,6 @@ NAI = 2 ** 31
 
 
 import AnnotationLocation
-import SymbolType
 
 """*
 * Convenience method that, given a plain text label, returns an
@@ -279,12 +278,5 @@ def withinRange(x, minLim, maxLim):
     # x!=x is a faster isNaN; NaN is considered in range
     result = (x!=x) and True or (x >= minLim  and  x <= maxLim)
     return result
-
-# Is the symbol type one of the special ANCHOR_MOUSE types,
-# whose position varies with the mouse cursor location?
-def isMouseAnchored(symbolType):
-    return (SymbolType.ANCHOR_MOUSE == symbolType  or
-            SymbolType.ANCHOR_MOUSE_SNAP_TO_X == symbolType  or 
-            SymbolType.ANCHOR_MOUSE_SNAP_TO_Y == symbolType)
 
 

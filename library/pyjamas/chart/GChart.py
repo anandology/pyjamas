@@ -144,6 +144,13 @@ def getCanvasFactory():
     return canvasFactory
 
 
+# Is the symbol type one of the special ANCHOR_MOUSE types,
+# whose position varies with the mouse cursor location?
+def isMouseAnchored(symbolType):
+    return (SymbolType.ANCHOR_MOUSE == symbolType  or
+            SymbolType.ANCHOR_MOUSE_SNAP_TO_X == symbolType  or
+            SymbolType.ANCHOR_MOUSE_SNAP_TO_Y == symbolType)
+
 
 class GChart (Composite):
 
