@@ -921,7 +921,7 @@ class Symbol(object):
             if rp.match(rgba):
                 FIRST_PAREN = 4
                 lastComma = rgba.rfind(",")
-                result = "rgb" + rgba[FIRST_PAREN, lastComma] + ")"
+                result = "rgb" + rgba[FIRST_PAREN:lastComma] + ")"
             
             else:
                 raise IllegalArgumentException(
