@@ -51,6 +51,8 @@ from GChartConsts import XAXIS_ID
 from GChartConsts import TICK_CHARHEIGHT_TO_FONTSIZE_LOWERBOUND 
 from GChartConsts import TICK_CHARWIDTH_TO_FONTSIZE_LOWERBOUND 
 
+from GChartUtil import htmlHeight
+
 # these are used in formatting tick positions into tick labels:
 NUMBER_FORMAT_TYPE = 0
 DATE_FORMAT_TYPE = 1
@@ -1955,15 +1957,15 @@ class XAxis(Axis):
             result = self.axisLabelThickness
 
         elif hasattr(self.getAxisLabel(), "getHTML"):
-            charHeight = htmlHeight( getAxisLabel().getHTML())
+            charHeight = htmlHeight( self.getAxisLabel().getHTML())
             result = int (round((EXTRA_CHARHEIGHT+charHeight) *
-                                getTickLabelFontSize() *
+                                self.getTickLabelFontSize() *
                                 TICK_CHARHEIGHT_TO_FONTSIZE_LOWERBOUND))
 
         else:
             result = int (round(
                         (EXTRA_CHARHEIGHT + DEF_CHARHEIGHT) *
-                        getTickLabelFontSize() *
+                        self.getTickLabelFontSize() *
                         TICK_CHARWIDTH_TO_FONTSIZE_LOWERBOUND))
 
         return result
