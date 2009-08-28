@@ -887,7 +887,8 @@ class Curve:
         # at all (undefined x or y, or off chart entirely)
         drawMainSymbol = (p.getINextInBand() != iPoint)
         
-        self.getSymbol().realizeSymbol(pp, grp, arp, p.getAnnotation(), onY2(),
+        self.getSymbol().realizeSymbol(pp, grp, arp, p.getAnnotation(),
+                                    self.onY2(),
                                     self.getActuallyClippedToPlotArea(),
                                     self.getClipToDecoratedChart(),
                                     drawMainSymbol,
