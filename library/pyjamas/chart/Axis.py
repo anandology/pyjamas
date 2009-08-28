@@ -17,7 +17,7 @@
 *
 """
 
-from pyjamas.ui import HTML
+from pyjamas.ui.HTML import HTML
 
 import NumberFormat
 import DateTimeFormat
@@ -1108,7 +1108,7 @@ class Axis:
 
     def setAxisLabel(self, axisLabel):
         if isinstance(axisLabel, str):
-            axisLabel = HTML(str)
+            axisLabel = HTML(axisLabel)
         self.axisLabel = axisLabel
         self.chartDecorationsChanged = True
 
