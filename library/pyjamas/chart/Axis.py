@@ -1850,7 +1850,6 @@ class Axis:
 
     """ similar to getTickText, except for the tick position """
     def getTickPosition(self, c, iTick):
-        result
         if self.isHorizontalAxis:
             result = c.getPoint(iTick).getX()
 

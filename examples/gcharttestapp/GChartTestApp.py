@@ -10,6 +10,7 @@ from pyjamas.chart import GChart
 from TestGChart00 import TestGChart00 
 from GChartExample00 import GChartExample00 
 from GChartExample00a import GChartExample00a
+from GChartExample01 import GChartExample01 
 
 """*
 *
@@ -119,10 +120,10 @@ def onModuleLoad():
     
     # To focus on a single test, simply use Eclipse's Source, Toggle comment
     #addChart(GChartExample00())
-    addChart(GChartExample00a())
+    #addChart(GChartExample00a())
     #    addChart(GChartExample00b())
     #    addChart(GChartExample00c())
-    #    addChart(GChartExample01())
+    addChart(GChartExample01())
     #    addChart(GChartExample01a(3))
     #    addChart(GChartExample01a(0))
     #    addChart(GChartExample01b())
