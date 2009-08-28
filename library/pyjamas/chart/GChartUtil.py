@@ -61,8 +61,9 @@ from pyjamas.ui.SimplePanel import SimplePanel
 from pyjamas.ui.UIObject import UIObject
 from pyjamas.ui.Widget import Widget
 
+from GChartConsts import NAI
+
 import AnnotationLocation
-import GChart
 
 """*
 * Convenience method that, given a plain text label, returns an
