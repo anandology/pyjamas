@@ -11,6 +11,7 @@ from TestGChart00 import TestGChart00
 from GChartExample00 import GChartExample00 
 from GChartExample00a import GChartExample00a
 from GChartExample01 import GChartExample01 
+from GChartExample02 import GChartExample02
 
 """*
 *
@@ -47,7 +48,7 @@ from GChartExample01 import GChartExample01
 *
 """
 i = 0
-def rnd(self):
+def rnd():
     m = 217728
     a = 84589
     c = 45989
@@ -123,12 +124,12 @@ def onModuleLoad():
     #addChart(GChartExample00a())
     #    addChart(GChartExample00b())
     #    addChart(GChartExample00c())
-    addChart(GChartExample01())
+    #addChart(GChartExample01())
     #    addChart(GChartExample01a(3))
     #    addChart(GChartExample01a(0))
     #    addChart(GChartExample01b())
     #    addChart(GChartExample01c())
-    #    addChart(GChartExample02())
+    addChart(GChartExample02())
     #    addChart(GChartExample03())
     #    addChart(GChartExample04())
     #    addChart(GChartExample04a())

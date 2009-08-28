@@ -42,7 +42,7 @@ def getTitle(obj):
 *
 """
 i = 0
-def rnd(self):
+def rnd():
     m = 217728
     a = 84589
     c = 45989
