@@ -568,7 +568,7 @@ class Axis:
         ** @see #setAxisVisible setAxisVisible
         **
         *"""
-        return axisVisible
+        return self.axisVisible
 
 
 
@@ -1794,11 +1794,11 @@ class Axis:
     # fills in the gridlines; ticks are assumed already populated
     def populateGridlines(self):
         cTicks = self.getSystemCurve(self.ticksId)
-        cGridlines = self.getSystemCurve(gridlinesId)
+        cGridlines = self.getSystemCurve(self.gridlinesId)
         cGridlines.clearPoints()
         nTicks = cTicks.getNPoints()
         for iTick in range(nTicks):
-            if hasGridlines  and  (iTick % ticksPerGridline) == 0:
+            if self.hasGridlines  and  (iTick % self.ticksPerGridline) == 0:
                 p = cTicks.getPoint(iTick)
                 cGridlines.addPoint(p.getX(), p.getY())
 

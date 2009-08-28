@@ -404,74 +404,75 @@ class GChart (Composite):
 
         # x-axis label
         self.getSystemCurve(XLABEL_ID).getPoint(0).setAnnotationWidget(
-        getXAxis().getAxisLabel(), getXChartSize(),
-        getXAxis().getAxisLabelThickness())
+                        self.getXAxis().getAxisLabel(), self.getXChartSize(),
+                        self.getXAxis().getAxisLabelThickness())
         self.getSystemCurve(XLABEL_ID).getPoint(0).setAnnotationYShift(
-        - getXAxis().getTickLabelThickness(False)
-        - getXAxis().getTickSpace()
-        - getXAxis().getTickLabelPadding()
-        - getXAxis().getAxisLabelThickness()/2)
+                        - self.getXAxis().getTickLabelThickness(False)
+                        - self.getXAxis().getTickSpace()
+                        - self.getXAxis().getTickLabelPadding()
+                        - self.getXAxis().getAxisLabelThickness()/2)
 
         # y-axis label
         self.getSystemCurve(YLABEL_ID).getPoint(0).setAnnotationWidget(
-                                getYAxis().getAxisLabel(),
-                                getYAxis().getAxisLabelThickness(),
-                                getYChartSize())
+                                self.getYAxis().getAxisLabel(),
+                                self.getYAxis().getAxisLabelThickness(),
+                                self.getYChartSize())
         self.getSystemCurve(YLABEL_ID).getPoint(0).setAnnotationXShift(
-                                - getYAxis().getTickLabelThickness(False)
-                                - getYAxis().getTickSpace()
-                                - getYAxis().getTickLabelPadding()
-                                - getYAxis().getAxisLabelThickness()/2)
+                                - self.getYAxis().getTickLabelThickness(False)
+                                - self.getYAxis().getTickSpace()
+                                - self.getYAxis().getTickLabelPadding()
+                                - self.getYAxis().getAxisLabelThickness()/2)
 
         # y2-axis label
         self.getSystemCurve(Y2LABEL_ID).getPoint(0).setAnnotationWidget(
-        getY2Axis().getAxisLabel(),
-        getY2Axis().getAxisLabelThickness(), getYChartSize())
+                        self.getY2Axis().getAxisLabel(),
+                        self.getY2Axis().getAxisLabelThickness(),
+                        self.getYChartSize())
         self.getSystemCurve(Y2LABEL_ID).getPoint(0).setAnnotationXShift(
-                            + getY2Axis().getTickLabelThickness(False)
-                            + getY2Axis().getTickSpace()
-                            + getY2Axis().getTickLabelPadding()
-                            + getY2Axis().getAxisLabelThickness()/2)
+                            + self.getY2Axis().getTickLabelThickness(False)
+                            + self.getY2Axis().getTickSpace()
+                            + self.getY2Axis().getTickLabelPadding()
+                            + self.getY2Axis().getAxisLabelThickness()/2)
 
         # legend
         legend = None
-        if self.isLegendVisible()  and  0 < getNVisibleCurvesOnLegend():
-            legend = createLegend(self.plotPanel)
+        if self.isLegendVisible()  and  0 < self.getNVisibleCurvesOnLegend():
+            legend = self.createLegend(self.plotPanel)
 
         self.getSystemCurve(LEGEND_ID).getPoint(0).setAnnotationWidget(
-                                legend, getLegendThickness(), getYChartSize())
+                                legend, self.getLegendThickness(), self.getYChartSize())
         self.getSystemCurve(LEGEND_ID).getPoint(0).setAnnotationXShift(
-                                + getY2Axis().getTickLabelThickness(False)
-                                + getY2Axis().getTickSpace()
-                                + getY2Axis().getTickLabelPadding()
-                                + getY2Axis().getAxisLabelThickness()
-                                + getLegendThickness()/2 )
+                                + self.getY2Axis().getTickLabelThickness(False)
+                                + self.getY2Axis().getTickSpace()
+                                + self.getY2Axis().getTickLabelPadding()
+                                + self.getY2Axis().getAxisLabelThickness()
+                                + self.getLegendThickness()/2 )
 
         # title
-        shiftToLeftEdge = (- getYAxis().getAxisLabelThickness()
-                           - getYAxis().getTickLabelThickness(False)
-                           - getYAxis().getTickSpace()
-                           - getYAxis().getTickLabelPadding())
+        shiftToLeftEdge = (- self.getYAxis().getAxisLabelThickness()
+                           - self.getYAxis().getTickLabelThickness(False)
+                           - self.getYAxis().getTickSpace()
+                           - self.getYAxis().getTickLabelPadding())
         shiftToHorizontalMidpoint = shiftToLeftEdge + xChartSizeDecorated/2
         self.getSystemCurve(TITLE_ID).getPoint(0).setAnnotationWidget(
-                                    getChartTitle(), xChartSizeDecorated,
-                                    getChartTitleThickness())
+                                    self.getChartTitle(), xChartSizeDecorated,
+                                    self.getChartTitleThickness())
         self.getSystemCurve(TITLE_ID).getPoint(0).setAnnotationYShift(
-                                        getChartTitleThickness()/2)
+                                        self.getChartTitleThickness()/2)
         self.getSystemCurve(TITLE_ID).getPoint(0).setAnnotationXShift(
                                         shiftToHorizontalMidpoint)
 
         # footnotes
         self.getSystemCurve(FOOTNOTES_ID).getPoint(0).setAnnotationWidget(
-                                    getChartFootnotes(), xChartSizeDecorated,
-                                    getChartFootnotesThickness())
+                                    self.getChartFootnotes(), xChartSizeDecorated,
+                                    self.getChartFootnotesThickness())
         self.getSystemCurve(FOOTNOTES_ID).getPoint(0).setAnnotationYShift(
-                                    - getXAxis().getTickLabelThickness(False)
-                                    - getXAxis().getTickSpace()
-                                    - getXAxis().getTickLabelPadding()
-                                    - getXAxis().getAxisLabelThickness()
-                                    - getChartFootnotesThickness()/2 )
-        if getChartFootnotesLeftJustified():
+                                    - self.getXAxis().getTickLabelThickness(False)
+                                    - self.getXAxis().getTickSpace()
+                                    - self.getXAxis().getTickLabelPadding()
+                                    - self.getXAxis().getAxisLabelThickness()
+                                    - self.getChartFootnotesThickness()/2 )
+        if self.getChartFootnotesLeftJustified():
             self.getSystemCurve(FOOTNOTES_ID).getPoint(0).setAnnotationXShift(
                                             shiftToLeftEdge)
             self.getSystemCurve(FOOTNOTES_ID).getPoint(0).setAnnotationLocation(
@@ -480,24 +481,24 @@ class GChart (Composite):
         else:
             # footnotes centered
             self.getSystemCurve(FOOTNOTES_ID).getPoint(0).setAnnotationXShift(
-            shiftToHorizontalMidpoint)
+                        shiftToHorizontalMidpoint)
             self.getSystemCurve(FOOTNOTES_ID).getPoint(0).setAnnotationLocation(
-            AnnotationLocation.CENTER)
+                        AnnotationLocation.CENTER)
 
 
 
         # add points to ticks and gridlines curves in accord with chart specs
 
         # x & y axis can be present even if no curves mapped to them
-        self.getSystemCurve(XAXIS_ID).setVisible(getXAxis().getAxisVisible())
-        getXAxis().populateGridlines()
-        self.getSystemCurve(YAXIS_ID).setVisible(getYAxis().getAxisVisible())
-        getYAxis().populateGridlines()
+        self.getSystemCurve(XAXIS_ID).setVisible(self.getXAxis().getAxisVisible())
+        self.getXAxis().populateGridlines()
+        self.getSystemCurve(YAXIS_ID).setVisible(self.getYAxis().getAxisVisible())
+        self.getYAxis().populateGridlines()
 
         # y2 axis is present only if at least 1 curve is on it.
-        if hasY2Axis():
-            getY2Axis().populateGridlines()
-            self.getSystemCurve(Y2AXIS_ID).setVisible(getY2Axis().getAxisVisible())
+        if self.hasY2Axis():
+            self.getY2Axis().populateGridlines()
+            self.getSystemCurve(Y2AXIS_ID).setVisible(self.getY2Axis().getAxisVisible())
             self.getSystemCurve(Y2TICKS_ID).setVisible(True)
             self.getSystemCurve(Y2GRIDLINES_ID).setVisible(True)
 
@@ -550,6 +551,7 @@ class GChart (Composite):
         self.legendBorderStyle = DEFAULT_LEGEND_BORDER_STYLE
         self.legendThickness = NAI
 
+        self.chartFootnotesLeftJustified = True
         self.legendVisible = True
 
         self.legendFontColor = DEFAULT_FONT_COLOR
@@ -2342,7 +2344,7 @@ class GChart (Composite):
     """
     def setChartFootnotesLeftJustified(self, footnotesLeftJustified):
         self.chartDecorationsChanged = True
-        chartFootnotesLeftJustified = footnotesLeftJustified
+        self.chartFootnotesLeftJustified = footnotesLeftJustified
 
 
     """*
