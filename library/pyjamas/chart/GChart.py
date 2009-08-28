@@ -3556,7 +3556,7 @@ class GChart (Composite):
             * <p>
             *
             """
-            DOM.setStyleAttribute(getElement(), "visibility","visible")
+            DOM.setStyleAttribute(self.getElement(), "visibility","visible")
 
         else:
             """
@@ -3572,8 +3572,8 @@ class GChart (Composite):
             * (Note comment regarding need for explicit visibility above).
             *
             """
-            DOM.setStyleAttribute(getElement(), "visibility","hidden")
-            DOM.setStyleAttribute(getElement(), "visibility","visible")
+            DOM.setStyleAttribute(self.getElement(), "visibility","hidden")
+            DOM.setStyleAttribute(self.getElement(), "visibility","visible")
 
 
 
