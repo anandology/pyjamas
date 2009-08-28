@@ -866,7 +866,7 @@ class Curve:
         x = p.getX()
         y = p.getY()
         # skip points at undefined locations
-        if (x!=x)  or  (y!=y):
+        if (Double.isNaN(x))  or  (Double.isNaN(y)):
             return; # x!=x is a faster isNaN
         
         prevX = Double.NaN

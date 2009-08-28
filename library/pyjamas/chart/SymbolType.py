@@ -261,7 +261,7 @@ class SymbolType:
         xMax = pp.getXMax()
         xMid = symbol.getBaseline()
         # x!=x is a faster isNaN
-        if (xMid!=xMid):
+        if (Double.isNaN(xMid)):
             xMid = (xMin + xMax)/2.
 
         xMinPx = pp.xToPixel(xMin)
@@ -275,7 +275,7 @@ class SymbolType:
         symWidth = getAdjustedWidth(width, xPx,
         prevXPx, nextXPx,
         xMinPx, xMaxPx, xMidPx)
-        if (symWidth!=symWidth):
+        if (Double.isNaN(symWidth)):
             return Double.NaN
 
 
@@ -283,7 +283,7 @@ class SymbolType:
         prevXPx, nextXPx,
         xMinPx, xMaxPx, xMidPx,
         pp.getXMousePlotArea())
-        if (xLeft!=xLeft):
+        if (Double.isNaN(xLeft)):
             return Double.NaN
 
 
@@ -344,7 +344,7 @@ class SymbolType:
             yMax =  pp.getYMin()
         yMid = symbol.getBaseline()
         # x!=x is a faster isNaN
-        if (yMid!=yMid):
+        if (Double.isNaN(yMid)):
             yMid = (yMin + yMax)/2.
 
         yMinPx = pp.yToPixel(yMin,onY2)
@@ -357,7 +357,7 @@ class SymbolType:
 
         symHeight = getAdjustedHeight(height, yPx,
         prevYPx, nextYPx, yMinPx, yMaxPx, yMidPx)
-        if (symHeight!=symHeight):
+        if (Double.isNaN(symHeight)):
             return Double.NaN
 
 
@@ -365,7 +365,7 @@ class SymbolType:
         prevYPx, nextYPx,
         yMinPx, yMaxPx, yMidPx,
         pp.getYMousePlotArea())
-        if (yTop!=yTop):
+        if (Double.isNaN(yTop)):
             return Double.NaN
 
 
@@ -410,7 +410,7 @@ class SymbolType:
         xMax = pp.getXMax()
         xMid = symbol.getBaseline()
         # x!=x is a faster isNaN
-        if (xMid!=xMid):
+        if (Double.isNaN(xMid)):
             xMid = (xMin + xMax)/2.
 
         xMinPx = pp.xToPixel(xMin)
@@ -424,7 +424,7 @@ class SymbolType:
         symWidth = getAdjustedWidth(width, xPx,
         prevXPx, nextXPx,
         xMinPx, xMaxPx, xMidPx)
-        if (symWidth!=symWidth):
+        if (Double.isNaN(symWidth)):
             return Double.NaN
 
 
@@ -432,7 +432,7 @@ class SymbolType:
                                 prevXPx, nextXPx,
                                 xMinPx, xMaxPx, xMidPx,
                                 pp.getXMousePlotArea())
-        if (xLeft!=xLeft):
+        if (Double.isNaN(xLeft)):
             return Double.NaN
 
         result = xLeft
@@ -447,7 +447,7 @@ class SymbolType:
         xMax = pp.getXMax()
         xMid = symbol.getBaseline()
         # x!=x is a faster isNaN
-        if (xMid!=xMid):
+        if (Double.isNaN(xMid)):
             xMid = (xMin + xMax)/2.
 
         xMinPx = pp.xToPixel(xMin)
@@ -461,7 +461,7 @@ class SymbolType:
         symWidth = getAdjustedWidth(width, xPx,
         prevXPx, nextXPx,
         xMinPx, xMaxPx, xMidPx)
-        if (symWidth!=symWidth):
+        if (Double.isNaN(symWidth)):
             return Double.NaN
 
 
@@ -469,7 +469,7 @@ class SymbolType:
         prevXPx, nextXPx,
         xMinPx, xMaxPx, xMidPx,
         pp.getXMousePlotArea())
-        if (xLeft!=xLeft):
+        if (Double.isNaN(xLeft)):
             return Double.NaN
 
 
@@ -496,7 +496,7 @@ class SymbolType:
             yMax =  pp.getYMin()
         yMid = symbol.getBaseline()
         # x!=x is a faster isNaN
-        if (yMid!=yMid):
+        if (Double.isNaN(yMid)):
             yMid = (yMin + yMax)/2.
 
         yMinPx = pp.yToPixel(yMin,onY2)
@@ -509,7 +509,7 @@ class SymbolType:
 
         symHeight = getAdjustedHeight(height, yPx,
         prevYPx, nextYPx, yMinPx, yMaxPx, yMidPx)
-        if (symHeight!=symHeight):
+        if (Double.isNaN(symHeight)):
             return Double.NaN
 
 
@@ -517,7 +517,7 @@ class SymbolType:
         prevYPx, nextYPx,
         yMinPx, yMaxPx, yMidPx,
         pp.getYMousePlotArea())
-        if (yTop!=yTop):
+        if (Double.isNaN(yTop)):
             return Double.NaN
 
 
@@ -544,7 +544,7 @@ class SymbolType:
             yMax =  pp.getYMin()
         yMid = symbol.getBaseline()
         # x!=x is a faster isNaN
-        if (yMid!=yMid):
+        if (Double.isNaN(yMid)):
             yMid = (yMin + yMax)/2.
 
         yMinPx = pp.yToPixel(yMin,onY2)
@@ -557,7 +557,7 @@ class SymbolType:
 
         symHeight = getAdjustedHeight(height, yPx,
         prevYPx, nextYPx, yMinPx, yMaxPx, yMidPx)
-        if (symHeight!=symHeight):
+        if (Double.isNaN(symHeight)):
             return Double.NaN
 
 
@@ -565,7 +565,7 @@ class SymbolType:
         prevYPx, nextYPx,
         yMinPx, yMaxPx, yMidPx,
         pp.getYMousePlotArea())
-        if (yTop!=yTop):
+        if (Double.isNaN(yTop)):
             return Double.NaN
 
 
@@ -583,7 +583,7 @@ class SymbolType:
         xMax = pp.getXMax()
         xMid = symbol.getBaseline()
         # x!=x is a faster isNaN
-        if (xMid!=xMid):
+        if (Double.isNaN(xMid)):
             xMid = (xMin + xMax)/2.
 
         xMinPx = pp.xToPixel(xMin)
@@ -597,7 +597,7 @@ class SymbolType:
         symWidth = getAdjustedWidth(width, xPx,
         prevXPx, nextXPx,
         xMinPx, xMaxPx, xMidPx)
-        if (symWidth!=symWidth):
+        if (Double.isNaN(symWidth)):
             return Double.NaN
 
 
@@ -605,7 +605,7 @@ class SymbolType:
         prevXPx, nextXPx,
         xMinPx, xMaxPx, xMidPx,
         pp.getXMousePlotArea())
-        if (xLeft!=xLeft):
+        if (Double.isNaN(xLeft)):
             return Double.NaN
 
 
@@ -633,7 +633,7 @@ class SymbolType:
             yMax =  pp.getYMin()
         yMid = symbol.getBaseline()
         # x!=x is a faster isNaN
-        if (yMid!=yMid):
+        if (Double.isNaN(yMid)):
             yMid = (yMin + yMax)/2.
 
         yMinPx = pp.yToPixel(yMin,onY2)
@@ -646,7 +646,7 @@ class SymbolType:
 
         symHeight = getAdjustedHeight(height, yPx,
         prevYPx, nextYPx, yMinPx, yMaxPx, yMidPx)
-        if (symHeight!=symHeight):
+        if (Double.isNaN(symHeight)):
             return Double.NaN
 
 
@@ -654,7 +654,7 @@ class SymbolType:
         prevYPx, nextYPx,
         yMinPx, yMaxPx, yMidPx,
         pp.getYMousePlotArea())
-        if (yTop!=yTop):
+        if (Double.isNaN(yTop)):
             return Double.NaN
 
 
@@ -680,7 +680,7 @@ class SymbolType:
         xMax = pp.getXMax()
         xMid = symbol.getBaseline()
         # x!=x is a faster isNaN
-        if (xMid!=xMid):
+        if (Double.isNaN(xMid)):
             xMid = (xMin + xMax)/2.
 
         xMinPx = pp.xToPixel(xMin)
@@ -694,7 +694,7 @@ class SymbolType:
         symWidth = getAdjustedWidth(width, xPx,
         prevXPx, nextXPx,
         xMinPx, xMaxPx, xMidPx)
-        if (symWidth!=symWidth):
+        if (Double.isNaN(symWidth)):
             return False
 
 
@@ -702,7 +702,7 @@ class SymbolType:
         prevXPx, nextXPx,
         xMinPx, xMaxPx, xMidPx,
         pp.getXMousePlotArea())
-        if (xLeft!=xLeft):
+        if (Double.isNaN(xLeft)):
             return False
 
 
@@ -725,7 +725,7 @@ class SymbolType:
             yMax =  pp.getYMin()
         yMid = symbol.getBaseline()
         # x!=x is a faster isNaN
-        if (yMid!=yMid):
+        if (Double.isNaN(yMid)):
             yMid = (yMin + yMax)/2.
 
         yMinPx = pp.yToPixel(yMin,onY2)
@@ -738,7 +738,7 @@ class SymbolType:
 
         symHeight = getAdjustedHeight(height, yPx,
         prevYPx, nextYPx, yMinPx, yMaxPx, yMidPx)
-        if (symHeight!=symHeight):
+        if (Double.isNaN(symHeight)):
             return False
 
 
@@ -746,7 +746,7 @@ class SymbolType:
         prevYPx, nextYPx,
         yMinPx, yMaxPx, yMidPx,
         pp.getYMousePlotArea())
-        if (yTop!=yTop):
+        if (Double.isNaN(yTop)):
             return False
 
 
@@ -976,7 +976,7 @@ class SymbolType:
         xMax = pp.getXMax()
         xMid = symbol.getBaseline()
         # x!=x is a faster isNaN
-        if (xMid!=xMid):
+        if (Double.isNaN(xMid)):
             xMid = (xMin + xMax)/2.
 
         xMinPx = pp.xToPixel(xMin)
@@ -986,7 +986,7 @@ class SymbolType:
         symWidth = getAdjustedWidth(width, xPx,
         prevXPx, nextXPx,
         xMinPx, xMaxPx, xMidPx)
-        if (symWidth!=symWidth):
+        if (Double.isNaN(symWidth)):
             return; # x!=x is a faster isNaN
 
 
@@ -994,7 +994,7 @@ class SymbolType:
         prevXPx, nextXPx,
         xMinPx, xMaxPx, xMidPx,
         pp.getXMousePlotArea())
-        if (xLeft!=xLeft):
+        if (Double.isNaN(xLeft)):
             return; # x!=x is a faster isNaN
 
 
@@ -1009,7 +1009,7 @@ class SymbolType:
             yMax =  pp.getYMin()
         yMid = symbol.getBaseline()
         # x!=x is a faster isNaN
-        if (yMid!=yMid):
+        if (Double.isNaN(yMid)):
             yMid = (yMin + yMax)/2.
 
         yMinPx = pp.yToPixel(yMin,onY2)
@@ -1019,7 +1019,7 @@ class SymbolType:
         symHeight = getAdjustedHeight(
         height, yPx,
         prevYPx, nextYPx, yMinPx, yMaxPx, yMidPx)
-        if (symHeight!=symHeight):
+        if (Double.isNaN(symHeight)):
             return; # x!=x is a faster isNaN
 
 
@@ -1027,7 +1027,7 @@ class SymbolType:
         prevYPx, nextYPx,
         yMinPx, yMaxPx, yMidPx,
         pp.getYMousePlotArea())
-        if (yTop!=yTop):
+        if (Double.isNaN(yTop)):
             return; # x!=x is a faster isNaN
 
 
@@ -1150,7 +1150,7 @@ class SymbolType:
     oppositeEdge = Double.NaN
     def realizeSymbol(self, pp, grp, arp, symbol, annotation, onY2, clipPlotArea, clipDecoratedChart, drawMainSymbol, x, y, prevX, prevY, nextX, nextY):
 
-        if (x!=x)  or  (y!=y):
+        if (Double.isNaN(x))  or  (Double.isNaN(y)):
             # this point undefined (isNaN)
             return
 
@@ -1544,7 +1544,7 @@ class LineSymbolType (SymbolType):
 
     def realizeSymbol(self, pp, grp, arp, symbol, annotation, onY2, clipPlotArea, clipDecoratedChart, drawMainSymbol, x, y, prevX, prevY, nextX, nextY):
 
-        if (x!=x)  or  (y!=y):
+        if (Double.isNaN(x))  or  (Double.isNaN(y)):
             # this point undefined (isNaN)
             return
 
@@ -2153,7 +2153,7 @@ class PieSliceSymbolType (SymbolType):
         theta1 = symbol.getPieSliceTheta1()
         canvas = grp.getCanvas()
         # x!=x is a faster isNaN
-        if (xPx!=xPx)  or  (yPx!=yPx):
+        if (Double.isNaN(xPx))  or  (Double.isNaN(yPx)):
             return; # undefined slice pivot point
 
         elif clipPlotArea  and  not intersects(xPx-r, yPx-r, xPx+r, yPx+r, 0, 0, pp.getXChartSize(), pp.getYChartSize()):

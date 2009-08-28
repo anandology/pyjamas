@@ -1811,18 +1811,18 @@ class Axis:
         # Adjust min/max so that special cases, like one-point
         # charts, do not have axes that shrink down to a point,
         # which would create numerical and visual difficulties.
-        if (min!=min)  and  (max!=max):
+        if (Double.isNaN(min))  and  (Double.isNaN(max)):
             # x!=x is a faster isNaN
             # e.g. no data and no explicitly specified ticks
             min = 0
             max = min + DEFAULT_AXIS_RANGE
 
-        elif (min!=min)  and  not (max!=max):
+        elif (Double.isNaN(min))  and  not (Double.isNaN(max)):
             # x!=x is a faster isNaN
             # e.g. no data but only max explicitly set
             min = max - DEFAULT_AXIS_RANGE
 
-        elif not (min!=min)  and  (max!=max):
+        elif not (Double.isNaN(min))  and  (max!=max):
             # x!=x is a faster isNaN
             # e.g. no data but only min explicitly set
             max = min + DEFAULT_AXIS_RANGE
@@ -1912,10 +1912,10 @@ class Axis:
     # to have changed.
     def invalidateDynamicAxisLimits(self):
         # x!=x is a faster isNaN
-        if (axisMin!=axisMin):
+        if (Double.isNaN(axisMin)):
             setAxisMin(axisMin)
 
-        if (axisMax!=axisMax):
+        if (Double.isNaN(axisMax)):
             setAxisMax(axisMax)
 
 

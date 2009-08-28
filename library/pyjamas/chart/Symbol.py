@@ -771,7 +771,7 @@ class Symbol(object):
     
     def getDecodedPieSliceOrientation(self):
         result = self.pieSliceOrientation
-        if (result!=result):
+        if (Double.isNaN(result)):
             # x!=x is a faster isNaN
             result = self.defaultPieSliceOrientation
         
@@ -1262,7 +1262,7 @@ class Symbol(object):
     def setFillSpacing(self, fillSpacing):
         self.getParent().invalidate()
         # x!=x is a faster isNaN
-        if not (self.fillSpacing!=fillSpacing)  and  fillSpacing != 0  and  fillSpacing < 1:
+        if not (self.Double.isNaN(fillSpacing))  and  fillSpacing != 0  and  fillSpacing < 1:
             raise IllegalArgumentException(
             "fillSpacing="+self.fillSpacing+"; "+
             "fillSpacing must either be >= 1, or else " +
@@ -2454,7 +2454,7 @@ class Symbol(object):
     def getHeight(self, pp, onY2):
         
         mH = getModelHeight()
-        if (mH!=mH):
+        if (Double.isNaN(mH)):
             # x!=x is a faster isNaN
             result = getHeight()
         
@@ -2468,7 +2468,7 @@ class Symbol(object):
     def getWidth(self, pp):
         
         mW = getModelWidth()
-        if (mW!=mW):
+        if (Double.isNaN(mW)):
             # x!=x is a faster isNaN
             result = getWidth()
         
