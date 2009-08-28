@@ -37,9 +37,10 @@ from GChartConsts import N_PRE_SYSTEM_CURVES
 * @see GChart#addCurve() addCurve()
 *
 """
-class Curve:
 
-    EXTRA_BANDS = 2;   # far left, right (top, bottom) bands
+EXTRA_BANDS = 2;   # far left, right (top, bottom) bands
+
+class Curve:
 
     def isValidated(self):
         return self.validated
