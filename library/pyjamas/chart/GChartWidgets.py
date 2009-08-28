@@ -535,7 +535,9 @@ class AnnotationRenderingPanel (PartitionedAbsolutePanel):
                 *
                 """
                 e = labelWidget.getElement()
-                if None == e  or  (e.getParentElement() != result.innerGrid.getCellFormatter().getElement(0,0)):
+                if (None == e  or  
+                    (DOM.getParent(e) != 
+                     result.innerGrid.getCellFormatter().getElement(0,0))):
                     # the widget' DOM parent isn't label's grid-cell (it was moved)
                     result.labelWidget = None
 
@@ -1360,7 +1362,7 @@ class PlotPanel (AbsolutePanel):
             grp = self.graphicsPanel.getWidget(i)
             if (DECORATIVE_RENDERING_PANEL_INDEX == i  or  
                 self.chart.isHoverFeedbackRenderingPanel(i)  or  
-                not self.getClipToPlotArea()):
+                not self.chart.getClipToPlotArea()):
                 grp.setPixelSize(0, 0)
                 GChart.setOverflow(grp, "visible")
 
