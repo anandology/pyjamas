@@ -214,9 +214,9 @@ class PartitionedAbsolutePanel (Composite):
     # returns widget at given index
     def getWidget(self, iWidget):
         if iWidget < 0  or  iWidget >= self.nWidgets:
-            raise IllegalArgumentException(
-                    "Invalid widget index: " + iWidget +
-                    ". Valid range is: 0..." + (self.nWidgets-1))
+            raise IndexError(
+                    "Invalid widget index: " + str(iWidget) +
+                    ". Valid range is: 0..." + str((self.nWidgets-1)))
 
         selectSubPanel(iWidget)
         result = self.subPanel.getWidget( iWidget % WIDGETS_PER_PANEL)
@@ -577,14 +577,14 @@ class AnnotationRenderingPanel (PartitionedAbsolutePanel):
         # (makes the bounding box tighter, which, for reasons unknown, makes
         # rendering around 10% faster on some browsers and usage scenarios).
         if loc.getHorizontalAlignment() != HasHorizontalAlignment.ALIGN_LEFT:
-            alignedLabel.setWidth(widthUpperBound + "px")
+            alignedLabel.setWidth(str(widthUpperBound) + "px")
 
         else:
             alignedLabel.setWidth("")
 
 
         if loc.getVerticalAlignment() != HasVerticalAlignment.ALIGN_TOP:
-            alignedLabel.setHeight(heightUpperBound + "px")
+            alignedLabel.setHeight(str(heightUpperBound) + "px")
 
         else:
             alignedLabel.setHeight("")
@@ -967,7 +967,7 @@ class GraphicsRenderingPanel (AbsolutePanel):
 
         self.lastVisibleImage = min(self.lastVisibleImage, self.imageIndex)
 
-        self.imageIndex -= 1
+        self.imageIndex += 1
 
 
     def renderBorderedImage(self, backgroundColor, borderColor, borderStyle, borderWidth, width, height, x, y, url):
