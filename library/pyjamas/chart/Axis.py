@@ -47,6 +47,7 @@ from GChartConsts import YAXIS_ID
 from GChartConsts import XTICKS_ID
 from GChartConsts import XGRIDLINES_ID
 from GChartConsts import XAXIS_ID
+from GChartConsts import TICK_CHARHEIGHT_TO_FONTSIZE_LOWERBOUND 
 
 # these are used in formatting tick positions into tick labels:
 NUMBER_FORMAT_TYPE = 0
@@ -2011,7 +2012,7 @@ class XAxis(Axis):
         if self.tickLabelThickness != GChart.NAI:
             result = self.tickLabelThickness
 
-        elif getTickCount() == 0:
+        elif self.getTickCount() == 0:
             result = 0
 
         else:
