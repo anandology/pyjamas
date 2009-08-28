@@ -75,9 +75,10 @@ class GChartExample02(GChart):
 
 
     def onClick(self, event):
+        print "click"
         for iCurve in range(self.getNCurves()):
             for iPoint in range(self.getCurve(iCurve).getNPoints()):
                 self.getCurve(iCurve).getPoint(iPoint).setY(rnd()*MAX_REVENUE)
             
         self.update()
-        self.updateButton.setFocus(True)
+        #self.updateButton.setFocus(True)

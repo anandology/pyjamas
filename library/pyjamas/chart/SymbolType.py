@@ -236,16 +236,16 @@ class SymbolType:
         width = symbol.getWidth(pp)
 
         symWidth = self.getAdjustedWidth(width, xPx,
-        prevXPx, nextXPx,
-        xMinPx, xMaxPx, xMidPx)
+                                prevXPx, nextXPx,
+                                xMinPx, xMaxPx, xMidPx)
         if (Double.isNaN(symWidth)):
             return Double.NaN
 
 
         xLeft = self.getUpperLeftX(width, xPx,
-        prevXPx, nextXPx,
-        xMinPx, xMaxPx, xMidPx,
-        pp.getXMousePlotArea())
+                            prevXPx, nextXPx,
+                            xMinPx, xMaxPx, xMidPx,
+                            pp.getXMousePlotArea())
         if (Double.isNaN(xLeft)):
             return Double.NaN
 

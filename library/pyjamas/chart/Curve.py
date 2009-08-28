@@ -171,12 +171,12 @@ class Curve:
         result = GChart.NAI
         symType = self.getSymbol().getSymbolType()
         xPx = symType.getCenterX(self.chart.plotPanel, self.getSymbol(), iPoint)
-        if xPx!=xPx:
+        if Double.isNaN(xPx):
             return result; # NaN points not in any band
 
         yPx = symType.getCenterY( self.chart.plotPanel, self.getSymbol(),
                                   iPoint, self.onY2())
-        if yPx!=yPx:
+        if Double.isNaN(yPx):
             return result; # NaN points not in any band
 
         # now, we've got a point with x,y values in some sort of band
