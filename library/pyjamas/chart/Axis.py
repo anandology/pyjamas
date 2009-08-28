@@ -49,6 +49,7 @@ from GChartConsts import XTICKS_ID
 from GChartConsts import XGRIDLINES_ID
 from GChartConsts import XAXIS_ID
 from GChartConsts import TICK_CHARHEIGHT_TO_FONTSIZE_LOWERBOUND 
+from GChartConsts import TICK_CHARWIDTH_TO_FONTSIZE_LOWERBOUND 
 
 # these are used in formatting tick positions into tick labels:
 NUMBER_FORMAT_TYPE = 0
