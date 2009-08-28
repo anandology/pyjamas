@@ -3675,8 +3675,8 @@ class GChart (Composite):
     # renders the curve in the plot panel
     def realizeCurve(self, c):
         if not c.isValidated():
-            internalIndex = getInternalCurveIndex(c)
-            rpIndex = getRenderingPanelIndex(internalIndex)
+            internalIndex = self.getInternalCurveIndex(c)
+            rpIndex = self.getRenderingPanelIndex(internalIndex)
             grp = self.plotPanel.getGraphicsRenderingPanel(rpIndex)
             arp = self.plotPanel.getAnnotationRenderingPanel(rpIndex)
             if PlotPanel.DECORATIVE_RENDERING_PANEL_INDEX == rpIndex:
