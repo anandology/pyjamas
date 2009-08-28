@@ -637,7 +637,8 @@ class SymbolType:
     * rendered) intersects with a given rectangle.
     *
     """
-    def isIntersecting(self, pp, symbol, prevX, x, nextX, prevY, y, nextY, onY2, top, right, bottom, left):
+    def isIntersecting13(self, pp, symbol, prevX, x, nextX, prevY, y,
+                            nextY, onY2, top, right, bottom, left):
 
         xMin = pp.getXMin()
         xMax = pp.getXMax()
@@ -654,17 +655,17 @@ class SymbolType:
         nextXPx = pp.xToPixel(nextX)
         width = symbol.getWidth(pp)
 
-        symWidth = getAdjustedWidth(width, xPx,
-        prevXPx, nextXPx,
-        xMinPx, xMaxPx, xMidPx)
+        symWidth = self.getAdjustedWidth(width, xPx,
+                                        prevXPx, nextXPx,
+                                        xMinPx, xMaxPx, xMidPx)
         if (Double.isNaN(symWidth)):
             return False
 
 
-        xLeft = getUpperLeftX(width, xPx,
-        prevXPx, nextXPx,
-        xMinPx, xMaxPx, xMidPx,
-        pp.getXMousePlotArea())
+        xLeft = self.getUpperLeftX(width, xPx,
+                                    prevXPx, nextXPx,
+                                    xMinPx, xMaxPx, xMidPx,
+                                    pp.getXMousePlotArea())
         if (Double.isNaN(xLeft)):
             return False
 
@@ -700,15 +701,15 @@ class SymbolType:
         height = symbol.getHeight(pp, onY2)
 
         symHeight = getAdjustedHeight(height, yPx,
-        prevYPx, nextYPx, yMinPx, yMaxPx, yMidPx)
+                                prevYPx, nextYPx, yMinPx, yMaxPx, yMidPx)
         if (Double.isNaN(symHeight)):
             return False
 
 
         yTop = getUpperLeftY(height, yPx,
-        prevYPx, nextYPx,
-        yMinPx, yMaxPx, yMidPx,
-        pp.getYMousePlotArea())
+                            prevYPx, nextYPx,
+                            yMinPx, yMaxPx, yMidPx,
+                            pp.getYMousePlotArea())
         if (Double.isNaN(yTop)):
             return False
 
@@ -742,7 +743,8 @@ class SymbolType:
     * their non-rectangular shape).
     *
     """
-    def isIntersecting(self, pp, symbol, iPoint, onY2, xBrush, yBrush, brushWidth, brushHeight):
+    def isIntersecting(self, pp, symbol, iPoint, onY2, xBrush,
+                             yBrush, brushWidth, brushHeight):
 
         c = symbol.getParent()
         p = c.getPoint(iPoint)
@@ -769,7 +771,7 @@ class SymbolType:
         left = symbol.getBrushLocation().getUpperLeftX(xBrush, brushWidth, 0)
         right = left + brushWidth
 
-        result = self.isIntersecting(pp, symbol,
+        result = self.isIntersecting13(pp, symbol,
                                 prevX, x, nextX,
                                 prevY, y, nextY, onY2,
                                 top, right, bottom, left)
@@ -2045,7 +2047,8 @@ class PieSliceSymbolType (SymbolType):
     * half the larger dimension of the point selection brush.
     *
     """
-    def isIntersecting(self, pp, symbol, iPoint, onY2, xBrush, yBrush, brushWidth, brushHeight):
+    def isIntersecting(self, pp, symbol, iPoint, onY2, xBrush, yBrush,
+                             brushWidth, brushHeight):
 
         result = False
         p = symbol.getParent().getPoint(iPoint)
