@@ -493,13 +493,13 @@ class AnnotationRenderingPanel (PartitionedAbsolutePanel):
 
     def endRendering(self):
         # hide or remove labels no longer being used
-        if self.optimizeForMemory:
+        if self.chart.optimizeForMemory:
             iLabel = (self.getWidgetCount()-1)
         else:
             iLabel = self.lastVisibleLabel
         while iLabel >= self.labelIndex:
             w = self.getWidget(iLabel)
-            if self.optimizeForMemory:
+            if self.chart.optimizeForMemory:
                 self.remove(iLabel)
             else:
                 w.setVisible(False)
