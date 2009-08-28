@@ -3500,17 +3500,19 @@ class GChart (Composite):
     # constructs the chart within the chart panel from current specs
     def assembleChart(self):
 
-        if self.chartDecorationsChanged  or  xAxis.limitsChanged()  or  yAxis.limitsChanged()  or  y2Axis.limitsChanged():
+        if (self.chartDecorationsChanged  or self.xAxis.limitsChanged()  or  
+            self.yAxis.limitsChanged()  or  self.y2Axis.limitsChanged()):
+
             self.plotPanel.reset(self.xChartSize, self.yChartSize,
                         self.hasYAxis(), self.hasY2Axis(),
                         self.xAxis, self.yAxis, self.y2Axis)
-            GChartUtil.setFontFamily(self,getFontFamily())
-            GChartUtil.setBackgroundColor(self, getBackgroundColor())
-            GChartUtil.setBorderColor(self, getBorderColor())
-            GChartUtil.setBorderStyle(self,getBorderStyle())
-            GChartUtil.setBorderWidth(self, getBorderWidth())
-            GChartUtil.setPadding(self,getPadding())
-            GChartUtil.setOverflow(self, (getClipToDecoratedChart() and
+            GChartUtil.setFontFamily(self, self.getFontFamily())
+            GChartUtil.setBackgroundColor(self, self.getBackgroundColor())
+            GChartUtil.setBorderColor(self, self.getBorderColor())
+            GChartUtil.setBorderStyle(self,self.getBorderStyle())
+            GChartUtil.setBorderWidth(self, self.getBorderWidth())
+            GChartUtil.setPadding(self, self.getPadding())
+            GChartUtil.setOverflow(self, (self.getClipToDecoratedChart() and
                                         "hidden" or "visible"))
 
             self.setPixelSize(self.plotPanel.getXChartSizeDecoratedQuickly(),
