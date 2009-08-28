@@ -1,6 +1,8 @@
                     Changes made to Pyjamas since 0.6
                     ---------------------------------
 
+ * fixed floating point precision in sprintf, now '%.2f' works
+
  * Added basic implemention of new style decorators and 2.6 style property()
 
  * Added first port of GChart - http://code.google.com/p/gchart.

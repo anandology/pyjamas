@@ -176,6 +176,7 @@ class StringTest(UnitTest):
         self.assertEqual("[%e]" % 11, "[1.100000e+01]")
         self.assertEqual("[%E]" % 11, "[1.100000E+01]")
         self.assertEqual("[%f]" % 11, "[11.000000]")
+        self.assertEqual("[%.2f]" % 11, "[11.00]")
         self.assertEqual("[%F]" % 11, "[11.000000]")
         self.assertEqual("[%g]" % 11, "[11]")
         self.assertEqual("[%G]" % 11, "[11]")

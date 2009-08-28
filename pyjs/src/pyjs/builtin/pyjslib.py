@@ -1793,7 +1793,7 @@ def sprintf(strng, args):
         if not precision:
             precision = None
         else:
-            precision = int(precision)
+            precision = int(precision[1:])
         left_padding = 1
         if flags.find('-') >= 0:
             left_padding = 0
