@@ -914,7 +914,7 @@ class GraphicsRenderingPanel (AbsolutePanel):
                 self.canvasPanel.setWidgetPosition( canvas, x0, y0)
 
 
-        imageIndex = 0
+        self.imageIndex = 0
 
     # Tells panel you are done drawing on it, and
     # it's OK to do any cleanup/bookkeeping needed.
@@ -923,27 +923,27 @@ class GraphicsRenderingPanel (AbsolutePanel):
         if optimizeForMemory:
             iImage = (self.getWidgetCount()-1)
         else:
-            iImage = lastVisibleImage
-        while iImage >= imageIndex:
-            w = imagePanel.getWidget(iImage)
+            iImage = self.lastVisibleImage
+        while iImage >= self.imageIndex:
+            w = self.imagePanel.getWidget(iImage)
             if optimizeForMemory:
-                imagePanel.remove(iImage)
+                self.imagePanel.remove(iImage)
             else:
                 DOM.setStyleAttribute(w.getElement(), "visibility", "hidden")
                 # setVisible unreliable w Images in IE as shown in TestGChart41a.java
                 # w.setVisible(False)
             iImage -= 1
 
-        lastVisibleImage = imageIndex - 1
+        self.lastVisibleImage = self.imageIndex - 1
 
 
     """ Speedier, reusable, rendering-panel-managed images. In effect,
     turns image panel into a specialized memory manager. """
     def addOrRevealImage(self, backgroundColor, borderColor, borderStyle, borderWidth, width, height, x, y, url):
-        if imageIndex < imagePanel.getWidgetCount():
+        if self.imageIndex < self.imagePanel.getWidgetCount():
             # reuse an old image
-            img = imagePanel.getWidget(imageIndex)
-            if imageIndex > lastVisibleImage:
+            img = self.imagePanel.getWidget(self.imageIndex)
+            if self.imageIndex > self.lastVisibleImage:
                 # "" visibility means "visible whenever the parent is visible"
                 DOM.setStyleAttribute(img.getElement(), "visibility", "")
                 # setVisible unreliable for Images in IE as shown in TestGChart41a.java
@@ -953,7 +953,7 @@ class GraphicsRenderingPanel (AbsolutePanel):
         else:
             # add a image
             img = ReusableImage()
-            imagePanel.add(img)
+            self.imagePanel.add(img)
 
 
         img.setReusableProperties(backgroundColor,
@@ -964,9 +964,9 @@ class GraphicsRenderingPanel (AbsolutePanel):
                                     height,
                                     x, y, url)
 
-        lastVisibleImage = min(lastVisibleImage, imageIndex)
+        self.lastVisibleImage = min(self.lastVisibleImage, self.imageIndex)
 
-        imageIndex -= 1
+        self.imageIndex -= 1
 
 
     def renderBorderedImage(self, backgroundColor, borderColor, borderStyle, borderWidth, width, height, x, y, url):
@@ -988,7 +988,7 @@ class GraphicsRenderingPanel (AbsolutePanel):
 
         else { # use an actual image HTML element
         """
-        addOrRevealImage(backgroundColor,
+        self.addOrRevealImage(backgroundColor,
                             borderColor,
                             borderStyle,
                             borderWidth,
