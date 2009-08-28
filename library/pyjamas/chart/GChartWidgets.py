@@ -62,6 +62,7 @@ from pyjamas.ui.UIObject import UIObject
 from pyjamas.ui.Widget import Widget
 
 from GChartConsts import N_PRE_SYSTEM_CURVES
+from GChartConsts import TRANSPARENT_BORDER_COLOR
 
 import GChart
 import Double
@@ -205,7 +206,7 @@ class PartitionedAbsolutePanel (Composite):
             self.subPanel.setPixelSize(0,0)
             self.root.add(self.subPanel, 0, 0)
 
-        selectSubPanel(self.nWidgets)
+        self.selectSubPanel(self.nWidgets)
         self.subPanel.add(w)
         self.nWidgets += 1
 
@@ -688,7 +689,7 @@ class ReusableImage (Image):
             newW -= newCappedBorderWidthX2; # impact of internal border.
 
 
-        if cappedBorderWidthX2 != newCappedBorderWidthX2:
+        if self.cappedBorderWidthX2 != newCappedBorderWidthX2:
             if 1 == (newCappedBorderWidthX2 % 2):
                 # odd pixel 2 x borderWidth needs asymetical borders to fill rect
                 # (only positive (internal) borders can have half-pixel widths)
@@ -696,16 +697,16 @@ class ReusableImage (Image):
                 ceilBW = floorBW+1
                 # (top, right, bottom, left) == (floor, floor, ceil, ceil)
                 # assures symbol is odd-pixel border-filled in all cases
-                DOM.setStyleAttribute(getElement(),
-                "borderWidth",
-                floorBW+"px "+floorBW+"px "+
-                ceilBW+"px " + ceilBW+"px ")
+                DOM.setStyleAttribute(self.getElement(),
+                                "borderWidth",
+                                floorBW+"px "+floorBW+"px "+
+                                ceilBW+"px " + ceilBW+"px ")
 
             else:
                 DOM.setStyleAttribute(getElement(),
                 "borderWidth", abs(newCappedBorderWidthX2/2)+"px")
 
-            cappedBorderWidthX2 = newCappedBorderWidthX2
+            self.cappedBorderWidthX2 = newCappedBorderWidthX2
 
 
         if GChart.NAI == self.x:
