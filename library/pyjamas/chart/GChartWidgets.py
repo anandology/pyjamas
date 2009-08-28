@@ -620,7 +620,8 @@ class AnnotationRenderingPanel (PartitionedAbsolutePanel):
 *
 """
 class ReusableImage (Image):
-    def __init__(self):
+    def __init__(self, parent):
+        self._parent = parent
         self.backgroundColor = GChart.USE_CSS
         self.borderColor = GChart.USE_CSS
         self.borderStyle= GChart.USE_CSS
@@ -693,18 +694,18 @@ class ReusableImage (Image):
             if 1 == (newCappedBorderWidthX2 % 2):
                 # odd pixel 2 x borderWidth needs asymetical borders to fill rect
                 # (only positive (internal) borders can have half-pixel widths)
-                floorBW = newCappedBorderWidthX2/2
+                floorBW = int(newCappedBorderWidthX2/2)
                 ceilBW = floorBW+1
                 # (top, right, bottom, left) == (floor, floor, ceil, ceil)
                 # assures symbol is odd-pixel border-filled in all cases
                 DOM.setStyleAttribute(self.getElement(),
                                 "borderWidth",
-                                floorBW+"px "+floorBW+"px "+
-                                ceilBW+"px " + ceilBW+"px ")
+                                str(floorBW)+"px "+str(floorBW)+"px "+
+                                str(ceilBW)+"px " + str(ceilBW)+"px ")
 
             else:
                 DOM.setStyleAttribute(self.getElement(),
-                "borderWidth", abs(newCappedBorderWidthX2/2)+"px")
+                "borderWidth", str(abs(newCappedBorderWidthX2/2))+"px")
 
             self.cappedBorderWidthX2 = newCappedBorderWidthX2
 
@@ -713,7 +714,7 @@ class ReusableImage (Image):
             # At first, use AbsolutePanel's official API
             # (to insulate us from any future AbsolutePanel
             # changes)
-            self.setImagePosition(self, newX, newY)
+            self._parent.setImagePosition(self, newX, newY)
             self.x = newX
             self.y = newY
 
@@ -721,27 +722,27 @@ class ReusableImage (Image):
             # for speed, just set the edge positions that changed
             # (works, but bypasses AbsolutePanel's official API)
             if self.x != newX:
-                DOM.setStyleAttribute(self.getElement(),"left", newX+"px")
+                DOM.setStyleAttribute(self.getElement(),"left", str(newX)+"px")
                 self.x = newX
 
             if self.y != newY:
-                DOM.setStyleAttribute(self.getElement(),"top", newY+"px")
+                DOM.setStyleAttribute(self.getElement(),"top", str(newY)+"px")
                 self.y = newY
 
 
 
         if self.width != newW:
-            setWidth(newW + "px")
+            self.setWidth(str(newW)+ "px")
             self.width = newW
 
         if self.height != newH:
-            setHeight(newH + "px")
+            self.setHeight(str(newH)+ "px")
             self.height = newH
 
 
         if self.backgroundColor != backgroundColor:
             DOM.setStyleAttribute(self.getElement(), "backgroundColor",
-            backgroundColor)
+                                    backgroundColor)
             self.backgroundColor =backgroundColor
 
         if self.borderColor != borderColor:
@@ -749,8 +750,7 @@ class ReusableImage (Image):
             self.borderColor = borderColor
 
         if self.borderStyle != borderStyle:
-            DOM.setStyleAttribute(self.getElement(), "borderStyle",
-            borderStyle)
+            DOM.setStyleAttribute(self.getElement(), "borderStyle", borderStyle)
             self.borderStyle = borderStyle
 
 
@@ -776,7 +776,7 @@ class ReusableImage (Image):
             * find two lines that, if uncommented, make the leak reappear.
             *
             """
-            setUrl(url)
+            self.setUrl(url)
             self.url = url
 
 
@@ -953,7 +953,7 @@ class GraphicsRenderingPanel (AbsolutePanel):
 
         else:
             # add a image
-            img = ReusableImage()
+            img = ReusableImage(self)
             self.imagePanel.add(img)
 
 

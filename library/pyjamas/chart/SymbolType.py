@@ -2627,29 +2627,28 @@ class AnnotationAnchor (SymbolType):
     # coordinates, based on the location defined in the
     # constructor.
     def getUpperLeftX(self, width, x, xPrev, xNext, xMin, xMax, xMid, xMouse):
-        result
-        if AnnotationLocation.AT_THE_MOUSE == location:
+        if AnnotationLocation.AT_THE_MOUSE == self.location:
             if (GChart.NAI == xMouse):
                 result = Double.NaN
             else:
                 result = xMouse
 
-        elif AnnotationLocation.AT_THE_MOUSE_SNAP_TO_X == location:
+        elif AnnotationLocation.AT_THE_MOUSE_SNAP_TO_X == self.location:
             if (GChart.NAI == xMouse):
                 result = Double.NaN
             else:
                 result = x
 
-        elif AnnotationLocation.AT_THE_MOUSE_SNAP_TO_Y == location:
+        elif AnnotationLocation.AT_THE_MOUSE_SNAP_TO_Y == self.location:
             if (GChart.NAI == xMouse):
                 result = Double.NaN
             else:
                 result = xMouse
 
-        elif AnnotationLocation.NORTHWEST == location  or  AnnotationLocation.WEST == location  or  AnnotationLocation.SOUTHWEST == location:
+        elif AnnotationLocation.NORTHWEST == self.location  or  AnnotationLocation.WEST == self.location  or  AnnotationLocation.SOUTHWEST == self.location:
             result = xMin
 
-        elif AnnotationLocation.NORTHEAST == location  or  AnnotationLocation.EAST == location  or  AnnotationLocation.SOUTHEAST == location:
+        elif AnnotationLocation.NORTHEAST == self.location  or  AnnotationLocation.EAST == self.location  or  AnnotationLocation.SOUTHEAST == self.location:
             result = xMax
 
         else:
@@ -2661,29 +2660,28 @@ class AnnotationAnchor (SymbolType):
 
 
     def getUpperLeftY(self, height, y, yPrev, yNext, yMin, yMax, yMid, yMouse):
-        result
-        if AnnotationLocation.AT_THE_MOUSE == location:
+        if AnnotationLocation.AT_THE_MOUSE == self.location:
             if (GChart.NAI == yMouse):
                 result = Double.NaN
             else:
                 result = yMouse
 
-        elif AnnotationLocation.AT_THE_MOUSE_SNAP_TO_X == location:
+        elif AnnotationLocation.AT_THE_MOUSE_SNAP_TO_X == self.location:
             if (GChart.NAI == yMouse):
                 result = Double.NaN
             else:
                 result = yMouse
 
-        elif AnnotationLocation.AT_THE_MOUSE_SNAP_TO_Y == location:
+        elif AnnotationLocation.AT_THE_MOUSE_SNAP_TO_Y == self.location:
             if (GChart.NAI == yMouse):
                 result = Double.NaN
             else:
                 result = y
 
-        elif AnnotationLocation.NORTHWEST == location  or  AnnotationLocation.NORTH == location  or  AnnotationLocation.NORTHEAST == location:
+        elif AnnotationLocation.NORTHWEST == self.location  or  AnnotationLocation.NORTH == self.location  or  AnnotationLocation.NORTHEAST == self.location:
             result = yMin
 
-        elif AnnotationLocation.SOUTHWEST == location  or  AnnotationLocation.SOUTH == location  or  AnnotationLocation.SOUTHEAST == location:
+        elif AnnotationLocation.SOUTHWEST == self.location  or  AnnotationLocation.SOUTH == self.location  or  AnnotationLocation.SOUTHEAST == self.location:
             result = yMax
 
         else:

@@ -184,7 +184,7 @@ class Annotation:
         self.widget = widget
     
     def getWidget(self):
-        return widget
+        return self.widget
     
     
     def setXShift(self, xShift):
