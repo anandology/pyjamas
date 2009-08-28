@@ -823,8 +823,8 @@ class SymbolType:
         if symBorderFraction > 0:
             result = int( max(1.0, floor(
                                     symBorderFraction * min(
-                                    getIconWidth(legendFontSize),
-                                    getIconHeight(legendFontSize)))))
+                                    self.getIconWidth(legendFontSize),
+                                    self.getIconHeight(legendFontSize)))))
 
         return result
 
@@ -838,14 +838,14 @@ class SymbolType:
 
 
     def getUpperLeftX(self, width, x, xPrev, xNext, xMin, xMax, xMid, xMouse):
-        adjWidth = getAdjustedWidth(width, x,
+        adjWidth = self.getAdjustedWidth(width, x,
                                     xPrev, xNext, xMin, xMax, xMid)
         result = x + (0.5*(widthMultiplier - 1)) * adjWidth
         return result
 
 
     def getUpperLeftY(self, height, y, yPrev, yNext, yMin, yMax, yMid, yMouse):
-        adjHeight = getAdjustedHeight(height, y,
+        adjHeight = self.getAdjustedHeight(height, y,
                                       yPrev, yNext, yMin, yMax, yMid)
         result = y + (0.5*(heightMultiplier - 1)) * adjHeight
         return result
@@ -941,10 +941,10 @@ class SymbolType:
     # creates small image of symbol (used in the chart legend).
     def createIconImage(self, symbol, legendFontSize, symBorderFraction):
         result = createImage(symbol,
-                            getIconWidth(legendFontSize),
-                            getIconHeight(legendFontSize),
-                            getIconBorderWidth(legendFontSize,
-                            symBorderFraction),
+                            self.getIconWidth(legendFontSize),
+                            self.getIconHeight(legendFontSize),
+                            self.getIconBorderWidth(legendFontSize,
+                                            symBorderFraction),
                             symbol.getImageURL())
         return result
 
