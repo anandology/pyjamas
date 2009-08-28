@@ -23,6 +23,8 @@ from Point import Point
 from Symbol import Symbol
 
 from GChartConsts import Y2_AXIS
+from GChartConsts import N_PRE_SYSTEM_CURVES
+
 
 """*
 * Represents a curve on a chart, which includes
