@@ -21,51 +21,13 @@
 
 
 from pyjamas import DOM
-from pyjamas import Window
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-from pyjamas.ui import Event
-from pyjamas.ui.AbsolutePanel import AbsolutePanel
-from pyjamas.ui.Composite import Composite
-from pyjamas.ui.Grid import Grid
-from pyjamas.ui import HasHorizontalAlignment
-from pyjamas.ui import HasVerticalAlignment
-from pyjamas.ui.HTML import HTML
-from pyjamas.ui.Image import Image
-from pyjamas.ui.SimplePanel import SimplePanel
-from pyjamas.ui.UIObject import UIObject
-from pyjamas.ui.Widget import Widget
 
 # XXX HACK!  recursive includes avoidance...
 NAI = 2 ** 31
 
 
 import AnnotationLocation
+import SymbolType
 
 """*
 * Convenience method that, given a plain text label, returns an

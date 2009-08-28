@@ -64,6 +64,7 @@ from pyjamas.ui.Widget import Widget
 
 
 import AnnotationLocation
+import GChartUtil
 from GChartUtil import validateMultipliers
 
 import GChartConsts
@@ -910,7 +911,7 @@ class SymbolType:
         # tables on the legend key, where they are always centered, so
         # that doesn't matter.
 
-        if TRANSPARENT_BORDER_COLOR == borderColor:
+        if GChartConsts.TRANSPARENT_BORDER_COLOR == borderColor:
             #transparency emulation
             if cappedBW > 0:
                 # to emulate an internal transparent border using a 0 width
@@ -922,7 +923,7 @@ class SymbolType:
             # else, external border is just eliminated, no adjustment needed
             cappedBW = 0
             borderColor = "transparent"
-            if TRANSPARENT_BORDER_COLOR == backgroundColor:
+            if GChartConsts.TRANSPARENT_BORDER_COLOR == backgroundColor:
                 backgroundColor = "transparent"
 
 
@@ -930,17 +931,16 @@ class SymbolType:
             height -= 2*cappedBW; # shrink size to incorporate
             width -= 2*cappedBW; # impact of internal border.
 
-        GChart.setBackgroundColor(result, backgroundColor)
-        GChart.setBorderColor(result, borderColor)
-        GChart.setBorderStyle(result, symbol.getBorderStyle())
-        GChart.setBorderWidth(result, abs(cappedBW))
-        result.setPixelSize(int(round(width)),
-                            int(round(height)))
+        GChartUtil.setBackgroundColor(result, backgroundColor)
+        GChartUtil.setBorderColor(result, borderColor)
+        GChartUtil.setBorderStyle(result, symbol.getBorderStyle())
+        GChartUtil.setBorderWidth(result, abs(cappedBW))
+        result.setPixelSize(int(round(width)), int(round(height)))
         return result
 
     # creates small image of symbol (used in the chart legend).
     def createIconImage(self, symbol, legendFontSize, symBorderFraction):
-        result = createImage(symbol,
+        result = self.createImage(symbol,
                             self.getIconWidth(legendFontSize),
                             self.getIconHeight(legendFontSize),
                             self.getIconBorderWidth(legendFontSize,
@@ -962,7 +962,7 @@ class SymbolType:
     # top/bottom can be interchanged and it still works)
     def intersects(self, left1, top1, right1, bottom1, left2, top2, right2, bottom2):
         result = True
-        if areDisjointRanges(left1, right1, left2, right2)  or  areDisjointRanges(top1, bottom1, top2, bottom2):
+        if self.areDisjointRanges(left1, right1, left2, right2)  or  self.areDisjointRanges(top1, bottom1, top2, bottom2):
             result = False
 
         return result

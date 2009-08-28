@@ -95,7 +95,7 @@ import TouchedPointUpdateOption
 from Curve import Curve
 import GChartUtil 
 from GChartUtil import formatAsHovertext, YAxisId, setOverflow
-from GChartUtil import htmlHeight, htmlWidth
+from GChartUtil import htmlHeight, htmlWidth, isMouseAnchored
 from GChartWidgets import PlotPanel
 import GChartWidgets 
 
@@ -3560,10 +3560,10 @@ class GChart (Composite):
             GChartUtil.setBorderWidth(result, 0)
             GChartUtil.setBorderColor(result, "transparent")
         else:
-            GChartUtil.setBorderWidth(result, abs(getLegendBorderWidth()))
-            GChartUtil.setBorderColor(result, getLegendBorderColor())
-        GChartUtil.setBorderStyle(result, getLegendBorderStyle())
-        GChartUtil.setBackgroundColor(result, getLegendBackgroundColor())
+            GChartUtil.setBorderWidth(result, abs(self.getLegendBorderWidth()))
+            GChartUtil.setBorderColor(result, self.getLegendBorderColor())
+        GChartUtil.setBorderStyle(result, self.getLegendBorderStyle())
+        GChartUtil.setBackgroundColor(result, self.getLegendBackgroundColor())
         nCurves = self.getNCurves()
         for i in range(nCurves):
             c = self.getSystemCurve(i)
@@ -3574,7 +3574,7 @@ class GChart (Composite):
                                 max(c.getSymbol().getWidth(pp),
                                 c.getSymbol().getHeight(pp, c.onY2()))))
                 icon = c.getSymbol().getSymbolType().createIconImage(
-                                        c.getSymbol(), getLegendFontSize(),
+                                        c.getSymbol(), self.getLegendFontSize(),
                                         symBorderFraction)
 
                 result.setWidget(iVisible, 0, icon)
@@ -3583,10 +3583,10 @@ class GChart (Composite):
                                         HasVerticalAlignment.ALIGN_MIDDLE)
 
                 label = HTML(c.getLegendLabel())
-                GChartUtil.setFontWeight(label, getLegendFontWeight())
-                GChartUtil.setFontStyle(label, getLegendFontStyle())
-                GChartUtil.setColor(label, getLegendFontColor())
-                GChartUtil.setFontSize(label, getLegendFontSize())
+                GChartUtil.setFontWeight(label, self.getLegendFontWeight())
+                GChartUtil.setFontStyle(label, self.getLegendFontStyle())
+                GChartUtil.setColor(label, self.getLegendFontColor())
+                GChartUtil.setFontSize(label, self.getLegendFontSize())
 
                 result.setWidget(iVisible, 1, label)
                 result.getCellFormatter().setAlignment(iVisible, 1,
@@ -3672,7 +3672,7 @@ class GChart (Composite):
                 # position follows the mouse (and thus has no fixed location
                 # suitable for banding) and 3) at least one kind of hover feedback
                 # is being provided for the curve.
-                if self.getCurveIndex(c) >= 0  and  not self.isMouseAnchored(c.getSymbol().getSymbolType())  and  (c.getSymbol().getHoverSelectionEnabled()  or  c.getSymbol().getHoverAnnotationEnabled()):
+                if self.getCurveIndex(c) >= 0  and  not isMouseAnchored(c.getSymbol().getSymbolType())  and  (c.getSymbol().getHoverSelectionEnabled()  or  c.getSymbol().getHoverAnnotationEnabled()):
                     c.bandSeparatePoints()
 
                 else:

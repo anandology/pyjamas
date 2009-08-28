@@ -67,6 +67,7 @@ from GChartConsts import HOVER_ANNOTATION_ID
 from GChartConsts import HOVER_CURSOR_ID
 
 import GChart
+import GChartUtil
 import Double
 
 """
@@ -1077,14 +1078,14 @@ class PlotPanel (AbsolutePanel):
         w = GraphicsRenderingPanel(self.chart)
         if (DECORATIVE_RENDERING_PANEL_INDEX == rpIndex  or  
             self.chart.isHoverFeedbackRenderingPanel(rpIndex)  or  
-            not self.getClipToPlotArea()):
+            not self.chart.getClipToPlotArea()):
             # chart decorations and hover feedback are never clipped
             w.setPixelSize(0, 0)
-            GChart.setOverflow(w, "visible")
+            GChartUtil.setOverflow(w, "visible")
 
         else:
             w.setPixelSize(getXChartSize(), getYChartSize())
-            GChart.setOverflow(w, "hidden")
+            GChartUtil.setOverflow(w, "hidden")
 
         # XXX TODO: investigate what the meaning of domInsert is about
         self.graphicsPanel.insert(w, self.graphicsPanel.getElement(), rpIndex)
