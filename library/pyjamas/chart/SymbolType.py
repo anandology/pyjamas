@@ -1162,14 +1162,14 @@ class SymbolType:
                    "transparent" != borderColor)  or
                    (TRANSPARENT_BORDER_COLOR != backgroundColor  and
                    "transparent" != backgroundColor))):
-                    if prevX != prevX  or  prevY != prevY:
+                    if Double.isNaN(prevX)  or  Double.isNaN(prevY):
                         # first defined point after an undefined point ==> path
                         # (need to draw zero-thickness lines for possible line
                         # endings user may have defined by overriding beginPath)
                         canvas.beginPath()
                         canvas.moveTo(xPx - grp.x0, yPx - grp.y0)
 
-                    if nextX!=nextX  or  nextY!=nextY:
+                    if Double.isNaN(nextX)  or  Double.isNaN(nextY):
                         # last defined point before undefined point ==> draw accumulated path
                         if (TRANSPARENT_BORDER_COLOR != borderColor  and
                            "transparent" != borderColor  and
@@ -1213,7 +1213,7 @@ class SymbolType:
                 """
                 closeStrokeAndFill = False
                 if False == self.horizontallyBanded:
-                    if prevX != prevX  or  prevY != prevY:
+                    if Double.isNaN(prevX)  or  Double.isNaN(prevY):
                         # 1st point, or 1st point after a break in the line
                         oppositeEdge = getEdgeOppositeVertically(
                         pp, symbol, y, onY2)
@@ -1221,7 +1221,7 @@ class SymbolType:
                         canvas.moveTo(xPx - grp.x0, oppositeEdge - grp.y0)
                         canvas.lineTo(xPx - grp.x0, yPx - grp.y0)
 
-                    if nextX!=nextX  or  nextY!=nextY:
+                    if Double.isNaN(nextX)  or  Double.isNaN(nextY):
                         # last point, or last point before a break in the line
                         canvas.lineTo(xPx - grp.x0, oppositeEdge - grp.y0)
                         closeStrokeAndFill = True
@@ -1232,7 +1232,7 @@ class SymbolType:
 
                 else:
 
-                    if prevX != prevX  or  prevY != prevY:
+                    if Double.isNaN(prevX)  or  Double.isNaN(prevY):
                         # 1st point, or 1st point after a break in the line
                         oppositeEdge = getEdgeOppositeHorizontally(
                         pp, symbol, x, onY2)
@@ -1240,7 +1240,7 @@ class SymbolType:
                         canvas.moveTo(oppositeEdge - grp.x0, yPx - grp.y0)
                         canvas.lineTo(xPx - grp.x0, yPx - grp.y0)
 
-                    if nextX!=nextX  or  nextY!=nextY:
+                    if Double.isNaN(nextX)  or  Double.isNaN(nextY):
                         # last point, or last point before a break in the line
                         canvas.lineTo(oppositeEdge - grp.x0, yPx - grp.y0)
                         closeStrokeAndFill = True
