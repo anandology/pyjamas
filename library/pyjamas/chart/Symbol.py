@@ -839,17 +839,6 @@ class Symbol(object):
     
     
     """*
-    ** Returns this symbol's height, as previously set by
-    ** <tt>setHeight</tt>.
-    **
-    ** @return the previously set symbol height, in pixels.
-    **
-    ** @see #setHeight setHeight
-    """
-    def getHeight(self):
-        return self.height
-    
-    """*
     ** Returns this symbol's height as previously set by
     ** <tt>setModelHeight</tt>.
     **
@@ -889,28 +878,6 @@ class Symbol(object):
     *"""
     def getSymbolType(self):
         return self.symbolType
-    
-    """*
-    ** Returns this symbol's width
-    ** as previously set by <tt>setWidth</tt>.
-    ** <p>
-    **
-    ** <i>Warning:</i> This method won't return the correct
-    ** pixel width associated with a <tt>setModelWidth</tt>
-    ** setting, as you might have expected.  It only returns
-    ** the pixel width you last explicitly specified via
-    ** <tt>setWidth</tt>.
-    **
-    ** <p>
-    **
-    ** @return the previously set symbol width, in pixels
-    **
-    ** @see #setWidth setWidth
-    ** @see #setModelWidth setModelWidth
-    """
-    def getWidth(self):
-        return self.width
-    
     
     """
     * Do points on the curve associated with this symbol
@@ -2450,13 +2417,25 @@ class Symbol(object):
         return annotation
     
     
+    """*
+    ** Returns this symbol's height, as previously set by
+    ** <tt>setHeight</tt>.
+    **
+    ** @return the previously set symbol height, in pixels.
+    **
+    ** @see #setHeight setHeight
+    """
+    
     # Pixel height of symbol when rendered on given plot panel
-    def getHeight(self, pp, onY2):
+    def getHeight(self, pp=None, onY2=None):
         
-        mH = getModelHeight()
+        if pp is None and onY2 is None:
+            return self.height
+
+        mH = self.getModelHeight()
         if (Double.isNaN(mH)):
             # x!=x is a faster isNaN
-            result = getHeight()
+            result = self.getHeight()
         
         else:
             result = pp.dyToPixel(mH,onY2)
@@ -2464,13 +2443,36 @@ class Symbol(object):
         
         return result
     
+    """*
+    ** Returns this symbol's width
+    ** as previously set by <tt>setWidth</tt>.
+    ** <p>
+    **
+    ** <i>Warning:</i> This method won't return the correct
+    ** pixel width associated with a <tt>setModelWidth</tt>
+    ** setting, as you might have expected.  It only returns
+    ** the pixel width you last explicitly specified via
+    ** <tt>setWidth</tt>.
+    **
+    ** <p>
+    **
+    ** @return the previously set symbol width, in pixels
+    **
+    ** @see #setWidth setWidth
+    ** @see #setModelWidth setModelWidth
+    """
+    
+    
     # Pixel width of symbol when rendered on given plot panel
-    def getWidth(self, pp):
+    def getWidth(self, pp=None):
         
-        mW = getModelWidth()
+        if pp is None:
+            return self.width
+
+        mW = self.getModelWidth()
         if (Double.isNaN(mW)):
             # x!=x is a faster isNaN
-            result = getWidth()
+            result = self.getWidth()
         
         else:
             result = pp.dxToPixel(mW)
@@ -2493,14 +2495,14 @@ class Symbol(object):
                             drawMainSymbol, x, y, prevX, prevY,
                             nextX, nextY):
         self.getSymbolType().realizeSymbol(pp, grp, arp, self, annotation,
-        onY2,
-        clipPlotArea,
-        clipDecoratedChart,
-        drawMainSymbol,
-        x, y,
-        prevX, prevY, nextX, nextY)
-        
-    
+                                            onY2,
+                                            clipPlotArea,
+                                            clipDecoratedChart,
+                                            drawMainSymbol,
+                                            x, y,
+                                            prevX, prevY, nextX, nextY)
+                                            
+                                        
     
     
     
