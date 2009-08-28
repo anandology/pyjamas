@@ -1799,10 +1799,10 @@ class PlotPanel (AbsolutePanel):
         * to using this workaround.
         *
         """
-        y = Window.getScrollTop() + repairBadClientY(clientY)
+        y = Window.getScrollTop() + self.repairBadClientY(clientY)
         absTop = container.getAbsoluteTop()
         if absTop < y  and  y+1 < absTop + container.getOffsetHeight():
-            x = Window.getScrollLeft() + repairBadClientX(clientX)
+            x = Window.getScrollLeft() + self.repairBadClientX(clientX)
             absLeft = container.getAbsoluteLeft()
             if absLeft < x  and  x+1 < absLeft + container.getOffsetWidth():
                 result = True
@@ -1817,22 +1817,22 @@ class PlotPanel (AbsolutePanel):
     # or if retouch is True. Returns True if a touch occured.
     def touchObjectAtMousePosition(self, retouch):
         result = False
-        pointAtPosition = getClosestBrushTouchingPointNoCheck(
-        getXMousePlotArea(), getYMousePlotArea())
+        pointAtPosition = self.getClosestBrushTouchingPointNoCheck(
+                            self.getXMousePlotArea(), self.getYMousePlotArea())
         if (pointAtPosition != self.touchedPoint)  or  retouch:
-            touch(pointAtPosition)
+            self.touch(pointAtPosition)
             result = True
 
         return result
 
     # touch object at mouse, but only if it is a different one
     def touchObjectAtMousePosition(self):
-        result = touchObjectAtMousePosition(False)
+        result = self.touchObjectAtMousePosition(False)
         return result
 
     # touch object at mouse, even if it is the same one as last time
     def retouchObjectAtMousePosition(self):
-        touchObjectAtMousePosition(True)
+        self.touchObjectAtMousePosition(True)
 
 
     """
@@ -1854,12 +1854,12 @@ class PlotPanel (AbsolutePanel):
     """
     def isOverOpenedHoverAnnotation(self, event):
         result = False
-        hoverElement = getOpenedHoverElement()
+        hoverElement = self.getOpenedHoverElement()
         if None != hoverElement:
-            if isContainedIn(hoverElement, event.getEventTarget()):
+            if self.isContainedIn(hoverElement, event.getEventTarget()):
                 result = True
 
-            elif isGeometricallyContainedIn(hoverElement, event.getClientX(), event.getClientY()):
+            elif self.isGeometricallyContainedIn(hoverElement, event.getClientX(), event.getClientY()):
                 result = True
 
 
@@ -2032,7 +2032,7 @@ class PlotPanel (AbsolutePanel):
         * and a point that moves under the mouse due to an update
         * can generate a mouseover without a MOUSEMOVE """
         isClick = (Event.ONCLICK == eventId)
-        if (Event.ONMOUSEMOVE == eventId  or  Event.ONMOUSEOVER == eventId  or  isClick)  and  not isOverOpenedHoverAnnotation(event):
+        if (Event.ONMOUSEMOVE == eventId  or  Event.ONMOUSEOVER == eventId  or  isClick)  and  not self.isOverOpenedHoverAnnotation(event):
             # remember last "tracked" mouse location
             """
             if Event.ONCLICK == eventId:
@@ -2050,23 +2050,23 @@ class PlotPanel (AbsolutePanel):
                 " event.getTarget()=" + event.getTarget())
 
             """
-            if getHoverTouchingEnabled()  or  isClick:
-                setClientX(event.getClientX(), isClick)
-                setClientY(event.getClientY(), isClick)
-                if not isUpdateNeeded()  and  touchObjectAtMousePosition(isClick):
-                    assembleChart()
+            if self.getHoverTouchingEnabled()  or  isClick:
+                self.setClientX(event.getClientX(), isClick)
+                self.setClientY(event.getClientY(), isClick)
+                if not self.isUpdateNeeded()  and  self.touchObjectAtMousePosition(isClick):
+                    self.assembleChart()
 
 
 
-        elif Event.ONMOUSEOUT == eventId  and  getHoverTouchingEnabled()  and  takesUsCompletelyOutsideChart(event):
+        elif Event.ONMOUSEOUT == eventId  and  self.getHoverTouchingEnabled()  and  self.takesUsCompletelyOutsideChart(event):
             #                Window.alert("MOUSEOUT: event.getClientX()=" + event.getClientX() +
             #                             " event.getClientY()=" + event.getClientY() +
             #                             " event.getCurrentTarget()="+event.getCurrentTarget() +
             #                             " event.getTarget()=" + event.getTarget())
-            setClientX(GChart.NAI, False); # mouse not over chart,
-            setClientY(GChart.NAI, False); # so position is undefined
-            if not isUpdateNeeded()  and  touchObjectAtMousePosition():
-                assembleChart()
+            self.setClientX(GChart.NAI, False); # mouse not over chart,
+            self.setClientY(GChart.NAI, False); # so position is undefined
+            if not self.isUpdateNeeded()  and  self.touchObjectAtMousePosition():
+                self.assembleChart()
 
 
 
@@ -2097,27 +2097,27 @@ class PlotPanel (AbsolutePanel):
         return result
 
     def getXChartSize(self):
-        return xChartSize
+        return self.xChartSize
 
 
     def getYChartSize(self):
-        return yChartSize
+        return self.yChartSize
 
     # quickly returns decorated xChartsize as of the last plotPanel.reset
     def getXChartSizeDecoratedQuickly(self):
-        result = (xChartSize +
-                    yAxisEnsembleWidth +
-                    y2AxisEnsembleWidth +
-                    chartLegendThickness)
+        result = (self.xChartSize +
+                    self.yAxisEnsembleWidth +
+                    self.y2AxisEnsembleWidth +
+                    self.chartLegendThickness)
         return result
 
 
     # quickly returns decorated yChartsize as of the last plotPanel.reset
     def getYChartSizeDecoratedQuickly(self):
-        result = (yChartSize +
-                    xAxisEnsembleHeight +
-                    topMargin +
-                    chartFootnotesThickness)
+        result = (self.yChartSize +
+                    self.xAxisEnsembleHeight +
+                    self.topMargin +
+                    self.chartFootnotesThickness)
         return result
 
 
