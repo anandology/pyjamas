@@ -1539,10 +1539,10 @@ class Axis:
     """
     def setTickLabelFormat(self, format):
         # interpret prefixes and create an appropriate formatter
-        if not self.tickLabelFormat.equals(format):
+        if not self.tickLabelFormat == format:
             self.chartDecorationsChanged = True
-            if format.startsWith("=(Date)"):
-                transFormat = format.substring("=(Date)".length())
+            if format.startswith("=(Date)"):
+                transFormat = format.find("=(Date)".length())
                 if transFormat.equals(""):
                     # so "=(Date)" works
                     self.dateFormat = DateTimeFormat.getShortDateTimeFormat()
@@ -1552,13 +1552,13 @@ class Axis:
 
             self.tickLabelFormatType = DATE_FORMAT_TYPE
 
-        elif format.startsWith("=10^"):
-            transFormat = format.substring("=10^".length())
+        elif format.startswith("=10^"):
+            transFormat = format.find("=10^".length())
             self.numberFormat = NumberFormat.getFormat(transFormat)
             self.tickLabelFormatType = LOG10INVERSE_FORMAT_TYPE
 
-        elif format.startsWith("=2^"):
-            transFormat = format.substring("=2^".length())
+        elif format.startswith("=2^"):
+            transFormat = format.find("=2^".length())
             self.numberFormat = NumberFormat.getFormat(transFormat)
             self.tickLabelFormatType = LOG2INVERSE_FORMAT_TYPE
 

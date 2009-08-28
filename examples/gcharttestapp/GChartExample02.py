@@ -32,8 +32,8 @@ class GChartExample02(GChart):
                     "Simulated Quarterly Revenues" +
                     "</big></big><br>&nbsp;</b>")
         self.updateButton.addClickListener(self)
-    
-        self.setChartFootnotes(updateButton)
+        self.setChartFootnotes(self.updateButton)
+
         for iCurve in range(len(barLabels)):
             self.addCurve()     # one curve per quarter
             self.getCurve().getSymbol().setSymbolType(SymbolType.VBAR_SOUTHWEST)
