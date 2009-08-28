@@ -703,7 +703,7 @@ class ReusableImage (Image):
                                 ceilBW+"px " + ceilBW+"px ")
 
             else:
-                DOM.setStyleAttribute(getElement(),
+                DOM.setStyleAttribute(self.getElement(),
                 "borderWidth", abs(newCappedBorderWidthX2/2)+"px")
 
             self.cappedBorderWidthX2 = newCappedBorderWidthX2
@@ -721,11 +721,11 @@ class ReusableImage (Image):
             # for speed, just set the edge positions that changed
             # (works, but bypasses AbsolutePanel's official API)
             if self.x != newX:
-                DOM.setStyleAttribute(getElement(),"left", newX+"px")
+                DOM.setStyleAttribute(self.getElement(),"left", newX+"px")
                 self.x = newX
 
             if self.y != newY:
-                DOM.setStyleAttribute(getElement(),"top", newY+"px")
+                DOM.setStyleAttribute(self.getElement(),"top", newY+"px")
                 self.y = newY
 
 
@@ -740,16 +740,16 @@ class ReusableImage (Image):
 
 
         if self.backgroundColor != backgroundColor:
-            DOM.setStyleAttribute(getElement(), "backgroundColor",
+            DOM.setStyleAttribute(self.getElement(), "backgroundColor",
             backgroundColor)
             self.backgroundColor =backgroundColor
 
         if self.borderColor != borderColor:
-            DOM.setStyleAttribute(getElement(), "borderColor", borderColor)
+            DOM.setStyleAttribute(self.getElement(), "borderColor", borderColor)
             self.borderColor = borderColor
 
         if self.borderStyle != borderStyle:
-            DOM.setStyleAttribute(getElement(), "borderStyle",
+            DOM.setStyleAttribute(self.getElement(), "borderStyle",
             borderStyle)
             self.borderStyle = borderStyle
 
