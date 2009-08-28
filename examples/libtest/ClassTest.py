@@ -491,6 +491,17 @@ class ClassTest(UnitTest):
         except AttributeError, e:
             self.assertTrue(True)
 
+        p = NewStylePropertyDecorating()
+
+        p.x = 1
+        self.assertEqual(p._x, 1)
+        self.assertEqual(p.x, 1)
+        del p.x
+        try:
+            x = p._x
+        except AttributeError, e:
+            self.assertTrue(True)
+
 
 class PassMeAClass(object):
     def __init__(self):
@@ -767,4 +778,69 @@ class OldStylePropertyDecorating(object):
     def delx(self):
         del self._x
     x = property(getx, setx, delx, "I'm the 'x' property.")
+
+# Property class that gives python 2.5 a setter and a deleter
+class Property(object):
+    def __init__(self, fget=None, fset=None, fdel=None, doc=None):
+        self.fget = fget
+        self.fset = fset
+        self.fdel = fdel
+        if not doc is None or not hasattr(fget, '__doc__') :
+            self.__doc__ = doc
+        else:
+            self.__doc__ = fget.__doc__
+
+    def __get__(self, obj, objtype=None):
+        if obj is None:
+            return self
+        if self.fget is None:
+            raise AttributeError, "unreadable attribute"
+        return self.fget(obj)
+
+    def __set__(self, obj, value):
+        if self.fset is None:
+            raise AttributeError, "can't set attribute"
+        self.fset(obj, value)
+
+    def __delete__(self, obj):
+        if self.fdel is None:
+            raise AttributeError, "can't delete attribute"
+        self.fdel(obj)
+
+    def setter(self, fset):
+        self.fset = fset
+        return self
+
+    def deleter(self, fdel):
+        self.fdel = fdel
+        return self
+
+    def property_setter(self, fset):
+        self.__setattr__('fset', fset)
+        return self
+    def property_deleter(self, fdel):
+        self.__setattr__('fdel', fdel)
+        return self
+
+# Bug in pyjs that appears when the next lines are executed
+# The 'property = Property' makes property a module variable, which is
+# not set if the next line not is executed
+property = property
+if not hasattr(property, 'setter'):
+    # Replace python 2.5 property class
+    property = Property
+
+class NewStylePropertyDecorating(object):
+    def __init__(self):
+        self._x = None
+    @property
+    def x(self):
+        """I'm the 'x' property."""
+        return self._x
+    @x.setter
+    def x(self, value):
+        self._x = value
+    @x.deleter
+    def x(self):
+        del self._x
 

@@ -158,3 +158,47 @@ class FunctionTest(UnitTest):
             return inittest
         self.assertEqual(f(), inittest)
 
+    def testFunctionDecorating(self):
+        log = []
+        def deco1(f):
+            def fn(*args, **kwargs):
+                log.append("deco1 begin")
+                res = f(*args, **kwargs)
+                log.append("deco1 end")
+                return res
+            return fn
+
+        def deco2(f):
+            def fn(*args, **kwargs):
+                log.append("deco2 begin")
+                res = f(*args, **kwargs)
+                log.append("deco2 end")
+                return res
+            return fn
+
+        @deco1
+        def fn1(a, b = 0):
+            return a, b
+
+        @deco1
+        @deco2
+        def fn2(a, b = 0):
+            return a, b
+
+        res = fn1(1,2)
+        self.assertEqual(res[0], 1)
+        self.assertEqual(res[1], 2)
+        self.assertEqual(len(log), 2)
+        self.assertEqual(log[0], "deco1 begin")
+        self.assertEqual(log[1], "deco1 end")
+
+        log = []
+        res = fn2(a=3)
+        self.assertEqual(res[0], 3)
+        self.assertEqual(res[1], 0)
+        self.assertEqual(len(log), 4)
+        self.assertEqual(log[0], "deco1 begin")
+        self.assertEqual(log[1], "deco2 begin")
+        self.assertEqual(log[2], "deco2 end")
+        self.assertEqual(log[3], "deco1 end")
+

@@ -1195,11 +1195,15 @@ dict = Dict
 
 class property(object):
     # From: http://users.rcn.com/python/download/Descriptor.htm
+    # Extended with setter(), deleter() and fget.__doc_ copy
     def __init__(self, fget=None, fset=None, fdel=None, doc=None):
         self.fget = fget
         self.fset = fset
         self.fdel = fdel
-        self.__doc__ = doc
+        if not doc is None or not hasattr(fget, '__doc__') :
+            self.__doc__ = doc
+        else:
+            self.__doc__ = fget.__doc__
 
     def __get__(self, obj, objtype=None):
         if obj is None:
@@ -1217,6 +1221,15 @@ class property(object):
         if self.fdel is None:
             raise AttributeError, "can't delete attribute"
         self.fdel(obj)
+
+    def setter(self, fset):
+        self.fset = fset
+        return self
+
+    def deleter(self, fdel):
+        self.fdel = fdel
+        return self
+
 
 def staticmethod(func):
     JS("""

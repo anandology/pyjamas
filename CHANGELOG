@@ -1,6 +1,8 @@
                     Changes made to Pyjamas since 0.6
                     ---------------------------------
 
+ * Added basic implemention of new style decorators and 2.6 style property()
+
  * Added first port of GChart - http://code.google.com/p/gchart.
    java2py.py converted, then manual update.  Passes syntax check
    but that's about it...

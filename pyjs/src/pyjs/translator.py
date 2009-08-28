@@ -643,7 +643,7 @@ class Translator:
             self.has_js_return = False
             self.track_lineno(child)
             if isinstance(child, ast.Function):
-                self._function(child, None, False)
+                self._function(child, None, True, False)
             elif isinstance(child, ast.Class):
                 self._class(child)
             elif isinstance(child, ast.Import):
@@ -741,9 +741,15 @@ class Translator:
             self.source_tracking, self.line_tracking, self.store_source,
         ) = self.option_stack.pop()
 
-    def parse_decorators(self, node):
+    def parse_decorators(self, node, funcname, current_class = None, top_level = False):
+        if node.decorators is None:
+            return False, False, '%s'
+        self.push_lookup()
+        self.add_lookup('variable', '%s', '%s')
+        code = '%s'
         staticmethod = False
         classmethod = False
+        lineno=node.lineno
         for d in node.decorators:
             if isinstance(d, ast.Getattr):
                 if isinstance(d.expr, ast.Name):
@@ -755,23 +761,34 @@ class Translator:
                             raise TranslationError(
                                 "Unknown compiler option '%s'" % d.attrname, node, self.module_name)
                     else:
-                        raise TranslationError(
-                            "Unknown decorator '%s'" % d.attrname, node, self.module_name)
+                        #tnode = ast.Assign([ast.AssName(funcname, "OP_ASSIGN", lineno=lineno)],
+                        #                   ast.CallFunc(d, [ast.Name(funcname)], lineno=lineno),
+                        #                   lineno=lineno)
+                        #self._assign(tnode, current_class, top_level)
+                        tnode = ast.CallFunc(d, [ast.Name('%s')], lineno=lineno)
+                        code = code % self._callfunc_code(tnode, None)
                 else:
                     raise TranslationError(
-                        "Unknown decorator '%s'" % d.attrname, node, self.module_name)
+                        "Unsupported decorator '%s'" % d.attrname, node, self.module_name)
             elif isinstance(d, ast.Name):
                 if d.name == 'staticmethod':
                     staticmethod = True
                 elif d.name == 'classmethod':
                     classmethod = True
                 else:
-                    raise TranslationError(
-                        "Unknown decorator '%s'" % d.name, node, self.module_name)
+                    #tnode = ast.Assign([ast.AssName(funcname, "OP_ASSIGN", lineno=lineno)],
+                    #                   ast.CallFunc(ast.Name(d.name), [ast.Name(funcname)], lineno=lineno),
+                    #                   lineno=lineno)
+                    #self._assign(tnode, current_class, top_level)
+                    tnode = ast.CallFunc(d, [ast.Name('%s')], lineno=lineno)
+                    code = code % self._callfunc_code(tnode, None)
             else:
                 raise TranslationError(
-                    "Unknown decorator '%s'" % d, node, self.module_name)
-        return (staticmethod, classmethod)
+                    "Unsupported decorator '%s'" % d, node, self.module_name)
+        self.pop_lookup()
+        if code != '%s':
+            code = code % 'pyjslib.staticmethod(%s)'
+        return (staticmethod, classmethod, code)
 
     def remap_regex(self, re_list, *words):
         dbg = 0
@@ -1424,18 +1441,21 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             rhs = "$pyjs.__modules__[%s]" % (']['.join(modnames))
             print >> self.output, self.spacing() + "%s = %s;" % (lhs, rhs)
 
-    def _function(self, node, current_klass, local=False):
+    def _function(self, node, current_klass, top_level, local):
         self.push_options()
         save_has_js_return = self.has_js_return
         self.has_js_return = False
-        if node.decorators:
-            self.parse_decorators(node)
 
         if local:
             function_name = node.name
         else:
             function_name = self.modpfx() + node.name
         function_name = self.add_lookup('function', node.name, function_name)
+        staticmethod, classmethod, decorator_code = self.parse_decorators(node, node.name, current_klass, top_level)
+        if staticmethod or classmethod:
+            raise TranslationError(
+                "Decorators staticmethod and classmethod not implemented for functions",
+                v.node, self.module_name)
         self.push_lookup()
 
         arg_names = []
@@ -1504,7 +1524,9 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
 
         self.func_args(node, current_klass, function_name, 'static', declared_arg_names, varargname, kwargname)
 
-        #self._kwargs_parser(node, function_name, normal_arg_names, None)
+        if decorator_code:
+            decorator_code = decorator_code % function_name
+            print >>self.output, self.spacing() + "%s = %s;" % (function_name, decorator_code)
         self.has_js_return = save_has_js_return
         self.pop_options()
         self.pop_lookup()
@@ -1531,7 +1553,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         print >>self.output, self.spacing() + "continue;"
 
 
-    def _callfunc(self, v, current_klass):
+    def _callfunc_code(self, v, current_klass):
 
         if isinstance(v.node, ast.Name):
             name_type, pyname, jsname, depth, is_local = self.lookup(v.node.name)
@@ -1642,6 +1664,10 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                                   + ")")
         else:
             call_code = call_name + "(" + ", ".join(call_args) + ")"
+        return call_code
+
+    def _callfunc(self, v, current_klass):
+        call_code = self._callfunc_code(v, current_klass)
         return self.track_call(call_code, v.lineno)
 
     def _print(self, node, current_klass):
@@ -1833,12 +1859,13 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
         if node.name in ['object', 'pyjslib.Object', 'pyjslib.object']:
             base_classes = []
-        local_prefix = 'cls_definition'
+        local_prefix = '$cls_definition'
         self.local_prefix = None
         class_name = self.add_lookup('class', node.name, class_name)
         print >>self.output, self.indent() + class_name + """ = (function(){
-%(s)svar cls_instance = $pyjs__class_instance('%(n)s');
+%(s)svar $cls_instance = $pyjs__class_instance('%(n)s');
 %(s)svar %(p)s = new Object();
+%(s)svar $method;
 %(s)s%(p)s.__md5__ = '%(m)s';""" % {'s': self.spacing(), 'n': node.name, 'p': local_prefix, 'm': current_klass.__md5__}
 
         private_scope = {}
@@ -1851,7 +1878,9 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 self.push_lookup(private_scope)
                 name = "%s.%s" % (local_prefix, child.name)
                 jsname = self.add_lookup('method', child.name, name)
-                #self.add_lookup('method', child.name, jsname)
+                staticmethod, classmethod, decorator_code = self.parse_decorators(child, child.name, current_klass, False)
+                decorator_code = decorator_code % '$method'
+                print >>self.output, self.spacing() + "%s = %s;" % (jsname, decorator_code)
                 self.add_lookup('method', child.name, "pyjslib.staticmethod(%s)" % jsname)
                 private_scope = self.pop_lookup()
             elif isinstance(child, ast.Assign):
@@ -1869,8 +1898,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 raise TranslationError(
                     "unsupported type (in _class)", child, self.module_name)
         print >>self.output, """\
-%(s)sreturn $pyjs__class_function(cls_instance, cls_definition, 
-%(s)s                            new Array(""" % {'s': self.spacing()}  + ",".join(map(lambda x: x[1], base_classes)) + """));
+%(s)sreturn $pyjs__class_function($cls_instance, %(local_prefix)s, 
+%(s)s                            new Array(""" % {'s': self.spacing(), 'local_prefix': local_prefix}  + ",".join(map(lambda x: x[1], base_classes)) + """));
 %s})();""" % self.dedent()
 
     def classattr(self, node, current_klass):
@@ -1907,10 +1936,10 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.push_options()
         save_has_js_return = self.has_js_return
         self.has_js_return = False
-        if node.decorators:
-            staticmethod, classmethod = self.parse_decorators(node)
-        else:
-            staticmethod = classmethod = False
+        method_name = self.attrib_remap(node.name)
+        jsmethod_name = local_prefix + '.' + method_name
+
+        staticmethod, classmethod, decorator_code = self.parse_decorators(node, method_name, current_klass, False)
 
         if node.name == '__new__':
             staticmethod = True
@@ -1937,8 +1966,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         else:
             function_args = "(" + ", ".join(declared_arg_names[1:]) + ")"
 
-        method_name = self.attrib_remap(node.name)
-        print >>self.output, self.indent() + local_prefix + '.' + method_name + " = $pyjs__bind_method(cls_instance, '"+method_name+"', function" + function_args + " {"
+        print >>self.output, self.indent() + "$method = $pyjs__bind_method($cls_instance, '"+method_name+"', function" + function_args + " {"
         if staticmethod:
             self._static_method_init(node, declared_arg_names, varargname, kwargname, current_klass)
         elif classmethod:
@@ -2040,7 +2068,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         elif isinstance(node, ast.Pass):
             pass
         elif isinstance(node, ast.Function):
-            self._function(node, current_klass, True)
+            self._function(node, current_klass, top_level, True)
         elif isinstance(node, ast.Printnl):
            self._print(node, current_klass)
         elif isinstance(node, ast.Print):
@@ -2565,7 +2593,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         print >> self.output, "var",
         code_node = ast.Stmt([ast.Return(node.code, node.lineno)], node.lineno)
         func_node = ast.Function(None, function_name, node.argnames, node.defaults, node.flags, None, code_node, node.lineno)
-        self._function(func_node, current_klass, True)
+        self._function(func_node, current_klass, False, True)
         return function_name
 
     def _listcomp(self, node, current_klass):
