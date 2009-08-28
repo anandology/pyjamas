@@ -141,18 +141,18 @@ class AnnotationLocation:
     # contained label flush against the left edge of the
     # labeled symbol.
     def getHorizontalAlignment(self):
-        if widthMultiplier == -1:
+        if self.widthMultiplier == -1:
             result = HasHorizontalAlignment.ALIGN_RIGHT
         
-        elif widthMultiplier == 0:
+        elif self.widthMultiplier == 0:
             result = HasHorizontalAlignment.ALIGN_CENTER
         
-        elif widthMultiplier == 1:
+        elif self.widthMultiplier == 1:
             result = HasHorizontalAlignment.ALIGN_LEFT
         
         else:
             raise IllegalStateException(
-                    "Invalid widthMultiplier: " + str(widthMultiplier) +
+                    "Invalid widthMultiplier: " + str(self.widthMultiplier) +
                     " 1, 0, or -1 were expected.")
         
         return result

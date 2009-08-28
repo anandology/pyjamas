@@ -564,7 +564,7 @@ class AnnotationRenderingPanel (PartitionedAbsolutePanel):
         heightUpperBound, abs(symHeight))
 
 
-        alignedLabel = getNextOrNewAlignedLabel(
+        alignedLabel = self.getNextOrNewAlignedLabel(
                                     annotation.getFontSize(),
                                     annotation.getFontStyle(),
                                     annotation.getFontWeight(),
@@ -590,7 +590,7 @@ class AnnotationRenderingPanel (PartitionedAbsolutePanel):
             alignedLabel.setHeight("")
 
 
-        setLabelPosition(alignedLabel, upLeftX, upLeftY)
+        self.setLabelPosition(alignedLabel, upLeftX, upLeftY)
 
 
 
