@@ -81,6 +81,7 @@ from GChartConsts import TICK_BORDER_STYLE
 from GChartConsts import TICK_BORDER_WIDTH
 from GChartConsts import Y2_AXIS
 from GChartConsts import DEFAULT_TITLE_THICKNESS 
+from GChartConsts import DEFAULT_FOOTNOTES_THICKNESS
 
 import Double
 import AnnotationLocation
