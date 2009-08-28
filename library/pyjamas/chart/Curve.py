@@ -22,6 +22,8 @@ import Double
 from Point import Point
 from Symbol import Symbol
 
+from GChartConsts import Y2_AXIS
+
 """*
 * Represents a curve on a chart, which includes
 * information such as the x,y coordinates of each point,
