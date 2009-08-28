@@ -6,6 +6,7 @@ from pyjamas.chart.GChart import GChart
 """
 class GChartExample00(GChart):
     def __init__(self):
+        GChart.__init__(self)
         self.setChartTitle("<b>x<sup>2</sup> vs x</b>")
         self.setChartSize(150, 150)
         self.addCurve()
