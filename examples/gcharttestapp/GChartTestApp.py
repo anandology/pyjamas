@@ -12,6 +12,7 @@ from GChartExample00 import GChartExample00
 from GChartExample00a import GChartExample00a
 from GChartExample01 import GChartExample01 
 from GChartExample02 import GChartExample02
+from GChartExample03 import GChartExample03
 
 """*
 *
@@ -129,8 +130,8 @@ def onModuleLoad():
     #    addChart(GChartExample01a(0))
     #    addChart(GChartExample01b())
     #    addChart(GChartExample01c())
-    addChart(GChartExample02())
-    #    addChart(GChartExample03())
+    #addChart(GChartExample02())
+    addChart(GChartExample03())
     #    addChart(GChartExample04())
     #    addChart(GChartExample04a())
     #    addChart(GChartExample04b())
@@ -375,7 +376,7 @@ def onModuleLoad():
     #RootPanel.get().add(TestGChart57a())
     #RootPanel.get().add(TestGChart58())
 
-    addChart(TestGChart00())
+    #addChart(TestGChart00())
     
     RootPanel().get("loadingMessage").setVisible(False)
     

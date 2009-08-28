@@ -832,13 +832,13 @@ class Curve:
         elif axisId != self.yAxisId:
             if axisId == Y2_AXIS:
                 # from Y to Y2
-                GChart.self.getYAxis().decrementCurves()
-                GChart.self.getY2Axis().incrementCurves()
+                self.chart.getYAxis().decrementCurves()
+                self.chart.getY2Axis().incrementCurves()
 
             else:
                 # from Y2 to Y
-                GChart.self.getY2Axis().decrementCurves()
-                GChart.self.getYAxis().incrementCurves()
+                self.chart.getY2Axis().decrementCurves()
+                self.chart.getYAxis().incrementCurves()
 
             self.yAxisId = axisId
 
