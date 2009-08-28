@@ -364,13 +364,13 @@ class Curve:
         if None == self.bandList:
             return result
         
-        symType = getSymbol().getSymbolType()
+        symType = self.getSymbol().getSymbolType()
         dBest = Double.MAX_VALUE; # closest touching pt's distance^2
         
         
         
         
-        brushWidth = symType.getBrushWidth(getSymbol())
+        brushWidth = symType.getBrushWidth(self.getSymbol())
         """
         * In every tested browser EXCEPT FF3, we don't need the +1 below to
         * select a 1px tall, off-chart, symbol with a 1x1 px brush
@@ -379,8 +379,8 @@ class Curve:
         * workaround this problem.
         *
         """
-        brushHeight = symType.getBrushHeight(getSymbol()) + 1
-        brushLocation = symType.getBrushLocation( getSymbol())
+        brushHeight = symType.getBrushHeight(self.getSymbol()) + 1
+        brushLocation = symType.getBrushLocation( self.getSymbol())
         nBands = len(self.bandList)
         
         # Determine range of bands touched by brush, taking into
@@ -394,7 +394,7 @@ class Curve:
         # rectangle occupied by the decorated chart.  The tacit
         # assumption is that such completely off-the-chart points
         # are rare, so it's OK to bunch them up into just 2 bands.
-        if getSymbol().isHorizontallyBanded():
+        if self.getSymbol().isHorizontallyBanded():
             # horizontal bars and some curves with "wider than high" brushes
             top = brushLocation.getUpperLeftY(yBrush, brushHeight, 0)
             bottom = top + brushHeight
@@ -423,23 +423,23 @@ class Curve:
             p = None
             iPoint = self.bandList[iBand]
             while iPoint != GChart.NAI:
-                if iPoint < 0  or  iPoint >= getNPoints():
+                if iPoint < 0  or  iPoint >= self.getNPoints():
                     raise IllegalStateException(
                         "Inappropriately terminated band-point-list, GChart bug likely. " +
-                        "iPoint=" + iPoint + " nPoints=" + getNPoints() +
+                        "iPoint=" + iPoint + " nPoints=" + self.getNPoints() +
                         " iBand="+iBand+" iBandFirst="+iBandFirst+" iBandLast="+iBandLast +
                         " xBrush="+xBrush+" yBrush="+yBrush+" brushWidth="+brushWidth +
                         " brushHeight=" +brushHeight + " bandThickness=" + self.bandThickness)
                     
-                p  = getPoint(iPoint)
-                if symType.isIntersecting(self.chart.plotPanel, getSymbol(), iPoint, onY2(), xBrush, yBrush, brushWidth, brushHeight):
+                p  = self.getPoint(iPoint)
+                if symType.isIntersecting(self.chart.plotPanel, self.getSymbol(), iPoint, onY2(), xBrush, yBrush, brushWidth, brushHeight):
                     # this point touches the brush (keep it if closest)
                     xPoint = symType.getCenterX(self.chart.plotPanel,
-                                                getSymbol(), iPoint)
+                                                self.getSymbol(), iPoint)
                     yPoint = symType.getCenterY(self.chart.plotPanel,
-                                                getSymbol(), iPoint, onY2())
-                    dx = getSymbol().xScaleFactor*(xPoint-xBrush)
-                    dy = getSymbol().yScaleFactor*(yPoint-yBrush)
+                                                self.getSymbol(), iPoint, onY2())
+                    dx = self.getSymbol().xScaleFactor*(xPoint-xBrush)
+                    dy = self.getSymbol().yScaleFactor*(yPoint-yBrush)
                     d = dx*dx + dy*dy
                     if d < dBest:
                         result = iPoint
