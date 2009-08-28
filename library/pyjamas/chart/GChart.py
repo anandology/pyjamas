@@ -717,21 +717,6 @@ class GChart (Composite):
         return result
 
 
-    """*
-    * Adds a curve to the chart, at the end of the current
-    * list of curves.
-    * <p>
-    *
-    * @see #getCurve getCurve
-    * @see #addCurve(int) addCurve(int)
-    * @see #removeCurve removeCurve
-    * @see #clearCurves clearCurves
-    * @see #getNCurves getNCurves
-    """
-
-    def addCurve(self):
-        addCurve(self.getNCurves())
-
     """
     * Given external, coded, index returns a curve's ArrayList index
     *
@@ -816,7 +801,10 @@ class GChart (Composite):
     * @see #getNCurves getNCurves
     """
 
-    def addCurve(self, iCurve):
+    def addCurve(self, iCurve=None):
+        if iCurve is None:
+            iCurve = self.getNCurves()
+
         if iCurve > self.getNCurves():
             raise IllegalArgumentException(
             "iCurve = " + iCurve +"; iCurve may not exceed self.getNCurves() (" + self.getNCurves() + ")")
@@ -1172,45 +1160,13 @@ class GChart (Composite):
         return result
 
 
-    """* Convenience method equivalent to <tt>getCurve(self.getNCurves()-1)</tt>.
-    *  <p>
-    *  This method, when used in conjunction with no-arg <tt>addCurve</tt>,
-    *  method, makes code blocks that create and define the
-    *  properties of a chart's curves more readable/editable. For example:
-    <pre>
-    addCurve(); # add 1st curve
-    getCurve().setYAxis(Y2_AXIS); # first setting for 1st curve
-    #... other settings for first curve
-    addCurve(); # add 2nd curve
-    getCurve().setYAxis(Y_AXIS); # first setting for 2nd curve
-    # ... other settings for 2nd curve
-    </pre>
-    *<p>
-    * Note that using the no-arg methods in this way allows you to copy
-    * entire groups of curve properties, unchanged, between such curve
-    * related blocks.
-    *
-    *  @return the curve with the highest integer index. In other words,
-    *    the curve with an index of <tt>self.getNCurves()-1</tt>.
-    *
-    *  @see #getCurve(int) getCurve(int)
-    *  @see #getNCurves getNCurves
-    *  @see #addCurve() addCurve()
-    """
-    def getCurve(self):
-        N = self.getNCurves()
-        if N < 1:
-            raise IllegalStateException(
-            "You must add at least 1 curve before invoking getCurve()")
-
-        result = self.getSystemCurve(N-1)
-        return result
-
-
     """*
     * Returns a reference to the curve at the specified
     * positional index.  Use the reference returned by this method to
     * modify properties of a curve (the symbol, data points, etc.)
+    *
+    * When the positional index is None, it is equivalent to
+    * <tt>getCurve(self.getNCurves()-1)</tt>.
     *
     * <p>
     * @param iCurve index of the curve to be retrieved.
@@ -1223,7 +1179,15 @@ class GChart (Composite):
     * @see #clearCurves clearCurves
     * @see #getNCurves getNCurves
     """
-    def getCurve(self, iCurve):
+    def getCurve(self, iCurve=None):
+
+        if iCurve is None:
+            N = self.getNCurves()
+            if N < 1:
+                raise IllegalStateException(
+                "You must add at least 1 curve before invoking getCurve()")
+
+            return self.getSystemCurve(N-1)
 
         if iCurve >= self.getNCurves():
             raise IllegalArgumentException(
