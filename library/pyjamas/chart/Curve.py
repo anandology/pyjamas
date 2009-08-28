@@ -38,7 +38,7 @@ class Curve:
     EXTRA_BANDS = 2;   # far left, right (top, bottom) bands
 
     def isValidated(self):
-        return self.isValidated
+        return self.validated
     
     """
     * TestGChart14d revealed that curves.indexOf(curve) could, due to its
@@ -91,7 +91,7 @@ class Curve:
         self.symbol = Symbol(self)
         
         self.yAxisId = GChart.Y_AXIS
-        self.isValidated = False
+        self.validated = False
         self.indexOf = indexOf
     
         self.bandList = None # index of first point in each band
@@ -908,13 +908,13 @@ class Curve:
     def invalidate(self):
         # The guard isn't just for speed; it keeps us out of trouble
         # when the system curves are being added/configured initially
-        if self.isValidated:
-            self.isValidated = False
+        if self.validated:
+            self.validated = False
             # for efficiency, all background curves use a single rendering
             # panel, so invalidating one background curve invalidates them all
             if self.indexOf < N_PRE_SYSTEM_CURVES:
                 for i in range(N_PRE_SYSTEM_CURVES):
-                    curves.get(i).isValidated = False
+                    curves.get(i).validated = False
             
         
     
@@ -1097,7 +1097,7 @@ class Curve:
     
     # is curve currently canvas rendered and up-to-date
     def isCanvasRendered(self):
-        return self.isValidated  and  self.wasCanvasRendered
+        return self.validated  and  self.wasCanvasRendered
     
     
  # end of class GChart.Curve

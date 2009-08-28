@@ -3729,7 +3729,7 @@ class GChart (Composite):
 
             # else it's a background panel curve, and not the last one
 
-            c.isValidated = True
+            c.validated = True
 
 
 
