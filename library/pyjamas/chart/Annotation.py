@@ -27,6 +27,7 @@ from GChartConsts import DEFAULT_ANNOTATION_FONTSIZE
 from GChartConsts import DEFAULT_WIDGET_WIDTH_UPPERBOUND
 from GChartConsts import DEFAULT_WIDGET_HEIGHT_UPPERBOUND
 from GChartConsts import CHARHEIGHT_TO_FONTSIZE_UPPERBOUND
+from GChartConsts import CHARWIDTH_TO_FONTSIZE_UPPERBOUND
 
 """
 * Annotates (labels) a chart symbol. Users access this class via
@@ -196,12 +197,12 @@ class Annotation:
     
     def getHeightUpperBound(self):
         result = 0
-        if heightUpperBound != GChart.NAI:
-            result = heightUpperBound
+        if self.heightUpperBound != GChart.NAI:
+            result = self.heightUpperBound
         
         else:
-            result = int (ceil(fontSize *
-                            numberOfLinesHigh *
+            result = int (ceil(self.fontSize *
+                            self.numberOfLinesHigh *
                             CHARHEIGHT_TO_FONTSIZE_UPPERBOUND))
         
         return result
@@ -209,12 +210,12 @@ class Annotation:
     
     def getWidthUpperBound(self):
         result = 0
-        if widthUpperBound != GChart.NAI:
-            result = widthUpperBound
+        if self.widthUpperBound != GChart.NAI:
+            result = self.widthUpperBound
         
         else:
-            result = int ( ceil(fontSize *
-                                numberOfCharsWide *
+            result = int ( ceil(self.fontSize *
+                                self.numberOfCharsWide *
                                 CHARWIDTH_TO_FONTSIZE_UPPERBOUND))
         
         return result
