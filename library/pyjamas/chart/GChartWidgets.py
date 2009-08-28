@@ -885,24 +885,24 @@ class GraphicsRenderingPanel (AbsolutePanel):
 
     # Tells panel you are ready to start drawing the curve on it
     def beginRendering(self, canvasRegion):
-        if None != canvas:
+        if None != self.canvas:
             if None == canvasRegion:
                 # hold onto empty canvas for simplicity
-                canvas.resize(0, 0)
-                canvasWidth = canvasHeight = 0
+                self.canvas.resize(0, 0)
+                self.canvasWidth = self.canvasHeight = 0
 
             else:
                 width = int( round(canvasRegion.width) )
                 height = int( round(canvasRegion.height) )
                 # if exactly same size, just clear...seems to save a little time
-                if width == canvasWidth  and  height == canvasHeight:
-                    canvas.clear(); # reuse same canvas
+                if width == self.canvasWidth  and  height == self.canvasHeight:
+                    self.canvas.clear(); # reuse same canvas
 
                 else:
                     # size changed
-                    canvas.resize(width, height)
-                    canvasWidth = width
-                    canvasHeight = height
+                    self.canvas.resize(width, height)
+                    self.canvasWidth = width
+                    self.canvasHeight = height
 
                 x0 = int( round(canvasRegion.x) )
                 y0 = int( round(canvasRegion.y) )
@@ -911,7 +911,7 @@ class GraphicsRenderingPanel (AbsolutePanel):
                 if x0 == -1  and  y0 == -1:
                     x0 = 0
 
-                canvasPanel.setWidgetPosition( canvas, x0, y0)
+                self.canvasPanel.setWidgetPosition( canvas, x0, y0)
 
 
         imageIndex = 0
@@ -921,7 +921,7 @@ class GraphicsRenderingPanel (AbsolutePanel):
     def endRendering(self):
         # hide or remove images no longer being used
         if optimizeForMemory:
-            iImage = (getWidgetCount()-1)
+            iImage = (self.getWidgetCount()-1)
         else:
             iImage = lastVisibleImage
         while iImage >= imageIndex:

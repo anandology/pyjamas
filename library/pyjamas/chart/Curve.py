@@ -84,7 +84,7 @@ class Curve:
     def __init__(self, chart, indexOf=GChart.NAI):
         self.chart = chart
         self.wasCanvasRendered = False
-        self.isVisible = True
+        self.visible = True
         self.legendHTML = None
         self.points = []
         # symbol defines how every point on this curve is rendered
@@ -616,7 +616,7 @@ class Curve:
     ** @see #setVisible setVisible
     *"""
     def isVisible(self):
-        return self.isVisible
+        return self.visible
     
     """* Convenience method equivalent to <tt>getYAxis()==Y2_AXIS</tt>.
     *
@@ -741,7 +741,7 @@ class Curve:
     ** @see #setLegendLabel setLegendLabel
     **
     *"""
-    def setVisible(self, isVisible):
+    def setVisible(self, visible):
         """ Axis curve count bookkeeping requires that curve be on the
         * list of curves.
         * <p>
@@ -763,7 +763,7 @@ class Curve:
         """
         
         if self.getIndexOf() == GChart.NAI:
-            self.isVisible = isVisible
+            self.visible = visible
             return
         
         
@@ -772,16 +772,16 @@ class Curve:
         # hover selection feedback curves (which are system curves)
         # never impact curve counts, need to refresh decorations, etc.
         if self.isSystemCurve():
-            self.isVisible = isVisible
+            self.visible = visible
             return
         
         
-        if self.isVisible != isVisible:
+        if self.visible != visible:
             if self.getYAxis() == GChart.Y_AXIS:
                 yaxis = GChart.self.getYAxis()
             else:
                 yaxis = GChart.self.getY2Axis()
-            if isVisible:
+            if visible:
                 axisCreatedOrDestroyed = (yaxis.getNCurvesVisibleOnAxis() == 0)
                 getXAxis().incrementCurves()
                 yaxis.incrementCurves()
@@ -796,7 +796,7 @@ class Curve:
                 chartDecorationsChanged = True
             
             
-            self.isVisible = isVisible
+            self.visible = visible
         
     
     
@@ -877,7 +877,7 @@ class Curve:
         nextX = Double.NaN
         nextY = Double.NaN
         nextP = None
-        if iPoint < getNPoints()-1:
+        if iPoint < self.getNPoints()-1:
             nextP = self.points[iPoint+1]
             nextX = nextP.getX()
             nextY = nextP.getY()
@@ -887,9 +887,9 @@ class Curve:
         # at all (undefined x or y, or off chart entirely)
         drawMainSymbol = (p.getINextInBand() != iPoint)
         
-        getSymbol().realizeSymbol(pp, grp, arp, p.getAnnotation(), onY2(),
-                                    getActuallyClippedToPlotArea(),
-                                    getClipToDecoratedChart(),
+        self.getSymbol().realizeSymbol(pp, grp, arp, p.getAnnotation(), onY2(),
+                                    self.getActuallyClippedToPlotArea(),
+                                    self.getClipToDecoratedChart(),
                                     drawMainSymbol,
                                     x, y, prevX, prevY, nextX, nextY)
         #    }

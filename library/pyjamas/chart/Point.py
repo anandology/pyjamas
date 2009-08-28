@@ -38,7 +38,7 @@ class Point:
     # Points to index of next point in a vertical or horizontal
     # band (used by the <tt>bandSeparatePoints</tt> method).
     def getINextInBand(self):
-        return iNextInBand
+        return self.iNextInBand
 
     def setINextInBand(iNext):
         self.iNextInBand = iNext

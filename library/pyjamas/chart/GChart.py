@@ -93,6 +93,7 @@ from Curve import Curve
 import GChartUtil 
 from GChartUtil import formatAsHovertext, YAxisId, setOverflow
 from GChartWidgets import PlotPanel
+import GChartWidgets 
 
 import pygwt
 from Axis import XAxis, YAxis, Y2Axis
@@ -3679,7 +3680,7 @@ class GChart (Composite):
             rpIndex = self.getRenderingPanelIndex(internalIndex)
             grp = self.plotPanel.getGraphicsRenderingPanel(rpIndex)
             arp = self.plotPanel.getAnnotationRenderingPanel(rpIndex)
-            if PlotPanel.DECORATIVE_RENDERING_PANEL_INDEX == rpIndex:
+            if GChartWidgets.DECORATIVE_RENDERING_PANEL_INDEX == rpIndex:
                 # background panel only gets initialized for first curve
                 if 0 == internalIndex:
                     # background panel never uses canvas
@@ -3709,7 +3710,7 @@ class GChart (Composite):
                 # position follows the mouse (and thus has no fixed location
                 # suitable for banding) and 3) at least one kind of hover feedback
                 # is being provided for the curve.
-                if getCurveIndex(c) >= 0  and  not isMouseAnchored(c.getSymbol().getSymbolType())  and  (c.getSymbol().getHoverSelectionEnabled()  or  c.getSymbol().getHoverAnnotationEnabled()):
+                if self.getCurveIndex(c) >= 0  and  not self.isMouseAnchored(c.getSymbol().getSymbolType())  and  (c.getSymbol().getHoverSelectionEnabled()  or  c.getSymbol().getHoverAnnotationEnabled()):
                     c.bandSeparatePoints()
 
                 else:
@@ -3723,7 +3724,7 @@ class GChart (Composite):
 
 
             # only end background panel rendering w last background curve
-            if PlotPanel.DECORATIVE_RENDERING_PANEL_INDEX != rpIndex  or  internalIndex == N_PRE_SYSTEM_CURVES-1:
+            if GChartWidgets.DECORATIVE_RENDERING_PANEL_INDEX != rpIndex  or  internalIndex == N_PRE_SYSTEM_CURVES-1:
                 grp.endRendering()
                 arp.endRendering()
 
