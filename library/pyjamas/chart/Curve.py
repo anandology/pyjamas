@@ -190,7 +190,7 @@ class Curve:
             
             else:
                 # inside a normal, chart-covering, band
-                result = 1 + int ( floor(yPx/bandThickness) )
+                result = 1 + int ( math.floor(yPx/bandThickness) )
             
         
         else:
@@ -203,7 +203,7 @@ class Curve:
             
             else:
                 # within one of the real bands covering the chart
-                result = 1 + int ( floor(xPx/bandThickness) )
+                result = 1 + int ( math.floor(xPx/bandThickness) )
             
         
         return result
@@ -400,9 +400,9 @@ class Curve:
             bottom = top + brushHeight
             top -= self.bandThickness/2.
             bottom += self.bandThickness/2.
-            iBandFirst = int( max(0, min(nBands-1,1+floor(
+            iBandFirst = int( max(0, min(nBands-1,1+math.floor(
                                         top / self.bandThickness))))
-            iBandLast = int ( max(0, min(nBands-1, 1+floor(
+            iBandLast = int ( max(0, min(nBands-1, 1+math.floor(
                                         bottom / self.bandThickness))))
         
         else:
@@ -411,9 +411,9 @@ class Curve:
             right = left + brushWidth
             left -= self.bandThickness/2.0
             right += self.bandThickness/2.0
-            iBandFirst = int( max(0, min(nBands-1, 1+floor(
+            iBandFirst = int( max(0, min(nBands-1, 1+math.floor(
                                         left / self.bandThickness))))
-            iBandLast = int( max(0, min(nBands-1, 1+floor(
+            iBandLast = int( max(0, min(nBands-1, 1+math.floor(
                                         right / self.bandThickness))))
         
         
