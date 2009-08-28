@@ -2413,20 +2413,8 @@ class GChart (Composite):
     *
     """
     def setChartSize(self, xChartSize, yChartSize):
-        setXChartSize(xChartSize)
-        setYChartSize(yChartSize)
-
-
-    """*
-    * Convenience method equivalent to
-    * <tt>setChartTitle(HTML(html))</tt>.
-    *
-    * @param html HTML text used to define the chart's title.
-    *
-    * @see #setChartTitle(Widget) setChartTitle(Widget)
-    """
-    def setChartTitle(self, html):
-        setChartTitle(HTML(html))
+        self.setXChartSize(xChartSize)
+        self.setYChartSize(yChartSize)
 
 
     # returns x,y min/max over every plotted curve
@@ -2442,6 +2430,8 @@ class GChart (Composite):
     *
     """
     def setChartTitle(self, chartTitle):
+        if isinstance(chartTitle, str):
+            chartTitle = HTML(chartTitle)
         self.chartDecorationsChanged = True
         self.chartTitle = chartTitle
 

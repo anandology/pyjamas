@@ -1,5 +1,5 @@
 
-from pyjamas.chart import GChart
+from pyjamas.chart.GChart import GChart
 
 """*
 * Defines a scatter-plot of x*x vs. x.
@@ -9,7 +9,7 @@ class GChartExample00(GChart):
         self.setChartTitle("<b>x<sup>2</sup> vs x</b>")
         self.setChartSize(150, 150)
         self.addCurve()
-        for int i = 0; i < 10; i++)
+        for i in range(10):
             self.getCurve().addPoint(i,i*i)
         self.getCurve().setLegendLabel("x<sup>2</sup>")
         self.getXAxis().setAxisLabel("x")
