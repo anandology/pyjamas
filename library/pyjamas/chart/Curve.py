@@ -213,11 +213,11 @@ class Curve:
     """
     def getNBands(self, bandThickness):
         result = EXTRA_BANDS
-        if getSymbol().isHorizontallyBanded():
-            result += int ( ceil(getYChartSize()/bandThickness))
+        if self.getSymbol().isHorizontallyBanded():
+            result += int ( ceil(self.getYChartSize()/bandThickness))
         
         else :
-            result += int ( ceil(getXChartSize()/bandThickness) )
+            result += int ( ceil(self.getXChartSize()/bandThickness) )
         
         return result
     
