@@ -17,6 +17,7 @@
 *
 """
 
+import math
 
 from pyjamas.ui.HTML import HTML
 
@@ -204,7 +205,7 @@ class Annotation:
             result = self.heightUpperBound
         
         else:
-            result = int (ceil(self.fontSize *
+            result = int (math.ceil(self.fontSize *
                             self.numberOfLinesHigh *
                             CHARHEIGHT_TO_FONTSIZE_UPPERBOUND))
         
@@ -217,7 +218,7 @@ class Annotation:
             result = self.widthUpperBound
         
         else:
-            result = int ( ceil(self.fontSize *
+            result = int ( math.ceil(self.fontSize *
                                 self.numberOfCharsWide *
                                 CHARWIDTH_TO_FONTSIZE_UPPERBOUND))
         
