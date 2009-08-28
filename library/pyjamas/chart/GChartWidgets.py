@@ -306,6 +306,8 @@ class NonoccludingReusuableAlignedLabel (AlignedLabel):
         self.isHTML = False
         self.labelWidget = None
         self.innerGrid = AlignedLabel()
+        self.hAlign = None
+        self.vAlign = None
 
         AlignedLabel.__init__(self)
 
@@ -360,7 +362,7 @@ class NonoccludingReusuableAlignedLabel (AlignedLabel):
         *
         """
 
-        DOM.setStyleAttribute(getElement(), "visibility","hidden")
+        DOM.setStyleAttribute(self.getElement(), "visibility","hidden")
         DOM.setStyleAttribute(self.innerGrid.getElement(),
                               "visibility", "visible")
 
@@ -387,50 +389,50 @@ class NonoccludingReusuableAlignedLabel (AlignedLabel):
                                     isHTML, labelWidget):
 
         if self.fontSize != fontSize:
-            DOM.setIntStyleAttribute(innerGrid.getElement(), "fontSize", fontSize)
+            DOM.setIntStyleAttribute(self.innerGrid.getElement(), "fontSize", fontSize)
             self.fontSize = fontSize
 
         if self.fontStyle != fontStyle:
-            DOM.setStyleAttribute(innerGrid.getElement(), "fontStyle", fontStyle)
+            DOM.setStyleAttribute(self.innerGrid.getElement(), "fontStyle", fontStyle)
             self.fontStyle = fontStyle
 
         if self.fontWeight != fontWeight:
-            DOM.setStyleAttribute(innerGrid.getElement(), "fontWeight", fontWeight)
+            DOM.setStyleAttribute(self.innerGrid.getElement(), "fontWeight", fontWeight)
             self.fontWeight = fontWeight
 
         if self.fontColor != fontColor:
-            DOM.setStyleAttribute(innerGrid.getElement(),"color", fontColor)
+            DOM.setStyleAttribute(self.innerGrid.getElement(),"color", fontColor)
             self.fontColor = fontColor
 
         if self.hAlign != hAlign:
-            getCellFormatter().setHorizontalAlignment(0,0,hAlign)
+            self.getCellFormatter().setHorizontalAlignment(0,0,hAlign)
             # without this, only IE6-quirks doesn't quite align right:
-            innerGrid.getCellFormatter().setHorizontalAlignment(0,0,hAlign)
+            self.innerGrid.getCellFormatter().setHorizontalAlignment(0,0,hAlign)
             self.hAlign = hAlign
 
         if self.vAlign != vAlign:
-            getCellFormatter().setVerticalAlignment(0,0,vAlign)
+            self.getCellFormatter().setVerticalAlignment(0,0,vAlign)
             # without this, only IE6-quirks doesn't quite align right:
-            innerGrid.getCellFormatter().setVerticalAlignment(0,0,vAlign)
+            self.innerGrid.getCellFormatter().setVerticalAlignment(0,0,vAlign)
             self.vAlign = vAlign
 
 
         if None != labelWidget:
             if self.labelWidget != labelWidget:
-                innerGrid.setWidget(0,0,labelWidget)
+                self.innerGrid.setWidget(0,0,labelWidget)
                 self.labelWidget = labelWidget
                 self.labelText = None
 
 
         elif self.labelText != labelText  or  self.isHTML != isHTML:
             if None == labelText  or  "" == labelText:
-                innerGrid.setText(0,0,"")
+                self.innerGrid.setText(0,0,"")
 
             elif not isHTML:
-                innerGrid.setText(0,0,labelText)
+                self.innerGrid.setText(0,0,labelText)
 
             else:
-                innerGrid.setHTML(0, 0, labelText)
+                self.innerGrid.setHTML(0, 0, labelText)
 
             self.isHTML = isHTML
             self.labelText = labelText
@@ -445,8 +447,6 @@ class NonoccludingReusuableAlignedLabel (AlignedLabel):
 *
 """
 class AnnotationRenderingPanel (PartitionedAbsolutePanel):
-    labelIndex = 0;                # to-be-added-next label index
-    lastVisibleLabel = -1; # just before 1st valid index
     """
     * Returns the inner grid of the first reusuable, non-occluding
     * aligned label in this rendering panel.
@@ -454,7 +454,7 @@ class AnnotationRenderingPanel (PartitionedAbsolutePanel):
     """
     def getFirstInnerAlignedLabel(self):
         result = None
-        if labelIndex > 0:
+        if self.labelIndex > 0:
             parent = self.getWidget(0)
             result = parent.getInnerGrid()
 
@@ -462,6 +462,8 @@ class AnnotationRenderingPanel (PartitionedAbsolutePanel):
 
 
     def __init__(self):
+        self.labelIndex = 0;                # to-be-added-next label index
+        self.lastVisibleLabel = -1; # just before 1st valid index
         PartitionedAbsolutePanel.__init__(self)
         """
         * Because of event-occlusion that can occur on all browsers but IE,
@@ -481,28 +483,28 @@ class AnnotationRenderingPanel (PartitionedAbsolutePanel):
         if x == -1  and  y == -1:
             x = 0
 
-        setWidgetPosition(lbl, x, y)
+        self.setWidgetPosition(lbl, x, y)
 
 
     def beginRendering(self):
-        labelIndex = 0
+        self.labelIndex = 0
 
 
     def endRendering(self):
         # hide or remove labels no longer being used
-        if optimizeForMemory:
-            iLabel = (getWidgetCount()-1)
+        if self.optimizeForMemory:
+            iLabel = (self.getWidgetCount()-1)
         else:
-            iLabel = lastVisibleLabel
-        while iLabel >= labelIndex:
-            w = getWidget(iLabel)
-            if optimizeForMemory:
-                remove(iLabel)
+            iLabel = self.lastVisibleLabel
+        while iLabel >= self.labelIndex:
+            w = self.getWidget(iLabel)
+            if self.optimizeForMemory:
+                self.remove(iLabel)
             else:
                 w.setVisible(False)
             iLabel -= 1
 
-        lastVisibleLabel = labelIndex-1
+        self.lastVisibleLabel = self.labelIndex-1
 
 
     """
@@ -511,8 +513,8 @@ class AnnotationRenderingPanel (PartitionedAbsolutePanel):
     *
     """
     def getNextOrNewAlignedLabel(self, fontSize, fontStyle, fontWeight, fontColor, hAlign, vAlign, labelText, isHTML, labelWidget):
-        if labelIndex < getWidgetCount():
-            result = self.getWidget(labelIndex)
+        if self.labelIndex < self.getWidgetCount():
+            result = self.getWidget(self.labelIndex)
             if None != result.labelWidget  and  labelWidget == result.labelWidget:
                 """
                 * DOM element actually stored in the label's Grid-cell, and what
@@ -535,33 +537,31 @@ class AnnotationRenderingPanel (PartitionedAbsolutePanel):
 
 
 
-            if labelIndex > lastVisibleLabel:
+            if self.labelIndex > self.lastVisibleLabel:
                 result.setVisible(True)
 
 
         else:
             result = NonoccludingReusuableAlignedLabel()
-            add(result)
+            self.add(result)
 
         result.setReusableProperties(fontSize, fontStyle, fontWeight,
                                     fontColor, hAlign, vAlign,
                                     labelText, isHTML, labelWidget)
 
-        if lastVisibleLabel < labelIndex:
-            lastVisibleLabel = labelIndex
+        if self.lastVisibleLabel < self.labelIndex:
+            self.lastVisibleLabel = self.labelIndex
 
-        labelIndex += 1
+        self.labelIndex += 1
         return result
 
 
     def renderAnnotation(self, annotation, loc, xCenter, yCenter, symWidth, symHeight, symbol):
 
         widthUpperBound = annotation.getWidthUpperBound()
-        upLeftX = loc.getUpperLeftX(xCenter,
-        widthUpperBound, abs(symWidth))
+        upLeftX = loc.getUpperLeftX(xCenter, widthUpperBound, abs(symWidth))
         heightUpperBound = annotation.getHeightUpperBound()
-        upLeftY = loc.getUpperLeftY(yCenter,
-        heightUpperBound, abs(symHeight))
+        upLeftY = loc.getUpperLeftY(yCenter, heightUpperBound, abs(symHeight))
 
 
         alignedLabel = self.getNextOrNewAlignedLabel(

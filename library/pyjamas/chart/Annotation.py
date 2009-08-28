@@ -18,9 +18,10 @@
 """
 
 
+from pyjamas.ui.HTML import HTML
 
 import GChart
-from GChartUtil import htmlWidth
+from GChartUtil import htmlWidth, htmlHeight
 
 from GChartConsts import DEFAULT_FONT_COLOR
 from GChartConsts import DEFAULT_ANNOTATION_FONTSIZE
@@ -62,11 +63,11 @@ class Annotation:
         self.fontWeight = "normal"
         self.location = None
         self.text = None
-        self.widget = None;    # may be used in lieu of text or HTML
+        self.widget = None    # may be used in lieu of text or HTML
         self.isVisible = True
         self.xShift = 0
         self.yShift = 0
-        self.isHTML = False; # no break tags ==> plain text
+        self._isHTML = False; # no break tags ==> plain text
         # Estimated number of lines, width in chars, of annotation
         # text (not used by Widgets)
         self.numberOfLinesHigh = 0
@@ -83,20 +84,20 @@ class Annotation:
     def analyzeHTML(self, s):
         result = None
         if None == s:
-            self.isHTML = False
+            self._isHTML = False
             self.numberOfLinesHigh = 0
             self.numberOfCharsWide = 0
         
         elif not s.startswith("<html>"):
             # no html==>plain text
-            self.isHTML = False
+            self._isHTML = False
             self.numberOfLinesHigh = 1
             self.numberOfCharsWide = len(s)
             result = s
         
         else:
             # HTML
-            self.isHTML = True
+            self._isHTML = True
             # <html> is just a flag, not a tag, so strip it out.
             result = s.substring(HTML_LEN)
             if self.widthUpperBound == GChart.NAI:
@@ -124,11 +125,11 @@ class Annotation:
     
     
     def isHTML(self):
-        return self.isHTML
+        return self._isHTML
     
     
     def getText(self):
-        if self.isHTML:
+        if self._isHTML:
             return "<html>" + self.text
         return self.text
     
@@ -179,6 +180,8 @@ class Annotation:
     def setWidget(self, widget,
                     widthUpperBound=DEFAULT_WIDGET_WIDTH_UPPERBOUND,
                     heightUpperBound=DEFAULT_WIDGET_HEIGHT_UPPERBOUND):
+        if isinstance(widget, str):
+            widget = HTML(widget)
         self.widthUpperBound = widthUpperBound
         self.heightUpperBound = heightUpperBound
         self.text = None
