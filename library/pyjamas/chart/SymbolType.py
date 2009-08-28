@@ -219,7 +219,7 @@ class SymbolType:
     * symbols except pie slices.
     *
     """
-    def getCenterX(self, pp, symbol, prevX, x, nextX):
+    def getCenterX_2(self, pp, symbol, prevX, x, nextX):
         xMin = pp.getXMin()
         xMax = pp.getXMax()
         xMid = symbol.getBaseline()
@@ -235,14 +235,14 @@ class SymbolType:
         nextXPx = pp.xToPixel(nextX)
         width = symbol.getWidth(pp)
 
-        symWidth = getAdjustedWidth(width, xPx,
+        symWidth = self.getAdjustedWidth(width, xPx,
         prevXPx, nextXPx,
         xMinPx, xMaxPx, xMidPx)
         if (Double.isNaN(symWidth)):
             return Double.NaN
 
 
-        xLeft = getUpperLeftX(width, xPx,
+        xLeft = self.getUpperLeftX(width, xPx,
         prevXPx, nextXPx,
         xMinPx, xMaxPx, xMidPx,
         pp.getXMousePlotArea())
@@ -278,7 +278,7 @@ class SymbolType:
             nextX = c.getPoint(iPoint+1).getX()
 
 
-        result = self.getCenterX(pp, symbol, prevX, x, nextX)
+        result = self.getCenterX_2(pp, symbol, prevX, x, nextX)
 
         return result
 
@@ -294,7 +294,7 @@ class SymbolType:
     * symbols except pie slices.
     *
     """
-    def getCenterY(self, pp, symbol, prevY, y, nextY, onY2):
+    def getCenterY_2(self, pp, symbol, prevY, y, nextY, onY2):
 
         # the cartesian data and pixel Y coordinates are
         # flipped, hence the (counter-intuitive) min/max
@@ -360,7 +360,7 @@ class SymbolType:
             nextY = c.getPoint(iPoint+1).getY()
 
 
-        result = self.getCenterY(pp, symbol, prevY, y, nextY, onY2)
+        result = self.getCenterY_2(pp, symbol, prevY, y, nextY, onY2)
 
         return result
 

@@ -40,7 +40,7 @@ class Point:
     def getINextInBand(self):
         return self.iNextInBand
 
-    def setINextInBand(iNext):
+    def setINextInBand(self, iNext):
         self.iNextInBand = iNext
 
     def __init__(self, curve, x, y):

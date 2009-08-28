@@ -174,7 +174,8 @@ class Curve:
         if xPx!=xPx:
             return result; # NaN points not in any band
         
-        yPx = symType.getCenterY( chart.plotPanel, self.getSymbol(), iPoint, onY2())
+        yPx = symType.getCenterY( self.chart.plotPanel, self.getSymbol(),
+                                  iPoint, self.onY2())
         if yPx!=yPx:
             return result; # NaN points not in any band
         
