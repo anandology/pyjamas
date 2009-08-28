@@ -113,15 +113,12 @@ def setBorderStyle(uio, cssBorderStyle):
 
 
 
-def setBorderWidth(uio, cssBorderWidth):
-    DOM.setStyleAttribute(uio.getElement(), "borderWidth", cssBorderWidth)
-
-
 def setBorderWidth(uio, borderWidth):
     if borderWidth != NAI:
-        setBorderWidth(uio, borderWidth + "px")
+        cssBorderWidth = str(borderWidth) + "px")
     else:
-        setBorderWidth(uio, "")
+        cssBorderWidth = ""
+    DOM.setStyleAttribute(uio.getElement(), "borderWidth", cssBorderWidth)
 
 
 def setFontFamily(uio, cssFontFamily):
