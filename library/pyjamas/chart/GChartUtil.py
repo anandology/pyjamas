@@ -271,7 +271,10 @@ def htmlWidth(sIn):
     if (-1 == iBr):
         s = sIn
     else:
-        s = sIn.substring(0, iBr)
+        s = sIn[:iBr]
+    # XXX TODO: sort out tags and literals
+    return len(s)
+
     LITERAL_PAT = "[&][#a-zA-Z]+[;]"
     s = s.replaceAll(LITERAL_PAT, "X"); # literals count as 1 char
     TAG_PAT = "[<][^>]+[>]"

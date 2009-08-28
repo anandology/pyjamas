@@ -93,7 +93,7 @@ import TouchedPointUpdateOption
 from Curve import Curve
 import GChartUtil 
 from GChartUtil import formatAsHovertext, YAxisId, setOverflow
-from GChartUtil import htmlHeight
+from GChartUtil import htmlHeight, htmlWidth
 from GChartWidgets import PlotPanel
 import GChartWidgets 
 
@@ -3609,7 +3609,7 @@ class GChart (Composite):
 
 
         return int ( ((maxLen + EXTRA_WIDTH) *
-                        getLegendFontSize() *
+                        self.getLegendFontSize() *
                         TICK_CHARWIDTH_TO_FONTSIZE_LOWERBOUND))
 
 
