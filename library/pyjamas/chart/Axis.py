@@ -17,6 +17,8 @@
 *
 """
 
+from pyjamas.ui import HTML
+
 import NumberFormat
 import DateTimeFormat
 import GChart
@@ -90,6 +92,7 @@ class Axis:
         self.currentLimits = AxisLimits( Double.MAX_VALUE, -Double.MAX_VALUE)
         self.previousLimits = AxisLimits( -Double.MAX_VALUE, Double.MAX_VALUE)
 
+        self.axisLabel = None
         self.axisLabelThickness = GChart.NAI
         self.hasGridlines = False
         self.tickCount = DEFAULT_TICK_COUNT
@@ -1101,20 +1104,10 @@ class Axis:
     """
 
     def setAxisLabel(self, axisLabel):
+        if isinstance(axisLabel, str):
+            axisLabel = HTML(str)
         self.axisLabel = axisLabel
         self.chartDecorationsChanged = True
-
-
-    """*
-    * Convenience method equivalent to
-    * <tt>setAxisLabel(HTML(html))</tt>
-    *
-    * @param html HTML text used to define the axis label
-    *
-    * @see #setAxisLabel(Widget) setAxisLabel(Widget)
-    """
-    def setAxisLabel(self, html):
-        setAxisLabel(HTML(html))
 
 
     """* Sets the thickness of the axis-label-holding region
