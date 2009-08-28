@@ -79,6 +79,13 @@ binary-indep: build install
 
 	# weeeird... something to do with dh_pysupport, how do you get it
 	# to stop interfering (when doing dh_pysupport for two packages??)
+	# what's going on here is that the pyjamas-desktop files are perfectly
+	# well laid out.... until dh_pysupport goes and screws them up by
+	# doing nothing short of copying the contents of _another_ package's
+	# files into it!
+	# greetings, debian developers: if you'd like to investigate the fault,
+	# knock yourselves out... but i ain't getting involved, and am quite
+	# happy to have this awful-looking workaround.  hurrah!
 	rm -fr debian/pyjamas-desktop/usr/share/pyshared/pyjs
 	grep -v pyjs \
 	   debian/pyjamas-desktop/usr/share/python-support/pyjamas-desktop.public \
