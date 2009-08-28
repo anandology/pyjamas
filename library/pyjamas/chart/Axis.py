@@ -25,6 +25,7 @@ import GChart
 import Double
 import TickLocation
 import AnnotationLocation
+import Annotation
 
 from GChartConsts import DEFAULT_TICK_LOCATION
 from GChartConsts import DEFAULT_TICK_COUNT
@@ -468,30 +469,30 @@ class Axis:
         # Base class implementation is for y axes (x-axis will override).
         EXTRA_CHARWIDTH = 2; # 1-char padding on each side
         DEF_CHARWIDTH = 1; # when widget has no text
-        if None == getAxisLabel():
+        if None == self.getAxisLabel():
             result = 0
 
-        elif GChart.NAI != axisLabelThickness:
-            result = axisLabelThickness
+        elif GChart.NAI != self.axisLabelThickness:
+            result = self.axisLabelThickness
 
-        elif hasattr(getAxisLabel(), 'getHTML'):
-            charWidth = htmlWidth( getAxisLabel().getHTML())
+        elif hasattr(self.getAxisLabel(), 'getHTML'):
+            charWidth = htmlWidth( self.getAxisLabel().getHTML())
             result = int ( round((charWidth + EXTRA_CHARWIDTH) *
-                            getTickLabelFontSize() *
+                            self.getTickLabelFontSize() *
                             TICK_CHARWIDTH_TO_FONTSIZE_LOWERBOUND))
 
-        elif hasattr(getAxisLabel(), "getText"):
-            text = getAxisLabel().getText()
+        elif hasattr(self.getAxisLabel(), "getText"):
+            text = self.getAxisLabel().getText()
             result = int (round((EXTRA_CHARWIDTH +
                             (text and len(text) or 0)) *
-                            getTickLabelFontSize() *
+                            self.getTickLabelFontSize() *
                             TICK_CHARWIDTH_TO_FONTSIZE_LOWERBOUND))
 
         else:
             # non-text widget. Not a clue, just use def width
             result = int ( round(
                             (DEF_CHARWIDTH + EXTRA_CHARWIDTH) *
-                            getTickLabelFontSize() *
+                            self.getTickLabelFontSize() *
                             TICK_CHARWIDTH_TO_FONTSIZE_LOWERBOUND) )
 
         return result

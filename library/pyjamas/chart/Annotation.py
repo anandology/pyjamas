@@ -38,6 +38,21 @@ from GChartConsts import CHARHEIGHT_TO_FONTSIZE_UPPERBOUND
 HTML_LEN = len("<html>")
 BR_LEN = len("<br>")
 
+# Returns number of chars in first <br>-delimited line of
+# given string. A very crude way to estimate (especially
+# HTML) width in characters, but user can give explicit
+# widths when the width estimates based on this char width
+# heuristic fail them.
+def getNumberOfCharsWide(s):
+    result = 0
+    if not s.startswith("<html>"):
+        result = len(s)
+    
+    else:
+        result = htmlWidth(s)
+    
+    return result
+
 class Annotation:
     def __init__(self):
         self.fontColor = DEFAULT_FONT_COLOR
@@ -95,21 +110,6 @@ class Annotation:
         return result
         
     
-    
-    # Returns number of chars in first <br>-delimited line of
-    # given string. A very crude way to estimate (especially
-    # HTML) width in characters, but user can give explicit
-    # widths when the width estimates based on this char width
-    # heuristic fail them.
-    def getNumberOfCharsWide(self, s):
-        result = 0
-        if not s.startswith("<html>"):
-            result = len(s)
-        
-        else:
-            result = htmlWidth(s)
-        
-        return result
     
     def getFontColor(self):
         return self.fontColor
