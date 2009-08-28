@@ -1071,8 +1071,8 @@ class PlotPanel (AbsolutePanel):
         domInsert = True
         w = GraphicsRenderingPanel()
         if (DECORATIVE_RENDERING_PANEL_INDEX == rpIndex  or  
-            isHoverFeedbackRenderingPanel(rpIndex)  or  
-            not getClipToPlotArea()):
+            self.chart.isHoverFeedbackRenderingPanel(rpIndex)  or  
+            not self.getClipToPlotArea()):
             # chart decorations and hover feedback are never clipped
             w.setPixelSize(0, 0)
             GChart.setOverflow(w, "visible")
@@ -1081,7 +1081,8 @@ class PlotPanel (AbsolutePanel):
             w.setPixelSize(getXChartSize(), getYChartSize())
             GChart.setOverflow(w, "hidden")
 
-        self.graphicsPanel.insert(w, self.graphicsPanel.getElement(), rpIndex, domInsert)
+        # XXX TODO: investigate what the meaning of domInsert is about
+        self.graphicsPanel.insert(w, self.graphicsPanel.getElement(), rpIndex)
         self.graphicsPanel.setWidgetPosition(w, 0, 0)
 
 

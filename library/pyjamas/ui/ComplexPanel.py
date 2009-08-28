@@ -28,6 +28,9 @@ class ComplexPanel(Panel):
     def getWidgetCount(self):
         return len(self.children)
 
+    def getWidget(self, index):
+        return self.children[index]
+
     def getChildren(self):
         return self.children
 
