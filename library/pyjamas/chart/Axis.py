@@ -17,6 +17,8 @@
 *
 """
 
+import time
+
 from pyjamas.ui.HTML import HTML
 
 import NumberFormat
@@ -410,7 +412,7 @@ class Axis:
         result = None
         if self.tickLabelFormatType == DATE_FORMAT_TYPE:
             #Date transDate = Date((long) value)
-            transDate = Date(value)
+            transDate = time.gmtime(value)
             result = self.dateFormat.format(transDate)
 
         elif self.tickLabelFormatType == LOG10INVERSE_FORMAT_TYPE:
