@@ -25,6 +25,9 @@ class ComplexPanel(Panel):
     def add(self, widget, container):
         self.insert(widget, container, len(self.children))
 
+    def getWidgetCount(self):
+        return len(self.children)
+
     def getChildren(self):
         return self.children
 

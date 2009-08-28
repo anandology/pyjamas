@@ -1011,20 +1011,20 @@ class PlotPanel (AbsolutePanel):
         # so if user calls update inside hoverCleanup, it won't recurse
         self.insideHoverCleanup = False
 
-        xMax = Double.NaN
-        xMin = Double.NaN
-        y2Max = Double.NaN
-        y2Min = Double.NaN
-        yMax = Double.NaN
-        yMin = Double.NaN
+        self.xMax = Double.NaN
+        self.xMin = Double.NaN
+        self.y2Max = Double.NaN
+        self.y2Min = Double.NaN
+        self.yMax = Double.NaN
+        self.yMin = Double.NaN
         # Retains the last moved-to (Event.ONMOUSEMOVE) client mouse position, or NAI if
         # mouse moved away from chart entirely.
-        clientX = GChart.NAI
-        clientY = GChart.NAI
+        self.clientX = GChart.NAI
+        self.clientY = GChart.NAI
         # Pixel coords of above mouse position, relative to top-left
         # corner of the GChart (mouse position in GChart's pixel coords)
-        xMouse = GChart.NAI
-        yMouse = GChart.NAI
+        self.xMouse = GChart.NAI
+        self.yMouse = GChart.NAI
         # first rendering panel is reserved for chart decorations,
         # and its overflow outside of the plot panel is never hidden
         self.graphicsPanel = AbsolutePanel()
@@ -1189,7 +1189,7 @@ class PlotPanel (AbsolutePanel):
             self.xMouse = (Window.getScrollLeft() + clientX - getAbsoluteLeft())
 
     def getClientY(self):
-        return clientY
+        return self.clientY
 
     # See comments on analogous lines in setClientX above
     def setClientY(self, clientY, isClick):
@@ -1317,29 +1317,29 @@ class PlotPanel (AbsolutePanel):
         y2Min = axisLimits.min
         y2Max = axisLimits.max
 
-        topMargin = self.chart.getChartTitleThickness()
+        self.topMargin = self.chart.getChartTitleThickness()
 
-        xAxisEnsembleHeight = (xAxis.getAxisLabelThickness() +
+        self.xAxisEnsembleHeight = (xAxis.getAxisLabelThickness() +
                                 xAxis.getTickLabelThickness(False) +
                                 xAxis.getTickSpace() +
                                 xAxis.getTickLabelPadding())
-        yAxisEnsembleWidth = (yAxis.getAxisLabelThickness() +
+        self.yAxisEnsembleWidth = (yAxis.getAxisLabelThickness() +
                                 yAxis.getTickLabelThickness(False) +
                                 yAxis.getTickSpace() +
                                 yAxis.getTickLabelPadding())
-        y2AxisEnsembleWidth = (y2Axis.getAxisLabelThickness() +
+        self.y2AxisEnsembleWidth = (y2Axis.getAxisLabelThickness() +
                                 y2Axis.getTickLabelThickness(False) +
                                 y2Axis.getTickSpace() +
                                 y2Axis.getTickLabelPadding())
 
-        chartLegendThickness = self.chart.getLegendThickness()
-        chartFootnotesThickness = self.chart.getChartFootnotesThickness()
+        self.chartLegendThickness = self.chart.getLegendThickness()
+        self.chartFootnotesThickness = self.chart.getChartFootnotesThickness()
 
         self.setPixelSize(self.getXChartSizeDecoratedQuickly(),
                         self.getYChartSizeDecoratedQuickly())
 
-        self.setWidgetPosition(self.graphicsPanel, yAxisEnsembleWidth, topMargin)
-        self.setWidgetPosition(self.annotationPanel, yAxisEnsembleWidth, topMargin)
+        self.setWidgetPosition(self.graphicsPanel, self.yAxisEnsembleWidth, self.topMargin)
+        self.setWidgetPosition(self.annotationPanel, self.yAxisEnsembleWidth, self.topMargin)
 
         # if there are any existing graphical rendering panels, bring
         # their clipping specs into agreement with the chartspecs
