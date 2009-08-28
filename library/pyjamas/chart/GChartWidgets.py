@@ -61,6 +61,8 @@ from pyjamas.ui.SimplePanel import SimplePanel
 from pyjamas.ui.UIObject import UIObject
 from pyjamas.ui.Widget import Widget
 
+from GChartConsts import N_PRE_SYSTEM_CURVES
+
 import GChart
 import Double
 
@@ -815,22 +817,12 @@ class ReusableImage (Image):
 *
 """
 class GraphicsRenderingPanel (AbsolutePanel):
-    canvas = None
-    x0 = 0;  # origin, in pixel coords, of upper left..
-    y0 = 0;  #   corner of rendering canvas widget
-    canvasWidth = 0; # width of last used rendering canvas
-    canvasHeight = 0; # height of last used rendering canvas
-    canvasPanel = AbsolutePanel()
-    imagePanel = PartitionedAbsolutePanel()
-    imageIndex = 0
-    # helps minimize calls to setVisible (which can be expensive)
-    lastVisibleImage = -1
     # Add a canvas, if needed
     def maybeAddCanvas(self):
-        if None != canvasFactory  and  None == canvas:
-            canvas = canvasFactory.create()
-            if None != canvas:
-                if isintance(canvas, Widget):
+        if None != self.canvasFactory  and  None == self.canvas:
+            self.canvas = canvasFactory.create()
+            if None != self.canvas:
+                if isintance(self.canvas, Widget):
                     """
                     * The next line is only needed for IE; it is needed to work-around a
                     * GWTCanvas bug that improperly shifts the x-placement of rendered
@@ -843,9 +835,9 @@ class GraphicsRenderingPanel (AbsolutePanel):
                     * See also TestGChart46.java, which reproduces the GWTCanvas bug.
                     *
                     """
-                    DOM.setElementAttribute(canvas.getElement(),
+                    DOM.setElementAttribute(self.canvas.getElement(),
                                         "align", "left")
-                    canvasPanel.add(canvas, 0, 0)
+                    self.canvasPanel.add(self.canvas, 0, 0)
 
                 else:
                     raise IllegalStateException(
@@ -853,18 +845,29 @@ class GraphicsRenderingPanel (AbsolutePanel):
                     "either None or a GWT Widget, as required. See the " +
                     "GChart.setCanvasFactory method javadocs for details.")
 
-    def __init__(self):
-        super()
+    def __init__(self, **kwargs):
+        self.canvas = None
+        self.x0 = 0;  # origin, in pixel coords, of upper left..
+        self.y0 = 0;  #   corner of rendering canvas widget
+        self.canvasWidth = 0; # width of last used rendering canvas
+        self.canvasHeight = 0; # height of last used rendering canvas
+        self.canvasPanel = AbsolutePanel()
+        self.imagePanel = PartitionedAbsolutePanel()
+        self.imageIndex = 0
+        # helps minimize calls to setVisible (which can be expensive)
+        self.lastVisibleImage = -1
+
+        AbsolutePanel.__init__(self, **kwargs)
         # Overflow of this panel is controlled when it is added
         #       GChart.setOverflow(this, "visible")
-        GChart.setOverflow(canvasPanel, "visible")
-        GChart.setOverflow(imagePanel, "visible")
+        GChart.setOverflow(self.canvasPanel, "visible")
+        GChart.setOverflow(self.imagePanel, "visible")
         # these sub-panels have no size themselves, they are merely
         # there to segregate background, images, and labels.
-        canvasPanel.setPixelSize(0,0)
-        imagePanel.setPixelSize(0,0)
-        self.add(canvasPanel, 0, 0)
-        self.add(imagePanel, 0, 0)
+        self.canvasPanel.setPixelSize(0,0)
+        self.imagePanel.setPixelSize(0,0)
+        self.add(self.canvasPanel, 0, 0)
+        self.add(self.imagePanel, 0, 0)
 
 
     def getCanvas(self):
@@ -1127,9 +1130,9 @@ class PlotPanel (AbsolutePanel):
         if 0 == self.graphicsPanel.getWidgetCount():
             # for lazy addition
             # smaller,faster if all background curves put on single panel
-            for i in range(N_PRE_SYSTEM_CURVES-1, curves.size()):
-                rpInd = getRenderingPanelIndex(i)
-                addGraphicsRenderingPanel(rpInd)
+            for i in range(N_PRE_SYSTEM_CURVES-1, len(self.chart.curves)):
+                rpInd = self.chart.getRenderingPanelIndex(i)
+                self.addGraphicsRenderingPanel(rpInd)
 
         return self.graphicsPanel.getWidget(rpIndex)
 
@@ -1137,9 +1140,9 @@ class PlotPanel (AbsolutePanel):
         if 0 == self.annotationPanel.getWidgetCount():
             # for lazy addition
             # smaller,faster if all background curves put on single panel
-            for i in range(N_PRE_SYSTEM_CURVES-1, curves.size()):
-                rpInd = getRenderingPanelIndex(i)
-                addAnnotationRenderingPanel(rpInd)
+            for i in range(N_PRE_SYSTEM_CURVES-1, len(self.chart.curves)):
+                rpInd = self.chart.getRenderingPanelIndex(i)
+                self.addAnnotationRenderingPanel(rpInd)
 
         return self.annotationPanel.getWidget(rpIndex)
 
