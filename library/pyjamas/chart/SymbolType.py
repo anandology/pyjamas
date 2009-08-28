@@ -1345,7 +1345,7 @@ class SymbolType:
          # if 0 == spacing  and  None != canvas  and  thickness > 0
         # next point defined
         # not a zero thickness connection
-        elif nextX==nextX  and  nextY==nextY  and   thickness > 0  and    (x!=nextX  or  y!=nextY):
+        elif (not Double.isNaN(nextX))  and  (not Double.isNaN(nextY))  and   thickness > 0  and    (x!=nextX  or  y!=nextY):
             # this/next point not overlayed
             if 0 == spacing:
                 # 1px is as close as HTML-element
@@ -1573,7 +1573,7 @@ class LineSymbolType (SymbolType):
 
         # next point defined
         # not a zero thickness connection
-        if nextX==nextX  and  nextY==nextY  and   thickness > 0  and    (x!=nextX  or  y!=nextY):
+        if (not Double.isNaN(nextX))  and  (not Double.isNaN(nextY))  and   thickness > 0  and    (x!=nextX  or  y!=nextY):
             # this/next point not overlayed
             # draw HTML-element rendered line segment
 

@@ -1822,7 +1822,7 @@ class Axis:
             # e.g. no data but only max explicitly set
             min = max - DEFAULT_AXIS_RANGE
 
-        elif not (Double.isNaN(min))  and  (max!=max):
+        elif not (Double.isNaN(min))  and  (Double.isNaN(max)):
             # x!=x is a faster isNaN
             # e.g. no data but only min explicitly set
             max = min + DEFAULT_AXIS_RANGE
