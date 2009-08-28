@@ -429,7 +429,7 @@ class Axis:
         * @see #formatAsTickLabel formatAsTickLabel
         *
         """
-        return formatAsTickLabel(value)
+        return self.formatAsTickLabel(value)
 
 
     def getAxisLabel(self):
@@ -440,7 +440,7 @@ class Axis:
         ** @see #setAxisLabel setAxisLabel
         **
         """
-        return axisLabel
+        return self.axisLabel
 
 
     def getAxisLabelThickness(self):
