@@ -1541,16 +1541,18 @@ class Axis:
     """
     def setTickLabelFormat(self, format):
         # interpret prefixes and create an appropriate formatter
-        if not self.tickLabelFormat == format:
-            self.chartDecorationsChanged = True
-            if format.startswith("=(Date)"):
-                transFormat = format.find("=(Date)".length())
-                if transFormat.equals(""):
-                    # so "=(Date)" works
-                    self.dateFormat = DateTimeFormat.getShortDateTimeFormat()
+        if self.tickLabelFormat == format:
+            return
 
-                else: # e.g. "=(Date)mm/dd/yy hh:mm"
-                    self.dateFormat = DateTimeFormat.getFormat(transFormat)
+        self.chartDecorationsChanged = True
+        if format.startswith("=(Date)"):
+            transFormat = format.find("=(Date)".length())
+            if transFormat.equals(""):
+                # so "=(Date)" works
+                self.dateFormat = DateTimeFormat.getShortDateTimeFormat()
+
+            else: # e.g. "=(Date)mm/dd/yy hh:mm"
+                self.dateFormat = DateTimeFormat.getFormat(transFormat)
 
             self.tickLabelFormatType = DATE_FORMAT_TYPE
 
@@ -1567,7 +1569,6 @@ class Axis:
         else:
             self.numberFormat = NumberFormat.getFormat(format)
             self.tickLabelFormatType = NUMBER_FORMAT_TYPE
-
 
         # remember original format (for use with the getter)
         self.tickLabelFormat = format

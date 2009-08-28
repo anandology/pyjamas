@@ -317,7 +317,9 @@ class Curve:
         nBands = self.getNBands(self.bandThickness)
 
         if self.bandList is None  or  len(self.bandList) != nBands:
-            self.bandList = [GChart.NAI] * nBands
+            self.bandList = []
+            for i in range(nBands):
+                self.bandList.append(GChart.NAI)
 
         for iPoint in range(self.getNPoints()):
             iBand = self.getBand(iPoint, self.bandThickness)
@@ -431,7 +433,7 @@ class Curve:
                         " xBrush="+xBrush+" yBrush="+yBrush+" brushWidth="+brushWidth +
                         " brushHeight=" +brushHeight + " bandThickness=" + self.bandThickness)
 
-                p  = self.getPoint(iPoint)
+                p = self.getPoint(iPoint)
                 if symType.isIntersecting(self.chart.plotPanel,
                                           self.getSymbol(), iPoint,
                                           self.onY2(), xBrush, yBrush,
@@ -570,11 +572,10 @@ class Curve:
     * @see #getNPoints getNPoints
     """
     def getPointIndex(self, point):
-        result = self.points.index(point)
-        if -1 == result:
-            result = GChart.NAI
-
-        return result
+        try:
+            return self.points.index(point)
+        except ValueError:
+            return GChart.NAI
 
     """*
     ** Returns the symbol associated with this curve.
