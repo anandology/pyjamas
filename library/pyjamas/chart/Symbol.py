@@ -584,7 +584,7 @@ class Symbol(object):
     def getHoverSelectionImageURL(self):
         if self.hoverSelectionImageURL:
             return self.hoverSelectionImageURL
-        return getBlankImageURL()
+        return self.parent.chart.getBlankImageURL()
     
     
     
@@ -713,7 +713,7 @@ class Symbol(object):
     def getImageURL(self):
         if self.imageURL:
             return self.imageURL
-        return getBlankImageURL()
+        return self.parent.chart.getBlankImageURL()
     
     # returns an internal, parsed form of the hovertext template
     def getHovertextChunks(self):

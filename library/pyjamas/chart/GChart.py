@@ -38,6 +38,7 @@ from pyjamas.ui.Widget import Widget
 from GChartConsts import NAI, DEFAULT_X_CHARTSIZE, DEFAULT_Y_CHARTSIZE
 from GChartConsts import USE_CSS
 from GChartConsts import Y_AXIS
+from GChartConsts import DEFAULT_BLANK_IMAGE_URL_FULLPATH
 from GChartConsts import DEFAULT_SYMBOL_BORDER_COLORS
 from GChartConsts import DEFAULT_LEGEND_BACKGROUND_COLOR
 from GChartConsts import N_SYSTEM_CURVES

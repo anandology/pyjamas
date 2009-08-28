@@ -840,21 +840,21 @@ class SymbolType:
     def getUpperLeftX(self, width, x, xPrev, xNext, xMin, xMax, xMid, xMouse):
         adjWidth = self.getAdjustedWidth(width, x,
                                     xPrev, xNext, xMin, xMax, xMid)
-        result = x + (0.5*(widthMultiplier - 1)) * adjWidth
+        result = x + (0.5*(self.widthMultiplier - 1)) * adjWidth
         return result
 
 
     def getUpperLeftY(self, height, y, yPrev, yNext, yMin, yMax, yMid, yMouse):
         adjHeight = self.getAdjustedHeight(height, y,
                                       yPrev, yNext, yMin, yMax, yMid)
-        result = y + (0.5*(heightMultiplier - 1)) * adjHeight
+        result = y + (0.5*(self.heightMultiplier - 1)) * adjHeight
         return result
 
 
 
     def defaultAnnotationLocation(self):
         #         return AnnotationLocation.SOUTH
-        result = defaultHoverLocation()
+        result = self.defaultHoverLocation()
         return result
 
     # fillSpacing to use when a symbol's fillSpacing is Double.NaN
@@ -1069,14 +1069,14 @@ class SymbolType:
         # Similarly, negative padding, pushes the edge inward.
 
         if symWidth != 0:
-            xLeft -= pixelPadLeft
-            symWidth += pixelPadLeft + pixelPadRight
+            xLeft -= self.pixelPadLeft
+            symWidth += self.pixelPadLeft + self.pixelPadRight
 
         # else, zero width, keep it that way (no padding added)
 
         if symHeight != 0:
-            yTop -= pixelPadTop
-            symHeight += pixelPadTop + pixelPadBottom
+            yTop -= self.pixelPadTop
+            symHeight += self.pixelPadTop + self.pixelPadBottom
 
         # else, zero height, keep it that way (no padding added)
 
