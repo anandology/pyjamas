@@ -461,7 +461,8 @@ class AnnotationRenderingPanel (PartitionedAbsolutePanel):
         return result
 
 
-    def __init__(self):
+    def __init__(self, chart):
+        self.chart = chart
         self.labelIndex = 0;                # to-be-added-next label index
         self.lastVisibleLabel = -1; # just before 1st valid index
         PartitionedAbsolutePanel.__init__(self)
@@ -846,7 +847,8 @@ class GraphicsRenderingPanel (AbsolutePanel):
                     "either None or a GWT Widget, as required. See the " +
                     "GChart.setCanvasFactory method javadocs for details.")
 
-    def __init__(self, **kwargs):
+    def __init__(self, chart, **kwargs):
+        self.chart = chart
         self.canvas = None
         self.x0 = 0;  # origin, in pixel coords, of upper left..
         self.y0 = 0;  #   corner of rendering canvas widget
@@ -921,13 +923,13 @@ class GraphicsRenderingPanel (AbsolutePanel):
     # it's OK to do any cleanup/bookkeeping needed.
     def endRendering(self):
         # hide or remove images no longer being used
-        if self._parent.optimizeForMemory:
+        if self.chart.optimizeForMemory:
             iImage = (self.getWidgetCount()-1)
         else:
             iImage = self.lastVisibleImage
         while iImage >= self.imageIndex:
             w = self.imagePanel.getWidget(iImage)
-            if self._parent.optimizeForMemory:
+            if self.chart.optimizeForMemory:
                 self.imagePanel.remove(iImage)
             else:
                 DOM.setStyleAttribute(w.getElement(), "visibility", "hidden")
@@ -1070,7 +1072,7 @@ class PlotPanel (AbsolutePanel):
 
     def addGraphicsRenderingPanel(self, rpIndex):
         domInsert = True
-        w = GraphicsRenderingPanel()
+        w = GraphicsRenderingPanel(self.chart)
         if (DECORATIVE_RENDERING_PANEL_INDEX == rpIndex  or  
             self.chart.isHoverFeedbackRenderingPanel(rpIndex)  or  
             not self.getClipToPlotArea()):
@@ -1101,7 +1103,7 @@ class PlotPanel (AbsolutePanel):
 
     def addAnnotationRenderingPanel(self, rpIndex):
         domInsert = True
-        w = AnnotationRenderingPanel()
+        w = AnnotationRenderingPanel(self.chart)
         # XXX TODO: investigate what the meaning of domInsert is about
         # self.annotationPanel.insert(w, self.annotationPanel.getElement(), rpIndex, domInsert)
         self.annotationPanel.insert(w, self.annotationPanel.getElement(),
