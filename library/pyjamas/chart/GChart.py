@@ -822,22 +822,22 @@ class GChart (Composite):
         c = Curve(self, internalIndex)
         self.curves[internalIndex] = c
         # curves are initially added to the x, y axes.
-        getXAxis().incrementCurves()
-        getYAxis().incrementCurves()
+        self.getXAxis().incrementCurves()
+        self.getYAxis().incrementCurves()
         # adjust ArrayList indexes to account for newly added element
         for i in range(internalIndex+1, len(self.curves)):
             self.curves.get(i).incrementIndex()
 
         if 0 != self.plotPanel.getRenderingPanelCount():
             # other panels are already there
-            rpIndex = getRenderingPanelIndex(internalIndex)
+            rpIndex = self.getRenderingPanelIndex(internalIndex)
             self.plotPanel.addGraphicsRenderingPanel(rpIndex)
             self.plotPanel.addAnnotationRenderingPanel(rpIndex)
 
         # otherwise, before 1st update: lazy-add panels when they're 1st used
         c.invalidate()
         if self.getNCurves() > 0:
-            setDefaultBorderColor(c, self.getNCurves()-1)
+            self.setDefaultBorderColor(c, self.getNCurves()-1)
 
 
 
@@ -917,7 +917,7 @@ class GChart (Composite):
     * @see #getChartTitle getChartTitle
     """
     def getChartFootnotes(self):
-        return chartFootnotes
+        return self.chartFootnotes
 
     """* Returns flag indicating if this chart's footnotes are
     *  left-justified or centered.
@@ -931,7 +931,7 @@ class GChart (Composite):
     * @see #setChartTitle setChartTitle
     """
     def getChartFootnotesLeftJustified(self):
-        return chartFootnotesLeftJustified
+        return self.chartFootnotesLeftJustified
 
     """* Returns the thickness (height) of the rectangular region
     ** at the bottom of the chart allocated for footnotes.
