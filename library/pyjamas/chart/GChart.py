@@ -970,15 +970,15 @@ class GChart (Composite):
         result = 0
         EXTRA_HEIGHT = 3; # 1.5 lines padding above/below
         DEF_HEIGHT = 1
-        if None == getChartFootnotes():
+        if None == self.getChartFootnotes():
             result = 0
 
         elif NAI != self.footnotesThickness:
             result = self.footnotesThickness
 
-        elif hasattr(getChartFootnotes(), 'getHTML'):
+        elif hasattr(self.getChartFootnotes(), 'getHTML'):
             result = DEFAULT_FOOTNOTES_THICKNESS * (EXTRA_HEIGHT +
-                        htmlHeight( getChartFootnotes().getHTML()) )
+                        htmlHeight( self.getChartFootnotes().getHTML()) )
 
         else:
             result = DEFAULT_FOOTNOTES_THICKNESS* (DEF_HEIGHT + EXTRA_HEIGHT)
@@ -1424,9 +1424,9 @@ class GChart (Composite):
     *"""
     def getLegendThickness(self):
         result = 0
-        if self.isLegendVisible()  and  0 < getNVisibleCurvesOnLegend():
+        if self.isLegendVisible()  and  0 < self.getNVisibleCurvesOnLegend():
             if NAI == self.legendThickness:
-                result = getDefaultLegendThickness()
+                result = self.getDefaultLegendThickness()
 
             else:
                 result = self.legendThickness
