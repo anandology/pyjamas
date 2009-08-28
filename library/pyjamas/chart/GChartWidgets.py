@@ -220,7 +220,7 @@ class PartitionedAbsolutePanel (Composite):
                     "Invalid widget index: " + str(iWidget) +
                     ". Valid range is: 0..." + str((self.nWidgets-1)))
 
-        selectSubPanel(iWidget)
+        self.selectSubPanel(iWidget)
         result = self.subPanel.getWidget( iWidget % WIDGETS_PER_PANEL)
         return result
 
@@ -1357,7 +1357,9 @@ class PlotPanel (AbsolutePanel):
         # their clipping specs into agreement with the chartspecs
         for i in range(self.getRenderingPanelCount()):
             grp = self.graphicsPanel.getWidget(i)
-            if DECORATIVE_RENDERING_PANEL_INDEX == i  or  self.isHoverFeedbackRenderingPanel(i)  or  not self.getClipToPlotArea():
+            if (DECORATIVE_RENDERING_PANEL_INDEX == i  or  
+                self.chart.isHoverFeedbackRenderingPanel(i)  or  
+                not self.getClipToPlotArea()):
                 grp.setPixelSize(0, 0)
                 GChart.setOverflow(grp, "visible")
 
@@ -1974,7 +1976,7 @@ class PlotPanel (AbsolutePanel):
     """
     def onBrowserEvent(self, event):
         # GWT docs say without this, 1.6+ event handlers won't work
-        PlotPanel.onBrowserEvent(self, event)
+        AbsolutePanel.onBrowserEvent(self, event)
 
         """
         * The tracking of the mouse position depends on if there are

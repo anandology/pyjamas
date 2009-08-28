@@ -1843,7 +1843,7 @@ class Axis:
         self._getAxisLimits(self.previousLimits)
 
     def limitsChanged(self):
-        return not getAxisLimits().equals(self.previousLimits)
+        return not self.getAxisLimits().equals(self.previousLimits)
 
 
     """ similar to getTickText, except for the tick position """

@@ -3476,7 +3476,7 @@ class GChart (Composite):
         * (so it's not like we are really building the chart twice)
         *
         """
-        assembleChart()
+        self.assembleChart()
 
 
 
