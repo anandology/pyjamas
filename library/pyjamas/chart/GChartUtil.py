@@ -61,7 +61,9 @@ from pyjamas.ui.SimplePanel import SimplePanel
 from pyjamas.ui.UIObject import UIObject
 from pyjamas.ui.Widget import Widget
 
-from GChartConsts import NAI
+# XXX HACK!  recursive includes avoidance...
+NAI = 2 ** 31
+
 
 import AnnotationLocation
 
@@ -116,7 +118,7 @@ def setBorderWidth(uio, cssBorderWidth):
 
 
 def setBorderWidth(uio, borderWidth):
-    if borderWidth != GChart.NAI:
+    if borderWidth != NAI:
         setBorderWidth(uio, borderWidth + "px")
     else:
         setBorderWidth(uio, "")
