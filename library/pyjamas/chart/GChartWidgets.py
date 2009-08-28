@@ -1557,19 +1557,19 @@ class PlotPanel (AbsolutePanel):
         # Note: getTouchedPoint always returns NEW touched point
         prevTouchedPoint = self.touchedPoint
         self.touchedPoint = p
-        cAnnotation = getSystemCurve(HOVER_ANNOTATION_ID)
-        cCursor = getSystemCurve(HOVER_CURSOR_ID)
+        cAnnotation = self.chart.getSystemCurve(HOVER_ANNOTATION_ID)
+        cCursor = self.chart.getSystemCurve(HOVER_CURSOR_ID)
         cTouched = p and p.getParent() or None
 
         if None != self.touchedHoverWidget:
             # free up resources allocated to previous hover widget
-            if not insideHoverCleanup:
+            if not self.insideHoverCleanup:
                 try:
-                    insideHoverCleanup = True
+                    self.insideHoverCleanup = True
                     self.touchedHoverWidget.hoverCleanup(prevTouchedPoint)
 
                 except:
-                    insideHoverCleanup = False
+                    self.insideHoverCleanup = False
 
 
 
@@ -1825,19 +1825,14 @@ class PlotPanel (AbsolutePanel):
     # Touches the underlying object at the last event's mouse
     # position if it is different from the currently touched point,
     # or if retouch is True. Returns True if a touch occured.
-    def touchObjectAtMousePosition(self, retouch):
+    def touchObjectAtMousePosition(self, retouch=False):
         result = False
-        pointAtPosition = self.getClosestBrushTouchingPointNoCheck(
+        pointAtPosition = self.chart.getClosestBrushTouchingPointNoCheck(
                             self.getXMousePlotArea(), self.getYMousePlotArea())
         if (pointAtPosition != self.touchedPoint)  or  retouch:
             self.touch(pointAtPosition)
             result = True
 
-        return result
-
-    # touch object at mouse, but only if it is a different one
-    def touchObjectAtMousePosition(self):
-        result = self.touchObjectAtMousePosition(False)
         return result
 
     # touch object at mouse, even if it is the same one as last time
