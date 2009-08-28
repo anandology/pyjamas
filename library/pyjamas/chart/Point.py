@@ -450,30 +450,14 @@ class Point:
     ** @see GChart.Axis#addTick(double,String,int,int) addTick
     **
     *"""
-    def setAnnotationText(self, annotationText, widthUpperBound, heightUpperBound):
+    def setAnnotationText(self, annotationText, 
+                                widthUpperBound=GChart.NAI,
+                                heightUpperBound=GChart.NAI):
         self.getParent().invalidate()
         self.getAnnotation().setText(annotationText,
-        widthUpperBound,
-        heightUpperBound)
+                        widthUpperBound,
+                        heightUpperBound)
 
-    """*
-    * Sets the text of an annotation.
-    * <p>
-    * This is a convenience method equivalent to
-    * <tt>setAnnotationText(annotationText, GChart.NAI, GChart.NAI)</tt>. See
-    * that method for further details.
-    * <p>
-    *
-    ** @param annotationText the text or
-    ** (<tt>&lt;html&gt</tt>-prefixed) HTML of this point's
-    ** annotation, or <tt>None</tt> to remove all annotation.
-    *
-    * @see #setAnnotationText(String, int, int)
-    *       setAnnotationText(String,int,int)
-    *
-    """
-    def setAnnotationText(self, annotationText):
-        setAnnotationText(annotationText, GChart.NAI, GChart.NAI)
 
 
     """*

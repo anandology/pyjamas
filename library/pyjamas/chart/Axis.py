@@ -22,6 +22,7 @@ import DateTimeFormat
 import GChart
 import Double
 import TickLocation
+import AnnotationLocation
 
 from GChartConsts import DEFAULT_TICK_LOCATION
 from GChartConsts import DEFAULT_TICK_COUNT
@@ -44,6 +45,12 @@ from GChartConsts import YAXIS_ID
 from GChartConsts import XTICKS_ID
 from GChartConsts import XGRIDLINES_ID
 from GChartConsts import XAXIS_ID
+
+# these are used in formatting tick positions into tick labels:
+NUMBER_FORMAT_TYPE = 0
+DATE_FORMAT_TYPE = 1
+LOG10INVERSE_FORMAT_TYPE = 2
+LOG2INVERSE_FORMAT_TYPE = 3
 
 
 """*
@@ -72,6 +79,9 @@ class Axis:
     def __init__(self, chart):
         self.chart = chart
         self.tickLocation = DEFAULT_TICK_LOCATION
+        self.numberFormat = NumberFormat.getFormat(DEFAULT_TICK_LABEL_FORMAT)
+        self.dateFormat = DateTimeFormat.getShortDateTimeFormat()
+        self.tickLabelFormatType = NUMBER_FORMAT_TYPE
         self.nCurvesVisibleOnAxis = 0;  # # of developer curves on axis.
         # (count does not include system or
         # invisible curves)
@@ -166,7 +176,7 @@ class Axis:
         if self.isHorizontalAxis:
             # below tick on X, above it on (the future) X2
             p.setAnnotationLocation( (self.axisPosition < 0) and AnnotationLocation.SOUTH or AnnotationLocation.NORTH)
-            if tickLabelPadding != 0:
+            if self.tickLabelPadding != 0:
                 # padding < 0 is rare but allowed
                 p.setAnnotationYShift(self.axisPosition*tickLabelPadding)
                 # else stick with default of 0 y-shift
@@ -175,8 +185,8 @@ class Axis:
         else:
             # to left of tick mark on Y, to right of it on Y2
             p.setAnnotationLocation( (self.axisPosition < 0) and AnnotationLocation.WEST or AnnotationLocation.EAST)
-            if tickLabelPadding != 0:
-                p.setAnnotationXShift(self.axisPosition*tickLabelPadding)
+            if self.tickLabelPadding != 0:
+                p.setAnnotationXShift(self.axisPosition*self.tickLabelPadding)
 
             # else stick with default of 0 x-shift
 
@@ -189,10 +199,10 @@ class Axis:
             p.setAnnotationWidget(tickWidget, widthUpperBound, heightUpperBound)
 
 
-        p.setAnnotationFontSize(getTickLabelFontSize())
-        p.setAnnotationFontStyle(getTickLabelFontStyle())
-        p.setAnnotationFontColor(getTickLabelFontColor())
-        p.setAnnotationFontWeight(getTickLabelFontWeight())
+        p.setAnnotationFontSize(self.getTickLabelFontSize())
+        p.setAnnotationFontStyle(self.getTickLabelFontStyle())
+        p.setAnnotationFontColor(self.getTickLabelFontColor())
+        p.setAnnotationFontWeight(self.getTickLabelFontWeight())
 
 
     """*
@@ -377,15 +387,6 @@ class Axis:
         *
         """
         pass
-
-    # these are used in formatting tick positions into tick labels:
-    numberFormat = NumberFormat.getFormat(DEFAULT_TICK_LABEL_FORMAT)
-    dateFormat = DateTimeFormat.getShortDateTimeFormat()
-    NUMBER_FORMAT_TYPE = 0
-    DATE_FORMAT_TYPE = 1
-    LOG10INVERSE_FORMAT_TYPE = 2
-    LOG2INVERSE_FORMAT_TYPE = 3
-    tickLabelFormatType = NUMBER_FORMAT_TYPE
 
     def formatAsTickLabel(self, value):
         """*
@@ -675,7 +676,7 @@ class Axis:
         **
         ** @see #setTickLabelFontWeight setTickLabelFontWeight
         *"""
-        return tickLabelFontWeight
+        return self.tickLabelFontWeight
 
     def getTickLabelFontColor(self):
         """*
@@ -693,7 +694,7 @@ class Axis:
         **
         **
         *"""
-        return tickLabelFontColor
+        return self.tickLabelFontColor
 
 
     def getTickLabelFontStyle(self):
@@ -707,7 +708,7 @@ class Axis:
         **
         ** @see #setTickLabelFontStyle setTickLabelFontStyle
         *"""
-        return tickLabelFontStyle
+        return self.tickLabelFontStyle
 
     def getTickLabelFontSize(self):
         """* Returns the CSS font size, in pixels, used for tick labels
@@ -717,7 +718,7 @@ class Axis:
         **
         ** @see #setTickLabelFontSize setTickLabelFontSize
         *"""
-        return tickLabelFontSize
+        return self.tickLabelFontSize
 
 
     def getTickLabelFormat(self):
@@ -743,7 +744,7 @@ class Axis:
         ** @see #setTickLabelPadding setTickLabelPadding
         **
         *"""
-        return tickLabelPadding
+        return self.tickLabelPadding
 
     # Does real work of getTickLabelThickness; flag saves time
     # during repeated calls made in updateChartDecorations.
@@ -765,7 +766,7 @@ class Axis:
                             Annotation.getNumberOfCharsWide(tt))
 
 
-            result = int (round(maxLength * tickLabelFontSize *
+            result = int (round(maxLength * self.tickLabelFontSize *
                                 TICK_CHARWIDTH_TO_FONTSIZE_LOWERBOUND))
 
         return result
@@ -1324,7 +1325,7 @@ class Axis:
         nPoints = c.getNPoints()
         for i in range(nPoints):
             c.getPoint(i).setAnnotationFontWeight(cssWeight)
-        tickLabelFontWeight = cssWeight
+        self.tickLabelFontWeight = cssWeight
 
     """*
     ** Specifies the color of the font used to render tick labels
@@ -1357,7 +1358,7 @@ class Axis:
         nPoints = c.getNPoints()
         for i in range(nPoints):
             c.getPoint(i).setAnnotationFontColor(cssColor)
-        tickLabelFontColor = cssColor
+        self.tickLabelFontColor = cssColor
 
 
     """*
@@ -1387,7 +1388,7 @@ class Axis:
         nPoints = c.getNPoints()
         for i in range(nPoints):
             c.getPoint(i).setAnnotationFontStyle(cssStyle)
-        tickLabelFontStyle = cssStyle
+        self.tickLabelFontStyle = cssStyle
 
 
     """*
@@ -1786,7 +1787,7 @@ class Axis:
                                 (self.tickCount-1.0))
                 self.addTickAsPoint(position,
                             (0 == i % self.ticksPerLabel) and
-                                    formatAsTickLabel(position) or None,
+                                    self.formatAsTickLabel(position) or None,
                             None,
                             GChart.NAI, GChart.NAI)
 
@@ -1935,6 +1936,7 @@ class XAxis(Axis):
         self.gridlinesId = XGRIDLINES_ID
         self.axisId = XAXIS_ID
         self.axisPosition = -1
+        self.tickLabelFormatType = None
         self.setTickLocation(DEFAULT_TICK_LOCATION)
         self.setTickThickness(DEFAULT_TICK_THICKNESS)
         self.setTickLength(DEFAULT_TICK_LENGTH)
@@ -2027,7 +2029,7 @@ class XAxis(Axis):
             # multi-line, HTML based, ticks, so OK for now.
             result = int (round(
                             TICK_CHARHEIGHT_TO_FONTSIZE_LOWERBOUND *
-                            tickLabelFontSize))
+                            self.tickLabelFontSize))
 
         return result
 

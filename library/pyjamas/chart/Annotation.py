@@ -71,11 +71,11 @@ class Annotation:
             self.numberOfLinesHigh = 0
             self.numberOfCharsWide = 0
         
-        elif not s.startsWith("<html>"):
+        elif not s.startswith("<html>"):
             # no html==>plain text
             self.isHTML = False
             self.numberOfLinesHigh = 1
-            self.numberOfCharsWide = s.length()
+            self.numberOfCharsWide = len(s)
             result = s
         
         else:
@@ -103,8 +103,8 @@ class Annotation:
     # heuristic fail them.
     def getNumberOfCharsWide(self, s):
         result = 0
-        if not s.startsWith("<html>"):
-            result = s.length()
+        if not s.startswith("<html>"):
+            result = len(s)
         
         else:
             result = htmlWidth(s)
