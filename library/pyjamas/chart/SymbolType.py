@@ -985,17 +985,17 @@ class SymbolType:
         xMaxPx = pp.xToPixel(xMax)
         xMidPx = pp.xToPixel(xMid)
 
-        symWidth = getAdjustedWidth(width, xPx,
-        prevXPx, nextXPx,
-        xMinPx, xMaxPx, xMidPx)
+        symWidth = self.getAdjustedWidth(width, xPx,
+                                        prevXPx, nextXPx,
+                                        xMinPx, xMaxPx, xMidPx)
         if (Double.isNaN(symWidth)):
             return; # x!=x is a faster isNaN
 
 
-        xLeft = getUpperLeftX(width, xPx,
-        prevXPx, nextXPx,
-        xMinPx, xMaxPx, xMidPx,
-        pp.getXMousePlotArea())
+        xLeft = self.getUpperLeftX(width, xPx,
+                                    prevXPx, nextXPx,
+                                    xMinPx, xMaxPx, xMidPx,
+                                    pp.getXMousePlotArea())
         if (Double.isNaN(xLeft)):
             return; # x!=x is a faster isNaN
 
@@ -1018,17 +1018,17 @@ class SymbolType:
         yMaxPx = pp.yToPixel(yMax,onY2)
         yMidPx = pp.yToPixel(yMid,onY2)
 
-        symHeight = getAdjustedHeight(
-        height, yPx,
-        prevYPx, nextYPx, yMinPx, yMaxPx, yMidPx)
+        symHeight = self.getAdjustedHeight( height, yPx,
+                                            prevYPx, nextYPx,
+                                            yMinPx, yMaxPx, yMidPx)
         if (Double.isNaN(symHeight)):
             return; # x!=x is a faster isNaN
 
 
-        yTop = getUpperLeftY(height, yPx,
-        prevYPx, nextYPx,
-        yMinPx, yMaxPx, yMidPx,
-        pp.getYMousePlotArea())
+        yTop = self.getUpperLeftY(height, yPx,
+                            prevYPx, nextYPx,
+                            yMinPx, yMaxPx, yMidPx,
+                            pp.getYMousePlotArea())
         if (Double.isNaN(yTop)):
             return; # x!=x is a faster isNaN
 
@@ -1092,10 +1092,12 @@ class SymbolType:
                                     xLeft, yTop, symbol.getImageURL())
 
         # if the image has an attached label, realize that
-        if annotation!=None  and  (annotation.getText() is not None  or  annotation.getWidget() is not None)  and  annotation.getVisible():
+        if (annotation!=None  and  (annotation.getText() is not None  or
+            annotation.getWidget() is not None)  and  
+            annotation.getVisible()):
             loc = annotation.getLocation()
             if None == loc:
-                loc = defaultAnnotationLocation()
+                loc = self.defaultAnnotationLocation()
 
             loc = AnnotationLocation.transform(loc, signWidth, signHeight)
             # Note: yShift follows orientation of cartesian y
@@ -1110,10 +1112,10 @@ class SymbolType:
             # for bars below the baseline, which is usually what you
             # want (e.g. placing labels above or below the bars).
             arp.renderAnnotation(annotation, loc,
-            xCenter+signWidth*annotation.getXShift(),
-            yCenter-signHeight*annotation.getYShift(),
-            symWidth, symHeight,
-            symbol)
+                                xCenter+signWidth*annotation.getXShift(),
+                                yCenter-signHeight*annotation.getYShift(),
+                                symWidth, symHeight,
+                                symbol)
 
 
 
