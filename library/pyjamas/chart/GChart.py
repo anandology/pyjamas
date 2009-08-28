@@ -211,7 +211,7 @@ class GChart (Composite):
         # Must be first: other methods assume sys curves exist
         for i in range(N_SYSTEM_CURVES):
             c = Curve(self, i)
-            self.curves[i] = c
+            self.curves.append(c)
             # Required rendering panels are added lazily, later on
 
 
@@ -544,7 +544,7 @@ class GChart (Composite):
         self.blankImageURL = None
         self.chartDecorationsChanged = True
         # collection of curves associated with this chart.
-        self.curves = {}
+        self.curves = []
         self.fontFamily = USE_CSS
         self.footnotesThickness = NAI
         self.legendBackgroundColor = DEFAULT_LEGEND_BACKGROUND_COLOR
@@ -802,6 +802,7 @@ class GChart (Composite):
     """
 
     def addCurve(self, iCurve=None):
+        print "addCurve", iCurve
         if iCurve is None:
             iCurve = self.getNCurves()
 
@@ -815,13 +816,15 @@ class GChart (Composite):
 
         internalIndex = self.internalCurveIndex(iCurve)
         c = Curve(self, internalIndex)
-        self.curves[internalIndex] = c
+        self.curves.insert(internalIndex, c)
+        print "iidx", internalIndex
+        print "curves", self.curves
         # curves are initially added to the x, y axes.
         self.getXAxis().incrementCurves()
         self.getYAxis().incrementCurves()
         # adjust ArrayList indexes to account for newly added element
         for i in range(internalIndex+1, len(self.curves)):
-            self.curves.get(i).incrementIndex()
+            self.curves[i].incrementIndex()
 
         if 0 != self.plotPanel.getRenderingPanelCount():
             # other panels are already there
@@ -1191,7 +1194,7 @@ class GChart (Composite):
 
         if iCurve >= self.getNCurves():
             raise IllegalArgumentException(
-            "iCurve = " + iCurve +"; iCurve may not exceed self.getNCurves()-1 (" + (self.getNCurves()-1) + ")")
+            "iCurve = " + iCurve +"; iCurve may not exceed self.getNCurves()-1 (" + str(self.getNCurves()-1) + ")")
 
         elif iCurve < 0:
             raise IllegalArgumentException(
@@ -1204,7 +1207,7 @@ class GChart (Composite):
     # Version of getCurve that allows sys curve (negative id) access
     def getSystemCurve(self, iCurve):
         internalIndex = self.internalCurveIndex(iCurve)
-        result = self.curves.get(internalIndex)
+        result = self.curves[internalIndex]
         return result
 
 
@@ -1874,7 +1877,7 @@ class GChart (Composite):
             self.plotPanel.removeAnnotationRenderingPanel(rpIndex)
 
 
-        c = self.curves.get(internalIndex)
+        c = self.curves[internalIndex]
         if c.isVisible():
             getXAxis().decrementCurves()
             if c.getYAxis() == Y_AXIS:
@@ -1889,7 +1892,7 @@ class GChart (Composite):
         self.curves.pop(internalIndex)
         # adjust ArrayList indexes to account for newly removed element
         for i in range(internalIndex, len(self.curves)):
-            self.curves.get(i).decrementIndex()
+            self.curves[i].decrementIndex()
 
 
 
@@ -3692,7 +3695,7 @@ class GChart (Composite):
     # marks every curve, including system curves, as needing an update
     def invalidateEveryCurve(self):
         for i in range(len(self.curves)):
-            self.curves.get(i).invalidate()
+            self.curves[i].invalidate()
 
 
     # marks every developer-accessible curve as needing an update
