@@ -147,10 +147,10 @@ class GChart (Composite):
 
 
     def getLastPieSliceOrientation(self):
-        return lastPieSliceOrientation
+        return self.lastPieSliceOrientation
 
     def setLastPieSliceOrientation(self, lastOrientation):
-        lastPieSliceOrientation = lastOrientation%1.0
+        self.lastPieSliceOrientation = lastOrientation%1.0
 
     """* Sets the default initial orientation for pie slices.
     **
@@ -180,7 +180,7 @@ class GChart (Composite):
             "orientation must be >=0 and < 1.")
 
         self.initialPieSliceOrientation = orientation
-        invalidateAllSlices()
+        self.invalidateAllSlices()
 
 
     """*
@@ -194,7 +194,7 @@ class GChart (Composite):
     **   setInitialPieSliceOrientation
     *"""
     def getInitialPieSliceOrientation(self):
-        return initialPieSliceOrientation
+        return self.initialPieSliceOrientation
 
 
 
@@ -558,6 +558,8 @@ class GChart (Composite):
         self.legendFontSize = DEFAULT_LEGEND_FONTSIZE
         self.legendFontStyle = DEFAULT_FONT_STYLE
         self.legendFontWeight = DEFAULT_FONT_WEIGHT
+
+        self.initialPieSliceOrientation = 0.0
 
         """
         * Contains the plotting region, as well as axes, ticks, and
