@@ -835,7 +835,7 @@ class Curve:
     
     # Is this specific curve actually clipped to the plot area?
     def getActuallyClippedToPlotArea(self):
-        result = self.getClipToPlotArea()
+        result = self.getParent().getClipToPlotArea()
         if result:
             # decorative, hover feedback curves are never clipped
             rpIndex = self.getRenderingPanelIndex(self.getIndexOf())
@@ -892,7 +892,7 @@ class Curve:
         self.getSymbol().realizeSymbol(pp, grp, arp, p.getAnnotation(),
                                     self.onY2(),
                                     self.getActuallyClippedToPlotArea(),
-                                    self.getClipToDecoratedChart(),
+                                    self.getParent().getClipToDecoratedChart(),
                                     drawMainSymbol,
                                     x, y, prevX, prevY, nextX, nextY)
         #    }

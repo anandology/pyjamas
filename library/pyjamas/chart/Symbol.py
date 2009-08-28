@@ -426,7 +426,7 @@ class Symbol(object):
     def getHoverLocation(self):
         result = self.getHoverAnnotation().getLocation()
         if None == result:
-            result = getSymbolType().defaultHoverLocation()
+            result = self.getSymbolType().defaultHoverLocation()
         
         return result
     
@@ -2397,50 +2397,50 @@ class Symbol(object):
     *
     """
     def copy(self, fc):
-        setBackgroundColor(fc.getBackgroundColor())
-        setBaseline(fc.getBaseline())
-        setBorderColor(fc.getBorderColor())
-        setBorderStyle(fc.getBorderStyle())
-        setBorderWidth(fc.getBorderWidth())
-        setFillSpacing(fc.getFillSpacing())
-        setFillThickness(fc.getFillThickness())
+        self.setBackgroundColor(fc.getBackgroundColor())
+        self.setBaseline(fc.getBaseline())
+        self.setBorderColor(fc.getBorderColor())
+        self.setBorderStyle(fc.getBorderStyle())
+        self.setBorderWidth(fc.getBorderWidth())
+        self.setFillSpacing(fc.getFillSpacing())
+        self.setFillThickness(fc.getFillThickness())
         #       setHoverAnnotationEnabled(fc.getHoverAnnotationEnabled())
-        setHoverFontColor(fc.getHoverFontColor())
-        setHoverFontSize(fc.getHoverFontSize())
-        setHoverFontStyle(fc.getHoverFontStyle())
-        setHoverFontWeight(fc.getHoverFontWeight())
-        setHoverLocation(fc.getHoverLocation())
-        setHoverAnnotationSymbolType(fc.getHoverAnnotationSymbolType())
-        setHoverSelectionBackgroundColor(fc.getHoverSelectionBackgroundColor())
-        setHoverSelectionBorderColor(fc.getHoverSelectionBorderColor())
-        setHoverSelectionBorderStyle(fc.getHoverSelectionBorderStyle())
-        setHoverSelectionBorderWidth(fc.getHoverSelectionBorderWidth())
+        self.setHoverFontColor(fc.getHoverFontColor())
+        self.setHoverFontSize(fc.getHoverFontSize())
+        self.setHoverFontStyle(fc.getHoverFontStyle())
+        self.setHoverFontWeight(fc.getHoverFontWeight())
+        self.setHoverLocation(fc.getHoverLocation())
+        self.setHoverAnnotationSymbolType(fc.getHoverAnnotationSymbolType())
+        self.setHoverSelectionBackgroundColor(fc.getHoverSelectionBackgroundColor())
+        self.setHoverSelectionBorderColor(fc.getHoverSelectionBorderColor())
+        self.setHoverSelectionBorderStyle(fc.getHoverSelectionBorderStyle())
+        self.setHoverSelectionBorderWidth(fc.getHoverSelectionBorderWidth())
         #       setHoverSelectionEnabled(fc.getHoverSelectionEnabled())
-        setHovertextTemplate(fc.getHovertextTemplate())
-        setHoverWidget(fc.getHoverWidget())
-        setHoverXShift(fc.getHoverXShift())
-        setHoverYShift(fc.getHoverYShift())
-        setImageURL(fc.getImageURL())
+        self.setHovertextTemplate(fc.getHovertextTemplate())
+        self.setHoverWidget(fc.getHoverWidget())
+        self.setHoverXShift(fc.getHoverXShift())
+        self.setHoverYShift(fc.getHoverYShift())
+        self.setImageURL(fc.getImageURL())
         # Model and pixel variants of width/height actually
         # represent a single underlying property (setting one,
-        # unsets the other, etc.). Logic below reflects self.
+        # unsets the other, etc.). Logic below reflects this.
         if not Double.isNaN(fc.getModelHeight()):
-            setModelHeight(fc.getModelHeight())
+            self.setModelHeight(fc.getModelHeight())
         
         else:
-            setHeight(fc.getHeight())
+            self.setHeight(fc.getHeight())
         
         if not Double.isNaN(fc.getModelWidth()):
-            setModelWidth(fc.getModelWidth())
+            self.setModelWidth(fc.getModelWidth())
         
         else:
-            setWidth(fc.getWidth())
+            self.setWidth(fc.getWidth())
         
         
-        setPieSliceOrientation(fc.getPieSliceOrientation())
-        setDefaultPieSliceOrientation(fc.getDefaultPieSliceOrientation())
-        setPieSliceSize(fc.getPieSliceSize())
-        setSymbolType(fc.getSymbolType())
+        self.setPieSliceOrientation(fc.getPieSliceOrientation())
+        self.setDefaultPieSliceOrientation(fc.getDefaultPieSliceOrientation())
+        self.setPieSliceSize(fc.getPieSliceSize())
+        self.setSymbolType(fc.getSymbolType())
         
     
     def getAnnotation(self):
@@ -2488,8 +2488,11 @@ class Symbol(object):
     associated point annotations, axes, gridlines, ticks and
     their tick-labels. """
     
-    def realizeSymbol(self, pp, grp, arp, annotation, onY2, clipPlotArea, clipDecoratedChart, drawMainSymbol, x, y, prevX, prevY, nextX, nextY):
-        getSymbolType().realizeSymbol(pp, grp, arp, this, annotation,
+    def realizeSymbol(self, pp, grp, arp, annotation,
+                            onY2, clipPlotArea, clipDecoratedChart,
+                            drawMainSymbol, x, y, prevX, prevY,
+                            nextX, nextY):
+        self.getSymbolType().realizeSymbol(pp, grp, arp, self, annotation,
         onY2,
         clipPlotArea,
         clipDecoratedChart,
