@@ -46,7 +46,7 @@ class Curve:
 
     def isValidated(self):
         return self.validated
-    
+
     """
     * TestGChart14d revealed that curves.indexOf(curve) could, due to its
     * sequential search, create a performance bug if the chart had
@@ -60,16 +60,16 @@ class Curve:
     """
     def incrementIndex(self):
         self.indexOf += 1
-    
+
     def decrementIndex(self):
         self.indexOf -= 1
-    
+
     def clearIndex(self):
         self.indexOf = GChart.NAI
-    
+
     def getIndexOf(self):
         return self.indexOf
-    
+
     """
     def assertCurveNotRemoved(self):
         if self.indexOf == GChart.NAI:
@@ -78,8 +78,8 @@ class Curve:
             "You removed a curve, but retained a reference " +
             "to that curve, and then tried to modify one of " +
             "its properties after you removed it.")
-        
-    
+
+
     """
     """
     * No constructor because curves are always
@@ -96,11 +96,11 @@ class Curve:
         self.points = []
         # symbol defines how every point on this curve is rendered
         self.symbol = Symbol(self)
-        
+
         self.yAxisId = GChart.Y_AXIS
         self.validated = False
         self.indexOf = indexOf
-    
+
         self.bandList = None # index of first point in each band
         self.bandThickness = Double.NaN
 
@@ -130,8 +130,8 @@ class Curve:
             x = arg2
             y = arg3
             self.points.insert(iPoint, Point(self, x, y))
-    
-    
+
+
     """*
     * Removes every point this curve contains.
     *
@@ -145,13 +145,13 @@ class Curve:
     def clearPoints(self):
         if self == self.getParent().getTouchedCurve():
             self.chart.plotPanel.touch(None)
-        
+
         self.invalidate()
         del self.points
         self.points = []
-    
-    
-    
+
+
+
     """
     * Locates index of vertical or horizontal hit-testing band
     * that the given point appears in. The first and last
@@ -173,42 +173,42 @@ class Curve:
         xPx = symType.getCenterX(self.chart.plotPanel, self.getSymbol(), iPoint)
         if xPx!=xPx:
             return result; # NaN points not in any band
-        
+
         yPx = symType.getCenterY( self.chart.plotPanel, self.getSymbol(),
                                   iPoint, self.onY2())
         if yPx!=yPx:
             return result; # NaN points not in any band
-        
+
         # now, we've got a point with x,y values in some sort of band
-        
+
         if self.getSymbol().isHorizontallyBanded():
             if yPx < 0:
                 result = 0; # off-chart point above chart
-            
+
             elif yPx >= (len(self.bandList)-EXTRA_BANDS)*bandThickness:
                 result = len(self.bandList)-1; # off-chart point below chart
-            
+
             else:
                 # inside a normal, chart-covering, band
                 result = 1 + int ( math.floor(yPx/bandThickness) )
-            
-        
+
+
         else:
             # vertically banded
             if xPx < 0:
                 result = 0;  # off-chart point to the left
-            
+
             elif xPx >= (len(self.bandList)-EXTRA_BANDS)*bandThickness:
                 result = len(self.bandList)-1; # off-chart point to the right
-            
+
             else:
                 # within one of the real bands covering the chart
                 result = 1 + int ( math.floor(xPx/bandThickness) )
-            
-        
+
+
         return result
-    
-    
+
+
     """
     * Number of hit-test bands for this curve, for a given band
     * thickness.
@@ -218,13 +218,13 @@ class Curve:
         result = EXTRA_BANDS
         if self.getSymbol().isHorizontallyBanded():
             result += int(math.ceil(self.chart.getYChartSize()/bandThickness))
-        
+
         else :
             result += int(math.ceil(self.chart.getXChartSize()/bandThickness))
-        
+
         return result
-    
-    
+
+
     """
     * Separates points on this curve into bins associated with
     * successive vertical (or horizontal) bands across the entire
@@ -301,8 +301,8 @@ class Curve:
     forloop (int iPoint = bandList[iBand]; iPoint != GChart.NAI; iPoint = p.getINextInBand()) {
         p = getPoint(iPoint)
         # do something requiring points in a given band...
-    
-    
+
+
     * </pre>
     *
     """
@@ -315,10 +315,10 @@ class Curve:
                                                          self.getSymbol(),
                                                          self.onY2())
         nBands = self.getNBands(self.bandThickness)
-        
+
         if self.bandList is None  or  len(self.bandList) != nBands:
             self.bandList = [GChart.NAI] * nBands
-        
+
         for iPoint in range(self.getNPoints()):
             iBand = self.getBand(iPoint, self.bandThickness)
             p = self.getPoint(iPoint)
@@ -327,16 +327,16 @@ class Curve:
                 # link pointing to self means "I'm not in any band"). To let
                 # us skip over these points quickly during rendering.
                 p.setINextInBand(iPoint)
-            
+
             else:
                 # Add point to front of list for whatever band it's in
                 # (note that point order therefore gets reversed).
                 p.setINextInBand(self.bandList[iBand])
                 self.bandList[iBand] = iPoint
-            
-            
-        
-    
+
+
+
+
     """
     * Returns the index of the point on this curve whose rendered
     * symbol intersects a rectangle with the specified width and
@@ -356,20 +356,20 @@ class Curve:
     * the <tt>bandSeparatePoints</tt> method).
     *
     """
-    
+
     def getClosestTouchingPoint(self, xBrush, yBrush):
-        
+
         result = GChart.NAI
         # ANCHOR_MOUSE symbol type curves not band separated/hit tested
         if None == self.bandList:
             return result
-        
+
         symType = self.getSymbol().getSymbolType()
         dBest = Double.MAX_VALUE; # closest touching pt's distance^2
-        
-        
-        
-        
+
+
+
+
         brushWidth = symType.getBrushWidth(self.getSymbol())
         """
         * In every tested browser EXCEPT FF3, we don't need the +1 below to
@@ -382,7 +382,7 @@ class Curve:
         brushHeight = symType.getBrushHeight(self.getSymbol()) + 1
         brushLocation = symType.getBrushLocation( self.getSymbol())
         nBands = len(self.bandList)
-        
+
         # Determine range of bands touched by brush, taking into
         # account potential for symbols whose centers are in one
         # band to "stick out" into an adjacent band by half-band
@@ -404,7 +404,7 @@ class Curve:
                                         top / self.bandThickness))))
             iBandLast = int ( max(0, min(nBands-1, 1+math.floor(
                                         bottom / self.bandThickness))))
-        
+
         else:
             # vertical bars, some curves with "tall or square" brushes
             left = brushLocation.getUpperLeftX(xBrush, brushWidth, 0)
@@ -415,8 +415,8 @@ class Curve:
                                         left / self.bandThickness))))
             iBandLast = int( max(0, min(nBands-1, 1+math.floor(
                                         right / self.bandThickness))))
-        
-        
+
+
         # Every point whose symbol touches the brush must be in one
         # of these bands. Search them to find closest touching point.
         for iBand in range(iBandFirst, iBandLast+1):
@@ -430,37 +430,41 @@ class Curve:
                         " iBand="+iBand+" iBandFirst="+iBandFirst+" iBandLast="+iBandLast +
                         " xBrush="+xBrush+" yBrush="+yBrush+" brushWidth="+brushWidth +
                         " brushHeight=" +brushHeight + " bandThickness=" + self.bandThickness)
-                    
+
                 p  = self.getPoint(iPoint)
-                if symType.isIntersecting(self.chart.plotPanel, self.getSymbol(), iPoint, onY2(), xBrush, yBrush, brushWidth, brushHeight):
+                if symType.isIntersecting(self.chart.plotPanel,
+                                          self.getSymbol(), iPoint,
+                                          self.onY2(), xBrush, yBrush,
+                                          brushWidth, brushHeight):
                     # this point touches the brush (keep it if closest)
                     xPoint = symType.getCenterX(self.chart.plotPanel,
                                                 self.getSymbol(), iPoint)
                     yPoint = symType.getCenterY(self.chart.plotPanel,
-                                                self.getSymbol(), iPoint, onY2())
+                                                self.getSymbol(), iPoint,
+                                                self.onY2())
                     dx = self.getSymbol().xScaleFactor*(xPoint-xBrush)
                     dy = self.getSymbol().yScaleFactor*(yPoint-yBrush)
                     d = dx*dx + dy*dy
                     if d < dBest:
                         result = iPoint
                         dBest = d
-                    
+
                     elif d == dBest  and  iPoint > result:
                         # in the case of ties, choose largest point index
                         # (highest "z-order" -- the one "on top")
                         result = iPoint
                         dBest = d
-                    
-                    
-                
+
+
+
                 iPoint = p.getINextInBand()
-            
-        
-        
+
+
+
         return result
-        
-    
-    
+
+
+
     """*
     * @deprecated
     *
@@ -476,8 +480,8 @@ class Curve:
     """
     def getHovertextTemplate(self):
         return symbol.getHovertextTemplate()
-    
-    
+
+
     """*
     ** Returns the HTML defining this curve's legend label.
     **
@@ -488,8 +492,8 @@ class Curve:
     *"""
     def getLegendLabel(self):
         return self.legendHTML
-    
-    
+
+
     """*
     * Returns the number of points this curve contains.
     *
@@ -503,8 +507,8 @@ class Curve:
     """
     def getNPoints(self):
         return len(self.points)
-    
-    
+
+
     """*
     * Returns a reference to the GChart that contains this
     * curve.
@@ -514,7 +518,7 @@ class Curve:
     """
     def getParent(self):
         return self.chart
-    
+
     """*
     * Returns a reference to the point at the specified
     * index.  The returned reference can be used to modify
@@ -539,11 +543,11 @@ class Curve:
             raise IllegalArgumentException(
             "Point index iPoint=" + iPoint + ". " +
             "is either < 0 or >= the number of points on the curve.")
-        
+
         return self.points[iPoint]
-    
-    
-    
+
+
+
     """*
     * Returns the positional index (within this curve's list of
     * points) of the specified point.
@@ -569,9 +573,9 @@ class Curve:
         result = self.points.index(point)
         if -1 == result:
             result = GChart.NAI
-        
+
         return result
-    
+
     """*
     ** Returns the symbol associated with this curve.
     ** <p>
@@ -598,8 +602,8 @@ class Curve:
     *"""
     def getSymbol(self):
         return self.symbol
-    
-    
+
+
     """*
     * Returns the y-axis (Y_AXIS or Y2_AXIS) this curve is
     * plotted on.
@@ -614,8 +618,8 @@ class Curve:
     """
     def getYAxis(self):
         return self.yAxisId
-    
-    
+
+
     """* Is this curve visible on the chart and legend key,
     ** or is it hidden from view.
     **
@@ -625,7 +629,7 @@ class Curve:
     *"""
     def isVisible(self):
         return self.visible
-    
+
     """* Convenience method equivalent to <tt>getYAxis()==Y2_AXIS</tt>.
     *
     * @return True if curve is on second y-axis, else False
@@ -634,7 +638,7 @@ class Curve:
     """
     def onY2(self):
         return self.yAxisId == Y2_AXIS
-    
+
     """*
     * Removes the point at the specified index.
     *
@@ -651,18 +655,18 @@ class Curve:
             raise IllegalArgumentException(
             "iPoint=" + iPoint + " iPoint arg must be >= 0 and < " +
             getNPoints() + ", the number of points on the curve.")
-        
+
         self.invalidate()
-        
+
         # simulate user moving away from point before it is deleted
         # (this assures that any required hoverCleanup gets called,
         #  and clears the otherwise dangling reference to the point)
         if self.chart.plotPanel.touchedPoint == self.getPoint(iPoint):
             self.chart.plotPanel.touch(None)
-        
+
         self.points.remove(iPoint)
-    
-    
+
+
     """*
     * Removes the given point from this curve.
     * <p>
@@ -677,15 +681,15 @@ class Curve:
     def removePoint(self, p):
         if None == p:
             raise IllegalArgumentException("p cannot be None.")
-        
+
         index = self.getPointIndex(p)
         if GChart.NAI == index:
             raise IllegalArgumentException("p must be a point on this curve " +
-                                    "(whose curveIndex is " + 
+                                    "(whose curveIndex is " +
                                     self.getParent().getCurveIndex(this) + ")")
-        
+
         self.removePoint(index)
-    
+
     """*
     ** @deprecated
     **
@@ -699,7 +703,7 @@ class Curve:
     *"""
     def setHovertextTemplate(self, hovertextTemplate):
         symbol.setHovertextTemplate(hovertextTemplate)
-    
+
     """*
     ** Sets the HTML that defines the label shown to the
     ** right of the icon representing the curve's symbol in
@@ -725,7 +729,7 @@ class Curve:
     def setLegendLabel(self, legendHTML):
         chartDecorationsChanged = True
         self.legendHTML = legendHTML
-    
+
     """*
     ** Defines if this curve is visible both in the plotting
     ** region and on the legend key.
@@ -769,21 +773,21 @@ class Curve:
         * become part of a rendered GChart again.
         *
         """
-        
+
         if self.getIndexOf() == GChart.NAI:
             self.visible = visible
             return
-        
-        
+
+
         self.invalidate()
-        
+
         # hover selection feedback curves (which are system curves)
         # never impact curve counts, need to refresh decorations, etc.
         if self.isSystemCurve():
             self.visible = visible
             return
-        
-        
+
+
         if self.visible != visible:
             if self.getYAxis() == GChart.Y_AXIS:
                 yaxis = GChart.self.getYAxis()
@@ -793,21 +797,21 @@ class Curve:
                 axisCreatedOrDestroyed = (yaxis.getNCurvesVisibleOnAxis() == 0)
                 getXAxis().incrementCurves()
                 yaxis.incrementCurves()
-            
+
             else:
                 getXAxis().decrementCurves()
                 yaxis.decrementCurves()
                 axisCreatedOrDestroyed = (yaxis.getNCurvesVisibleOnAxis() == 0)
-            
-            
+
+
             if (None != getLegendLabel()  and  isLegendVisible())  or  axisCreatedOrDestroyed:
                 chartDecorationsChanged = True
-            
-            
+
+
             self.visible = visible
-        
-    
-    
+
+
+
     """* Sets the y-axis that this curve is plotted on.
     ** <p>
     ** @param axisId must be either GChart.Y_AXIS or
@@ -823,36 +827,36 @@ class Curve:
         self.invalidate()
         if self.isSystemCurve():
             self.yAxisId = axisId
-        
+
         elif axisId != self.yAxisId:
             if axisId == Y2_AXIS:
                 # from Y to Y2
                 GChart.self.getYAxis().decrementCurves()
                 GChart.self.getY2Axis().incrementCurves()
-            
+
             else:
                 # from Y2 to Y
                 GChart.self.getY2Axis().decrementCurves()
                 GChart.self.getYAxis().incrementCurves()
-            
+
             self.yAxisId = axisId
-        
-    
-    
+
+
+
     # Is this specific curve actually clipped to the plot area?
     def getActuallyClippedToPlotArea(self):
         result = self.getParent().getClipToPlotArea()
         if result:
             # decorative, hover feedback curves are never clipped
             rpIndex = self.getRenderingPanelIndex(self.getIndexOf())
-            if (PlotPanel.DECORATIVE_RENDERING_PANEL_INDEX == rpIndex  or  
+            if (PlotPanel.DECORATIVE_RENDERING_PANEL_INDEX == rpIndex  or
                 self.isHoverFeedbackRenderingPanel(rpIndex)):
                 result = False
-            
-        
+
+
         return result
-    
-    
+
+
     """
     * Is this curve one of GChart's special, internally created, system
     * curves? These curves can't be directly accessed by users, and are
@@ -862,10 +866,10 @@ class Curve:
     """
     def isSystemCurve(self):
         # negative curve indexes are reserved for system curves
-        result = ((self.indexOf != GChart.NAI)  and 
+        result = ((self.indexOf != GChart.NAI)  and
                     self.getParent().externalCurveIndex(self.indexOf) < 0)
         return result
-    
+
     # renders the specified point of this curve on the given panel
     def realizePoint(self, pp, grp, arp, iPoint):
         p = self.points[iPoint]
@@ -874,14 +878,14 @@ class Curve:
         # skip points at undefined locations
         if (Double.isNaN(x))  or  (Double.isNaN(y)):
             return; # x!=x is a faster isNaN
-        
+
         prevX = Double.NaN
         prevY = Double.NaN
         if iPoint > 0:
             prevP = self.points[iPoint-1]
             prevX = prevP.getX()
             prevY = prevP.getY()
-        
+
         nextX = Double.NaN
         nextY = Double.NaN
         nextP = None
@@ -889,12 +893,12 @@ class Curve:
             nextP = self.points[iPoint+1]
             nextX = nextP.getX()
             nextY = nextP.getY()
-        
-        
+
+
         # if point was not assigned to any band, it's not drawn
         # at all (undefined x or y, or off chart entirely)
         drawMainSymbol = (p.getINextInBand() != iPoint)
-        
+
         self.getSymbol().realizeSymbol(pp, grp, arp, p.getAnnotation(),
                                     self.onY2(),
                                     self.getActuallyClippedToPlotArea(),
@@ -902,8 +906,8 @@ class Curve:
                                     drawMainSymbol,
                                     x, y, prevX, prevY, nextX, nextY)
         #    }
-    
-    
+
+
     """
     * Declares that this curve's rendering panel (its DOM representation)
     * is inconsistent with current curve specifications.
@@ -924,10 +928,10 @@ class Curve:
             if self.indexOf < N_PRE_SYSTEM_CURVES:
                 for i in range(N_PRE_SYSTEM_CURVES):
                     self.chart.curves.get(i).validated = False
-            
-        
-    
-    
+
+
+
+
     """
     * Smallest rectangle containing curve's graphics (ignoring
     * annotations)
@@ -948,8 +952,8 @@ class Curve:
         if getNPoints() == 0:
             result.x = result.y = result.width = result.height = 0
             return result
-        
-        
+
+
         minX = Double.MAX_VALUE
         maxX = -Double.MAX_VALUE
         minY = Double.MAX_VALUE
@@ -968,100 +972,99 @@ class Curve:
             y = p.getY()
             if Double.MAX_VALUE == x:
                 pointAtXAxisMax = True
-            
+
             elif -Double.MAX_VALUE == x:
                 pointAtXAxisMin = True
-            
+
             else:
                 if x < minX:
                     minX = x
-                
+
                 if x > maxX:
                     maxX = x
-                
-            
+
+
             if Double.MAX_VALUE == y:
                 pointAtYAxisMax = True
-            
+
             elif -Double.MAX_VALUE == y:
                 pointAtYAxisMin = True
-            
+
             else:
                 if y < minY:
                     minY = y
-                
+
                 if y > maxY:
                     maxY = y
-                
-            
-        
-        
+
+
+
+
         # apply "at min/max" keyword, clipping imposed limits
         if pointAtXAxisMin:
             minX = min(minX, pp.getXMin())
-        
+
         if isClippedToPlotArea:
             minX = max(minX, pp.getXMin())
-        
+
         elif isClippedToDecoratedChart:
             minX = max(minX, getXAxis().pixelToModel(0))
-        
-        
+
+
         if pointAtXAxisMax:
             maxX = max(maxX, pp.getXMax())
-        
+
         if isClippedToPlotArea:
             maxX = min(maxX, pp.getXMax())
-        
+
         elif isClippedToDecoratedChart:
             maxX = min(maxX, getXAxis().pixelToModel(
             pp.getXChartSizeDecoratedQuickly()))
-        
-        
-        onY2 = onY2()
+
+
+        onY2 = self.onY2()
         if onY2:
             if pointAtYAxisMin:
                 minY = min(minY, pp.getY2Min())
-            
+
             if isClippedToPlotArea:
                 minY = max(minY, pp.getY2Min())
-            
+
             elif isClippedToDecoratedChart:
                 minY = max(minY, getY2Axis().pixelToModel(
                 pp.getYChartSizeDecoratedQuickly()))
-            
+
             if pointAtYAxisMax:
                 maxY = max(maxY, pp.getY2Max())
-            
+
             if isClippedToPlotArea:
                 maxY = min(maxY, pp.getY2Max())
-            
+
             elif isClippedToDecoratedChart:
                 maxY = min(maxY, getY2Axis().pixelToModel(0))
-            
-        
+
         else:
             if pointAtYAxisMin:
                 minY = min(minY, pp.getYMin())
-            
+
             if isClippedToPlotArea:
                 minY = max(minY, pp.getYMin())
-            
+
             elif isClippedToDecoratedChart:
                 minY = max(minY, GChart.self.getYAxis().pixelToModel(
                 pp.getYChartSizeDecoratedQuickly()))
-            
+
             if pointAtYAxisMax:
                 maxY = max(maxY, pp.getYMax())
-            
+
             if isClippedToPlotArea:
                 maxY = min(maxY, pp.getYMax())
-            
+
             elif isClippedToDecoratedChart:
                 maxY = min(maxY, GChart.self.getYAxis().pixelToModel(0))
-            
-        
-        
+
+
+
         # finally, we need to convert to pixels while taking into account
         # the size of the rendered symbol itself (e.g. pies can stick
         # out from their x,y specified center point, etc.)
@@ -1078,7 +1081,7 @@ class Curve:
         bottom1  = symType.getEdgeBottom(pp, sym, maxY, onY2)
         top0 = symType.getEdgeTop(pp, sym, minY, onY2)
         top1 = symType.getEdgeTop(pp, sym, maxY, onY2)
-        
+
         # baseline bars can flip order, so smallest x could be 'right', etc.
         xPxMin = min(min(left0, left1),
                             min(right0, right1))
@@ -1092,22 +1095,22 @@ class Curve:
         result.y = yPxMin - extraSpace
         result.width = xPxMax - xPxMin + 1 + 2*extraSpace
         result.height = yPxMax - yPxMin + 1 + 2*extraSpace
-        
+
         # result is (roughly) smallest rectangle that contains every
         # rendered symbol on this curve (ignoring annotations)
-        
+
         return result
-        
-    
-    
+
+
+
     # keeps track of if last rendering was canvas-based or not
     def setWasCanvasRendered(self, wasCanvasRendered):
         self.wasCanvasRendered = wasCanvasRendered
-    
+
     # is curve currently canvas rendered and up-to-date
     def isCanvasRendered(self):
         return self.validated  and  self.wasCanvasRendered
-    
-    
+
+
  # end of class GChart.Curve
 

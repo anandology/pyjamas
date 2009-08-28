@@ -769,7 +769,7 @@ class SymbolType:
         left = symbol.getBrushLocation().getUpperLeftX(xBrush, brushWidth, 0)
         right = left + brushWidth
 
-        result = isIntersecting(pp, symbol,
+        result = self.isIntersecting(pp, symbol,
                                 prevX, x, nextX,
                                 prevY, y, nextY, onY2,
                                 top, right, bottom, left)
@@ -782,7 +782,7 @@ class SymbolType:
     def getIconBorderWidth(self, legendFontSize, symBorderFraction):
         result = 0
         if symBorderFraction > 0:
-            result = int( max(1.0, floor(
+            result = int( max(1.0, math.floor(
                                     symBorderFraction * min(
                                     self.getIconWidth(legendFontSize),
                                     self.getIconHeight(legendFontSize)))))
