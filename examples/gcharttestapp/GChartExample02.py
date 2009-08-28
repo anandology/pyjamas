@@ -46,8 +46,9 @@ class GChartExample02(GChart):
             self.getCurve().getSymbol().setBorderWidth(1)
             for jGroup in range(len(groupLabels)):
                 # the '+1' creates a bar-sized gap between groups
-                self.getCurve().addPoint(1+iCurve+jGroup*(len(barLabels)+1),
-                                        rnd()*MAX_REVENUE)
+                y = rnd()*MAX_REVENUE
+                print "x, y", 1+iCurve+jGroup*(len(barLabels)+1), y
+                self.getCurve().addPoint(1+iCurve+jGroup*(len(barLabels)+1), y)
                 self.getCurve().getPoint().setAnnotationText(barLabels[iCurve])
                 self.getCurve().getPoint().setAnnotationLocation(
                                     AnnotationLocation.NORTH)

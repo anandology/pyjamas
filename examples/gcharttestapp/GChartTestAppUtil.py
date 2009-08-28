@@ -41,6 +41,7 @@ def getTitle(obj):
 * Constants are from Knuth via Numerical Recipes in C.
 *
 """
+global i
 i = 0
 def rnd():
     global i
@@ -48,6 +49,6 @@ def rnd():
     a = 84589
     c = 45989
     i = (a*i + c) % m
-    return i/m
+    return float(i)/m
 
 

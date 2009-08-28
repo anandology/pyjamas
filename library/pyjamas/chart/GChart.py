@@ -813,7 +813,6 @@ class GChart (Composite):
     """
 
     def addCurve(self, iCurve=None):
-        print "addCurve", iCurve
         if iCurve is None:
             iCurve = self.getNCurves()
 
@@ -828,8 +827,6 @@ class GChart (Composite):
         internalIndex = self.internalCurveIndex(iCurve)
         c = Curve(self, internalIndex)
         self.curves.insert(internalIndex, c)
-        print "iidx", internalIndex
-        print "curves", self.curves
         # curves are initially added to the x, y axes.
         self.getXAxis().incrementCurves()
         self.getYAxis().incrementCurves()
