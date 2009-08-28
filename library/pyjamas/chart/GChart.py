@@ -84,6 +84,7 @@ from GChartConsts import Y2_AXIS
 from GChartConsts import DEFAULT_TITLE_THICKNESS 
 from GChartConsts import DEFAULT_FOOTNOTES_THICKNESS
 from GChartConsts import TICK_CHARWIDTH_TO_FONTSIZE_LOWERBOUND
+from GChartConsts import TRANSPARENT_BORDER_COLOR 
 
 import Double
 import AnnotationLocation
@@ -555,6 +556,7 @@ class GChart (Composite):
         self.legendBorderStyle = DEFAULT_LEGEND_BORDER_STYLE
         self.legendThickness = NAI
 
+        self.chartFootnotes = None
         self.chartFootnotesLeftJustified = True
         self.legendVisible = True
 
@@ -3538,7 +3540,7 @@ class GChart (Composite):
 
     # create a Grid representing the chart legend.
     def createLegend(self, pp):
-        result = Grid(getNVisibleCurvesOnLegend(), 2)
+        result = Grid(self.getNVisibleCurvesOnLegend(), 2)
         iVisible = 0
         """
         * Simply eliminating the border entirely is a valid transparency
@@ -3554,14 +3556,14 @@ class GChart (Composite):
         * transparent borders.
         *
         """
-        if TRANSPARENT_BORDER_COLOR == getLegendBorderColor():
-            GChart.setBorderWidth(result, 0)
-            GChart.setBorderColor(result, "transparent")
+        if TRANSPARENT_BORDER_COLOR == self.getLegendBorderColor():
+            GChartUtil.setBorderWidth(result, 0)
+            GChartUtil.setBorderColor(result, "transparent")
         else:
-            GChart.setBorderWidth(result, abs(getLegendBorderWidth()))
-            GChart.setBorderColor(result, getLegendBorderColor())
-        GChart.setBorderStyle(result, getLegendBorderStyle())
-        GChart.setBackgroundColor(result, getLegendBackgroundColor())
+            GChartUtil.setBorderWidth(result, abs(getLegendBorderWidth()))
+            GChartUtil.setBorderColor(result, getLegendBorderColor())
+        GChartUtil.setBorderStyle(result, getLegendBorderStyle())
+        GChartUtil.setBackgroundColor(result, getLegendBackgroundColor())
         nCurves = self.getNCurves()
         for i in range(nCurves):
             c = self.getSystemCurve(i)
@@ -3581,10 +3583,10 @@ class GChart (Composite):
                                         HasVerticalAlignment.ALIGN_MIDDLE)
 
                 label = HTML(c.getLegendLabel())
-                GChart.setFontWeight(label, getLegendFontWeight())
-                GChart.setFontStyle(label, getLegendFontStyle())
-                GChart.setColor(label, getLegendFontColor())
-                GChart.setFontSize(label, getLegendFontSize())
+                GChartUtil.setFontWeight(label, getLegendFontWeight())
+                GChartUtil.setFontStyle(label, getLegendFontStyle())
+                GChartUtil.setColor(label, getLegendFontColor())
+                GChartUtil.setFontSize(label, getLegendFontSize())
 
                 result.setWidget(iVisible, 1, label)
                 result.getCellFormatter().setAlignment(iVisible, 1,
