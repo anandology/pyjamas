@@ -886,13 +886,13 @@ class Symbol(object):
     *
     """
     def isHorizontallyBanded(self):
-        if None == self.symbolType.isHorizontallyBanded:
+        if None == self.symbolType.horizontallyBanded:
             # not fixed by symbol type: use brush shape determined banding
             # (we are guessing point distribution based on brush shape)
             result = self.brushHeight < self.brushWidth
         
         else:
-            result = self.symbolType.isHorizontallyBanded.booleanValue()
+            result = bool(self.symbolType.isHorizontallyBanded())
         
         
         return result

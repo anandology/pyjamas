@@ -307,7 +307,7 @@ class Curve:
 
     def bandSeparatePoints(self):
         self.bandThickness = \
-            self.getSymbol().getSymbolType().getBandThickness(self.plotPanel,
+            self.getSymbol().getSymbolType().getBandThickness(self.chart.plotPanel,
                                                          self.getSymbol(),
                                                          self.onY2())
         nBands = self.getNBands(self.bandThickness)

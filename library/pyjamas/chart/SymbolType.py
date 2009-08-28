@@ -21,47 +21,7 @@ import math
 import Double
 
 
-from pyjamas import DOM
-from pyjamas import Window
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-from pyjamas.ui  import Event
-from pyjamas.ui.AbsolutePanel import AbsolutePanel
-from pyjamas.ui.Composite import Composite
-from pyjamas.ui.Grid import Grid
-from pyjamas.ui import HasHorizontalAlignment
-from pyjamas.ui import HasVerticalAlignment
-from pyjamas.ui.HTML import HTML
 from pyjamas.ui.Image import Image
-from pyjamas.ui.SimplePanel import SimplePanel
-from pyjamas.ui.UIObject import UIObject
-from pyjamas.ui.Widget import Widget
-
 
 import AnnotationLocation
 import GChartUtil
@@ -160,7 +120,8 @@ class SymbolType:
     * See the <tt>bandSeparatePoints</tt> method for more info.
     *
     """
-    #      isHorizontallyBanded() {return isHorizontallyBanded; }
+    def isHorizontallyBanded(self):
+        return self.horizontallyBanded
 
     """ Thickness (in pixels) of hit-test-bands used with this
     * symbol type.
@@ -170,7 +131,6 @@ class SymbolType:
     * thickness on pie diameter.
     """
     def getBandThickness(self, pp, sym, onY2):
-        result
         if sym.isHorizontallyBanded():
             result = max(MIN_BAND_SIZE, sym.getHeight(pp, onY2))
 
@@ -238,7 +198,7 @@ class SymbolType:
         self.pixelPadRight = pixelPadRight
         self.pixelPadTop = pixelPadTop
         self.pixelPadBottom = pixelPadBottom
-        self.isHorizontallyBanded = isHorizontallyBanded
+        self.horizontallyBanded = isHorizontallyBanded
 
 
     def getAdjustedHeight(self, height, y, yPrev, yNext, yMin, yMax, yMid):
@@ -1171,7 +1131,7 @@ class SymbolType:
 
         if 0 == spacing  and  None != canvas  and  thickness > 0:
             # if canvas rendered
-            if None == isHorizontallyBanded:
+            if None == self.horizontallyBanded:
                 """
                 * Continuous fill, canvas available, and not explicitly
                 * horizontally or vertically banded. For example, BOX_*
@@ -1250,7 +1210,7 @@ class SymbolType:
                 *
                 """
                 closeStrokeAndFill = False
-                if False == isHorizontallyBanded:
+                if False == self.horizontallyBanded:
                     if prevX != prevX  or  prevY != prevY:
                         # 1st point, or 1st point after a break in the line
                         oppositeEdge = getEdgeOppositeVertically(
