@@ -1332,8 +1332,8 @@ class PlotPanel (AbsolutePanel):
                                 y2Axis.getTickSpace() +
                                 y2Axis.getTickLabelPadding())
 
-        chartLegendThickness = self.getLegendThickness()
-        chartFootnotesThickness = self.getChartFootnotesThickness()
+        chartLegendThickness = self.chart.getLegendThickness()
+        chartFootnotesThickness = self.chart.getChartFootnotesThickness()
 
         self.setPixelSize(self.getXChartSizeDecoratedQuickly(),
                         self.getYChartSizeDecoratedQuickly())
