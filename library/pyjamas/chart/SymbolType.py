@@ -66,6 +66,8 @@ from pyjamas.ui.Widget import Widget
 import AnnotationLocation
 from GChartUtil import validateMultipliers
 
+import GChartConsts
+
 # Use smallest min band size, since I expect per band
 # cost to be small compared to per-point hit testing.
 MIN_BAND_SIZE = 1
@@ -857,20 +859,20 @@ class SymbolType:
 
     # fillSpacing to use when a symbol's fillSpacing is Double.NaN
     def defaultFillSpacing(self):
-        return DEFAULT_SYMBOL_FILL_SPACING
+        return GChartConsts.DEFAULT_SYMBOL_FILL_SPACING
 
     # fillThickness to use when a symbol's fillThickness is
     # GChart.NAI
     def defaultFillThickness(self):
-        return DEFAULT_SYMBOL_FILL_THICKNESS
+        return GChartConsts.DEFAULT_SYMBOL_FILL_THICKNESS
 
     # symbol-type-specific default hovertextTemplate
     def defaultHovertextTemplate(self):
-        return DEFAULT_HOVERTEXT_TEMPLATE
+        return GChartConsts.DEFAULT_HOVERTEXT_TEMPLATE
 
     # symbol-type-specific default location of hover feedback
     def defaultHoverLocation(self):
-        return DEFAULT_HOVER_LOCATION
+        return GChartConsts.DEFAULT_HOVER_LOCATION
 
     """
     * Unmanaged images. Supports older code that simply
@@ -1393,15 +1395,15 @@ class SymbolType:
                     # interpolated symbols set width & height to
                     # thickness, but are otherwise the same as main
                     # symbol at (x,y)
-                    realizeOneImageOfSymbol(pp, grp, arp, symbol, None,
-                    onY2,
-                    clipPlotArea,
-                    clipDecoratedChart,
-                    xi, yi,
-                    prevXPx, prevYPx,
-                    nextXPx, nextYPx,
-                    thickness,
-                    thickness)
+                    self.realizeOneImageOfSymbol(pp, grp, arp, symbol, None,
+                                    onY2,
+                                    clipPlotArea,
+                                    clipDecoratedChart,
+                                    xi, yi,
+                                    prevXPx, prevYPx,
+                                    nextXPx, nextYPx,
+                                    thickness,
+                                    thickness)
 
 
             # else points too close to require any "filler" elements
@@ -1410,15 +1412,15 @@ class SymbolType:
         # rendered last to put it on top of interpolated images; this
         # is also where any annotation on the point gets rendered.
         if drawMainSymbol:
-            realizeOneImageOfSymbol(pp, grp, arp, symbol, annotation,
-            onY2,
-            clipPlotArea,
-            clipDecoratedChart,
-            xPx, yPx,
-            prevXPx, prevYPx,
-            nextXPx, nextYPx,
-            symbol.getWidth(pp),
-            symbol.getHeight(pp,onY2))
+            self.realizeOneImageOfSymbol(pp, grp, arp, symbol, annotation,
+                            onY2,
+                            clipPlotArea,
+                            clipDecoratedChart,
+                            xPx, yPx,
+                            prevXPx, prevYPx,
+                            nextXPx, nextYPx,
+                            symbol.getWidth(pp),
+                            symbol.getHeight(pp,onY2))
 
 
 

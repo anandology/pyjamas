@@ -871,7 +871,7 @@ class GraphicsRenderingPanel (AbsolutePanel):
 
 
     def getCanvas(self):
-        return canvas
+        return self.canvas
 
 
     def setImagePosition(self, img, x, y):
@@ -880,7 +880,7 @@ class GraphicsRenderingPanel (AbsolutePanel):
         if x == -1  and  y == -1:
             x = 0
 
-        imagePanel.setWidgetPosition(img, x, y)
+        self.imagePanel.setWidgetPosition(img, x, y)
 
 
     # Tells panel you are ready to start drawing the curve on it
