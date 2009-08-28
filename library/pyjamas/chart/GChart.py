@@ -3779,7 +3779,7 @@ class GChart (Composite):
 
     # Defines the default pie slice orientations for every pie-slice curve
     def setDefaultPieSliceOrientations(self):
-        self.setLastPieSliceOrientation(getInitialPieSliceOrientation())
+        self.setLastPieSliceOrientation(self.getInitialPieSliceOrientation())
         nCurves = self.getNCurves()
         for i in range(nCurves):
             c = self.getSystemCurve(i)
