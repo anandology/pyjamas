@@ -1100,7 +1100,10 @@ class PlotPanel (AbsolutePanel):
     def addAnnotationRenderingPanel(self, rpIndex):
         domInsert = True
         w = AnnotationRenderingPanel()
-        self.annotationPanel.insert(w, self.annotationPanel.getElement(), rpIndex, domInsert)
+        # XXX TODO: investigate what the meaning of domInsert is about
+        # self.annotationPanel.insert(w, self.annotationPanel.getElement(), rpIndex, domInsert)
+        self.annotationPanel.insert(w, self.annotationPanel.getElement(),
+                                    rpIndex)
         self.annotationPanel.setWidgetPosition(w, 0, 0)
 
 
