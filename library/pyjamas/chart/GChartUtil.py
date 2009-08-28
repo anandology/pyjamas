@@ -115,7 +115,7 @@ def setBorderStyle(uio, cssBorderStyle):
 
 def setBorderWidth(uio, borderWidth):
     if borderWidth != NAI:
-        cssBorderWidth = str(borderWidth) + "px")
+        cssBorderWidth = str(borderWidth) + "px"
     else:
         cssBorderWidth = ""
     DOM.setStyleAttribute(uio.getElement(), "borderWidth", cssBorderWidth)
