@@ -1317,7 +1317,7 @@ class PlotPanel (AbsolutePanel):
         y2Min = axisLimits.min
         y2Max = axisLimits.max
 
-        topMargin = getChartTitleThickness()
+        topMargin = self.chart.getChartTitleThickness()
 
         xAxisEnsembleHeight = (xAxis.getAxisLabelThickness() +
                                 xAxis.getTickLabelThickness(False) +

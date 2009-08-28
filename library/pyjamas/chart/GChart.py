@@ -80,7 +80,7 @@ from GChartConsts import DEFAULT_GRID_HEIGHT
 from GChartConsts import TICK_BORDER_STYLE
 from GChartConsts import TICK_BORDER_WIDTH
 from GChartConsts import Y2_AXIS
-
+from GChartConsts import DEFAULT_TITLE_THICKNESS 
 
 import Double
 import AnnotationLocation
@@ -1023,15 +1023,15 @@ class GChart (Composite):
         result = 0
         EXTRA_HEIGHT = 3; # 1.5 lines above & below title
         DEF_HEIGHT = 1
-        if None == getChartTitle():
+        if None == self.getChartTitle():
             result = 0
 
         elif NAI != self.titleThickness:
             result = self.titleThickness
 
-        elif hasattr(getChartTitle(), 'getHTML'):
+        elif hasattr(self.getChartTitle(), 'getHTML'):
             result = DEFAULT_TITLE_THICKNESS * (EXTRA_HEIGHT +
-                    htmlHeight( getChartTitle().getHTML() ))
+                    htmlHeight( self.getChartTitle().getHTML() ))
 
         else:
             result = DEFAULT_TITLE_THICKNESS* (EXTRA_HEIGHT + DEF_HEIGHT)

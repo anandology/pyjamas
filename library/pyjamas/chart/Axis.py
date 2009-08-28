@@ -1776,7 +1776,7 @@ class Axis:
         # dummy curve to the axis, etc. to control axis visibility is needed.
         # x, y ticks are drawn even
         # if no curves are on these axes
-        if XTICKS_ID == self.ticksId  or  YTICKS_ID == self.ticksId  or  0 < getNCurvesVisibleOnAxis():
+        if XTICKS_ID == self.ticksId  or  YTICKS_ID == self.ticksId  or  0 < self.getNCurvesVisibleOnAxis():
             l = self.getAxisLimits()
             for i in range(self.tickCount):
                 # linear interpolation between min and max
