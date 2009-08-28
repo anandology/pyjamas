@@ -169,18 +169,18 @@ class Curve:
     """
     def getBand(self, iPoint, bandThickness):
         result = GChart.NAI
-        symType = getSymbol().getSymbolType()
-        xPx = symType.getCenterX(plotPanel, getSymbol(), iPoint)
+        symType = self.getSymbol().getSymbolType()
+        xPx = symType.getCenterX(plotPanel, self.getSymbol(), iPoint)
         if xPx!=xPx:
             return result; # NaN points not in any band
         
-        yPx = symType.getCenterY( plotPanel, getSymbol(), iPoint, onY2())
+        yPx = symType.getCenterY( plotPanel, self.getSymbol(), iPoint, onY2())
         if yPx!=yPx:
             return result; # NaN points not in any band
         
         # now, we've got a point with x,y values in some sort of band
         
-        if getSymbol().isHorizontallyBanded():
+        if self.getSymbol().isHorizontallyBanded():
             if yPx < 0:
                 result = 0; # off-chart point above chart
             
