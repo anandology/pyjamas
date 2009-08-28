@@ -93,6 +93,7 @@ import TouchedPointUpdateOption
 from Curve import Curve
 import GChartUtil 
 from GChartUtil import formatAsHovertext, YAxisId, setOverflow
+from GChartUtil import htmlHeight
 from GChartWidgets import PlotPanel
 import GChartWidgets 
 
