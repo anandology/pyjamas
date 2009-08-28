@@ -87,7 +87,7 @@ class Symbol(object):
         self.backgroundColor = GChartConsts.DEFAULT_SYMBOL_BACKGROUND_COLOR
         # same as backgroundColor, but with extended RGBA collapsed to plain RGA
         self.backgroundColorCSS = GChartConsts.DEFAULT_SYMBOL_BACKGROUND_COLOR
-        baseline = Double.NaN
+        self.baseline = Double.NaN
         self.borderColor = "black"
         self.borderColorCSS = "black"
         self.borderStyle = GChartConsts.DEFAULT_SYMBOL_BORDER_STYLE
@@ -174,7 +174,7 @@ class Symbol(object):
     ** @see #setBaseline setBaseline
     *"""
     def getBaseline(self):
-        return baseline
+        return self.baseline
     
     """* Returns the CSS border color of all the rectangular
     ** elements used in rendering the symbol.
