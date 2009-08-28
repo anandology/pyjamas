@@ -753,8 +753,8 @@ class Axis:
     # during repeated calls made in updateChartDecorations.
     def getTickLabelThickness(self, needsPopulation=True):
         maxLength = 0
-        if tickLabelThickness != GChart.NAI:
-            result = tickLabelThickness
+        if self.tickLabelThickness != GChart.NAI:
+            result = self.tickLabelThickness
         else:
             # use an heuristic to estimate thickness
             if needsPopulation:
@@ -2008,8 +2008,8 @@ class XAxis(Axis):
 
     def getTickLabelThickness(self, needsPopulation):
         # overrides base class
-        if tickLabelThickness != GChart.NAI:
-            result = tickLabelThickness
+        if self.tickLabelThickness != GChart.NAI:
+            result = self.tickLabelThickness
 
         elif getTickCount() == 0:
             result = 0
