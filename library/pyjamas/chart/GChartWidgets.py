@@ -921,13 +921,13 @@ class GraphicsRenderingPanel (AbsolutePanel):
     # it's OK to do any cleanup/bookkeeping needed.
     def endRendering(self):
         # hide or remove images no longer being used
-        if optimizeForMemory:
+        if self._parent.optimizeForMemory:
             iImage = (self.getWidgetCount()-1)
         else:
             iImage = self.lastVisibleImage
         while iImage >= self.imageIndex:
             w = self.imagePanel.getWidget(iImage)
-            if optimizeForMemory:
+            if self._parent.optimizeForMemory:
                 self.imagePanel.remove(iImage)
             else:
                 DOM.setStyleAttribute(w.getElement(), "visibility", "hidden")
