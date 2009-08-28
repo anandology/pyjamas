@@ -1332,25 +1332,25 @@ class PlotPanel (AbsolutePanel):
                                 y2Axis.getTickSpace() +
                                 y2Axis.getTickLabelPadding())
 
-        chartLegendThickness = getLegendThickness()
-        chartFootnotesThickness = getChartFootnotesThickness()
+        chartLegendThickness = self.getLegendThickness()
+        chartFootnotesThickness = self.getChartFootnotesThickness()
 
-        setPixelSize(getXChartSizeDecoratedQuickly(),
-                        getYChartSizeDecoratedQuickly())
+        self.setPixelSize(self.getXChartSizeDecoratedQuickly(),
+                        self.getYChartSizeDecoratedQuickly())
 
-        setWidgetPosition(self.graphicsPanel, yAxisEnsembleWidth, topMargin)
-        setWidgetPosition(self.annotationPanel, yAxisEnsembleWidth, topMargin)
+        self.setWidgetPosition(self.graphicsPanel, yAxisEnsembleWidth, topMargin)
+        self.setWidgetPosition(self.annotationPanel, yAxisEnsembleWidth, topMargin)
 
         # if there are any existing graphical rendering panels, bring
         # their clipping specs into agreement with the chartspecs
-        for i in range(getRenderingPanelCount()):
+        for i in range(self.getRenderingPanelCount()):
             grp = self.graphicsPanel.getWidget(i)
-            if DECORATIVE_RENDERING_PANEL_INDEX == i  or  isHoverFeedbackRenderingPanel(i)  or  not getClipToPlotArea():
+            if DECORATIVE_RENDERING_PANEL_INDEX == i  or  self.isHoverFeedbackRenderingPanel(i)  or  not self.getClipToPlotArea():
                 grp.setPixelSize(0, 0)
                 GChart.setOverflow(grp, "visible")
 
             else:
-                grp.setPixelSize(getXChartSize(), getYChartSize())
+                grp.setPixelSize(self.getXChartSize(), self.getYChartSize())
                 GChart.setOverflow(grp, "hidden")
 
 
