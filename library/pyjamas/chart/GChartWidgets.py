@@ -461,7 +461,7 @@ class AnnotationRenderingPanel (PartitionedAbsolutePanel):
 
 
     def __init__(self):
-        super()
+        PartitionedAbsolutePanel.__init__(self)
         """
         * Because of event-occlusion that can occur on all browsers but IE,
         * annotation panels MUST by 0-sized/overflow:visible otherwise they
@@ -1315,14 +1315,14 @@ class PlotPanel (AbsolutePanel):
         self.yChartSize = yChartSize
 
         axisLimits = xAxis.getAxisLimits()
-        xMin = axisLimits.min
-        xMax = axisLimits.max
+        self.xMin = axisLimits.min
+        self.xMax = axisLimits.max
         axisLimits = yAxis.getAxisLimits()
-        yMin = axisLimits.min
-        yMax = axisLimits.max
+        self.yMin = axisLimits.min
+        self.yMax = axisLimits.max
         axisLimits = y2Axis.getAxisLimits()
-        y2Min = axisLimits.min
-        y2Max = axisLimits.max
+        self.y2Min = axisLimits.min
+        self.y2Max = axisLimits.max
 
         self.topMargin = self.chart.getChartTitleThickness()
 
@@ -1364,16 +1364,16 @@ class PlotPanel (AbsolutePanel):
     def xToChartPixel(self, x):
         result = Double.NaN
         if -Double.MAX_VALUE == x:
-            result = yAxisEnsembleWidth
+            result = self.yAxisEnsembleWidth
 
         elif Double.MAX_VALUE == x:
-            result = yAxisEnsembleWidth+xChartSize-1.0
+            result = self.yAxisEnsembleWidth+self.xChartSize-1.0
 
         elif not (x!=x):
             # x!=x is a faster isNaN
-            result = ((yAxisEnsembleWidth * (xMax - x) +
-                        (yAxisEnsembleWidth+xChartSize-1.0) * (x - xMin))/
-                        (xMax - xMin))
+            result = ((self.yAxisEnsembleWidth * (self.xMax - x) +
+                        (self.yAxisEnsembleWidth+self.xChartSize-1.0) * (x - self.xMin))/
+                        (self.xMax - self.xMin))
 
         return result
 
@@ -1384,11 +1384,11 @@ class PlotPanel (AbsolutePanel):
             result = 0
 
         elif Double.MAX_VALUE == x:
-            result = xChartSize-1.0
+            result = self.xChartSize-1.0
 
         elif not (x!=x):
             # x!=x is a faster isNaN
-            result = (xChartSize-1.0) * (x - xMin)/(xMax - xMin)
+            result = (self.xChartSize-1.0) * (x - self.xMin)/(self.xMax - self.xMin)
 
         return result
 
@@ -1396,17 +1396,17 @@ class PlotPanel (AbsolutePanel):
 
     def xChartPixelToX(self, xPx):
         result = Double.NaN
-        if GChart.NAI != xPx  and  xChartSize > 1:
-            result = (xMin + (xMax - xMin) *
-                        (xPx - yAxisEnsembleWidth)/(xChartSize-1.))
+        if GChart.NAI != xPx  and  self.xChartSize > 1:
+            result = (self.xMin + (self.xMax - self.xMin) *
+                        (xPx - self.yAxisEnsembleWidth)/(self.xChartSize-1.))
 
         return result
 
 
     def xPixelToX(self, xPx):
         result = Double.NaN
-        if GChart.NAI != xPx  and  xChartSize > 1:
-            result = xMin + (xMax - xMin) * xPx/(xChartSize-1.)
+        if GChart.NAI != xPx  and  self.xChartSize > 1:
+            result = self.xMin + (self.xMax - self.xMin) * xPx/(self.xChartSize-1.)
 
         return result
 
@@ -1414,28 +1414,28 @@ class PlotPanel (AbsolutePanel):
 
     def dxToPixel(self, dx):
         # xMax and xMin are at centers of their pixels, hence the -1
-        result = (dx * (xChartSize-1))/(xMax-xMin)
+        result = (dx * (self.xChartSize-1))/(self.xMax-self.xMin)
         return result
 
 
     def yToChartPixel(self, y, isY2):
         if isY2:
-            minY = y2Min 
-            maxY = y2Max 
+            minY = self.y2Min 
+            maxY = self.y2Max 
         else:
-            minY = yMin
-            maxY = yMax
+            minY = self.yMin
+            maxY = self.yMax
         result = Double.NaN
         if -Double.MAX_VALUE == y:
-            result = yChartSize + topMargin - 1.0
+            result = self.yChartSize + self.topMargin - 1.0
 
         elif Double.MAX_VALUE == y:
-            result = topMargin
+            result = self.topMargin
 
         elif not (y!=y):
             # x!=x is a faster isNaN
-            result = (topMargin * (y - minY) +
-            ((yChartSize + topMargin - 1.0) *
+            result = (self.topMargin * (y - minY) +
+            ((self.yChartSize + self.topMargin - 1.0) *
             (maxY - y)))/(maxY - minY)
 
         return result
@@ -1443,63 +1443,63 @@ class PlotPanel (AbsolutePanel):
 
     def yToPixel(self, y, isY2):
         if isY2:
-            minY = y2Min 
-            maxY = y2Max 
+            minY = self.y2Min 
+            maxY = self.y2Max 
         else:
-            minY = yMin
-            maxY = yMax
+            minY = self.yMin
+            maxY = self.yMax
         result = Double.NaN
         if -Double.MAX_VALUE == y:
-            result = yChartSize - 1.0
+            result = self.yChartSize - 1.0
 
         elif Double.MAX_VALUE == y:
             result = 0
 
         elif not (y!=y):
             # x!=x is a faster isNaN
-            result = (yChartSize - 1.0) * (maxY - y)/(maxY - minY)
+            result = (self.yChartSize - 1.0) * (maxY - y)/(maxY - minY)
 
         return result
 
 
     def yChartPixelToY(self, yPx):
         result = Double.NaN
-        if GChart.NAI != yPx  and  yChartSize > 1:
-            result = yMax + (yMin - yMax) * (yPx - topMargin)/(yChartSize-1.)
+        if GChart.NAI != yPx  and  self.yChartSize > 1:
+            result = self.yMax + (self.yMin - self.yMax) * (yPx - self.topMargin)/(self.yChartSize-1.)
 
         return result
 
     def yPixelToY(self, yPx):
         result = Double.NaN
-        if GChart.NAI != yPx  and  yChartSize > 1:
-            result = yMax + (yMin - yMax) * yPx/(yChartSize-1.)
+        if GChart.NAI != yPx  and  self.yChartSize > 1:
+            result = self.yMax + (self.yMin - self.yMax) * yPx/(self.yChartSize-1.)
 
         return result
 
     def yChartPixelToY2(self, yPx):
         result = Double.NaN
-        if GChart.NAI != yPx  and  yChartSize > 1:
-            result = y2Max + (y2Min - y2Max) * (yPx - topMargin)/(yChartSize-1.)
+        if GChart.NAI != yPx  and  self.yChartSize > 1:
+            result = self.y2Max + (self.y2Min - self.y2Max) * (yPx - self.topMargin)/(self.yChartSize-1.)
 
         return result
 
     def yPixelToY2(self, yPx):
         result = Double.NaN
-        if GChart.NAI != yPx  and  yChartSize > 1:
-            result = y2Max + (y2Min - y2Max) * yPx/(yChartSize-1.)
+        if GChart.NAI != yPx  and  self.yChartSize > 1:
+            result = self.y2Max + (self.y2Min - self.y2Max) * yPx/(self.yChartSize-1.)
 
         return result
 
 
     def dyToPixel(self, dy, isY2):
         if isY2:
-            minY = y2Min 
-            maxY = y2Max 
+            minY = self.y2Min 
+            maxY = self.y2Max 
         else:
-            minY = yMin
-            maxY = yMax
+            minY = self.yMin
+            maxY = self.yMax
         # maxY and minY are at centers of their pixels, hence the -1
-        result = (dy * (yChartSize-1))/(maxY-minY)
+        result = (dy * (self.yChartSize-1))/(maxY-minY)
         return result
 
 
@@ -1510,9 +1510,9 @@ class PlotPanel (AbsolutePanel):
         result = None
         c = getSystemCurve(HOVER_ANNOTATION_ID)
         if self.touchedPoint is not None  and  c.isVisible():
-            internalIndex = getInternalCurveIndex(c)
-            rpIndex = getRenderingPanelIndex(internalIndex)
-            arp = getAnnotationRenderingPanel(rpIndex)
+            internalIndex = self.getInternalCurveIndex(c)
+            rpIndex = self.getRenderingPanelIndex(internalIndex)
+            arp = self.getAnnotationRenderingPanel(rpIndex)
             result = arp.getFirstInnerAlignedLabel()
 
         return result
@@ -1520,7 +1520,7 @@ class PlotPanel (AbsolutePanel):
 
     # the element associated with any opened hover container, else None
     def getOpenedHoverElement(self):
-        hoverContainer = getOpenedHoverContainer()
+        hoverContainer = self.getOpenedHoverContainer()
         return hoverContainer and hoverContainer.getElement() or None
 
 
@@ -1974,7 +1974,7 @@ class PlotPanel (AbsolutePanel):
     """
     def onBrowserEvent(self, event):
         # GWT docs say without this, 1.6+ event handlers won't work
-        super.onBrowserEvent(event)
+        PlotPanel.onBrowserEvent(self, event)
 
         """
         * The tracking of the mouse position depends on if there are
