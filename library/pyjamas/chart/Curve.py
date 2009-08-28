@@ -927,7 +927,7 @@ class Curve:
             # panel, so invalidating one background curve invalidates them all
             if self.indexOf < N_PRE_SYSTEM_CURVES:
                 for i in range(N_PRE_SYSTEM_CURVES):
-                    self.chart.curves.get(i).validated = False
+                    self.chart.curves[i].validated = False
 
 
 
