@@ -856,11 +856,11 @@ class Axis:
         *
         """
 
-        if TickLocation.CENTERED == tickLocation:
-            result = (tickLength+1)/2;  # round up to nearest pixel
+        if TickLocation.CENTERED == self.tickLocation:
+            result = (self.tickLength+1)/2;  # round up to nearest pixel
 
-        elif TickLocation.OUTSIDE == tickLocation:
-            result = tickLength
+        elif TickLocation.OUTSIDE == self.tickLocation:
+            result = self.tickLength
 
         else: # INSIDE
             result = 0
