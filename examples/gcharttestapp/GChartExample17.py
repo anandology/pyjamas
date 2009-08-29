@@ -21,6 +21,7 @@ class CurveNumberHoverParameterInterpreter:
 
         # add "elif" branches to support more parameter names
 
+        print "getHoverParam", paramName, hoveredOver, result
         return result
 
 """*

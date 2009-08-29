@@ -49,6 +49,9 @@ def createInputRadio(group):
     return $doc.createElement("<INPUT type='RADIO' name='" + group + "'>");
     """)
 
+def eventGetCurrentTarget(event):
+    return event.currentEventTarget
+
 def eventGetTarget(evt):
     JS("""
     var elem = evt.srcElement;

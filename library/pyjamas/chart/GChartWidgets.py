@@ -70,6 +70,8 @@ import GChart
 import GChartUtil
 import Double
 
+from pyjamas import log
+
 """
 * This class' sole purpose is to work around a FF 2
 * performance limitation: chart update times increase as
@@ -1585,14 +1587,18 @@ class PlotPanel (AbsolutePanel):
 
 
         # with hoverCleanup out of the way, switch to hover widget
+        print "set hover widget", cTouched 
         self.touchedHoverWidget = cTouched and \
                                 cTouched.getSymbol().getHoverWidget() or None
+
+        print "set hover widget:", self.touchedHoverWidget
 
         if None == self.touchedHoverWidget:
             if None != p:
                 # no hover-widget, just use expanded hover-template
                 hovertext = p.getHovertext()
 
+                print "hovertext", hovertext
                 cAnnotation.getPoint(0).setAnnotationText( hovertext,
                     cTouched.getSymbol().getHoverAnnotation().widthUpperBound,
                     cTouched.getSymbol().getHoverAnnotation().heightUpperBound)
@@ -1717,6 +1723,9 @@ class PlotPanel (AbsolutePanel):
     *  not track to their source, so I just stuck with this)
     """
     def isContainedIn(self, container, et):
+
+        return DOM.isOrHasChild(et, container)
+
         # XXX ???? ehh??
         # Element part =
         #(None == et  or  !Element.is(et)) ? None : Element.as(et)
@@ -1819,11 +1828,11 @@ class PlotPanel (AbsolutePanel):
         *
         """
         y = Window.getScrollTop() + self.repairBadClientY(clientY)
-        absTop = container.getAbsoluteTop()
-        if absTop < y  and  y+1 < absTop + container.getOffsetHeight():
+        absTop = DOM.getAbsoluteTop(container)
+        if absTop < y  and  y+1 < absTop + DOM.getOffsetHeight(container):
             x = Window.getScrollLeft() + self.repairBadClientX(clientX)
-            absLeft = container.getAbsoluteLeft()
-            if absLeft < x  and  x+1 < absLeft + container.getOffsetWidth():
+            absLeft = DOM.getAbsoluteLeft(container)
+            if absLeft < x  and  x+1 < absLeft + DOM.getOffsetWidth(container):
                 result = True
 
 
@@ -2047,29 +2056,30 @@ class PlotPanel (AbsolutePanel):
         """
 
         eventId = DOM.eventGetType(event)
+        print eventId
         """ Note that a click that closes a modal DialogBox can
         * generate a mouse location change without an ONMOUSEMOVE,
         * and a point that moves under the mouse due to an update
         * can generate a mouseover without a MOUSEMOVE """
-        isClick = (Event.ONCLICK == eventId)
+        isClick = ("click" == eventId)
         if ("mousemove" == eventId  or  "mouseover" == eventId  or  isClick)  and  not self.isOverOpenedHoverAnnotation(event):
             # remember last "tracked" mouse location
-            """
-            if Event.ONCLICK == eventId:
-                Window.alert("CLICK: event.getClientX()=" + event.getClientX() +
-                " event.getClientY()=" + event.getClientY() +
+            #"""
+            if "click" == eventId:
+                log.writebr("CLICK: event.getClientX()=" + str(DOM.eventGetClientX(event)) +
+                " event.getClientY()=" + str(DOM.eventGetClientY(event)) +
                 " event.getTarget()==self.getElement() is " +
-                (event.getTarget() == self.getElement()) +
-                " event.getCurrentTarget()="+event.getCurrentTarget() +
-                " event.getTarget()=" + event.getTarget())
+                str(DOM.eventGetTarget(event) == self.getElement()) +
+                " event.getCurrentTarget()="+str(DOM.eventGetCurrentTarget(event)) +
+                " event.getTarget()=" + str(DOM.eventGetTarget(event)))
 
-            elif Event.ONMOUSEOVER == eventId:
-                Window.alert("MOUSEOVER: event.getClientX()=" + event.getClientX() +
-                " event.getClientY()=" + event.getClientY() +
-                " event.getCurrentTarget()="+event.getCurrentTarget() +
-                " event.getTarget()=" + event.getTarget())
+            elif "mouseover" == eventId:
+                log.writebr("MOUSEOVER: event.getClientX()=" + str(DOM.eventGetClientX(event)) +
+                " event.getClientY()=" + str(DOM.eventGetClientY(event)) +
+                " event.getCurrentTarget()="+str(DOM.eventGetCurrentTarget(event)) +
+                " event.getTarget()=" + str(DOM.eventGetTarget(event)))
 
-            """
+            #"""
             if self.chart.getHoverTouchingEnabled()  or  isClick:
                 self.setClientX(DOM.eventGetClientX(event), isClick)
                 self.setClientY(DOM.eventGetClientY(event), isClick)
@@ -2080,10 +2090,12 @@ class PlotPanel (AbsolutePanel):
 
 
         elif "mouseout" == eventId  and  self.chart.getHoverTouchingEnabled()  and  self.takesUsCompletelyOutsideChart(event):
-            #                Window.alert("MOUSEOUT: event.getClientX()=" + event.getClientX() +
-            #                             " event.getClientY()=" + event.getClientY() +
-            #                             " event.getCurrentTarget()="+event.getCurrentTarget() +
-            #                             " event.getTarget()=" + event.getTarget())
+            #"""
+            log.writebr("MOUSEOUT: event.getClientX()=" + str(DOM.eventGetClientX(event)) +
+                " event.getClientY()=" + str(DOM.eventGetClientY(event)) +
+                " event.getCurrentTarget()="+str(DOM.eventGetCurrentTarget(event)) +
+                " event.getTarget()=" + str(DOM.eventGetTarget(event)))
+            #"""
             self.setClientX(GChart.NAI, False); # mouse not over chart,
             self.setClientY(GChart.NAI, False); # so position is undefined
             if (not self.chart.isUpdateNeeded()  and  

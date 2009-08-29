@@ -153,7 +153,7 @@ class Browser(WebView):
 
     def _loading(self, progress_listener, progress):
 
-        print "loading", progress
+        print "loading", progress, self.getDomWindow().location.href
 
 def is_loaded():
     return wv.already_initialised

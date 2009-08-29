@@ -283,6 +283,9 @@ def eventGetScreenY(evt):
 def eventGetShiftKey(evt):
     return evt.shiftKey
 
+def eventGetCurrentTarget(event):
+    return event.currentTarget
+
 def eventGetTarget(event):
     return event.target
 
@@ -619,6 +622,12 @@ def replaceChild(parent, newChild, oldChild):
 
 def removeEventPreview(preview):
     sEventPreviewStack.remove(preview)
+
+def getOffsetHeight(elem):
+    return elem.offsetHeight
+
+def getOffsetWidth(elem):
+    return elem.offsetWidth
 
 def scrollIntoView(elem):
     left = elem.offsetLeft
