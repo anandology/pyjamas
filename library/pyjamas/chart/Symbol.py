@@ -69,6 +69,7 @@ import GChart
 import AnnotationLocation
 from Annotation import Annotation
 import HovertextChunk
+import GChartUtil
 
 """*
 ** Defines a chart curve symbol. Each point on a curve
@@ -1995,7 +1996,11 @@ class Symbol(object):
     * @see #setHoverYShift setHoverYShift
     *
     """
-    def setHoverWidget(self, hoverWidget, widthUpperBound, heightUpperBound):
+    
+    
+    def setHoverWidget(self, hoverWidget,
+                widthUpperBound=GChartConsts.DEFAULT_WIDGET_WIDTH_UPPERBOUND,
+                heightUpperBound=GChartConsts.DEFAULT_WIDGET_HEIGHT_UPPERBOUND):
         if None != hoverWidget  and  not isinstance(hoverWidget, Widget):
             raise IllegalArgumentException(
             "hoverWidget must either be None or a Widget.")
@@ -2003,38 +2008,6 @@ class Symbol(object):
         self.getHoverAnnotation().setWidget(hoverWidget,
                                             widthUpperBound, heightUpperBound)
         
-    
-    
-    """*
-    * Specifies a <tt>HoverUpdateable</tt> widget that will be
-    * used to display all hover annotations associated with this
-    * symbol. If <tt>None</tt>, GChart's built-in,
-    * <tt>setHovertextTemplate</tt>-based, text or HTML
-    * based hover annotations will instead be used.  <p>
-    *
-    * <p>
-    * A convenience method equivalent to
-    * <tt>setHoverWidget(hoverWidget, GChart.NAI, GChart.NAI)</tt>
-    *
-    *
-    *  @param annotationWidget the GWT Widget that defines this
-    *    point's hover-induced annotation, or <tt>None</tt> to use the
-    *    default hover annotation, which is based on expanding the
-    *    hover text template relative to the hovered over point.
-    *
-    * @see #setHoverWidget(HoverUpdateable,int,int)
-    * setHoverWidget(HoverUpdateable,int,int)
-    * @see #setHovertextTemplate setHovertextTemplate
-    * @see Curve.Point#getHovertext getHovertext
-    * @see #DEFAULT_WIDGET_HEIGHT_UPPERBOUND DEFAULT_WIDGET_HEIGHT_UPPERBOUND
-    * @see #DEFAULT_WIDGET_WIDTH_UPPERBOUND DEFAULT_WIDGET_WIDTH_UPPERBOUND
-    *
-    """
-    def setHoverWidget(self, annotationWidget):
-        setHoverWidget(annotationWidget,
-                      GChartConsts.DEFAULT_WIDGET_WIDTH_UPPERBOUND,
-                      GChartConsts.DEFAULT_WIDGET_HEIGHT_UPPERBOUND)
-    
     
     """*
     * Specifies the number of pixels (along the x-axis) to
@@ -2247,7 +2220,8 @@ class Symbol(object):
     **
     """
     def setPieSliceOrientation(self, pieSliceOrientation):
-        invalidateDependentSlices(getCurveIndex(self.getParent()))
+        idx = self.getChart().getCurveIndex(self.getParent())
+        self.getChart().invalidateDependentSlices(idx)
         if self.pieSliceOrientation!=Double.NaN  and  (self.pieSliceOrientation < 0  or  self.pieSliceOrientation >=1):
             raise IllegalArgumentException(
             "pieSliceOrientation="+str(self.pieSliceOrientation)+"; "+
@@ -2291,8 +2265,9 @@ class Symbol(object):
     **
     """
     def setPieSliceSize(self, pieSliceSize):
-        invalidateDependentSlices(getCurveIndex(self.getParent()))
-        if not withinRange(pieSliceSize,0,1):
+        idx = self.getChart().getCurveIndex(self.getParent())
+        self.getChart().invalidateDependentSlices(idx)
+        if not GChartUtil.withinRange(pieSliceSize,0,1):
             raise IllegalArgumentException(
             "pieSliceSize="+self.pieSliceSize+"; the requirement: "+
             "0.0 <= pieSliceSize <= 1.0 must be satisfied.")

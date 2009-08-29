@@ -1522,8 +1522,8 @@ class PlotPanel (AbsolutePanel):
         result = None
         c = self.chart.getSystemCurve(HOVER_ANNOTATION_ID)
         if self.touchedPoint is not None  and  c.isVisible():
-            internalIndex = self.getInternalCurveIndex(c)
-            rpIndex = self.getRenderingPanelIndex(internalIndex)
+            internalIndex = self.chart.getInternalCurveIndex(c)
+            rpIndex = self.chart.getRenderingPanelIndex(internalIndex)
             arp = self.getAnnotationRenderingPanel(rpIndex)
             result = arp.getFirstInnerAlignedLabel()
 
@@ -1870,10 +1870,12 @@ class PlotPanel (AbsolutePanel):
         result = False
         hoverElement = self.getOpenedHoverElement()
         if None != hoverElement:
-            if self.isContainedIn(hoverElement, event.getEventTarget()):
+            if self.isContainedIn(hoverElement, DOM.eventGetTarget(event)):
                 result = True
 
-            elif self.isGeometricallyContainedIn(hoverElement, event.getClientX(), event.getClientY()):
+            elif self.isGeometricallyContainedIn(hoverElement,
+                                             DOM.eventGetClientX(event), 
+                                              DOM.eventGetClientY(event)):
                 result = True
 
 

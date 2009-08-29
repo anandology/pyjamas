@@ -94,10 +94,10 @@ def getHovertext(htc, p):
     hpi = p.getParent().getParent().getHoverParameterInterpreter()
     for i in range(len(htc)):
         pid = htc[i].paramId
-        if pid == HovertextChunk.HOVERTEXT_PARAM_NONE:
+        if pid == HOVERTEXT_PARAM_NONE:
             break
 
-        elif  pid == HovertextChunk.HOVERTEXT_PARAM_X:
+        elif  pid == HOVERTEXT_PARAM_X:
             if None == xS:
                 if None != hpi:
                     xS = hpi.getHoverParameter(htc[i].paramName, p)
@@ -109,7 +109,7 @@ def getHovertext(htc, p):
             result += xS
             break
 
-        elif  pid == HovertextChunk.HOVERTEXT_PARAM_Y:
+        elif  pid == HOVERTEXT_PARAM_Y:
             if None == yS:
                 if None != hpi:
                     yS = hpi.getHoverParameter(htc[i].paramName, p)
@@ -126,7 +126,7 @@ def getHovertext(htc, p):
             break
 
 
-        elif  pid == HovertextChunk.HOVERTEXT_PARAM_PIESLICESIZE:
+        elif  pid == HOVERTEXT_PARAM_PIESLICESIZE:
             if None == pieSlicePercentS:
                 if None != hpi:
                     pieSlicePercentS = hpi.getHoverParameter(htc[i].paramName, p)
@@ -144,7 +144,7 @@ def getHovertext(htc, p):
             break
 
 
-        elif  pid == HovertextChunk.HOVERTEXT_PARAM_USERDEFINED:
+        elif  pid == HOVERTEXT_PARAM_USERDEFINED:
 
             if None == hpi:
                 # None means "unrecognized parameter" - so
