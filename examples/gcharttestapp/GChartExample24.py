@@ -6,7 +6,7 @@ from pyjamas.chart import SymbolType
 import math
 
 from pyjamas import DOM
-from pyjamas.ui.Anchor import Anchor
+from pyjamas.ui.Hyperlink import Hyperlink
 from pyjamas.ui.Button import Button
 from pyjamas.ui.FlowPanel import FlowPanel
 from pyjamas.ui.Grid import Grid
@@ -147,25 +147,6 @@ N_POINTS = 100
     
 
 class GChartExample24(GChart):
-    def __init__(self):
-        GChart.__init__(self)
-
-        self.SELECTION_CURVE = 0 # curve index of selection cursor
-        self.p1 = Point(); # first corner (@mousedown) of selection rect
-        self.p2 = Point(); # second corner (@mouseup) of selection rect
-        self.selecting = False
-        self.moving = False
-        self.ctrlPressed = False; # as evaluated at mouse down
-        self.altPressed = False
-        # (# zoom ins) - (# zoom outs) since selection rect created
-        # lets us know when to restore initial plot area limits/cursor
-        self.zoomIndex = 0
-        self.zoomController = ZoomController()
-        # min plot area fraction zoom selection cursor must capture
-        
-        self.initialPlotRegion = Region()
-        self.initialSelectionRegion = Region()
-    
     
     def updateCursor(self):
         dx = self.p2.x - self.p1.x
@@ -201,10 +182,28 @@ class GChartExample24(GChart):
     
     
     def __init__(self):
+        GChart.__init__(self)
+
+        self.SELECTION_CURVE = 0 # curve index of selection cursor
+        self.p1 = Point(); # first corner (@mousedown) of selection rect
+        self.p2 = Point(); # second corner (@mouseup) of selection rect
+        self.selecting = False
+        self.moving = False
+        self.ctrlPressed = False; # as evaluated at mouse down
+        self.altPressed = False
+        # (# zoom ins) - (# zoom outs) since selection rect created
+        # lets us know when to restore initial plot area limits/cursor
+        self.zoomIndex = 0
+        self.zoomController = ZoomController()
+        # min plot area fraction zoom selection cursor must capture
+        
+        self.initialPlotRegion = Region()
+        self.initialSelectionRegion = Region()
+    
         self.setChartTitle(
         "Drag to pan; Press Ctrl while drag-selecting a rectangle to zoom")
         self.setChartSize(500, 150)
-        a = Anchor()
+        a = Hyperlink()
         a.setPixelSize(10, 500)
         self.getYAxis().setAxisLabel(a)
         # another option is to use clipToDecoratedChart(True) instead.
