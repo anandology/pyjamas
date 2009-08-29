@@ -58,28 +58,17 @@ def eventGetButton(evt):
 #"""
 def getAbsoluteLeft(elem):
     JS("""
-if (true) {
-    try {
-        // Firefox 3 expects getBoundingClientRect
-        // getBoundingClientRect can be float: 73.1 instead of 74, see
-        // gwt's workaround at user/src/com/google/gwt/dom/client/DOMImplMozilla.java:47
-        // Please note, their implementation has 1px offset.
-
-        var left = Math.ceil(elem.getBoundingClientRect().left);
-        return left + elem.ownerDocument.getViewportElement().scrollLeft;
-    } catch (e) {
-        var left = $doc.getBoxObjectFor(elem).x;
-    }
-} else {
+    // Firefox 3 expects getBoundingClientRect
+    // getBoundingClientRect can be float: 73.1 instead of 74, see
+    // gwt's workaround at user/src/com/google/gwt/dom/client/DOMImplMozilla.java:47
+    // Please note, their implementation has 1px offset.
     if (   typeof elem.getBoundingClientRect == 'function'
         && elem.ownerDocument.getViewportElement == 'function') {
         var left = Math.ceil(elem.getBoundingClientRect().left);
         return left + elem.ownerDocument.getViewportElement().scrollLeft;
     }
     var left = $doc.getBoxObjectFor(elem).x;
-}
     var parent = elem.parentNode;
-
     while (parent) {
         if (parent.scrollLeft > 0) {
             left = left -  parent.scrollLeft;
@@ -114,22 +103,13 @@ if (true) {
 #"""
 def getAbsoluteTop(elem):
     JS("""
-if (true) {
-    try {
-        // Firefox 3 expects getBoundingClientRect
-        var top = Math.ceil(elem.getBoundingClientRect().top);
-        return top + elem.ownerDocument.getViewportElement().scrollTop;
-    } catch (e) {
-        var top = $doc.getBoxObjectFor(elem).y;
-    }
-} else {
+    // Firefox 3 expects getBoundingClientRect
     if (   typeof elem.getBoundingClientRect == 'function'
         && elem.ownerDocument.getViewportElement == 'function') {
         var top = Math.ceil(elem.getBoundingClientRect().top);
         return top + elem.ownerDocument.getViewportElement().scrollTop;
     }
     var left = $doc.getBoxObjectFor(elem).x;
-}
     var parent = elem.parentNode;
     while (parent) {
         if (parent.scrollTop > 0) {
