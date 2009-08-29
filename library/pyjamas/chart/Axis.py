@@ -141,31 +141,6 @@ class Axis:
     def decrementCurves(self):
         self.nCurvesVisibleOnAxis -= 1
 
-    """*
-    * Adds a tick on this axis at the specified position.
-    *
-    * @param tickPosition the position, in model units,
-    *   along this axis at which this tick is displayed.
-    *   For example, if the axis range goes from 0 to 100,
-    *   a tick at position 50 would appear in the middle of
-    *   the axis.
-    *
-    * @see #clearTicks clearTicks
-    * @see #addTick(double,String) addTick(double,String)
-    * @see #addTick(double,String,int,int) addTick(double,String,int,int)
-    * @see #addTick(double,Widget,int,int) addTick(double,Widget,int,int)
-    * @see #formatAsTickLabel formatAsTickLabel
-    * @see #setTickCount setTickCount
-    * @see #setTickLabelFormat setTickLabelFormat
-    * @see #setTickLabelFontStyle setTickLabelFontStyle
-    * @see #setTickLabelFontColor setTickLabelFontColor
-    * @see #setTickLabelFontWeight setTickLabelFontWeight
-    * @see #setTickLabelFontSize setTickLabelFontSize
-    *
-    """
-    def addTick(self, tickPosition):
-        addTick(tickPosition, formatAsTickLabel(tickPosition))
-
     # adds a labeled tick mark via this Axis' special system tick curve
     def addTickAsPoint(self, tickPosition, tickLabel, tickWidget, widthUpperBound, heightUpperBound):
 
@@ -269,7 +244,7 @@ class Axis:
     * @see Curve.Point#setAnnotationWidget setAnnotationWidget
     *
     """
-    def addTick(self, tickPosition, tickLabel, widthUpperBound, heightUpperBound):
+    def _addTickLabel(self, tickPosition, tickLabel, widthUpperBound, heightUpperBound):
         self.chartDecorationsChanged = True
         if GChart.NAI != self.tickCount:
             # clear out any auto-generated ticks
@@ -280,37 +255,9 @@ class Axis:
         self.addTickAsPoint(tickPosition, tickLabel, None, widthUpperBound,
                         heightUpperBound)
 
-
-    def addTick(self, tickPosition, tickLabel):
-        """*
-        * Adds a tick at the specified position with the specified
-        * label on this axis.
-        * <p>
-        *
-        * This is a convenience method equivalent to
-        * <tt>addTick(tickPosition, tickLabel, GChart.NAI,
-        * GChart.NAI)</tt>. Most applications can usually just
-        * use this convenience method. See {@link #addTick(double,String,int,int)
-        * addTick(tickPosition,tickLabel,
-        * widthUpperBound,heightUpperBound)} for the fine print.
-        *
-        * @param tickPosition the position, in model units, along
-        *   this axis at which the tick is displayed.
-        *
-        * @param tickLabel the plain text or
-        * (<tt>&lt;html&gt</tt>-prefixed) HTML defining the tick's
-        * label.
-        *
-        * @see #addTick(double,String,int,int) addTick(double,String,int,int)
-        * @see #addTick(double,Widget) addTick(double,Widget)
-        *
-        """
-        addTick(tickPosition, tickLabel, GChart.NAI, GChart.NAI)
-
-
-    def addTick(self, tickPosition, tickWidget,
-                    widthUpperBound=DEFAULT_WIDGET_WIDTH_UPPERBOUND,
-                    heightUpperBound=DEFAULT_WIDGET_HEIGHT_UPPERBOUND):
+    def addTick(self, tickPosition, tickWidget=None,
+                                    widthUpperBound=None,
+                                    heightUpperBound=None):
         """*
         *  Adds a widget-defined tick label at the specified
         *  position, whose width and height are within
@@ -341,6 +288,21 @@ class Axis:
         *  @see #DEFAULT_WIDGET_WIDTH_UPPERBOUND DEFAULT_WIDGET_WIDTH_UPPERBOUND
         *  @see #DEFAULT_WIDGET_HEIGHT_UPPERBOUND DEFAULT_WIDGET_HEIGHT_UPPERBOUND
         *"""
+
+        if tickWidget is None:
+            tiickWidget = self.formatAsTickLabel(tickPosition))
+
+        if isinstance(tickWidget, str):
+            if widthUpperBound is None and heightUpperBound is None:
+                widthUpperBound = GChart.NAI
+                heightUpperBound = GChart.NAI
+            self._addTickLabel(tickPosition, tickWidget,
+                               widthUpperBound, heightUpperBound)
+            return
+
+        if widthUpperBound is None and heightUpperBound is None:
+            widthUpperBound = DEFAULT_WIDGET_WIDTH_UPPERBOUND
+            heightUpperBound = DEFAULT_WIDGET_HEIGHT_UPPERBOUND
         self.chartDecorationsChanged = True
         if GChart.NAI != self.tickCount:
             # clear out any auto-generated ticks
