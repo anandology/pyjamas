@@ -537,6 +537,7 @@ class GChart (Composite):
     def __init__(self, xChartSize=DEFAULT_X_CHARTSIZE,
                        yChartSize=DEFAULT_Y_CHARTSIZE, **kwargs):
 
+        self.chartTitle = None
         self.hoverParameterInterpreter = None
         self.hoverTouchingEnabled = True
 
