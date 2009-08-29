@@ -67,6 +67,7 @@ import GChartConsts
 import Double
 import GChart
 import AnnotationLocation
+from Annotation import Annotation
 
 """*
 ** Defines a chart curve symbol. Each point on a curve
@@ -333,7 +334,7 @@ class Symbol(object):
     * hover feedback. """
     def getHoverAnnotation(self):
         if self.hoverAnnotation is None:
-            self.hoverAnnotation = self.Annotation()
+            self.hoverAnnotation = Annotation()
         
         return self.hoverAnnotation
     

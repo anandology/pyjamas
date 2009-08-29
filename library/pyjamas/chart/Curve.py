@@ -317,9 +317,9 @@ class Curve:
         nBands = self.getNBands(self.bandThickness)
 
         if self.bandList is None  or  len(self.bandList) != nBands:
-            self.bandList = []
-            for i in range(nBands):
-                self.bandList.append(GChart.NAI)
+            self.bandList = [GChart.NAI] * nBands
+        for i in range(nBands):
+            self.bandList[i] = GChart.NAI
 
         for iPoint in range(self.getNPoints()):
             iBand = self.getBand(iPoint, self.bandThickness)
