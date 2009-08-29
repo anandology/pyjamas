@@ -68,6 +68,7 @@ import Double
 import GChart
 import AnnotationLocation
 from Annotation import Annotation
+import HovertextChunk
 
 """*
 ** Defines a chart curve symbol. Each point on a curve
@@ -719,7 +720,8 @@ class Symbol(object):
     # returns an internal, parsed form of the hovertext template
     def getHovertextChunks(self):
         if None == self.hovertextChunks:
-            self.hovertextChunks = HovertextChunk.parseHovertextTemplate( getHovertextTemplate())
+            self.hovertextChunks = HovertextChunk.parseHovertextTemplate(
+                                            self.getHovertextTemplate())
         
         return self.hovertextChunks
     
