@@ -154,14 +154,14 @@ class GChartExample24(GChart):
     def updateCursor(self):
         dx = self.p2.x - self.p1.x
         dy = self.p2.y - self.p1.y
-        if not self.moving  and  math.abs(dx) >= MIN_SELECTION_FRACTION_X* (getXAxis().getAxisMax()-getXAxis().getAxisMin())  and  math.abs(dy) >= MIN_SELECTION_FRACTION_Y* (getYAxis().getAxisMax()-getYAxis().getAxisMin()):
+        if not self.moving  and  abs(dx) >= MIN_SELECTION_FRACTION_X* (getXAxis().getAxisMax()-getXAxis().getAxisMin())  and  abs(dy) >= MIN_SELECTION_FRACTION_Y* (getYAxis().getAxisMax()-getYAxis().getAxisMin()):
             self.getCurve(self.SELECTION_CURVE).setVisible(True)
             self.getCurve(self.SELECTION_CURVE).getSymbol().setSymbolType(
             SymbolType.BOX_CENTER)
             self.getCurve(self.SELECTION_CURVE).getSymbol().setBorderColor("gray")
             self.getCurve(self.SELECTION_CURVE).getSymbol().setBorderWidth(2)
-            self.getCurve(self.SELECTION_CURVE).getSymbol().setModelWidth(math.abs(dx))
-            self.getCurve(self.SELECTION_CURVE).getSymbol().setModelHeight(math.abs(dy))
+            self.getCurve(self.SELECTION_CURVE).getSymbol().setModelWidth(abs(dx))
+            self.getCurve(self.SELECTION_CURVE).getSymbol().setModelHeight(abs(dy))
             self.getCurve(self.SELECTION_CURVE).getPoint(0).setX((self.p1.x + self.p2.x)/2)
             self.getCurve(self.SELECTION_CURVE).getPoint(0).setY((self.p1.y + self.p2.y)/2)
         
@@ -180,7 +180,7 @@ class GChartExample24(GChart):
         
         
         
-        update()
+        self.update()
         
     
     
