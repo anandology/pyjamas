@@ -24,6 +24,14 @@ HOVERTEXT_PARAM_Y = 2;  # ${y}
 HOVERTEXT_PARAM_PIESLICESIZE = 3; # ${pieSlicePercent}
 HOVERTEXT_PARAM_USERDEFINED = 4; # ${mySpecialParameter}
 
+# Allows hovertext templates to be parsed into "chunks"
+# so that they can be expanded into hovertext faster.
+class HovertextChunk:
+    def __init__(self, pid, name, text):
+        self.paramId = pid
+        self.paramName = name
+        self.chunkText = text
+
 # returns array of "chunks" corresponding to the given
 # hovertext template
 def parseHovertextTemplate(htTemplate):
@@ -76,95 +84,86 @@ def parseHovertextTemplate(htTemplate):
 
     return result
 
-# Allows hovertext templates to be parsed into "chunks"
-# so that they can be expanded into hovertext faster.
-class HovertextChunk:
-    def __init__(self, pid, name, text):
-        self.paramId = pid
-        self.paramName = name
-        self.chunkText = text
+""" hovertext associated with parsed "chunks" for a given point """
+def getHovertext(htc, p):
+    result = ""
+    xS = None
+    yS = None
+    pieSlicePercentS = None
+    #HoverParameterInterpreter hpi =
+    hpi = p.getParent().getParent().getHoverParameterInterpreter()
+    for i in range(len(htc)):
+        pid = htc[i].paramId
+        if pid == HovertextChunk.HOVERTEXT_PARAM_NONE:
+            break
 
-
-    """ hovertext associated with parsed "chunks" for a given point """
-    def getHovertext(self, htc, p):
-        result = ""
-        xS = None
-        yS = None
-        pieSlicePercentS = None
-        #HoverParameterInterpreter hpi =
-        hpi = p.getParent().getParent().getHoverParameterInterpreter()
-        for i in range(len(htc)):
-            pid = htc[i].paramId
-            if pid == HovertextChunk.HOVERTEXT_PARAM_NONE:
-                break
-
-            elif  pid == HovertextChunk.HOVERTEXT_PARAM_X:
-                if None == xS:
-                    if None != hpi:
-                        xS = hpi.getHoverParameter(htc[i].paramName, p)
-
-                    else:
-                        axis = p.getParent().getParent().getXAxis()
-                        xS = axis.formatAsTickLabel(p.getX())
-
-                result += xS
-                break
-
-            elif  pid == HovertextChunk.HOVERTEXT_PARAM_Y:
-                if None == yS:
-                    if None != hpi:
-                        yS = hpi.getHoverParameter(htc[i].paramName, p)
-
-                    else:
-                        if p.getParent().onY2():
-                            axis = p.getParent().getParent().getY2Axis()
-                        else:
-                            axis = p.getParent().getParent().getYAxis()
-                        yS = axis.formatAsTickLabel(p.getY())
-
-
-                result+=yS
-                break
-
-
-            elif  pid == HovertextChunk.HOVERTEXT_PARAM_PIESLICESIZE:
-                if None == pieSlicePercentS:
-                    if None != hpi:
-                        pieSlicePercentS = hpi.getHoverParameter(htc[i].paramName, p)
-
-                    else:
-                        pieSliceSize = p.getParent().getSymbol().getPieSliceSize()
-                        if p.getParent().onY2():
-                            axis = p.getParent().getParent().getY2Axis()
-                        else:
-                            axis = p.getParent().getParent().getYAxis()
-                        pieSlicePercentS = axis.formatAsTickLabel(100*pieSliceSize) + "%"
-
-
-                result+=pieSlicePercentS
-                break
-
-
-            elif  pid == HovertextChunk.HOVERTEXT_PARAM_USERDEFINED:
-
-                if None == hpi:
-                    # None means "unrecognized parameter" - so
-                    # regenerate the original, unparsed, param spec
-                    # to clue them in that it was not processed.
-                    result += "${" + htc[i].paramName + "}"
+        elif  pid == HovertextChunk.HOVERTEXT_PARAM_X:
+            if None == xS:
+                if None != hpi:
+                    xS = hpi.getHoverParameter(htc[i].paramName, p)
 
                 else:
-                    result += hpi.getHoverParameter(htc[i].paramName, p)
+                    axis = p.getParent().getParent().getXAxis()
+                    xS = axis.formatAsTickLabel(p.getX())
+
+            result += xS
+            break
+
+        elif  pid == HovertextChunk.HOVERTEXT_PARAM_Y:
+            if None == yS:
+                if None != hpi:
+                    yS = hpi.getHoverParameter(htc[i].paramName, p)
+
+                else:
+                    if p.getParent().onY2():
+                        axis = p.getParent().getParent().getY2Axis()
+                    else:
+                        axis = p.getParent().getParent().getYAxis()
+                    yS = axis.formatAsTickLabel(p.getY())
 
 
-                break
+            result+=yS
+            break
+
+
+        elif  pid == HovertextChunk.HOVERTEXT_PARAM_PIESLICESIZE:
+            if None == pieSlicePercentS:
+                if None != hpi:
+                    pieSlicePercentS = hpi.getHoverParameter(htc[i].paramName, p)
+
+                else:
+                    pieSliceSize = p.getParent().getSymbol().getPieSliceSize()
+                    if p.getParent().onY2():
+                        axis = p.getParent().getParent().getY2Axis()
+                    else:
+                        axis = p.getParent().getParent().getYAxis()
+                    pieSlicePercentS = axis.formatAsTickLabel(100*pieSliceSize) + "%"
+
+
+            result+=pieSlicePercentS
+            break
+
+
+        elif  pid == HovertextChunk.HOVERTEXT_PARAM_USERDEFINED:
+
+            if None == hpi:
+                # None means "unrecognized parameter" - so
+                # regenerate the original, unparsed, param spec
+                # to clue them in that it was not processed.
+                result += "${" + htc[i].paramName + "}"
 
             else:
-                raise IllegalStateException(
-                    "An illegal HOVERTEXT_PARAM_* id: " + htc[i].paramId +
-                    " was encountered. A GChart bug is likely to blame.")
+                result += hpi.getHoverParameter(htc[i].paramName, p)
 
-            result+=htc[i].chunkText
 
-        return result
+            break
+
+        else:
+            raise IllegalStateException(
+                "An illegal HOVERTEXT_PARAM_* id: " + htc[i].paramId +
+                " was encountered. A GChart bug is likely to blame.")
+
+        result+=htc[i].chunkText
+
+    return result
 
