@@ -26,6 +26,7 @@ from Symbol import Symbol
 
 from GChartConsts import Y2_AXIS
 from GChartConsts import N_PRE_SYSTEM_CURVES
+import GChartWidgets
 
 
 """*
@@ -849,8 +850,8 @@ class Curve:
         result = self.getParent().getClipToPlotArea()
         if result:
             # decorative, hover feedback curves are never clipped
-            rpIndex = self.getRenderingPanelIndex(self.getIndexOf())
-            if (PlotPanel.DECORATIVE_RENDERING_PANEL_INDEX == rpIndex  or
+            rpIndex = self.chart.getRenderingPanelIndex(self.getIndexOf())
+            if (GChartWidgets.DECORATIVE_RENDERING_PANEL_INDEX == rpIndex  or
                 self.isHoverFeedbackRenderingPanel(rpIndex)):
                 result = False
 
