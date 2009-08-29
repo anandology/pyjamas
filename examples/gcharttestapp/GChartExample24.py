@@ -251,6 +251,12 @@ class GChartExample24(GChart):
         else:
             GChart.onBrowserEvent(self, event)
     
+    def onMouseEnter(self, sender, x, y):
+        pass
+
+    def onMouseLeave(self, sender, x, y):
+        pass
+
     def onMouseUp(self, sender, x, y):
         event = DOM.eventGetCurrentEvent()
         DOM.eventPreventDefault(event)
