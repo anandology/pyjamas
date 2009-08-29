@@ -104,29 +104,31 @@ def getHovertext(htc, p):
 
         elif  pid == HOVERTEXT_PARAM_X:
             if None == xS:
+                hoverParam = None
                 if None != hpi:
                     hoverParam = hpi.getHoverParameter(htc[i].paramName, p)
-                    if hoverParam is not None:
-                        xS = hoverParam
-                    else:
-                        axis = p.getParent().getParent().getXAxis()
-                        xS = axis.formatAsTickLabel(p.getX())
+                if hoverParam is not None:
+                    xS = hoverParam
+                else:
+                    axis = p.getParent().getParent().getXAxis()
+                    xS = axis.formatAsTickLabel(p.getX())
 
             if None != xS:
                 result += xS
 
         elif  pid == HOVERTEXT_PARAM_Y:
             if None == yS:
+                hoverParam = None
                 if None != hpi:
                     hoverParam = hpi.getHoverParameter(htc[i].paramName, p)
-                    if hoverParam is not None:
-                        yS = hoverParam
+                if hoverParam is not None:
+                    yS = hoverParam
+                else:
+                    if p.getParent().onY2():
+                        axis = p.getParent().getParent().getY2Axis()
                     else:
-                        if p.getParent().onY2():
-                            axis = p.getParent().getParent().getY2Axis()
-                        else:
-                            axis = p.getParent().getParent().getYAxis()
-                        yS = axis.formatAsTickLabel(p.getY())
+                        axis = p.getParent().getParent().getYAxis()
+                    yS = axis.formatAsTickLabel(p.getY())
 
 
             if None != yS:
