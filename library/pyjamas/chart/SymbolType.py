@@ -2369,10 +2369,10 @@ class PieSliceSymbolType (SymbolType):
                         # ALWAYS rely on the (mathematically correct)
                         # fact that problematic bars always connect p[1]
                         # and p[2].
-                        if abs(theta0-theta1) <= math.pi  or  
+                        if (abs(theta0-theta1) <= math.pi  or  
                             self.angleInRange(self.angle(xi-xPx,
                                                          yPx-(0.3*p[j]+0.7*p[j-1])),
-                                              theta0,theta1):
+                                              theta0,theta1)):
                             # widening of EPS pixels on either side fills in
                             # tiny intra-slice gaps (that can otherwise appear
                             # due to roundoff) by making each bar a tad bigger.
