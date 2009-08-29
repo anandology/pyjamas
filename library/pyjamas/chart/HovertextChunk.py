@@ -42,7 +42,7 @@ def parseHovertextTemplate(htTemplate):
     # takes "x=${x}; y=${y}" into {"x=", "x}; y=", "y}"}
     # Thus, except for the first, chunks contain a
     # keyword like part, followed by a string literal.
-    sChunk = htTemplate.split("\\$\\{")
+    sChunk = htTemplate.split("${")
     #HovertextChunk[] result = HovertextChunk[len(sChunk)]
     result = [None] * len(sChunk)
 
@@ -95,9 +95,10 @@ def getHovertext(htc, p):
     hpi = p.getParent().getParent().getHoverParameterInterpreter()
     print "getHovertext", htc, p
     for i in range(len(htc)):
+        print htc[i].paramId, htc[i].paramName, htc[i].chunkText
         pid = htc[i].paramId
         if pid == HOVERTEXT_PARAM_NONE:
-            break
+            pass # do nothing extra
 
         elif  pid == HOVERTEXT_PARAM_X:
             if None == xS:
@@ -109,7 +110,6 @@ def getHovertext(htc, p):
                     xS = axis.formatAsTickLabel(p.getX())
 
             result += xS
-            break
 
         elif  pid == HOVERTEXT_PARAM_Y:
             if None == yS:
@@ -125,7 +125,6 @@ def getHovertext(htc, p):
 
 
             result+=yS
-            break
 
 
         elif  pid == HOVERTEXT_PARAM_PIESLICESIZE:
@@ -143,8 +142,6 @@ def getHovertext(htc, p):
 
 
             result+=pieSlicePercentS
-            break
-
 
         elif  pid == HOVERTEXT_PARAM_USERDEFINED:
 
@@ -156,9 +153,6 @@ def getHovertext(htc, p):
 
             else:
                 result += hpi.getHoverParameter(htc[i].paramName, p)
-
-
-            break
 
         else:
             raise IllegalStateException(
