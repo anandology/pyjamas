@@ -15,6 +15,8 @@ from GChartExample02 import GChartExample02
 from GChartExample03 import GChartExample03
 from GChartExample04 import GChartExample04
 
+from GChartExample06 import GChartExample06
+
 """*
 *
 * Displays the test  chart in the browser, and checks the HTML
@@ -126,7 +128,7 @@ def onModuleLoad():
     #addChart(GChartExample00a())
     #    addChart(GChartExample00b())
     #    addChart(GChartExample00c())
-    addChart(GChartExample01())
+    #addChart(GChartExample01())
     #    addChart(GChartExample01a(3))
     #    addChart(GChartExample01a(0))
     #    addChart(GChartExample01b())
@@ -137,7 +139,7 @@ def onModuleLoad():
     #    addChart(GChartExample04a())
     #    addChart(GChartExample04b())
     #    addChart(GChartExample05())
-    #    addChart(GChartExample06())
+    addChart(GChartExample06())
     #    addChart(GChartExample07())
     #    addChart(GChartExample08())
     #    addChart(GChartExample09())
