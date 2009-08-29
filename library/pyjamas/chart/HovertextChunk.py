@@ -38,7 +38,6 @@ class HovertextChunk:
 # returns array of "chunks" corresponding to the given
 # hovertext template
 def parseHovertextTemplate(htTemplate):
-    print "parseHovertextTemplate", htTemplate
     if htTemplate == "":
         return []
 
@@ -95,9 +94,7 @@ def getHovertext(htc, p):
     pieSlicePercentS = None
     #HoverParameterInterpreter hpi =
     hpi = p.getParent().getParent().getHoverParameterInterpreter()
-    print "getHovertext", htc, p
     for i in range(len(htc)):
-        print htc[i].paramId, htc[i].paramName, htc[i].chunkText
         pid = htc[i].paramId
         if pid == HOVERTEXT_PARAM_NONE:
             pass # do nothing extra
@@ -168,6 +165,5 @@ def getHovertext(htc, p):
 
         result+=htc[i].chunkText
 
-    print "getHovertext result", result
     return result
 

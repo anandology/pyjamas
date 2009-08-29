@@ -154,7 +154,12 @@ class GChartExample24(GChart):
     def updateCursor(self):
         dx = self.p2.x - self.p1.x
         dy = self.p2.y - self.p1.y
-        if not self.moving  and  abs(dx) >= MIN_SELECTION_FRACTION_X* (getXAxis().getAxisMax()-getXAxis().getAxisMin())  and  abs(dy) >= MIN_SELECTION_FRACTION_Y* (getYAxis().getAxisMax()-getYAxis().getAxisMin()):
+        if (not self.moving  and  
+            abs(dx) >= MIN_SELECTION_FRACTION_X*
+                (self.getXAxis().getAxisMax()- self.getXAxis().getAxisMin()) 
+                and  abs(dy) >= MIN_SELECTION_FRACTION_Y* 
+                (self.getYAxis().getAxisMax()-self.getYAxis().getAxisMin())):
+
             self.getCurve(self.SELECTION_CURVE).setVisible(True)
             self.getCurve(self.SELECTION_CURVE).getSymbol().setSymbolType(
             SymbolType.BOX_CENTER)
@@ -208,7 +213,7 @@ class GChartExample24(GChart):
         self.setChartTitle(
         "Drag to pan; Press Ctrl while drag-selecting a rectangle to zoom")
         self.setChartSize(500, 150)
-        a = Hyperlink()
+        a = Hyperlink("huh?")
         a.setPixelSize(10, 500)
         self.getYAxis().setAxisLabel(a)
         # another option is to use clipToDecoratedChart(True) instead.
@@ -424,7 +429,7 @@ class GChartExample24(GChart):
             self.getYAxis().setAxisMax(pYMax)
             
         
-        updateCursor()
+        self.updateCursor()
         self.zoomIndex += 1
     
     def zoomOut(self):
@@ -496,6 +501,6 @@ class GChartExample24(GChart):
             self.p2.y = yMax
         
         self.zoomIndex -= 1
-        updateCursor()
+        self.updateCursor()
     
 

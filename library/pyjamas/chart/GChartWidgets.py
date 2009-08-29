@@ -1587,18 +1587,14 @@ class PlotPanel (AbsolutePanel):
 
 
         # with hoverCleanup out of the way, switch to hover widget
-        print "set hover widget", cTouched 
         self.touchedHoverWidget = cTouched and \
                                 cTouched.getSymbol().getHoverWidget() or None
-
-        print "set hover widget:", self.touchedHoverWidget
 
         if None == self.touchedHoverWidget:
             if None != p:
                 # no hover-widget, just use expanded hover-template
                 hovertext = p.getHovertext()
 
-                print "hovertext", hovertext
                 cAnnotation.getPoint(0).setAnnotationText( hovertext,
                     cTouched.getSymbol().getHoverAnnotation().widthUpperBound,
                     cTouched.getSymbol().getHoverAnnotation().heightUpperBound)
@@ -1606,13 +1602,13 @@ class PlotPanel (AbsolutePanel):
 
         else:
             # touched curve has custom hover widget; update it, etc.
-            if not insideHoverUpdate:
+            if not self.insideHoverUpdate:
                 try:
-                    insideHoverUpdate = True
+                    self.insideHoverUpdate = True
                     self.touchedHoverWidget.hoverUpdate(p)
 
                 except:
-                    insideHoverUpdate = False
+                    self.insideHoverUpdate = False
 
 
             cAnnotation.getPoint(0).setAnnotationWidget(
@@ -2056,7 +2052,6 @@ class PlotPanel (AbsolutePanel):
         """
 
         eventId = DOM.eventGetType(event)
-        print eventId
         """ Note that a click that closes a modal DialogBox can
         * generate a mouse location change without an ONMOUSEMOVE,
         * and a point that moves under the mouse due to an update
@@ -2064,7 +2059,7 @@ class PlotPanel (AbsolutePanel):
         isClick = ("click" == eventId)
         if ("mousemove" == eventId  or  "mouseover" == eventId  or  isClick)  and  not self.isOverOpenedHoverAnnotation(event):
             # remember last "tracked" mouse location
-            #"""
+            """
             if "click" == eventId:
                 log.writebr("CLICK: event.getClientX()=" + str(DOM.eventGetClientX(event)) +
                 " event.getClientY()=" + str(DOM.eventGetClientY(event)) +
@@ -2079,7 +2074,7 @@ class PlotPanel (AbsolutePanel):
                 " event.getCurrentTarget()="+str(DOM.eventGetCurrentTarget(event)) +
                 " event.getTarget()=" + str(DOM.eventGetTarget(event)))
 
-            #"""
+            """
             if self.chart.getHoverTouchingEnabled()  or  isClick:
                 self.setClientX(DOM.eventGetClientX(event), isClick)
                 self.setClientY(DOM.eventGetClientY(event), isClick)
@@ -2090,12 +2085,12 @@ class PlotPanel (AbsolutePanel):
 
 
         elif "mouseout" == eventId  and  self.chart.getHoverTouchingEnabled()  and  self.takesUsCompletelyOutsideChart(event):
-            #"""
+            """
             log.writebr("MOUSEOUT: event.getClientX()=" + str(DOM.eventGetClientX(event)) +
                 " event.getClientY()=" + str(DOM.eventGetClientY(event)) +
                 " event.getCurrentTarget()="+str(DOM.eventGetCurrentTarget(event)) +
                 " event.getTarget()=" + str(DOM.eventGetTarget(event)))
-            #"""
+            """
             self.setClientX(GChart.NAI, False); # mouse not over chart,
             self.setClientY(GChart.NAI, False); # so position is undefined
             if (not self.chart.isUpdateNeeded()  and  

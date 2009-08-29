@@ -131,7 +131,7 @@ class Annotation:
     
     def getText(self):
         if self._isHTML:
-            return "<html>" + self.text
+            return "<html>" + (self.text or "")
         return self.text
     
     def getVisible(self):

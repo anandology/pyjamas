@@ -797,7 +797,7 @@ class Curve:
                 yaxis = self.chart.getY2Axis()
             if visible:
                 axisCreatedOrDestroyed = (yaxis.getNCurvesVisibleOnAxis() == 0)
-                getXAxis().incrementCurves()
+                self.chart.getXAxis().incrementCurves()
                 yaxis.incrementCurves()
 
             else:
