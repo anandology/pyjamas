@@ -290,7 +290,7 @@ class Axis:
         *"""
 
         if tickWidget is None:
-            tiickWidget = self.formatAsTickLabel(tickPosition))
+            tiickWidget = self.formatAsTickLabel(tickPosition)
 
         if isinstance(tickWidget, str):
             if widthUpperBound is None and heightUpperBound is None:
