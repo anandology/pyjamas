@@ -1201,7 +1201,8 @@ class PlotPanel (AbsolutePanel):
         if (GChart.NAI == clientX):
             self.xMouse = GChart.NAI
         else:
-            self.xMouse = (Window.getScrollLeft() + clientX - getAbsoluteLeft())
+            self.xMouse = (Window.getScrollLeft() + clientX - 
+                           self.getAbsoluteLeft())
 
     def getClientY(self):
         return self.clientY
@@ -1218,7 +1219,8 @@ class PlotPanel (AbsolutePanel):
         if (GChart.NAI == clientY):
             self.yMouse = GChart.NAI
         else:
-            self.yMouse = (Window.getScrollTop() + clientY - getAbsoluteTop())
+            self.yMouse = (Window.getScrollTop() + clientY - 
+                           self.getAbsoluteTop())
 
 
     """
@@ -1908,16 +1910,16 @@ class PlotPanel (AbsolutePanel):
             result = False
 
         elif self.isGeometricallyContainedIn(self.getElement(),
-                                             event.getClientX(), 
-                                              event.getClientY()):
+                                             DOM.eventGetClientX(event), 
+                                              DOM.eventGetClientY(event)):
             result = False
 
         else:
             hoverElement = self.getOpenedHoverElement()
             if None != hoverElement:
                 if self.isGeometricallyContainedIn(hoverElement,
-                                                 event.getClientX(),
-                                                 event.getClientY()):
+                                                 DOM.eventGetClientX(event),
+                                                 DOM.eventGetClientY(event)):
                     result = False
 
 
@@ -2067,10 +2069,11 @@ class PlotPanel (AbsolutePanel):
 
             """
             if self.chart.getHoverTouchingEnabled()  or  isClick:
-                self.setClientX(event.getClientX(), isClick)
-                self.setClientY(event.getClientY(), isClick)
-                if not self.isUpdateNeeded()  and  self.touchObjectAtMousePosition(isClick):
-                    self.assembleChart()
+                self.setClientX(DOM.eventGetClientX(event), isClick)
+                self.setClientY(DOM.eventGetClientY(event), isClick)
+                if (not self.chart.isUpdateNeeded()  and  
+                    self.touchObjectAtMousePosition(isClick)):
+                    self.chart.assembleChart()
 
 
 
@@ -2081,8 +2084,9 @@ class PlotPanel (AbsolutePanel):
             #                             " event.getTarget()=" + event.getTarget())
             self.setClientX(GChart.NAI, False); # mouse not over chart,
             self.setClientY(GChart.NAI, False); # so position is undefined
-            if not self.isUpdateNeeded()  and  self.touchObjectAtMousePosition():
-                self.assembleChart()
+            if (not self.chart.isUpdateNeeded()  and  
+                self.touchObjectAtMousePosition()):
+                self.chart.assembleChart()
 
 
 
@@ -2094,8 +2098,8 @@ class PlotPanel (AbsolutePanel):
     def isValidated(self):
         result = True
         i = 0
-        while result  and  i < curves.size():
-            result = curves.get(i).isValidated()
+        while result  and  i < len(self.chart.curves):
+            result = self.chart.curves[i].isValidated()
             i += 1
         return result
 

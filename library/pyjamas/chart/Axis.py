@@ -1546,7 +1546,7 @@ class Axis:
 
         self.chartDecorationsChanged = True
         if format.startswith("=(Date)"):
-            transFormat = format.find("=(Date)".length())
+            transFormat = format[len("=(Date)"):]
             if transFormat.equals(""):
                 # so "=(Date)" works
                 self.dateFormat = DateTimeFormat.getShortDateTimeFormat()
@@ -1557,12 +1557,12 @@ class Axis:
             self.tickLabelFormatType = DATE_FORMAT_TYPE
 
         elif format.startswith("=10^"):
-            transFormat = format.find("=10^".length())
+            transFormat = format[len("=10^"):]
             self.numberFormat = NumberFormat.getFormat(transFormat)
             self.tickLabelFormatType = LOG10INVERSE_FORMAT_TYPE
 
         elif format.startswith("=2^"):
-            transFormat = format.find("=2^".length())
+            transFormat = format[len("=2^"):]
             self.numberFormat = NumberFormat.getFormat(transFormat)
             self.tickLabelFormatType = LOG2INVERSE_FORMAT_TYPE
 

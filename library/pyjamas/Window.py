@@ -56,6 +56,17 @@ def getClientWidth():
     except:
         return doc().body.clientWidth;
 
+def getScrollLeft():
+     return getDocumentRoot().scrollLeft;
+
+def getScrollTop():
+     return getDocumentRoot().scrollTop;
+
+def getDocumentRoot():
+    if doc().compatMode == 'CSS1Compat':
+        return doc().documentElement
+    return doc().body
+
 def setLocation(url):
     w = wnd()
     w.location = url
