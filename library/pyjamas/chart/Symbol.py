@@ -816,14 +816,14 @@ class Symbol(object):
     *
     """
     def getPieSliceRadius(self, pp, onY2):
-        w = getWidth(pp);      # needed to decode model
-        h = getHeight(pp,onY2);# width,height into pixels
+        w = self.getWidth(pp);      # needed to decode model
+        h = self.getHeight(pp,onY2);# width,height into pixels
         result = math.sqrt(w*w + h*h)/2.
         # Tweak radius to assure it is an even multiple of the fill
         # spacing. Makes it possible to assure regular band spacing
         # across pie at the expense of less precise control of pie
         # size (regular band spacing makes it look much better).
-        spacing = getFillSpacing()
+        spacing = self.getFillSpacing()
         if 0 == spacing:
             spacing = 1
         
@@ -835,11 +835,11 @@ class Symbol(object):
     # defines first, second edge angle in standard radian units
     def getPieSliceTheta0(self):
         
-        result = (0.75 - getDecodedPieSliceOrientation())*2*math.pi
+        result = (0.75 - self.getDecodedPieSliceOrientation())*2*math.pi
         return result
     
     def getPieSliceTheta1(self):
-        return getPieSliceTheta0() - 2.*math.pi*getPieSliceSize()
+        return self.getPieSliceTheta0() - 2.*math.pi*self.getPieSliceSize()
     
     
     """*

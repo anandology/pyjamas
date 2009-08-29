@@ -1597,7 +1597,7 @@ class LineSymbolType (SymbolType):
                 xi = xiPrev
                 yi = yiPrev
                 # round up to err on side of providing more detail
-                N = int (ceil((xMax-xMin)/spacing))
+                N = int (math.ceil((xMax-xMin)/spacing))
                 dy = abs((yAtXMax - yAtXMin)/N)+EPS
                 for i in range(1, N):
                     xi = xMin + i*(xMax - xMin)/N
@@ -1625,7 +1625,7 @@ class LineSymbolType (SymbolType):
                 yiPrev = yMin
                 xi = xiPrev
                 yi = yiPrev
-                N = int (ceil((yMax-yMin)/spacing))
+                N = int (math.ceil((yMax-yMin)/spacing))
                 dx = abs((xAtYMax - xAtYMin)/N)+ EPS
                 for i in range(1, N):
                     yi = yMin + i*(yMax - yMin)/N
@@ -1838,7 +1838,7 @@ class PieSliceSymbolType (SymbolType):
         # include those points in determining the min/max x
         # and min/max y included in the slice:
         halfPi = math.pi/2.
-        i = int (ceil(tMin/halfPi))
+        i = int (math.ceil(tMin/halfPi))
         while i*halfPi < tMax:
             t = i*halfPi
             tmp =  math.cos(t)
@@ -2284,7 +2284,7 @@ class PieSliceSymbolType (SymbolType):
             MAX_PIE_SLICE_PERIMETER_INTERSECTIONS = 4
             p = [0.0, 0.0, 0.0, 0.0]
             EPS = 0.5
-            sl = getSliceLimits(theta1, theta0)
+            sl = self.getSliceLimits(theta1, theta0)
             optimalIsVertical = (sl.yMax - sl.yMin) > (sl.xMax - sl.xMin)
             isFullPie = (symbol.getPieSliceSize() == 1.0)
             # perform any vertical shading that may be required:
@@ -2304,12 +2304,12 @@ class PieSliceSymbolType (SymbolType):
                     if isFullPie:
                         e1 = Double.NaN
                     else:
-                        e1 = yWherePieEdgeIntersectsVerticalLine(
+                        e1 = self.yWherePieEdgeIntersectsVerticalLine(
                                             xi,xPx,yPx,r,theta0)
                     if isFullPie:
                         e2 = Double.NaN
                     else:
-                        e2 = yWherePieEdgeIntersectsVerticalLine(
+                        e2 = self.yWherePieEdgeIntersectsVerticalLine(
                                             xi,xPx,yPx,r,theta1)
                     # Exclude circle perimeter intercepts outside of
                     # the slice.  Note: Pixel y coordinates used in
@@ -2317,7 +2317,7 @@ class PieSliceSymbolType (SymbolType):
                     # coordinates used in trig functions increase
                     # going up, hence the sign-flipping on second arg
                     # of angle function below.
-                    if angleInRange(angle(xi-xPx,yPx-c1),theta0,theta1):
+                    if self.angleInRange(angle(xi-xPx,yPx-c1),theta0,theta1):
                         p[nP] = c1
                         nP += 1
 
@@ -2344,7 +2344,7 @@ class PieSliceSymbolType (SymbolType):
 
 
 
-                    if angleInRange(angle(xi-xPx, yPx-c2),theta0,theta1):
+                    if self.angleInRange(angle(xi-xPx, yPx-c2),theta0,theta1):
                         p[nP] = c2
                         nP += 1
 
@@ -2367,7 +2367,7 @@ class PieSliceSymbolType (SymbolType):
                             # widening of EPS pixels on either side fills in
                             # tiny intra-slice gaps (that can otherwise appear
                             # due to roundoff) by making each bar a tad bigger.
-                            realizeOneImageOfSymbol(pp, grp, arp,
+                            self.realizeOneImageOfSymbol(pp, grp, arp,
                                                     symbol, None,
                                                     onY2,
                                                     clipPlotArea,
@@ -2387,7 +2387,9 @@ class PieSliceSymbolType (SymbolType):
             # Now do any required horizontal shading. This is
             # basically the same as the code for vertical shading
             # above (w appropriate transposition/adjustments).
-            if nBands > 0  and  (horizontallyShaded  or  (optimallyShaded  and  not optimalIsVertical)):
+            if (nBands > 0  and  (self.horizontallyShaded  or  
+                    (self.optimallyShaded  and  
+                     not self.optimalIsVertical))):
                 for i in range( int ( round(-nBands*sl.yMax)),
                                 int ( -nBands * sl.yMin) ):
                     nP = 0
@@ -2406,13 +2408,13 @@ class PieSliceSymbolType (SymbolType):
                         e1 = Double.NaN
                         e2 = Double.NaN
                     else:
-                        e1 = xWherePieEdgeIntersectsHorizontalLine(
+                        e1 = self.xWherePieEdgeIntersectsHorizontalLine(
                                 yi,xPx,yPx,r,theta0)
-                        e2 = xWherePieEdgeIntersectsHorizontalLine(
+                        e2 = self.xWherePieEdgeIntersectsHorizontalLine(
                                 yi,xPx,yPx,r,theta1)
                     # exclude circle perimeter intercepts outside of
                     # the slice
-                    if angleInRange(angle(c1-xPx, yPx-yi),theta0,theta1):
+                    if self.angleInRange(angle(c1-xPx, yPx-yi),theta0,theta1):
                         p[nP] = c1
                         nP += 1
 
@@ -2451,7 +2453,7 @@ class PieSliceSymbolType (SymbolType):
                             # widening of EPS pixels on either side fills in
                             # tiny intra-slice gaps that can sometimes appear
                             # by making slices just a tad bigger.
-                            realizeOneImageOfSymbol(pp, grp, arp,
+                            self.realizeOneImageOfSymbol(pp, grp, arp,
                                                     symbol, None,
                                                     onY2,
                                                     clipPlotArea,
