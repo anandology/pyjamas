@@ -8,14 +8,17 @@ from pyjamas.chart import SymbolType
 from pyjamas.ui.Button import Button
 
 groupLabels = [ \
+"<html>2004<br><small><small>O Floor",
+"<html>2005<br><small><small>O Survive!",
+"<html>2006<br><small><small>O Sucks!",
 "<html>2007<br><small><small>O Seven",
 "<html>2008<br><small><small>Owe Ate",
 "<html>2009<br><i><small><small>Oh Nein!"]
 barLabels = [ "Q1", "Q2", "Q3", "Q4"]
 barColors = [ "red", "blue", "green", "silver"]
 MAX_REVENUE = 1000
-WIDTH = 300
-HEIGHT = 200
+WIDTH = 300.0
+HEIGHT = 400.0
 
 """*
 * Defines a traditional "quarterly revenues" grouped bar-chart.
@@ -61,9 +64,9 @@ class GChartExample02(GChart):
                         len(barLabels)/2. + i*(len(barLabels)+1),
                         groupLabels[i])
         
-        self.getXAxis().setTickLabelFontSize(20)
-        self.getXAxis().setTickLabelThickness(40)
-        self.getXAxis().setTickLength(6);    # small tick-like gap...
+        self.getXAxis().setTickLabelFontSize(20.0)
+        self.getXAxis().setTickLabelThickness(40.0)
+        self.getXAxis().setTickLength(6.0);    # small tick-like gap...
         self.getXAxis().setTickThickness(0); # but with invisible ticks
         self.getXAxis().setAxisMin(0);       # keeps first bar on chart
         
