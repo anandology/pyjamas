@@ -12,6 +12,7 @@ from pyjamas.ui.Button import Button
 from pyjamas.ui.FlowPanel import FlowPanel
 from pyjamas.ui.Grid import Grid
 from pyjamas.ui.HorizontalPanel import HorizontalPanel
+from pyjamas.ui import MouseListener
 
 
 """*
@@ -184,6 +185,8 @@ class GChartExample24(GChart):
     
     def __init__(self):
         GChart.__init__(self)
+        self.sinkEvents( Event.MOUSEEVENTS )
+
 
         self.SELECTION_CURVE = 0 # curve index of selection cursor
         self.p1 = Point(); # first corner (@mousedown) of selection rect
@@ -238,11 +241,13 @@ class GChartExample24(GChart):
         """
         addClickHandler()
         """
-        addMouseDownHandler()
-        addMouseMoveHandler()
-        addMouseUpHandler()
-        addMouseWheelHandler()
         
+    def onBrowserEvent(self, event):
+        type = DOM.eventGetType(event)
+        if type == "mousedown" or type == "mouseup" or type == "mousemove" or type == "mouseover" or type == "mouseout":
+            MouseListener.fireMouseEvent(self.mouseListeners, self, event)
+        else:
+            GChart.onBrowserEvent(self, event)
     
     def onMouseUp(self, sender, x, y):
         event = DOM.eventGetCurrentEvent()
