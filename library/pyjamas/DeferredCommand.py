@@ -3,30 +3,29 @@ from pyjamas.Timer import Timer
 deferredCommands = []
 timerIsActive = False
 
-class DeferredCommand:
-    def add(self, cmd):
-        deferredCommands.append(cmd)
-        self.maybeSetDeferredCommandTimer()
+def add(cmd):
+    deferredCommands.append(cmd)
+    maybeSetDeferredCommandTimer()
 
-    def flushDeferredCommands(self):
-        for i in range(len(deferredCommands)):
-            current = deferredCommands[0]
-            del deferredCommands[0]
-            if current:
-                current.execute()
+def flushDeferredCommands():
+    for i in range(len(deferredCommands)):
+        current = deferredCommands[0]
+        del deferredCommands[0]
+        if current:
+            current.execute()
 
-    def maybeSetDeferredCommandTimer(self):
-        global timerIsActive
+def maybeSetDeferredCommandTimer():
+    global timerIsActive
 
-        if (not timerIsActive) and (not len(deferredCommands)==0):
-            Timer(1, self)
-            timerIsActive = True
+    if (not timerIsActive) and (not len(deferredCommands)==0):
+        Timer(1, onTimer)
+        timerIsActive = True
 
-    def onTimer(self, t):
-        global timerIsActive
+def onTimer(t):
+    global timerIsActive
 
-        self.flushDeferredCommands()
-        timerIsActive = False
-        self.maybeSetDeferredCommandTimer()
+    flushDeferredCommands()
+    timerIsActive = False
+    maybeSetDeferredCommandTimer()
 
 

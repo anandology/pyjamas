@@ -22,7 +22,7 @@
 from __pyjamas__ import JS
 from pyjamas.ui.splitpanel import SplitPanel
 from pyjamas import DOM
-from pyjamas.DeferredCommand import DeferredCommand
+from pyjamas import DeferredCommand
 
 class ImplHorizontalSplitPanel:
     """ The standard implementation for horizontal split panels.
@@ -294,7 +294,7 @@ class HorizontalSplitPanel(SplitPanel):
         # after layout runs.  This first call is simply to try
         # to avoid a jitter effect if possible.
         self.setSplitPosition(self.lastSplitPosition)
-        DeferredCommand().add(self)
+        DeferredCommand.add(self)
 
     def execute(self):
         self.setSplitPosition(self.lastSplitPosition)

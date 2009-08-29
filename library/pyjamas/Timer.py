@@ -31,7 +31,10 @@ init()
 class Timer:
 
     def __init__(self, time, notify):
-        self.notify_fn = notify.onTimer
+        if hasattr(notify, "onTimer"):
+            self.notify_fn = notify.onTimer
+        else:
+            self.notify_fn = notify
         self.timer_id = timeout_add(time, self.notify)
 
     def clearInterval(self, timer_id):
@@ -56,10 +59,7 @@ class Timer:
     def _notify(self, *args):
         if not self.notify_fn:
             return False
-        if self.notify_fn.func_code.co_argcount == 2:
-            self.notify_fn(self.timer_id)
-        else:
-            self.notify_fn()
+        self.notify_fn(self.timer_id)
         return False
 
     def cancel(self):

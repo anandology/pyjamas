@@ -115,7 +115,7 @@ class ImplHorizontalSplitPanel:
               # before layout completes, the 1 element will
               # appear to be blanked out.
               
-                DeferredCommand().add(self)
+                DeferredCommand.add(self)
             else:
                 self.panel.setElemWidth(self.panel.getWidgetElement(0), px + "px")
 

@@ -3,11 +3,11 @@
 class Timer:
     MIN_PERIOD = 1
 
-    def __init__(self, delay = 0, object = None):
+    def __init__(self, delay = 0, listener = None):
         self.isRepeating = False
         self.timerId = 0
 
-        self.listener = object
+        self.listener = listener
         if delay >= Timer.MIN_PERIOD:
             self.schedule(delay)
 
@@ -44,7 +44,10 @@ class Timer:
             timers.remove(self)
 
     def run(self):
-        self.listener.onTimer(self.timerId)
+        if hasattr(self.listener, "onTimer"):
+            self.listener.onTimer(self.timerId)
+        else:
+            self.listener(self.timerId)
 
     def schedule(self, delayMillis):
         if delayMillis < Timer.MIN_PERIOD:

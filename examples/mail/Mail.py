@@ -1,7 +1,7 @@
 import pyjd # this is dummy in pyjs
 
 from pyjamas import Window
-from pyjamas.DeferredCommand import DeferredCommand
+from pyjamas import DeferredCommand
 from pyjamas.ui.DockPanel import DockPanel
 from pyjamas.ui.RootPanel import RootPanel
 from pyjamas.ui.VerticalPanel import VerticalPanel
@@ -67,7 +67,7 @@ class Mail:
         # this in a deferred command causes it to occur after all widgets' sizes
         # have been computed by the browser.
 
-        DeferredCommand().add(self)
+        DeferredCommand.add(self)
 
     def execute(self):
         self.onWindowResized(Window.getClientWidth(), Window.getClientHeight())
