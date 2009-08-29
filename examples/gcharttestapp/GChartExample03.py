@@ -25,8 +25,6 @@ class GChartExample03(GChart):
         self.getCurve().getSymbol().setBackgroundColor("#DDF")
         self.getCurve().getSymbol().setBorderColor("red")
         self.getCurve().getSymbol().setBorderWidth(1)
-        self.getCurve().getSymbol().setFillThickness(2)
-        self.getCurve().getSymbol().setFillSpacing(5)
         self.getCurve().getSymbol().setModelWidth(0.5)
         for i in range(10):
             self.getCurve().addPoint(i,i*10)
@@ -52,10 +50,8 @@ class GChartExample03(GChart):
         self.getXAxis().setTickThickness(0); # hide tick marks...
         self.getXAxis().setTickLength(3);    # but leave a small gap
         self.getYAxis().setAxisLabel("<i>10x</i>")
-        #self.getXAxis().setAxisMax(10.0)
-        #self.getXAxis().setAxisMin(0.0)
-        self.getYAxis().setAxisMax(100.0)
-        self.getYAxis().setAxisMin(0.0)
+        self.getYAxis().setAxisMax(100)
+        self.getYAxis().setAxisMin(0)
         self.getYAxis().setTickLabelFormat("#.#")
         self.getYAxis().setTickCount(11)
         if do_axis2:
