@@ -16,6 +16,7 @@ from GChartExample03 import GChartExample03
 from GChartExample04 import GChartExample04
 
 from GChartExample06 import GChartExample06
+from GChartExample07 import GChartExample07
 
 """*
 *
@@ -139,8 +140,8 @@ def onModuleLoad():
     #    addChart(GChartExample04a())
     #    addChart(GChartExample04b())
     #    addChart(GChartExample05())
-    addChart(GChartExample06())
-    #    addChart(GChartExample07())
+    #addChart(GChartExample06())
+    addChart(GChartExample07())
     #    addChart(GChartExample08())
     #    addChart(GChartExample09())
     #    addChart(GChartExample10())
