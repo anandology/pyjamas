@@ -2044,7 +2044,7 @@ class PlotPanel (AbsolutePanel):
         * and a point that moves under the mouse due to an update
         * can generate a mouseover without a MOUSEMOVE """
         isClick = (Event.ONCLICK == eventId)
-        if (Event.ONMOUSEMOVE == eventId  or  Event.ONMOUSEOVER == eventId  or  isClick)  and  not self.isOverOpenedHoverAnnotation(event):
+        if ("mousemove" == eventId  or  "mouseover" == eventId  or  isClick)  and  not self.isOverOpenedHoverAnnotation(event):
             # remember last "tracked" mouse location
             """
             if Event.ONCLICK == eventId:
@@ -2070,7 +2070,7 @@ class PlotPanel (AbsolutePanel):
 
 
 
-        elif Event.ONMOUSEOUT == eventId  and  self.getHoverTouchingEnabled()  and  self.takesUsCompletelyOutsideChart(event):
+        elif "mouseout" == eventId  and  self.getHoverTouchingEnabled()  and  self.takesUsCompletelyOutsideChart(event):
             #                Window.alert("MOUSEOUT: event.getClientX()=" + event.getClientX() +
             #                             " event.getClientY()=" + event.getClientY() +
             #                             " event.getCurrentTarget()="+event.getCurrentTarget() +
