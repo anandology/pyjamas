@@ -21,6 +21,7 @@ from GChartConsts import DEFAULT_WIDGET_WIDTH_UPPERBOUND
 from GChartConsts import DEFAULT_WIDGET_HEIGHT_UPPERBOUND
 import GChart
 from Annotation import Annotation
+import HovertextChunk
 
 """*
 ** Represents a single point on one of the chart's
