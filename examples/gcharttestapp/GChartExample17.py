@@ -15,9 +15,8 @@ class CurveNumberHoverParameterInterpreter:
             # parent of that curve is the GChart itself. So, from the
             # single hovered over point ref., we can self.get at any info
             # within the GChart we may need to generate our snippets.
-            result = "" + \
-            hoveredOver.getParent().getParent().getCurveIndex(
-                                    hoveredOver.getParent())
+            result = str(hoveredOver.getParent().getParent().getCurveIndex(
+                                    hoveredOver.getParent()))
 
         # add "elif" branches to support more parameter names
 

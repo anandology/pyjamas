@@ -17,6 +17,9 @@
 *
 """
 
+import re
+
+userpattern = re.compile("[a-zA-Z][a-zA-Z0-9_]*}.*")
 
 HOVERTEXT_PARAM_NONE = 0; # plain old text
 HOVERTEXT_PARAM_X = 1;  # ${x}
@@ -68,14 +71,13 @@ def parseHovertextTemplate(htTemplate):
                             "pieSliceSize",
                             sC[len("pieSliceSize}"):])
 
-        # TODO: XXX - i can't stand regular expressions!  shoot them allll
-        #elif sC.matches("[a-zA-Z][a-zA-Z0-9_]*\\}.*"):
-        #    # fits pattern for a user defined parameter
-        #    closeCurlyIndex = sC.find("}")
-        #    result[i] = HovertextChunk(
-        #                    HOVERTEXT_PARAM_USERDEFINED,
-        #                    sC[0:closeCurlyIndex],
-        #                    sC[closeCurlyIndex+1:])
+        elif userpattern.match(sC):
+            # fits pattern for a user defined parameter
+            closeCurlyIndex = sC.find("}")
+            result[i] = HovertextChunk(
+                            HOVERTEXT_PARAM_USERDEFINED,
+                            sC[0:closeCurlyIndex],
+                            sC[closeCurlyIndex+1:])
 
         else:
             # leading "${" without "paramName}". Likely a
@@ -103,29 +105,32 @@ def getHovertext(htc, p):
         elif  pid == HOVERTEXT_PARAM_X:
             if None == xS:
                 if None != hpi:
-                    xS = hpi.getHoverParameter(htc[i].paramName, p)
+                    hoverParam = hpi.getHoverParameter(htc[i].paramName, p)
+                    if hoverParam is not None:
+                        xS = hoverParam
+                    else:
+                        axis = p.getParent().getParent().getXAxis()
+                        xS = axis.formatAsTickLabel(p.getX())
 
-                else:
-                    axis = p.getParent().getParent().getXAxis()
-                    xS = axis.formatAsTickLabel(p.getX())
-
-            result += xS
+            if None != xS:
+                result += xS
 
         elif  pid == HOVERTEXT_PARAM_Y:
             if None == yS:
                 if None != hpi:
-                    yS = hpi.getHoverParameter(htc[i].paramName, p)
-
-                else:
-                    if p.getParent().onY2():
-                        axis = p.getParent().getParent().getY2Axis()
+                    hoverParam = hpi.getHoverParameter(htc[i].paramName, p)
+                    if hoverParam is not None:
+                        yS = hoverParam
                     else:
-                        axis = p.getParent().getParent().getYAxis()
-                    yS = axis.formatAsTickLabel(p.getY())
+                        if p.getParent().onY2():
+                            axis = p.getParent().getParent().getY2Axis()
+                        else:
+                            axis = p.getParent().getParent().getYAxis()
+                        yS = axis.formatAsTickLabel(p.getY())
 
 
-            result+=yS
-
+            if None != yS:
+                result+=yS
 
         elif  pid == HOVERTEXT_PARAM_PIESLICESIZE:
             if None == pieSlicePercentS:
