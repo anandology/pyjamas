@@ -2423,7 +2423,7 @@ class PieSliceSymbolType (SymbolType):
                                 yi,xPx,yPx,r,theta1)
                     # exclude circle perimeter intercepts outside of
                     # the slice
-                    if self.angleInRange(angle(c1-xPx, yPx-yi),theta0,theta1):
+                    if self.angleInRange(self.angle(c1-xPx, yPx-yi),theta0,theta1):
                         p[nP] = c1
                         nP += 1
 
@@ -2451,14 +2451,14 @@ class PieSliceSymbolType (SymbolType):
 
 
 
-                    if angleInRange(angle(c2-xPx, yPx-yi),theta0,theta1):
+                    if self.angleInRange(self.angle(c2-xPx, yPx-yi),theta0,theta1):
                         p[nP] = c2
                         nP += 1
 
 
                     for j in range(1, nP):
                         # c.f. comment on corresponding vertical code above.
-                        if abs(theta0-theta1) <= math.pi  or  angleInRange(angle((0.3*p[j]+0.7*p[j-1])-xPx, yPx-yi), theta0,theta1):
+                        if abs(theta0-theta1) <= math.pi  or  self.angleInRange(self.angle((0.3*p[j]+0.7*p[j-1])-xPx, yPx-yi), theta0,theta1):
                             # widening of EPS pixels on either side fills in
                             # tiny intra-slice gaps that can sometimes appear
                             # by making slices just a tad bigger.
@@ -2495,7 +2495,7 @@ class PieSliceSymbolType (SymbolType):
             cosTheta = math.cos(thetaMid)
             loc = annotation.getLocation()
             if None == loc:
-                loc = defaultAnnotationLocation()
+                loc = self.defaultAnnotationLocation()
 
             # note: pixel Y increases down but yShift & "trig Y"
             # increase going up, which explains dY sign reversal

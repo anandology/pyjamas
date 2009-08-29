@@ -19,6 +19,9 @@
 
 import math
 
+from pyjamas.ui import HasHorizontalAlignment
+from pyjamas.ui import HasVerticalAlignment
+
 from GChartUtil import validateMultipliers
 
 # retrieves a location given its multipliers
