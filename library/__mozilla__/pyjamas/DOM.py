@@ -58,6 +58,7 @@ def eventGetButton(evt):
 #"""
 def getAbsoluteLeft(elem):
     JS("""
+if (true) {
     try {
         // Firefox 3 expects getBoundingClientRect
         // getBoundingClientRect can be float: 73.1 instead of 74, see
@@ -69,6 +70,14 @@ def getAbsoluteLeft(elem):
     } catch (e) {
         var left = $doc.getBoxObjectFor(elem).x;
     }
+} else {
+    if (   typeof elem.getBoundingClientRect == 'function'
+        && elem.ownerDocument.getViewportElement == 'function') {
+        var left = Math.ceil(elem.getBoundingClientRect().left);
+        return left + elem.ownerDocument.getViewportElement().scrollLeft;
+    }
+    var left = $doc.getBoxObjectFor(elem).x;
+}
     var parent = elem.parentNode;
 
     while (parent) {
@@ -105,6 +114,7 @@ def getAbsoluteLeft(elem):
 #"""
 def getAbsoluteTop(elem):
     JS("""
+if (true) {
     try {
         // Firefox 3 expects getBoundingClientRect
         var top = Math.ceil(elem.getBoundingClientRect().top);
@@ -112,6 +122,14 @@ def getAbsoluteTop(elem):
     } catch (e) {
         var top = $doc.getBoxObjectFor(elem).y;
     }
+} else {
+    if (   typeof elem.getBoundingClientRect == 'function'
+        && elem.ownerDocument.getViewportElement == 'function') {
+        var top = Math.ceil(elem.getBoundingClientRect().top);
+        return top + elem.ownerDocument.getViewportElement().scrollTop;
+    }
+    var left = $doc.getBoxObjectFor(elem).x;
+}
     var parent = elem.parentNode;
     while (parent) {
         if (parent.scrollTop > 0) {
