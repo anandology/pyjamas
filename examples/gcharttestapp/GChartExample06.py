@@ -39,7 +39,7 @@ class GChartExample06(GChart):
                                         AnnotationLocation.SOUTHEAST)
 
             self.getCurve().getSymbol().setHovertextTemplate(
-            GChartUtil.formatAsHovertext(region[i] + ", " + percent[i] + "%"))
+            GChartUtil.formatAsHovertext("%s, %d" % (region[i], percent[i]))
             self.getCurve().setLegendLabel(region[i])
             self.getCurve().addPoint(0, 100-sum)
             self.getCurve().getPoint().setAnnotationText(region[i])
