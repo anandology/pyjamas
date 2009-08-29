@@ -2354,7 +2354,7 @@ class PieSliceSymbolType (SymbolType):
                         p[nP] = c2
                         nP += 1
 
-                    for i in range(1, nP):
+                    for j in range(1, nP):
                         # logic below avoids drawing a line across the
                         # non-convex "pacman mouth" that occurs with any
                         # bigger-than-half-pie-sized slices, by
