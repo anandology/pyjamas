@@ -1216,7 +1216,7 @@ class GChart (Composite):
     # Version of getCurve that allows sys curve (negative id) access
     def getSystemCurve(self, iCurve):
         internalIndex = self.internalCurveIndex(iCurve)
-        result = self.chart.curves[internalIndex]
+        result = self.curves[internalIndex]
         return result
 
 
