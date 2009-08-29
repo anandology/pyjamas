@@ -100,7 +100,7 @@ class Annotation:
             # HTML
             self._isHTML = True
             # <html> is just a flag, not a tag, so strip it out.
-            result = s.substring(HTML_LEN)
+            result = s[HTML_LEN:]
             if self.widthUpperBound == GChart.NAI:
                 self.numberOfCharsWide = htmlWidth(result)
             

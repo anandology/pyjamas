@@ -1398,10 +1398,10 @@ class HBarBaseline (SymbolType):
         SymbolType.__init__(self, wm, hm, 0.5, 0.5, 0, 0,  True)
 
     def defaultFillSpacing(self):
-        return DEFAULT_BAR_FILL_SPACING
+        return GChartConsts.DEFAULT_BAR_FILL_SPACING
 
     def defaultHoverLocation(self):
-        return DEFAULT_HBAR_BASELINE_HOVER_LOCATION
+        return GChartConsts.DEFAULT_HBAR_BASELINE_HOVER_LOCATION
 
     def getAdjustedWidth(self, width, x, xPrev, xNext, xMin, xMax, xMid):
         return x - xMid
@@ -1425,10 +1425,10 @@ class HBarLeft (SymbolType):
         SymbolType.__init__(self, wm, hm, 0.5, 0.5, 0.5, 0.5,  True)
 
     def defaultFillSpacing(self):
-        return DEFAULT_BAR_FILL_SPACING
+        return GChartConsts.DEFAULT_BAR_FILL_SPACING
 
     def defaultHoverLocation(self):
-        return DEFAULT_HBARLEFT_HOVER_LOCATION
+        return GChartConsts.DEFAULT_HBARLEFT_HOVER_LOCATION
 
     def getAdjustedWidth(self, width, x, xPrev, xNext, xMin, xMax, xMid):
         return x - xMin
@@ -1448,10 +1448,10 @@ class HBarRight (SymbolType):
 
 
     def defaultFillSpacing(self):
-        return DEFAULT_BAR_FILL_SPACING
+        return GChartConsts.DEFAULT_BAR_FILL_SPACING
 
     def defaultHoverLocation(self):
-        return DEFAULT_HBARRIGHT_HOVER_LOCATION
+        return GChartConsts.DEFAULT_HBARRIGHT_HOVER_LOCATION
 
     def getAdjustedWidth(self, width, x, xPrev, xNext, xMin, xMax, xMid):
         return xMax - x
@@ -1476,12 +1476,12 @@ class LineSymbolType (SymbolType):
     # fillSpacing to use when a symbol's fillSpacing is
     # set to GChart.NAI (an undefined integer)
     def defaultFillSpacing(self):
-        return DEFAULT_LINE_FILL_SPACING
+        return GChartConsts.DEFAULT_LINE_FILL_SPACING
 
     # fillThickness to use when a symbol's fillThickness is
     # set to GChart.NAI (an undefined integer)
     def defaultFillThickness(self):
-        return DEFAULT_LINE_FILL_THICKNESS
+        return GChartConsts.DEFAULT_LINE_FILL_THICKNESS
 
     def getIconHeight(self, legendFontSize):
         return 3; # leaves room for a 1px border and a center
@@ -1726,7 +1726,7 @@ class PieSliceSymbolType (SymbolType):
 
 
     def defaultHoverLocation(self):
-        return DEFAULT_PIE_SLICE_HOVER_LOCATION
+        return GChartConsts.DEFAULT_PIE_SLICE_HOVER_LOCATION
 
     """
     * @Override
@@ -1799,13 +1799,13 @@ class PieSliceSymbolType (SymbolType):
 
 
     def defaultFillSpacing(self):
-        return DEFAULT_PIE_SLICE_FILL_SPACING
+        return GChartConsts.DEFAULT_PIE_SLICE_FILL_SPACING
 
     def defaultFillThickness(self):
-        return DEFAULT_PIE_SLICE_FILL_THICKNESS
+        return GChartConsts.DEFAULT_PIE_SLICE_FILL_THICKNESS
 
     def defaultHovertextTemplate(self):
-        return DEFAULT_PIE_SLICE_HOVERTEXT_TEMPLATE
+        return GChartConsts.DEFAULT_PIE_SLICE_HOVERTEXT_TEMPLATE
 
 
     # Gets min/max sin, cos over slice cut from unit circle
@@ -2505,10 +2505,10 @@ class VBarBottom (SymbolType):
         SymbolType.__init__(self, wm, hm,0.5,0.5,0.5,0.5, False)
 
     def defaultFillSpacing(self):
-        return DEFAULT_BAR_FILL_SPACING
+        return GChartConsts.DEFAULT_BAR_FILL_SPACING
 
     def defaultHoverLocation(self):
-        return DEFAULT_VBARBOTTOM_HOVER_LOCATION
+        return GChartConsts.DEFAULT_VBARBOTTOM_HOVER_LOCATION
 
     def getAdjustedHeight(self, height, y, yPrev, yNext, yMin, yMax, yMid):
         return yMax - y
@@ -2525,10 +2525,10 @@ class VBarBaseline (SymbolType):
         SymbolType.__init__(self, wm, hm, 0, 0, 0.5, 0.5, False)
 
     def defaultFillSpacing(self):
-        return DEFAULT_BAR_FILL_SPACING
+        return GChartConsts.DEFAULT_BAR_FILL_SPACING
 
     def defaultHoverLocation(self):
-        return DEFAULT_VBAR_BASELINE_HOVER_LOCATION
+        return GChartConsts.DEFAULT_VBAR_BASELINE_HOVER_LOCATION
 
     def getAdjustedHeight(self, height, y, yPrev, yNext, yMin, yMax, yMid):
         return y - yMid
@@ -2553,10 +2553,10 @@ class VBarTop (SymbolType):
         SymbolType.__init__(self, wm, hm, 0.5, 0.5, 0.5, 0.5, False)
 
     def defaultFillSpacing(self):
-        return DEFAULT_BAR_FILL_SPACING
+        return GChartConsts.DEFAULT_BAR_FILL_SPACING
 
     def defaultHoverLocation(self):
-        return DEFAULT_VBARTOP_HOVER_LOCATION
+        return GChartConsts.DEFAULT_VBARTOP_HOVER_LOCATION
 
     def getAdjustedHeight(self, height, y, yPrev, yNext, yMin, yMax, yMid):
         return y - yMin
