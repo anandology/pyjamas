@@ -18,7 +18,13 @@
 
 from __pyjamas__ import JS, setCompilerOptions
 
-setCompilerOptions("noBoundMethods", "noDescriptors", "noAttributeChecking", "noSourceTracking", "noLineTracking", "noStoreSource")
+# bug#247 - FIXME: commenting this out (kees) because when compiled with -d
+# you end up with a syntax error:
+#    $pyjs.track.lineno=21;
+#    (function(){var $pyjs_dbg_000001_retry = 0;
+#    try{var $pyjs_dbg_000001_res=;}catch($pyjs_dbg_000001_err){
+
+#setCompilerOptions("noBoundMethods", "noDescriptors", "noAttributeChecking", "noSourceTracking", "noLineTracking", "noStoreSource")
 
 class object:
     pass
