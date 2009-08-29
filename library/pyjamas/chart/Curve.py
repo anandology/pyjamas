@@ -852,7 +852,7 @@ class Curve:
             # decorative, hover feedback curves are never clipped
             rpIndex = self.chart.getRenderingPanelIndex(self.getIndexOf())
             if (GChartWidgets.DECORATIVE_RENDERING_PANEL_INDEX == rpIndex  or
-                self.isHoverFeedbackRenderingPanel(rpIndex)):
+                self.chart.isHoverFeedbackRenderingPanel(rpIndex)):
                 result = False
 
 

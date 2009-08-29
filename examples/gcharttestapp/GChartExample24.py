@@ -187,7 +187,7 @@ class GChartExample24(GChart):
     def __init__(self):
         GChart.__init__(self)
         self.sinkEvents( Event.MOUSEEVENTS )
-
+        self.mouseListeners = []
 
         self.SELECTION_CURVE = 0 # curve index of selection cursor
         self.p1 = Point(); # first corner (@mousedown) of selection rect
@@ -242,6 +242,7 @@ class GChartExample24(GChart):
         """
         addClickHandler()
         """
+        self.mouseListeners.append(self)
         
     def onBrowserEvent(self, event):
         type = DOM.eventGetType(event)

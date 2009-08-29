@@ -997,13 +997,13 @@ class SymbolType:
 
         yCenter =  yTop + symHeight/2.
 
-        if clipPlotArea  and  not intersects(xMinPx, yMinPx, xMaxPx, yMaxPx, xLeft, yTop, xLeft+symWidth, yTop+symHeight):
+        if clipPlotArea  and  not self.intersects(xMinPx, yMinPx, xMaxPx, yMaxPx, xLeft, yTop, xLeft+symWidth, yTop+symHeight):
             return; # image is completely off plot area, so skip it.
 
         elif clipDecoratedChart:
             yAxisWidth = pp.getYAxisEnsembleWidth()
             titleThickness = pp.chartTitleThickness()
-            if not intersects(xMinPx - yAxisWidth, yMinPx - titleThickness,
+            if not self.intersects(xMinPx - yAxisWidth, yMinPx - titleThickness,
                               pp.getXChartSizeDecoratedQuickly()-yAxisWidth,
                               pp.getYChartSizeDecoratedQuickly()-titleThickness,
                               xLeft, yTop, xLeft+symWidth, yTop+symHeight):
@@ -1630,7 +1630,7 @@ class LineSymbolType (SymbolType):
                 for i in range(1, N):
                     yi = yMin + i*(yMax - yMin)/N
                     xi = xAtYMin + i * (xAtYMax - xAtYMin)/N
-                    realizeOneImageOfSymbol(pp, grp, arp, symbol, None,
+                    self.realizeOneImageOfSymbol(pp, grp, arp, symbol, None,
                                             onY2,
                                             clipPlotArea,
                                             clipDecoratedChart,
@@ -1649,7 +1649,7 @@ class LineSymbolType (SymbolType):
         if drawMainSymbol:
             w = symbol.getWidth(pp)
             h = symbol.getHeight(pp, onY2)
-            realizeOneImageOfSymbol(pp, grp, arp, symbol, annotation,
+            self.realizeOneImageOfSymbol(pp, grp, arp, symbol, annotation,
                                     onY2,
                                     clipPlotArea,
                                     clipDecoratedChart,
