@@ -109,7 +109,7 @@ def getAbsoluteTop(elem):
         var top = Math.ceil(elem.getBoundingClientRect().top);
         return top + elem.ownerDocument.getViewportElement().scrollTop;
     }
-    var left = $doc.getBoxObjectFor(elem).x;
+    var top = $doc.getBoxObjectFor(elem).y;
     var parent = elem.parentNode;
     while (parent) {
         if (parent.scrollTop > 0) {
