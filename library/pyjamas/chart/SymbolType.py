@@ -2059,7 +2059,7 @@ class PieSliceSymbolType (SymbolType):
         dy = -(yBrush-yPx)
 
         rSquared = dx*dx + dy*dy
-        angle = angle(dx, dy)
+        angle = self.angle(dx, dy)
         # pie angles grow clockwise but radians counter-clockwise,
         # hence the odd "0 into max, 1 into min" mapping below.
         thetaMax = symbol.getPieSliceTheta0()
@@ -2096,7 +2096,7 @@ class PieSliceSymbolType (SymbolType):
             thetaMin = thetaMid - minDTheta
             thetaMax = thetaMid + minDTheta
 
-        if rSquared <= rPiePlus*rPiePlus  and  angleInRange(angle,thetaMin,thetaMax):
+        if rSquared <= rPiePlus*rPiePlus  and  self.angleInRange(angle,thetaMin,thetaMax):
             result = True
 
 
