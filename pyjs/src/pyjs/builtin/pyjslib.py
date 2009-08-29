@@ -636,6 +636,7 @@ def bool(v):
     # this needs to stay in native code without any dependencies here,
     # because this is used by if and while, we need to prevent
     # recursion
+    # (!v?false:(v === true?:v:(v != 'object?Boolean(v):(typeof v.__nonzero__ == 'function': v.__nonzero__():(typeof v.__len__ == 'function'?v.__len__()>0:true)))))
     JS("""
     if (!v) return false;
     switch(typeof v){

@@ -316,7 +316,10 @@ for a in ECMAScipt_Reserved_Words:
 
 # Attributes that should be remapped in classes
 pyjs_attrib_remap_names = [\
-    'name', 'prototype', 'call', 'apply', 'constructor',
+    'prototype', 'call', 'apply', 'constructor',
+    # Specifically for Chrome, which doesn't set the name attribute of a _function_
+    # http://code.google.com/p/chromium/issues/detail?id=12871
+    'name',
 ]
 pyjs_attrib_remap = []
 for a in pyjs_attrib_remap_names:
@@ -592,6 +595,7 @@ class Translator:
         self.source_tracking = source_tracking
         self.line_tracking = line_tracking
         self.store_source = store_source
+        self.inline_bool = False
 
         self.imported_modules = []
         self.imported_js = []
@@ -926,6 +930,12 @@ class Translator:
             if not _importName in self.imported_modules:
                 self.imported_modules.append(_importName)
             _importName += '.'
+
+    def inline_bool_code(self, expr):
+        if self.inline_bool:
+            self.add_lookup('variable', '$bool', '$bool')
+            return """(!(%(v)s=%(e)s)?false:(%(v)s===true?true:(typeof %(v)s!='object'?Boolean(%(v)s):(typeof %(v)s.__nonzero__=='function'?%(v)s.__nonzero__():(typeof %(v)s.__len__=='function'?%(v)s.__len__()>0:true)))))""" % {'v': '$bool', 'e': expr}
+        return "pyjslib.bool(%s)" % expr
 
     def md5(self, node):
         return hashlib.md5(self.raw_module_name + str(node.lineno) + repr(node)).hexdigest()
@@ -2331,7 +2341,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         if test:
             expr = self.expr(test, current_klass)
 
-            print >>self.output, self.indent() +keyword + " (" + self.track_call("pyjslib.bool(" + expr + ")", test.lineno)+") {"
+            print >>self.output, self.indent() +keyword + " (" + self.track_call(self.inline_bool_code(expr), test.lineno)+") {"
         else:
             print >>self.output, self.indent() + keyword + " {"
 
@@ -2472,7 +2482,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
     def _while(self, node, current_klass):
         test = self.expr(node.test, current_klass)
-        print >>self.output, "    while (" + self.track_call("pyjslib.bool(" + test + ")", node.lineno) + ") {"
+        print >>self.output, "    while (" + self.track_call(self.inline_bool_code(test), node.lineno) + ") {"
         if isinstance(node.body, ast.Stmt):
             for child in node.body.nodes:
                 self._stmt(child, current_klass)
