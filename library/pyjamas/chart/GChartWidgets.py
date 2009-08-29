@@ -1088,7 +1088,7 @@ class PlotPanel (AbsolutePanel):
             GChartUtil.setOverflow(w, "visible")
 
         else:
-            w.setPixelSize(getXChartSize(), getYChartSize())
+            w.setPixelSize(self.getXChartSize(), self.getYChartSize())
             GChartUtil.setOverflow(w, "hidden")
 
         # XXX TODO: investigate what the meaning of domInsert is about
