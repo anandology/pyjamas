@@ -825,7 +825,7 @@ class SymbolType:
         return GChartConsts.DEFAULT_SYMBOL_FILL_SPACING
 
     # fillThickness to use when a symbol's fillThickness is
-    # GChart.NAI
+    # GChartConsts.NAI
     def defaultFillThickness(self):
         return GChartConsts.DEFAULT_SYMBOL_FILL_THICKNESS
 
@@ -1474,12 +1474,12 @@ class LineSymbolType (SymbolType):
 
 
     # fillSpacing to use when a symbol's fillSpacing is
-    # set to GChart.NAI (an undefined integer)
+    # set to GChartConsts.NAI (an undefined integer)
     def defaultFillSpacing(self):
         return GChartConsts.DEFAULT_LINE_FILL_SPACING
 
     # fillThickness to use when a symbol's fillThickness is
-    # set to GChart.NAI (an undefined integer)
+    # set to GChartConsts.NAI (an undefined integer)
     def defaultFillThickness(self):
         return GChartConsts.DEFAULT_LINE_FILL_THICKNESS
 
@@ -2589,19 +2589,19 @@ class AnnotationAnchor (SymbolType):
     # constructor.
     def getUpperLeftX(self, width, x, xPrev, xNext, xMin, xMax, xMid, xMouse):
         if AnnotationLocation.AT_THE_MOUSE == self.location:
-            if (GChart.NAI == xMouse):
+            if (GChartConsts.NAI == xMouse):
                 result = Double.NaN
             else:
                 result = xMouse
 
         elif AnnotationLocation.AT_THE_MOUSE_SNAP_TO_X == self.location:
-            if (GChart.NAI == xMouse):
+            if (GChartConsts.NAI == xMouse):
                 result = Double.NaN
             else:
                 result = x
 
         elif AnnotationLocation.AT_THE_MOUSE_SNAP_TO_Y == self.location:
-            if (GChart.NAI == xMouse):
+            if (GChartConsts.NAI == xMouse):
                 result = Double.NaN
             else:
                 result = xMouse
@@ -2622,19 +2622,19 @@ class AnnotationAnchor (SymbolType):
 
     def getUpperLeftY(self, height, y, yPrev, yNext, yMin, yMax, yMid, yMouse):
         if AnnotationLocation.AT_THE_MOUSE == self.location:
-            if (GChart.NAI == yMouse):
+            if (GChartConsts.NAI == yMouse):
                 result = Double.NaN
             else:
                 result = yMouse
 
         elif AnnotationLocation.AT_THE_MOUSE_SNAP_TO_X == self.location:
-            if (GChart.NAI == yMouse):
+            if (GChartConsts.NAI == yMouse):
                 result = Double.NaN
             else:
                 result = yMouse
 
         elif AnnotationLocation.AT_THE_MOUSE_SNAP_TO_Y == self.location:
-            if (GChart.NAI == yMouse):
+            if (GChartConsts.NAI == yMouse):
                 result = Double.NaN
             else:
                 result = y
