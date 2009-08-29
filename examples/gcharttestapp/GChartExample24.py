@@ -222,7 +222,7 @@ class GChartExample24(GChart):
         self.getCurve().setVisible(False)
         # preferentially selects cursor over ordinary curves:
         self.getCurve().getSymbol().setDistanceMetric(0,0)
-        self.getCurve().getSymbol().setHoverWidget(zoomController)
+        self.getCurve().getSymbol().setHoverWidget(self.zoomController)
         self.getCurve().getSymbol().setHoverLocation( AnnotationLocation.CENTER)
         # hides hover-buttons when mouse is outside zoom-cursor
         self.getCurve().getSymbol().setBrushSize(0, 0)

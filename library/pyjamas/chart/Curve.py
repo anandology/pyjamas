@@ -728,7 +728,7 @@ class Curve:
     **
     *"""
     def setLegendLabel(self, legendHTML):
-        chartDecorationsChanged = True
+        self.chartDecorationsChanged = True
         self.legendHTML = legendHTML
 
     """*
@@ -800,13 +800,13 @@ class Curve:
                 yaxis.incrementCurves()
 
             else:
-                getXAxis().decrementCurves()
+                self.chart.getXAxis().decrementCurves()
                 yaxis.decrementCurves()
                 axisCreatedOrDestroyed = (yaxis.getNCurvesVisibleOnAxis() == 0)
 
 
-            if (None != getLegendLabel()  and  isLegendVisible())  or  axisCreatedOrDestroyed:
-                chartDecorationsChanged = True
+            if (None != self.getLegendLabel()  and  self.isLegendVisible())  or  axisCreatedOrDestroyed:
+                self.chartDecorationsChanged = True
 
 
             self.visible = visible
