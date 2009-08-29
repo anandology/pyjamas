@@ -1918,7 +1918,7 @@ class PieSliceSymbolType (SymbolType):
             # edge. For example, this fraction is 0.5 whenever the vertical
             # line bisects the pie slice edge.
             t = (xOfVerticalLine-xPieCenter)/dxToArc
-            if GChart.withinRange(t,0,1):
+            if GChartUtil.withinRange(t,0,1):
                 result = yPieCenter - t * pieRadius * math.sin(pieEdgeAngle)
 
         return result
@@ -1938,7 +1938,7 @@ class PieSliceSymbolType (SymbolType):
             # edge. For example, this fraction is 0.5 whenever the horizontal
             # line bisects the pie slice edge.
             t = (yPieCenter - yOfHorizontalLine)/dyToArc
-            if GChart.withinRange(t,0,1):
+            if GChartUtil.withinRange(t,0,1):
                 result = xPieCenter + t * pieRadius * math.cos(pieEdgeAngle)
 
         return result
@@ -1986,7 +1986,7 @@ class PieSliceSymbolType (SymbolType):
     def angleInRange(self, angle, theta0, theta1):
 
         if theta0 > theta1:
-            return angleInRange(angle, theta1, theta0)
+            return self.angleInRange(angle, theta1, theta0)
 
         # angle is in standard 0 to 2*Pi range, but thetas
         # can be "wrapped around" several negative
@@ -1996,7 +1996,7 @@ class PieSliceSymbolType (SymbolType):
             angle -= 2*math.pi
 
 
-        result = GChart.withinRange(angle, theta0, theta1)
+        result = GChartUtil.withinRange(angle, theta0, theta1)
         return result
 
 
@@ -2249,7 +2249,10 @@ class PieSliceSymbolType (SymbolType):
 
                 # negative borders fill AFTER stroking (thus zapping
                 # the internal half of the stroked border).
-                if borderWidth < 0  and  thickness > 0  and  TRANSPARENT_BORDER_COLOR != backgroundColor  and  "transparent" != backgroundColor:
+                if (borderWidth < 0  and  
+                    thickness > 0  and  
+                    TRANSPARENT_BORDER_COLOR != backgroundColor  and  
+                    "transparent" != backgroundColor):
                     canvas.setFillStyle(backgroundColor)
                     canvas.fill()
 
@@ -2291,7 +2294,7 @@ class PieSliceSymbolType (SymbolType):
             if (nBands > 0  and  
                  (self.verticallyShaded  or  
                       (self.optimallyShaded  and  
-                           self.optimalIsVertical))):
+                           optimalIsVertical))):
                 for i in range(int(round(nBands*sl.xMin)),
                                int(sl.xMax*nBands)):
                     nP = 0
@@ -2320,7 +2323,7 @@ class PieSliceSymbolType (SymbolType):
                     # coordinates used in trig functions increase
                     # going up, hence the sign-flipping on second arg
                     # of angle function below.
-                    if self.angleInRange(angle(xi-xPx,yPx-c1),theta0,theta1):
+                    if self.angleInRange(self.angle(xi-xPx,yPx-c1),theta0,theta1):
                         p[nP] = c1
                         nP += 1
 
@@ -2347,7 +2350,7 @@ class PieSliceSymbolType (SymbolType):
 
 
 
-                    if self.angleInRange(angle(xi-xPx, yPx-c2),theta0,theta1):
+                    if self.angleInRange(self.angle(xi-xPx, yPx-c2),theta0,theta1):
                         p[nP] = c2
                         nP += 1
 
@@ -2366,7 +2369,10 @@ class PieSliceSymbolType (SymbolType):
                         # ALWAYS rely on the (mathematically correct)
                         # fact that problematic bars always connect p[1]
                         # and p[2].
-                        if abs(theta0-theta1) <= math.pi  or  angleInRange(angle(xi-xPx, yPx-(0.3*p[j]+0.7*p[j-1])), theta0,theta1):
+                        if abs(theta0-theta1) <= math.pi  or  
+                            self.angleInRange(self.angle(xi-xPx,
+                                                         yPx-(0.3*p[j]+0.7*p[j-1])),
+                                              theta0,theta1):
                             # widening of EPS pixels on either side fills in
                             # tiny intra-slice gaps (that can otherwise appear
                             # due to roundoff) by making each bar a tad bigger.
@@ -2392,7 +2398,7 @@ class PieSliceSymbolType (SymbolType):
             # above (w appropriate transposition/adjustments).
             if (nBands > 0  and  (self.horizontallyShaded  or  
                     (self.optimallyShaded  and  
-                     not self.optimalIsVertical))):
+                     not optimalIsVertical))):
                 for i in range( int ( round(-nBands*sl.yMax)),
                                 int ( -nBands * sl.yMin) ):
                     nP = 0
