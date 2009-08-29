@@ -155,19 +155,19 @@ class GChartExample24(GChart):
         dx = self.p2.x - self.p1.x
         dy = self.p2.y - self.p1.y
         if not self.moving  and  math.abs(dx) >= MIN_SELECTION_FRACTION_X* (getXAxis().getAxisMax()-getXAxis().getAxisMin())  and  math.abs(dy) >= MIN_SELECTION_FRACTION_Y* (getYAxis().getAxisMax()-getYAxis().getAxisMin()):
-            self.getCurve(SELECTION_CURVE).setVisible(True)
-            self.getCurve(SELECTION_CURVE).getSymbol().setSymbolType(
+            self.getCurve(self.SELECTION_CURVE).setVisible(True)
+            self.getCurve(self.SELECTION_CURVE).getSymbol().setSymbolType(
             SymbolType.BOX_CENTER)
-            self.getCurve(SELECTION_CURVE).getSymbol().setBorderColor("gray")
-            self.getCurve(SELECTION_CURVE).getSymbol().setBorderWidth(2)
-            self.getCurve(SELECTION_CURVE).getSymbol().setModelWidth(math.abs(dx))
-            self.getCurve(SELECTION_CURVE).getSymbol().setModelHeight(math.abs(dy))
-            self.getCurve(SELECTION_CURVE).getPoint(0).setX((self.p1.x + self.p2.x)/2)
-            self.getCurve(SELECTION_CURVE).getPoint(0).setY((self.p1.y + self.p2.y)/2)
+            self.getCurve(self.SELECTION_CURVE).getSymbol().setBorderColor("gray")
+            self.getCurve(self.SELECTION_CURVE).getSymbol().setBorderWidth(2)
+            self.getCurve(self.SELECTION_CURVE).getSymbol().setModelWidth(math.abs(dx))
+            self.getCurve(self.SELECTION_CURVE).getSymbol().setModelHeight(math.abs(dy))
+            self.getCurve(self.SELECTION_CURVE).getPoint(0).setX((self.p1.x + self.p2.x)/2)
+            self.getCurve(self.SELECTION_CURVE).getPoint(0).setY((self.p1.y + self.p2.y)/2)
         
         elif self.moving:
-            if self.getCurve(SELECTION_CURVE).isVisible():
-                self.getCurve(SELECTION_CURVE).setVisible(False)
+            if self.getCurve(self.SELECTION_CURVE).isVisible():
+                self.getCurve(self.SELECTION_CURVE).setVisible(False)
             
             xMin = self.getXAxis().getAxisMin() - dx
             xMax =  self.getXAxis().getAxisMax() - dx

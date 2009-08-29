@@ -1906,8 +1906,8 @@ class XAxis(Axis):
 
     def clientToModel(clientCoordinate):
         xPixel = (Window.getScrollLeft() + clientCoordinate -
-                self.plotPanel.getAbsoluteLeft())
-        result = self.plotPanel.xChartPixelToX(xPixel)
+                self.chart.plotPanel.getAbsoluteLeft())
+        result = self.chart.plotPanel.xChartPixelToX(xPixel)
         return result
 
     def getAxisLabelThickness(self):
@@ -1971,7 +1971,7 @@ class XAxis(Axis):
 
 
     def getMouseCoordinate(self):
-        result = self.plotPanel.xChartPixelToX(self.plotPanel.getXMouse())
+        result = self.chart.plotPanel.xChartPixelToX(self.chart.plotPanel.getXMouse())
         return result
 
 
@@ -1997,25 +1997,25 @@ class XAxis(Axis):
 
 
     def modelToClient(self, modelCoordinate):
-        xPixel = self.plotPanel.xToChartPixel(modelCoordinate)
-        result = (self.plotPanel.getAbsoluteLeft()
+        xPixel = self.chart.plotPanel.xToChartPixel(modelCoordinate)
+        result = (self.chart.plotPanel.getAbsoluteLeft()
                         - Window.getScrollLeft() + xPixel )
         return result
 
     def modelToPixel(self, modelCoordinate):
-        result = self.plotPanel.xToChartPixel(modelCoordinate)
+        result = self.chart.plotPanel.xToChartPixel(modelCoordinate)
         return result
 
     def modelToPlotAreaPixel(self, modelCoordinate):
-        result = self.plotPanel.xToPixel(modelCoordinate)
+        result = self.chart.plotPanel.xToPixel(modelCoordinate)
         return result
 
     def pixelToModel(self, pixelCoordinate):
-        result = self.plotPanel.xChartPixelToX(pixelCoordinate)
+        result = self.chart.plotPanel.xChartPixelToX(pixelCoordinate)
         return result
 
     def plotAreaPixelToModel(self, pixelCoordinate):
-        result = self.plotPanel.xPixelToX(pixelCoordinate)
+        result = self.chart.plotPanel.xPixelToX(pixelCoordinate)
         return result
 
     def setTickLength(self, tickLength):
@@ -2050,8 +2050,8 @@ class Y2Axis(Axis):
 
     def clientToModel(clientCoordinate):
         yPixel = (Window.getScrollTop() + clientCoordinate -
-                        self.plotPanel.getAbsoluteTop())
-        result = self.plotPanel.yChartPixelToY2(yPixel)
+                        self.chart.plotPanel.getAbsoluteTop())
+        result = self.chart.plotPanel.yChartPixelToY2(yPixel)
         return result
 
     def getDataMax(self):
@@ -2095,29 +2095,29 @@ class Y2Axis(Axis):
 
 
     def getMouseCoordinate(self):
-        result = self.plotPanel.yChartPixelToY2(self.plotPanel.getYMouse())
+        result = self.chart.plotPanel.yChartPixelToY2(self.chart.plotPanel.getYMouse())
         return result
 
 
     def modelToClient(self, modelCoordinate):
-        yPixel = self.plotPanel.yToChartPixel(modelCoordinate, True)
-        result = self.plotPanel.getAbsoluteTop() - Window.getScrollTop() + yPixel
+        yPixel = self.chart.plotPanel.yToChartPixel(modelCoordinate, True)
+        result = self.chart.plotPanel.getAbsoluteTop() - Window.getScrollTop() + yPixel
         return result
 
     def modelToPixel(self, modelCoordinate):
-        result = self.plotPanel.yToChartPixel(modelCoordinate, True)
+        result = self.chart.plotPanel.yToChartPixel(modelCoordinate, True)
         return result
 
     def modelToPlotAreaPixel(self, modelCoordinate):
-        result = self.plotPanel.yToPixel(modelCoordinate, True)
+        result = self.chart.plotPanel.yToPixel(modelCoordinate, True)
         return result
 
     def pixelToModel(self, pixelCoordinate):
-        result = self.plotPanel.yChartPixelToY2(pixelCoordinate)
+        result = self.chart.plotPanel.yChartPixelToY2(pixelCoordinate)
         return result
 
     def plotAreaPixelToModel(self, pixelCoordinate):
-        result = self.plotPanel.yPixelToY2(pixelCoordinate)
+        result = self.chart.plotPanel.yPixelToY2(pixelCoordinate)
         return result
 
     def setTickLength(self, tickLength):
@@ -2150,8 +2150,8 @@ class YAxis(Axis):
 
     def clientToModel(clientCoordinate):
         yPixel = (Window.getScrollTop() + clientCoordinate -
-                        self.plotPanel.getAbsoluteTop())
-        result = self.plotPanel.yChartPixelToY(yPixel)
+                        self.chart.plotPanel.getAbsoluteTop())
+        result = self.chart.plotPanel.yChartPixelToY(yPixel)
         return result
 
     def getDataMax(self):
@@ -2196,30 +2196,30 @@ class YAxis(Axis):
 
 
     def getMouseCoordinate(self):
-        result = self.plotPanel.yChartPixelToY(self.plotPanel.getYMouse())
+        result = self.chart.plotPanel.yChartPixelToY(self.chart.plotPanel.getYMouse())
         return result
 
 
 
     def modelToClient(self, modelCoordinate):
-        yPixel = self.plotPanel.yToChartPixel(modelCoordinate, False)
-        result = self.plotPanel.getAbsoluteTop() - Window.getScrollTop() + yPixel
+        yPixel = self.chart.plotPanel.yToChartPixel(modelCoordinate, False)
+        result = self.chart.plotPanel.getAbsoluteTop() - Window.getScrollTop() + yPixel
         return result
 
     def modelToPixel(self, modelCoordinate):
-        result = self.plotPanel.yToChartPixel(modelCoordinate, False)
+        result = self.chart.plotPanel.yToChartPixel(modelCoordinate, False)
         return result
 
     def modelToPlotAreaPixel(self, modelCoordinate):
-        result = self.plotPanel.yToPixel(modelCoordinate, False)
+        result = self.chart.plotPanel.yToPixel(modelCoordinate, False)
         return result
 
     def pixelToModel(self, pixelCoordinate):
-        result = self.plotPanel.yChartPixelToY(pixelCoordinate)
+        result = self.chart.plotPanel.yChartPixelToY(pixelCoordinate)
         return result
 
     def plotAreaPixelToModel(self, pixelCoordinate):
-        result = self.plotPanel.yPixelToY(pixelCoordinate)
+        result = self.chart.plotPanel.yPixelToY(pixelCoordinate)
         return result
 
     def setTickLength(self, tickLength):
