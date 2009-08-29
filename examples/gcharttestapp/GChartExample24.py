@@ -9,6 +9,7 @@ import math
 from pyjamas import DOM
 from pyjamas.ui.Hyperlink import Hyperlink
 from pyjamas.ui.Button import Button
+from pyjamas.ui import Event
 from pyjamas.ui.FlowPanel import FlowPanel
 from pyjamas.ui.Grid import Grid
 from pyjamas.ui.HorizontalPanel import HorizontalPanel
