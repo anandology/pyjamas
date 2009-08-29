@@ -2288,7 +2288,10 @@ class PieSliceSymbolType (SymbolType):
             optimalIsVertical = (sl.yMax - sl.yMin) > (sl.xMax - sl.xMin)
             isFullPie = (symbol.getPieSliceSize() == 1.0)
             # perform any vertical shading that may be required:
-            if nBands > 0  and  (verticallyShaded  or  (optimallyShaded  and  optimalIsVertical)):
+            if (nBands > 0  and  
+                 (self.verticallyShaded  or  
+                      (self.optimallyShaded  and  
+                           self.optimalIsVertical))):
                 for i in range(int(round(nBands*sl.xMin)),
                                int(sl.xMax*nBands)):
                     nP = 0
