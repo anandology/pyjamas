@@ -2507,7 +2507,7 @@ class GChart (Composite):
     """
     def setClipToPlotArea(self, clipToPlotArea):
         self.chartDecorationsChanged = True
-        invalidateAccessibleCurves()
+        self.invalidateAccessibleCurves()
         self.clipToPlotArea = clipToPlotArea
 
     """*

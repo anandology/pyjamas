@@ -2,6 +2,7 @@ from pyjamas.chart import GChartUtil
 from pyjamas.chart.GChart import GChart
 from pyjamas.chart import AnnotationLocation
 from pyjamas.chart import SymbolType
+from pyjamas.chart import Double
 
 import math
 
@@ -194,7 +195,7 @@ class GChartExample24(GChart):
         # (# zoom ins) - (# zoom outs) since selection rect created
         # lets us know when to restore initial plot area limits/cursor
         self.zoomIndex = 0
-        self.zoomController = ZoomController()
+        self.zoomController = ZoomController(self)
         # min plot area fraction zoom selection cursor must capture
         
         self.initialPlotRegion = Region()
@@ -243,8 +244,9 @@ class GChartExample24(GChart):
         addMouseWheelHandler()
         
     
-    def onMouseUp(self, event):
-        event.preventDefault()
+    def onMouseUp(self, sender, x, y):
+        event = DOM.eventGetCurrentEvent()
+        DOM.eventPreventDefault(event)
         if self.selecting  or  self.moving:
             self.p2.x = self.getXAxis().getMouseCoordinate()
             self.p2.y = self.getYAxis().getMouseCoordinate()
@@ -253,18 +255,18 @@ class GChartExample24(GChart):
             self.moving = False
         
     
-    def onMouseWheel(self, event):
-        event.preventDefault()
+    def onMouseWheel(self, sender, x, y):
+        event = DOM.eventGetCurrentEvent()
+        DOM.eventPreventDefault(event)
         if self.getCurve(self.SELECTION_CURVE).isVisible():
             if event.isNorth():
-                zoomController.zoomIn()
+                self.zoomIn()
             
             elif event.isSouth():
-                zoomController.zoomOut()
-            
+                self.zoomOut()
         
     
-    def onMouseDown(self, event):
+    def onMouseDown(self, sender, x, y):
         """
         * Most browsers, by default, support the ability to
         * to "drag-copy" any web page image to the desktop.
@@ -272,12 +274,16 @@ class GChartExample24(GChart):
         * images, so we need to override this default.
         *
         """
-        event.preventDefault()
-        ctrlPressed = event.isControlKeyDown()
-        altPressed = event.isAltKeyDown()
+        event = DOM.eventGetCurrentEvent()
+        DOM.eventPreventDefault(event)
+        self.ctrlPressed = DOM.eventGetCtrlKey(event)
+        self.altPressed = DOM.eventGetAltKey(event)
         x = self.getXAxis().getMouseCoordinate()
         y = self.getYAxis().getMouseCoordinate()
-        if min(self.p1.x, self.p2.x) <= x  and  x <= max(self.p1.x, self.p2.x)  and  min(self.p1.y, self.p2.y) <= y  and  y <= max(self.p1.y, self.p2.y):
+        if (min(self.p1.x, self.p2.x) <= x  and 
+            x <= max(self.p1.x, self.p2.x)  and  
+            min(self.p1.y, self.p2.y) <= y  and  
+            y <= max(self.p1.y, self.p2.y)):
             return; # ignore mouse down inside selection rectangle
         
         self.p1.x = self.p2.x = x
@@ -286,28 +292,28 @@ class GChartExample24(GChart):
         xMax = self.getXAxis().getAxisMax()
         yMin = self.getYAxis().getAxisMin()
         yMax = self.getYAxis().getAxisMax()
-        initialPlotRegion.xMin = xMin
-        initialPlotRegion.xMax = xMax
-        initialPlotRegion.yMin = yMin
-        initialPlotRegion.yMax = yMax
-        if ctrlPressed:
+        self.initialPlotRegion.xMin = xMin
+        self.initialPlotRegion.xMax = xMax
+        self.initialPlotRegion.yMin = yMin
+        self.initialPlotRegion.yMax = yMax
+        if self.ctrlPressed:
             self.selecting = True
             self.moving = False
-        
         else:
-            selecting = False
-            moving = True
+            self.selecting = False
+            self.moving = True
         
-        updateCursor()
+        self.updateCursor()
         
     
-    def onMouseMove(self, event):
-        event.preventDefault()
-        if selecting  or  moving:
+    def onMouseMove(self, sender, x, y):
+        event = DOM.eventGetCurrentEvent()
+        DOM.eventPreventDefault(event)
+        if self.selecting  or  self.moving:
             self.p2.x = self.getXAxis().getMouseCoordinate()
             self.p2.y = self.getYAxis().getMouseCoordinate()
-            updateCursor()
-            if moving:
+            self.updateCursor()
+            if self.moving:
                 self.p1.x = self.p2.x = self.getXAxis().getMouseCoordinate()
                 self.p1.y = self.p2.y = self.getYAxis().getMouseCoordinate()
             
@@ -316,19 +322,19 @@ class GChartExample24(GChart):
     def onClick(self, event):
         x = self.getXAxis().getMouseCoordinate()
         y = self.getYAxis().getMouseCoordinate()
-        if altPressed:
+        if self.altPressed:
             self.getXAxis().setAxisMin(0.25*N_POINTS)
             self.getXAxis().setAxisMax(0.75*N_POINTS)
             self.getYAxis().setAxisMin(-0.5)
             self.getYAxis().setAxisMax(.5)
             self.getCurve(self.SELECTION_CURVE).setVisible(False)
-            update()
+            self.update()
         
         elif self.getCurve(self.SELECTION_CURVE).isVisible():
             self.p1.x = self.p2.x = x
             self.p1.y = self.p2.y = y
             self.getCurve(self.SELECTION_CURVE).setVisible(False)
-            update()
+            self.update()
         
         else:
             xMin = self.getXAxis().getAxisMin()
@@ -342,23 +348,23 @@ class GChartExample24(GChart):
             moving = selecting = False
             self.zoomIndex = 0
             self.getCurve(self.SELECTION_CURVE).setVisible(True)
-            updateCursor()
+            self.updateCursor()
         
-        moving = selecting = False
+        self.moving = self.selecting = False
     
 
     def zoomIn(self):
         
         if -1 == self.zoomIndex:
             # return to starting (0 index) state
-            self.getXAxis().setAxisMin(initialPlotRegion.xMin)
-            self.getXAxis().setAxisMax(initialPlotRegion.xMax)
-            self.getYAxis().setAxisMin(initialPlotRegion.yMin)
-            self.getYAxis().setAxisMax(initialPlotRegion.yMax)
-            self.p1.x = initialSelectionRegion.xMin
-            self.p2.x = initialSelectionRegion.xMax
-            self.p1.y = initialSelectionRegion.yMin
-            self.p2.y = initialSelectionRegion.yMax
+            self.getXAxis().setAxisMin(self.initialPlotRegion.xMin)
+            self.getXAxis().setAxisMax(self.initialPlotRegion.xMax)
+            self.getYAxis().setAxisMin(self.initialPlotRegion.yMin)
+            self.getYAxis().setAxisMax(self.initialPlotRegion.yMax)
+            self.p1.x = self.initialSelectionRegion.xMin
+            self.p2.x = self.initialSelectionRegion.xMax
+            self.p1.y = self.initialSelectionRegion.yMin
+            self.p2.y = self.initialSelectionRegion.yMax
         
         else:
             xMin = self.getXAxis().getAxisMin()
@@ -367,14 +373,14 @@ class GChartExample24(GChart):
             yMax = self.getYAxis().getAxisMax()
             if 0 == self.zoomIndex:
                 # moving away from starting state
-                initialPlotRegion.xMin = xMin
-                initialPlotRegion.xMax = xMax
-                initialPlotRegion.yMin = yMin
-                initialPlotRegion.yMax = yMax
-                initialSelectionRegion.xMin = min(self.p1.x, self.p2.x)
-                initialSelectionRegion.xMax = max(self.p1.x, self.p2.x)
-                initialSelectionRegion.yMin = min(self.p1.y, self.p2.y)
-                initialSelectionRegion.yMax = max(self.p1.y, self.p2.y)
+                self.initialPlotRegion.xMin = xMin
+                self.initialPlotRegion.xMax = xMax
+                self.initialPlotRegion.yMin = yMin
+                self.initialPlotRegion.yMax = yMax
+                self.initialSelectionRegion.xMin = min(self.p1.x, self.p2.x)
+                self.initialSelectionRegion.xMax = max(self.p1.x, self.p2.x)
+                self.initialSelectionRegion.yMin = min(self.p1.y, self.p2.y)
+                self.initialSelectionRegion.yMax = max(self.p1.y, self.p2.y)
                 dx = xMax - xMin
                 dy = yMax - yMin
                 # center plot area on selection cursor
@@ -411,14 +417,14 @@ class GChartExample24(GChart):
     def zoomOut(self):
         if 1 == self.zoomIndex:
             # return to starting (0 index) state
-            self.getXAxis().setAxisMin(initialPlotRegion.xMin)
-            self.getXAxis().setAxisMax(initialPlotRegion.xMax)
-            self.getYAxis().setAxisMin(initialPlotRegion.yMin)
-            self.getYAxis().setAxisMax(initialPlotRegion.yMax)
-            self.p1.x = initialSelectionRegion.xMin
-            self.p2.x = initialSelectionRegion.xMax
-            self.p1.y = initialSelectionRegion.yMin
-            self.p2.y = initialSelectionRegion.yMax
+            self.getXAxis().setAxisMin(self.initialPlotRegion.xMin)
+            self.getXAxis().setAxisMax(self.initialPlotRegion.xMax)
+            self.getYAxis().setAxisMin(self.initialPlotRegion.yMin)
+            self.getYAxis().setAxisMax(self.initialPlotRegion.yMax)
+            self.p1.x = self.initialSelectionRegion.xMin
+            self.p2.x = self.initialSelectionRegion.xMax
+            self.p1.y = self.initialSelectionRegion.yMin
+            self.p2.y = self.initialSelectionRegion.yMax
         
         else:
             xMin = self.getXAxis().getAxisMin()
@@ -426,14 +432,14 @@ class GChartExample24(GChart):
             yMin = self.getYAxis().getAxisMin()
             yMax = self.getYAxis().getAxisMax()
             if 0 == self.zoomIndex:
-                initialPlotRegion.xMin = xMin
-                initialPlotRegion.xMax = xMax
-                initialPlotRegion.yMin = yMin
-                initialPlotRegion.yMax = yMax
-                initialSelectionRegion.xMin = min(self.p1.x, self.p2.x)
-                initialSelectionRegion.xMax = max(self.p1.x, self.p2.x)
-                initialSelectionRegion.yMin = min(self.p1.y, self.p2.y)
-                initialSelectionRegion.yMax = max(self.p1.y, self.p2.y)
+                self.initialPlotRegion.xMin = xMin
+                self.initialPlotRegion.xMax = xMax
+                self.initialPlotRegion.yMin = yMin
+                self.initialPlotRegion.yMax = yMax
+                self.initialSelectionRegion.xMin = min(self.p1.x, self.p2.x)
+                self.initialSelectionRegion.xMax = max(self.p1.x, self.p2.x)
+                self.initialSelectionRegion.yMin = min(self.p1.y, self.p2.y)
+                self.initialSelectionRegion.yMax = max(self.p1.y, self.p2.y)
                 dx = xMax - xMin
                 dy = yMax - yMin
                 xCenter = (self.p1.x + self.p2.x)/2

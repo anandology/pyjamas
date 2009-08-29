@@ -791,9 +791,9 @@ class Curve:
 
         if self.visible != visible:
             if self.getYAxis() == GChart.Y_AXIS:
-                yaxis = GChart.self.getYAxis()
+                yaxis = self.chart.getYAxis()
             else:
-                yaxis = GChart.self.getY2Axis()
+                yaxis = self.chart.getY2Axis()
             if visible:
                 axisCreatedOrDestroyed = (yaxis.getNCurvesVisibleOnAxis() == 0)
                 getXAxis().incrementCurves()
