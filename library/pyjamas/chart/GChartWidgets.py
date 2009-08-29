@@ -1518,7 +1518,7 @@ class PlotPanel (AbsolutePanel):
     # (this is the one that directly holds the popup hover annotation)
     def getOpenedHoverContainer(self):
         result = None
-        c = getSystemCurve(HOVER_ANNOTATION_ID)
+        c = self.chart.getSystemCurve(HOVER_ANNOTATION_ID)
         if self.touchedPoint is not None  and  c.isVisible():
             internalIndex = self.getInternalCurveIndex(c)
             rpIndex = self.getRenderingPanelIndex(internalIndex)
@@ -1901,19 +1901,23 @@ class PlotPanel (AbsolutePanel):
     def takesUsCompletelyOutsideChart(self, event):
         result = True
 
-        if isContainedIn(getElement(), event.getRelatedEventTarget()):
+        if self.isContainedIn(self.getElement(), DOM.eventGetToElement(event)):
             """ hoverElement is always a descendant of the main chart element due to
             * how GChart generates it, so if this branch isn't reached, toElement
             * is not contained in either chart or the opened hover annotation """
             result = False
 
-        elif isGeometricallyContainedIn(getElement(), event.getClientX(), event.getClientY()):
+        elif self.isGeometricallyContainedIn(self.getElement(),
+                                             event.getClientX(), 
+                                              event.getClientY()):
             result = False
 
         else:
-            hoverElement = getOpenedHoverElement()
+            hoverElement = self.getOpenedHoverElement()
             if None != hoverElement:
-                if isGeometricallyContainedIn(hoverElement, event.getClientX(), event.getClientY()):
+                if self.isGeometricallyContainedIn(hoverElement,
+                                                 event.getClientX(),
+                                                 event.getClientY()):
                     result = False
 
 
@@ -2062,7 +2066,7 @@ class PlotPanel (AbsolutePanel):
                 " event.getTarget()=" + event.getTarget())
 
             """
-            if self.getHoverTouchingEnabled()  or  isClick:
+            if self.chart.getHoverTouchingEnabled()  or  isClick:
                 self.setClientX(event.getClientX(), isClick)
                 self.setClientY(event.getClientY(), isClick)
                 if not self.isUpdateNeeded()  and  self.touchObjectAtMousePosition(isClick):
@@ -2070,7 +2074,7 @@ class PlotPanel (AbsolutePanel):
 
 
 
-        elif "mouseout" == eventId  and  self.getHoverTouchingEnabled()  and  self.takesUsCompletelyOutsideChart(event):
+        elif "mouseout" == eventId  and  self.chart.getHoverTouchingEnabled()  and  self.takesUsCompletelyOutsideChart(event):
             #                Window.alert("MOUSEOUT: event.getClientX()=" + event.getClientX() +
             #                             " event.getClientY()=" + event.getClientY() +
             #                             " event.getCurrentTarget()="+event.getCurrentTarget() +
