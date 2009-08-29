@@ -1,7 +1,7 @@
 import pyjd
 pyjd.setup("./public/GChartTestApp.html")
 
-from pyjamas.DeferredCommand import DeferredCommand
+from pyjamas import DeferredCommand
 from pyjamas.ui.HTML import HTML
 from pyjamas.ui.RootPanel import RootPanel
 from pyjamas.Canvas2D import Canvas
@@ -98,10 +98,10 @@ class AddOneChart:
 
 
 def addChart(gchart):
-    DeferredCommand().add(AddOneChart(gchart, True))
+    DeferredCommand.add(AddOneChart(gchart, True))
 
 def addChartNoUpdate(gchart):
-    DeferredCommand().add(AddOneChart(gchart, False))
+    DeferredCommand.add(AddOneChart(gchart, False))
 
 class GWTCanvasBasedCanvasFactory :
     def create(self):

@@ -6,7 +6,7 @@ from pyjamas.chart import AnnotationLocation
 from pyjamas.chart import SymbolType
 from pyjamas.chart import Double
 
-from pyjamas.DeferredCommand import DeferredCommand
+from pyjamas import DeferredCommand
 from pyjamas.ui.Button import Button
 
 
@@ -47,7 +47,7 @@ class IncrementalUpdate:
     
     def execute(self):
         for iC in range(self.iCurve, self.iCurve+self.n):
-            if self.gchart.getNCurves() <= iCurve:
+            if self.gchart.getNCurves() <= self.iCurve:
                 #            gchart.getCurve(0).getPoint(0).setY(
                 #                gchart.getCurve(0).getPoint(0).getY())
                 self.gchart.addCurve()
@@ -89,11 +89,6 @@ class GChartExample14 (GChart):
     
         self.phase = 0
         self.btn = Button("Update", self)
-        def onClick(self, event):
-            self.phase += DELTA_PHASE
-            for i in range(N_PERIODS):
-                DeferredCommand().add(IncrementalUpdate(self, i, self.phase, 1))
-            
         self.setChartFootnotes(self.btn)
         
         self.setChartSize(1000,100)
@@ -123,10 +118,13 @@ class GChartExample14 (GChart):
         self.getCurve().getSymbol().setWidth(1)
         
         for i in range(N_PERIODS):
-            DeferredCommand().add(IncrementalUpdate(self, i, 0, 1))
+            DeferredCommand.add(IncrementalUpdate(self, i, 0, 1))
         
         #     for int phaseShift=0; phaseShift < N_PERIODS*PERIOD; phaseShift+=DELTA_PHASE)
         #         DeferredCommand.addCommand(IncrementalUpdate(this,0, phaseShift, N_PERIODS))
     
-
+    def onClick(self, event):
+        self.phase += DELTA_PHASE
+        for i in range(N_PERIODS):
+            DeferredCommand.add(IncrementalUpdate(self, i, self.phase, 1))
 

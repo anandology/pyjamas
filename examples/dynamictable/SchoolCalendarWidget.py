@@ -1,5 +1,5 @@
 from pyjamas.ui.Composite import Composite
-from pyjamas.DeferredCommand import DeferredCommand
+from pyjamas import DeferredCommand
 from SchoolCalendarService import SchoolCalendarService
 from DynaTableWidget import DynaTableWidget
 from Person import Person
@@ -78,7 +78,7 @@ class SchoolCalendarWidget(Composite):
         
         if not self.pendingRefresh:
             self.pendingRefresh = True
-            DeferredCommand().add(self)
+            DeferredCommand.add(self)
 
     def execute(self):
         self.pendingRefresh = False
