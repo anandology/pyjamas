@@ -18,58 +18,63 @@
 """
 
 
-
-
-from pyjamas import DOM
-from pyjamas import Window
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-from pyjamas.ui import Event
-from pyjamas.ui.AbsolutePanel import AbsolutePanel
-from pyjamas.ui.Composite import Composite
-from pyjamas.ui.Grid import Grid
-from pyjamas.ui.HasHTML import HasHTML
-from pyjamas.ui import HasHorizontalAlignment
-from pyjamas.ui.HasText import HasText
-from pyjamas.ui import HasVerticalAlignment
-from pyjamas.ui.HTML import HTML
-from pyjamas.ui.Image import Image
-from pyjamas.ui.SimplePanel import SimplePanel
-from pyjamas.ui.UIObject import UIObject
-from pyjamas.ui.Widget import Widget
-
-
-
 HOVERTEXT_PARAM_NONE = 0; # plain old text
 HOVERTEXT_PARAM_X = 1;  # ${x}
 HOVERTEXT_PARAM_Y = 2;  # ${y}
 HOVERTEXT_PARAM_PIESLICESIZE = 3; # ${pieSlicePercent}
 HOVERTEXT_PARAM_USERDEFINED = 4; # ${mySpecialParameter}
+
+# returns array of "chunks" corresponding to the given
+# hovertext template
+def parseHovertextTemplate(htTemplate):
+    if htTemplate == "":
+        return []
+
+    # takes "x=${x}; y=${y}" into {"x=", "x}; y=", "y}"}
+    # Thus, except for the first, chunks contain a
+    # keyword like part, followed by a string literal.
+    sChunk = htTemplate.split("\\$\\{")
+    #HovertextChunk[] result = HovertextChunk[len(sChunk)]
+    result = [None] * len(sChunk)
+
+    for i in range(len(sChunk)):
+        sC = sChunk[i]
+        if 0 == i:
+            # leading (non-parametric) plain text chunk
+            result[i] = HovertextChunk(HOVERTEXT_PARAM_NONE, None, sC)
+
+        elif sC.startswith("x}"):
+            result[i] = HovertextChunk(
+                            HOVERTEXT_PARAM_X, "x",
+                            sC[len("x}"):])
+
+        elif sC.startswith("y}"):
+            result[i] = HovertextChunk(
+                            HOVERTEXT_PARAM_Y, "y",
+                            sC[len("y}"):])
+
+        elif sC.startswith("pieSliceSize}"):
+            result[i] = HovertextChunk(
+                            HOVERTEXT_PARAM_PIESLICESIZE,
+                            "pieSliceSize",
+                            sC[len("pieSliceSize}"):])
+
+        # TODO: XXX - i can't stand regular expressions!  shoot them allll
+        #elif sC.matches("[a-zA-Z][a-zA-Z0-9_]*\\}.*"):
+        #    # fits pattern for a user defined parameter
+        #    closeCurlyIndex = sC.find("}")
+        #    result[i] = HovertextChunk(
+        #                    HOVERTEXT_PARAM_USERDEFINED,
+        #                    sC[0:closeCurlyIndex],
+        #                    sC[closeCurlyIndex+1:])
+
+        else:
+            # leading "${" without "paramName}". Likely a
+            # typo, but output verbatim to give them a clue:
+            result[i] = HovertextChunk(HOVERTEXT_PARAM_NONE,
+                                        None, "${" + sC)
+
+    return result
 
 # Allows hovertext templates to be parsed into "chunks"
 # so that they can be expanded into hovertext faster.
@@ -78,58 +83,6 @@ class HovertextChunk:
         self.paramId = pid
         self.paramName = name
         self.chunkText = text
-
-    # returns array of "chunks" corresponding to the given
-    # hovertext template
-    def parseHovertextTemplate(self, htTemplate):
-        if htTemplate.equals(""):
-            return HovertextChunk[0]
-
-        # takes "x=${x}; y=${y}" into {"x=", "x}; y=", "y}"}
-        # Thus, except for the first, chunks contain a
-        # keyword like part, followed by a string literal.
-        sChunk = htTemplate.split("\\$\\{")
-        #HovertextChunk[] result = HovertextChunk[len(sChunk)]
-        result = [None] * len(sChunk)
-
-        for i in range(len(sChunk)):
-            sC = sChunk[i]
-            if 0 == i:
-                # leading (non-parametric) plain text chunk
-                result[i] = HovertextChunk(HOVERTEXT_PARAM_NONE,
-                None, sC)
-
-            elif sC.startsWith("x}"):
-                result[i] = HovertextChunk(
-                                HOVERTEXT_PARAM_X, "x",
-                                sC.substring("x}".length()))
-
-            elif sC.startsWith("y}"):
-                result[i] = HovertextChunk(
-                                HOVERTEXT_PARAM_Y, "y",
-                                sC.substring("y}".length()))
-
-            elif sC.startsWith("pieSliceSize}"):
-                result[i] = HovertextChunk(
-                                HOVERTEXT_PARAM_PIESLICESIZE,
-                                "pieSliceSize",
-                                sC.substring("pieSliceSize}".length()))
-
-            elif sC.matches("[a-zA-Z][a-zA-Z0-9_]*\\}.*"):
-                # fits pattern for a user defined parameter
-                closeCurlyIndex = sC.indexOf("}")
-                result[i] = HovertextChunk(
-                                HOVERTEXT_PARAM_USERDEFINED,
-                                sC.substring(0, closeCurlyIndex),
-                                sC.substring(closeCurlyIndex+1))
-
-            else:
-                # leading "${" without "paramName}". Likely a
-                # typo, but output verbatim to give them a clue:
-                result[i] = HovertextChunk(HOVERTEXT_PARAM_NONE,
-                                            None, "${" + sC)
-
-        return result
 
 
     """ hovertext associated with parsed "chunks" for a given point """
