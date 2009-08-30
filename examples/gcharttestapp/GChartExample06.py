@@ -1,6 +1,5 @@
-
+from pyjamas.chart.HovertextChunk import formatAsHovertext
 from pyjamas.chart.GChart import GChart
-from pyjamas.chart import GChartUtil
 from pyjamas.chart import AnnotationLocation
 from pyjamas.chart import SymbolType
 
@@ -39,7 +38,7 @@ class GChartExample06(GChart):
                                         AnnotationLocation.SOUTHEAST)
 
             ht = "%s, %d%%" % (region[i], percent[i])
-            ht = GChartUtil.formatAsHovertext(ht)
+            ht = formatAsHovertext(ht)
             self.getCurve().getSymbol().setHovertextTemplate(ht)
             self.getCurve().setLegendLabel(region[i])
             self.getCurve().addPoint(0, 100-sum)

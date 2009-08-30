@@ -35,69 +35,68 @@ from pyjamas.ui.SimplePanel import SimplePanel
 from pyjamas.ui.UIObject import UIObject
 from pyjamas.ui.Widget import Widget
 
-from GChartConsts import NAI, DEFAULT_X_CHARTSIZE, DEFAULT_Y_CHARTSIZE
-from GChartConsts import USE_CSS
-from GChartConsts import Y_AXIS
-from GChartConsts import DEFAULT_BLANK_IMAGE_URL_FULLPATH
-from GChartConsts import DEFAULT_SYMBOL_BORDER_COLORS
-from GChartConsts import DEFAULT_LEGEND_BACKGROUND_COLOR
-from GChartConsts import N_SYSTEM_CURVES
-from GChartConsts import DEFAULT_LEGEND_BORDER_COLOR
-from GChartConsts import DEFAULT_LEGEND_BORDER_WIDTH
-from GChartConsts import DEFAULT_LEGEND_BORDER_STYLE
-from GChartConsts import DEFAULT_FONT_COLOR
-from GChartConsts import DEFAULT_LEGEND_FONTSIZE
-from GChartConsts import DEFAULT_FONT_STYLE
-from GChartConsts import DEFAULT_FONT_WEIGHT
-from GChartConsts import DEFAULT_PLOTAREA_BACKGROUND_COLOR
-from GChartConsts import DEFAULT_PLOTAREA_BORDER_COLOR
-from GChartConsts import DEFAULT_PLOTAREA_BORDER_STYLE
-from GChartConsts import DEFAULT_PLOTAREA_BORDER_WIDTH
-from GChartConsts import PLOTAREA_ID
-from GChartConsts import TITLE_ID
-from GChartConsts import YAXIS_ID
-from GChartConsts import YTICKS_ID
-from GChartConsts import YGRIDLINES_ID
-from GChartConsts import YLABEL_ID
-from GChartConsts import Y2AXIS_ID
-from GChartConsts import Y2TICKS_ID
-from GChartConsts import Y2GRIDLINES_ID
-from GChartConsts import Y2LABEL_ID
-from GChartConsts import LEGEND_ID
-from GChartConsts import XAXIS_ID
-from GChartConsts import XTICKS_ID
-from GChartConsts import XGRIDLINES_ID
-from GChartConsts import XLABEL_ID
-from GChartConsts import FOOTNOTES_ID
-from GChartConsts import HOVER_CURSOR_ID
-from GChartConsts import HOVER_ANNOTATION_ID
-from GChartConsts import N_PRE_SYSTEM_CURVES 
-from GChartConsts import N_POST_SYSTEM_CURVES
-from GChartConsts import DEFAULT_GRID_COLOR
-from GChartConsts import GRID_BORDER_STYLE
-from GChartConsts import GRID_BORDER_WIDTH
-from GChartConsts import DEFAULT_GRID_WIDTH
-from GChartConsts import DEFAULT_GRID_HEIGHT
-from GChartConsts import TICK_BORDER_STYLE
-from GChartConsts import TICK_BORDER_WIDTH
-from GChartConsts import Y2_AXIS
-from GChartConsts import DEFAULT_TITLE_THICKNESS 
-from GChartConsts import DEFAULT_FOOTNOTES_THICKNESS
-from GChartConsts import TICK_CHARWIDTH_TO_FONTSIZE_LOWERBOUND
-from GChartConsts import TRANSPARENT_BORDER_COLOR 
+from pyjamas.chart.GChartConsts import NAI, DEFAULT_X_CHARTSIZE, DEFAULT_Y_CHARTSIZE
+from pyjamas.chart.GChartConsts import USE_CSS
+from pyjamas.chart.GChartConsts import Y_AXIS
+from pyjamas.chart.GChartConsts import DEFAULT_BLANK_IMAGE_URL_FULLPATH
+from pyjamas.chart.GChartConsts import DEFAULT_SYMBOL_BORDER_COLORS
+from pyjamas.chart.GChartConsts import DEFAULT_LEGEND_BACKGROUND_COLOR
+from pyjamas.chart.GChartConsts import N_SYSTEM_CURVES
+from pyjamas.chart.GChartConsts import DEFAULT_LEGEND_BORDER_COLOR
+from pyjamas.chart.GChartConsts import DEFAULT_LEGEND_BORDER_WIDTH
+from pyjamas.chart.GChartConsts import DEFAULT_LEGEND_BORDER_STYLE
+from pyjamas.chart.GChartConsts import DEFAULT_FONT_COLOR
+from pyjamas.chart.GChartConsts import DEFAULT_LEGEND_FONTSIZE
+from pyjamas.chart.GChartConsts import DEFAULT_FONT_STYLE
+from pyjamas.chart.GChartConsts import DEFAULT_FONT_WEIGHT
+from pyjamas.chart.GChartConsts import DEFAULT_PLOTAREA_BACKGROUND_COLOR
+from pyjamas.chart.GChartConsts import DEFAULT_PLOTAREA_BORDER_COLOR
+from pyjamas.chart.GChartConsts import DEFAULT_PLOTAREA_BORDER_STYLE
+from pyjamas.chart.GChartConsts import DEFAULT_PLOTAREA_BORDER_WIDTH
+from pyjamas.chart.GChartConsts import PLOTAREA_ID
+from pyjamas.chart.GChartConsts import TITLE_ID
+from pyjamas.chart.GChartConsts import YAXIS_ID
+from pyjamas.chart.GChartConsts import YTICKS_ID
+from pyjamas.chart.GChartConsts import YGRIDLINES_ID
+from pyjamas.chart.GChartConsts import YLABEL_ID
+from pyjamas.chart.GChartConsts import Y2AXIS_ID
+from pyjamas.chart.GChartConsts import Y2TICKS_ID
+from pyjamas.chart.GChartConsts import Y2GRIDLINES_ID
+from pyjamas.chart.GChartConsts import Y2LABEL_ID
+from pyjamas.chart.GChartConsts import LEGEND_ID
+from pyjamas.chart.GChartConsts import XAXIS_ID
+from pyjamas.chart.GChartConsts import XTICKS_ID
+from pyjamas.chart.GChartConsts import XGRIDLINES_ID
+from pyjamas.chart.GChartConsts import XLABEL_ID
+from pyjamas.chart.GChartConsts import FOOTNOTES_ID
+from pyjamas.chart.GChartConsts import HOVER_CURSOR_ID
+from pyjamas.chart.GChartConsts import HOVER_ANNOTATION_ID
+from pyjamas.chart.GChartConsts import N_PRE_SYSTEM_CURVES 
+from pyjamas.chart.GChartConsts import N_POST_SYSTEM_CURVES
+from pyjamas.chart.GChartConsts import DEFAULT_GRID_COLOR
+from pyjamas.chart.GChartConsts import GRID_BORDER_STYLE
+from pyjamas.chart.GChartConsts import GRID_BORDER_WIDTH
+from pyjamas.chart.GChartConsts import DEFAULT_GRID_WIDTH
+from pyjamas.chart.GChartConsts import DEFAULT_GRID_HEIGHT
+from pyjamas.chart.GChartConsts import TICK_BORDER_STYLE
+from pyjamas.chart.GChartConsts import TICK_BORDER_WIDTH
+from pyjamas.chart.GChartConsts import Y2_AXIS
+from pyjamas.chart.GChartConsts import DEFAULT_TITLE_THICKNESS 
+from pyjamas.chart.GChartConsts import DEFAULT_FOOTNOTES_THICKNESS
+from pyjamas.chart.GChartConsts import TICK_CHARWIDTH_TO_FONTSIZE_LOWERBOUND
+from pyjamas.chart.GChartConsts import TRANSPARENT_BORDER_COLOR 
+from pyjamas.chart.GChartConsts import YAxisId
 
-import Double
+from pyjamas.chart import Double
 import AnnotationLocation
 import SymbolType
 import TickLocation
 import TouchedPointUpdateOption
 
 from Curve import Curve
-import GChartUtil 
-from GChartUtil import formatAsHovertext, YAxisId, setOverflow
-from GChartUtil import htmlHeight, htmlWidth
-from GChartWidgets import PlotPanel
-import GChartWidgets 
+from pyjamas.chart import GChartUtil 
+from pyjamas.chart.GChartWidgets import PlotPanel
+from pyjamas.chart import GChartWidgets 
 
 import pygwt
 from Axis import XAxis, YAxis, Y2Axis
@@ -995,7 +994,7 @@ class GChart (Composite, FocusHandler, KeyboardHandler,
 
         elif hasattr(self.getChartFootnotes(), 'getHTML'):
             result = DEFAULT_FOOTNOTES_THICKNESS * (EXTRA_HEIGHT +
-                        htmlHeight( self.getChartFootnotes().getHTML()) )
+                        GChartUtil.htmlHeight( self.getChartFootnotes().getHTML()) )
 
         else:
             result = DEFAULT_FOOTNOTES_THICKNESS* (DEF_HEIGHT + EXTRA_HEIGHT)
@@ -1048,7 +1047,7 @@ class GChart (Composite, FocusHandler, KeyboardHandler,
 
         elif hasattr(self.getChartTitle(), 'getHTML'):
             result = DEFAULT_TITLE_THICKNESS * (EXTRA_HEIGHT +
-                    htmlHeight( self.getChartTitle().getHTML() ))
+                    GChartUtil.htmlHeight( self.getChartTitle().getHTML() ))
 
         else:
             result = DEFAULT_TITLE_THICKNESS* (EXTRA_HEIGHT + DEF_HEIGHT)
@@ -3623,7 +3622,7 @@ class GChart (Composite, FocusHandler, KeyboardHandler,
             c = self.getSystemCurve(i)
             if c.isVisible()  and  None != c.getLegendLabel():
                 maxLen = max(maxLen,
-                htmlWidth(c.getLegendLabel()))
+                GChartUtil.htmlWidth(c.getLegendLabel()))
 
 
         return int ( ((maxLen + EXTRA_WIDTH) *

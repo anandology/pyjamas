@@ -1,4 +1,4 @@
-from pyjamas.chart import GChartUtil
+from pyjamas.chart.HovertextChunk import formatAsHovertext
 from pyjamas.chart.GChart import GChart
 from pyjamas.chart import AnnotationLocation
 from pyjamas.chart import SymbolType
@@ -49,7 +49,7 @@ class GChartExample07 (GChart):
             self.getCurve().getSymbol().setFillSpacing(3)
             self.getCurve().getSymbol().setFillThickness(3)
             self.getCurve().getSymbol().setHovertextTemplate(
-                    GChartUtil.formatAsHovertext(pieTypes[i] + ", " +
+                    formatAsHovertext(pieTypes[i] + ", " +
                             "%d%%" % round(100*pieMarketShare[i])))
             self.getCurve().getSymbol().setPieSliceSize(pieMarketShare[i])
             self.getCurve().getPoint().setAnnotationText(pieTypes[i])

@@ -1,6 +1,6 @@
 from GChartTestAppUtil import rnd
 
-from pyjamas.chart import GChartUtil
+from pyjamas.chart.HovertextChunk import formatAsHovertext
 from pyjamas.chart.GChart import GChart
 from pyjamas.chart import AnnotationLocation
 from pyjamas.chart import SymbolType
@@ -43,7 +43,7 @@ class GChartExample02(GChart):
             self.getCurve().getSymbol().setBackgroundColor(barColors[iCurve])
             self.getCurve().setLegendLabel(barLabels[iCurve])
             self.getCurve().getSymbol().setHovertextTemplate(
-                GChartUtil.formatAsHovertext(barLabels[iCurve] + " revenue=${y}"))
+                formatAsHovertext(barLabels[iCurve] + " revenue=${y}"))
             self.getCurve().getSymbol().setModelWidth(1.0)
             self.getCurve().getSymbol().setBorderColor("black")
             self.getCurve().getSymbol().setBorderWidth(1)

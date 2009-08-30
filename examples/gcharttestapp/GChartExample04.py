@@ -1,7 +1,8 @@
 import math
 
 from pyjamas.chart.GChart import GChart
-from pyjamas.chart import GChartUtil
+from pyjamas.chart.HovertextChunk import formatAsHovertext
+
 
 # GWT 1.4's Math class does not include JDK's
 # Math.log10--so emulate it.
@@ -19,7 +20,7 @@ class GChartExample04(GChart):
         self.setChartTitle("<h2>2<sup>x</sup> vs x</h2>")
         self.addCurve()
         self.getCurve().getSymbol().setHovertextTemplate(
-                        GChartUtil.formatAsHovertext("${y}=2^${x}"))
+                        formatAsHovertext("${y}=2^${x}"))
         self.getCurve().setLegendLabel("<b>2<sup>x</sup></b>")
         self.getCurve().getSymbol().setBackgroundColor("red")
         self.getCurve().getSymbol().setBorderColor("black")

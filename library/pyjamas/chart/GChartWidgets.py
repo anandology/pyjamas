@@ -61,14 +61,14 @@ from pyjamas.ui.SimplePanel import SimplePanel
 from pyjamas.ui.UIObject import UIObject
 from pyjamas.ui.Widget import Widget
 
-from GChartConsts import N_PRE_SYSTEM_CURVES
-from GChartConsts import TRANSPARENT_BORDER_COLOR
-from GChartConsts import HOVER_ANNOTATION_ID
-from GChartConsts import HOVER_CURSOR_ID
+from pyjamas.chart.GChartConsts import N_PRE_SYSTEM_CURVES
+from pyjamas.chart.GChartConsts import TRANSPARENT_BORDER_COLOR
+from pyjamas.chart.GChartConsts import HOVER_ANNOTATION_ID
+from pyjamas.chart.GChartConsts import HOVER_CURSOR_ID
 
 import GChart
-import GChartUtil
-import Double
+from pyjamas.chart import GChartUtil
+from pyjamas.chart import Double
 
 from pyjamas import log
 
@@ -207,7 +207,7 @@ class PartitionedAbsolutePanel (Composite):
             self.subPanel = AbsolutePanel()
             # Panel sits in upper left corner. Does nothing, can't
             # be seen. It's just a holder for other widgets.
-            GChart.setOverflow(self.subPanel, "visible")
+            GChartUtil.setOverflow(self.subPanel, "visible")
             self.subPanel.setPixelSize(0,0)
             self.root.add(self.subPanel, 0, 0)
 
@@ -479,7 +479,7 @@ class AnnotationRenderingPanel (PartitionedAbsolutePanel):
         * constraint and thus can be clipped to the plot area.
         *
         """
-        GChart.setOverflow(self, "visible")
+        GChartUtil.setOverflow(self, "visible")
         self.setPixelSize(0,0)
 
 
@@ -870,9 +870,9 @@ class GraphicsRenderingPanel (AbsolutePanel):
 
         AbsolutePanel.__init__(self, **kwargs)
         # Overflow of this panel is controlled when it is added
-        #       GChart.setOverflow(this, "visible")
-        GChart.setOverflow(self.canvasPanel, "visible")
-        GChart.setOverflow(self.imagePanel, "visible")
+        #       GChartUtil.setOverflow(this, "visible")
+        GChartUtil.setOverflow(self.canvasPanel, "visible")
+        GChartUtil.setOverflow(self.imagePanel, "visible")
         # these sub-panels have no size themselves, they are merely
         # there to segregate background, images, and labels.
         self.canvasPanel.setPixelSize(0,0)
@@ -1049,9 +1049,9 @@ class PlotPanel (AbsolutePanel):
         # allows labels, symbols, that extend a tad off the
         # chart proper to still appear on the chart; AbsolutePanel
         # default is to truncate these.
-        GChart.setOverflow(self, "visible")
-        GChart.setOverflow(self.graphicsPanel, "visible")
-        GChart.setOverflow(self.annotationPanel, "visible")
+        GChartUtil.setOverflow(self, "visible")
+        GChartUtil.setOverflow(self.graphicsPanel, "visible")
+        GChartUtil.setOverflow(self.annotationPanel, "visible")
         # these sub-panels have no size themselves, they are merely
         # there to segregate the graphical and annotation part of chart
         self.graphicsPanel.setPixelSize(0,0)
@@ -1369,11 +1369,11 @@ class PlotPanel (AbsolutePanel):
                 self.chart.isHoverFeedbackRenderingPanel(i)  or  
                 not self.chart.getClipToPlotArea()):
                 grp.setPixelSize(0, 0)
-                GChart.setOverflow(grp, "visible")
+                GChartUtil.setOverflow(grp, "visible")
 
             else:
                 grp.setPixelSize(self.getXChartSize(), self.getYChartSize())
-                GChart.setOverflow(grp, "hidden")
+                GChartUtil.setOverflow(grp, "hidden")
 
 
     def xToChartPixel(self, x):

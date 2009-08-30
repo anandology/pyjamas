@@ -27,7 +27,7 @@ NAI = 2 ** 31
 
 
 import AnnotationLocation
-import Double
+from pyjamas.chart import Double
 
 """*
 * Convenience method that, given a plain text label, returns an
@@ -46,13 +46,6 @@ import Double
 *
 *
 """
-
-def formatAsHovertext(plainTextLabel):
-    result = \
-    "<html><div style='background-color:#FFFFF0; border-color:black; border-style:solid; border-width:1px 1px 1px 1px; padding:2px; text-align:left'>" + str(plainTextLabel) + "</div>"
-    return result
-
-
 
 def setBackgroundColor(uio, cssColor):
     DOM.setStyleAttribute(uio.getElement(), "backgroundColor", cssColor)
@@ -145,10 +138,6 @@ def sign(x):
     result = (x < 0) and -1 or 1
     return result
 
-
-# axis types (used to define which y-axis each curve is on)
-class YAxisId(object):
-    pass
 
 # case-independent index of next "break" tag in string (case of HTML
 # returned from HasHTML.getHTML can change with browser)

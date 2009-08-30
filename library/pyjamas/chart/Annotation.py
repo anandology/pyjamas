@@ -22,14 +22,14 @@ import math
 from pyjamas.ui.HTML import HTML
 
 import GChart
-from GChartUtil import htmlWidth, htmlHeight
+from pyjamas.chart.GChartUtil import htmlWidth, htmlHeight
 
-from GChartConsts import DEFAULT_FONT_COLOR
-from GChartConsts import DEFAULT_ANNOTATION_FONTSIZE
-from GChartConsts import DEFAULT_WIDGET_WIDTH_UPPERBOUND
-from GChartConsts import DEFAULT_WIDGET_HEIGHT_UPPERBOUND
-from GChartConsts import CHARHEIGHT_TO_FONTSIZE_UPPERBOUND
-from GChartConsts import CHARWIDTH_TO_FONTSIZE_UPPERBOUND
+from pyjamas.chart.GChartConsts import DEFAULT_FONT_COLOR
+from pyjamas.chart.GChartConsts import DEFAULT_ANNOTATION_FONTSIZE
+from pyjamas.chart.GChartConsts import DEFAULT_WIDGET_WIDTH_UPPERBOUND
+from pyjamas.chart.GChartConsts import DEFAULT_WIDGET_HEIGHT_UPPERBOUND
+from pyjamas.chart.GChartConsts import CHARHEIGHT_TO_FONTSIZE_UPPERBOUND
+from pyjamas.chart.GChartConsts import CHARWIDTH_TO_FONTSIZE_UPPERBOUND
 
 """
 * Annotates (labels) a chart symbol. Users access this class via

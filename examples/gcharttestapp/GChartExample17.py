@@ -1,4 +1,4 @@
-from pyjamas.chart import GChartUtil
+from pyjamas.chart.HovertextChunk import formatAsHovertext
 from pyjamas.chart.GChart import GChart
 
 class CurveNumberHoverParameterInterpreter:
@@ -43,7 +43,7 @@ class GChartExample17 (GChart):
         self.setBorderWidth("0px")
         self.setHoverParameterInterpreter(
                             CurveNumberHoverParameterInterpreter())
-        template = GChartUtil.formatAsHovertext(
+        template = formatAsHovertext(
                             "Curve #${curveNumber}:<br>x=${x}, y=${y}")
         for iCurve in range(3):
             self.addCurve()

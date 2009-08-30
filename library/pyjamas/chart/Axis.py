@@ -24,38 +24,38 @@ from pyjamas.ui.HTML import HTML
 import NumberFormat
 import DateTimeFormat
 import GChart
-import Double
+from pyjamas.chart import Double
 import TickLocation
 import AnnotationLocation
 import Annotation
 
-from GChartConsts import DEFAULT_TICK_LOCATION
-from GChartConsts import DEFAULT_TICK_COUNT
-from GChartConsts import DEFAULT_WIDGET_WIDTH_UPPERBOUND 
-from GChartConsts import DEFAULT_WIDGET_HEIGHT_UPPERBOUND
-from GChartConsts import DEFAULT_TICK_LABEL_FONT_COLOR
-from GChartConsts import DEFAULT_TICK_LABEL_FONTSIZE
-from GChartConsts import DEFAULT_TICK_LABEL_FONT_STYLE
-from GChartConsts import DEFAULT_TICK_LABEL_FONT_WEIGHT
-from GChartConsts import DEFAULT_TICK_LABEL_FORMAT
-from GChartConsts import DEFAULT_TICK_LENGTH
-from GChartConsts import DEFAULT_TICK_LOCATION
-from GChartConsts import DEFAULT_TICK_THICKNESS
-from GChartConsts import Y2TICKS_ID
-from GChartConsts import Y2GRIDLINES_ID
-from GChartConsts import Y2AXIS_ID
-from GChartConsts import YTICKS_ID
-from GChartConsts import YGRIDLINES_ID
-from GChartConsts import YAXIS_ID
-from GChartConsts import XTICKS_ID
-from GChartConsts import XGRIDLINES_ID
-from GChartConsts import XAXIS_ID
-from GChartConsts import TICK_CHARHEIGHT_TO_FONTSIZE_LOWERBOUND 
-from GChartConsts import TICK_CHARWIDTH_TO_FONTSIZE_LOWERBOUND 
-from GChartConsts import Y_AXIS
-from GChartConsts import Y2_AXIS
+from pyjamas.chart.GChartConsts import DEFAULT_TICK_LOCATION
+from pyjamas.chart.GChartConsts import DEFAULT_TICK_COUNT
+from pyjamas.chart.GChartConsts import DEFAULT_WIDGET_WIDTH_UPPERBOUND 
+from pyjamas.chart.GChartConsts import DEFAULT_WIDGET_HEIGHT_UPPERBOUND
+from pyjamas.chart.GChartConsts import DEFAULT_TICK_LABEL_FONT_COLOR
+from pyjamas.chart.GChartConsts import DEFAULT_TICK_LABEL_FONTSIZE
+from pyjamas.chart.GChartConsts import DEFAULT_TICK_LABEL_FONT_STYLE
+from pyjamas.chart.GChartConsts import DEFAULT_TICK_LABEL_FONT_WEIGHT
+from pyjamas.chart.GChartConsts import DEFAULT_TICK_LABEL_FORMAT
+from pyjamas.chart.GChartConsts import DEFAULT_TICK_LENGTH
+from pyjamas.chart.GChartConsts import DEFAULT_TICK_LOCATION
+from pyjamas.chart.GChartConsts import DEFAULT_TICK_THICKNESS
+from pyjamas.chart.GChartConsts import Y2TICKS_ID
+from pyjamas.chart.GChartConsts import Y2GRIDLINES_ID
+from pyjamas.chart.GChartConsts import Y2AXIS_ID
+from pyjamas.chart.GChartConsts import YTICKS_ID
+from pyjamas.chart.GChartConsts import YGRIDLINES_ID
+from pyjamas.chart.GChartConsts import YAXIS_ID
+from pyjamas.chart.GChartConsts import XTICKS_ID
+from pyjamas.chart.GChartConsts import XGRIDLINES_ID
+from pyjamas.chart.GChartConsts import XAXIS_ID
+from pyjamas.chart.GChartConsts import TICK_CHARHEIGHT_TO_FONTSIZE_LOWERBOUND 
+from pyjamas.chart.GChartConsts import TICK_CHARWIDTH_TO_FONTSIZE_LOWERBOUND 
+from pyjamas.chart.GChartConsts import Y_AXIS
+from pyjamas.chart.GChartConsts import Y2_AXIS
 
-from GChartUtil import htmlHeight, htmlWidth
+from pyjamas.chart.GChartUtil import htmlHeight, htmlWidth
 
 # these are used in formatting tick positions into tick labels:
 NUMBER_FORMAT_TYPE = 0

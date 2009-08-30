@@ -167,3 +167,26 @@ def getHovertext(htc, p):
 
     return result
 
+"""*
+* Convenience method that, given a plain text label, returns an
+* HTML snippet appropriate for use as an argument to the
+* <tt>setHovertextTemplate</tt> or <tt>setAnnotationText</tt>
+* methods, that will display the plain text label with
+* formatting appropriate for use with hovertext.
+*
+* @see Symbol#setHovertextTemplate setHovertextTemplate
+* @see Curve.Point#setAnnotationText setAnnotationText
+* @see Symbol#setHoverAnnotationSymbolType setHoverAnnotationSymbolType
+*
+* @param plainTextLabel the plain text label that is to be
+*  HTML-wrapped to make it look like <tt>setTitle</tt>-based
+*  hovertext.
+*
+*
+"""
+
+def formatAsHovertext(plainTextLabel):
+    result = \
+    "<html><div style='background-color:#FFFFF0; border-color:black; border-style:solid; border-width:1px 1px 1px 1px; padding:2px; text-align:left'>" + str(plainTextLabel) + "</div>"
+    return result
+

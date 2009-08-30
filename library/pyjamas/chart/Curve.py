@@ -20,12 +20,12 @@
 import math
 
 import GChart
-import Double
+from pyjamas.chart import Double
 from Point import Point
 from Symbol import Symbol
 
-from GChartConsts import Y2_AXIS
-from GChartConsts import N_PRE_SYSTEM_CURVES
+from pyjamas.chart.GChartConsts import Y2_AXIS
+from pyjamas.chart.GChartConsts import N_PRE_SYSTEM_CURVES
 import GChartWidgets
 
 

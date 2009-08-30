@@ -20,30 +20,15 @@
 
 
 import AnnotationLocation
-import SymbolType
 import TickLocation
-from GChartUtil import formatAsHovertext, YAxisId
+from pyjamas.chart.HovertextChunk import formatAsHovertext
 
 import pygwt
 
+# axis types (used to define which y-axis each curve is on)
+class YAxisId(object):
+    pass
 
-"""*
-* Convenience method that, given a plain text label, returns an
-* HTML snippet appropriate for use as an argument to the
-* <tt>setHovertextTemplate</tt> or <tt>setAnnotationText</tt>
-* methods, that will display the plain text label with
-* formatting appropriate for use with hovertext.
-*
-* @see Symbol#setHovertextTemplate setHovertextTemplate
-* @see Curve.Point#setAnnotationText setAnnotationText
-* @see Symbol#setHoverAnnotationSymbolType setHoverAnnotationSymbolType
-*
-* @param plainTextLabel the plain text label that is to be
-*  HTML-wrapped to make it look like <tt>setTitle</tt>-based
-*  hovertext.
-*
-*
-"""
 
 """* Default size, in pixels, of text used to annotate individual
 ** plotted points on a curve.
@@ -404,16 +389,6 @@ DEFAULT_PIE_SLICE_HOVER_LOCATION = AnnotationLocation.OUTSIDE_PIE_ARC
 **
 *"""
 DEFAULT_SYMBOL_HEIGHT = 7
-
-"""*
-** The default symbol type for curve if none is
-** specified; this default is BOX_CENTER
-**
-** @see SymbolType#BOX_CENTER BOX_CENTER
-** @see Symbol#setSymbolType setSymbolType
-**
-*"""
-DEFAULT_SYMBOL_TYPE = SymbolType.BOX_CENTER
 
 """*
 ** The default width (including borders) used for

@@ -21,55 +21,13 @@
 import math
 import re
 
-from pyjamas import DOM
-from pyjamas import Window
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-from pyjamas.ui  import Event
-from pyjamas.ui.AbsolutePanel import AbsolutePanel
-from pyjamas.ui.Composite import Composite
-from pyjamas.ui.Grid import Grid
-from pyjamas.ui import HasHorizontalAlignment
-from pyjamas.ui import HasVerticalAlignment
-from pyjamas.ui.HTML import HTML
-from pyjamas.ui.Image import Image
-from pyjamas.ui.SimplePanel import SimplePanel
-from pyjamas.ui.UIObject import UIObject
-from pyjamas.ui.Widget import Widget
-
-
-import GChartConsts
-import Double
-import GChart
-import AnnotationLocation
-from Annotation import Annotation
-import HovertextChunk
-import GChartUtil
+from pyjamas.chart import GChartConsts
+from pyjamas.chart import Double
+from pyjamas.chart import SymbolType
+from pyjamas.chart import AnnotationLocation
+from pyjamas.chart.Annotation import Annotation
+from pyjamas.chart import HovertextChunk
+from pyjamas.chart import GChartUtil
 
 """*
 ** Defines a chart curve symbol. Each point on a curve
@@ -100,7 +58,7 @@ class Symbol(object):
         self.brushWidth = GChartConsts.DEFAULT_BRUSH_WIDTH
         self.fillHasHovertext = True
         self.fillSpacing = Double.NaN
-        self.fillThickness = GChart.NAI
+        self.fillThickness = GChartConsts.NAI
         self.height = GChartConsts.DEFAULT_SYMBOL_HEIGHT
         self.hovertextTemplate=None
         # holds specification for the hover annotation. Actual
@@ -121,10 +79,10 @@ class Symbol(object):
         self.hoverSelectionBorderWidth = -1
         self.hoverSelectionEnabled = True
         self.hoverSelectionFillSpacing = Double.NaN
-        self.hoverSelectionFillThickness = GChart.NAI
-        self.hoverSelectionHeight = GChart.NAI
+        self.hoverSelectionFillThickness = GChartConsts.NAI
+        self.hoverSelectionHeight = GChartConsts.NAI
         self.hoverSelectionImageURL = None
-        self.hoverSelectionWidth = GChart.NAI
+        self.hoverSelectionWidth = GChartConsts.NAI
         self.hoverSelectionSymbolType = None
 
         self.hovertextChunks = None
@@ -145,7 +103,7 @@ class Symbol(object):
         # slices, by default, fill the entire pie (useful for drawing disks)
         self.pieSliceSize = 1
 
-        self.symbolType = GChartConsts.DEFAULT_SYMBOL_TYPE
+        self.symbolType = SymbolType.DEFAULT_SYMBOL_TYPE
 
         self.width = GChartConsts.DEFAULT_SYMBOL_WIDTH
         self.xScaleFactor = 1.0
@@ -315,14 +273,14 @@ class Symbol(object):
     **
     **
     ** @return the previously set (or the default, if the
-    ** fillThickness has been set to <tt>GChart.NAI</tt>) fill
+    ** fillThickness has been set to <tt>GChartConsts.NAI</tt>) fill
     ** thickness (in pixels).
     **
     ** @see #setFillThickness setFillThickness
     ** @see #setFillSpacing setFillSpacing
     """
     def getFillThickness(self):
-        if self.fillThickness==GChart.NAI:
+        if self.fillThickness==GChartConsts.NAI:
             return self.symbolType.defaultFillThickness()
         
         else:
@@ -524,7 +482,7 @@ class Symbol(object):
     * <p>
     *
     * @return fill spacing used by hover selection feedback,
-    * or <tt>GChart.NAI</tt> if the fill spacing setting
+    * or <tt>GChartConsts.NAI</tt> if the fill spacing setting
     * of the hovered-over curve is to be used.
     *
     * @see #setHoverSelectionFillSpacing
@@ -540,7 +498,7 @@ class Symbol(object):
     * <p>
     *
     * @return fill thickness used by hover selection feedback,
-    * or <tt>GChart.NAI</tt> if the fill thickness setting
+    * or <tt>GChartConsts.NAI</tt> if the fill thickness setting
     * of the hovered-over curve is to be used.
     *
     * @see #setHoverSelectionFillThickness
@@ -559,7 +517,7 @@ class Symbol(object):
     *
     * @return the height of the symbol used to
     * indicate that that a point has been selected, or
-    * <tt>GChart.NAI</tt> if the the height of the
+    * <tt>GChartConsts.NAI</tt> if the the height of the
     * symbol representing the selected point is being used.
     *
     *
@@ -616,7 +574,7 @@ class Symbol(object):
     * <p>
     *
     * @return the width of the symbol used to indicate that
-    * that a point has been selected, or <tt>GChart.NAI</tt> if
+    * that a point has been selected, or <tt>GChartConsts.NAI</tt> if
     * using to the width of the symbol representing the
     * selected point.
     *
@@ -1248,7 +1206,7 @@ class Symbol(object):
     ** The exact meaning of this thickness setting, as well as
     ** the default used whenever the thickness is set to the
     ** special undefined integer value recognized by GChart
-    ** (<tt>GChart.NAI</tt>), depends on the symbol type, and
+    ** (<tt>GChartConsts.NAI</tt>), depends on the symbol type, and
     ** if an external canvas factory has been specified via
     ** <tt>setCanvasFactory</tt>:
     ** <p>
@@ -1261,11 +1219,11 @@ class Symbol(object):
     """
     def setFillThickness(self, fillThickness):
         self.getParent().invalidate()
-        if fillThickness!=GChart.NAI  and  fillThickness < 0:
+        if fillThickness!=GChartConsts.NAI  and  fillThickness < 0:
             raise IllegalArgumentException(
             "fillThickness="+self.fillThickness+"; "+
             "fillThickness must either be >= 0, or else " +
-            "equal to GChart.NAI.")
+            "equal to GChartConsts.NAI.")
         
         self.fillThickness = fillThickness
     
@@ -1738,7 +1696,7 @@ class Symbol(object):
     *
     * @param selectionFillThickness fill thickness, in pixels, used
     * when rendering this curve's hover selection feedback or
-    * <tt>GChart.NAI</tt> (the default) to adopt the curve's
+    * <tt>GChartConsts.NAI</tt> (the default) to adopt the curve's
     * fill thickness.
     *
     * @see #getHoverSelectionFillThickness getHoverSelectionFillThickness
@@ -1756,7 +1714,7 @@ class Symbol(object):
     * mouse.
     * <p>
     *
-    * With the default setting of <tt>GChart.NAI</tt>, GChart
+    * With the default setting of <tt>GChartConsts.NAI</tt>, GChart
     * simply gives the hover selection symbol the same height as
     * the symbol representing the point itself.  Though this
     * default is usually appropriate, you might want the
@@ -1766,7 +1724,7 @@ class Symbol(object):
     *
     * @param selectionHeight the height of the symbol used
     * to indicate that that a point has been selected, in
-    * pixels, or <tt>GChart.NAI</tt> (the default) to use
+    * pixels, or <tt>GChartConsts.NAI</tt> (the default) to use
     * the height of the symbol representing the selected
     * point.
     *
@@ -1881,7 +1839,7 @@ class Symbol(object):
     * mouse.
     * <p>
     *
-    * With the default setting of <tt>GChart.NAI</tt>, GChart
+    * With the default setting of <tt>GChartConsts.NAI</tt>, GChart
     * simply gives the hover selection symbol the same width as
     * the symbol representing the point itself.  Though this
     * default is usually appropriate, you might want the
@@ -1892,7 +1850,7 @@ class Symbol(object):
     * @param selectionWidth the width of the symbol used to
     * indicate that that a point has been selected, in
     * pixels, or
-    * <tt>GChart.NAI</tt> (the default) to use the width of the
+    * <tt>GChartConsts.NAI</tt> (the default) to use the width of the
     * symbol representing the selected point.
     *
     *
@@ -1974,10 +1932,10 @@ class Symbol(object):
     *
     *  @param widthUpperBound an upper bound on the width of
     *  the widget (or default hover annotation) in pixels.
-    *  Use GChart.NAI to get the GChart-determined default.
+    *  Use GChartConsts.NAI to get the GChart-determined default.
     *
     *  @param heightUpperBound an upper bound on the height of the
-    *  widget (or default hover annotation) in pixels. Use GChart.NAI
+    *  widget (or default hover annotation) in pixels. Use GChartConsts.NAI
     *  to get the GChart-determined default.
     *
     * @see #getHoverWidget getHoverWidget
@@ -2118,7 +2076,7 @@ class Symbol(object):
     ** <p>
     **
     ** Specification of the modelHeight undefines (that is, sets
-    ** to <tt>GChart.NAI</tt>) any previous pixel-based
+    ** to <tt>GChartConsts.NAI</tt>) any previous pixel-based
     ** specification made via <tt>setHeight</tt>.
     **
     ** <p> Symbols for drawing vertical bars and symbols defining
@@ -2147,7 +2105,7 @@ class Symbol(object):
     ** points displayed on the chart.
     **
     ** <p> Specification of a symbol's model width undefines (that
-    ** is, sets to <tt>GChart.NAI</tt>) any previous, pixel-based,
+    ** is, sets to <tt>GChartConsts.NAI</tt>) any previous, pixel-based,
     ** width specification made via <tt>setWidth</tt>.  <p>
     **
     ** Symbols for drawing horizontal bars, and symbols defining

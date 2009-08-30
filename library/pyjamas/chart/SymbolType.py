@@ -18,14 +18,14 @@
 """
 
 import math
-import Double
+from pyjamas.chart import Double
 
 
 from pyjamas.ui.Image import Image
 
 import AnnotationLocation
-import GChartUtil
-from GChartUtil import validateMultipliers
+from pyjamas.chart import GChartUtil
+from pyjamas.chart.GChartUtil import validateMultipliers
 
 import GChartConsts
 
@@ -3639,4 +3639,14 @@ YGRIDLINE = SymbolTypeYGrid(0,0,0.5,0.5,0,0, True)
 *"""
 
 Y2GRIDLINE = YGRIDLINE
+
+"""*
+** The default symbol type for curve if none is
+** specified; this default is BOX_CENTER
+**
+** @see SymbolType#BOX_CENTER BOX_CENTER
+** @see Symbol#setSymbolType setSymbolType
+**
+*"""
+DEFAULT_SYMBOL_TYPE = BOX_CENTER
 
