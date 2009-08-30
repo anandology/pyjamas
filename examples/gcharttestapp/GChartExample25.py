@@ -8,6 +8,8 @@ from pyjamas.chart import SymbolType
 from pyjamas.ui.Button import Button
 from pyjamas.ui.FocusPanel import FocusPanel
 from pyjamas.ui.Grid import Grid
+from pyjamas.ui import KeyboardListener
+from pyjamas import DOM
 
 
 
@@ -86,9 +88,9 @@ class GChartExample25 (FocusPanel):
         iPoint = 0
         if p is not None:
             iPoint = c.getPointIndex(p)
-        if event.isLeftArrow():
+        if keycode == KeyboardListener.KEY_LEFT:
             iPoint = (iPoint + N_POINTS) % (N_POINTS+1)
-        elif event.isRightArrow():
+        elif keycode == KeyboardListener.KEY_RIGHT:
             iPoint = (iPoint + 1) % (N_POINTS+1)
 
         self.theChild.touch(c.getPoint(iPoint))

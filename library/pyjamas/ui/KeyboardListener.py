@@ -87,3 +87,11 @@ class KeyboardHandler:
     def removeKeyboardListener(self, listener):
         self._keyboardListeners.remove(listener)
 
+    def onKeyDown(self, sender, keycode, modifiers):
+        pass
+
+    def onKeyUp(self, sender, keycode, modifiers):
+        pass
+
+    def onKeyPress(self, sender, keycode, modifiers):
+        pass
