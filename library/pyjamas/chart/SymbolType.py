@@ -23,9 +23,8 @@ from pyjamas.chart import Double
 
 from pyjamas.ui.Image import Image
 
-import AnnotationLocation
+from pyjamas.chart import AnnotationLocation
 from pyjamas.chart import GChartUtil
-from pyjamas.chart.GChartUtil import validateMultipliers
 
 import GChartConsts
 
@@ -191,7 +190,8 @@ class SymbolType:
                         pixelPadLeft, pixelPadRight, 
                         pixelPadTop, pixelPadBottom,
                         isHorizontallyBanded=1):
-        validateMultipliers(widthMultiplier, heightMultiplier)
+        AnnotationLocation.validateMultipliers(widthMultiplier,
+                                               heightMultiplier)
         self.widthMultiplier = widthMultiplier
         self.heightMultiplier = heightMultiplier
         self.pixelPadLeft = pixelPadLeft

@@ -22,7 +22,16 @@ import math
 from pyjamas.ui import HasHorizontalAlignment
 from pyjamas.ui import HasVerticalAlignment
 
-from pyjamas.chart.GChartUtil import validateMultipliers
+# Validates multipliers used to simplify computing the
+# upper left corner location of symbols and labels to
+# properly reflect their alignment relative to the
+# plotted point or labeled symbol.
+def validateMultipliers(widthMultiplier, heightMultiplier):
+    if (not (widthMultiplier == 0  or  abs(widthMultiplier)==1)  and
+        not (heightMultiplier == 0  or abs(heightMultiplier)==1)):
+        raise IllegalArgumentException(
+        "widthMultiplier, heightMultiplier args must both be " +
+        "either 0, 1, or -1")
 
 # retrieves a location given its multipliers
 def getAnnotationLocation(widthMultiplier, heightMultiplier):

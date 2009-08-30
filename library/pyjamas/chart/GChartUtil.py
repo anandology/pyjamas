@@ -250,18 +250,6 @@ def htmlHeight(s):
 
 
 
-# Validates multipliers used to simplify computing the
-# upper left corner location of symbols and labels to
-# properly reflect their alignment relative to the
-# plotted point or labeled symbol.
-def validateMultipliers(widthMultiplier, heightMultiplier):
-    if (not (widthMultiplier == 0  or  abs(widthMultiplier)==1)  and  
-        not (heightMultiplier == 0  or abs(heightMultiplier)==1)):
-        raise IllegalArgumentException(
-        "widthMultiplier, heightMultiplier args must both be " +
-        "either 0, 1, or -1")
-
-
 
 # is value within given limits, inclusive?
 def withinRange(x, minLim, maxLim):
