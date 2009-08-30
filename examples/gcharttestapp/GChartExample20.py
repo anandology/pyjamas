@@ -1,5 +1,8 @@
 import math
 
+from pyjamas import DOM
+from pyjamas import Window
+
 from pyjamas.ui import Event
 from pyjamas.ui.Button import Button
 from pyjamas.ui.DialogBox import DialogBox
@@ -243,21 +246,22 @@ class SliceEditor(DialogBox):
 
 
 
-    def onClick(self, event):
+    def onClick(self, sender):
         # don't shown property editor if they clicked on nothing
-        if None == self.getTouchedPoint():
+        if None == self.chart.getTouchedPoint():
             return
 
+        event = DOM.eventGetCurrentEvent()
 
         # load properties of clicked-on slice into form
-        copyChartPropertiesIntoForm(getTouchedPoint())
-        if isFirstTime:
+        self.copyChartPropertiesIntoForm(self.chart.getTouchedPoint())
+        if self.isFirstTime:
             # initially put upper left corner wherever they clicked...
             self.setPopupPosition(
-            Window.getScrollLeft()+Event.getCurrentEvent().getClientX(),
-            Window.getScrollTop() + Event.getCurrentEvent().getClientY())
+                        Window.getScrollLeft()+ DOM.eventGetClientX(event),
+                        Window.getScrollTop() + DOM.eventGetClientX(event))
             self.show()
-            self.isFirstTime= False
+            self.isFirstTime = False
 
         else:
             # ...thereafter, just stay whereever they dragged it to
