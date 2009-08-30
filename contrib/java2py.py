@@ -33,6 +33,12 @@ def import_gwt_to_pyjamas(txt):
     if txt.startswith('import com.allen_sauer.gwt.dnd.client.util.'):
         module = txt[43:-1]
         return "from pyjamas.dnd.util import %s" % module
+    if txt.startswith('import com.googlecode.gchart.client.'):
+        module = txt[36:-1]
+        if module == 'GChart':
+            return "from pyjamas.chart.GChart import GChart"
+        return "from pyjamas.chart import %s" % module
+
     if txt.startswith('import com.allen_sauer.gwt.dnd.client.'):
         module = txt[38:-1]
         return "from pyjamas.dnd import %s" % module

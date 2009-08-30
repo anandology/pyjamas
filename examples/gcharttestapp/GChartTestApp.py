@@ -23,6 +23,8 @@ from GChartExample14 import GChartExample14
 
 from GChartExample17 import GChartExample17
 
+from GChartExample21 import GChartExample21
+
 from GChartExample24 import GChartExample24
 from GChartExample25 import GChartExample25
 
@@ -172,14 +174,14 @@ def onModuleLoad():
     #      addChart(GChartExample19())
     #        addChart(GChartExample20())
     #      addChart(GChartExample20a())
-    #      addChart(GChartExample21())
+    addChart(GChartExample21())
     #      addChart(GChartExample22())
     #      addChart(GChartExample22a())
     #      addChart(GChartExample23(False, False))
     #      addChart(GChartExample23(False, True))
     #      addChart(GChartExample23(True, False))
     #      addChart(GChartExample23(True, True))
-    addChart(GChartExample24())
+    #addChart(GChartExample24())
     #addChart(GChartExample25())
     #DeferredCommand.add(Command() {
     #    def execute(self):
@@ -390,7 +392,7 @@ def onModuleLoad():
     #RootPanel.get().add(TestGChart57a())
     #RootPanel.get().add(TestGChart58())
 
-    addChart(TestGChart00())
+    #addChart(TestGChart00())
     
     RootPanel().get("loadingMessage").setVisible(False)
     
