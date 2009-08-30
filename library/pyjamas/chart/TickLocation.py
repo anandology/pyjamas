@@ -62,7 +62,7 @@ from pyjamas.ui.UIObject import UIObject
 from pyjamas.ui.Widget import Widget
 
 
-import SymbolType
+from pyjamas.chart import SymbolType
 
 
 """*

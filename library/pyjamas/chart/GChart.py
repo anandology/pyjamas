@@ -262,6 +262,9 @@ class GChart (Composite, FocusHandler, KeyboardHandler,
         ClickHandler.__init__(self)
         MouseHandler.__init__(self)
 
+    def getCanvasFactory(self):
+        return getCanvasFactory()
+
     def getLastPieSliceOrientation(self):
         return self.lastPieSliceOrientation
 
@@ -3668,7 +3671,7 @@ class GChart (Composite, FocusHandler, KeyboardHandler,
             # continuous fill# non-empty fill# canvas available
             elif (0 == c.getSymbol().getFillSpacing()  and  
                      0 < c.getSymbol().getFillThickness()  and  
-                        None != getCanvasFactory()  and
+                        None != self.getCanvasFactory()  and
                            c.isVisible()):
                 grp.maybeAddCanvas()
                 canvasRegion = c.getContainingRectangle(self.plotPanel)

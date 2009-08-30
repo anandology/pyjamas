@@ -24,31 +24,6 @@ from pyjamas import DOM
 from pyjamas import Window
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 from pyjamas.ui import Event
 from pyjamas.ui.AbsolutePanel import AbsolutePanel
 from pyjamas.ui.Composite import Composite
@@ -65,8 +40,10 @@ from pyjamas.chart.GChartConsts import N_PRE_SYSTEM_CURVES
 from pyjamas.chart.GChartConsts import TRANSPARENT_BORDER_COLOR
 from pyjamas.chart.GChartConsts import HOVER_ANNOTATION_ID
 from pyjamas.chart.GChartConsts import HOVER_CURSOR_ID
+from pyjamas.chart.GChartConsts import USE_CSS
+from pyjamas.chart.GChartConsts import NAI
+from pyjamas.chart.GChartConsts import DEFAULT_BLANK_IMAGE_URL_FULLPATH
 
-import GChart
 from pyjamas.chart import GChartUtil
 from pyjamas.chart import Double
 
@@ -303,10 +280,10 @@ class NonoccludingReusuableAlignedLabel (AlignedLabel):
         return self.innerGrid
 
     def __init__(self):
-        self.fontSize = GChart.NAI
-        self.fontStyle = GChart.USE_CSS
-        self.fontWeight = GChart.USE_CSS
-        self.fontColor = GChart.USE_CSS
+        self.fontSize = NAI
+        self.fontStyle = USE_CSS
+        self.fontWeight = USE_CSS
+        self.fontColor = USE_CSS
         self.labelText = None
         self.isHTML = False
         self.labelWidget = None
@@ -630,15 +607,15 @@ class AnnotationRenderingPanel (PartitionedAbsolutePanel):
 class ReusableImage (Image):
     def __init__(self, parent):
         self._parent = parent
-        self.backgroundColor = GChart.USE_CSS
-        self.borderColor = GChart.USE_CSS
-        self.borderStyle= GChart.USE_CSS
+        self.backgroundColor = USE_CSS
+        self.borderColor = USE_CSS
+        self.borderStyle = USE_CSS
         # the capped border width, times two (to allow half-pixel widths)
-        self.cappedBorderWidthX2 = GChart.NAI
-        self.width = GChart.NAI
-        self.height = GChart.NAI
-        self.x = GChart.NAI
-        self.y = GChart.NAI
+        self.cappedBorderWidthX2 = NAI
+        self.width = NAI
+        self.height = NAI
+        self.x = NAI
+        self.y = NAI
         self.url = None
 
         Image.__init__(self)
@@ -718,7 +695,7 @@ class ReusableImage (Image):
             self.cappedBorderWidthX2 = newCappedBorderWidthX2
 
 
-        if GChart.NAI == self.x:
+        if NAI == self.x:
             # At first, use AbsolutePanel's official API
             # (to insulate us from any future AbsolutePanel
             # changes)
@@ -828,7 +805,7 @@ class ReusableImage (Image):
 class GraphicsRenderingPanel (AbsolutePanel):
     # Add a canvas, if needed
     def maybeAddCanvas(self):
-        canvasFactory = GChart.getCanvasFactory()
+        canvasFactory = self.chart.getCanvasFactory()
         if None != canvasFactory  and  None == self.canvas:
             self.canvas = canvasFactory.create()
             if None != self.canvas:
@@ -1033,12 +1010,12 @@ class PlotPanel (AbsolutePanel):
         self.yMin = Double.NaN
         # Retains the last moved-to (Event.ONMOUSEMOVE) client mouse position, or NAI if
         # mouse moved away from chart entirely.
-        self.clientX = GChart.NAI
-        self.clientY = GChart.NAI
+        self.clientX = NAI
+        self.clientY = NAI
         # Pixel coords of above mouse position, relative to top-left
         # corner of the GChart (mouse position in GChart's pixel coords)
-        self.xMouse = GChart.NAI
-        self.yMouse = GChart.NAI
+        self.xMouse = NAI
+        self.yMouse = NAI
         # first rendering panel is reserved for chart decorations,
         # and its overflow outside of the plot panel is never hidden
         self.graphicsPanel = AbsolutePanel()
@@ -1195,14 +1172,14 @@ class PlotPanel (AbsolutePanel):
 
         elif clientX < 0:
             # some browsers (e.g. FF2) use -1 to indicate undefined mouse coords.
-            clientX = GChart.NAI
+            clientX = NAI
 
 
         self.clientX = clientX
         # computing this on-the-fly is VERY expensive, so we retain it
         # (the buffering can be wrong in unusual scrolling scenarios)
-        if (GChart.NAI == clientX):
-            self.xMouse = GChart.NAI
+        if (NAI == clientX):
+            self.xMouse = NAI
         else:
             self.xMouse = (Window.getScrollLeft() + clientX - 
                            self.getAbsoluteLeft())
@@ -1216,11 +1193,11 @@ class PlotPanel (AbsolutePanel):
             return
 
         elif clientY < 0:
-            clientY = GChart.NAI
+            clientY = NAI
 
         self.clientY = clientY
-        if (GChart.NAI == clientY):
-            self.yMouse = GChart.NAI
+        if (NAI == clientY):
+            self.yMouse = NAI
         else:
             self.yMouse = (Window.getScrollTop() + clientY - 
                            self.getAbsoluteTop())
@@ -1409,7 +1386,7 @@ class PlotPanel (AbsolutePanel):
 
     def xChartPixelToX(self, xPx):
         result = Double.NaN
-        if GChart.NAI != xPx  and  self.xChartSize > 1:
+        if NAI != xPx  and  self.xChartSize > 1:
             result = (self.xMin + (self.xMax - self.xMin) *
                         (xPx - self.yAxisEnsembleWidth)/(self.xChartSize-1.))
 
@@ -1418,7 +1395,7 @@ class PlotPanel (AbsolutePanel):
 
     def xPixelToX(self, xPx):
         result = Double.NaN
-        if GChart.NAI != xPx  and  self.xChartSize > 1:
+        if NAI != xPx  and  self.xChartSize > 1:
             result = self.xMin + (self.xMax - self.xMin) * xPx/(self.xChartSize-1.)
 
         return result
@@ -1475,28 +1452,28 @@ class PlotPanel (AbsolutePanel):
 
     def yChartPixelToY(self, yPx):
         result = Double.NaN
-        if GChart.NAI != yPx  and  self.yChartSize > 1:
+        if NAI != yPx  and  self.yChartSize > 1:
             result = self.yMax + (self.yMin - self.yMax) * (yPx - self.topMargin)/(self.yChartSize-1.)
 
         return result
 
     def yPixelToY(self, yPx):
         result = Double.NaN
-        if GChart.NAI != yPx  and  self.yChartSize > 1:
+        if NAI != yPx  and  self.yChartSize > 1:
             result = self.yMax + (self.yMin - self.yMax) * yPx/(self.yChartSize-1.)
 
         return result
 
     def yChartPixelToY2(self, yPx):
         result = Double.NaN
-        if GChart.NAI != yPx  and  self.yChartSize > 1:
+        if NAI != yPx  and  self.yChartSize > 1:
             result = self.y2Max + (self.y2Min - self.y2Max) * (yPx - self.topMargin)/(self.yChartSize-1.)
 
         return result
 
     def yPixelToY2(self, yPx):
         result = Double.NaN
-        if GChart.NAI != yPx  and  self.yChartSize > 1:
+        if NAI != yPx  and  self.yChartSize > 1:
             result = self.y2Max + (self.y2Min - self.y2Max) * yPx/(self.yChartSize-1.)
 
         return result
@@ -1635,7 +1612,7 @@ class PlotPanel (AbsolutePanel):
                 # and zap any images (can't make it 0-sized since
                 # annotation placement is size-dependent)
                 cAnnotation.getSymbol().setImageURL(
-                                GChart.DEFAULT_BLANK_IMAGE_URL_FULLPATH)
+                                DEFAULT_BLANK_IMAGE_URL_FULLPATH)
                 cAnnotation.getSymbol().setBackgroundColor("transparent")
                 cAnnotation.getSymbol().setBorderColor(TRANSPARENT_BORDER_COLOR)
                 if None != cTouched.getSymbol().getHoverAnnotationSymbolType():
@@ -1685,14 +1662,14 @@ class PlotPanel (AbsolutePanel):
 
                 fillThickness = \
                         cTouched.getSymbol().getHoverSelectionFillThickness()
-                if GChart.NAI != fillThickness:
+                if NAI != fillThickness:
                     cCursor.getSymbol().setFillThickness(fillThickness)
 
-                if GChart.NAI != cTouched.getSymbol().getHoverSelectionHeight():
+                if NAI != cTouched.getSymbol().getHoverSelectionHeight():
                     cCursor.getSymbol().setHeight(
                             cTouched.getSymbol().getHoverSelectionHeight())
 
-                if GChart.NAI != cTouched.getSymbol().getHoverSelectionWidth():
+                if NAI != cTouched.getSymbol().getHoverSelectionWidth():
                     cCursor.getSymbol().setWidth(
                             cTouched.getSymbol().getHoverSelectionWidth())
 
@@ -2088,8 +2065,8 @@ class PlotPanel (AbsolutePanel):
                 " event.getCurrentTarget()="+str(DOM.eventGetCurrentTarget(event)) +
                 " event.getTarget()=" + str(DOM.eventGetTarget(event)))
             """
-            self.setClientX(GChart.NAI, False); # mouse not over chart,
-            self.setClientY(GChart.NAI, False); # so position is undefined
+            self.setClientX(NAI, False); # mouse not over chart,
+            self.setClientY(NAI, False); # so position is undefined
             if (not self.chart.isUpdateNeeded()  and  
                 self.touchObjectAtMousePosition()):
                 self.chart.assembleChart()
