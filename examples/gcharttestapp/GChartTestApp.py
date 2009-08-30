@@ -23,6 +23,7 @@ from GChartExample14 import GChartExample14
 
 from GChartExample17 import GChartExample17
 
+from GChartExample20 import GChartExample20
 from GChartExample21 import GChartExample21
 
 from GChartExample24 import GChartExample24
@@ -172,9 +173,9 @@ def onModuleLoad():
     #      addChart(GChartExample18())
     #      addChart(GChartExample18a())
     #      addChart(GChartExample19())
-    #        addChart(GChartExample20())
+    addChart(GChartExample20())
     #      addChart(GChartExample20a())
-    addChart(GChartExample21())
+    #addChart(GChartExample21())
     #      addChart(GChartExample22())
     #      addChart(GChartExample22a())
     #      addChart(GChartExample23(False, False))
