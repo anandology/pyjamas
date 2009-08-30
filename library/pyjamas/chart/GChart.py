@@ -88,18 +88,18 @@ from pyjamas.chart.GChartConsts import TRANSPARENT_BORDER_COLOR
 from pyjamas.chart.GChartConsts import YAxisId
 
 from pyjamas.chart import Double
-import AnnotationLocation
-import SymbolType
-import TickLocation
-import TouchedPointUpdateOption
+from pyjamas.chart import AnnotationLocation
+from pyjamas.chart import SymbolType
+from pyjamas.chart import TickLocation
+from pyjamas.chart import TouchedPointUpdateOption
 
-from Curve import Curve
+from pyjamas.chart.Curve import Curve
 from pyjamas.chart import GChartUtil 
 from pyjamas.chart.GChartWidgets import PlotPanel
 from pyjamas.chart import GChartWidgets 
 
 import pygwt
-from Axis import XAxis, YAxis, Y2Axis
+from pyjamas.chart.Axis import XAxis, YAxis, Y2Axis
 
 global canvasFactory
 canvasFactory = None
