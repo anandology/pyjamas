@@ -149,15 +149,15 @@ class PartitionedAbsolutePanel (Composite):
 
     def __init__(self, **kwargs):
         self.root = AbsolutePanel()
-        self.subPanel = None; # "selected" subPanel
-        self.iSubPanel = -1;    # index of "selected" subPanel
+        self.subPanel = None # "selected" subPanel
+        self.iSubPanel = -1    # index of "selected" subPanel
         self.nWidgets = 0;     # total # over all subPanels
 
         Composite.__init__(self, **kwargs)
         self.initWidget(self.root)
 
 
-    """ resets the partitioned panel to it's initial state """
+    """ resets the partitioned panel to its initial state """
     def clear(self):
         self.root.clear()
         self.subPanel = None
@@ -217,7 +217,7 @@ class PartitionedAbsolutePanel (Composite):
             # if deleted widget is last widget overall, and first on
             # the selected panel, selected panel will now be empty.
             self.root.remove(self.subPanel)
-            self.iSubPanel = -1;    # next selectSubPanel will reset these
+            self.iSubPanel = -1    # next selectSubPanel will reset these
             self.subPanel = None
 
         self.nWidgets -= 1
