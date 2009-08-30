@@ -388,7 +388,7 @@ class GChartExample20 (GChart):
         else:
             iPrev = (iCurve-1)
         self.touch(self.getCurve(iPrev).getPoint(0))
-        self.copyChartPropertiesIntoForm(self.getTouchedPoint())
+        self.theSliceEditor.copyChartPropertiesIntoForm(self.getTouchedPoint())
         self.update(TouchedPointUpdateOption.TOUCHED_POINT_LOCKED)
 
     def onClickNextSlice(self, event):
@@ -398,6 +398,6 @@ class GChartExample20 (GChart):
         else:
             iNext = (iCurve+1)
         self.touch(self.getCurve(iNext).getPoint(0))
-        self.copyChartPropertiesIntoForm(self.getTouchedPoint())
+        self.theSliceEditor.copyChartPropertiesIntoForm(self.getTouchedPoint())
         self.update(TouchedPointUpdateOption.TOUCHED_POINT_LOCKED)
 
