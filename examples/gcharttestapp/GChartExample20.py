@@ -181,7 +181,7 @@ class SliceEditor(DialogBox):
         self.setWidget(mainPanel); # add the DialogBox' single, defining, widget
 
     def onChange(self, sender):
-        self.chart.copyFormPropertiesIntoChart(self.chart.getTouchedPoint())
+        self.copyFormPropertiesIntoChart(self.chart.getTouchedPoint())
         # Changes in slice size can place a different, or no, slice under
         # GChart's "current mouse position". Such chart changes "underneath the
         # mouse" would normally result in a change in the touched point; the
