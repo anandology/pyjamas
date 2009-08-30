@@ -21,9 +21,9 @@ import math
 
 from pyjamas.ui.HTML import HTML
 
-import GChart
 from pyjamas.chart.GChartUtil import htmlWidth, htmlHeight
 
+from pyjamas.chart.GChartConsts import NAI
 from pyjamas.chart.GChartConsts import DEFAULT_FONT_COLOR
 from pyjamas.chart.GChartConsts import DEFAULT_ANNOTATION_FONTSIZE
 from pyjamas.chart.GChartConsts import DEFAULT_WIDGET_WIDTH_UPPERBOUND
@@ -73,8 +73,8 @@ class Annotation:
         # text (not used by Widgets)
         self.numberOfLinesHigh = 0
         self.numberOfCharsWide = 0
-        self.widthUpperBound = GChart.NAI
-        self.heightUpperBound = GChart.NAI
+        self.widthUpperBound = NAI
+        self.heightUpperBound = NAI
         
     """
     * Computes parameters used to estimate the width and height
@@ -101,11 +101,11 @@ class Annotation:
             self._isHTML = True
             # <html> is just a flag, not a tag, so strip it out.
             result = s[HTML_LEN:]
-            if self.widthUpperBound == GChart.NAI:
+            if self.widthUpperBound == NAI:
                 self.numberOfCharsWide = htmlWidth(result)
             
             
-            if self.heightUpperBound == GChart.NAI:
+            if self.heightUpperBound == NAI:
                 self.numberOfLinesHigh = htmlHeight(result)
             
             
@@ -168,7 +168,7 @@ class Annotation:
         self.location = location
     
     
-    def setText(self, text, widthUpperBound=GChart.NAI, heightUpperBound=GChart.NAI):
+    def setText(self, text, widthUpperBound=NAI, heightUpperBound=NAI):
         self.widthUpperBound = widthUpperBound
         self.heightUpperBound = heightUpperBound
         self.text = self.analyzeHTML(text)
@@ -201,7 +201,7 @@ class Annotation:
     
     def getHeightUpperBound(self):
         result = 0
-        if self.heightUpperBound != GChart.NAI:
+        if self.heightUpperBound != NAI:
             result = self.heightUpperBound
         
         else:
@@ -214,7 +214,7 @@ class Annotation:
     
     def getWidthUpperBound(self):
         result = 0
-        if self.widthUpperBound != GChart.NAI:
+        if self.widthUpperBound != NAI:
             result = self.widthUpperBound
         
         else:
