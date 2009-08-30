@@ -21,7 +21,7 @@ from pyjamas.ui import FocusListener
 from __pyjamas__ import JS
 
 class Canvas(Widget):
-    def __init__(self, width, height):
+    def __init__(self, width=0, height=0):
         Widget.__init__(self)
         self.context = None
         

@@ -1158,9 +1158,9 @@ class SymbolType:
                 borderColor = symbol.getBorderColor()
                 backgroundColor = symbol.getBackgroundColor()
                 if (externalLineWidth > 0  and
-                   ((TRANSPARENT_BORDER_COLOR != borderColor  and
+                   ((GChartConsts.TRANSPARENT_BORDER_COLOR != borderColor  and
                    "transparent" != borderColor)  or
-                   (TRANSPARENT_BORDER_COLOR != backgroundColor  and
+                   (GChartConsts.TRANSPARENT_BORDER_COLOR != backgroundColor  and
                    "transparent" != backgroundColor))):
                     if Double.isNaN(prevX)  or  Double.isNaN(prevY):
                         # first defined point after an undefined point ==> path
@@ -1171,14 +1171,14 @@ class SymbolType:
 
                     if Double.isNaN(nextX)  or  Double.isNaN(nextY):
                         # last defined point before undefined point ==> draw accumulated path
-                        if (TRANSPARENT_BORDER_COLOR != borderColor  and
+                        if (GChartConsts.TRANSPARENT_BORDER_COLOR != borderColor  and
                            "transparent" != borderColor  and
                            externalLineWidth > 0):
                             canvas.setStrokeStyle(borderColor)
                             canvas.setLineWidth(externalLineWidth)
                             canvas.stroke()
 
-                        if TRANSPARENT_BORDER_COLOR != backgroundColor  and  "transparent" != backgroundColor  and  internalLineWidth > 0:
+                        if GChartConsts.TRANSPARENT_BORDER_COLOR != backgroundColor  and  "transparent" != backgroundColor  and  internalLineWidth > 0:
                             canvas.setLineWidth(internalLineWidth)
                             canvas.setStrokeStyle(backgroundColor)
                             canvas.stroke()
@@ -1286,13 +1286,13 @@ class SymbolType:
 
                     # non-negative borders fill before stroking (thus
                     # stroke overwrites internal half of border)
-                    if borderWidth >= 0  and  thickness > 0  and  TRANSPARENT_BORDER_COLOR != backgroundColor  and  "transparent" != backgroundColor:
+                    if borderWidth >= 0  and  thickness > 0  and  GChartConsts.TRANSPARENT_BORDER_COLOR != backgroundColor  and  "transparent" != backgroundColor:
                         canvas.setFillStyle(backgroundColor)
                         canvas.fill()
 
 
                     # stroke whenever a border is present
-                    if borderWidth != 0  and  TRANSPARENT_BORDER_COLOR != borderColor  and  "transparent" != borderColor:
+                    if borderWidth != 0  and  GChartConsts.TRANSPARENT_BORDER_COLOR != borderColor  and  "transparent" != borderColor:
                         canvas.setStrokeStyle(borderColor)
                         canvas.setLineWidth(lineWidth)
                         canvas.stroke()
@@ -1300,7 +1300,7 @@ class SymbolType:
 
                     # negative borders fill AFTER stroking (thus zapping
                     # the internal half of the stroked border).
-                    if borderWidth < 0  and  thickness > 0  and  TRANSPARENT_BORDER_COLOR != backgroundColor  and  "transparent" != backgroundColor:
+                    if borderWidth < 0  and  thickness > 0  and  GChartConsts.TRANSPARENT_BORDER_COLOR != backgroundColor  and  "transparent" != backgroundColor:
                         canvas.setFillStyle(backgroundColor)
                         canvas.fill()
 
@@ -1863,7 +1863,7 @@ class PieSliceSymbolType (SymbolType):
         r = symbol.getPieSliceRadius(pp, onY2)
         theta0 = symbol.getPieSliceTheta0()
         theta1 = symbol.getPieSliceTheta1()
-        sl = getSliceLimits(theta1, theta0)
+        sl = self.getSliceLimits(theta1, theta0)
         xPx = pp.xToPixel(x)
         # scale up the xMin on unit circle to get to left edge
         result =  xPx + sl.xMin * r
@@ -1873,7 +1873,7 @@ class PieSliceSymbolType (SymbolType):
         r = symbol.getPieSliceRadius(pp, onY2)
         theta0 = symbol.getPieSliceTheta0()
         theta1 = symbol.getPieSliceTheta1()
-        sl = getSliceLimits(theta1, theta0)
+        sl = self.getSliceLimits(theta1, theta0)
         xPx = pp.xToPixel(x)
         # scale up the xMax on unit circle to get to right edge
         result = xPx + sl.xMax * r
@@ -1886,7 +1886,7 @@ class PieSliceSymbolType (SymbolType):
         r = symbol.getPieSliceRadius(pp, onY2)
         theta0 = symbol.getPieSliceTheta0()
         theta1 = symbol.getPieSliceTheta1()
-        sl = getSliceLimits(theta1, theta0)
+        sl = self.getSliceLimits(theta1, theta0)
         yPx = pp.yToPixel(y, onY2)
         # minus for the Cartesian to pixel-coord transform
         result = yPx - sl.yMax * r
@@ -1897,7 +1897,7 @@ class PieSliceSymbolType (SymbolType):
         r = symbol.getPieSliceRadius(pp, onY2)
         theta0 = symbol.getPieSliceTheta0()
         theta1 = symbol.getPieSliceTheta1()
-        sl = getSliceLimits(theta1, theta0)
+        sl = self.getSliceLimits(theta1, theta0)
         yPx = pp.yToPixel(y, onY2)
         # minus for the Cartesian to pixel-coord transform
         result = yPx - sl.yMin * r
@@ -2233,7 +2233,7 @@ class PieSliceSymbolType (SymbolType):
                 # stroke overwrites internal half of border)
                 # GWTCanvas thows an exception w "transparent"
                 if (borderWidth >= 0  and  thickness > 0  and  
-                    TRANSPARENT_BORDER_COLOR != backgroundColor  and  
+                    GChartConsts.TRANSPARENT_BORDER_COLOR != backgroundColor  and  
                     "transparent" != backgroundColor):
                     canvas.setFillStyle(backgroundColor)
                     canvas.fill()
@@ -2241,7 +2241,7 @@ class PieSliceSymbolType (SymbolType):
 
                 # stroke whenever a border is present
                 if (borderWidth != 0  and  
-                    TRANSPARENT_BORDER_COLOR != borderColor  and  
+                    GChartConsts.TRANSPARENT_BORDER_COLOR != borderColor  and  
                     "transparent" != borderColor):
                     canvas.setStrokeStyle(borderColor)
                     canvas.stroke()
@@ -2251,7 +2251,7 @@ class PieSliceSymbolType (SymbolType):
                 # the internal half of the stroked border).
                 if (borderWidth < 0  and  
                     thickness > 0  and  
-                    TRANSPARENT_BORDER_COLOR != backgroundColor  and  
+                    GChartConsts.TRANSPARENT_BORDER_COLOR != backgroundColor  and  
                     "transparent" != backgroundColor):
                     canvas.setFillStyle(backgroundColor)
                     canvas.fill()

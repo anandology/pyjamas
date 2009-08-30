@@ -832,7 +832,7 @@ class GraphicsRenderingPanel (AbsolutePanel):
         if None != canvasFactory  and  None == self.canvas:
             self.canvas = canvasFactory.create()
             if None != self.canvas:
-                if isintance(self.canvas, Widget):
+                if isinstance(self.canvas, Widget):
                     """
                     * The next line is only needed for IE; it is needed to work-around a
                     * GWTCanvas bug that improperly shifts the x-placement of rendered
@@ -845,7 +845,7 @@ class GraphicsRenderingPanel (AbsolutePanel):
                     * See also TestGChart46.java, which reproduces the GWTCanvas bug.
                     *
                     """
-                    DOM.setElementAttribute(self.canvas.getElement(),
+                    DOM.setElemAttribute(self.canvas.getElement(),
                                         "align", "left")
                     self.canvasPanel.add(self.canvas, 0, 0)
 
@@ -922,7 +922,7 @@ class GraphicsRenderingPanel (AbsolutePanel):
                 if x0 == -1  and  y0 == -1:
                     x0 = 0
 
-                self.canvasPanel.setWidgetPosition( canvas, x0, y0)
+                self.canvasPanel.setWidgetPosition( self.canvas, x0, y0)
 
 
         self.imageIndex = 0

@@ -950,8 +950,8 @@ class Curve:
     *
     """
     def getContainingRectangle(self, pp):
-        result = Rectangle()
-        if getNPoints() == 0:
+        result = GChartWidgets.Rectangle()
+        if self.getNPoints() == 0:
             result.x = result.y = result.width = result.height = 0
             return result
 
@@ -964,12 +964,12 @@ class Curve:
         pointAtXAxisMax = False; # exist on this curve?
         pointAtYAxisMin = False
         pointAtYAxisMax = False
-        isClippedToDecoratedChart = getClipToDecoratedChart()
-        isClippedToPlotArea = getActuallyClippedToPlotArea()
+        isClippedToDecoratedChart = self.chart.getClipToDecoratedChart()
+        isClippedToPlotArea = self.getActuallyClippedToPlotArea()
         # Find min, max for x,y and record each keyword position used
-        nPoints = getNPoints()
+        nPoints = self.getNPoints()
         for i in range(nPoints):
-            p = getPoint(i)
+            p = self.getPoint(i)
             x = p.getX()
             y = p.getY()
             if Double.MAX_VALUE == x:
@@ -1063,14 +1063,14 @@ class Curve:
                 maxY = min(maxY, pp.getYMax())
 
             elif isClippedToDecoratedChart:
-                maxY = min(maxY, GChart.self.getYAxis().pixelToModel(0))
+                maxY = min(maxY, self.chart.getYAxis().pixelToModel(0))
 
 
 
         # finally, we need to convert to pixels while taking into account
         # the size of the rendered symbol itself (e.g. pies can stick
         # out from their x,y specified center point, etc.)
-        sym = getSymbol()
+        sym = self.getSymbol()
         symType = sym.getSymbolType()
         # in obscure cases, canvas could clip without this extra wiggle room
         extraSpace = sym.getFillThickness()
