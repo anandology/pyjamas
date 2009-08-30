@@ -19,7 +19,6 @@
 
 import math
 
-import GChart
 from pyjamas.chart import Double
 from pyjamas.chart.Point import Point
 from pyjamas.chart.Symbol import Symbol

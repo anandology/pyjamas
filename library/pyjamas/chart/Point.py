@@ -18,10 +18,10 @@
 """
 
 from pyjamas.chart.GChartConsts import DEFAULT_WIDGET_WIDTH_UPPERBOUND
+from pyjamas.chart.GChartConsts import NAI
 from pyjamas.chart.GChartConsts import DEFAULT_WIDGET_HEIGHT_UPPERBOUND
-import GChart
-from Annotation import Annotation
-import HovertextChunk
+from pyjamas.chart.Annotation import Annotation
+from pyjamas.chart import HovertextChunk
 
 """*
 ** Represents a single point on one of the chart's
@@ -48,7 +48,7 @@ class Point:
         self.curve = curve
         self.x = x
         self.y = y
-        self.iNextInBand = GChart.NAI
+        self.iNextInBand = NAI
         self.annotation = None
 
 
@@ -428,12 +428,12 @@ class Point:
     ** annotation, or <tt>None</tt> to remove all annotation.
     **
     ** @param widthUpperBound an upper bound on the width of
-    ** the text or HTML, in pixels. Use <tt>GChart.NAI</tt> to
+    ** the text or HTML, in pixels. Use <tt>NAI</tt> to
     ** get GChart to estimate this width using a heuristic
     ** that works fine most of the time.
     **
     ** @param heightUpperBound an upper bound on the height of
-    ** the text or HTML, in pixels. Use <tt>GChart.NAI</tt> to
+    ** the text or HTML, in pixels. Use <tt>NAI</tt> to
     ** get GChart to estimate this height using a heuristic
     ** that works fine most of the time.
     **
@@ -448,12 +448,12 @@ class Point:
     ** @see #setAnnotationXShift setAnnotationXShift
     ** @see #setAnnotationYShift setAnnotationYShift
     ** @see #setAnnotationVisible setAnnotationVisible
-    ** @see GChart.Axis#addTick(double,String,int,int) addTick
+    ** @see Axis#addTick(double,String,int,int) addTick
     **
     *"""
     def setAnnotationText(self, annotationText, 
-                                widthUpperBound=GChart.NAI,
-                                heightUpperBound=GChart.NAI):
+                                widthUpperBound=NAI,
+                                heightUpperBound=NAI):
         self.getParent().invalidate()
         self.getAnnotation().setText(annotationText,
                         widthUpperBound,
@@ -540,10 +540,10 @@ class Point:
         self.getParent().invalidate()
 
         # accept "Not an Integer" (because setAnnotationText does)
-        if widthUpperBound == GChart.NAI:
+        if widthUpperBound == NAI:
             widthUpperBound = DEFAULT_WIDGET_WIDTH_UPPERBOUND
 
-        if heightUpperBound == GChart.NAI:
+        if heightUpperBound == NAI:
             heightUpperBound = DEFAULT_WIDGET_HEIGHT_UPPERBOUND
 
         self.getAnnotation().setWidget(annotationWidget,
@@ -756,6 +756,6 @@ class Point:
                 self.getParent().getSymbol().getHovertextChunks(), self)
 
 
- # end of class GChart.Curve.Point
+ # end of class Point
 
 
