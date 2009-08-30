@@ -171,8 +171,8 @@ class PartitionedAbsolutePanel (Composite):
 
     # makes the subpanel containing the widget the selected one.
     def selectSubPanel(self, iWidget):
-        if self.iSubPanel != iWidget/WIDGETS_PER_PANEL:
-            self.iSubPanel = iWidget/WIDGETS_PER_PANEL
+        if self.iSubPanel != int(iWidget/WIDGETS_PER_PANEL):
+            self.iSubPanel = int(iWidget/WIDGETS_PER_PANEL)
             self.subPanel = self.root.getWidget(self.iSubPanel)
 
 
