@@ -222,21 +222,6 @@ class SliceEditor(DialogBox):
         sliceSize = int(self.chart.sliceSizeSelector.getSelectedObject())
         p.getParent().getSymbol().setPieSliceSize(sliceSize/100.)
 
-    def onClick(self, sender):
-        print "onClick", sender
-        if sender == self.prevSlice:
-            self.chart.onClickPrevSlice(sender)
-        elif sender == self.nextSlice:
-            self.chart.onClickNextSlice(sender)
-        else:
-            self.onClickClose(sender)
-
-    def onClickClose(self, event):
-        self.hide()
-        self.chart.touch(None);  # clears any selected slice
-        self.chart.update(TouchedPointUpdateOption.TOUCHED_POINT_LOCKED)
-
-
 
     # Retrieves an existing ColorSpec object reference, given its colors
     def getColorSpec(self, backgroundColor, borderColor):
@@ -251,8 +236,24 @@ class SliceEditor(DialogBox):
         "Attempt to retrieve a non-existing color combination.")
 
 
-
     def onClick(self, sender):
+        print "onClick", sender
+        if sender == self.prevSlice:
+            self.chart.onClickPrevSlice(sender)
+        elif sender == self.nextSlice:
+            self.chart.onClickNextSlice(sender)
+        elif sender == self.closeButton:
+            self.onClickClose(sender)
+        else:
+            self.onClickDefault(sender)
+
+    def onClickClose(self, event):
+        self.hide()
+        self.chart.touch(None);  # clears any selected slice
+        self.chart.update(TouchedPointUpdateOption.TOUCHED_POINT_LOCKED)
+
+
+    def onClickDefault(self, sender):
         # don't shown property editor if they clicked on nothing
         if None == self.chart.getTouchedPoint():
             return
