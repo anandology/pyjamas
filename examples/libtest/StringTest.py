@@ -34,6 +34,27 @@ class StringTest(UnitTest):
         result=text.replace(" ", "_")
         self.assertEquals(result, expected_result3)
 
+    def testRFind(self):
+        text="this is a yes it is a rather long string"
+
+        result=text.rfind("not found")
+        self.assertEquals(result, -1)
+
+        result=text.rfind("is")
+        self.assertEquals(result, 17)
+
+        result=text.rfind("is", 18)
+        self.assertEquals(result, -1)
+
+        result=text.rfind("is", 17)
+        self.assertEquals(result, 17)
+
+        result=text.rfind("is", 16)
+        self.assertEquals(result, 17)
+
+        result=text.rfind("is", 2, 3)
+        self.assertEquals(result, -1)
+
     def testFind(self):
         text="this is a rather long string"
 

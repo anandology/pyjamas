@@ -353,6 +353,25 @@ pyjslib.StopIteration.message = 'StopIteration';
 
     # Patching of the standard javascript String object
     JS("""
+String.prototype.rfind = function(sub, start, end) {
+    var pos;
+    if (!pyjslib.isUndefined(start)) {
+        /* *sigh* - python rfind goes *RIGHT*, NOT left */
+        pos = this.substring(start).lastIndexOf(sub);
+        if (pos == -1) {
+            return -1;
+        }
+        pos += start;
+    }
+    else {
+        pos=this.lastIndexOf(sub, start);
+    }
+    if (pyjslib.isUndefined(end)) return pos;
+
+    if (pos + sub.length>end) return -1;
+    return pos;
+};
+
 String.prototype.find = function(sub, start, end) {
     var pos=this.indexOf(sub, start);
     if (pyjslib.isUndefined(end)) return pos;
