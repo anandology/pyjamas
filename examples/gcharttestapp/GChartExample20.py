@@ -15,7 +15,6 @@ from pyjamas.chart.GChart import GChart
 from pyjamas.chart import AnnotationLocation
 from pyjamas.chart import SymbolType
 from pyjamas.chart import TouchedPointUpdateOption
-from pyjamas.ui.ClickListener import ClickHandler
 
 LABEL_COL = 0;  # for the label/object pairs
 OBJECT_COL = 1; # associated with the property
@@ -113,7 +112,7 @@ class ColorSpec:
 
 
 # the modal dialog that pops up when they click on a slice to edit it
-class SliceEditor(DialogBox, ClickHandler):
+class SliceEditor(DialogBox):
     def __init__(self, chart):
         """ DialogBox CSS Style self.settings used with this example for reference:
 
@@ -142,21 +141,23 @@ class SliceEditor(DialogBox, ClickHandler):
 
         """
         DialogBox.__init__(self, autoHide=True, modal=True)
-        ClickHandler.__init__(self)
-
         self.chart = chart
         self.isFirstTime = True
         mainPanel = VerticalPanel()
         propertyForm = FlexTable()
         commandBar = DockPanel()
         sliceSwitcher = HorizontalPanel()
-        self.prevSlice = Button("&lt;Prev Slice")
-        self.nextSlice = Button("Next Slice&gt;")
-        self.closeButton = Button("Close")
+        self.prevSlice = Button("&lt;Prev Slice", self)
+        self.nextSlice = Button("Next Slice&gt;", self)
+        self.closeButton = Button("Close", self)
 
         self.chart.colorSelector.addChangeListener(self)
         self.chart.sliceSizeSelector.addChangeListener(self)
         self.chart.shadingSelector.addChangeListener(self)
+
+        #self.prevSlice.addClickListener(self)
+        #self.nextSlice.addClickListener(self)
+        #self.closeButton.addClickListener(self)
 
         # slice properties table (slice color, shading and size)
         propertyForm.setSize(3, 2)
@@ -182,8 +183,6 @@ class SliceEditor(DialogBox, ClickHandler):
         mainPanel.add(propertyForm)
         mainPanel.add(commandBar)
         self.setWidget(mainPanel); # add the DialogBox' single, defining, widget
-
-        self.addClickListener(self)
 
     def onChange(self, sender):
         self.copyFormPropertiesIntoChart(self.chart.getTouchedPoint())
@@ -224,6 +223,7 @@ class SliceEditor(DialogBox, ClickHandler):
         p.getParent().getSymbol().setPieSliceSize(sliceSize/100.)
 
     def onClick(self, sender):
+        print "onClick", sender
         if sender == self.prevSlice:
             self.chart.onClickPrevSlice(sender)
         elif sender == self.nextSlice:
