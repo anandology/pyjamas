@@ -214,7 +214,7 @@ class SliceEditor(DialogBox):
         p.getParent().getSymbol().setHoverSelectionBackgroundColor(
                     self.chart.colorSelector.getSelectedObject().borderColor)
         p.getParent().getSymbol().setSymbolType(
-                                shadingSelector.getSelectedObject())
+                    self.chart.shadingSelector.getSelectedObject())
         sliceSize = int(self.chart.sliceSizeSelector.getSelectedObject())
         p.getParent().getSymbol().setPieSliceSize(sliceSize/100.)
 
