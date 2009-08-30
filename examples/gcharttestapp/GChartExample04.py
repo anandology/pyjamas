@@ -16,7 +16,7 @@ def log10(x):
 """
 class GChartExample04(GChart):
     def __init__(self):
-        GChart.__init__(self, 300, 450)
+        GChart.__init__(self, XChartSize=300, YChartSize=450)
         self.setChartTitle("<h2>2<sup>x</sup> vs x</h2>")
         self.addCurve()
         self.getCurve().getSymbol().setHovertextTemplate(
