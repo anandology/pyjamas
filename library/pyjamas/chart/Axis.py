@@ -21,14 +21,14 @@ import time
 
 from pyjamas.ui.HTML import HTML
 
-import NumberFormat
-import DateTimeFormat
-import GChart
+from pyjamas.chart import NumberFormat
+from pyjamas.chart import DateTimeFormat
 from pyjamas.chart import Double
-import TickLocation
-import AnnotationLocation
-import Annotation
+from pyjamas.chart import TickLocation
+from pyjamas.chart import AnnotationLocation
+from pyjamas.chart import Annotation
 
+from pyjamas.chart.GChartConsts import NAI
 from pyjamas.chart.GChartConsts import DEFAULT_TICK_LOCATION
 from pyjamas.chart.GChartConsts import DEFAULT_TICK_COUNT
 from pyjamas.chart.GChartConsts import DEFAULT_WIDGET_WIDTH_UPPERBOUND 
@@ -102,7 +102,7 @@ class Axis:
         self.previousLimits = AxisLimits( -Double.MAX_VALUE, Double.MAX_VALUE)
 
         self.axisLabel = None
-        self.axisLabelThickness = GChart.NAI
+        self.axisLabelThickness = NAI
         self.hasGridlines = False
         self.tickCount = DEFAULT_TICK_COUNT
         # axes auto-scale whenever min or max are NaN.
@@ -119,7 +119,7 @@ class Axis:
         self.tickLabelFontWeight = DEFAULT_TICK_LABEL_FONT_WEIGHT
 
         self.tickLabelFormat = DEFAULT_TICK_LABEL_FORMAT
-        self.tickLabelThickness = GChart.NAI
+        self.tickLabelThickness = NAI
         self.tickLabelPadding = 0
         self.ticksPerLabel = 1
         self.ticksPerGridline = 1
@@ -222,12 +222,12 @@ class Axis:
     *  setAnnotationText} method for more information.
     *
     *  @param widthUpperBound an upper bound on the width of
-    *  the text or HTML, in pixels. Use <tt>GChart.NAI</tt> to
+    *  the text or HTML, in pixels. Use <tt>NAI</tt> to
     *  get GChart to estimate this width for you. See the
     *  <tt>setAnnotationText</tt> method for more information.
     *
     *  @param heightUpperBound an upper bound on the height of
-    *  the text or HTML, in pixels. Use <tt>GChart.NAI</tt> to
+    *  the text or HTML, in pixels. Use <tt>NAI</tt> to
     *  get GChart to estimate this height for you. See the
     *  <tt>setAnnotationText</tt> method for more information.
     *
@@ -248,11 +248,11 @@ class Axis:
     """
     def _addTickLabel(self, tickPosition, tickLabel, widthUpperBound, heightUpperBound):
         self.chartDecorationsChanged = True
-        if GChart.NAI != self.tickCount:
+        if NAI != self.tickCount:
             # clear out any auto-generated ticks
             cTicks = self.getSystemCurve(self.ticksId)
             cTicks.clearPoints()
-            self.tickCount = GChart.NAI
+            self.tickCount = NAI
 
         self.addTickAsPoint(tickPosition, tickLabel, None, widthUpperBound,
                         heightUpperBound)
@@ -296,8 +296,8 @@ class Axis:
 
         if isinstance(tickWidget, str):
             if widthUpperBound is None and heightUpperBound is None:
-                widthUpperBound = GChart.NAI
-                heightUpperBound = GChart.NAI
+                widthUpperBound = NAI
+                heightUpperBound = NAI
             self._addTickLabel(tickPosition, tickWidget,
                                widthUpperBound, heightUpperBound)
             return
@@ -306,11 +306,11 @@ class Axis:
             widthUpperBound = DEFAULT_WIDGET_WIDTH_UPPERBOUND
             heightUpperBound = DEFAULT_WIDGET_HEIGHT_UPPERBOUND
         self.chartDecorationsChanged = True
-        if GChart.NAI != self.tickCount:
+        if NAI != self.tickCount:
             # clear out any auto-generated ticks
             cTicks = self.getSystemCurve(self.ticksId)
             cTicks.clearPoints()
-            self.tickCount = GChart.NAI
+            self.tickCount = NAI
 
         self.addTickAsPoint(tickPosition, None, tickWidget, widthUpperBound,
                             heightUpperBound)
@@ -334,7 +334,7 @@ class Axis:
         *
         """
         self.chartDecorationsChanged = True
-        self.tickCount = GChart.NAI
+        self.tickCount = NAI
         c = self.getSystemCurve(self.ticksId)
         c.clearPoints()
 
@@ -441,7 +441,7 @@ class Axis:
         if None == self.getAxisLabel():
             result = 0
 
-        elif GChart.NAI != self.axisLabelThickness:
+        elif NAI != self.axisLabelThickness:
             result = self.axisLabelThickness
 
         elif hasattr(self.getAxisLabel(), 'getHTML'):
@@ -488,7 +488,7 @@ class Axis:
         if not (Double.isNaN(self.axisMax)):
             return self.axisMax
 
-        elif GChart.NAI != self.tickCount:
+        elif NAI != self.tickCount:
             return self.getDataMax()
 
         else:
@@ -514,7 +514,7 @@ class Axis:
         if not (Double.isNaN(self.axisMin)):
             return self.axisMin; # explicitly set
 
-        elif GChart.NAI != self.tickCount:
+        elif NAI != self.tickCount:
             return self.getDataMin()
 
         else:
@@ -632,7 +632,7 @@ class Axis:
         **
         *"""
         result = self.tickCount
-        if GChart.NAI == self.tickCount:
+        if NAI == self.tickCount:
             c = self.getSystemCurve(self.ticksId)
             result = c.getNPoints()
 
@@ -722,7 +722,7 @@ class Axis:
     # during repeated calls made in updateChartDecorations.
     def getTickLabelThickness(self, needsPopulation=True):
         maxLength = 0
-        if self.tickLabelThickness != GChart.NAI:
+        if self.tickLabelThickness != NAI:
             result = self.tickLabelThickness
         else:
             # use an heuristic to estimate thickness
@@ -1089,7 +1089,7 @@ class Axis:
     ** adjacent regions.
     ** <p>
     **
-    ** If the axis label thickness is <tt>GChart.NAI</tt> (the
+    ** If the axis label thickness is <tt>NAI</tt> (the
     ** default), and the widget defining the axis label
     ** implements <tt>HasHTML</tt> (or <tt>HasText</tt>) then
     ** GChart uses a thickness based on the estimated number of
@@ -1106,7 +1106,7 @@ class Axis:
     ** <p>
     **
     ** @param thickness the thickness of the axis-label-holding
-    ** region, in pixels, or <tt>GChart.NAI</tt> to use
+    ** region, in pixels, or <tt>NAI</tt> to use
     ** GChart's character-based default thickness estimates.
     **
     ** @see #getAxisLabelThickness getAxisLabelThickness
@@ -1567,7 +1567,7 @@ class Axis:
     **
     **
     ** By default, this property has the special "undefined"
-    ** value <tt>GChart.NAI</tt>. With this value, the
+    ** value <tt>NAI</tt>. With this value, the
     ** companion method <tt>getTickLabelThickness</tt> uses an
     ** HTML-based heuristic to estimate the thickness.
     **
@@ -1577,7 +1577,7 @@ class Axis:
     ** @see #setTickLocation setTickLocation
     ** @see #setTickLabelPadding setTickLabelPadding
     ** @see #setAxisLabel setAxisLabel
-    ** @see GChart#NAI NAI
+    ** @see NAI NAI
     **
     *"""
     def setTickLabelThickness(self, tickLabelThickness):
@@ -1721,7 +1721,7 @@ class Axis:
         pass
 
     def maybePopulateTicks(self):
-        if self.tickCount != GChart.NAI:
+        if self.tickCount != NAI:
             self.populateTicks()
 
 
@@ -1752,7 +1752,7 @@ class Axis:
                             (0 == i % self.ticksPerLabel) and
                                     self.formatAsTickLabel(position) or None,
                             None,
-                            GChart.NAI, GChart.NAI)
+                            NAI, NAI)
 
 
 
@@ -1911,7 +1911,7 @@ class XAxis(Axis):
         if None == self.getAxisLabel():
             result = 0
 
-        elif GChart.NAI != self.axisLabelThickness:
+        elif NAI != self.axisLabelThickness:
             result = self.axisLabelThickness
 
         elif hasattr(self.getAxisLabel(), "getHTML"):
@@ -1971,7 +1971,7 @@ class XAxis(Axis):
 
     def getTickLabelThickness(self, needsPopulation=True):
         # overrides base class
-        if self.tickLabelThickness != GChart.NAI:
+        if self.tickLabelThickness != NAI:
             result = self.tickLabelThickness
 
         elif self.getTickCount() == 0:
