@@ -46,7 +46,7 @@ class ChildGChart(GChart):
         self.getXAxis().setTickCount(11)
         self.getYAxis().setTickCount(11)
         self.addCurve()
-        for i in range(NPOINTS+1):
+        for i in range(N_POINTS+1):
             self.getCurve().addPoint(i, math.sin((2* math.pi * i)/N_POINTS))
 
         self.getCurve().getSymbol().setWidth(5)
