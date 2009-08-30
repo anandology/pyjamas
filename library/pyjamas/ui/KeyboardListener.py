@@ -74,7 +74,7 @@ class KeyboardHandler:
     def __init__(self):
 
         self._keyboardListeners = []
-        self.sinkEvents( Event.KEYEVENTS)
+        self.sinkEvents( Event.KEYEVENTS )
 
     def onBrowserEvent(self, event):
         type = DOM.eventGetType(event)

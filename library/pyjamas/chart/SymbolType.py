@@ -1548,7 +1548,7 @@ class LineSymbolType (SymbolType):
             if deltaX == 0:
                 # special-case of vertical line
 
-                realizeOneImageOfSymbol(pp, grp, arp, symbol, None,
+                self.realizeOneImageOfSymbol(pp, grp, arp, symbol, None,
                                         onY2,
                                         clipPlotArea,
                                         clipDecoratedChart,
@@ -1562,7 +1562,7 @@ class LineSymbolType (SymbolType):
             elif deltaY == 0:
                 # special case of horizontal line
 
-                realizeOneImageOfSymbol(pp, grp, arp, symbol, None,
+                self.realizeOneImageOfSymbol(pp, grp, arp, symbol, None,
                                         onY2,
                                         clipPlotArea,
                                         clipDecoratedChart,
@@ -1590,7 +1590,7 @@ class LineSymbolType (SymbolType):
                 for i in range(1, N):
                     xi = xMin + i*(xMax - xMin)/N
                     yi = yAtXMin + i * (yAtXMax - yAtXMin)/N
-                    realizeOneImageOfSymbol(pp, grp, arp, symbol, None,
+                    self.realizeOneImageOfSymbol(pp, grp, arp, symbol, None,
                                             onY2,
                                             clipPlotArea,
                                             clipDecoratedChart,

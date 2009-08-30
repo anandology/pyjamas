@@ -56,6 +56,6 @@ class Composite(Widget):
         self.initWidget(widget)
 
     def onBrowserEvent(self, event):
-        #print "Composite onBrowserEvent", self, event
+        Widget.onBrowserEvent(self, event) # takes care of auto-handlers
         self.widget.onBrowserEvent(event)
 

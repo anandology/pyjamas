@@ -191,7 +191,6 @@ class GChartExample24(GChart):
     
     def __init__(self):
         GChart.__init__(self)
-        self.sinkEvents( Event.MOUSEEVENTS )
 
         self.SELECTION_CURVE = 0 # curve index of selection cursor
         self.p1 = Point(); # first corner (@mousedown) of selection rect

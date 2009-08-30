@@ -104,3 +104,5 @@ class GChartExample25 (FocusPanel):
             self.theChild.setHoverTouchingEnabled(True)
             self.theChild.update()
 
+    def update(self):
+        self.theChild.update()
