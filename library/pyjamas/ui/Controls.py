@@ -7,14 +7,14 @@
 import math
 from pyjamas import DOM
 from pyjamas.ui.FocusWidget import FocusWidget
-from pyjamas.ui import MouseListener
+from pyjamas.ui.MouseListener import MouseHandler
 from pyjamas.ui import Event
 from pyjamas.ui import Focus
 from pyjamas.ui import KeyboardListener
 
 from pyjamas.ui.TextBox import TextBox
 
-class Control(FocusWidget):
+class Control(FocusWidget, MouseHandler):
 
     def __init__(self, element, min_value, max_value,
                        start_value=None, step=None,
@@ -29,20 +29,11 @@ class Control(FocusWidget):
         self.step = step
         self.value = start_value
         self.valuechange_listeners = []
-        self.mouseListeners = []
         self.dragging = False
         
         if not kwargs.has_key("TabIndex"): kwargs['TabIndex'] = 0
         FocusWidget.__init__(self, element, **kwargs)
-        self.sinkEvents( Event.FOCUSEVENTS | Event.ONCLICK | Event.MOUSEEVENTS |
-                         Event.KEYEVENTS)
-
-    def onBrowserEvent(self, event):
-        type = DOM.eventGetType(event)
-        if type == "mousedown" or type == "mouseup" or type == "mousemove" or type == "mouseover" or type == "mouseout":
-            MouseListener.fireMouseEvent(self.mouseListeners, self, event)
-        else:
-            FocusWidget.onBrowserEvent(self, event)
+        MouseHandler.__init__(self)
 
     def onFocus(self, sender):
         pass
@@ -78,12 +69,6 @@ class Control(FocusWidget):
 
     def removeControlValueListener(self, listener):
         self.valuechange_listeners.remove(listener)
-
-    def addMouseListener(self, listener):
-        self.mouseListeners.append(listener)
-
-    def removeMouseListener(self, listener):
-        self.mouseListeners.remove(listener)
 
     def moveControl(self, x, y):
         pass

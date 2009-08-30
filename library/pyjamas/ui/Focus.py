@@ -34,3 +34,21 @@ def setAccessKey(elem, key):
 def setTabIndex(elem, index):
     elem.tabIndex = index
 
+
+class FocusMixin:
+
+    def getTabIndex(self):
+        return getTabIndex(self.getElement())
+
+    def setAccessKey(self, key):
+        setAccessKey(self.getElement(), key)
+
+    def setFocus(self, focused):
+        if (focused):
+            focus(self.getElement())
+        else:
+            blur(self.getElement())
+
+    def setTabIndex(self, index):
+        setTabIndex(self.getElement(), index)
+

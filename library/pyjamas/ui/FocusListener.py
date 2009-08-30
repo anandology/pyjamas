@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from pyjamas import DOM
+from pyjamas.ui import Event
 
 def fireFocusEvent(listeners, sender, event):
     type = DOM.eventGetType(event)
@@ -22,4 +23,26 @@ def fireFocusEvent(listeners, sender, event):
         for listener in listeners:
             listener.onLostFocus(sender)
 
+class FocusHandler:
+
+    def __init__(self):
+        self._focusListeners = []
+        self.sinkEvents( Event.FOCUSEVENTS )
+
+    def onFocus(self, sender):
+        pass
+
+    def onLostFocus(self, sender):
+        pass
+
+    def onBrowserEvent(self, event):
+        type = DOM.eventGetType(event)
+        if type == "blur" or type == "focus":
+            fireFocusEvent(self._focusListeners, self, event)
+
+    def addFocusListener(self, listener):
+        self._focusListeners.append(listener)
+
+    def removeFocusListener(self, listener):
+        self._focusListeners.remove(listener)
 

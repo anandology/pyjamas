@@ -14,10 +14,10 @@
 from pyjamas import DOM
 
 from pyjamas.ui.Widget import Widget
-from pyjamas.ui import Event
-from pyjamas.ui import MouseListener
+from pyjamas.ui.MouseListener import MouseHandler
+from pyjamas.ui.ClickListener import ClickHandler
 
-class Label(Widget):
+class Label(Widget, MouseHandler, ClickHandler):
 
     def __init__(self, text=None, wordWrap=True, **kwargs):
         if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-Label"
@@ -25,17 +25,10 @@ class Label(Widget):
         kwargs['WordWrap'] = wordWrap
         self.setElement(DOM.createDiv())
         self.horzAlign = ""
-        self.clickListeners = []
-        self.mouseListeners = []
 
         Widget.__init__(self, **kwargs)
-        self.sinkEvents(Event.ONCLICK | Event.MOUSEEVENTS)
-
-    def addClickListener(self, listener):
-        self.clickListeners.append(listener)
-
-    def addMouseListener(self, listener):
-        self.mouseListeners.append(listener)
+        MouseHandler.__init__(self)
+        ClickHandler.__init__(self)
 
     def getHorizontalAlignment(self):
         return self.horzAlign
@@ -45,24 +38,6 @@ class Label(Widget):
 
     def getWordWrap(self):
         return not (DOM.getStyleAttribute(self.getElement(), "whiteSpace") == "nowrap")
-
-    def onBrowserEvent(self, event):
-        type = DOM.eventGetType(event)
-        #print "Label onBrowserEvent", type, self.clickListeners
-        if type == "click":
-            for listener in self.clickListeners:
-                if hasattr(listener, 'onClick'): listener.onClick(self)
-                else: listener(self)
-        elif type == "mousedown" or type == "mouseup" or type == "mousemove" or type == "mouseover" or type == "mouseout":
-            MouseListener.fireMouseEvent(self.mouseListeners, self, event)
-        else:
-            Widget.onBrowserEvent(self, event)
-
-    def removeClickListener(self, listener):
-        self.clickListeners.remove(listener)
-
-    def removeMouseListener(self, listener):
-        self.mouseListeners.remove(listener)
 
     def setHorizontalAlignment(self, align):
         self.horzAlign = align

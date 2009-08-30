@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from pyjamas import DOM
+from pyjamas.ui import Event
 
 def fireMouseEvent(listeners, sender, event):
     x = DOM.eventGetClientX(event) - DOM.getAbsoluteLeft(sender.getElement())
@@ -38,4 +39,38 @@ def fireMouseEvent(listeners, sender, event):
             for listener in listeners:
                 listener.onMouseLeave(sender)
 
+MOUSE_EVENTS = [ "mousedown", "mouseup", "mousemove", "mouseover", "mouseout"]
+
+class MouseHandler:
+
+    def __init__(self):
+
+        self._mouseListeners = []
+        self.sinkEvents( Event.MOUSEEVENTS )
+
+    def onBrowserEvent(self, event):
+        type = DOM.eventGetType(event)
+        if type in MOUSE_EVENTS:
+            fireMouseEvent(self._mouseListeners, self, event)
+
+    def addMouseListener(self, listener):
+        self._mouseListeners.append(listener)
+
+    def removeMouseListener(self, listener):
+        self._mouseListeners.remove(listener)
+
+    def onMouseMove(self, sender, x, y):
+        pass
+        
+    def onMouseDown(self, sender, x, y):
+        pass
+
+    def onMouseUp(self, sender, x, y):
+        pass
+
+    def onMouseEnter(self, sender):
+        pass
+
+    def onMouseLeave(self, sender):
+        pass
 

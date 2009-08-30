@@ -24,7 +24,6 @@ class TextBoxBase(FocusWidget):
 
     def __init__(self, element, **kwargs):
         self.changeListeners = []
-        self.clickListeners = []
         self.currentEvent = None
 
         FocusWidget.__init__(self, element, **kwargs)
@@ -32,9 +31,6 @@ class TextBoxBase(FocusWidget):
 
     def addChangeListener(self, listener):
         self.changeListeners.append(listener)
-
-    def addClickListener(self, listener):
-        self.clickListeners.append(listener)
 
     def cancelKey(self):
         if self.currentEvent is not None:
@@ -77,9 +73,6 @@ class TextBoxBase(FocusWidget):
 
     def removeChangeListener(self, listener):
         self.changeListeners.remove(listener)
-
-    def removeClickListener(self, listener):
-        self.clickListeners.remove(listener)
 
     def selectAll(self):
         length = len(self.getText())

@@ -15,45 +15,35 @@ from pyjamas import DOM
 
 from pyjamas.ui.Widget import Widget
 from pyjamas.ui import Event
-from pyjamas.ui import MouseListener
+from pyjamas.ui.MouseListener import MouseHandler
+from pyjamas.ui.ClickListener import ClickHandler
 
 prefetchImages = {}
 
-class Image(Widget):
+class Image(Widget, MouseHandler, ClickHandler):
     def __init__(self, url="", **kwargs):
         if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-Image"
         if url: kwargs['Url'] = url
 
         self.setElement(DOM.createImg())
 
-        self.clickListeners = []
         self.loadListeners = []
-        self.mouseListeners = []
 
-        self.sinkEvents(Event.ONCLICK | Event.MOUSEEVENTS | Event.ONLOAD | Event.ONERROR)
+        self.sinkEvents(Event.ONLOAD | Event.ONERROR)
         Widget.__init__(self, **kwargs)
-
-    def addClickListener(self, listener):
-        self.clickListeners.append(listener)
+        MouseHandler.__init__(self)
+        ClickHandler.__init__(self)
 
     def addLoadListener(self, listener):
         self.loadListeners.append(listener)
-
-    def addMouseListener(self, listener):
-        self.mouseListeners.append(listener)
 
     def getUrl(self):
         return DOM.getAttribute(self.getElement(), "src")
 
     def onBrowserEvent(self, event):
+        Widget.onBrowserEvent(self, event)
         type = DOM.eventGetType(event)
-        if type == "click":
-            for listener in self.clickListeners:
-                if hasattr(listener, 'onClick'): listener.onClick(self)
-                else: listener(self)
-        elif type == "mousedown" or type == "mouseup" or type == "mousemove" or type == "mouseover" or type == "mouseout":
-            MouseListener.fireMouseEvent(self.mouseListeners, self, event)
-        elif type == "load":
+        if type == "load":
             for listener in self.loadListeners:
                 listener.onLoad(self)
         elif type == "error":

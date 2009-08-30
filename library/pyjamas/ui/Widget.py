@@ -16,6 +16,10 @@ from pyjamas import log
 
 from pyjamas.ui.UIObject import UIObject
 from pyjamas.ui import Event
+from pyjamas.ui.ClickListener import ClickHandler
+from pyjamas.ui.FocusListener import FocusHandler
+from pyjamas.ui.KeyboardListener import KeyboardHandler
+from pyjamas.ui.MouseListener import MouseHandler
 
 class Widget(UIObject):
     """
@@ -52,6 +56,18 @@ class Widget(UIObject):
             self.unsinkEvents(Event.ONCONTEXTMENU)
 
     def onBrowserEvent(self, event):
+
+        # farm out the event to convenience handlers.
+        # detect existence by checking for the listener lists of each
+        # type of handler.  there's probably a better way to do this...
+        if hasattr(self, "_clickListeners"):
+            ClickHandler.onBrowserEvent(self, event)
+        if hasattr(self, "_keyboardListeners"):
+            KeyboardHandler.onBrowserEvent(self, event)
+        if hasattr(self, "_mouseListeners"):
+            MouseHandler.onBrowserEvent(self, event)
+        if hasattr(self, "_focusListeners"):
+            FocusHandler.onBrowserEvent(self, event)
 
         if self.contextMenu is None:
             return True

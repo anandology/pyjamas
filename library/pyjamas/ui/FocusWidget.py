@@ -14,32 +14,23 @@
 from pyjamas import DOM
 
 from pyjamas.ui.Widget import Widget
-from pyjamas.ui import Focus
-from pyjamas.ui import Event
-from pyjamas.ui import FocusListener
-from pyjamas.ui import KeyboardListener
+from pyjamas.ui.Focus import FocusMixin
+from pyjamas.ui.ClickListener import ClickHandler
+from pyjamas.ui.KeyboardListener import KeyboardHandler
+from pyjamas.ui.FocusListener import FocusHandler
+from pyjamas.ui.MouseListener import MouseHandler
 
-class FocusWidget(Widget):
+class FocusWidget(Widget, FocusHandler, KeyboardHandler,
+                          MouseHandler, ClickHandler,
+                          FocusMixin):
 
     def __init__(self, element, **kwargs):
         self.setElement(element)
         Widget.__init__(self, **kwargs)
-        self.clickListeners = []
-        self.focusListeners = []
-        self.keyboardListeners = []
-        self.sinkEvents(Event.ONCLICK | Event.FOCUSEVENTS | Event.KEYEVENTS)
-
-    def addClickListener(self, listener):
-        self.clickListeners.append(listener)
-
-    def addFocusListener(self, listener):
-        self.focusListeners.append(listener)
-
-    def addKeyboardListener(self, listener):
-        self.keyboardListeners.append(listener)
-
-    def getTabIndex(self):
-        return Focus.getTabIndex(self.getElement())
+        FocusHandler.__init__(self)
+        KeyboardHandler.__init__(self)
+        ClickHandler.__init__(self)
+        MouseHandler.__init__(self)
 
     def isEnabled(self):
         try:
@@ -49,39 +40,6 @@ class FocusWidget(Widget):
         except AttributeError:
             return True
 
-    def onBrowserEvent(self, event):
-        type = DOM.eventGetType(event)
-        if type == "click":
-            for listener in self.clickListeners:
-                if hasattr(listener, "onClick"): listener.onClick(self)
-                else: listener(self)
-        elif type == "blur" or type == "focus":
-            FocusListener.fireFocusEvent(self.focusListeners, self, event)
-        elif type == "keydown" or type == "keypress" or type == "keyup":
-            KeyboardListener.fireKeyboardEvent(self.keyboardListeners, self, event)
-
-    def removeClickListener(self, listener):
-        self.clickListeners.remove(listener)
-
-    def removeFocusListener(self, listener):
-        self.focusListeners.remove(listener)
-
-    def removeKeyboardListener(self, listener):
-        self.keyboardListeners.remove(listener)
-
-    def setAccessKey(self, key):
-        DOM.setAttribute(self.getElement(), "accessKey", str(key))
-
     def setEnabled(self, enabled):
         DOM.setBooleanAttribute(self.getElement(), "disabled", not enabled)
-
-    def setFocus(self, focused):
-        if (focused):
-            Focus.focus(self.getElement())
-        else:
-            Focus.blur(self.getElement())
-
-    def setTabIndex(self, index):
-        Focus.setTabIndex(self.getElement(), index)
-
 

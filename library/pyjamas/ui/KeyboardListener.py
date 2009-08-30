@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from pyjamas import DOM
+from pyjamas.ui import Event
 
 
 KEY_ALT = 18
@@ -67,4 +68,22 @@ def fireKeyboardEvent(listeners, sender, event):
         for listener in listeners:
             listener.onKeyPress(sender, keycode, modifiers)
 
+
+class KeyboardHandler:
+
+    def __init__(self):
+
+        self._keyboardListeners = []
+        self.sinkEvents( Event.KEYEVENTS)
+
+    def onBrowserEvent(self, event):
+        type = DOM.eventGetType(event)
+        if type in [ "keydown", "keyup", "keypress" ]:
+            fireKeyboardEvent(self._keyboardListeners, self, event)
+
+    def addKeyboardListener(self, listener):
+        self._keyboardListeners.append(listener)
+
+    def removeKeyboardListener(self, listener):
+        self._keyboardListeners.remove(listener)
 

@@ -16,12 +16,13 @@ from pyjamas import History
 
 from pyjamas.ui.Widget import Widget
 from pyjamas.ui import Event
+from pyjamas.ui.ClickListener import ClickHandler
 
-class Hyperlink(Widget):
+class Hyperlink(Widget, ClickHandler):
 
     def __init__(self, text="", asHTML=False, targetHistoryToken="",
                        Element=None, **kwargs):
-        self.clickListeners = []
+
         self.targetHistoryToken = ""
 
         if not Element:
@@ -40,10 +41,7 @@ class Hyperlink(Widget):
             kwargs['TargetHistoryToken'] = targetHistoryToken
 
         Widget.__init__(self, **kwargs)
-        self.sinkEvents(Event.ONCLICK)
-
-    def addClickListener(self, listener):
-        self.clickListeners.append(listener)
+        ClickHandler.__init__(self)
 
     def getHTML(self):
         return DOM.getInnerHTML(self.anchorElem)
@@ -55,15 +53,10 @@ class Hyperlink(Widget):
         return DOM.getInnerText(self.anchorElem)
 
     def onBrowserEvent(self, event):
+        Widget.onBrowserEvent(self, event)
         if DOM.eventGetType(event) == "click":
-            for listener in self.clickListeners:
-                if hasattr(listener, 'onClick'): listener.onClick(self)
-                else: listener(self)
             History.newItem(self.targetHistoryToken)
             DOM.eventPreventDefault(event)
-
-    def removeClickListener(self, listener):
-        self.clickListeners.remove(listener)
 
     def setHTML(self, html):
         DOM.setInnerHTML(self.anchorElem, html)

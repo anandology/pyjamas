@@ -14,76 +14,27 @@
 from pyjamas import DOM
 
 from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.Focus import FocusMixin
 from pyjamas.ui import Focus
-from pyjamas.ui import Event
-from pyjamas.ui import FocusListener
-from pyjamas.ui import MouseListener
-from pyjamas.ui import KeyboardListener
 
-class FocusPanel(SimplePanel):
+from pyjamas.ui.ClickListener import ClickHandler
+from pyjamas.ui.KeyboardListener import KeyboardHandler
+from pyjamas.ui.FocusListener import FocusHandler
+from pyjamas.ui.MouseListener import MouseHandler
+
+class FocusPanel(SimplePanel, FocusHandler, KeyboardHandler,
+                          MouseHandler, ClickHandler,
+                          FocusMixin):
+
     def __init__(self, child=None):
-        self.clickListeners = []
-        self.focusListeners = []
-        self.keyboardListeners = []
-        self.mouseListeners = []
 
         SimplePanel.__init__(self, Focus.createFocusable())
-        self.sinkEvents(Event.FOCUSEVENTS | Event.KEYEVENTS | Event.ONCLICK | Event.MOUSEEVENTS)
+
+        FocusHandler.__init__(self)
+        KeyboardHandler.__init__(self)
+        ClickHandler.__init__(self)
+        MouseHandler.__init__(self)
 
         if child:
             self.setWidget(child)
-
-    def addClickListener(self, listener):
-        self.clickListeners.append(listener)
-
-    def addFocusListener(self, listener):
-        self.focusListeners.append(listener)
-
-    def addKeyboardListener(self, listener):
-        self.keyboardListeners.append(listener)
-
-    def addMouseListener(self, listener):
-        self.mouseListeners.append(listener)
-
-    def getTabIndex(self):
-        return Focus.getTabIndex(self.getElement())
-
-    def onBrowserEvent(self, event):
-        type = DOM.eventGetType(event)
-
-        if type == "click":
-            for listener in self.clickListeners:
-                if hasattr(listener, 'onClick'): listener.onClick(self)
-                else: listener(self)
-        elif type == "mousedown" or type == "mouseup" or type == "mousemove" or type == "mouseover" or type == "mouseout":
-            MouseListener.fireMouseEvent(self.mouseListeners, self, event)
-        elif type == "blur" or type == "focus":
-            FocusListener.fireFocusEvent(self.focusListeners, self, event)
-        elif type == "keydown" or type == "keypress" or type == "keyup":
-            KeyboardListener.fireKeyboardEvent(self.keyboardListeners, self, event)
-
-    def removeClickListener(self, listener):
-        self.clickListeners.remove(listener)
-
-    def removeFocusListener(self, listener):
-        self.focusListeners.remove(listener)
-
-    def removeKeyboardListener(self, listener):
-        self.keyboardListeners.remove(listener)
-
-    def removeMouseListener(self, listener):
-        self.mouseListeners.remove(listener)
-
-    def setAccessKey(self, key):
-        Focus.setAccessKey(self.getElement(), key)
-
-    def setFocus(self, focused):
-        if (focused):
-            Focus.focus(self.getElement())
-        else:
-            Focus.blur(self.getElement())
-
-    def setTabIndex(self, index):
-        Focus.setTabIndex(self.getElement(), index)
-
 
