@@ -273,20 +273,6 @@ class GChartExample20 (GChart):
 
     # the single dialog box that self.gets used to edit any slice
     def __init__(self):
-        self.theSliceEditor = SliceEditor(self)
-
-        SOURCE_CODE_LINK = \
-        "<a href='GChartExample20.txt' target='_blank'>Source code</a>"
-        self.setChartSize(100, 100)
-        self.setBorderStyle("none")
-        self.setChartTitle("<big>Click pie to edit!</big>")
-        self.setChartTitleThickness(20)
-        self.setChartFootnotes(SOURCE_CODE_LINK)
-        self.setChartFootnotesThickness(20)
-        # initial slice sizes
-        initSliceSize = [0.3, 0.2, 0.1, 0.2, 0.2]
-
-        self.addClickListener(self.theSliceEditor)
 
         # labels/values for color selection drop-down list:
         self.colorSelector = ObjectSelectorDropdownList( \
@@ -331,6 +317,21 @@ class GChartExample20 (GChart):
                                             ["90%", Integer(90)],
                                             ["95%", Integer(95)],
                                             ["100%", Integer(100)]])
+
+        self.theSliceEditor = SliceEditor(self)
+
+        SOURCE_CODE_LINK = \
+        "<a href='GChartExample20.txt' target='_blank'>Source code</a>"
+        self.setChartSize(100, 100)
+        self.setBorderStyle("none")
+        self.setChartTitle("<big>Click pie to edit!</big>")
+        self.setChartTitleThickness(20)
+        self.setChartFootnotes(SOURCE_CODE_LINK)
+        self.setChartFootnotesThickness(20)
+        # initial slice sizes
+        initSliceSize = [0.3, 0.2, 0.1, 0.2, 0.2]
+
+        self.addClickListener(self.theSliceEditor)
 
         for iCurve in range(N_SLICES):
             self.addCurve()
