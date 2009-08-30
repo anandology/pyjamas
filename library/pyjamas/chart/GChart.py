@@ -504,8 +504,7 @@ class GChart (Composite, FocusHandler, KeyboardHandler,
 
         # external "curve count" should now be 0 (system curves don't count)
         if self.getNCurves() != 0:
-            raise new
-            IllegalStateException("self.getNCurves() != 0. Probably a GChart bug.")
+            raise IllegalStateException("self.getNCurves() != 0. Probably a GChart bug.")
 
 
 

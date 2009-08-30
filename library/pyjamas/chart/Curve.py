@@ -655,7 +655,7 @@ class Curve:
     * @see #clearPoints clearPoints
     * @see #getNPoints getNPoints
     """
-    def removePoint(self, iPoint):
+    def removePointByIndex(self, iPoint):
         if iPoint < 0  or  iPoint >= getNPoints():
             raise IllegalArgumentException(
             "iPoint=" + iPoint + " iPoint arg must be >= 0 and < " +
@@ -684,14 +684,18 @@ class Curve:
     *
     """
     def removePoint(self, p):
+        if not isinstance(p, Point):
+            self.removePointByIndex(p)
+            return
+
         if None == p:
             raise IllegalArgumentException("p cannot be None.")
 
         index = self.getPointIndex(p)
         if NAI == index:
             raise IllegalArgumentException("p must be a point on this curve " +
-                                    "(whose curveIndex is " +
-                                    self.getParent().getCurveIndex(this) + ")")
+                                    "(whose curveIndex is %d)" % \
+                                    self.getParent().getCurveIndex(this))
 
         self.removePoint(index)
 
