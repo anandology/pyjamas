@@ -163,7 +163,7 @@ def onModuleLoad():
     #    addChart(GChartExample11(2,1,False))
     #    addChart(GChartExample11(3,1,False))
     #    addChart(GChartExample12())
-    addChart(GChartExample14())
+    #addChart(GChartExample14())
     #    addChart(GChartExample15())
     #    addChart(GChartExample15a())
     #    addChart(GChartExample15b())
@@ -183,7 +183,7 @@ def onModuleLoad():
     #      addChart(GChartExample23(True, False))
     #      addChart(GChartExample23(True, True))
     #addChart(GChartExample24())
-    #addChart(GChartExample25())
+    addChart(GChartExample25())
     #DeferredCommand.add(Command() {
     #    def execute(self):
     #        RootPanel.get().add(GChartExample25())
