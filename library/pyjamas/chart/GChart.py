@@ -152,12 +152,116 @@ def isMouseAnchored(symbolType):
             SymbolType.ANCHOR_MOUSE_SNAP_TO_X == symbolType  or
             SymbolType.ANCHOR_MOUSE_SNAP_TO_Y == symbolType)
 
+from pyjamas.ui.ClickListener import ClickHandler
+from pyjamas.ui.KeyboardListener import KeyboardHandler
+from pyjamas.ui.FocusListener import FocusHandler
+from pyjamas.ui.MouseListener import MouseHandler
 
-class GChart (Composite):
+class GChart (Composite, FocusHandler, KeyboardHandler,
+                         MouseHandler, ClickHandler):
 
+    """*
+    * Instantiates a GChart with a curve display region of
+    * the specified size.
+    *
+    *
+    * @param xChartSize the width of the curve display region, in pixels.
+    * @param yChartSize the height of the curve display region, in pixels.
+    *
+    * @see #setXChartSize setXChartSize
+    * @see #setYChartSize setYChartSize
+    * @see #setChartSize setChartSize
+    """
+    def __init__(self,
+                       **kwargs):
 
+        self.chartTitle = None
+        self.hoverParameterInterpreter = None
+        self.hoverTouchingEnabled = True
 
+        self.defaultSymbolBorderColors = DEFAULT_SYMBOL_BORDER_COLORS
+        # creates canvas Widgets GChart needs for *_CANVAS symbol types.
+        #self.canvasFactory = None
 
+        # outer container needed so CSS-defined paddings don't interfere with positioning
+        self.chartPanel = SimplePanel()
+
+        self.borderWidth = USE_CSS
+        self.borderStyle = USE_CSS
+        self.borderColor = USE_CSS
+        self.backgroundColor = USE_CSS
+        self.blankImageURL = None
+        self.chartDecorationsChanged = True
+        # collection of curves associated with this chart.
+        self.curves = []
+        self.fontFamily = USE_CSS
+        self.footnotesThickness = NAI
+        self.legendBackgroundColor = DEFAULT_LEGEND_BACKGROUND_COLOR
+        self.legendBorderColor = DEFAULT_LEGEND_BORDER_COLOR
+        self.legendBorderWidth = DEFAULT_LEGEND_BORDER_WIDTH
+        self.legendBorderStyle = DEFAULT_LEGEND_BORDER_STYLE
+        self.legendThickness = NAI
+
+        self.chartFootnotes = None
+        self.chartFootnotesLeftJustified = True
+        self.legendVisible = True
+
+        self.legendFontColor = DEFAULT_FONT_COLOR
+        self.legendFontSize = DEFAULT_LEGEND_FONTSIZE
+        self.legendFontStyle = DEFAULT_FONT_STYLE
+        self.legendFontWeight = DEFAULT_FONT_WEIGHT
+
+        self.initialPieSliceOrientation = 0.0
+
+        """
+        * Contains the plotting region, as well as axes, ticks, and
+        * tick-labels associated with that region. Note that tickText
+        * must be centered on the ticks--placing them on the same
+        * AbsolutePanel as the ticks/plots facilitates self.
+        *
+        """
+        self.plotPanel =  PlotPanel(self)
+        self.padding = USE_CSS
+        self.optimizeForMemory = False
+        self.clipToPlotArea = False
+        self.clipToDecoratedChart = False
+        self.titleThickness = NAI
+
+        self.wasUnloaded = False
+        self.addSystemCurves();  # must come first: later lines use system curves
+        self.xAxis = XAxis(self)
+        self.yAxis = YAxis(self)
+        self.y2Axis = Y2Axis(self)
+        """
+        * See the block comment at top of "class GChart" for a detailed
+        * discussion/rational for GChart's (very minimal support) of
+        * stylenames. Would like deeper support if I can ever figure out
+        * how to do it without hamstringing future versions by locking
+        * them into a particular implementation I might need to change
+        * later on. In particular, I don't know how to provide such "deep"
+        * stylenames that also work consistently with canvas-rendered
+        * curves.
+        """
+        if not kwargs.has_key('StyleName'):
+            kwargs['StyleName'] = "gchart-GChart"
+
+        if not kwargs.has_key('XChartSize'):
+            kwargs['XChartSize'] = DEFAULT_X_CHARTSIZE
+        if not kwargs.has_key('YChartSize'):
+            kwargs['YChartSize'] = DEFAULT_Y_CHARTSIZE
+
+        # Note: plotPanel (where real chart resides) won't get
+        # added to chartPanel (top-level do-nothing container for
+        # padding and such) until AFTER first update; FF2 has some
+        # serious performance problems otherwise for common usage
+        # scenarios with large widget-count pages.
+
+        Composite.__init__(self, self.chartPanel, **kwargs)
+
+        FocusHandler.__init__(self)
+        KeyboardHandler.__init__(self)
+        ClickHandler.__init__(self)
+        MouseHandler.__init__(self)
 
     def getLastPieSliceOrientation(self):
         return self.lastPieSliceOrientation
@@ -521,101 +625,6 @@ class GChart (Composite):
             self.getSystemCurve(Y2GRIDLINES_ID).setVisible(False)
 
 
-
-
-    """*
-    * Instantiates a GChart with a curve display region of
-    * the specified size.
-    *
-    *
-    * @param xChartSize the width of the curve display region, in pixels.
-    * @param yChartSize the height of the curve display region, in pixels.
-    *
-    * @see #setXChartSize setXChartSize
-    * @see #setYChartSize setYChartSize
-    * @see #setChartSize setChartSize
-    """
-    def __init__(self, xChartSize=DEFAULT_X_CHARTSIZE,
-                       yChartSize=DEFAULT_Y_CHARTSIZE, **kwargs):
-
-        self.chartTitle = None
-        self.hoverParameterInterpreter = None
-        self.hoverTouchingEnabled = True
-
-        self.defaultSymbolBorderColors = DEFAULT_SYMBOL_BORDER_COLORS
-        # creates canvas Widgets GChart needs for *_CANVAS symbol types.
-        #self.canvasFactory = None
-
-        # outer container needed so CSS-defined paddings don't interfere with positioning
-        self.chartPanel = SimplePanel()
-
-        self.borderWidth = USE_CSS
-        self.borderStyle = USE_CSS
-        self.borderColor = USE_CSS
-        self.backgroundColor = USE_CSS
-        self.blankImageURL = None
-        self.chartDecorationsChanged = True
-        # collection of curves associated with this chart.
-        self.curves = []
-        self.fontFamily = USE_CSS
-        self.footnotesThickness = NAI
-        self.legendBackgroundColor = DEFAULT_LEGEND_BACKGROUND_COLOR
-        self.legendBorderColor = DEFAULT_LEGEND_BORDER_COLOR
-        self.legendBorderWidth = DEFAULT_LEGEND_BORDER_WIDTH
-        self.legendBorderStyle = DEFAULT_LEGEND_BORDER_STYLE
-        self.legendThickness = NAI
-
-        self.chartFootnotes = None
-        self.chartFootnotesLeftJustified = True
-        self.legendVisible = True
-
-        self.legendFontColor = DEFAULT_FONT_COLOR
-        self.legendFontSize = DEFAULT_LEGEND_FONTSIZE
-        self.legendFontStyle = DEFAULT_FONT_STYLE
-        self.legendFontWeight = DEFAULT_FONT_WEIGHT
-
-        self.initialPieSliceOrientation = 0.0
-
-        """
-        * Contains the plotting region, as well as axes, ticks, and
-        * tick-labels associated with that region. Note that tickText
-        * must be centered on the ticks--placing them on the same
-        * AbsolutePanel as the ticks/plots facilitates self.
-        *
-        """
-        self.plotPanel =  PlotPanel(self)
-        self.padding = USE_CSS
-        self.optimizeForMemory = False
-        self.clipToPlotArea = False
-        self.clipToDecoratedChart = False
-        self.titleThickness = NAI
-
-        Composite.__init__(self, **kwargs)
-
-        self.wasUnloaded = False
-        self.addSystemCurves();  # must come first: later lines use system curves
-        self.xAxis = XAxis(self)
-        self.yAxis = YAxis(self)
-        self.y2Axis = Y2Axis(self)
-        self.setXChartSize(xChartSize)
-        self.setYChartSize(yChartSize)
-        # Note: plotPanel (where real chart resides) won't get
-        # added to chartPanel (top-level do-nothing container for
-        # padding and such) until AFTER first update; FF2 has some
-        # serious performance problems otherwise for common usage
-        # scenarios with large widget-count pages.
-        self.initWidget(self.chartPanel)
-        """
-        * See the block comment at top of "class GChart" for a detailed
-        * discussion/rational for GChart's (very minimal support) of
-        * stylenames. Would like deeper support if I can ever figure out
-        * how to do it without hamstringing future versions by locking
-        * them into a particular implementation I might need to change
-        * later on. In particular, I don't know how to provide such "deep"
-        * stylenames that also work consistently with canvas-rendered
-        * curves.
-        """
-        self.setStyleName("gchart-GChart")
 
 
 
