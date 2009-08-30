@@ -17,7 +17,7 @@ groupLabels = [ \
 barLabels = [ "Q1", "Q2", "Q3", "Q4"]
 barColors = [ "red", "blue", "green", "silver"]
 MAX_REVENUE = 1000
-WIDTH = 300.0
+WIDTH = 500.0
 HEIGHT = 400.0
 
 """*

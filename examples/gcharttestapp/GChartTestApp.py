@@ -175,7 +175,7 @@ def onModuleLoad():
     #      addChart(GChartExample19())
     addChart(GChartExample20())
     #      addChart(GChartExample20a())
-    #addChart(GChartExample21())
+    addChart(GChartExample21())
     #      addChart(GChartExample22())
     #      addChart(GChartExample22a())
     #      addChart(GChartExample23(False, False))
