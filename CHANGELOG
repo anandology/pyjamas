@@ -1,6 +1,10 @@
                     Changes made to Pyjamas since 0.6
                     ---------------------------------
 
+ * Added new "Handler" classes MouseHandler, ClickHandler, KeyboardHandler
+   and FocusHandler, which need only be "mixed in" to a Widget in order
+   to get event handling.
+
  * fixed floating point precision in sprintf, now '%.2f' works
 
  * Added basic implemention of new style decorators and 2.6 style property()
