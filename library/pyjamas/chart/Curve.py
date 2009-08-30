@@ -693,9 +693,9 @@ class Curve:
 
         index = self.getPointIndex(p)
         if NAI == index:
-            raise IllegalArgumentException("p must be a point on this curve " +
-                                    "(whose curveIndex is %d)" % \
-                                    self.getParent().getCurveIndex(this))
+            raise ValueError(
+                "p must be a point on this curve (whose curveIndex is %d)" % \
+                        self.getParent().getCurveIndex(self))
 
         self.removePoint(index)
 
