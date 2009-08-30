@@ -1975,7 +1975,7 @@ class XAxis(Axis):
         return result
 
 
-    def getTickLabelThickness(self, needsPopulation):
+    def getTickLabelThickness(self, needsPopulation=True):
         # overrides base class
         if self.tickLabelThickness != GChart.NAI:
             result = self.tickLabelThickness
