@@ -1,4 +1,3 @@
-import math
 
 from pyjamas import DOM
 from pyjamas import Window
@@ -80,14 +79,14 @@ class ObjectSelectorDropdownList(ListBox):
 
     # returns the currently selected object in the drop-down list
     def getSelectedObject(self):
-        result = self.getObject(getSelectedIndex())
+        result = self.getObject(self.getSelectedIndex())
         return result
 
 
     # makes given object the selected one (assumes it's on list--once)
     def setSelectedObject(self, selectedObject):
         for i in range(len(self.labelObjectPairs)):
-            if selectedObject == labelObjectPairs[i][OBJECT_COL]:
+            if selectedObject == self.labelObjectPairs[i][OBJECT_COL]:
                 self.setSelectedIndex(i)
                 return
 
@@ -165,6 +164,7 @@ class SliceEditor(DialogBox):
             self.chart.update(TouchedPointUpdateOption.TOUCHED_POINT_LOCKED)
 
         # slice properties table (slice color, shading and size)
+        propertyForm.setSize(3, 2)
         propertyForm.setText(  0, 0, "Color:")
         propertyForm.setWidget(0, 1, self.chart.colorSelector)
         propertyForm.setText(  1, 0, "Shading Pattern:")
@@ -186,19 +186,19 @@ class SliceEditor(DialogBox):
         # create main form and place it in DialogBox
         mainPanel.add(propertyForm)
         mainPanel.add(commandBar)
-        self.add(mainPanel);  # add the DialogBox' single, defining, widget
+        self.setWidget(mainPanel); # add the DialogBox' single, defining, widget
 
     # loads properties associated with point/slice into form
     def copyChartPropertiesIntoForm(self, p):
         # dialog title bar caption:
-        self.setText("Slice " + self.chart.getCurveIndex(p.getParent()) +
-                                    " Properties")
+        self.setText("Slice %d Properties " % \
+                         self.chart.getCurveIndex(p.getParent()))
         self.chart.colorSelector.setSelectedObject(
             self.getColorSpec( p.getParent().getSymbol().getBackgroundColor(),
                                p.getParent().getSymbol().getBorderColor()))
         self.chart.shadingSelector.setSelectedObject(
                         p.getParent().getSymbol().getSymbolType())
-        sliceSize = math.round(100*p.getParent().getSymbol().getPieSliceSize())
+        sliceSize = round(100*p.getParent().getSymbol().getPieSliceSize())
         self.chart.sliceSizeSelector.setSelectedObject( int(sliceSize) )
 
     # saves current form self.settings into associated point/slice of chart
@@ -235,9 +235,10 @@ class SliceEditor(DialogBox):
 
     # Retrieves an existing ColorSpec object reference, given its colors
     def getColorSpec(self, backgroundColor, borderColor):
-        for i in range(colorSelector.getNObjects()):
+        for i in range(self.chart.colorSelector.getNObjects()):
             cs =  self.chart.colorSelector.getObject(i)
-            if backgroundColor == cs.backgroundColor and  borderColor == cs.borderColor:
+            if (backgroundColor == cs.backgroundColor and  
+                borderColor == cs.borderColor):
                 return cs
 
 
