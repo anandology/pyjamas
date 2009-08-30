@@ -1554,8 +1554,8 @@ class PlotPanel (AbsolutePanel):
                     self.touchedHoverWidget.hoverCleanup(prevTouchedPoint)
 
                 except:
-                    self.insideHoverCleanup = False
-
+                    pass
+                self.insideHoverCleanup = False
 
 
 
@@ -1582,7 +1582,8 @@ class PlotPanel (AbsolutePanel):
                     self.touchedHoverWidget.hoverUpdate(p)
 
                 except:
-                    self.insideHoverUpdate = False
+                    pass
+                self.insideHoverUpdate = False
 
 
             cAnnotation.getPoint(0).setAnnotationWidget(

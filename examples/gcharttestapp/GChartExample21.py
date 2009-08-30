@@ -53,10 +53,10 @@ class YChanger (HorizontalPanel):
     def onClick(self, sender):
         if sender == self.incrementY:
             self.chart.getTouchedPoint().setY(
-                                self.chart.getTouchedPoint().getY() - 1)
+                                self.chart.getTouchedPoint().getY() + 1)
         else:
             self.chart.getTouchedPoint().setY(
-                                self.chart.getTouchedPoint().getY() + 1)
+                                self.chart.getTouchedPoint().getY() - 1)
         self.chart.update()
     
     # The 2 HoverUpdateable interface methods:
