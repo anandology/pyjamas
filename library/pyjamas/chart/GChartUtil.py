@@ -22,7 +22,10 @@
 
 from pyjamas import DOM
 
-from pyjamas.chart.GChartConsts import NAI
+# XXX HACK!  recursive includes avoidance...
+NAI = 2 ** 31
+
+
 from pyjamas.chart import AnnotationLocation
 from pyjamas.chart import Double
 
