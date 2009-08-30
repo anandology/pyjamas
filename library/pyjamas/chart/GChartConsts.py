@@ -19,8 +19,8 @@
 
 
 
-import AnnotationLocation
-import TickLocation
+from pyjamas.chart import AnnotationLocation
+from pyjamas.chart import TickLocation
 from pyjamas.chart.HovertextChunk import formatAsHovertext
 
 import pygwt
