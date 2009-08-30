@@ -53,6 +53,7 @@ from GChartConsts import XAXIS_ID
 from GChartConsts import TICK_CHARHEIGHT_TO_FONTSIZE_LOWERBOUND 
 from GChartConsts import TICK_CHARWIDTH_TO_FONTSIZE_LOWERBOUND 
 from GChartConsts import Y_AXIS
+from GChartConsts import Y2_AXIS
 
 from GChartUtil import htmlHeight, htmlWidth
 
@@ -485,7 +486,6 @@ class Axis:
         *"""
 
         if not (Double.isNaN(self.axisMax)):
-            # x!=x is a faster isNaN
             return self.axisMax
 
         elif GChart.NAI != self.tickCount:
@@ -512,7 +512,6 @@ class Axis:
         ** @see #setAxisMin setAxisMin
         *"""
         if not (Double.isNaN(self.axisMin)):
-            # x!=x is a faster isNaN
             return self.axisMin; # explicitly set
 
         elif GChart.NAI != self.tickCount:
@@ -1780,18 +1779,15 @@ class Axis:
         # charts, do not have axes that shrink down to a point,
         # which would create numerical and visual difficulties.
         if (Double.isNaN(min))  and  (Double.isNaN(max)):
-            # x!=x is a faster isNaN
             # e.g. no data and no explicitly specified ticks
             min = 0
             max = min + DEFAULT_AXIS_RANGE
 
         elif (Double.isNaN(min))  and  not (Double.isNaN(max)):
-            # x!=x is a faster isNaN
             # e.g. no data but only max explicitly set
             min = max - DEFAULT_AXIS_RANGE
 
         elif not (Double.isNaN(min))  and  (Double.isNaN(max)):
-            # x!=x is a faster isNaN
             # e.g. no data but only min explicitly set
             max = min + DEFAULT_AXIS_RANGE
 
@@ -1849,7 +1845,6 @@ class Axis:
     # Same as max, except treats NaN/MAX_VALUE values as "not there"
     def maxIgnoreNaNAndMaxValue(self, x1, x2):
         if Double.isNaN(x1)  or  Double.MAX_VALUE == x1  or  -Double.MAX_VALUE == x1:
-            # x!=x is a faster isNaN
             result = x2
 
         elif Double.isNaN(x2)  or  Double.MAX_VALUE == x2  or  -Double.MAX_VALUE == x2:
@@ -1863,7 +1858,6 @@ class Axis:
     # Same as min, except treats NaN/MAX_VALUE values as "not there"
     def minIgnoreNaNAndMaxValue(self, x1, x2):
         if Double.isNaN(x1)  or  Double.MAX_VALUE == x1  or  -Double.MAX_VALUE == x1:
-            # x!=x is a faster isNaN
             result = x2
 
         elif Double.isNaN(x2)  or  Double.MAX_VALUE == x2  or  -Double.MAX_VALUE == x2:
@@ -1878,7 +1872,6 @@ class Axis:
     # limit, so, for update purposes, they are considered
     # to have changed.
     def invalidateDynamicAxisLimits(self):
-        # x!=x is a faster isNaN
         if (Double.isNaN(axisMin)):
             self.setAxisMin(axisMin)
 
@@ -2057,7 +2050,7 @@ class Y2Axis(Axis):
 
     def getDataMax(self):
         result = -Double.MAX_VALUE
-        nCurves = getNCurves()
+        nCurves = self.chart.getNCurves()
         for i in range(nCurves):
             c = self.getSystemCurve(i)
             if not c.isVisible():
@@ -2067,7 +2060,7 @@ class Y2Axis(Axis):
                 nPoints = c.getNPoints()
                 for j in range(nPoints):
                     result = self.maxIgnoreNaNAndMaxValue(result,
-                    c.getPoint(j).getY())
+                                                        c.getPoint(j).getY())
 
 
 
@@ -2077,7 +2070,7 @@ class Y2Axis(Axis):
 
     def getDataMin(self):
         result = Double.MAX_VALUE
-        nCurves = getNCurves()
+        nCurves = self.chart.getNCurves()
         for i in range(nCurves):
             c = self.getSystemCurve(i)
             if not c.isVisible():

@@ -223,7 +223,6 @@ class SymbolType:
         xMin = pp.getXMin()
         xMax = pp.getXMax()
         xMid = symbol.getBaseline()
-        # x!=x is a faster isNaN
         if (Double.isNaN(xMid)):
             xMid = (xMin + xMax)/2.
 
@@ -306,7 +305,6 @@ class SymbolType:
             yMin =  pp.getYMax()
             yMax =  pp.getYMin()
         yMid = symbol.getBaseline()
-        # x!=x is a faster isNaN
         if (Double.isNaN(yMid)):
             yMid = (yMin + yMax)/2.
 
@@ -372,7 +370,6 @@ class SymbolType:
         xMin = pp.getXMin()
         xMax = pp.getXMax()
         xMid = symbol.getBaseline()
-        # x!=x is a faster isNaN
         if (Double.isNaN(xMid)):
             xMid = (xMin + xMax)/2.
 
@@ -409,7 +406,6 @@ class SymbolType:
         xMin = pp.getXMin()
         xMax = pp.getXMax()
         xMid = symbol.getBaseline()
-        # x!=x is a faster isNaN
         if (Double.isNaN(xMid)):
             xMid = (xMin + xMax)/2.
 
@@ -458,7 +454,6 @@ class SymbolType:
             yMin =  pp.getYMax()
             yMax =  pp.getYMin()
         yMid = symbol.getBaseline()
-        # x!=x is a faster isNaN
         if (Double.isNaN(yMid)):
             yMid = (yMin + yMax)/2.
 
@@ -506,7 +501,6 @@ class SymbolType:
             yMin =  pp.getYMax()
             yMax =  pp.getYMin()
         yMid = symbol.getBaseline()
-        # x!=x is a faster isNaN
         if (Double.isNaN(yMid)):
             yMid = (yMin + yMax)/2.
 
@@ -545,7 +539,6 @@ class SymbolType:
         xMin = pp.getXMin()
         xMax = pp.getXMax()
         xMid = symbol.getBaseline()
-        # x!=x is a faster isNaN
         if (Double.isNaN(xMid)):
             xMid = (xMin + xMax)/2.
 
@@ -595,7 +588,6 @@ class SymbolType:
             yMin =  pp.getYMax()
             yMax =  pp.getYMin()
         yMid = symbol.getBaseline()
-        # x!=x is a faster isNaN
         if (Double.isNaN(yMid)):
             yMid = (yMin + yMax)/2.
 
@@ -643,7 +635,6 @@ class SymbolType:
         xMin = pp.getXMin()
         xMax = pp.getXMax()
         xMid = symbol.getBaseline()
-        # x!=x is a faster isNaN
         if (Double.isNaN(xMid)):
             xMid = (xMin + xMax)/2.
 
@@ -688,7 +679,6 @@ class SymbolType:
             yMin =  pp.getYMax()
             yMax =  pp.getYMin()
         yMid = symbol.getBaseline()
-        # x!=x is a faster isNaN
         if (Double.isNaN(yMid)):
             yMid = (yMin + yMax)/2.
 
@@ -939,7 +929,6 @@ class SymbolType:
         xMin = pp.getXMin()
         xMax = pp.getXMax()
         xMid = symbol.getBaseline()
-        # x!=x is a faster isNaN
         if (Double.isNaN(xMid)):
             xMid = (xMin + xMax)/2.
 
@@ -951,7 +940,7 @@ class SymbolType:
                                         prevXPx, nextXPx,
                                         xMinPx, xMaxPx, xMidPx)
         if (Double.isNaN(symWidth)):
-            return; # x!=x is a faster isNaN
+            return
 
 
         xLeft = self.getUpperLeftX(width, xPx,
@@ -959,7 +948,7 @@ class SymbolType:
                                     xMinPx, xMaxPx, xMidPx,
                                     pp.getXMousePlotArea())
         if (Double.isNaN(xLeft)):
-            return; # x!=x is a faster isNaN
+            return
 
 
         xCenter = xLeft + symWidth/2.
@@ -972,7 +961,6 @@ class SymbolType:
             yMin =  pp.getYMax()
             yMax =  pp.getYMin()
         yMid = symbol.getBaseline()
-        # x!=x is a faster isNaN
         if (Double.isNaN(yMid)):
             yMid = (yMin + yMax)/2.
 
@@ -984,7 +972,7 @@ class SymbolType:
                                             prevYPx, nextYPx,
                                             yMinPx, yMaxPx, yMidPx)
         if (Double.isNaN(symHeight)):
-            return; # x!=x is a faster isNaN
+            return
 
 
         yTop = self.getUpperLeftY(height, yPx,
@@ -992,7 +980,7 @@ class SymbolType:
                             yMinPx, yMaxPx, yMidPx,
                             pp.getYMousePlotArea())
         if (Double.isNaN(yTop)):
-            return; # x!=x is a faster isNaN
+            return
 
 
         yCenter =  yTop + symHeight/2.
@@ -2117,7 +2105,6 @@ class PieSliceSymbolType (SymbolType):
         theta0 = symbol.getPieSliceTheta0()
         theta1 = symbol.getPieSliceTheta1()
         canvas = grp.getCanvas()
-        # x!=x is a faster isNaN
         if (Double.isNaN(xPx))  or  (Double.isNaN(yPx)):
             return; # undefined slice pivot point
 
@@ -2329,22 +2316,21 @@ class PieSliceSymbolType (SymbolType):
 
                     # intersection points sorted by increasing y within p[]
                     if e1 < e2:
-                        # x!=x is a faster isNaN
-                        if not (e1!=e1):
+                        if not Double.isNaN(e1):
                             p[nP] = e1
                             nP += 1
 
-                        if not (e2!=e2):
+                        if not Double.isNaN(e2):
                             p[nP] = e2
                             nP += 1
 
 
                     else:
-                        if not (e2!=e2):
+                        if not Double.isNaN(e2):
                             p[nP] = e2
                             nP += 1
 
-                        if not (e1!=e1):
+                        if not Double.isNaN(e1):
                             p[nP] = e1
                             nP += 1
 
@@ -2430,8 +2416,7 @@ class PieSliceSymbolType (SymbolType):
 
                     # intersection points sorted by increasing x within p[]
                     if e1 < e2:
-                        # x!=x is a faster isNaN
-                        if not (e1!=e1):
+                        if not Double.isNaN(e2):
                             p[nP] = e1
                             nP += 1
 
@@ -2441,11 +2426,11 @@ class PieSliceSymbolType (SymbolType):
 
 
                     else:
-                        if not (e2!=e2):
+                        if not Double.isNaN(e2):
                             p[nP] = e2
                             nP += 1
 
-                        if not (e1!=e1):
+                        if not Double.isNaN(e1):
                             p[nP] = e1
                             nP += 1
 

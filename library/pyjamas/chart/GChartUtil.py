@@ -27,6 +27,7 @@ NAI = 2 ** 31
 
 
 import AnnotationLocation
+import Double
 
 """*
 * Convenience method that, given a plain text label, returns an
@@ -275,8 +276,7 @@ def validateMultipliers(widthMultiplier, heightMultiplier):
 
 # is value within given limits, inclusive?
 def withinRange(x, minLim, maxLim):
-    # x!=x is a faster isNaN; NaN is considered in range
-    result = (x!=x) and True or (x >= minLim  and  x <= maxLim)
+    result = Double.isNaN(x) and True or (x >= minLim  and  x <= maxLim)
     return result
 
 
