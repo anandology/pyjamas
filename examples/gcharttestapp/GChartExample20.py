@@ -180,6 +180,8 @@ class SliceEditor(DialogBox):
         mainPanel.add(commandBar)
         self.setWidget(mainPanel); # add the DialogBox' single, defining, widget
 
+        self.addClickListener(self)
+
     def onChange(self, sender):
         self.copyFormPropertiesIntoChart(self.chart.getTouchedPoint())
         # Changes in slice size can place a different, or no, slice under
