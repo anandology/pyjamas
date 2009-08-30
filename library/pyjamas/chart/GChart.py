@@ -103,6 +103,7 @@ import pygwt
 from Axis import XAxis, YAxis, Y2Axis
 
 global canvasFactory
+canvasFactory = None
 
 """*
 *
@@ -543,7 +544,7 @@ class GChart (Composite):
 
         self.defaultSymbolBorderColors = DEFAULT_SYMBOL_BORDER_COLORS
         # creates canvas Widgets GChart needs for *_CANVAS symbol types.
-        self.canvasFactory = None
+        #self.canvasFactory = None
 
         # outer container needed so CSS-defined paddings don't interfere with positioning
         self.chartPanel = SimplePanel()
@@ -3657,7 +3658,10 @@ class GChart (Composite):
                 c.setWasCanvasRendered(False)
 
             # continuous fill# non-empty fill# canvas available
-            elif 0 == c.getSymbol().getFillSpacing()  and  0 < c.getSymbol().getFillThickness()  and  None != getCanvasFactory()  and            c.isVisible():
+            elif (0 == c.getSymbol().getFillSpacing()  and  
+                     0 < c.getSymbol().getFillThickness()  and  
+                        None != getCanvasFactory()  and
+                           c.isVisible()):
                 grp.maybeAddCanvas()
                 canvasRegion = c.getContainingRectangle(self.plotPanel)
                 grp.beginRendering(canvasRegion)

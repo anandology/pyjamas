@@ -828,7 +828,8 @@ class ReusableImage (Image):
 class GraphicsRenderingPanel (AbsolutePanel):
     # Add a canvas, if needed
     def maybeAddCanvas(self):
-        if None != self.canvasFactory  and  None == self.canvas:
+        canvasFactory = GChart.getCanvasFactory()
+        if None != canvasFactory  and  None == self.canvas:
             self.canvas = canvasFactory.create()
             if None != self.canvas:
                 if isintance(self.canvas, Widget):

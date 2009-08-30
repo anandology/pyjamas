@@ -108,8 +108,9 @@ def addChart(gchart):
 def addChartNoUpdate(gchart):
     DeferredCommand.add(AddOneChart(gchart, False))
 
-class GWTCanvasBasedCanvasFactory :
+class GWTCanvasBasedCanvasFactory(object):
     def create(self):
+        error
         return Canvas()
 
 
@@ -142,12 +143,12 @@ def onModuleLoad():
     #    addChart(GChartExample01c())
     #addChart(GChartExample02())
     #addChart(GChartExample03())
-    addChart(GChartExample04())
+    #addChart(GChartExample04())
     #    addChart(GChartExample04a())
     #    addChart(GChartExample04b())
     #    addChart(GChartExample05())
     #addChart(GChartExample06())
-    #addChart(GChartExample07())
+    addChart(GChartExample07())
     #    addChart(GChartExample08())
     #    addChart(GChartExample09())
     #    addChart(GChartExample10())
