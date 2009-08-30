@@ -483,7 +483,7 @@ class Axis:
         ** @see #getDataMax getDataMax
         *"""
 
-        if not (self.axisMax!=self.axisMax):
+        if not (Double.isNaN(self.axisMax):
             # x!=x is a faster isNaN
             return self.axisMax
 
@@ -510,7 +510,7 @@ class Axis:
         **
         ** @see #setAxisMin setAxisMin
         *"""
-        if not (self.axisMin!=self.axisMin):
+        if not (Double.isNaN(self.axisMin):
             # x!=x is a faster isNaN
             return self.axisMin; # explicitly set
 
@@ -1847,11 +1847,11 @@ class Axis:
 
     # Same as max, except treats NaN/MAX_VALUE values as "not there"
     def maxIgnoreNaNAndMaxValue(self, x1, x2):
-        if (x1!=x1)  or  Double.MAX_VALUE == x1  or  -Double.MAX_VALUE == x1:
+        if (Double.isNaN(x1)  or  Double.MAX_VALUE == x1  or  -Double.MAX_VALUE == x1:
             # x!=x is a faster isNaN
             result = x2
 
-        elif (x2!=x2)  or  Double.MAX_VALUE == x2  or  -Double.MAX_VALUE == x2:
+        elif (Double.isNaN(x2)  or  Double.MAX_VALUE == x2  or  -Double.MAX_VALUE == x2:
             result = x1
 
         else:
@@ -1861,11 +1861,11 @@ class Axis:
 
     # Same as min, except treats NaN/MAX_VALUE values as "not there"
     def minIgnoreNaNAndMaxValue(self, x1, x2):
-        if (x1!=x1)  or  Double.MAX_VALUE == x1  or  -Double.MAX_VALUE == x1:
+        if (Double.isNaN(x1)  or  Double.MAX_VALUE == x1  or  -Double.MAX_VALUE == x1:
             # x!=x is a faster isNaN
             result = x2
 
-        elif (x2!=x2)  or  Double.MAX_VALUE == x2  or  -Double.MAX_VALUE == x2:
+        elif (Double.isNaN(x2)  or  Double.MAX_VALUE == x2  or  -Double.MAX_VALUE == x2:
             result = x1
 
         else:
@@ -1879,10 +1879,10 @@ class Axis:
     def invalidateDynamicAxisLimits(self):
         # x!=x is a faster isNaN
         if (Double.isNaN(axisMin)):
-            setAxisMin(axisMin)
+            self.setAxisMin(axisMin)
 
         if (Double.isNaN(axisMax)):
-            setAxisMax(axisMax)
+            self.setAxisMax(axisMax)
 
 
 """* The x-axis of a GChart.
@@ -1944,7 +1944,7 @@ class XAxis(Axis):
 
             nPoints = c.getNPoints()
             for j in range(nPoints):
-                result = maxIgnoreNaNAndMaxValue(result,
+                result = self.maxIgnoreNaNAndMaxValue(result,
                                     c.getPoint(j).getX())
 
 
@@ -1962,7 +1962,7 @@ class XAxis(Axis):
 
             nPoints = c.getNPoints()
             for j in range(nPoints):
-                result = minIgnoreNaNAndMaxValue(result, c.getPoint(j).getX())
+                result = self.minIgnoreNaNAndMaxValue(result, c.getPoint(j).getX())
 
 
         if result == Double.MAX_VALUE:
@@ -2065,7 +2065,7 @@ class Y2Axis(Axis):
             if c.getYAxis() == Y2_AXIS:
                 nPoints = c.getNPoints()
                 for j in range(nPoints):
-                    result = maxIgnoreNaNAndMaxValue(result,
+                    result = self.maxIgnoreNaNAndMaxValue(result,
                     c.getPoint(j).getY())
 
 
@@ -2085,7 +2085,7 @@ class Y2Axis(Axis):
             if c.getYAxis() == Y2_AXIS:
                 nPoints = c.getNPoints()
                 for j in range(nPoints):
-                    result = minIgnoreNaNAndMaxValue(result,
+                    result = self.minIgnoreNaNAndMaxValue(result,
                                                     c.getPoint(j).getY())
 
 
@@ -2165,7 +2165,7 @@ class YAxis(Axis):
             if c.getYAxis() == Y_AXIS:
                 nPoints = c.getNPoints()
                 for j in range(nPoints):
-                    result = maxIgnoreNaNAndMaxValue(result,
+                    result = self.maxIgnoreNaNAndMaxValue(result,
                     c.getPoint(j).getY())
 
 
@@ -2185,7 +2185,7 @@ class YAxis(Axis):
             if c.getYAxis() == Y_AXIS:
                 nPoints = c.getNPoints()
                 for j in range(nPoints):
-                    result = minIgnoreNaNAndMaxValue(result,
+                    result = self.minIgnoreNaNAndMaxValue(result,
                     c.getPoint(j).getY())
 
 
