@@ -21,6 +21,8 @@
 import math
 import re
 
+from pyjamas.ui.Widget import Widget
+
 from pyjamas.chart import GChartConsts
 from pyjamas.chart import Double
 from pyjamas.chart import SymbolType
