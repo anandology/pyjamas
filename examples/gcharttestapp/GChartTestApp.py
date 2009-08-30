@@ -115,7 +115,8 @@ class GWTCanvasBasedCanvasFactory(object):
 
 def onModuleLoad():
     
-    GChart.setCanvasFactory(GWTCanvasBasedCanvasFactory())
+    # TODO: port http://code.google.com/p/gwt-canvas
+    #GChart.setCanvasFactory(GWTCanvasBasedCanvasFactory())
     
     # thinking about retiring these tests:
     #    addChart(GChartExample11(0,2,False))
