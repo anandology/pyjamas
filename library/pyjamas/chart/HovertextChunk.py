@@ -46,43 +46,43 @@ def parseHovertextTemplate(htTemplate):
     # keyword like part, followed by a string literal.
     sChunk = htTemplate.split("${")
     #HovertextChunk[] result = HovertextChunk[len(sChunk)]
-    result = [None] * len(sChunk)
+    result = []
 
     for i in range(len(sChunk)):
         sC = sChunk[i]
         if 0 == i:
             # leading (non-parametric) plain text chunk
-            result[i] = HovertextChunk(HOVERTEXT_PARAM_NONE, None, sC)
+            result.append(HovertextChunk(HOVERTEXT_PARAM_NONE, None, sC))
 
         elif sC.startswith("x}"):
-            result[i] = HovertextChunk(
+            result.append(HovertextChunk(
                             HOVERTEXT_PARAM_X, "x",
-                            sC[len("x}"):])
+                            sC[len("x}"):]))
 
         elif sC.startswith("y}"):
-            result[i] = HovertextChunk(
+            result.append(HovertextChunk(
                             HOVERTEXT_PARAM_Y, "y",
-                            sC[len("y}"):])
+                            sC[len("y}"):]))
 
         elif sC.startswith("pieSliceSize}"):
-            result[i] = HovertextChunk(
+            result.append(HovertextChunk(
                             HOVERTEXT_PARAM_PIESLICESIZE,
                             "pieSliceSize",
-                            sC[len("pieSliceSize}"):])
+                            sC[len("pieSliceSize}"):]))
 
         elif userpattern.match(sC):
             # fits pattern for a user defined parameter
             closeCurlyIndex = sC.find("}")
-            result[i] = HovertextChunk(
+            result.append(HovertextChunk(
                             HOVERTEXT_PARAM_USERDEFINED,
                             sC[0:closeCurlyIndex],
-                            sC[closeCurlyIndex+1:])
+                            sC[closeCurlyIndex+1:]))
 
         else:
             # leading "${" without "paramName}". Likely a
             # typo, but output verbatim to give them a clue:
-            result[i] = HovertextChunk(HOVERTEXT_PARAM_NONE,
-                                        None, "${" + sC)
+            result.append(HovertextChunk(HOVERTEXT_PARAM_NONE,
+                                        None, "${" + sC))
 
     return result
 
