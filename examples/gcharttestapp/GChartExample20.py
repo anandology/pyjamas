@@ -155,14 +155,6 @@ class SliceEditor(DialogBox):
         self.chart.sliceSizeSelector.addChangeListener(self)
         self.chart.shadingSelector.addChangeListener(self)
 
-        def onChange(self, sender):
-            self.chart.copyFormPropertiesIntoChart(self.chart.getTouchedPoint())
-            # Changes in slice size can place a different, or no, slice under
-            # GChart's "current mouse position". Such chart changes "underneath the
-            # mouse" would normally result in a change in the touched point; the
-            # TOUCHED_POINT_LOCKED update option keeps that from happening.
-            self.chart.update(TouchedPointUpdateOption.TOUCHED_POINT_LOCKED)
-
         # slice properties table (slice color, shading and size)
         propertyForm.setSize(3, 2)
         propertyForm.setText(  0, 0, "Color:")
@@ -187,6 +179,14 @@ class SliceEditor(DialogBox):
         mainPanel.add(propertyForm)
         mainPanel.add(commandBar)
         self.setWidget(mainPanel); # add the DialogBox' single, defining, widget
+
+    def onChange(self, sender):
+        self.chart.copyFormPropertiesIntoChart(self.chart.getTouchedPoint())
+        # Changes in slice size can place a different, or no, slice under
+        # GChart's "current mouse position". Such chart changes "underneath the
+        # mouse" would normally result in a change in the touched point; the
+        # TOUCHED_POINT_LOCKED update option keeps that from happening.
+        self.chart.update(TouchedPointUpdateOption.TOUCHED_POINT_LOCKED)
 
     # loads properties associated with point/slice into form
     def copyChartPropertiesIntoForm(self, p):
