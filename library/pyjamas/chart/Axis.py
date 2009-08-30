@@ -483,7 +483,7 @@ class Axis:
         ** @see #getDataMax getDataMax
         *"""
 
-        if not (Double.isNaN(self.axisMax):
+        if not (Double.isNaN(self.axisMax)):
             # x!=x is a faster isNaN
             return self.axisMax
 
@@ -510,7 +510,7 @@ class Axis:
         **
         ** @see #setAxisMin setAxisMin
         *"""
-        if not (Double.isNaN(self.axisMin):
+        if not (Double.isNaN(self.axisMin)):
             # x!=x is a faster isNaN
             return self.axisMin; # explicitly set
 
@@ -1847,11 +1847,11 @@ class Axis:
 
     # Same as max, except treats NaN/MAX_VALUE values as "not there"
     def maxIgnoreNaNAndMaxValue(self, x1, x2):
-        if (Double.isNaN(x1)  or  Double.MAX_VALUE == x1  or  -Double.MAX_VALUE == x1:
+        if Double.isNaN(x1)  or  Double.MAX_VALUE == x1  or  -Double.MAX_VALUE == x1:
             # x!=x is a faster isNaN
             result = x2
 
-        elif (Double.isNaN(x2)  or  Double.MAX_VALUE == x2  or  -Double.MAX_VALUE == x2:
+        elif Double.isNaN(x2)  or  Double.MAX_VALUE == x2  or  -Double.MAX_VALUE == x2:
             result = x1
 
         else:
@@ -1861,11 +1861,11 @@ class Axis:
 
     # Same as min, except treats NaN/MAX_VALUE values as "not there"
     def minIgnoreNaNAndMaxValue(self, x1, x2):
-        if (Double.isNaN(x1)  or  Double.MAX_VALUE == x1  or  -Double.MAX_VALUE == x1:
+        if Double.isNaN(x1)  or  Double.MAX_VALUE == x1  or  -Double.MAX_VALUE == x1:
             # x!=x is a faster isNaN
             result = x2
 
-        elif (Double.isNaN(x2)  or  Double.MAX_VALUE == x2  or  -Double.MAX_VALUE == x2:
+        elif Double.isNaN(x2)  or  Double.MAX_VALUE == x2  or  -Double.MAX_VALUE == x2:
             result = x1
 
         else:
