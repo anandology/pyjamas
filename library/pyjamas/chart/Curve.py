@@ -21,12 +21,14 @@ import math
 
 import GChart
 from pyjamas.chart import Double
-from Point import Point
-from Symbol import Symbol
+from pyjamas.chart.Point import Point
+from pyjamas.chart.Symbol import Symbol
 
+from pyjamas.chart.GChartConsts import Y_AXIS
 from pyjamas.chart.GChartConsts import Y2_AXIS
 from pyjamas.chart.GChartConsts import N_PRE_SYSTEM_CURVES
-import GChartWidgets
+from pyjamas.chart.GChartConsts import NAI
+from pyjamas.chart import GChartWidgets
 
 
 """*
@@ -34,7 +36,7 @@ import GChartWidgets
 * information such as the x,y coordinates of each point,
 * the symbol used to represent points on the curve, etc.
 * <p>
-* To create a curve, use the <tt>GChart.addCurve</tt>
+* To create a curve, use the <tt>addCurve</tt>
 * method.
 *
 * @see GChart#addCurve() addCurve()
@@ -66,14 +68,14 @@ class Curve:
         self.indexOf -= 1
 
     def clearIndex(self):
-        self.indexOf = GChart.NAI
+        self.indexOf = NAI
 
     def getIndexOf(self):
         return self.indexOf
 
     """
     def assertCurveNotRemoved(self):
-        if self.indexOf == GChart.NAI:
+        if self.indexOf == NAI:
             raise IllegalStateException(
             "Removed curves should not be modified. " +
             "You removed a curve, but retained a reference " +
@@ -89,7 +91,7 @@ class Curve:
     * methods.
     *
     """
-    def __init__(self, chart, indexOf=GChart.NAI):
+    def __init__(self, chart, indexOf=NAI):
         self.chart = chart
         self.wasCanvasRendered = False
         self.visible = True
@@ -98,7 +100,7 @@ class Curve:
         # symbol defines how every point on this curve is rendered
         self.symbol = Symbol(self)
 
-        self.yAxisId = GChart.Y_AXIS
+        self.yAxisId = Y_AXIS
         self.validated = False
         self.indexOf = indexOf
 
@@ -169,7 +171,7 @@ class Curve:
     *
     """
     def getBand(self, iPoint, bandThickness):
-        result = GChart.NAI
+        result = NAI
         symType = self.getSymbol().getSymbolType()
         xPx = symType.getCenterX(self.chart.plotPanel, self.getSymbol(), iPoint)
         if Double.isNaN(xPx):
@@ -299,7 +301,7 @@ class Curve:
     *
     * <pre>
     Point p = None
-    forloop (int iPoint = bandList[iBand]; iPoint != GChart.NAI; iPoint = p.getINextInBand()) {
+    forloop (int iPoint = bandList[iBand]; iPoint != NAI; iPoint = p.getINextInBand()) {
         p = getPoint(iPoint)
         # do something requiring points in a given band...
 
@@ -318,14 +320,14 @@ class Curve:
         nBands = self.getNBands(self.bandThickness)
 
         if self.bandList is None  or  len(self.bandList) != nBands:
-            self.bandList = [GChart.NAI] * nBands
+            self.bandList = [NAI] * nBands
         for i in range(nBands):
-            self.bandList[i] = GChart.NAI
+            self.bandList[i] = NAI
 
         for iPoint in range(self.getNPoints()):
             iBand = self.getBand(iPoint, self.bandThickness)
             p = self.getPoint(iPoint)
-            if GChart.NAI == iBand:
+            if NAI == iBand:
                 # point isn't rendered at all, so isn't in a band (a next
                 # link pointing to self means "I'm not in any band"). To let
                 # us skip over these points quickly during rendering.
@@ -352,7 +354,7 @@ class Curve:
     * center is closest to the specified rectangle's center is
     * returned. In the event of a tie, the point with the largest
     * point index is returned. If no point "touches" the rectangle,
-    * <tt>GChart.NAI</tt> is returned.  <p>
+    * <tt>NAI</tt> is returned.  <p>
     *
     * Assumes/requires up-to-date <tt>bandList</tt> array and
     * related <tt>iNextInBand</tt> indexes (these get defined within
@@ -362,7 +364,7 @@ class Curve:
 
     def getClosestTouchingPoint(self, xBrush, yBrush):
 
-        result = GChart.NAI
+        result = NAI
         # ANCHOR_MOUSE symbol type curves not band separated/hit tested
         if None == self.bandList:
             return result
@@ -425,7 +427,7 @@ class Curve:
         for iBand in range(iBandFirst, iBandLast+1):
             p = None
             iPoint = self.bandList[iBand]
-            while iPoint != GChart.NAI:
+            while iPoint != NAI:
                 if iPoint < 0  or  iPoint >= self.getNPoints():
                     raise IllegalStateException(
                         "Inappropriately terminated band-point-list, GChart bug likely. " +
@@ -556,13 +558,13 @@ class Curve:
     * points) of the specified point.
     * <p>
     *
-    * Returns <tt>GChart.NAI</tt> if the specified point is not found on
+    * Returns <tt>NAI</tt> if the specified point is not found on
     * this curve's point list.
     *
     * <p>
     * @param point point whose list position is to be retrieved
     * @return position of point on this curve's point list, or
-    *        <tt>GChart.NAI</tt>
+    *        <tt>NAI</tt>
     *        if not on the list.
     *
     * @see #getPoint() getPoint()
@@ -576,7 +578,7 @@ class Curve:
         try:
             return self.points.index(point)
         except ValueError:
-            return GChart.NAI
+            return NAI
 
     """*
     ** Returns the symbol associated with this curve.
@@ -685,7 +687,7 @@ class Curve:
             raise IllegalArgumentException("p cannot be None.")
 
         index = self.getPointIndex(p)
-        if GChart.NAI == index:
+        if NAI == index:
             raise IllegalArgumentException("p must be a point on this curve " +
                                     "(whose curveIndex is " +
                                     self.getParent().getCurveIndex(this) + ")")
@@ -776,7 +778,7 @@ class Curve:
         *
         """
 
-        if self.getIndexOf() == GChart.NAI:
+        if self.getIndexOf() == NAI:
             self.visible = visible
             return
 
@@ -791,7 +793,7 @@ class Curve:
 
 
         if self.visible != visible:
-            if self.getYAxis() == GChart.Y_AXIS:
+            if self.getYAxis() == Y_AXIS:
                 yaxis = self.chart.getYAxis()
             else:
                 yaxis = self.chart.getY2Axis()
@@ -816,8 +818,8 @@ class Curve:
 
     """* Sets the y-axis that this curve is plotted on.
     ** <p>
-    ** @param axisId must be either GChart.Y_AXIS or
-    **               GChart.Y2_AXIS
+    ** @param axisId must be either Y_AXIS or
+    **               Y2_AXIS
     **
     ** @see #getYAxis getYAxis
     ** @see GChart#Y_AXIS Y_AXIS
@@ -868,7 +870,7 @@ class Curve:
     """
     def isSystemCurve(self):
         # negative curve indexes are reserved for system curves
-        result = ((self.indexOf != GChart.NAI)  and
+        result = ((self.indexOf != NAI)  and
                     self.getParent().externalCurveIndex(self.indexOf) < 0)
         return result
 
@@ -1053,7 +1055,7 @@ class Curve:
                 minY = max(minY, pp.getYMin())
 
             elif isClippedToDecoratedChart:
-                minY = max(minY, GChart.self.getYAxis().pixelToModel(
+                minY = max(minY, self.chart.getYAxis().pixelToModel(
                 pp.getYChartSizeDecoratedQuickly()))
 
             if pointAtYAxisMax:
@@ -1114,5 +1116,5 @@ class Curve:
         return self.validated  and  self.wasCanvasRendered
 
 
- # end of class GChart.Curve
+ # end of class Curve
 
