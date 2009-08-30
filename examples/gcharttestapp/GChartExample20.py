@@ -296,27 +296,27 @@ class GChartExample20 (GChart):
 
         # labels/values for pie slice size (as percentage) drop-down list
         self.sliceSizeSelector = ObjectSelectorDropdownList([
-                                            ["0%", Integer(0)],
-                                            ["5%", Integer(5)],
-                                            ["10%", Integer(10)],
-                                            ["15%", Integer(15)],
-                                            ["20%", Integer(20)],
-                                            ["25%", Integer(25)],
-                                            ["30%", Integer(30)],
-                                            ["35%", Integer(35)],
-                                            ["40%", Integer(40)],
-                                            ["45%", Integer(45)],
-                                            ["50%", Integer(50)],
-                                            ["55%", Integer(55)],
-                                            ["60%", Integer(60)],
-                                            ["65%", Integer(65)],
-                                            ["70%", Integer(70)],
-                                            ["75%", Integer(75)],
-                                            ["80%", Integer(80)],
-                                            ["85%", Integer(85)],
-                                            ["90%", Integer(90)],
-                                            ["95%", Integer(95)],
-                                            ["100%", Integer(100)]])
+                                            ["0%", int(0)],
+                                            ["5%", int(5)],
+                                            ["10%", int(10)],
+                                            ["15%", int(15)],
+                                            ["20%", int(20)],
+                                            ["25%", int(25)],
+                                            ["30%", int(30)],
+                                            ["35%", int(35)],
+                                            ["40%", int(40)],
+                                            ["45%", int(45)],
+                                            ["50%", int(50)],
+                                            ["55%", int(55)],
+                                            ["60%", int(60)],
+                                            ["65%", int(65)],
+                                            ["70%", int(70)],
+                                            ["75%", int(75)],
+                                            ["80%", int(80)],
+                                            ["85%", int(85)],
+                                            ["90%", int(90)],
+                                            ["95%", int(95)],
+                                            ["100%", int(100)]])
 
         self.theSliceEditor = SliceEditor(self)
 
