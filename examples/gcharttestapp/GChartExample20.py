@@ -273,6 +273,7 @@ class GChartExample20 (GChart):
 
     # the single dialog box that self.gets used to edit any slice
     def __init__(self):
+        GChart.__init__(self)
 
         # labels/values for color selection drop-down list:
         self.colorSelector = ObjectSelectorDropdownList( \
