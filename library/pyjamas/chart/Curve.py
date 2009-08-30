@@ -319,7 +319,9 @@ class Curve:
         nBands = self.getNBands(self.bandThickness)
 
         if self.bandList is None  or  len(self.bandList) != nBands:
-            self.bandList = [NAI] * nBands
+            self.bandList = []
+            for i in range(nBands):
+                self.bandList.append(NAI)
         for i in range(nBands):
             self.bandList[i] = NAI
 
