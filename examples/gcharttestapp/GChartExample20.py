@@ -163,20 +163,20 @@ class SliceEditor(DialogBox):
 
         # slice properties table (slice color, shading and size)
         propertyForm.setText(  0, 0, "Color:")
-        propertyForm.setWidget(0, 1, colorSelector)
+        propertyForm.setWidget(0, 1, self.chart.colorSelector)
         propertyForm.setText(  1, 0, "Shading Pattern:")
-        propertyForm.setWidget(1, 1, shadingSelector)
+        propertyForm.setWidget(1, 1, self.chart.shadingSelector)
         propertyForm.setText(  2, 0, "Slice Size:")
-        propertyForm.setWidget(2, 1, sliceSizeSelector)
+        propertyForm.setWidget(2, 1, self.chart.sliceSizeSelector)
         # add additional properties here, if desired
 
         # buttons for changing the selected slice from the form
-        sliceSwitcher.add(prevSlice)
-        sliceSwitcher.add(nextSlice)
+        sliceSwitcher.add(self.prevSlice)
+        sliceSwitcher.add(self.nextSlice)
 
         commandBar.add(sliceSwitcher, DockPanel.WEST)
         commandBar.add(closeButton, DockPanel.EAST)
-        commandBar.setCellHorizontalAlignment(closeButton,
+        commandBar.setCellHorizontalAlignment(self.closeButton,
                         HasHorizontalAlignment.ALIGN_RIGHT)
         commandBar.setWidth("100%"); # pushes close button to right edge
 
