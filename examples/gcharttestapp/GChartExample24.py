@@ -192,7 +192,6 @@ class GChartExample24(GChart):
     def __init__(self):
         GChart.__init__(self)
         self.sinkEvents( Event.MOUSEEVENTS )
-        self.mouseListeners = []
 
         self.SELECTION_CURVE = 0 # curve index of selection cursor
         self.p1 = Point(); # first corner (@mousedown) of selection rect
@@ -245,17 +244,10 @@ class GChartExample24(GChart):
         self.getYAxis().setAxisMax(0.5)
         
         """
-        addClickHandler()
+        self.addClickListener(self)
         """
-        self.mouseListeners.append(self)
+        self.addMouseListener(self)
         
-    def onBrowserEvent(self, event):
-        type = DOM.eventGetType(event)
-        if type == "mousedown" or type == "mouseup" or type == "mousemove" or type == "mouseover" or type == "mouseout":
-            MouseListener.fireMouseEvent(self.mouseListeners, self, event)
-        else:
-            GChart.onBrowserEvent(self, event)
-    
     def onMouseEnter(self, sender):
         pass
 

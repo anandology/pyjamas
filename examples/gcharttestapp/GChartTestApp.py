@@ -22,7 +22,9 @@ from GChartExample07 import GChartExample07
 from GChartExample14 import GChartExample14
 
 from GChartExample17 import GChartExample17
+
 from GChartExample24 import GChartExample24
+from GChartExample25 import GChartExample25
 
 """*
 *
@@ -148,7 +150,7 @@ def onModuleLoad():
     #    addChart(GChartExample04b())
     #    addChart(GChartExample05())
     #addChart(GChartExample06())
-    addChart(GChartExample07())
+    #addChart(GChartExample07())
     #    addChart(GChartExample08())
     #    addChart(GChartExample09())
     #    addChart(GChartExample10())
@@ -178,6 +180,7 @@ def onModuleLoad():
     #      addChart(GChartExample23(True, False))
     #      addChart(GChartExample23(True, True))
     #addChart(GChartExample24())
+    addChart(GChartExample25())
     #DeferredCommand.add(Command() {
     #    def execute(self):
     #        RootPanel.get().add(GChartExample25())
