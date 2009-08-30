@@ -191,31 +191,31 @@ class SliceEditor(DialogBox):
     # loads properties associated with point/slice into form
     def copyChartPropertiesIntoForm(self, p):
         # dialog title bar caption:
-        self.setText("Slice " + self.getCurveIndex(p.getParent()) +
+        self.setText("Slice " + self.chart.getCurveIndex(p.getParent()) +
                                     " Properties")
-        colorSelector.setSelectedObject(
-        self.getColorSpec( p.getParent().getSymbol().getBackgroundColor(),
-                           p.getParent().getSymbol().getBorderColor()))
-        shadingSelector.setSelectedObject(
+        self.chart.colorSelector.setSelectedObject(
+            self.getColorSpec( p.getParent().getSymbol().getBackgroundColor(),
+                               p.getParent().getSymbol().getBorderColor()))
+        self.chart.shadingSelector.setSelectedObject(
                         p.getParent().getSymbol().getSymbolType())
         sliceSize = math.round(100*p.getParent().getSymbol().getPieSliceSize())
-        sliceSizeSelector.setSelectedObject( int(sliceSize))
+        self.chart.sliceSizeSelector.setSelectedObject( int(sliceSize) )
 
     # saves current form self.settings into associated point/slice of chart
     def copyFormPropertiesIntoChart(self, p):
         p.getParent().getSymbol().setBackgroundColor(
-                    colorSelector.getSelectedObject().backgroundColor)
+                    self.chart.colorSelector.getSelectedObject().backgroundColor)
         p.getParent().getSymbol().setBorderColor(
-                    colorSelector.getSelectedObject().borderColor)
+                    self.chart.colorSelector.getSelectedObject().borderColor)
 
         # selection flips border and background colors
         p.getParent().getSymbol().setHoverSelectionBorderColor(
-                    colorSelector.getSelectedObject().backgroundColor)
+                    self.chart.colorSelector.getSelectedObject().backgroundColor)
         p.getParent().getSymbol().setHoverSelectionBackgroundColor(
-                    colorSelector.getSelectedObject().borderColor)
+                    self.chart.colorSelector.getSelectedObject().borderColor)
         p.getParent().getSymbol().setSymbolType(
                                 shadingSelector.getSelectedObject())
-        sliceSize = int(sliceSizeSelector.getSelectedObject())
+        sliceSize = int(self.chart.sliceSizeSelector.getSelectedObject())
         p.getParent().getSymbol().setPieSliceSize(sliceSize/100.)
 
     def onClick(self, sender):
