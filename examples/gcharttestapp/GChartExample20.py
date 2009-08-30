@@ -15,6 +15,7 @@ from pyjamas.chart.GChart import GChart
 from pyjamas.chart import AnnotationLocation
 from pyjamas.chart import SymbolType
 from pyjamas.chart import TouchedPointUpdateOption
+from pyjamas.ui.ClickListener import ClickHandler
 
 LABEL_COL = 0;  # for the label/object pairs
 OBJECT_COL = 1; # associated with the property
@@ -112,7 +113,7 @@ class ColorSpec:
 
 
 # the modal dialog that pops up when they click on a slice to edit it
-class SliceEditor(DialogBox):
+class SliceEditor(DialogBox, ClickHandler):
     def __init__(self, chart):
         """ DialogBox CSS Style self.settings used with this example for reference:
 
@@ -141,6 +142,8 @@ class SliceEditor(DialogBox):
 
         """
         DialogBox.__init__(self, autoHide=True, modal=True)
+        ClickHandler.__init__(self)
+
         self.chart = chart
         self.isFirstTime = True
         mainPanel = VerticalPanel()
