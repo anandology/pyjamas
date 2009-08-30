@@ -110,7 +110,6 @@ def addChartNoUpdate(gchart):
 
 class GWTCanvasBasedCanvasFactory(object):
     def create(self):
-        error
         return Canvas()
 
 
