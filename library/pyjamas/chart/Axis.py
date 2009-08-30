@@ -1827,7 +1827,7 @@ class Axis:
         c = self.getSystemCurve(self.ticksId)
         nTicks = c.getNPoints()
         for i in range(nTicks):
-            result = max(result, getTickPosition(c, i))
+            result = max(result, self.getTickPosition(c, i))
         return result
 
 
@@ -1837,7 +1837,7 @@ class Axis:
         c = self.getSystemCurve(self.ticksId)
         nTicks = c.getNPoints()
         for i in range(nTicks):
-            result = min(result, getTickPosition(c, i))
+            result = min(result, self.getTickPosition(c, i))
         return result
 
 
