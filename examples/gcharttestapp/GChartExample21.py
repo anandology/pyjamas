@@ -61,10 +61,11 @@ class YChanger (HorizontalPanel):
     
     # The 2 HoverUpdateable interface methods:
     def hoverCleanup(self, hoveredAwayFrom):
+        pass
     
     def hoverUpdate(self, hoveredOver):
         # update (x,y) display when they click point
-        coordinates.setHTML(hoveredOver.getHovertext())
+        self.coordinates.setHTML(hoveredOver.getHovertext())
     
 
 class GChartExample21(GChart):
