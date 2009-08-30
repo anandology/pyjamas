@@ -52,6 +52,7 @@ from GChartConsts import XGRIDLINES_ID
 from GChartConsts import XAXIS_ID
 from GChartConsts import TICK_CHARHEIGHT_TO_FONTSIZE_LOWERBOUND 
 from GChartConsts import TICK_CHARWIDTH_TO_FONTSIZE_LOWERBOUND 
+from GChartConsts import Y_AXIS
 
 from GChartUtil import htmlHeight, htmlWidth
 
@@ -1936,7 +1937,7 @@ class XAxis(Axis):
 
     def getDataMax(self):
         result = -Double.MAX_VALUE
-        nCurves = getNCurves()
+        nCurves = self.chart.getNCurves()
         for i in range(nCurves):
             c = self.getSystemCurve(i)
             if not c.isVisible():
@@ -1954,7 +1955,7 @@ class XAxis(Axis):
 
     def getDataMin(self):
         result = Double.MAX_VALUE
-        nCurves = getNCurves()
+        nCurves = self.chart.getNCurves()
         for i in range(nCurves):
             c = self.getSystemCurve(i)
             if not c.isVisible():
@@ -2156,7 +2157,7 @@ class YAxis(Axis):
 
     def getDataMax(self):
         result = -Double.MAX_VALUE
-        nCurves = self.getNCurves()
+        nCurves = self.chart.getNCurves()
         for i in range(nCurves):
             c = self.getSystemCurve(i)
             if not c.isVisible():
@@ -2176,7 +2177,7 @@ class YAxis(Axis):
 
     def getDataMin(self):
         result = Double.MAX_VALUE
-        nCurves = getNCurves()
+        nCurves = self.chart.getNCurves()
         for i in range(nCurves):
             c = self.getSystemCurve(i)
             if not c.isVisible():
