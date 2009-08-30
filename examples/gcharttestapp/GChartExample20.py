@@ -175,7 +175,7 @@ class SliceEditor(DialogBox):
         sliceSwitcher.add(self.nextSlice)
 
         commandBar.add(sliceSwitcher, DockPanel.WEST)
-        commandBar.add(closeButton, DockPanel.EAST)
+        commandBar.add(self.closeButton, DockPanel.EAST)
         commandBar.setCellHorizontalAlignment(self.closeButton,
                         HasHorizontalAlignment.ALIGN_RIGHT)
         commandBar.setWidth("100%"); # pushes close button to right edge
