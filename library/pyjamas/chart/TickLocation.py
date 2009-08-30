@@ -125,3 +125,11 @@ CENTERED = TickLocation(0)
 INSIDE = TickLocation(1)
 
 
+"""*
+* The default tick location.
+*
+* @see Axis#setTickLocation setTickLocation
+"""
+DEFAULT_TICK_LOCATION = OUTSIDE
+
+

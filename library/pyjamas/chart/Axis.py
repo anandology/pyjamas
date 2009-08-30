@@ -29,7 +29,6 @@ from pyjamas.chart import AnnotationLocation
 from pyjamas.chart import Annotation
 
 from pyjamas.chart.GChartConsts import NAI
-from pyjamas.chart.GChartConsts import DEFAULT_TICK_LOCATION
 from pyjamas.chart.GChartConsts import DEFAULT_TICK_COUNT
 from pyjamas.chart.GChartConsts import DEFAULT_WIDGET_WIDTH_UPPERBOUND 
 from pyjamas.chart.GChartConsts import DEFAULT_WIDGET_HEIGHT_UPPERBOUND
@@ -39,7 +38,6 @@ from pyjamas.chart.GChartConsts import DEFAULT_TICK_LABEL_FONT_STYLE
 from pyjamas.chart.GChartConsts import DEFAULT_TICK_LABEL_FONT_WEIGHT
 from pyjamas.chart.GChartConsts import DEFAULT_TICK_LABEL_FORMAT
 from pyjamas.chart.GChartConsts import DEFAULT_TICK_LENGTH
-from pyjamas.chart.GChartConsts import DEFAULT_TICK_LOCATION
 from pyjamas.chart.GChartConsts import DEFAULT_TICK_THICKNESS
 from pyjamas.chart.GChartConsts import Y2TICKS_ID
 from pyjamas.chart.GChartConsts import Y2GRIDLINES_ID
@@ -89,7 +87,7 @@ class AxisLimits:
 class Axis:
     def __init__(self, chart):
         self.chart = chart
-        self.tickLocation = DEFAULT_TICK_LOCATION
+        self.tickLocation = TickLocation.DEFAULT_TICK_LOCATION
         self.numberFormat = NumberFormat.getFormat(DEFAULT_TICK_LABEL_FORMAT)
         self.dateFormat = DateTimeFormat.getShortDateTimeFormat()
         self.tickLabelFormatType = NUMBER_FORMAT_TYPE
@@ -1893,7 +1891,7 @@ class XAxis(Axis):
         self.axisId = XAXIS_ID
         self.axisPosition = -1
         self.tickLabelFormatType = None
-        self.setTickLocation(DEFAULT_TICK_LOCATION)
+        self.setTickLocation(TickLocation.DEFAULT_TICK_LOCATION)
         self.setTickThickness(DEFAULT_TICK_THICKNESS)
         self.setTickLength(DEFAULT_TICK_LENGTH)
 
@@ -2038,7 +2036,7 @@ class Y2Axis(Axis):
         self.gridlinesId = Y2GRIDLINES_ID
         self.axisId = Y2AXIS_ID
         self.axisPosition = 1
-        self.setTickLocation(DEFAULT_TICK_LOCATION)
+        self.setTickLocation(TickLocation.DEFAULT_TICK_LOCATION)
         self.setTickThickness(DEFAULT_TICK_THICKNESS)
         self.setTickLength(DEFAULT_TICK_LENGTH)
 
@@ -2138,7 +2136,7 @@ class YAxis(Axis):
         self.gridlinesId = YGRIDLINES_ID
         self.axisId = YAXIS_ID
         self.axisPosition = -1
-        self.setTickLocation(DEFAULT_TICK_LOCATION)
+        self.setTickLocation(TickLocation.DEFAULT_TICK_LOCATION)
         self.setTickThickness(DEFAULT_TICK_THICKNESS)
         self.setTickLength(DEFAULT_TICK_LENGTH)
 

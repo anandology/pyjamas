@@ -20,7 +20,6 @@
 
 
 from pyjamas.chart import AnnotationLocation
-from pyjamas.chart import TickLocation
 from pyjamas.chart.HovertextChunk import formatAsHovertext
 
 import pygwt
@@ -463,14 +462,6 @@ DEFAULT_TICK_LABEL_FORMAT = "#.##"
 * @see Axis#setTickLength setTickLength
 """
 DEFAULT_TICK_LENGTH = 6
-
-
-"""*
-* The default tick location.
-*
-* @see Axis#setTickLocation setTickLocation
-"""
-DEFAULT_TICK_LOCATION = TickLocation.OUTSIDE
 
 
 """*

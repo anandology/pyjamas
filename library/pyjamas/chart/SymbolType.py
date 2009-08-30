@@ -26,7 +26,7 @@ from pyjamas.ui.Image import Image
 from pyjamas.chart import AnnotationLocation
 from pyjamas.chart import GChartUtil
 
-import GChartConsts
+from pyjamas.chart import GChartConsts
 
 # Use smallest min band size, since I expect per band
 # cost to be small compared to per-point hit testing.
