@@ -59,8 +59,8 @@ class ChildGChart(GChart):
         self.getCurve().getSymbol().setHoverLocation(
                                 AnnotationLocation.NORTH)
         self.getCurve().getSymbol().setHoverYShift(5)
-        self.setPixelSize(getXChartSizeDecorated(),
-        self.getYChartSizeDecorated())
+        self.setPixelSize(self.getXChartSizeDecorated(),
+                            self.getYChartSizeDecorated())
 
 
 
