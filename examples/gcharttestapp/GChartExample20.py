@@ -5,7 +5,7 @@ from pyjamas.ui.Button import Button
 from pyjamas.ui.DialogBox import DialogBox
 from pyjamas.ui.DockPanel import DockPanel
 from pyjamas.ui.FlexTable import FlexTable
-from pyjamas.ui.HasHorizontalAlignment import HasHorizontalAlignment
+from pyjamas.ui import HasHorizontalAlignment
 from pyjamas.ui.HorizontalPanel import HorizontalPanel
 from pyjamas.ui.ListBox import ListBox
 from pyjamas.ui.VerticalPanel import VerticalPanel
