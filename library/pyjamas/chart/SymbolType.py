@@ -2416,7 +2416,7 @@ class PieSliceSymbolType (SymbolType):
 
                     # intersection points sorted by increasing x within p[]
                     if e1 < e2:
-                        if not Double.isNaN(e2):
+                        if not Double.isNaN(e1):
                             p[nP] = e1
                             nP += 1
 

@@ -171,15 +171,15 @@ class PartitionedAbsolutePanel (Composite):
 
     # makes the subpanel containing the widget the selected one.
     def selectSubPanel(self, iWidget):
-        if self.iSubPanel != int(math.floor(iWidget/WIDGETS_PER_PANEL)):
-            self.iSubPanel = int(math.floor(iWidget/WIDGETS_PER_PANEL))
+        if self.iSubPanel != int(iWidget/WIDGETS_PER_PANEL):
+            self.iSubPanel = int(iWidget/WIDGETS_PER_PANEL)
             self.subPanel = self.root.getWidget(self.iSubPanel)
 
 
 
     # adds a widget to end of this partioned absolute panel
     def add(self, w):
-        if self.nWidgets % WIDGETS_PER_PANEL == 0:
+        if (self.nWidgets % WIDGETS_PER_PANEL) == 0:
             # last panel is full, time to add a one
             self.subPanel = AbsolutePanel()
             # Panel sits in upper left corner. Does nothing, can't
@@ -213,7 +213,7 @@ class PartitionedAbsolutePanel (Composite):
 
         self.selectSubPanel(iWidget)
         result = self.subPanel.remove(iWidget % WIDGETS_PER_PANEL)
-        if iWidget % WIDGETS_PER_PANEL == 0:
+        if (iWidget % WIDGETS_PER_PANEL) == 0:
             # if deleted widget is last widget overall, and first on
             # the selected panel, selected panel will now be empty.
             self.root.remove(self.subPanel)
@@ -802,6 +802,7 @@ class ReusableImage (Image):
 * be rendered with Image elements.
 *
 """
+
 class GraphicsRenderingPanel (AbsolutePanel):
     # Add a canvas, if needed
     def maybeAddCanvas(self):
@@ -857,7 +858,6 @@ class GraphicsRenderingPanel (AbsolutePanel):
         self.add(self.canvasPanel, 0, 0)
         self.add(self.imagePanel, 0, 0)
 
-
     def getCanvas(self):
         return self.canvas
 
@@ -912,6 +912,7 @@ class GraphicsRenderingPanel (AbsolutePanel):
             iImage = (self.imagePanel.getWidgetCount()-1)
         else:
             iImage = self.lastVisibleImage
+
         while iImage >= self.imageIndex:
             w = self.imagePanel.getWidget(iImage)
             if self.chart.optimizeForMemory:
@@ -952,7 +953,8 @@ class GraphicsRenderingPanel (AbsolutePanel):
                                     height,
                                     x, y, url)
 
-        self.lastVisibleImage = min(self.lastVisibleImage, self.imageIndex)
+        if self.lastVisibleImage < self.imageIndex:
+            self.lastVisibleImage = self.imageIndex
 
         self.imageIndex += 1
 
@@ -1674,7 +1676,8 @@ class PlotPanel (AbsolutePanel):
                     cCursor.getSymbol().setWidth(
                             cTouched.getSymbol().getHoverSelectionWidth())
 
-                cCursor.getSymbol().setImageURL(cTouched.getSymbol().getHoverSelectionImageURL())
+                cCursor.getSymbol().setImageURL(
+                        cTouched.getSymbol().getHoverSelectionImageURL())
                 cCursor.getSymbol().setBackgroundColor(
                         cTouched.getSymbol().getHoverSelectionBackgroundColor())
                 cCursor.getSymbol().setBorderColor(

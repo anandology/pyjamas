@@ -3653,65 +3653,66 @@ class GChart (Composite, FocusHandler, KeyboardHandler,
 
     # renders the curve in the plot panel
     def realizeCurve(self, c):
-        if not c.isValidated():
-            internalIndex = self.getInternalCurveIndex(c)
-            rpIndex = self.getRenderingPanelIndex(internalIndex)
-            grp = self.plotPanel.getGraphicsRenderingPanel(rpIndex)
-            arp = self.plotPanel.getAnnotationRenderingPanel(rpIndex)
-            if GChartWidgets.DECORATIVE_RENDERING_PANEL_INDEX == rpIndex:
-                # background panel only gets initialized for first curve
-                if 0 == internalIndex:
-                    # background panel never uses canvas
-                    grp.beginRendering(None)
-                    arp.beginRendering()
-
-                c.setWasCanvasRendered(False)
-
-            # continuous fill# non-empty fill# canvas available
-            elif (0 == c.getSymbol().getFillSpacing()  and  
-                     0 < c.getSymbol().getFillThickness()  and  
-                        None != self.getCanvasFactory()  and
-                           c.isVisible()):
-                grp.maybeAddCanvas()
-                canvasRegion = c.getContainingRectangle(self.plotPanel)
-                grp.beginRendering(canvasRegion)
-                arp.beginRendering()
-                c.setWasCanvasRendered(True)
-
-            else:
-                # does not use canvas, or it is invisible
+        if c.isValidated():
+            return 
+        internalIndex = self.getInternalCurveIndex(c)
+        rpIndex = self.getRenderingPanelIndex(internalIndex)
+        grp = self.plotPanel.getGraphicsRenderingPanel(rpIndex)
+        arp = self.plotPanel.getAnnotationRenderingPanel(rpIndex)
+        if GChartWidgets.DECORATIVE_RENDERING_PANEL_INDEX == rpIndex:
+            # background panel only gets initialized for first curve
+            if 0 == internalIndex:
+                # background panel never uses canvas
                 grp.beginRendering(None)
                 arp.beginRendering()
-                c.setWasCanvasRendered(False)
+
+            c.setWasCanvasRendered(False)
+
+        # continuous fill# non-empty fill# canvas available
+        elif (0 == c.getSymbol().getFillSpacing()  and  
+                 0 < c.getSymbol().getFillThickness()  and  
+                    None != self.getCanvasFactory()  and
+                       c.isVisible()):
+            grp.maybeAddCanvas()
+            canvasRegion = c.getContainingRectangle(self.plotPanel)
+            grp.beginRendering(canvasRegion)
+            arp.beginRendering()
+            c.setWasCanvasRendered(True)
+
+        else:
+            # does not use canvas, or it is invisible
+            grp.beginRendering(None)
+            arp.beginRendering()
+            c.setWasCanvasRendered(False)
 
 
-            if c.isVisible():
-                # Separate points into vertical/horizontal band-bins provided
-                # 1) it is not a system curve and 2) it is not of a type whose
-                # position follows the mouse (and thus has no fixed location
-                # suitable for banding) and 3) at least one kind of hover feedback
-                # is being provided for the curve.
-                if self.getCurveIndex(c) >= 0  and  not isMouseAnchored(c.getSymbol().getSymbolType())  and  (c.getSymbol().getHoverSelectionEnabled()  or  c.getSymbol().getHoverAnnotationEnabled()):
-                    c.bandSeparatePoints()
+        if c.isVisible():
+            # Separate points into vertical/horizontal band-bins provided
+            # 1) it is not a system curve and 2) it is not of a type whose
+            # position follows the mouse (and thus has no fixed location
+            # suitable for banding) and 3) at least one kind of hover feedback
+            # is being provided for the curve.
+            if self.getCurveIndex(c) >= 0  and  not isMouseAnchored(c.getSymbol().getSymbolType())  and  (c.getSymbol().getHoverSelectionEnabled()  or  c.getSymbol().getHoverAnnotationEnabled()):
+                c.bandSeparatePoints()
 
-                else:
-                    # hit test banding calcs unneeded; skip them for speed.
-                    c.clearBandList()
+            else:
+                # hit test banding calcs unneeded; skip them for speed.
+                c.clearBandList()
 
-                # Note: these lines must come AFTER band separation lines above
-                nPoints = c.getNPoints()
-                for j in range(nPoints):
-                    c.realizePoint(self.plotPanel, grp, arp, j)
+            # Note: these lines must come AFTER band separation lines above
+            nPoints = c.getNPoints()
+            for j in range(nPoints):
+                c.realizePoint(self.plotPanel, grp, arp, j)
 
 
-            # only end background panel rendering w last background curve
-            if GChartWidgets.DECORATIVE_RENDERING_PANEL_INDEX != rpIndex  or  internalIndex == N_PRE_SYSTEM_CURVES-1:
-                grp.endRendering()
-                arp.endRendering()
+        # only end background panel rendering w last background curve
+        if GChartWidgets.DECORATIVE_RENDERING_PANEL_INDEX != rpIndex  or  internalIndex == N_PRE_SYSTEM_CURVES-1:
+            grp.endRendering()
+            arp.endRendering()
 
-            # else it's a background panel curve, and not the last one
+        # else it's a background panel curve, and not the last one
 
-            c.validated = True
+        c.validated = True
 
 
 

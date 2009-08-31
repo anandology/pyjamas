@@ -362,7 +362,7 @@ class GChartExample20 (GChart):
             self.getCurve().getSymbol().setHoverSelectionBorderColor(
                     self.colorSelector.getObject(iCurve).backgroundColor)
             self.getCurve().getSymbol().setSymbolType(
-                    SymbolType.PIE_SLICE_OPTIMAL_SHADING)
+                    SymbolType.PIE_SLICE_HORIZONTAL_SHADING)
             self.getCurve().getSymbol().setPieSliceSize(initSliceSize[iCurve])
             self.getCurve().getSymbol().setModelHeight(1.0); #diameter = yMax-yMin
             self.getCurve().getSymbol().setModelWidth(0)

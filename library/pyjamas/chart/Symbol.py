@@ -2347,10 +2347,10 @@ class Symbol(object):
         
     
     def getAnnotation(self):
-        if annotation is None:
-            annotation = Annotation()
+        if self.annotation is None:
+            self.annotation = Annotation()
         
-        return annotation
+        return self.annotation
     
     
     """*
