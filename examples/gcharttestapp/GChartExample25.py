@@ -104,5 +104,7 @@ class GChartExample25 (FocusPanel):
             self.theChild.setHoverTouchingEnabled(True)
             self.theChild.update()
 
+    def setOptimizeForMemory(self, optimize):
+        self.theChild.setOptimizeForMemory( optimize)
     def update(self):
         self.theChild.update()

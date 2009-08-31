@@ -152,8 +152,8 @@ class Browser(WebView):
         #    minst.onModuleLoad()
 
     def _loading(self, progress_listener, progress):
-
-        print "loading", progress, self.getDomWindow().location.href
+        pass
+        #print "loading", progress, self.getDomWindow().location.href
 
 def is_loaded():
     return wv.already_initialised

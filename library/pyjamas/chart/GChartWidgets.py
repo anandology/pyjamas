@@ -18,7 +18,7 @@
 """
 
 
-
+import math
 
 from pyjamas import DOM
 from pyjamas import Window
@@ -171,8 +171,8 @@ class PartitionedAbsolutePanel (Composite):
 
     # makes the subpanel containing the widget the selected one.
     def selectSubPanel(self, iWidget):
-        if self.iSubPanel != int(iWidget/WIDGETS_PER_PANEL):
-            self.iSubPanel = int(iWidget/WIDGETS_PER_PANEL)
+        if self.iSubPanel != int(math.floor(iWidget/WIDGETS_PER_PANEL)):
+            self.iSubPanel = int(math.floor(iWidget/WIDGETS_PER_PANEL))
             self.subPanel = self.root.getWidget(self.iSubPanel)
 
 
@@ -211,7 +211,7 @@ class PartitionedAbsolutePanel (Composite):
             raise IllegalArgumentException(
             "iWidgets arg = " + iWidget + " nWidgets-1 (" + (self.nWidgets-1)+") is required.")
 
-        selectSubPanel(iWidget)
+        self.selectSubPanel(iWidget)
         result = self.subPanel.remove(iWidget % WIDGETS_PER_PANEL)
         if iWidget % WIDGETS_PER_PANEL == 0:
             # if deleted widget is last widget overall, and first on
@@ -909,7 +909,7 @@ class GraphicsRenderingPanel (AbsolutePanel):
     def endRendering(self):
         # hide or remove images no longer being used
         if self.chart.optimizeForMemory:
-            iImage = (self.getWidgetCount()-1)
+            iImage = (self.imagePanel.getWidgetCount()-1)
         else:
             iImage = self.lastVisibleImage
         while iImage >= self.imageIndex:
@@ -2004,7 +2004,7 @@ class PlotPanel (AbsolutePanel):
         *
         * Well, that's the theory. But GChart's mouse tracking has
         * only been tested for the case where <tt>update</tt> is
-        * always called just before the developer ceeds control back
+        * always called just before the developer cedes control back
         * to the browser after making a series of chart spec changes.
         * So, the docs warn developers to be sure that they do
         * that, too. But the hope is that specialized applications

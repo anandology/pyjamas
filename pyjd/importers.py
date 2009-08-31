@@ -230,7 +230,7 @@ class PathImporter(imputil.Importer):
         self.path = path
 
     def get_code(self, parent, modname, fqname):
-        print "PathImporter.get_code", parent, modname, fqname
+        #print "PathImporter.get_code", parent, modname, fqname
         if parent:
             # we are looking for a module inside of a specific package
             return _fs_import(parent.__pkgdir__, modname, fqname)
