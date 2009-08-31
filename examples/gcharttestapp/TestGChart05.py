@@ -33,7 +33,7 @@ class TestGChart05 (GChart):
         if testCanvas:
             self.getCurve().getSymbol().setFillSpacing(0)
         
-        self.getCurve().setYAxis(Y2_AXIS)
+        self.getCurve().setYAxis(GChartConsts.Y2_AXIS)
         self.getCurve().addPoint(90,-50); # clipped
         self.getCurve().getPoint().setAnnotationText(self.getCurve().getPoint().getHovertext())
         self.getCurve().addPoint(90,-45)
@@ -90,7 +90,7 @@ class TestGChart05 (GChart):
         self.getCurve().getSymbol().setFillThickness(1)
         self.getCurve().getSymbol().setWidth(100)
         self.getCurve().getSymbol().setHeight(0)
-        self.getCurve().setYAxis(Y2_AXIS)
+        self.getCurve().setYAxis(GChartConsts.Y2_AXIS)
         self.getCurve().addPoint(95,0)
         self.getCurve().getPoint().setAnnotationText(self.getCurve().getPoint().getHovertext())
         # this should be entirely clipped

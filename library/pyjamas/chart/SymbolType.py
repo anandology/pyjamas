@@ -2108,13 +2108,13 @@ class PieSliceSymbolType (SymbolType):
         if (Double.isNaN(xPx))  or  (Double.isNaN(yPx)):
             return; # undefined slice pivot point
 
-        elif clipPlotArea  and  not intersects(xPx-r, yPx-r, xPx+r, yPx+r, 0, 0, pp.getXChartSize(), pp.getYChartSize()):
+        elif clipPlotArea  and  not self.intersects(xPx-r, yPx-r, xPx+r, yPx+r, 0, 0, pp.getXChartSize(), pp.getYChartSize()):
             return; # rect containing pie is off plot area
 
         elif clipDecoratedChart:
             yAxisWidth = pp.getYAxisEnsembleWidth()
             titleThickness = pp.chartTitleThickness()
-            if not SymbolType.intersects(0.0 - yAxisWidth,
+            if not SymbolType.intersects(self, 0.0 - yAxisWidth,
                                          0.0 - titleThickness, 
                             pp.getXChartSizeDecoratedQuickly()-yAxisWidth, 
                             pp.getYChartSizeDecoratedQuickly()-titleThickness, 
