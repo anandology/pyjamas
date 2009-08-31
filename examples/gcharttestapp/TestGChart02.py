@@ -77,15 +77,15 @@ class TestGChart02 (GChart):
             self.getCurve(i).getSymbol().setSymbolType(symbolTypes[i])
             self.getCurve(i).getSymbol().setHeight(7)
             self.getCurve(i).getSymbol().setWidth(7)
-            self.getCurve(i).setLegendLabel(i + " " + symbolNames[i])
+            self.getCurve(i).setLegendLabel("%d %s " % (i, symbolNames[i]))
         
         self.setLegendFontSize(8)
         self.getXAxis().setTickLabelFontSize(8)
         self.getXAxis().setHasGridlines(True)
-        self.getXAxis().setTickCount(symbolTypes.length)
+        self.getXAxis().setTickCount(len(symbolTypes))
         self.getYAxis().setTickLabelFontSize(8)
         self.getYAxis().setHasGridlines(True)
-        self.getYAxis().setTickCount(symbolTypes.length)
+        self.getYAxis().setTickCount(len(symbolTypes))
         
     
 
