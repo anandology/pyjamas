@@ -8,6 +8,9 @@ from pyjamas.Canvas2D import Canvas
 from pyjamas.chart import GChart
 
 from TestGChart00 import TestGChart00 
+from TestGChart01 import TestGChart01 
+from TestGChart02 import TestGChart02 
+
 from GChartExample00 import GChartExample00 
 from GChartExample00a import GChartExample00a
 from GChartExample01 import GChartExample01 
@@ -154,7 +157,7 @@ def onModuleLoad():
     #    addChart(GChartExample04b())
     #    addChart(GChartExample05())
     #addChart(GChartExample06())
-    addChart(GChartExample07())
+    #addChart(GChartExample07())
     #    addChart(GChartExample08())
     #    addChart(GChartExample09())
     #    addChart(GChartExample10())
@@ -174,7 +177,7 @@ def onModuleLoad():
     #      addChart(GChartExample18())
     #      addChart(GChartExample18a())
     #      addChart(GChartExample19())
-    addChart(GChartExample20())
+    #addChart(GChartExample20())
     #      addChart(GChartExample20a())
     #addChart(GChartExample21())
     #      addChart(GChartExample22())
@@ -191,10 +194,10 @@ def onModuleLoad():
     #    
     #)
     #    addChart(TestGChart00())
-    #    addChartNoUpdate(TestGChart01(0,0))
-    #    addChartNoUpdate(TestGChart01(1,0))
-    #    addChartNoUpdate(TestGChart01(2,0))
-    #    addChartNoUpdate(TestGChart01(3,0))
+    #addChartNoUpdate(TestGChart01(0,0))
+    #addChartNoUpdate(TestGChart01(1,0))
+    #addChartNoUpdate(TestGChart01(2,0))
+    #addChartNoUpdate(TestGChart01(3,0))
     #    addChartNoUpdate(TestGChart01(0,1))
     #    addChartNoUpdate(TestGChart01(1,1))
     #    addChartNoUpdate(TestGChart01(2,1))
@@ -204,7 +207,7 @@ def onModuleLoad():
     #    addChartNoUpdate(TestGChart01(2,2))
     #    addChartNoUpdate(TestGChart01(3,2))
     #    addChart(TestGChart01a())
-    #    addChart(TestGChart02())
+    addChart(TestGChart02())
     #    addChart(TestGChart03())
     #    addChart(TestGChart04())
     #    addChart(TestGChart04a())

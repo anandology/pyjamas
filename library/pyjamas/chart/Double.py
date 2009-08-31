@@ -9,4 +9,4 @@ import math
 def isNaN(num):
     """ returns True if number is "not a number"
     """
-    return num > MAX_VALUE or num < MIN_VALUE
+    return num == NaN
