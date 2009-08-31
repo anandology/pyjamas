@@ -92,7 +92,7 @@ class Slide(Sink):
                 else:
                     line = "<pre class='slide_code'>"
             elif line[:2] == '= ' and line[-2:] == ' =':
-                line = "<h1 class='slide_heading1>%s</h1>" % line[2:-2]
+                line = "<h1 class='slide_heading1'>%s</h1>" % line[2:-2]
             elif line[:3] == '== ' and line[-3:] == ' ==':
                 line = "<h2 class='slide_heading2>%s</h2>" % line[3:-3]
             elif line[:2] == '* ':
