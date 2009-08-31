@@ -2420,7 +2420,7 @@ class PieSliceSymbolType (SymbolType):
                             p[nP] = e1
                             nP += 1
 
-                        if not (e2!=e2):
+                        if not Double.isNaN(e2):
                             p[nP] = e2
                             nP += 1
 

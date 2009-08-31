@@ -95,6 +95,7 @@ from GChartTestAppUtil import getTitle
 
 class AddOneChart:
     def __init__(self, gchart, needsUpdate=True):
+        #gchart.setOptimizeForMemory(True)
         self.gchart = gchart
         self.needsUpdate = needsUpdate
     
@@ -146,13 +147,13 @@ def onModuleLoad():
     #    addChart(GChartExample01a(0))
     #    addChart(GChartExample01b())
     #    addChart(GChartExample01c())
-    addChart(GChartExample02())
-    addChart(GChartExample03())
-    addChart(GChartExample04())
+    #addChart(GChartExample02())
+    #addChart(GChartExample03())
+    #addChart(GChartExample04())
     #    addChart(GChartExample04a())
     #    addChart(GChartExample04b())
     #    addChart(GChartExample05())
-    addChart(GChartExample06())
+    #addChart(GChartExample06())
     addChart(GChartExample07())
     #    addChart(GChartExample08())
     #    addChart(GChartExample09())
@@ -173,9 +174,9 @@ def onModuleLoad():
     #      addChart(GChartExample18())
     #      addChart(GChartExample18a())
     #      addChart(GChartExample19())
-    addChart(GChartExample20())
+    #addChart(GChartExample20())
     #      addChart(GChartExample20a())
-    addChart(GChartExample21())
+    #addChart(GChartExample21())
     #      addChart(GChartExample22())
     #      addChart(GChartExample22a())
     #      addChart(GChartExample23(False, False))

@@ -65,7 +65,7 @@ class Annotation:
         self.location = None
         self.text = None
         self.widget = None    # may be used in lieu of text or HTML
-        self.isVisible = True
+        self.visible = True
         self.xShift = 0
         self.yShift = 0
         self._isHTML = False; # no break tags ==> plain text
@@ -135,7 +135,7 @@ class Annotation:
         return self.text
     
     def getVisible(self):
-        return self.isVisible
+        return self.visible
     
     def getXShift(self):
         return self.xShift
@@ -174,8 +174,8 @@ class Annotation:
         self.text = self.analyzeHTML(text)
         self.widget = None
     
-    def setVisible(self, isVisible):
-        self.isVisible = isVisible
+    def setVisible(self, visible):
+        self.visible = visible
     
     
     def setWidget(self, widget,
