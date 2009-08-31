@@ -69,7 +69,7 @@ def setBorderStyle(uio, cssBorderStyle):
 
 
 def setBorderWidth(uio, borderWidth):
-    if borderWidth != NAI:
+    if borderWidth != NAI and borderWidth:
         cssBorderWidth = str(borderWidth) + "px"
     else:
         cssBorderWidth = ""

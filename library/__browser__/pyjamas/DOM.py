@@ -552,9 +552,9 @@ def setOptionText(select, text, index):
     option = select.options.item(index)
     option.text = text
 
-def setStyleAttribute(element, name, value):
+def setStyleAttribute(element, attr, value):
     JS("""
-    element.style[name] = value;
+    element.style[attr] = value;
     """)
 
 def sinkEvents(element, bits):
