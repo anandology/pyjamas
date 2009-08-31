@@ -11,6 +11,8 @@ from TestGChart00 import TestGChart00
 from TestGChart01 import TestGChart01 
 from TestGChart02 import TestGChart02 
 
+from TestGChart05 import TestGChart05 
+
 from GChartExample00 import GChartExample00 
 from GChartExample00a import GChartExample00a
 from GChartExample01 import GChartExample01 
@@ -207,11 +209,11 @@ def onModuleLoad():
     #    addChartNoUpdate(TestGChart01(2,2))
     #    addChartNoUpdate(TestGChart01(3,2))
     #    addChart(TestGChart01a())
-    addChart(TestGChart02())
+    #addChart(TestGChart02())
     #    addChart(TestGChart03())
     #    addChart(TestGChart04())
     #    addChart(TestGChart04a())
-    #    addChart(TestGChart05(False))
+    addChart(TestGChart05(False))
     #    addChart(TestGChart05(True))
     #    addChart(TestGChart06(False))
     #    addChart(TestGChart06(True))
