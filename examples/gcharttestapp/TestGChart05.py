@@ -8,7 +8,7 @@ from pyjamas.chart import SymbolType
 class TestGChart05 (GChart):
     def __init__(self, testCanvas):
         GChart.__init__(self, XChartSize=300,YChartSize=300)
-        self.setChartTitle(GChartTestAppUtil.getTitle(this))
+        self.setChartTitle(GChartTestAppUtil.getTitle(self))
         self.setClipToPlotArea(True)
         self.setChartFootnotes("Check: an unclipped point at each corner.<br> No x-ticks.<br>Line clipped at plot area limits<br>Three clipped-off pies visible<br>Every at-least-partly visible symbol labeled.")
         
@@ -18,7 +18,7 @@ class TestGChart05 (GChart):
         if testCanvas:
             self.getCurve().getSymbol().setFillSpacing(0)
         
-        self.getCurve().setYAxis(Y_AXIS)
+        self.getCurve().setYAxis(GChartConsts.Y_AXIS)
         self.getCurve().addPoint(0,-95); # clipped
         self.getCurve().getPoint().setAnnotationText(self.getCurve().getPoint().getHovertext())
         self.getCurve().addPoint(0,-90)
@@ -29,7 +29,7 @@ class TestGChart05 (GChart):
         self.getCurve().getPoint().setAnnotationText(self.getCurve().getPoint().getHovertext())
         
         self.getCurve().setLegendLabel("On Y")
-        addCurve()
+        self.addCurve()
         if testCanvas:
             self.getCurve().getSymbol().setFillSpacing(0)
         
@@ -45,7 +45,7 @@ class TestGChart05 (GChart):
         self.getCurve().setLegendLabel("On Y2")
         
         # continuous line whose edges self.get clipped off
-        addCurve()
+        self.addCurve()
         self.getCurve().setLegendLabel("clipped line")
         self.getCurve().getSymbol().setBackgroundColor("blue")
         self.getCurve().getSymbol().setBorderColor("blue")
@@ -56,7 +56,7 @@ class TestGChart05 (GChart):
             self.getCurve().getSymbol().setFillSpacing(10)
         
         self.getCurve().getSymbol().setFillThickness(3)
-        self.getCurve().setYAxis(Y_AXIS)
+        self.getCurve().setYAxis(GChartConsts.Y_AXIS)
         #     self.getCurve().addPoint(50,-50)
         self.getCurve().addPoint(0,-100)
         self.getCurve().getPoint().setAnnotationText(self.getCurve().getPoint().getHovertext())
@@ -65,7 +65,7 @@ class TestGChart05 (GChart):
         self.getCurve().getPoint().setAnnotationText(self.getCurve().getPoint().getHovertext())
         
         # this should be entirely visible
-        addCurve()
+        self.addCurve()
         if testCanvas:
             self.getCurve().getSymbol().setFillSpacing(0)
         
@@ -75,12 +75,12 @@ class TestGChart05 (GChart):
         self.getCurve().getSymbol().setFillThickness(1)
         self.getCurve().getSymbol().setWidth(100)
         self.getCurve().getSymbol().setHeight(0)
-        self.getCurve().setYAxis(Y_AXIS)
+        self.getCurve().setYAxis(GChartConsts.Y_AXIS)
         self.getCurve().addPoint(45,0)
         self.getCurve().getPoint().setAnnotationText(self.getCurve().getPoint().getHovertext())
         
         # this should be entirely clipped.
-        addCurve()
+        self.addCurve()
         if testCanvas:
             self.getCurve().getSymbol().setFillSpacing(0)
         
@@ -104,7 +104,7 @@ class TestGChart05 (GChart):
         self.getCurve().getSymbol().setFillThickness(1)
         self.getCurve().getSymbol().setWidth(100)
         self.getCurve().getSymbol().setHeight(0)
-        self.getCurve().setYAxis(Y_AXIS)
+        self.getCurve().setYAxis(GChartConsts.Y_AXIS)
         self.getCurve().addPoint(45,-95)
         self.getCurve().getPoint().setAnnotationText(self.getCurve().getPoint().getHovertext())
         
