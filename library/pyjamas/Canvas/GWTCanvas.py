@@ -472,7 +472,7 @@ class GWTCanvas(Widget):
     * @param color the background color.
     """
     def setBackgroundColor(self, color):
-        self.impl.setBackgroundColor(self.getElement(), color.toString())
+        self.impl.setBackgroundColor(self.getElement(), str(color))
     
     
     """*
@@ -530,7 +530,7 @@ class GWTCanvas(Widget):
     * @param color {@link Color}
     """
     def setFillStyle(self, color):
-        self.impl.setFillStyle(color.toString())
+        self.impl.setFillStyle(str(color))
     
     
     """*
@@ -647,7 +647,7 @@ class GWTCanvas(Widget):
     * @param color {@link Color}
     """
     def setStrokeStyle(self, color):
-        self.impl.setStrokeStyle(color.toString())
+        self.impl.setStrokeStyle(str(color))
     
     
     """*

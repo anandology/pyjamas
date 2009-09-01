@@ -51,7 +51,7 @@ class Color:
         else:
             self.colorStr = "rgba(%d,%d,%d,%d)" % (r, g, b, a)
     
-    def toString(self):
+    def __str__(self):
         return self.colorStr
     
 
