@@ -39,7 +39,7 @@ class GWTCanvasImplDefault:
 
 
     def clear(self, width, height):
-        clearRect(0,0,width,height)
+        self.clearRect(0,0,width,height)
 
 
     def closePath(self):
