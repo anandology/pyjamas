@@ -68,7 +68,7 @@ install: build
 	mv debian/pyjamas-build/usr/share/pyjamas debian/pyjamas-ui/usr/share/
 
 	# replace ../../bin/pyjsbuild with pyjsbuild
-	sed -i -e's/..\/..\/bin\///' tmp/examples/*/build.sh
+	sed -i -e's/..\/..\/bin\///' debian/pyjamas-doc/examples/*/build.sh
 
 binary-indep: build install
 
