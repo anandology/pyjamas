@@ -57,10 +57,14 @@ install: build
 	rm -fr debian/pyjamas-build/usr/share/pyjamas/library/pyjamas/chart
 
 	# move examples out way.
-	mkdir -p debian/pyjamas-doc/examples
-	mv  debian/pyjamas-build/usr/share/pyjamas/examples/* \
-	    debian/pyjamas-doc/examples
-	rm -fr debian/pyjamas-build/usr/share/pyjamas/examples
+	mkdir -p tmp
+	mv  debian/pyjamas-build/usr/share/pyjamas/examples/ \
+	    tmp
+	#rm -fr debian/pyjamas-build/usr/share/pyjamas/examples
+	#mkdir -p debian/pyjamas-doc/examples
+	#mv  debian/pyjamas-build/usr/share/pyjamas/examples/* \
+	#    debian/pyjamas-doc/examples
+	#rm -fr debian/pyjamas-build/usr/share/pyjamas/examples
 
 	# shuffle things around...
 	#mv debian/pyjamas-build/usr/share/pyjamas/pygtkweb \
@@ -69,7 +73,8 @@ install: build
 	mv debian/pyjamas-build/usr/share/pyjamas debian/pyjamas-ui/usr/share/
 
 	# replace ../../bin/pyjsbuild with pyjsbuild
-	sed -i -e's/..\/..\/bin\///' debian/pyjamas-doc/examples/*/build.sh
+	#sed -i -e's/..\/..\/bin\///' debian/pyjamas-doc/examples/*/build.sh
+	sed -i -e's/..\/..\/bin\///' tmp/examples/*/build.sh
 
 binary-indep: build install
 
