@@ -46,7 +46,7 @@ class LogoDemo(SimpleCanvasDemo):
         SimpleCanvasDemo.__init__(self, theCanvas)
         self.height = 400
         self.width = 600
-        self.demoName = "GWT Logo"
+        self.demoName = "Pyjamas Logo"
 
         """
         * Reference to our ImageHandle that gets initialized on the callback from
