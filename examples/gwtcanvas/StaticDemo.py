@@ -103,9 +103,9 @@ class StaticDemo (SimpleCanvasDemo):
         self.canvas.translate(150, 0)
         
         self.canvas.fillRect(0,0,150,150)
-        self.canvas.setFillStyle(Color("#09F"))
+        self.canvas.setFillStyle(Color.Color("#09F"))
         self.canvas.fillRect(15,15,120,120)
-        self.canvas.setFillStyle(Color("#FFF"))
+        self.canvas.setFillStyle(Color.Color("#FFF"))
         self.canvas.setGlobalAlpha(0.5)
         self.canvas.fillRect(30,30,90,90)
         self.canvas.fillRect(45,45,60,60)
@@ -115,15 +115,15 @@ class StaticDemo (SimpleCanvasDemo):
         self.canvas.saveContext()
         self.canvas.translate(10, 140)
         
-        self.canvas.setFillStyle(Color("#FD0"))
+        self.canvas.setFillStyle(Color.Color("#FD0"))
         self.canvas.fillRect(0,0,75,75)
-        self.canvas.setFillStyle(Color("#6C0"))
+        self.canvas.setFillStyle(Color.Color("#6C0"))
         self.canvas.fillRect(75,0,75,75)
-        self.canvas.setFillStyle(Color("#09F"))
+        self.canvas.setFillStyle(Color.Color("#09F"))
         self.canvas.fillRect(0,75,75,75)
-        self.canvas.setFillStyle(Color("#F30"))
+        self.canvas.setFillStyle(Color.Color("#F30"))
         self.canvas.fillRect(75,75,75,75)
-        self.canvas.setFillStyle(Color("#FFF"))
+        self.canvas.setFillStyle(Color.Color("#FFF"))
         
         self.canvas.setGlobalAlpha(0.2)
         
@@ -158,7 +158,7 @@ class StaticDemo (SimpleCanvasDemo):
         for i in range(6):
             # Loop through rings (from inside to out)
             self.canvas.saveContext()
-            self.canvas.setFillStyle(Color((51 * i),(255 - 51 * i),255))
+            self.canvas.setFillStyle(Color.Color((51 * i),(255 - 51 * i),255))
             
             for j in range(i*6):
                 # draw individual dots
