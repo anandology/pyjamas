@@ -47,9 +47,9 @@ class Color:
         if g is None and b is None and a is None:
             self.colorStr = r
         elif a is None:
-            self.colorStr = "rgb(" + r + "," + g + "," + b + ")"
+            self.colorStr = "rgb(%d,%d,%d)" % (r, g, b)
         else:
-            self.colorStr = "rgba(" + r + "," + g + "," + b + "," + a + ")"
+            self.colorStr = "rgba(%d,%d,%d,%d)" % (r, g, b, a)
     
     def toString(self):
         return self.colorStr
