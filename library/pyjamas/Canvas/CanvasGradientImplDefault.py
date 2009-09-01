@@ -20,19 +20,24 @@
 
 
 """*
-* Default deferred binding implementation of GradientFactory.
-*
+* Native canvas gradients.
 """
-class GradientFactoryImplDefault implements GradientFactory:
+class CanvasGradientImplDefault:
     
-    CanvasGradient createLinearGradient(double x0, double y0, double x1,
-    double y1, Element c) {
-        return LinearGradientImplDefault(x0,y0,x1,y1,c)
+    def __init__(self):
+        self.nativeGradient = None
     
+    def addColorStop(self, offset, color):
+        self.addNativeColorStop(offset,color.toString())
     
-    CanvasGradient createRadialGradient(double x0, double y0, double r0,
-    double x1, double y1, double r1, Element c) {
-        return RadialGradientImplDefault(x0,y0,r0,x1,y1,r1,c)
+    def getObject(self):
+        return nativeGradient
+    
+    def addNativeColorStop(self, offset, color):
+        self.nativeGradient.addColorStop(offset,color);
+    
+    def setNativeGradient(self, grad):
+        self.nativeGradient = grad
     
 
 

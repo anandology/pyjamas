@@ -47,7 +47,7 @@ class GWTCanvasImplDefault:
     
     def createElement(self):
         e = DOM.createElement("CANVAS")
-        self.setCanvasContext(e.getContext('2d')
+        self.setCanvasContext(e.getContext('2d'))
         return e
     
     
@@ -138,15 +138,15 @@ class GWTCanvasImplDefault:
     
     
     def setCoordHeight(self, elem, height):
-        DOM.setElementProperty(elem, "height", String.valueOf(height))
+        DOM.setElemAttribute(elem, "height", str(height))
     
     
     def setCoordWidth(self, elem, width):
-        DOM.setElementProperty(elem,"width", String.valueOf(width))
+        DOM.setElemAttribute(elem,"width", str(width))
     
     
     def setFillStyle(self, gradient):
-        setFillStyle((CanvasGradientImplDefault) gradient)
+        setFillStyle( gradient)
     
     
     def setFillStyle(self, colorStr):
@@ -178,15 +178,15 @@ class GWTCanvasImplDefault:
     
     
     def setPixelHeight(self, elem, height):
-        DOM.setStyleAttribute(elem, "height", height + "px")
+        DOM.setStyleAttribute(elem, "height", "%dpx" % height)
     
     
     def setPixelWidth(self, elem, width):
-        DOM.setStyleAttribute(elem, "width", width + "px")
+        DOM.setStyleAttribute(elem, "width", "%dpx" % width)
     
     
     def setStrokeStyle(self, gradient):
-        setStrokeStyle((CanvasGradientImplDefault) gradient)
+        setStrokeStyle(gradient)
     
     
     def setStrokeStyle(self, colorStr):
@@ -200,7 +200,7 @@ class GWTCanvasImplDefault:
     def strokeRect(self, startX, startY, width, height):
         self.canvasContext.strokeRect(startX,startY,width,height)
     
-    def transform(self, m11, m12, m21, m22, dx, dy) {
+    def transform(self, m11, m12, m21, m22, dx, dy):
         self.canvasContext.transform(m11,m12,m21,m22,dx,dy)
     
     

@@ -14,25 +14,22 @@
 * the License.
 """
 
-
+from pyjamas.Canvas.CanvasGradientImplDefault import CanvasGradientImplDefault 
 
 
 """*
-* Default deferred binding of GradientFactory will create instances of this class.
-* This corresponds to a LinearGradient for stroke or fill styles.
+*  Default deferred binding of Gradient Factory will create instances of this class
+*  for RadialGradients.
 """
-class LinearGradientImplDefault(CanvasGradientImplDefault):
+class RadialGradientImplDefault(CanvasGradientImplDefault):
     
-    def __init__(self, x0, y0, x1, y1, c):
+    def __init__(self, x0, y0, r0, x1, y1, r1, c):
         CanvasGradientImplDefault.__init__(self)
-        self.createNativeGradientObject(x0,y0,x1,y1,c)
+        createNativeGradientObject(x0,y0,r0,x1,y1,r1, c)
     
-    
-    def createNativeGradientObject(self, x0, y0, x1, y1, c):
+    def createNativeGradientObject(self, x0, y0, r0, x1, y1, r1, c):
         ctx = c.getContext('2d')
-        gradient = ctx.createLinearGradient(x0,y0,x1,y1)
+        gradient = ctx.createRadialGradient(x0,y0,r0,x1,y1,r1)
         self.setNativeGradient(gradient)
-
     
-
 

@@ -15,30 +15,32 @@
 """
 
 
-
-
+from pyjamas.ui.Composite import Composite
 
 
 """*
-* Native canvas gradients.
-"""
-class CanvasGradientImplDefault(CanvasGradient):
-    
-    def __init__(self):
-        CanvasGradient.__init__(self)
-        self.nativeGradient = None
-    
-    def addColorStop(self, offset, color):
-        self.addNativeColorStop(offset,color.toString())
-    
-    def getObject(self):
-        return nativeGradient
-    
-    def addNativeColorStop(self, offset, color):
-        self.nativeGradient.addColorStop(offset,color);
-    
-    def setNativeGradient(self, grad):
-        self.nativeGradient = grad
-    
+* Simple abstract class for defining a demo for
+* GWTCanvasDemo. Demos should involve a single
+* canvas only which is shared amongst all other
+* demos in the suite.
+*
+*"""
+class SimpleCanvasDemo:
+
+    def __init__(self, theCanvas):
+        self.height = 400
+        self.width = 400
+        self.canvas = theCanvas
+        self.controls = None
+
+    def getControls(self):
+        if self.controls is None:
+            self.createControls()
+
+        return self.controls
+
+
+    def getName(self):
+        return self.demoName
 
 

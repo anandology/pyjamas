@@ -9,12 +9,16 @@
 *
 * Unless required by applicable law or agreed to in writing, software
 * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-* WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+* WARRANTIES OR CONDITIONS OF ANY KIND, either express or self.implied. See the
 * License for the specific language governing permissions and limitations under
 * the License.
 """
 
 from pyjamas.ui.Widget import Widget
+from pyjamas.Canvas.Color import Color
+from pyjamas.Canvas.LinearGradientImplDefault import LinearGradientImplDefault
+from pyjamas.Canvas.RadialGradientImplDefault import RadialGradientImplDefault
+from pyjamas.Canvas.GWTCanvasImplDefault import GWTCanvasImplDefault
 
 """*
 * Use this constant as a parameter for the {@link #setLineJoin(String)}
@@ -62,7 +66,7 @@ SQUARE = "square"
 * Use this constant as a parameter for the {@link #setBackgroundColor(Color)}
 * method.
 """
-Color TRANSPARENT = Color("")
+TRANSPARENT = Color("")
 
 
 
@@ -73,7 +77,7 @@ Color TRANSPARENT = Color("")
 *
 * <p>
 * Performance may scale differently for IE than for browsers with a native
-* canvas implementation. Sub-pixel precision is supported where possible.
+* canvas self.implementation. Sub-pixel precision is supported where possible.
 * </p>
 """
 class GWTCanvas(Widget):
@@ -94,17 +98,17 @@ class GWTCanvas(Widget):
     * @param pixelY the CSS height in pixels of the canvas element
     """
     def __init__(self, coordX=300, coordY=150, pixelX=300, pixelY=150):
-        gradientFactoryImpl = GWT.create(GradientFactory.class)
         
         """
         * Impl Instance. Compiler should statify all the methods, so we do not end up
         * with duplicate code for each canvas instance.
         """
-        GWTCanvasImpl impl = GWT.create(GWTCanvasImpl.class)
+        self.impl = GWTCanvasImplDefault()
         
         self.coordHeight = 0
         self.coordWidth = 0
-        self.setElement(impl.createElement())
+        Widget.__init__(self)
+        self.setElement(self.impl.createElement())
         self.setPixelWidth(pixelX)
         self.setPixelHeight(pixelY)
         self.setCoordSize(coordX, coordY)
@@ -123,14 +127,14 @@ class GWTCanvas(Widget):
     * @param antiClockwise direction that the arc line is drawn
     """
     def arc(self, x, y, radius, startAngle, endAngle, antiClockwise):
-        impl.arc(x, y, radius, startAngle, endAngle, antiClockwise)
+        self.impl.arc(x, y, radius, startAngle, endAngle, antiClockwise)
     
     
     """*
     * Erases the current path and prepares it for a path.
     """
     def beginPath(self):
-        impl.beginPath()
+        self.impl.beginPath()
     
     
     """*
@@ -139,7 +143,7 @@ class GWTCanvas(Widget):
     def clear(self):
         # we used local references instead of looking up the attributes
         # on the DOM element
-        impl.clear(self.coordWidth, self.coordHeight)
+        self.impl.clear(self.coordWidth, self.coordHeight)
     
     
     """*
@@ -147,7 +151,7 @@ class GWTCanvas(Widget):
     * the last element in the path back to the first.
     """
     def closePath(self):
-        impl.closePath()
+        self.impl.closePath()
     
     
     """*
@@ -161,8 +165,8 @@ class GWTCanvas(Widget):
     * @return returns the CanvasGradient
     """
     def createLinearGradient(self, x0, y0, x1, y1):
-        return gradientFactoryImpl.createLinearGradient(x0, y0, x1, y1,
-        self.getElement())
+        return GradientFactoryImplDefault.createLinearGradient(x0, y0, x1, y1,
+                                                        self.getElement())
     
     
     """*
@@ -178,8 +182,8 @@ class GWTCanvas(Widget):
     * @return returns the CanvasGradient
     """
     def createRadialGradient(self, x0, y0, r0, x1, y1, r1):
-        return gradientFactoryImpl.createRadialGradient(x0, y0, r0, x1, y1, r1,
-        self.getElement())
+        return GradientFactoryImplDefault.createRadialGradient(x0, y0, r0, x1, y1, r1,
+                                        self.getElement())
     
     
     """*
@@ -201,7 +205,7 @@ class GWTCanvas(Widget):
     * @param y x coord of point
     """
     def cubicCurveTo(self, cp1x, cp1y, cp2x, cp2y, x, y):
-        impl.cubicCurveTo(cp1x, cp1y, cp2x, cp2y, x, y)
+        self.impl.cubicCurveTo(cp1x, cp1y, cp2x, cp2y, x, y)
     
     
     """*
@@ -233,7 +237,7 @@ class GWTCanvas(Widget):
     """
     def drawImage(self, img, offsetX, offsetY, width, height):
         
-        impl.drawImage(img, 0, 0, img.getWidth(), img.getHeight(), offsetX,
+        self.impl.drawImage(img, 0, 0, img.getWidth(), img.getHeight(), offsetX,
         offsetY, width, height)
     
     
@@ -259,7 +263,7 @@ class GWTCanvas(Widget):
     """
     def drawImage(self, img, sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight):
         
-        impl.drawImage(img, sourceX, sourceY, sourceWidth, sourceHeight, destX,
+        self.impl.drawImage(img, sourceX, sourceY, sourceWidth, sourceHeight, destX,
         destY, destWidth, destHeight)
     
     
@@ -267,7 +271,7 @@ class GWTCanvas(Widget):
     * Fills the current path according to the current fillstyle.
     """
     def fill(self):
-        impl.fill()
+        self.impl.fill()
     
     
     """*
@@ -280,7 +284,7 @@ class GWTCanvas(Widget):
     * @param height destination height of image
     """
     def fillRect(self, startX, startY, width, height):
-        impl.fillRect(startX, startY, width, height)
+        self.impl.fillRect(startX, startY, width, height)
     
     
     """*
@@ -309,7 +313,7 @@ class GWTCanvas(Widget):
     * @see GWTCanvas#setGlobalAlpha(double)
     """
     def getGlobalAlpha(self):
-        return impl.getGlobalAlpha()
+        return self.impl.getGlobalAlpha()
     
     
     """*
@@ -319,7 +323,7 @@ class GWTCanvas(Widget):
     * @see GWTCanvas#setGlobalCompositeOperation(String)
     """
     def getGlobalCompositeOperation(self):
-        return impl.getGlobalCompositeOperation()
+        return self.impl.getGlobalCompositeOperation()
     
     
     """*
@@ -329,7 +333,7 @@ class GWTCanvas(Widget):
     * @see GWTCanvas#setLineCap(String)
     """
     def getLineCap(self):
-        return impl.getLineCap()
+        return self.impl.getLineCap()
     
     
     """*
@@ -339,7 +343,7 @@ class GWTCanvas(Widget):
     * @see GWTCanvas#setLineJoin(String)
     """
     def getLineJoin(self):
-        return impl.getLineJoin()
+        return self.impl.getLineJoin()
     
     
     """*
@@ -349,7 +353,7 @@ class GWTCanvas(Widget):
     * @see GWTCanvas#setLineWidth(double)
     """
     def getLineWidth(self):
-        return impl.getLineWidth()
+        return self.impl.getLineWidth()
     
     
     """*
@@ -359,7 +363,7 @@ class GWTCanvas(Widget):
     * @see GWTCanvas#setMiterLimit(double)
     """
     def getMiterLimit(self):
-        return impl.getMiterLimit()
+        return self.impl.getMiterLimit()
     
     
     """*
@@ -370,7 +374,7 @@ class GWTCanvas(Widget):
     * @param y y coord of point
     """
     def lineTo(self, x, y):
-        impl.lineTo(x, y)
+        self.impl.lineTo(x, y)
     
     
     """*
@@ -380,13 +384,13 @@ class GWTCanvas(Widget):
     * @param y y coord of point
     """
     def moveTo(self, x, y):
-        impl.moveTo(x, y)
+        self.impl.moveTo(x, y)
     
     
     """*
     * Does nothing if the context has an empty path. Otherwise it connects the
     * last point in the path to the given point <b>(x, y)</b> using a quadratic
-    * BŽzier curve with control point <b>(cpx, cpy)</b>, and then adds the given
+    * Bezier curve with control point <b>(cpx, cpy)</b>, and then adds the given
     * point <b>(x, y)</b> to the path.
     *
     * @param cpx x coord of the control point
@@ -395,7 +399,7 @@ class GWTCanvas(Widget):
     * @param y y coord of the point
     """
     def quadraticCurveTo(self, cpx, cpy, x, y):
-        impl.quadraticCurveTo(cpx, cpy, x, y)
+        self.impl.quadraticCurveTo(cpx, cpy, x, y)
     
     
     """*
@@ -407,7 +411,7 @@ class GWTCanvas(Widget):
     * @param height the height of the rectangle
     """
     def rect(self, startX, startY, width, height):
-        impl.rect(startX, startY, width, height)
+        self.impl.rect(startX, startY, width, height)
     
     
     """*
@@ -433,7 +437,7 @@ class GWTCanvas(Widget):
     * Restores the last saved context from the context stack.
     """
     def restoreContext(self):
-        impl.restoreContext()
+        self.impl.restoreContext()
     
     
     """*
@@ -442,14 +446,14 @@ class GWTCanvas(Widget):
     * @param angle the angle to rotate by, <b>in radians</b>
     """
     def rotate(self, angle):
-        impl.rotate(angle)
+        self.impl.rotate(angle)
     
     
     """*
     * Saves the current context to the context stack.
     """
     def saveContext(self):
-        impl.saveContext()
+        self.impl.saveContext()
     
     
     """*
@@ -459,7 +463,7 @@ class GWTCanvas(Widget):
     * @param y ratio that we must scale in the Y direction
     """
     def scale(self, x, y):
-        impl.scale(x, y)
+        self.impl.scale(x, y)
     
     
     """*
@@ -467,8 +471,8 @@ class GWTCanvas(Widget):
     *
     * @param color the background color.
     """
-    def self.setBackgroundColor(self, color):
-        impl.setBackgroundColor(self.getElement(), color.toString())
+    def setBackgroundColor(self, color):
+        self.impl.setBackgroundColor(self.getElement(), color.toString())
     
     
     """*
@@ -479,8 +483,8 @@ class GWTCanvas(Widget):
     *
     * @param height the size of the y component of the coordinate space
     """
-    def self.setCoordHeight(self, height):
-        impl.setCoordHeight(self.getElement(), height)
+    def setCoordHeight(self, height):
+        self.impl.setCoordHeight(self.getElement(), height)
         self.coordHeight = height
     
     
@@ -493,7 +497,7 @@ class GWTCanvas(Widget):
     * @param width the size of the x component of the coordinate space
     * @param height the size of the y component of the coordinate space
     """
-    def self.setCoordSize(self, width, height):
+    def setCoordSize(self, width, height):
         self.setCoordWidth(width)
         self.setCoordHeight(height)
     
@@ -506,8 +510,8 @@ class GWTCanvas(Widget):
     *
     * @param width the size of the x component of the coordinate space
     """
-    def self.setCoordWidth(self, width):
-        impl.setCoordWidth(self.getElement(), width)
+    def setCoordWidth(self, width):
+        self.impl.setCoordWidth(self.getElement(), width)
         self.coordWidth = width
     
     
@@ -516,8 +520,8 @@ class GWTCanvas(Widget):
     *
     * @param grad {@link CanvasGradient}
     """
-    def self.setFillStyle(self, grad):
-        impl.setFillStyle(grad)
+    def setFillStyle(self, grad):
+        self.impl.setFillStyle(grad)
     
     
     """*
@@ -525,8 +529,8 @@ class GWTCanvas(Widget):
     *
     * @param color {@link Color}
     """
-    def self.setFillStyle(self, color):
-        impl.setFillStyle(color.toString())
+    def setFillStyle(self, color):
+        self.impl.setFillStyle(color.toString())
     
     
     """*
@@ -534,8 +538,8 @@ class GWTCanvas(Widget):
     *
     * @param alpha alpha value
     """
-    def self.setGlobalAlpha(self, alpha):
-        impl.setGlobalAlpha(alpha)
+    def setGlobalAlpha(self, alpha):
+        self.impl.setGlobalAlpha(alpha)
     
     
     """*
@@ -553,8 +557,8 @@ class GWTCanvas(Widget):
     *
     * @param globalCompositeOperation
     """
-    def self.setGlobalCompositeOperation(self, globalCompositeOperation):
-        impl.setGlobalCompositeOperation(globalCompositeOperation)
+    def setGlobalCompositeOperation(self, globalCompositeOperation):
+        self.impl.setGlobalCompositeOperation(globalCompositeOperation)
     
     
     """*
@@ -567,8 +571,8 @@ class GWTCanvas(Widget):
     *
     * @param lineCap
     """
-    def self.setLineCap(self, lineCap):
-        impl.setLineCap(lineCap)
+    def setLineCap(self, lineCap):
+        self.impl.setLineCap(lineCap)
     
     
     """*
@@ -581,8 +585,8 @@ class GWTCanvas(Widget):
     *
     * @param lineJoin
     """
-    def self.setLineJoin(self, lineJoin):
-        impl.setLineJoin(lineJoin)
+    def setLineJoin(self, lineJoin):
+        self.impl.setLineJoin(lineJoin)
     
     
     """*
@@ -591,8 +595,8 @@ class GWTCanvas(Widget):
     *
     * @param width the width of the canvas
     """
-    def self.setLineWidth(self, width):
-        impl.setLineWidth(width)
+    def setLineWidth(self, width):
+        self.impl.setLineWidth(width)
     
     
     """*
@@ -606,8 +610,8 @@ class GWTCanvas(Widget):
     *
     * @param miterLimit
     """
-    def self.setMiterLimit(self, miterLimit):
-        impl.setMiterLimit(miterLimit)
+    def setMiterLimit(self, miterLimit):
+        self.impl.setMiterLimit(miterLimit)
     
     
     """*
@@ -615,8 +619,8 @@ class GWTCanvas(Widget):
     *
     * @param height the height of the canvas in pixels
     """
-    def self.setPixelHeight(self, height):
-        impl.setPixelHeight(self.getElement(), height)
+    def setPixelHeight(self, height):
+        self.impl.setPixelHeight(self.getElement(), height)
     
     
     """*
@@ -624,8 +628,8 @@ class GWTCanvas(Widget):
     *
     * @param width width of the canvas in pixels
     """
-    def self.setPixelWidth(self, width):
-        impl.setPixelWidth(self.getElement(), width)
+    def setPixelWidth(self, width):
+        self.impl.setPixelWidth(self.getElement(), width)
     
     
     """*
@@ -633,8 +637,8 @@ class GWTCanvas(Widget):
     *
     * @param grad {@link CanvasGradient}
     """
-    def self.setStrokeStyle(self, grad):
-        impl.setStrokeStyle(grad)
+    def setStrokeStyle(self, grad):
+        self.impl.setStrokeStyle(grad)
     
     
     """*
@@ -642,15 +646,15 @@ class GWTCanvas(Widget):
     *
     * @param color {@link Color}
     """
-    def self.setStrokeStyle(self, color):
-        impl.setStrokeStyle(color.toString())
+    def setStrokeStyle(self, color):
+        self.impl.setStrokeStyle(color.toString())
     
     
     """*
     * Strokes the current path according to the current stroke style.
     """
     def stroke(self):
-        impl.stroke()
+        self.impl.stroke()
     
     
     """*
@@ -662,7 +666,7 @@ class GWTCanvas(Widget):
     * @param height height of the rectangle
     """
     def strokeRect(self, startX, startY, width, height):
-        impl.strokeRect(startX, startY, width, height)
+        self.impl.strokeRect(startX, startY, width, height)
     
     
     """*
@@ -684,7 +688,7 @@ class GWTCanvas(Widget):
     * @param dy Translation in Y direction
     """
     def transform(self, m11, m12, m21, m22, dx, dy):
-        impl.transform(m11, m12, m21, m22, dx, dy)
+        self.impl.transform(m11, m12, m21, m22, dx, dy)
     
     
     """*
@@ -695,7 +699,7 @@ class GWTCanvas(Widget):
     * @param y amount to shift in the y direction
     """
     def translate(self, x, y):
-        impl.translate(x, y)
+        self.impl.translate(x, y)
     
 
 

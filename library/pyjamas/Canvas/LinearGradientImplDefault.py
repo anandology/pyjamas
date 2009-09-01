@@ -15,22 +15,24 @@
 """
 
 
+from pyjamas.Canvas.CanvasGradientImplDefault import CanvasGradientImplDefault 
 
 """*
-*  Default deferred binding of Gradient Factory will create instances of this class
-*  for RadialGradients.
+* Default deferred binding of GradientFactory will create instances of this class.
+* This corresponds to a LinearGradient for stroke or fill styles.
 """
-class RadialGradientImplDefault(CanvasGradientImplDefault):
+class LinearGradientImplDefault(CanvasGradientImplDefault):
     
-    def __init__(self, x0, y0, r0, x1, y1, r1, c):
+    def __init__(self, x0, y0, x1, y1, c):
         CanvasGradientImplDefault.__init__(self)
-        createNativeGradientObject(x0,y0,r0,x1,y1,r1, c)
+        self.createNativeGradientObject(x0,y0,x1,y1,c)
+  
     
-    def createNativeGradientObject(self, x0, y0, r0, x1, y1, r1, c):
+    def createNativeGradientObject(self, x0, y0, x1, y1, c):
         ctx = c.getContext('2d')
-        gradient = ctx.createRadialGradient(x0,y0,r0,x1,y1,r1)
+        gradient = ctx.createLinearGradient(x0,y0,x1,y1)
         self.setNativeGradient(gradient)
-    
+
     
 
 
