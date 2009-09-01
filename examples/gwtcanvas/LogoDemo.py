@@ -80,7 +80,7 @@ class LogoDemo(SimpleCanvasDemo):
 
         else:
             # Go ahead and animate
-            if isImageLoaded(self.img):
+            if self.isImageLoaded(self.img):
                 self.run = True
                 #log.writebr("already loaded")
                 Timer(1, self)
