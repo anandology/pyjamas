@@ -47,4 +47,5 @@ fi
 (cd canvasprocessing; ./build.sh $options)
 (cd toggle; ./build.sh $options)
 (cd gcharttestapp; ./build.sh $options)
+(cd gwtcanvas; ./build.sh $options)
 
