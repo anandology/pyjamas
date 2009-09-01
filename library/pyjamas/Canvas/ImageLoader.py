@@ -47,7 +47,7 @@ class ImageLoader:
     """
     def addHandle(self, img):
         self.totalImages += 1
-        self.images.add(img)
+        self.images.append(img)
     
     
     """*
