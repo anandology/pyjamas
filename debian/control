@@ -18,7 +18,7 @@ Description: Python web widget toolkit and Python-to-Javascript compiler
  Pyjamas is typically used for the development of "Web 2.0" RIAs,
  where the application can be almost exclusively written in Python,
  instead of Javascript, yet compiled to run in the user's browser.
- Pyjamas also supports running the application as pure python,
+ Pyjamas also supports running the application as pure Python,
  unmodified, using Pyjamas Desktop (conceptually similar to Adobe AIR)
  .
  Pyjamas does not do the "usual" static AJAX Javascript framework
