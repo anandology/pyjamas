@@ -83,7 +83,7 @@ class GWTCanvasDemo:
         self.currentDemo.drawDemo()
 
     def onChange(self, listBox):
-        choice = self.listBox.getSelectedIndex()
+        choice = listBox.getSelectedIndex()
         self.swapDemo(self.demos[choice])
 
 
