@@ -87,11 +87,11 @@ class ImageLoader:
     * Returns a handle to an img object. Ties back to the ImageLoader instance
     """
     def prepareImage(self, url):
+        img = DOM.createElement("img")
         JS("""
         // if( callback specified )
         // do nothing
         
-        var img = new Image();
         var __this = this;
         
         img.onload = function() {
