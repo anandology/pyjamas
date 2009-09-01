@@ -41,13 +41,19 @@ install: build
 	dh_prep
 	dh_installdirs
 
-	# install the package into debian/pyjamas.
+	# install the desktop package into debian/pyjamas-desktop
+	python run_bootstrap_first_then_pyjd_setup.py install \
+	                  $(py_setup_install_args) --root=debian/pyjamas-desktop
+
+	# install the pyjs package into debian/pyjamas (which also
+	# includes building pyjd, which we do NOT install in pyjs)
 	python run_bootstrap_first_then_setup.py install \
 	                  $(py_setup_install_args) --root=debian/pyjamas-build
 
-	# install the package into debian/pyjamas-desktop
-	python run_bootstrap_first_then_pyjd_setup.py install \
-	                  $(py_setup_install_args) --root=debian/pyjamas-desktop
+	# move pyjamas-build gchart to pyjamas-gchart
+	mkdir -p debian/pyjamas-gchart/usr/share/pyjamas/library/pyjamas/chart
+	mv debian/pyjamas-build/usr/share/pyjamas/library/pyjamas/chart/* \
+	   debian/pyjamas-gchart/usr/share/pyjamas/library/pyjamas/chart
 
 	# move examples out way.
 	mkdir -p tmp
@@ -74,6 +80,7 @@ binary-indep: build install
 	dh_install -ppyjamas-pyjs bin/pyjsbuild /usr/bin
 	dh_installman -ppyjamas-pyjs debian/pyjsbuild.1
 
+	dh_pysupport -ppyjamas-gchart
 	dh_pysupport -ppyjamas-pyjs /usr/share/pyshared/pyjs
 	dh_pysupport -ppyjamas-desktop /usr/share/pyshared/pyjd
 	dh_pysupport -ppyjamas-ui /usr/share/pyjamas
@@ -107,3 +114,4 @@ binary-arch: build install
 
 binary: binary-indep 
 .PHONY: build clean binary-indep binary-arch binary install 
+
