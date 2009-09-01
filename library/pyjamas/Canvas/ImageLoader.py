@@ -60,7 +60,7 @@ class ImageLoader:
         if self.callBack is not None  and  self.isAllLoaded():
             self.callBack.onImagesLoaded(self.images)
             # remove the image loader
-            ImageLoader.imageLoaders.remove(self)
+            imageLoaders.remove(self)
         
     
     
