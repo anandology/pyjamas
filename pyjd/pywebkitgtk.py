@@ -295,7 +295,7 @@ def addEventListener(element, event_name, cb):
         element._callbacks.append(cb)
     return element.addEventListener(event_name, True)
 
-class WebBrowser(gtk.Window):
+class Browser(gtk.Window):
     def __init__(self, application, appdir=None, width=800, height=600):
         gtk.Window.__init__(self)
         self.set_size_request(width, height)
@@ -547,7 +547,7 @@ def setup(application, appdir=None, width=800, height=600):
 
     global wv
 
-    wv = WebBrowser(application, appdir, width, height)
+    wv = Browser(application, appdir, width, height)
     wv.load_app()
     wv.show_all()
 

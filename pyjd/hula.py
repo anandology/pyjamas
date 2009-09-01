@@ -158,12 +158,28 @@ class Browser(WebView):
 def is_loaded():
     return wv.already_initialised
 
+global timer_q
+timer_q = []
+
+def add_timer_queue(fn):
+    timer_q.append(fn)
+    # hope and pray that an event occurs!
+    #event = gtk.gdk.new()
+    #gtk.gdk.push(event)
+
 def run(one_event=False, block=True):
     if one_event:
         if block or gtk.events_pending():
             gtk.main_iteration()
     else:
-        gtk.main()
+        while 1:
+            gtk.main_iteration()
+
+            if timer_q:
+                fn = timer_q.pop()
+                fn()
+
+        #gtk.main()
 
 def setup(application, appdir=None, width=800, height=600):
 

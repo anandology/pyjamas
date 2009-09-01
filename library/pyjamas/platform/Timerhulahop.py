@@ -8,3 +8,7 @@ def init():
     timeout_add = pyjd.gobject.timeout_add
     timeout_end = kill_timer
 
+class Timer:
+    def notify(self, *args):
+            pyjd.add_timer_queue(self._notify)
+
