@@ -58,7 +58,7 @@ class ImageLoader:
     """
     def dispatchIfComplete(self):
         if self.callBack is not None  and  self.isAllLoaded():
-            self.callBack.onImagesLoaded(self.images))
+            self.callBack.onImagesLoaded(self.images)
             # remove the image loader
             ImageLoader.imageLoaders.remove(this)
         
