@@ -58,8 +58,9 @@ install: build
 
 	# move examples out way.
 	mkdir -p debian/pyjamas-doc/examples
-	mv  debian/pyjamas-build/usr/share/pyjamas/examples \
+	mv  debian/pyjamas-build/usr/share/pyjamas/examples/* \
 	    debian/pyjamas-doc/examples
+	rm -fr debian/pyjamas-build/usr/share/pyjamas/examples
 
 	# shuffle things around...
 	#mv debian/pyjamas-build/usr/share/pyjamas/pygtkweb \
