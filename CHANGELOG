@@ -1,6 +1,8 @@
                     Changes made to Pyjamas since 0.6
                     ---------------------------------
 
+ * make public subdirectory configurable at build time (thanks to Mathias Waack)
+
  * Add rfind to string (and tests)
 
  * Added new "Handler" classes MouseHandler, ClickHandler, KeyboardHandler

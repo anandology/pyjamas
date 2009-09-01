@@ -45,6 +45,7 @@ class BrowserLinker(linker.BaseLinker):
         self.multi_file = kwargs.pop('multi_file', False)
         self.cache_buster = kwargs.pop('cache_buster', False)
         self.bootstrap_file = kwargs.pop('bootstrap_file', 'bootstrap.js')
+        self.public_folder = kwargs.pop('public_folder', 'public')
         super(BrowserLinker, self).__init__(*args, **kwargs)
 
     def visit_start(self):
@@ -87,7 +88,7 @@ class BrowserLinker(linker.BaseLinker):
 
     def merge_resources(self, dir_name):
         if not dir_name in self.merged_public:
-            public_folder = os.path.join(dir_name, 'public')
+            public_folder = os.path.join(dir_name, self.public_folder)
             if os.path.exists(public_folder) and os.path.isdir(public_folder):
                 util.copytree_exists(public_folder,
                                      self.output)
@@ -298,12 +299,19 @@ def build_script():
         help="Specify the bootstrap code. (Used when application html file is generated)."
         )
 
+    parser.add_option(
+        "--public-folder",
+        dest="public_folder",
+        help="Specifiy the public folder. (Contents copied into the output dir, see -o)."
+        )
+
     parser.set_defaults(output="output",
                         js_includes=[],
                         js_static_includes=[],
                         library_dirs=[],
                         platforms=(','.join(AVAILABLE_PLATFORMS)),
                         bootstrap_file="bootstrap.js",
+                        public_folder="public",
                         )
     options, _args = parser.parse_args()
     args = []
@@ -348,6 +356,7 @@ def build_script():
                       multi_file=options.multi_file,
                       cache_buster=options.cache_buster,
                       bootstrap_file=options.bootstrap_file,
+                      public_folder=options.public_folder,
                      )
     l()
     print "Built to :", os.path.abspath(options.output)
