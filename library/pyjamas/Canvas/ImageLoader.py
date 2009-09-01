@@ -14,7 +14,7 @@
 * the License.
 """
 
-
+from __pyjamas__ import JS
 
 
 
