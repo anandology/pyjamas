@@ -16,7 +16,7 @@
 
 from __pyjamas__ import JS
 
-
+from pyjamas import DOM
 
 """*
 * Static internal collection of ImageLoader instances.
@@ -58,7 +58,7 @@ class ImageLoader:
     """
     def dispatchIfComplete(self):
         if self.callBack is not None  and  self.isAllLoaded():
-            self.callBack.onImagesLoaded(self.images.toArray(ImageElement[0]))
+            self.callBack.onImagesLoaded(self.images))
             # remove the image loader
             ImageLoader.imageLoaders.remove(this)
         
@@ -137,6 +137,6 @@ def loadImages(urls, cb):
     imageLoaders.append(il)
     # Go ahead and fetch the images now
     for i in range(len(urls)):
-        il.images[i].setSrc(urls[i])
+        DOM.setElemAttribute(il.images[i], "src", urls[i])
     
 
