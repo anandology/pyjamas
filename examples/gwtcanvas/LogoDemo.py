@@ -18,6 +18,7 @@
 
 from pyjamas.Timer import Timer
 from pyjamas import Window
+from pyjamas import DOM
 from pyjamas.ui.Composite import Composite
 from pyjamas.ui.VerticalPanel import VerticalPanel
 from pyjamas.Canvas.ImageLoader import loadImages
@@ -111,6 +112,8 @@ class LogoDemo(SimpleCanvasDemo):
         # Draw starting at position 10, 10
         # scaled up by a factor of 2 on the self.canvas (using 200x200 as the
         # destination dimensions).
+        log.writebr(str(self.img))
+        log.writebr(DOM.getAttribute("src"))
         self.canvas.drawImage(self.img, 84, 74, 100, 100, 10, 10, 200, 200)
 
         # draw an animated version

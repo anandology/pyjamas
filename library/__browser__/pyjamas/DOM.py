@@ -191,6 +191,9 @@ def getAttribute(elem, attr):
     return (ret == null) ? null : String(ret);
     """)
 
+def getElemAttribute(elem, attr):
+    return elem.getAttribute(attr)
+
 def getBooleanAttribute(elem, attr):
     JS("""
     return !!elem[attr];
