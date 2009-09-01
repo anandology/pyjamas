@@ -25,7 +25,7 @@ from pyjamas.Canvas.ImageLoader import loadImages
 
 from SimpleCanvasDemo import SimpleCanvasDemo
 
-from pyjamas import log
+#from pyjamas import log
 
 class LogoDemoControls(Composite):
     def __init__(self):
@@ -82,14 +82,14 @@ class LogoDemo(SimpleCanvasDemo):
             # Go ahead and animate
             if isImageLoaded(self.img):
                 self.run = True
-                log.writebr("already loaded")
+                #log.writebr("already loaded")
                 Timer(1, self)
             else:
                 Window.alert("Refresh the page to reload the image.")
 
 
     def onImagesLoaded(self, imageHandles):
-        log.writebr("loaded")
+        #log.writebr("loaded")
         # Drawing code involving images goes here
         self.img = imageHandles[0]
         self.run = True
@@ -112,9 +112,10 @@ class LogoDemo(SimpleCanvasDemo):
         # Draw starting at position 10, 10
         # scaled up by a factor of 2 on the self.canvas (using 200x200 as the
         # destination dimensions).
-        log.writebr(str(self.img))
-        log.writebr(DOM.getAttribute("src"))
-        self.canvas.drawImage(self.img, 84, 74, 100, 100, 10, 10, 200, 200)
+        #log.writebr(str(self.img))
+        #log.writebr(DOM.getAttribute("src"))
+        #self.canvas.drawImage(self.img, 84, 74, 100, 100, 10, 10, 200, 200)
+        self.canvas.drawImage(self.img, 84, 74)
 
         # draw an animated version
         self.canvas.translate(300, 200)
@@ -126,7 +127,7 @@ class LogoDemo(SimpleCanvasDemo):
 
         self.canvas.restoreContext()
 
-        log.writebr(str(self.rotation))
+        #log.writebr(str(self.rotation))
 
     def onTimer(self, tid):
         if not self.run:

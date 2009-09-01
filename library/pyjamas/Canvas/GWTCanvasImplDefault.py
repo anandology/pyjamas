@@ -56,9 +56,12 @@ class GWTCanvasImplDefault:
         self.canvasContext.bezierCurveTo(cp1x,cp1y,cp2x,cp2y,x,y)
 
 
-    def drawImage(self, img, sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight):
+    def drawImage(self, img, sourceX, sourceY, sourceWidth=None, sourceHeight=None, destX=None, destY=None, destWidth=None, destHeight=None):
 
-        self.canvasContext.drawImage(img,sourceX,sourceY,sourceWidth,sourceHeight,destX,destY,destWidth,destHeight)
+        if sourceWidth is None:
+            self.canvasContext.drawImage(img,sourceX,sourceY)
+        else:
+            self.canvasContext.drawImage(img,sourceX,sourceY,sourceWidth,sourceHeight,destX,destY,destWidth,destHeight)
 
 
 
