@@ -54,11 +54,12 @@ install: build
 	mkdir -p debian/pyjamas-gchart/usr/share/pyjamas/library/pyjamas/chart
 	mv debian/pyjamas-build/usr/share/pyjamas/library/pyjamas/chart/* \
 	   debian/pyjamas-gchart/usr/share/pyjamas/library/pyjamas/chart
+	rm -fr debian/pyjamas-build/usr/share/pyjamas/library/pyjamas/chart
 
 	# move examples out way.
-	mkdir -p tmp
+	mkdir -p debian/pyjamas-doc/examples
 	mv  debian/pyjamas-build/usr/share/pyjamas/examples \
-	    tmp
+	    debian/pyjamas-doc/examples
 
 	# shuffle things around...
 	#mv debian/pyjamas-build/usr/share/pyjamas/pygtkweb \

@@ -50,5 +50,6 @@ debian-build:
 	cd deb && lintian -I pyjamas-doc_${VERSION}-${DEBSUBVERSION}_all.deb
 	cd deb && lintian -I pyjamas-ui_${VERSION}-${DEBSUBVERSION}_all.deb
 	cd deb && lintian -I pyjamas_${VERSION}-${DEBSUBVERSION}.dsc
+	cd deb && lintian -l pyjamas-gchart${VERSION}-${DEBSUBVERSION}_all.deb
 #	cd deb && lintian -l pyjamas-pygtkweb_${VERSION}-${DEBSUBVERSION}_all.deb
 
