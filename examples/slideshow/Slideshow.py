@@ -1,3 +1,5 @@
+import pyjd
+
 from pyjamas.ui.Button import Button
 from pyjamas.ui.RootPanel import RootPanel
 from pyjamas.ui.HTML import HTML
@@ -12,6 +14,8 @@ from pyjamas import History
 import Slide
 from pyjamas.HTTPRequest import HTTPRequest
 from SlideLoader import SlideListLoader
+from pyjamas.Timer import Timer
+from pyjamas.ui.Button import Button
 
 class Slideshow:
 
@@ -28,8 +32,8 @@ class Slideshow:
         self.description=HTML()
         self.sink_list=SinkList()
         self.panel=DockPanel()
+        self.b=Button("load", self)
         
-        self.loadSinks()
         self.sinkContainer = DockPanel()
         self.sinkContainer.setStyleName("ks-Sink")
 
@@ -58,6 +62,19 @@ class Slideshow:
 
         History.addHistoryListener(self)
         RootPanel().add(self.panel)
+        RootPanel().add(self.b)
+
+        # kludgy way to detect "real" pyjd / pyjs difference.
+        # there's a bug in XULRunner nsIXMLHttpRequest which
+        # stops it from working (open "NS_ERROR_NOT_INITIALISED")
+        if not hasattr(pyjd, "Browser"):
+            Timer(1, self)
+
+    def onClick(self, sender):
+        self.loadSinks()
+
+    def onTimer(self, tid):
+        self.loadSinks()
 
     def onWindowResized(self, width, height):
         self.sink_list.resize(width, height)
@@ -111,5 +128,7 @@ class Slideshow:
 
 
 if __name__ == '__main__':
+    pyjd.setup("http://127.0.0.1/examples/slideshow/public/Slideshow.html")
     app = Slideshow()
     app.onModuleLoad()
+    pyjd.run()
