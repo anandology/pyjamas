@@ -39,28 +39,6 @@ class ImageLoader:
         self.loadedImages = 0
         self.totalImages = 0
     
-    """*
-    * Takes in an array of url Strings corresponding to the images needed to
-    * be loaded. The onImagesLoaded() method in the specified CallBack
-    * object is invoked with an array of ImageElements corresponding to
-    * the original input array of url Strings once all the images report
-    * an onload event.
-    *
-    * @param urls Array of urls for the images that need to be loaded
-    * @param cb CallBack object
-    """
-    def loadImages(self, urls, cb):
-        il = ImageLoader()
-        for i in range(len(urls)):
-            il.addHandle(il.prepareImage(urls[i]))
-        
-        il.finalize(cb)
-        imageLoaders.append(il)
-        # Go ahead and fetch the images now
-        for i in range(len(urls)):
-            il.images[i].setSrc(urls[i])
-        
-    
     
     """*
     * Stores the ImageElement reference so that when all the images report
@@ -78,7 +56,6 @@ class ImageLoader:
     *
     * Called from the JSNI onload event handler.
     """
-    @SuppressWarnings("unused")
     def dispatchIfComplete(self):
         if self.callBack is not None  and  self.isAllLoaded():
             self.callBack.onImagesLoaded(self.images.toArray(ImageElement[0]))
@@ -98,7 +75,6 @@ class ImageLoader:
         self.callBack = cb
     
     
-    @SuppressWarnings("unused")
     def incrementLoadedImages(self):
         self.loadedImages += 1
     
@@ -141,4 +117,26 @@ class ImageLoader:
         """)
     
 
+
+"""*
+* Takes in an array of url Strings corresponding to the images needed to
+* be loaded. The onImagesLoaded() method in the specified CallBack
+* object is invoked with an array of ImageElements corresponding to
+* the original input array of url Strings once all the images report
+* an onload event.
+*
+* @param urls Array of urls for the images that need to be loaded
+* @param cb CallBack object
+"""
+def loadImages(urls, cb):
+    il = ImageLoader()
+    for i in range(len(urls)):
+        il.addHandle(il.prepareImage(urls[i]))
+    
+    il.finalize(cb)
+    imageLoaders.append(il)
+    # Go ahead and fetch the images now
+    for i in range(len(urls)):
+        il.images[i].setSrc(urls[i])
+    
 

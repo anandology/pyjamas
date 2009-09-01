@@ -25,6 +25,7 @@ from pyjamas.ui.Widget import Widget
 from pyjamas.Canvas.GWTCanvas import GWTCanvas
 
 from StaticDemo import StaticDemo
+from LogoDemo import LogoDemo
 
 """*
 * Simple demo of the GWTCanvas Widget.
@@ -53,7 +54,7 @@ class GWTCanvasDemo:
         self.demos = []
         # Create demos
         self.demos.append(StaticDemo(canvas))
-        #self.demos.append(LogoDemo(canvas))
+        self.demos.append(LogoDemo(canvas))
         #self.demos.append(ParticleDemo(canvas))
         #self.demos.append(GradientDemo(canvas))
         #self.demos.append(SuiteDemo(canvas))
