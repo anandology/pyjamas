@@ -31,7 +31,7 @@ class CanvasGradientImplDefault:
         self.addNativeColorStop(offset,color.toString())
     
     def getObject(self):
-        return nativeGradient
+        return self.nativeGradient
     
     def addNativeColorStop(self, offset, color):
         self.nativeGradient.addColorStop(offset,color);

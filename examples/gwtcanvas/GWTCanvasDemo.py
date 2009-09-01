@@ -78,7 +78,7 @@ class GWTCanvasDemo:
         if self.currentDemo.getControls() is not None:
             self.layout.add(self.currentDemo.getControls())
 
-        RootPanel.get().add(self.layout)
+        RootPanel().add(self.layout)
         self.currentDemo.drawDemo()
 
     def onChange(self, listBox):

@@ -19,6 +19,7 @@ import math
 from pyjamas.ui.Composite import Composite
 from pyjamas.ui.VerticalPanel import VerticalPanel
 
+from pyjamas.Canvas import Color
 
 from SimpleCanvasDemo import SimpleCanvasDemo
 
@@ -27,7 +28,7 @@ from SimpleCanvasDemo import SimpleCanvasDemo
 # Even if they don't have any :).
 class StaticDemoControls(Composite):
     def __init__(self):
-        self.initWidget(VerticalPanel())
+        Composite.__init__(self, VerticalPanel())
 
 """*
 * Demo that showcases most of the GWTCanvas drawing Api,
