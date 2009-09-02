@@ -37,6 +37,10 @@ Description: Python web widget toolkit and Python-to-Javascript compiler
  CSS, NPAPI Plugins such as Adobe Flash, and SVG 2D Canvas.
  All these are directly available, rather than requiring additional
  components.
+ .
+ This package is a meta-package that installs the javascript compiler;
+ Pyjamas Desktop; the user-interface widget set library and other useful
+ libraries.
 
 Package: pyjamas-pyjs
 Architecture: all
