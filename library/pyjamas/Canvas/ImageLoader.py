@@ -14,9 +14,8 @@
 * the License.
 """
 
-from __pyjamas__ import JS
-
 from pyjamas import DOM
+from pyjamas.ui.Image import Image
 
 """*
 * Static internal collection of ImageLoader instances.
@@ -87,34 +86,32 @@ class ImageLoader:
     * Returns a handle to an img object. Ties back to the ImageLoader instance
     """
     def prepareImage(self, url):
-        img = DOM.createElement("img")
-        JS("""
-        // if( callback specified )
-        // do nothing
+        img = Image()
+        img.__isLoaded = False
+        img.addLoadListener(self)
+        # normally, event listeners are only set up when the widget
+        # is attached to part of the DOM (see Widget.onAttach).  but,
+        # in this case, we want a load even _even though_ the Image
+        # widget is not yet attached (and quite likely won't be).
+        DOM.setEventListener(img.getElement(), img)
+        return img
         
-        var __this = this;
-        
-        img.onload = function() {
-            if(!img.__isLoaded) {
-                
-                // __isLoaded should be set for the first time here.
-                // if for some reason img fires a second onload event
-                // we do not want to execute the following again (hence the guard)
-                img.__isLoaded = true;
-                __this.incrementLoadedImages();
-                img.onload = null;
-                
-                // we call this function each time onload fires
-                // It will see if we are ready to invoke the callback
-                __this.dispatchIfComplete();
-            } else {
-                // we invoke the callback since we are already loaded
-                __this.dispatchIfComplete();
-            }
-        }
+    def onLoad(self, img):
+
+        if not img.__isLoaded:
+            
+            # __isLoaded should be set for the first time here.
+            # if for some reason img fires a second onload event
+            # we do not want to execute the following again (hence the guard)
+            img.__isLoaded = True;
+            self.incrementLoadedImages();
+            img.removeLoadListener(self)
+            
+        # we call this function each time onload fires
+        # It will see if we are ready to invoke the callback
+        self.dispatchIfComplete();
         
         return img;
-        """)
     
 
 
@@ -137,6 +134,6 @@ def loadImages(urls, cb):
     imageLoaders.append(il)
     # Go ahead and fetch the images now
     for i in range(len(urls)):
-        DOM.setElemAttribute(il.images[i], "src", urls[i])
+        il.images[i].setUrl(urls[i])
     
 

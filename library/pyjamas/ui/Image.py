@@ -26,16 +26,17 @@ class Image(Widget, MouseHandler, ClickHandler):
         if url: kwargs['Url'] = url
 
         self.setElement(DOM.createImg())
-
-        self.loadListeners = []
-
-        self.sinkEvents(Event.ONLOAD | Event.ONERROR)
         Widget.__init__(self, **kwargs)
         MouseHandler.__init__(self)
         ClickHandler.__init__(self)
+        self.sinkEvents(Event.ONLOAD | Event.ONERROR)
+        self.loadListeners = []
 
     def addLoadListener(self, listener):
         self.loadListeners.append(listener)
+
+    def removeLoadListener(self, listener):
+        self.loadListeners.remove(listener)
 
     def getUrl(self):
         return DOM.getAttribute(self.getElement(), "src")
@@ -52,10 +53,10 @@ class Image(Widget, MouseHandler, ClickHandler):
 
     def prefetch(self, url):
         img = DOM.createImg()
-        DOM.setAttribute(img, "src", url)
+        DOM.setElemAttribute(img, "src", url)
         prefetchImages[url] = img
 
     def setUrl(self, url):
-        DOM.setAttribute(self.getElement(), "src", url)
+        DOM.setElemAttribute(self.getElement(), "src", url)
 
 

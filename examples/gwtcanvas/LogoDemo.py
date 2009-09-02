@@ -69,7 +69,7 @@ class LogoDemo(SimpleCanvasDemo):
         #self.canvas.setPixelHeight(self.height)
         #self.canvas.setPixelWidth(self.width)
 
-        imageUrls = ["pyjamas.128x128.png"]
+        imageUrls = ["./pyjamas.128x128.png"]
 
 
         if self.img is None:

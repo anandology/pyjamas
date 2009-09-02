@@ -208,39 +208,6 @@ class GWTCanvas(Widget):
     
     
     """*
-    * Draws an input image to a specified position on the canvas. Size defaults
-    * to the default dimensions of the image.
-    *
-    * @param img the image to be drawn
-    * @param offsetX x coord of the top left corner in the destination space
-    * @param offsetY y coord of the top left corner in the destination space
-    """
-    def drawImage(self, img, offsetX, offsetY):
-        drawImage(img, offsetX, offsetY, img.getWidth(), img.getHeight())
-    
-    
-    """*
-    * Draws an input image at a given position on the canvas. Resizes image
-    * according to specified width and height.
-    *
-    * <p>
-    * We recommend that the pixel and coordinate spaces be the same to provide
-    * consistent positioning and scaling results
-    * </p>
-    *
-    * @param img The image to be drawn
-    * @param offsetX x coord of the top left corner in the destination space
-    * @param offsetY y coord of the top left corner in the destination space
-    * @param width the size of the image in the destination space
-    * @param height the size of the image in the destination space
-    """
-    def drawImage(self, img, offsetX, offsetY, width, height):
-        
-        self.impl.drawImage(img, 0, 0, img.getWidth(), img.getHeight(), offsetX,
-        offsetY, width, height)
-    
-    
-    """*
     * Draws an input image at a given position on the canvas. Resizes image
     * according to specified width and height and samples from the specified
     * sourceY and sourceX.
@@ -250,6 +217,19 @@ class GWTCanvas(Widget):
     * consistent positioning and scaling results
     * </p>
     *
+    option 1:
+    * @param img the image to be drawn
+    * @param offsetX x coord of the top left corner in the destination space
+    * @param offsetY y coord of the top left corner in the destination space
+    * @param img The image to be drawn
+
+    option 2:
+    * @param offsetX x coord of the top left corner in the destination space
+    * @param offsetY y coord of the top left corner in the destination space
+    * @param width the size of the image in the destination space
+    * @param height the size of the image in the destination space
+    
+    option 3:
     * @param img the image to be drawn
     * @param sourceX the start X position in the source image
     * @param sourceY the start Y position in the source image
@@ -260,10 +240,29 @@ class GWTCanvas(Widget):
     * @param destWidth the width of drawn image in the destination
     * @param destHeight the height of the drawn image in the destination
     """
-    def drawImage(self, img, sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight):
-        
-        self.impl.drawImage(img, sourceX, sourceY, sourceWidth, sourceHeight, destX,
-        destY, destWidth, destHeight)
+    def drawImage(self, img, *args):
+        if isinstance(img, Widget):
+            img_width = img.getWidth()
+            img_height = img.getHeight()
+        else:
+            img_width = DOM.getIntAttribute(img, "offsetWidth")
+            img_height = DOM.getIntAttribute(img, "offsetHeight")
+        if len(args) == 8:
+            self.impl.drawImage(img, *args)
+        elif len(args) == 4:
+            sourceX = 0
+            sourceY = 0
+            sourceWidth = img_width
+            sourceHeight = img_height
+            destX = args[0]
+            destY = args[1]
+            destWidth = args[2]
+            destHeight = args[3]
+            self.impl.drawImage(img, sourceX, sourceY,
+                                     sourceWidth, sourceHeight,
+                                     destX, destY, destWidth, destHeight)
+        elif len(args) == 2:
+            self.impl.drawImage(img, *args)
     
     
     """*

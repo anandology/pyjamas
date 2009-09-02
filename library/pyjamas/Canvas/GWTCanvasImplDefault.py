@@ -19,6 +19,7 @@
 
 from pyjamas import DOM
 from pyjamas import log
+from pyjamas.ui.Widget import Widget
 
 from pyjamas.Canvas.Color import Color
 
@@ -61,6 +62,8 @@ class GWTCanvasImplDefault:
 
     def drawImage(self, img, sourceX, sourceY, sourceWidth=None, sourceHeight=None, destX=None, destY=None, destWidth=None, destHeight=None):
 
+        if isinstance(img, Widget):
+            img = img.getElement()
         if sourceWidth is None:
             self.canvasContext.drawImage(img,sourceX,sourceY)
         else:
