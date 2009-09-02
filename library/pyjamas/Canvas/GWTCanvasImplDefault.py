@@ -22,6 +22,8 @@ from pyjamas import log
 
 from pyjamas.Canvas.Color import Color
 
+def cvt(s):
+    return s
 
 """*
 * Deferred binding implementation of GWTCanvas.
@@ -155,6 +157,8 @@ class GWTCanvasImplDefault:
             gradient = str(gradient)
         elif not isinstance(gradient, str): # is it a colorString?
             gradient = gradient.getObject() # it's a gradient object
+        if isinstance(gradient, str): 
+            gradient = unicode(gradient)
         self.canvasContext.strokeStyle = gradient
 
 
@@ -163,22 +167,22 @@ class GWTCanvasImplDefault:
             gradient = str(gradient)
         elif not isinstance(gradient, str): # is it a colorString?
             gradient = gradient.getObject() # it's a gradient object
-        self.canvasContext.fillStyle = gradient
+        self.canvasContext.fillStyle = cvt(gradient)
 
     def setGlobalAlpha(self, alpha):
         self.canvasContext.globalAlpha = alpha
 
 
     def setGlobalCompositeOperation(self, globalCompositeOperation):
-        self.canvasContext.globalCompositeOperation = globalCompositeOperation
+        self.canvasContext.globalCompositeOperation = cvt(globalCompositeOperation)
 
 
     def setLineCap(self, lineCap):
-        self.canvasContext.lineCap = lineCap
+        self.canvasContext.lineCap = cvt(lineCap)
 
 
     def setLineJoin(self, lineJoin):
-        self.canvasContext.lineJoin = lineJoin
+        self.canvasContext.lineJoin = cvt(lineJoin)
 
 
     def setLineWidth(self, width):
