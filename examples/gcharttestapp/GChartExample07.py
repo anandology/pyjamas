@@ -46,7 +46,7 @@ class GChartExample07 (GChart):
             # next two lines define pie diameter in x-axis model units
             self.getCurve().getSymbol().setModelWidth(6)
             self.getCurve().getSymbol().setHeight(0)
-            self.getCurve().getSymbol().setFillSpacing(3)
+            self.getCurve().getSymbol().setFillSpacing(0)
             self.getCurve().getSymbol().setFillThickness(3)
             self.getCurve().getSymbol().setHovertextTemplate(
                     formatAsHovertext(pieTypes[i] + ", " +

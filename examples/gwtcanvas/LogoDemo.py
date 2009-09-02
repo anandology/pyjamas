@@ -64,10 +64,10 @@ class LogoDemo(SimpleCanvasDemo):
 
     def drawDemo(self):
         # The following is the same as doing
-        # self.canvas.resize(width,height)
-        self.canvas.setCoordSize(self.width, self.height)
-        self.canvas.setPixelHeight(self.height)
-        self.canvas.setPixelWidth(self.width)
+        self.canvas.resize(self.width,self.height)
+        #self.canvas.setCoordSize(self.width, self.height)
+        #self.canvas.setPixelHeight(self.height)
+        #self.canvas.setPixelWidth(self.width)
 
         imageUrls = ["pyjamas.128x128.png"]
 
