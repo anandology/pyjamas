@@ -1222,8 +1222,8 @@ class SymbolType:
 
                     if Double.isNaN(prevX)  or  Double.isNaN(prevY):
                         # 1st point, or 1st point after a break in the line
-                        oppositeEdge = getEdgeOppositeHorizontally(
-                        pp, symbol, x, onY2)
+                        oppositeEdge = self.getEdgeOppositeHorizontally(
+                                            pp, symbol, x, onY2)
                         canvas.beginPath()
                         canvas.moveTo(oppositeEdge - grp.x0, yPx - grp.y0)
                         canvas.lineTo(xPx - grp.x0, yPx - grp.y0)
