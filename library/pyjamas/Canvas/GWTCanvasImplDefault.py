@@ -157,8 +157,6 @@ class GWTCanvasImplDefault:
             gradient = str(gradient)
         elif not isinstance(gradient, str): # is it a colorString?
             gradient = gradient.getObject() # it's a gradient object
-        if isinstance(gradient, str): 
-            gradient = unicode(gradient)
         self.canvasContext.strokeStyle = gradient
 
 
