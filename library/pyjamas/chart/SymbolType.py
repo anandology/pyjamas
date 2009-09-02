@@ -417,17 +417,17 @@ class SymbolType:
         nextXPx = Double.NaN
         width = symbol.getWidth(pp)
 
-        symWidth = getAdjustedWidth(width, xPx,
-        prevXPx, nextXPx,
-        xMinPx, xMaxPx, xMidPx)
+        symWidth = self.getAdjustedWidth(width, xPx,
+                                        prevXPx, nextXPx,
+                                        xMinPx, xMaxPx, xMidPx)
         if (Double.isNaN(symWidth)):
             return Double.NaN
 
 
-        xLeft = getUpperLeftX(width, xPx,
-        prevXPx, nextXPx,
-        xMinPx, xMaxPx, xMidPx,
-        pp.getXMousePlotArea())
+        xLeft = self.getUpperLeftX(width, xPx,
+                                    prevXPx, nextXPx,
+                                    xMinPx, xMaxPx, xMidPx,
+                                    pp.getXMousePlotArea())
         if (Double.isNaN(xLeft)):
             return Double.NaN
 
@@ -465,16 +465,16 @@ class SymbolType:
         nextYPx = Double.NaN
         height = symbol.getHeight(pp, onY2)
 
-        symHeight = getAdjustedHeight(height, yPx,
-        prevYPx, nextYPx, yMinPx, yMaxPx, yMidPx)
+        symHeight = self.getAdjustedHeight(height, yPx,
+                            prevYPx, nextYPx, yMinPx, yMaxPx, yMidPx)
         if (Double.isNaN(symHeight)):
             return Double.NaN
 
 
-        yTop = getUpperLeftY(height, yPx,
-        prevYPx, nextYPx,
-        yMinPx, yMaxPx, yMidPx,
-        pp.getYMousePlotArea())
+        yTop = self.getUpperLeftY(height, yPx,
+                                prevYPx, nextYPx,
+                                yMinPx, yMaxPx, yMidPx,
+                                pp.getYMousePlotArea())
         if (Double.isNaN(yTop)):
             return Double.NaN
 
@@ -512,16 +512,16 @@ class SymbolType:
         nextYPx = Double.NaN
         height = symbol.getHeight(pp, onY2)
 
-        symHeight = getAdjustedHeight(height, yPx,
-        prevYPx, nextYPx, yMinPx, yMaxPx, yMidPx)
+        symHeight = self.getAdjustedHeight(height, yPx,
+                            prevYPx, nextYPx, yMinPx, yMaxPx, yMidPx)
         if (Double.isNaN(symHeight)):
             return Double.NaN
 
 
-        yTop = getUpperLeftY(height, yPx,
-        prevYPx, nextYPx,
-        yMinPx, yMaxPx, yMidPx,
-        pp.getYMousePlotArea())
+        yTop = self.getUpperLeftY(height, yPx,
+                            prevYPx, nextYPx,
+                            yMinPx, yMaxPx, yMidPx,
+                            pp.getYMousePlotArea())
         if (Double.isNaN(yTop)):
             return Double.NaN
 
@@ -550,17 +550,17 @@ class SymbolType:
         nextXPx = Double.NaN
         width = symbol.getWidth(pp)
 
-        symWidth = getAdjustedWidth(width, xPx,
-        prevXPx, nextXPx,
-        xMinPx, xMaxPx, xMidPx)
+        symWidth = self.getAdjustedWidth(width, xPx,
+                                    prevXPx, nextXPx,
+                                    xMinPx, xMaxPx, xMidPx)
         if (Double.isNaN(symWidth)):
             return Double.NaN
 
 
-        xLeft = getUpperLeftX(width, xPx,
-        prevXPx, nextXPx,
-        xMinPx, xMaxPx, xMidPx,
-        pp.getXMousePlotArea())
+        xLeft = self.getUpperLeftX(width, xPx,
+                                    prevXPx, nextXPx,
+                                    xMinPx, xMaxPx, xMidPx,
+                                    pp.getXMousePlotArea())
         if (Double.isNaN(xLeft)):
             return Double.NaN
 

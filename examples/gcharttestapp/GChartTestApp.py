@@ -4,8 +4,9 @@ pyjd.setup("./public/GChartTestApp.html")
 from pyjamas import DeferredCommand
 from pyjamas.ui.HTML import HTML
 from pyjamas.ui.RootPanel import RootPanel
-from pyjamas.Canvas2D import Canvas
 from pyjamas.chart import GChart
+
+from pyjamas.Canvas.GWTCanvas import GWTCanvas
 
 from TestGChart00 import TestGChart00 
 from TestGChart01 import TestGChart01 
@@ -121,13 +122,13 @@ def addChartNoUpdate(gchart):
 
 class GWTCanvasBasedCanvasFactory(object):
     def create(self):
-        return Canvas()
+        return GWTCanvas()
 
 
 def onModuleLoad():
     
     # TODO: port http://code.google.com/p/gwt-canvas
-    #GChart.setCanvasFactory(GWTCanvasBasedCanvasFactory())
+    GChart.setCanvasFactory(GWTCanvasBasedCanvasFactory())
     
     # thinking about retiring these tests:
     #    addChart(GChartExample11(0,2,False))
@@ -152,14 +153,14 @@ def onModuleLoad():
     #    addChart(GChartExample01a(0))
     #    addChart(GChartExample01b())
     #    addChart(GChartExample01c())
-    addChart(GChartExample02())
+    #addChart(GChartExample02())
     #addChart(GChartExample03())
     #addChart(GChartExample04())
     #    addChart(GChartExample04a())
     #    addChart(GChartExample04b())
     #    addChart(GChartExample05())
     #addChart(GChartExample06())
-    addChart(GChartExample07())
+    #addChart(GChartExample07())
     #    addChart(GChartExample08())
     #    addChart(GChartExample09())
     #    addChart(GChartExample10())
@@ -179,9 +180,9 @@ def onModuleLoad():
     #      addChart(GChartExample18())
     #      addChart(GChartExample18a())
     #      addChart(GChartExample19())
-    addChart(GChartExample20())
+    #addChart(GChartExample20())
     #      addChart(GChartExample20a())
-    addChart(GChartExample21())
+    #addChart(GChartExample21())
     #      addChart(GChartExample22())
     #      addChart(GChartExample22a())
     #      addChart(GChartExample23(False, False))
@@ -196,10 +197,10 @@ def onModuleLoad():
     #    
     #)
     #    addChart(TestGChart00())
-    addChartNoUpdate(TestGChart01(0,0))
-    addChartNoUpdate(TestGChart01(1,0))
-    addChartNoUpdate(TestGChart01(2,0))
-    addChartNoUpdate(TestGChart01(3,0))
+    #addChartNoUpdate(TestGChart01(0,0))
+    #addChartNoUpdate(TestGChart01(1,0))
+    #addChartNoUpdate(TestGChart01(2,0))
+    #addChartNoUpdate(TestGChart01(3,0))
     #    addChartNoUpdate(TestGChart01(0,1))
     #    addChartNoUpdate(TestGChart01(1,1))
     #    addChartNoUpdate(TestGChart01(2,1))
@@ -214,7 +215,7 @@ def onModuleLoad():
     #    addChart(TestGChart04())
     #    addChart(TestGChart04a())
     #addChart(TestGChart05(False))
-    #    addChart(TestGChart05(True))
+    addChart(TestGChart05(True))
     #    addChart(TestGChart06(False))
     #    addChart(TestGChart06(True))
     #    addChart(TestGChart07(0,0,10,1))
