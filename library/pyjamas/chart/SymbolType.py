@@ -199,6 +199,7 @@ class SymbolType:
         self.pixelPadTop = pixelPadTop
         self.pixelPadBottom = pixelPadBottom
         self.horizontallyBanded = isHorizontallyBanded
+        self.oppositeEdge = Double.NaN
 
 
     def getAdjustedHeight(self, height, y, yPrev, yNext, yMin, yMax, yMid):
@@ -1101,7 +1102,6 @@ class SymbolType:
     *
     """
     # retains coord of an area chart's "filled to" axis/baseline
-    oppositeEdge = Double.NaN
     def realizeSymbol(self, pp, grp, arp, symbol, annotation, onY2, clipPlotArea, clipDecoratedChart, drawMainSymbol, x, y, prevX, prevY, nextX, nextY):
 
         if (Double.isNaN(x))  or  (Double.isNaN(y)):
@@ -1203,15 +1203,15 @@ class SymbolType:
                 if False == self.horizontallyBanded:
                     if Double.isNaN(prevX)  or  Double.isNaN(prevY):
                         # 1st point, or 1st point after a break in the line
-                        oppositeEdge = getEdgeOppositeVertically(
+                        self.oppositeEdge = getEdgeOppositeVertically(
                         pp, symbol, y, onY2)
                         canvas.beginPath()
-                        canvas.moveTo(xPx - grp.x0, oppositeEdge - grp.y0)
+                        canvas.moveTo(xPx - grp.x0, self.oppositeEdge - grp.y0)
                         canvas.lineTo(xPx - grp.x0, yPx - grp.y0)
 
                     if Double.isNaN(nextX)  or  Double.isNaN(nextY):
                         # last point, or last point before a break in the line
-                        canvas.lineTo(xPx - grp.x0, oppositeEdge - grp.y0)
+                        canvas.lineTo(xPx - grp.x0, self.oppositeEdge - grp.y0)
                         closeStrokeAndFill = True
 
                     else:
@@ -1222,15 +1222,15 @@ class SymbolType:
 
                     if Double.isNaN(prevX)  or  Double.isNaN(prevY):
                         # 1st point, or 1st point after a break in the line
-                        oppositeEdge = self.getEdgeOppositeHorizontally(
+                        self.oppositeEdge = self.getEdgeOppositeHorizontally(
                                             pp, symbol, x, onY2)
                         canvas.beginPath()
-                        canvas.moveTo(oppositeEdge - grp.x0, yPx - grp.y0)
+                        canvas.moveTo(self.oppositeEdge - grp.x0, yPx - grp.y0)
                         canvas.lineTo(xPx - grp.x0, yPx - grp.y0)
 
                     if Double.isNaN(nextX)  or  Double.isNaN(nextY):
                         # last point, or last point before a break in the line
-                        canvas.lineTo(oppositeEdge - grp.x0, yPx - grp.y0)
+                        canvas.lineTo(self.oppositeEdge - grp.x0, yPx - grp.y0)
                         closeStrokeAndFill = True
 
                     else:
