@@ -252,7 +252,8 @@ class AlignedLabel(Grid):
 
 class Rectangle(object):
     # a (pixel graphics coords) rectangle
-    pass
+    def __str__(self):
+        return "Rect <%fx%f,%f-%f>" % (self.x, self.y, self.width, self.height)
     #double x;  # x, y at upper left corner of rectangle
     #double y
     #double width;  # distance from x to right edge
@@ -892,14 +893,14 @@ class GraphicsRenderingPanel (AbsolutePanel):
                     self.canvasWidth = width
                     self.canvasHeight = height
 
-                x0 = int( round(canvasRegion.x) )
-                y0 = int( round(canvasRegion.y) )
+                self.x0 = int( round(canvasRegion.x) )
+                self.y0 = int( round(canvasRegion.y) )
                 # workaround problem with special meaning of (-1,-1) to
                 # setWidgetPosition (makes position off by one pixel).
-                if x0 == -1  and  y0 == -1:
-                    x0 = 0
+                if self.x0 == -1  and  self.y0 == -1:
+                    self.x0 = 0
 
-                self.canvasPanel.setWidgetPosition( self.canvas, x0, y0)
+                self.canvasPanel.setWidgetPosition( self.canvas, self.x0, self.y0)
 
 
         self.imageIndex = 0

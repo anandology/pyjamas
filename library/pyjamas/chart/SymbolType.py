@@ -2191,13 +2191,15 @@ class PieSliceSymbolType (SymbolType):
                 canvas.setLineWidth(adjustedBorderWidth)
 
                 canvas.arc(xPx - grp.x0, yPx - grp.y0, r,
-                angleStart, angleEnd, False)
+                            angleStart, angleEnd, False)
                 if dTheta <= MAX_DTHETA:
                     canvas.lineTo(xPx - grp.x0, yPx- grp.y0)
 
                 # else avoid "line to center" in full pies
 
                 canvas.closePath()
+
+                #canvas.translate(xPx - grp.x0, yPx - grp.y0)
 
                 borderColor = symbol.getBorderColor()
                 backgroundColor = symbol.getBackgroundColor()
@@ -2242,7 +2244,6 @@ class PieSliceSymbolType (SymbolType):
                     "transparent" != backgroundColor):
                     canvas.setFillStyle(backgroundColor)
                     canvas.fill()
-
 
             # else 0-sized slice, 0 or internal border, is just dropped
 

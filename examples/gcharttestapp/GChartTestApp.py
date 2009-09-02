@@ -215,7 +215,7 @@ def onModuleLoad():
     #    addChart(TestGChart04())
     #    addChart(TestGChart04a())
     #addChart(TestGChart05(False))
-    #addChart(TestGChart05(True))
+    addChart(TestGChart05(True))
     #    addChart(TestGChart06(False))
     #    addChart(TestGChart06(True))
     #    addChart(TestGChart07(0,0,10,1))
