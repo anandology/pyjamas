@@ -165,8 +165,7 @@ class GWTCanvas(Widget):
     * @return returns the CanvasGradient
     """
     def createLinearGradient(self, x0, y0, x1, y1):
-        return GradientFactoryImplDefault.createLinearGradient(x0, y0, x1, y1,
-                                                        self.getElement())
+        return LinearGradientImplDefault(x0, y0, x1, y1, self.getElement())
     
     
     """*
@@ -182,7 +181,7 @@ class GWTCanvas(Widget):
     * @return returns the CanvasGradient
     """
     def createRadialGradient(self, x0, y0, r0, x1, y1, r1):
-        return GradientFactoryImplDefault.createRadialGradient(x0, y0, r0, x1, y1, r1,
+        return RadialGradientImplDefault(x0, y0, r0, x1, y1, r1,
                                         self.getElement())
     
     
@@ -525,15 +524,6 @@ class GWTCanvas(Widget):
     
     
     """*
-    * Set the current Fill Style to the specified color.
-    *
-    * @param color {@link Color}
-    """
-    def setFillStyle(self, color):
-        self.impl.setFillStyle(str(color))
-    
-    
-    """*
     * Set the global transparency to the specified alpha.
     *
     * @param alpha alpha value
@@ -639,15 +629,6 @@ class GWTCanvas(Widget):
     """
     def setStrokeStyle(self, grad):
         self.impl.setStrokeStyle(grad)
-    
-    
-    """*
-    * Set the current Stroke Style to the specified color.
-    *
-    * @param color {@link Color}
-    """
-    def setStrokeStyle(self, color):
-        self.impl.setStrokeStyle(str(color))
     
     
     """*

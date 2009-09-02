@@ -18,6 +18,7 @@
 
 
 from pyjamas import DOM
+from pyjamas import log
 
 from pyjamas.Canvas.Color import Color
 

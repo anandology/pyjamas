@@ -29,5 +29,5 @@ class ColorStop:
     
     
     def cloneColorStop(self):
-        return ColorStop(self.offset, Color(self.color.toString()))
+        return ColorStop(self.offset, Color(str(self.color()))
 

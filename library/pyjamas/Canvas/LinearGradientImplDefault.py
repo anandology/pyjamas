@@ -22,17 +22,14 @@ from pyjamas.Canvas.CanvasGradientImplDefault import CanvasGradientImplDefault
 * This corresponds to a LinearGradient for stroke or fill styles.
 """
 class LinearGradientImplDefault(CanvasGradientImplDefault):
-    
+
     def __init__(self, x0, y0, x1, y1, c):
         CanvasGradientImplDefault.__init__(self)
         self.createNativeGradientObject(x0,y0,x1,y1,c)
   
-    
+
     def createNativeGradientObject(self, x0, y0, x1, y1, c):
         ctx = c.getContext('2d')
         gradient = ctx.createLinearGradient(x0,y0,x1,y1)
         self.setNativeGradient(gradient)
-
-    
-
 

@@ -25,7 +25,7 @@ class RadialGradientImplDefault(CanvasGradientImplDefault):
     
     def __init__(self, x0, y0, r0, x1, y1, r1, c):
         CanvasGradientImplDefault.__init__(self)
-        createNativeGradientObject(x0,y0,r0,x1,y1,r1, c)
+        self.createNativeGradientObject(x0,y0,r0,x1,y1,r1, c)
     
     def createNativeGradientObject(self, x0, y0, r0, x1, y1, r1, c):
         ctx = c.getContext('2d')
