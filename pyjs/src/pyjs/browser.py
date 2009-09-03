@@ -88,7 +88,8 @@ class BrowserLinker(linker.BaseLinker):
         self._create_nocache_html()
         if not self.keep_lib_files:
             for fname in self.remove_files:
-                os.unlink(fname)
+                if fname.find(self.output) == 0:
+                    os.unlink(fname)
 
     def merge_resources(self, dir_name):
         if not dir_name in self.merged_public:
