@@ -97,18 +97,39 @@ Description: Python web widget set
  .
  This package contains the documentation and the examples.
 
-Package: pyjamas-gchart
+Package: pyjamas-canvas
 Architecture: all
 Depends: ${python:Depends}, ${misc:Depends}, pyjamas-ui
 Recommends: pyjamas-desktop
+Description: Pyjamas Python port of GWTCanvas SVG Library
+ Pyjamas is a stand-alone Python to Javascript compiler, an AJAX
+ framework / library and a Desktop-like Widget set.
+ .
+ This package contains a port of the GWT Canvas library, to Pyjamas.
+ Written in pure Python, it can be used to create scalable vector
+ graphics applications in either a user's web browser (compiled to javascript),
+ or as a desktop application under Pyjamas-Desktop.
+ .
+ An online demo is here:
+ http://pyjs.org/examples/gwtcanvas/output/GWTCanvasDemo.html
+ .
+ Please note: pyjamas-canvas is experimental but functional, and does not yet
+ provide VML support (used exclusively by IE).  Pyjamas-Desktop (with the
+ XULRunner backend), Firefox and Google Chrome have been confirmed as working.
+
+Package: pyjamas-gchart
+Architecture: all
+Depends: ${python:Depends}, ${misc:Depends}, pyjamas-ui
+Recommends: pyjamas-desktop, pyjamas-canvas
 Description: Pyjamas Python port of GWT GChart Charting and Graph Widget Library
  Pyjamas is a stand-alone Python to Javascript compiler, an AJAX
  framework / library and a Desktop-like Widget set.
  .
  This package contains a port of GChart: http://code.google.com/p/gchart to
- Pyjamas.  Written in pure Python, it can either be used to create graphs,
- bar charts and pie charts in a user's web browser (compiled to javascript),
- or it can run as a desktop application under Pyjamas-Desktop.
+ Pyjamas.  Written in pure Python, it can be used to create graphs, bar charts
+ and pie charts in either a user's web browser (compiled to javascript),
+ or as a desktop application under Pyjamas-Desktop.
+ .
  An online demo is here:
  http://pyjs.org/examples/gcharttestapp/output/GChartTestApp.html
  .

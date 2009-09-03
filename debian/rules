@@ -50,6 +50,12 @@ install: build
 	python run_bootstrap_first_then_setup.py install \
 	                  $(py_setup_install_args) --root=debian/pyjamas-build
 
+	# move pyjamas-build canvas to pyjamas-canvas
+	mkdir -p debian/pyjamas-canvas/usr/share/pyjamas/library/pyjamas/chart
+	mv debian/pyjamas-build/usr/share/pyjamas/library/pyjamas/chart/* \
+	   debian/pyjamas-canvas/usr/share/pyjamas/library/pyjamas/chart
+	rm -fr debian/pyjamas-build/usr/share/pyjamas/library/pyjamas/chart
+
 	# move pyjamas-build gchart to pyjamas-gchart
 	mkdir -p debian/pyjamas-gchart/usr/share/pyjamas/library/pyjamas/chart
 	mv debian/pyjamas-build/usr/share/pyjamas/library/pyjamas/chart/* \
@@ -89,6 +95,7 @@ binary-indep: build install
 	dh_installman -ppyjamas-pyjs debian/pyjsbuild.1
 
 	dh_pysupport -ppyjamas-gchart
+	dh_pysupport -ppyjamas-canvas
 	dh_pysupport -ppyjamas-pyjs /usr/share/pyshared/pyjs
 	dh_pysupport -ppyjamas-desktop /usr/share/pyshared/pyjd
 	dh_pysupport -ppyjamas-ui /usr/share/pyjamas
