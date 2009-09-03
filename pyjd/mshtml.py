@@ -51,9 +51,17 @@ class IOleWindow(IUnknown):
 
     _methods_ = [
         COMMETHOD([], HRESULT, 'GetWindow',
-                  ( ['in'], POINTER(HWND), 'pHwnd' ),
-                  )
+                  ( ['in'], POINTER(HWND), 'pHwnd' ))
         ]
+
+class IOleInPlaceActiveObject(IOleWindow):
+    _iid_ = GUID("{00000117-0000-0000-C000-000000000046}")
+    _idlflags_ = []
+    _methods_ = IOleWindow._methods_ + [
+        COMMETHOD([], HRESULT, 'TranslateAccelerator',
+                  ( ['in'], POINTER(MSG), 'pMsg' ))
+        ]
+    
 
 # http://www.mail-archive.com/comtypes-users@lists.sourceforge.net/msg00439.html
 class IServiceProvider(IUnknown):
@@ -72,6 +80,14 @@ class IServiceProvider(IUnknown):
                   ( ['in'], POINTER(GUID), 'riid' ),
                   ( ['in'], POINTER(c_void_p), 'ppvObject' ))
         ]
+
+#class IInputObject(IUnknown):
+#    _iid_= GUID("{68284FAA-6A48-11D0-8C78-00C04FD918B4}")
+#
+#    _methods_= IUnknown._methods_ + [
+#        (STDMETHOD (HRESULT, "UIActivateIO", BOOL, POINTER(MSG))),
+#        (STDMETHOD (HRESULT, "HasFocusIO")),
+#        (STDMETHOD (HRESULT, "TranslateAcceleratorIO", POINTER(MSG)))]
 
 class EventSink(object):
     # some DWebBrowserEvents
@@ -124,7 +140,7 @@ def event_fn(self, *args):
         try:
             fn(self._sender, Dispatch(args[0]), True)
         except:
-            sys.stderr.write( traceback.print_exc() )
+            traceback.print_exc()
             sys.stderr.flush()
 """
 
@@ -369,10 +385,13 @@ def MainWin(one_event):
         if msg.message == WM_USER_TIMER:
             continue
 
-        if not TranslateAccelerator( 
-                        wv.hwnd,  #handle to receiving window 
-                        NULL,    #handle to active accelerator table 
-                        pMsg):     #message data 
+        app = wv.pBrowser.Application
+        ao = app.QueryInterface(IOleInPlaceActiveObject)
+        if ao.TranslateAccelerator(pMsg):
+        #if not TranslateAccelerator( 
+        #                wv.hwnd,  #handle to receiving window 
+        #                NULL,    #handle to active accelerator table 
+        #                pMsg):     #message data 
             TranslateMessage(pMsg)
             DispatchMessage(pMsg)
         else:
