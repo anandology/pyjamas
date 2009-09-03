@@ -1684,8 +1684,11 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         return call_code
 
     def _callfunc(self, v, current_klass):
+        self.push_options()
         call_code = self._callfunc_code(v, current_klass)
-        return self.track_call(call_code, v.lineno)
+        call_code = self.track_call(call_code, v.lineno)
+        self.pop_options()
+        return call_code
 
     def _print(self, node, current_klass):
         if not self.print_statements:
