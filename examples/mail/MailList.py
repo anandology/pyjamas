@@ -7,7 +7,6 @@ from pyjamas.ui.Label import Label
 from pyjamas.ui import HasAlignment
 from MailItems import MailItems
 from Logger import Logger
-from datetime import datetime
 
 class MailList(Composite):
 

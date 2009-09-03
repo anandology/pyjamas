@@ -1,6 +1,16 @@
                     Changes made to Pyjamas since 0.6
                     ---------------------------------
 
+ * Make compile options effective in runtime options
+
+ * Added --keep-lib-files option
+
+ * Added --dynamic option
+
+ * Added dynamic loading of modules
+
+ * Added builtin __import__ (only supports the first parameter)
+
  * make public subdirectory configurable at build time (thanks to Mathias Waack)
 
  * Add rfind to string (and tests)

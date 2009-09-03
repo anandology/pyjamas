@@ -20,8 +20,6 @@ class Tooltip(PopupPanel):
         left = sender.getAbsoluteLeft() + offsetX
         top = sender.getAbsoluteTop() + offsetY
 
-        print "tooltip", left, top
-
         self.setPopupPosition(left, top)
         self.setStyleName(styleName)
 
