@@ -318,8 +318,12 @@ def MainWin(one_event):
         if msg.message == WM_USER_TIMER:
             continue
 
-        TranslateMessage(pMsg)
-        DispatchMessage(pMsg)
+        if not TranslateAccelerator( 
+                        wv.hwnd,  #handle to receiving window 
+                        haccel,    #handle to active accelerator table 
+                        pMsg)):     #message data 
+            TranslateMessage(pMsg)
+            DispatchMessage(pMsg)
 
         if one_event:
             break
