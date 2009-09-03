@@ -1203,8 +1203,8 @@ class SymbolType:
                 if False == self.horizontallyBanded:
                     if Double.isNaN(prevX)  or  Double.isNaN(prevY):
                         # 1st point, or 1st point after a break in the line
-                        self.oppositeEdge = getEdgeOppositeVertically(
-                        pp, symbol, y, onY2)
+                        self.oppositeEdge = self.getEdgeOppositeVertically(
+                                                pp, symbol, y, onY2)
                         canvas.beginPath()
                         canvas.moveTo(xPx - grp.x0, self.oppositeEdge - grp.y0)
                         canvas.lineTo(xPx - grp.x0, yPx - grp.y0)

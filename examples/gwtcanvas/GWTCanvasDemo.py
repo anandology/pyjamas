@@ -28,6 +28,7 @@ from StaticDemo import StaticDemo
 from LogoDemo import LogoDemo
 from ParticleDemo import ParticleDemo
 from GradientDemo import GradientDemo
+from SuiteDemo import SuiteDemo
 
 """*
 * Simple demo of the GWTCanvas Widget.
@@ -59,7 +60,7 @@ class GWTCanvasDemo:
         self.demos.append(LogoDemo(canvas))
         self.demos.append(ParticleDemo(canvas))
         self.demos.append(GradientDemo(canvas))
-        #self.demos.append(SuiteDemo(canvas))
+        self.demos.append(SuiteDemo(canvas))
 
         # Add them to the selection list box
         lb = ListBox()
