@@ -12,32 +12,14 @@ import sys
 class AjaxError(RuntimeError):
     pass
 
-__HttpRequestMode__ = None
 def createHttpRequest():
-    global __HttpRequestMode__
-    from __pyjamas__ import JS
-    if __HttpRequestMode__ == 'XMLHttpRequest':
-        return JS("""new XMLHttpRequest()""")
-    if not __HttpRequestMode__ is None:
-        return JS("""new ActiveXObject(__HttpRequestMode__)""")
+    if JS("""typeof $wnd.XMLHttpRequest != 'undefined'"""):
+        # IE7+, Mozilla, Safari, ...
+       return JS("""new XMLHttpRequest()""")
 
-    # Check for IE/ActiveX
+    # Check for IE6/ActiveX
     try:
         res = JS("""new ActiveXObject("Msxml2.XMLHTTP")""")
-        __HttpRequestMode__ = "Msxml2.XMLHTTP"
-        return res
-    except:
-        pass
-    try:
-        res = JS("""new ActiveXObject("Microsoft.XMLHTTP")""")
-        __HttpRequestMode__ = "Microsoft.XMLHTTP"
-        return res
-    except:
-        pass
-    try:
-        res = JS("""new XMLHttpRequest()""")
-        # maybe pyjd: res = eval("""new XMLHttpRequest()""")
-        __HttpRequestMode__ = "XMLHttpRequest"
         return res
     except:
         pass
@@ -65,7 +47,8 @@ def load(url, onreadystatechange=None, on_load_fn=None, async=False):
                 if not on_load_fn is None:
                     on_load_fn(evnt, req)
 
-    req.onreadystatechange = onreadystatechange
+    # next line is in JS() for IE6
+    JS("req.onreadystatechange = onreadystatechange")
     res = req.open("GET", url , async)
     req.send(None)
     if async:
@@ -143,17 +126,6 @@ def activate_javascript(txt):
     doc().getElementsByTagName("head").item(0).appendChild(fileref)
 
 def eval(str):
-    if hasattr(wnd(), "execScript"):
-        from __javascript__ import pyjs_execScript
-        str = "pyjs_execScript=" + str
-        wnd().execScript(str)
-        ret = wnd().pyjs_execScript
-        try:
-            # fails for IE6
-            delattr(wnd(), 'pyjs_execScript')
-        except:
-            wnd().pyjs_execScript = None
-        return ret
     from __javascript__ import eval
     return eval(str)
 
@@ -196,7 +168,7 @@ return $pyjs$moduleObject;
             module = eval(script)
         except:
             e = sys.exc_info()
-            raise AjaxError("Error in %s: %s" % (url, e[1]))
+            raise AjaxError("Error in %s: %s" % (url, e.message))
         __imported__[url] = module
     inject(module, namespace, names)
 
