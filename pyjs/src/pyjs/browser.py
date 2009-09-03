@@ -47,6 +47,7 @@ class BrowserLinker(linker.BaseLinker):
         self.cache_buster = kwargs.pop('cache_buster', False)
         self.bootstrap_file = kwargs.pop('bootstrap_file', 'bootstrap.js')
         self.public_folder = kwargs.pop('public_folder', 'public')
+        self.runtime_options = kwargs.pop('runtime_options', [])
         super(BrowserLinker, self).__init__(*args, **kwargs)
 
     def visit_start(self):
@@ -243,6 +244,8 @@ class BrowserLinker(linker.BaseLinker):
         static_js_libs = static_code(static_js_libs, "javascript lib")
         late_static_js_libs = static_code(late_static_js_libs, "javascript lib")
 
+        setoptions = "\n".join([("$pyjs.options['%s'] = %s;" % (n, v)).lower() for n,v in self.runtime_options])
+
         file_contents = template % locals()
         if self.cache_buster:
             import hashlib
@@ -402,6 +405,16 @@ def build_script():
     print "Building:", top_module
     print "PYJSPATH:", pyjs.path
 
+    runtime_options = []
+    runtime_options.append(("arg_ignore", options.function_argument_checking))
+    runtime_options.append(("arg_count", options.function_argument_checking))
+    runtime_options.append(("arg_is_instance", options.function_argument_checking))
+    runtime_options.append(("arg_instance_type", options.function_argument_checking))
+    runtime_options.append(("arg_kwarg_dup", options.function_argument_checking))
+    runtime_options.append(("arg_kwarg_unexpected_keyword", options.function_argument_checking))
+    runtime_options.append(("arg_kwarg_multiple_values", options.function_argument_checking))
+    runtime_options.append(("dynamic_loading", (len(options.unlinked_modules)>0)))
+
     translator_arguments=dict(
         debug=options.debug,
         print_statements = options.print_statements,
@@ -425,6 +438,7 @@ def build_script():
                       cache_buster=options.cache_buster,
                       bootstrap_file=options.bootstrap_file,
                       public_folder=options.public_folder,
+                      runtime_options=runtime_options,
                      )
     l()
     print "Built to :", os.path.abspath(options.output)

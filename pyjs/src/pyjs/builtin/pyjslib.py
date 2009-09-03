@@ -31,25 +31,6 @@ def ___import___(path, context, module_name=None, get_base=True):
     module = JS("$pyjs.loaded_modules[path]")
     in_context = (not context is None)
     parts = path.split('.')
-    def dyn_load(importName):
-            if JS("typeof $pyjs.loaded_modules['dynamic'] == 'undefined'"):
-                JS("$pyjs.track.module = save_track_module;")
-                debugger()
-                raise ImportError(
-                    "No module named 'dynamic' in context ___import___")
-
-            try:
-                dynamic.ajax_import("lib/" + importName + ".__" + platform + "__.js")
-            except:
-                pass
-            module = JS("$pyjs.loaded_modules[importName]")
-            if JS("typeof module == 'undefined'"):
-                try:
-                    dynamic.ajax_import("lib/" + importName + ".js")
-                except:
-                    pass
-                module = JS("$pyjs.loaded_modules[importName]")
-            return module
     parent_module = None
     if in_context:
         importName = context + '.'
@@ -67,7 +48,8 @@ def ___import___(path, context, module_name=None, get_base=True):
                         if JS("typeof $pyjs.loaded_modules[context + '.' + path].__was_initialized__ != 'undefined'"):
                             break
                 else:
-                    module = dyn_load(importName)
+                    if JS("$pyjs.options.dynamic_loading"):
+                        module = __dynamic_load__(importName)
                     if JS("typeof module == 'undefined'"):
                         in_context = False
                         if JS("typeof $pyjs.loaded_modules[path] != 'undefined'"):
@@ -79,7 +61,8 @@ def ___import___(path, context, module_name=None, get_base=True):
         else:
             module = JS("$pyjs.loaded_modules[importName]")
         if JS("typeof module == 'undefined'"):
-            module = dyn_load(importName)
+            if JS("$pyjs.options.dynamic_loading"):
+                module = __dynamic_load__(importName)
             if JS("typeof module == 'undefined'"):
                 if not parent_module is None and hasattr(parent_module, name):
                     break
@@ -104,6 +87,23 @@ def ___import___(path, context, module_name=None, get_base=True):
         else:
             importName = path
     return JS("$pyjs.loaded_modules[importName]")
+
+def __dynamic_load__(importName):
+    JS("""
+    try {
+        pyjslib.dynamic.ajax_import("lib/" + importName + ".__" + platform + "__.js");
+    } catch (e) {
+    }
+    module = $pyjs.loaded_modules[importName];
+    if (typeof module == 'undefined') {
+        try {
+            pyjslib.dynamic.ajax_import("lib/" + importName + ".js");
+        } catch (e) {
+        }
+        module = $pyjs.loaded_modules[importName];
+    }
+    return module
+""")
 
 class BaseException:
 
