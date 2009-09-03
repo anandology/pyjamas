@@ -28,13 +28,35 @@ import comtypes.gen
 if not hasattr(sys, 'frozen'):
     GetModule('atl.dll')
     GetModule('shdocvw.dll')
-    GetModule('msxml2.dll')
+    try:
+        GetModule('msxml2.dll')
+    except:
+        pass
+    try:
+        GetModule('msxml3.dll')
+    except:
+        pass
+    try:
+        GetModule('msxml6.dll')
+    except:
+        pass
     GetModule('mshtml.tlb') 
     #GetModule('progdlg.tlb') 
 
 from comtypes.gen import SHDocVw
-from comtypes.gen import MSXML2
 from comtypes.gen import MSHTML
+try:
+    from comtypes.gen import MSXML2
+except:
+    pass
+try:
+    from comtypes.gen import MSXML6
+except:
+    pass
+try:
+    from comtypes.gen import MSXML3
+except:
+    pass
 
 atl = windll.atl                  # If this fails, you need atl.dll
 

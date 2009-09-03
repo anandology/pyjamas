@@ -60,7 +60,7 @@ http://github.com/lkcl/webkit/16401.master
 Detailed build instructions are available here:
 http://wiki.github.com/lkcl/webkit/helping-with-16401master
 
-3) - MSHTML (experimental!)
+3) - MSHTML (beta)
 
 For Windows users, all that's required, other than installing python
 and Internet Explorer, is one further package: Win32 "comtypes".
@@ -70,8 +70,4 @@ Win32 "comtypes" can be downloaded here:
 
 The MSHTML version primarily works.  Reports using IE8's MSHTML
 engine would be appreciated.
-
-Known bugs: the use of Tab to cycle through Keyboard Focus elements
-            is ineffective; onkeyup and onkeydown events are unresponsive,
-            but oddly onkeypress event handling works.
 
