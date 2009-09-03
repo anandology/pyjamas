@@ -5,6 +5,7 @@ from pyjs import util
 from cStringIO import StringIO
 from optparse import OptionParser
 import pyjs
+import re
 
 AVAILABLE_PLATFORMS = ('IE6', 'Opera', 'OldMoz', 'Safari', 'Mozilla')
 
@@ -85,6 +86,9 @@ class BrowserLinker(linker.BaseLinker):
             # autogenerate
             self._create_app_html(html_output_filename)
         self._create_nocache_html()
+        if not self.keep_lib_files:
+            for fname in self.remove_files:
+                os.unlink(fname)
 
     def merge_resources(self, dir_name):
         if not dir_name in self.merged_public:
@@ -141,7 +145,7 @@ class BrowserLinker(linker.BaseLinker):
         platform_name = platform.lower()
         dynamic = 0,
         app_headers = ''
-        available_modules = self.visited_modules[platform]
+        available_modules = self.unique_list_values(self.visited_modules[platform])
         early_static_app_libs = [] + self.early_static_app_libs
         static_app_libs = []
         dynamic_app_libs = []
@@ -150,6 +154,10 @@ class BrowserLinker(linker.BaseLinker):
         early_static_js_libs = [] + self.early_static_js_libs
         late_static_js_libs = [] + self.late_static_js_libs
         dynamic_modules = []
+        not_unlinked_modules = [re.compile(m[1:]) for m in self.unlinked_modules if m[0] == '!']
+        for m in ['pyjslib', 'sys', 'dynamic', 'pyjamas', 'pyjamas.DOM']:
+            not_unlinked_modules.append(re.compile('^%s$' % m))
+        unlinked_modules = [re.compile(m) for m in self.unlinked_modules if m[0] != '!' and m not in not_unlinked_modules]
 
         def static_code(libs, msg = None):
             code = []
@@ -169,10 +177,41 @@ class BrowserLinker(linker.BaseLinker):
                 code.append(f.read())
                 if not msg is None:
                     code.append("/* end %s */" % (name,))
+                self.remove_files[fname] = True
+                fname = fname.split('.')
+                if fname[-2] == '__%s__' % platform_name:
+                    del fname[-2]
+                    fname = '.'.join(fname)
+                    if os.path.isfile(fname):
+                        self.remove_files[fname] = True
             return "\n".join(code)
 
         def js_modname(path):
             return 'js@'+os.path.basename(path)+'.'+hashlib.md5(path).hexdigest()
+
+        def skip_unlinked(lst):
+            new_lst = []
+            pltfrm = '.__%s__' % platform_name
+            for path in lst:
+                fname = os.path.basename(path)[:-3]
+                if fname.endswith(pltfrm):
+                    fname = '.'.join(fname.split('.')[:-1])
+                in_not_unlinked_modules = False
+                for m in not_unlinked_modules:
+                    if m.match(fname):
+                        in_not_unlinked_modules = True
+                        new_lst.append(path)
+                        break
+                if not in_not_unlinked_modules:
+                    in_unlinked_modules = False
+                    for m in unlinked_modules:
+                        if m.match(fname):
+                            in_unlinked_modules = True
+                            if fname in available_modules:
+                                available_modules.remove(fname)
+                    if not in_unlinked_modules:
+                        new_lst.append(path)
+            return new_lst
 
         if self.multi_file:
             dynamic_js_libs = self.unique_list_values(dynamic_js_libs + [m for m in list(self.js_libs) if not m in static_js_libs])
@@ -181,6 +220,11 @@ class BrowserLinker(linker.BaseLinker):
             static_js_libs = self.unique_list_values(static_js_libs + [m for m in list(self.js_libs) if not m in dynamic_js_libs])
             static_app_libs = self.unique_list_values([m for m in done if not m in early_static_app_libs])
 
+        dynamic_js_libs = skip_unlinked(dynamic_js_libs)
+        dynamic_app_libs = skip_unlinked(dynamic_app_libs)
+        static_js_libs = skip_unlinked(static_js_libs)
+        static_app_libs = skip_unlinked(static_app_libs)
+        
         import hashlib
         dynamic_modules = self.unique_list_values(available_modules + [js_modname(lib) for lib in dynamic_js_libs])
         available_modules = self.unique_list_values(available_modules + early_static_app_libs + dynamic_modules)
@@ -311,6 +355,20 @@ def build_script():
         help="Specifiy the public folder. (Contents copied into the output dir, see -o)."
         )
 
+    parser.add_option(
+        "--dynamic",
+        dest="unlinked_modules",
+        action="append",
+        help="regular expression for modules that will not be linked and thus loaded dynamically"
+        )
+
+    parser.add_option(
+        "--keep-lib-files", dest="keep_lib_files",
+        default=False,
+        action="store_true",
+        help="Keep the files generated in the lib directory"
+        )
+
     parser.set_defaults(output="output",
                         js_includes=[],
                         js_static_includes=[],
@@ -318,6 +376,7 @@ def build_script():
                         platforms=(','.join(AVAILABLE_PLATFORMS)),
                         bootstrap_file="bootstrap.js",
                         public_folder="public",
+                        unlinked_modules=[],
                         )
     options, _args = parser.parse_args()
     args = []
@@ -358,6 +417,8 @@ def build_script():
                       platforms=app_platforms,
                       path=pyjs.path,
                       js_libs=options.js_includes,
+                      unlinked_modules=options.unlinked_modules,
+                      keep_lib_files=options.keep_lib_files,
                       translator_arguments=translator_arguments,
                       multi_file=options.multi_file,
                       cache_buster=options.cache_buster,

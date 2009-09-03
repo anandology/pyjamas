@@ -1,2 +1,2 @@
 #!/bin/sh
-../../bin/pyjsbuild $@ LibTest `find I18N -name ??_??.py`
+../../bin/pyjsbuild --dynamic '^I18N[.].*.._..' $@ LibTest `find I18N -name ??_??.py`

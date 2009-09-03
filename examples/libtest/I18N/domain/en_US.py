@@ -1,8 +1,9 @@
 
-import I18N.domain as parent
 
-class I18N(parent.I18N):
+class I18N(object):
     def example(self):
         return "This is a domain en_US example"
 
-parent.i18n = I18N()
+import I18N as parent
+import I18N.domain as dom
+dom.i18n = type('I18N', (I18N, dom.I18N, parent.I18N), {})()

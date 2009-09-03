@@ -20,41 +20,49 @@ else:
 _path_cache= {}
 def module_path(name, path):
     global _path_cache
-    k = (name, tuple(sorted(path)))
-    if k in _path_cache:
-        return _path_cache[k]
     candidates = []
-    tail = []
     packages = {}
     modules = {}
     if name.endswith('.js'):
         parts = [name]
     else:
         parts = name.split('.')
-    for pn in parts:
-        tail.append(pn)
-        for p in path:
+    if not name in _path_cache:
+        _path_cache[name] = {}
+    for p in path:
+        if p in _path_cache[name]:
+            if _path_cache[name][p] is None:
+                continue
+            return _path_cache[name][p]
+        tail = []
+        for pn in parts:
+            tail.append(pn)
+            mn = '.'.join(tail)
             cp = os.path.join(*([p] + tail))
-            if os.path.isdir(cp) and os.path.exists(
+            if mn in _path_cache:
+                cache = _path_cache[mn]
+            else:
+                cache = {}
+                _path_cache[mn] = cache
+            if p in cache:
+                if cache[p] is None:
+                    break
+            elif os.path.isdir(cp) and os.path.exists(
                 os.path.join(cp, '__init__.py')):
-                packages['.'.join(tail)] = os.path.join(cp, '__init__.py')
+                cache[p] = os.path.join(cp, '__init__.py')
             elif os.path.exists(cp + '.py'):
-                modules['.'.join(tail)] = cp + '.py'
+                cache[p] = cp + '.py'
             elif pn.endswith('.js') and os.path.exists(cp):
-                modules['.'.join(tail)] = cp
-    res = None
-    if modules:
-        assert len(modules)==1
-        res = modules.get(name)
-        if not res and '.'.join(name.split('.')[:-1]) not in modules:
-            raise RuntimeError, "Module %r not found" % name
+                cache[p] = cp
+            else:
+                cache[p] = None
+        if p in _path_cache[name] and not _path_cache[name][p] is None:
+            return _path_cache[name][p]
+        _path_cache[name][p] = None
+    
+    return None
+    raise RuntimeError, "Module %r not found" % name
 
-    elif packages:
-        res = packages[sorted(packages)[-1]]
-        if not packages.has_key(name):
-            return None
-    _path_cache[k] = res
-    return res
 
 class BaseLinker(object):
 
@@ -63,14 +71,12 @@ class BaseLinker(object):
     def __init__(self, modules, output='output',
                  debug=False, 
                  js_libs=[], static_js_libs=[], early_static_js_libs=[], late_static_js_libs=[], dynamic_js_libs=[],
-                 early_static_app_libs = [],
+                 early_static_app_libs = [], unlinked_modules = [], keep_lib_files = False,
                  platforms=[], path=[],
                  translator_arguments={},
                  compile_inplace=False):
         modules = [mod.replace(os.sep, '.') for mod in modules]
         self.js_path = os.path.abspath(output)
-        self.path = path + [PYLIB_PATH]
-        self.platforms = platforms
         self.top_module = modules[0]
         self.modules = modules
         self.output = os.path.abspath(output)
@@ -80,9 +86,14 @@ class BaseLinker(object):
         self.late_static_js_libs = list(late_static_js_libs)
         self.dynamic_js_libs = list(dynamic_js_libs)
         self.early_static_app_libs = list(early_static_app_libs)
+        self.unlinked_modules = unlinked_modules
+        self.keep_lib_files = keep_lib_files
+        self.platforms = platforms
+        self.path = path + [PYLIB_PATH]
         self.translator_arguments = translator_arguments
         self.compile_inplace = compile_inplace
         self.top_module_path = None
+        self.remove_files = {}
 
     def __call__(self):
         self.visited_modules = {}
@@ -99,7 +110,7 @@ class BaseLinker(object):
             self.visit_end_platform(platform)
         self.visit_end()
 
-    def visit_modules(self, module_names, platform=None):
+    def visit_modules(self, module_names, platform=None, parent_file = None):
         prefix = ''
         all_names = []
         for mn in module_names:
@@ -111,12 +122,15 @@ class BaseLinker(object):
                     if pn not in all_names:
                         all_names.append(pn)
             all_names.append(mn)
+        paths = self.path
+        if not parent_file is None:
+            paths.insert(0, os.path.split(parent_file)[0])
 
         for mn in all_names:
-            p = module_path(mn, self.path)
+            p = module_path(mn, paths)
             if not p:
                 continue
-                raise RuntimeError, "Module %r found. Dep of %r" % (
+                raise RuntimeError, "Module %r not found. Dep of %r" % (
                     mn, self.dependencies)
             if mn==self.top_module:
                 self.top_module_path = p
@@ -124,7 +138,7 @@ class BaseLinker(object):
             if platform:
                 for pl in self.platform_parents.get(platform, []) + [platform]:
                     override_path = module_path('__%s__.%s' % (pl, mn),
-                                                self.path)
+                                                paths)
                     # prevent package overrides
                     if override_path and not override_path.endswith('__init__.py'):
                         override_paths.append(override_path)
@@ -210,7 +224,7 @@ class BaseLinker(object):
         if module_name not in self.visited_modules.setdefault(platform, []):
             self.visited_modules[platform].append(module_name)
         if deps:
-            self.visit_modules(deps, platform)
+            self.visit_modules(deps, platform, file_path)
 
     def merge_resources(self, dir_name):
         """gets a directory path for each module visited, this can be
@@ -245,6 +259,4 @@ def add_linker_options(parser):
     parser.add_option("-I", "--library_dir", dest="library_dirs",
                       default=[],
                       action="append", help="additional paths appended to PYJSPATH")
-
-
 

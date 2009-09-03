@@ -65,7 +65,6 @@ def ___import___(path, context, module_name=None, get_base=True):
                     if JS("typeof $pyjs.loaded_modules[context + '.' + path] != 'undefined'"):
                         # module is already loaded
                         if JS("typeof $pyjs.loaded_modules[context + '.' + path].__was_initialized__ != 'undefined'"):
-                            debugger()
                             break
                 else:
                     module = dyn_load(importName)

@@ -624,7 +624,10 @@ class Translator:
 
             print >>self.output, self.spacing() + 'var %s;' % self.js_module_name
         print >>self.output, self.indent() + "$pyjs.loaded_modules['%s'] = function (__mod_name__) {" % module_name
-        print >>self.output, self.spacing() + "if($pyjs.loaded_modules['%s'].__was_initialized__) return %s;"% (module_name, self.js_module_name)
+        print >>self.output, self.spacing() + "if($pyjs.loaded_modules['%s'].__was_initialized__) return $pyjs.loaded_modules['%s'];"% (module_name, self.js_module_name)
+        parts = self.js_module_name.split('.')
+        if len(parts) > 1:
+            print >>self.output, self.spacing() + 'var %s = $pyjs.loaded_modules["%s"];' % (parts[0], module_name.split('.')[0])
         print >>self.output, self.spacing() + '%s = $pyjs.loaded_modules["%s"];' % (self.js_module_name, module_name)
 
         print >>self.output, self.spacing() + self.js_module_name+".__was_initialized__ = true;"

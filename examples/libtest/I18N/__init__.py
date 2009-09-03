@@ -10,22 +10,16 @@ i18n = I18N()
 locale = 'en'
 domains = []
 
-def add_domain(domain_name):
-    global domains
-    domains.append(domain_name)
-
 import domain
-add_domain('domain')
+domains.append('domain')
 import domain.subdomain
-add_domain('domain.subdomain')
+domains.append('domain.subdomain')
 
 def set_locale(loc):
     global i18n
     try:
         path = "I18N.%s" % loc
-        m = __import__(path)
-        m = getattr(m, loc)
-        i18n = getattr(m, 'I18N')()
+        c = __import__(path)
     except ImportError, e:
         print "Failed to import %s" % e
     domains.sort()
@@ -35,5 +29,4 @@ def set_locale(loc):
             __import__(path)
         except ImportError, e:
             print "Failed to import %s" % e
-#set_locale("en_US")
 
