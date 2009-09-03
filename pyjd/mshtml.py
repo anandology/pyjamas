@@ -173,8 +173,8 @@ class EventHandler(object):
             if idx > 0:
                 name = name[idx+1:]
             #return EventCaller(self, name)
-            #exec fn_txt % (name[2:], name[2:])
-            exec fn_txt % (name[2:])
+            exec fn_txt % (name[2:], name[2:])
+            #exec fn_txt % (name[2:])
             #print event_fn
             return new.instancemethod(event_fn, self)
         raise AttributeError(name)
