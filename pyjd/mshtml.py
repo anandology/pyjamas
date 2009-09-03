@@ -133,8 +133,8 @@ class EventSink(object):
 
 fn_txt = """\
 def event_fn(self, *args):
-    print "event %s", self, args
-    print "event callbacks", self._listeners
+    #print "event %s", self, args
+    #print "event callbacks", self._listeners
     callbacks = self._listeners.get('%s', [])
     for fn in callbacks:
         try:
@@ -150,7 +150,7 @@ class EventCaller:
         self.name = name
     def __call__(self, *args):
         callbacks = self.handler._listeners.get(self.name, [])
-        print "event", self.name, callbacks
+        #print "event", self.name, callbacks
         for fn in callbacks:
             try:
                 fn(self.handler._sender, Dispatch(args[0]), True)
@@ -173,8 +173,9 @@ class EventHandler(object):
             if idx > 0:
                 name = name[idx+1:]
             #return EventCaller(self, name)
-            exec fn_txt % (name[2:], name[2:])
-            print event_fn
+            #exec fn_txt % (name[2:], name[2:])
+            exec fn_txt % (name[2:])
+            #print event_fn
             return new.instancemethod(event_fn, self)
         raise AttributeError(name)
 
@@ -236,7 +237,7 @@ class Browser(EventSink):
             # assume file
             uri = 'file://'+os.path.abspath(uri)
 
-        print "load_app", uri
+        #print "load_app", uri
 
         self.application = uri
         v = byref(VARIANT())
@@ -257,8 +258,8 @@ class Browser(EventSink):
         wn.GetWindow(pHnd)
 
         #PostMessage(pHnd.value, WM_SETFOCUS,0,0)
-        print SetFocus(pHnd.value)
-        print self.hwnd, pHnd.value
+        SetFocus(pHnd.value)
+        #print self.hwnd, pHnd.value
 
     def getDomDocument(self):
         return Dispatch(self.pBrowser.Document)
@@ -305,7 +306,7 @@ class Browser(EventSink):
 
     def _addWindowEventListener(self, event_name, event_fn):
         
-        print "_addWindowEventListener", event_name, event_fn
+        #print "_addWindowEventListener", event_name, event_fn
         #rcvr = mshtmlevents.GetDispEventReceiver(MSHTML.HTMLWindowEvents,
         #                   event_fn, "on%s" % event_name)
         #print rcvr
@@ -338,7 +339,7 @@ class Browser(EventSink):
 
     def _loaded(self):
 
-        print "loaded"
+        #print "loaded"
 
         if self.already_initialised:
             return
@@ -394,8 +395,6 @@ def MainWin(one_event):
         #                pMsg):     #message data 
             TranslateMessage(pMsg)
             DispatchMessage(pMsg)
-        else:
-            print msg
 
         if one_event:
             break

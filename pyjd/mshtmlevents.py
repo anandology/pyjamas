@@ -146,11 +146,11 @@ class EventDumper(object):
         "Create event handler methods on demand"
         if name.startswith("__") and name.endswith("__"):
             raise AttributeError(name)
-        print "# event found:", name
+        #print "# event found:", name
         def handler(self, this, *args, **kw):
             # XXX handler is called with 'this'.  Should we really print "None" instead?
             args = (None,) + args
-            print "Event %s(%s)" % (name, ", ".join([repr(a) for a in args]))
+            #print "Event %s(%s)" % (name, ", ".join([repr(a) for a in args]))
         return comtypes.instancemethod(handler, EventDumper, self)
 
 def ShowEvents(source, interface=None):
@@ -227,15 +227,15 @@ class _DispEventReceiver(comtypes.COMObject):
     # as last parameter?
     def IDispatch_Invoke(self, this, memid, riid, lcid, wFlags, pDispParams,
                          pVarResult, pExcepInfo, puArgErr):
-        print "IDispatch_Invoke", memid, this, riid, lcid, pDispParams
+        #print "IDispatch_Invoke", memid, this, riid, lcid, pDispParams
         mth = self.dispmap.get(memid, None)
         if mth is None:
             return S_OK
         dp = pDispParams[0]
-        print "num args", dp.cArgs 
+        #print "num args", dp.cArgs 
         # DISPPARAMS contains the arguments in reverse order
         args = [dp.rgvarg[i].value for i in range(dp.cArgs)]
-        print "Event", self, memid, mth, args
+        #print "Event", self, memid, mth, args
         event = None
         if len(args) > 0:
             event = wrap(args[0])
@@ -301,7 +301,7 @@ def GetDispEventReceiver(interface, sink, sink_name=None):
     for itf in interfaces:
         for memid, name in _get_dispmap(itf).iteritems():
             if name == sink_name:
-                print "GetDispEventReceiver", memid, name
+                #print "GetDispEventReceiver", memid, name
                 methods[0] = sink
                 continue
             # find methods to call, if not found ignore event
