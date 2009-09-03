@@ -35,6 +35,10 @@ def _dispatchEvent(sender, event, useCap):
     if listener:
         dispatchEvent(evt, curElem, listener)
 
+def buttonClick(elem):
+    newEvent = doc().createEventObject()
+    elem.fireEvent('onclick', newEvent)
+
 #def TODOinit():
 #    JS("""
 #    // Set up event dispatchers.
