@@ -104,12 +104,13 @@ class Browser(WebView):
     def mash_attrib(self, attrib_name):
         return attrib_name
 
-    def _addWindowEventListener(self, event_name, event_fn):
+    def _addWindowEventListener(self, event_name, event_fn, win=None):
         
-        listener = xpcom.server.WrapObject(ContentInvoker(self.window_root,
-                                                          event_fn),
+        if win is None:
+            win = self.window_root
+        listener = xpcom.server.WrapObject(ContentInvoker(win, event_fn),
                                             interfaces.nsIDOMEventListener)
-        self.window_root.addEventListener(event_name, listener, True)
+        win.addEventListener(event_name, listener, True)
         return listener
 
     def getXmlHttpRequest(self):
