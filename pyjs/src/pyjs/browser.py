@@ -330,7 +330,7 @@ def build_script():
     if options.log_level is not None:
         import logging
         logging.basicConfig(level=options.log_level)
-    if len(args) != 1:
+    if len(args) < 1:
         parser.error("incorrect number of arguments")
 
     top_module = args[0]
@@ -353,7 +353,7 @@ def build_script():
         line_tracking=options.line_tracking,
         store_source=options.store_source)
 
-    l = BrowserLinker(top_module,
+    l = BrowserLinker(args,
                       output=options.output,
                       platforms=app_platforms,
                       path=pyjs.path,

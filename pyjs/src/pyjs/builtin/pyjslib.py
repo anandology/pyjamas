@@ -16,82 +16,78 @@
 
 # must declare import _before_ importing sys
 
-from __pyjamas__ import JS, setCompilerOptions
+from __pyjamas__ import JS, setCompilerOptions, debugger
 
 setCompilerOptions("noBoundMethods", "noDescriptors", "noAttributeChecking", "noSourceTracking", "noLineTracking", "noStoreSource")
 
 class object:
     pass
 
-# # FIXME: dynamic=1, async=False, init=True are useless here (?)
-# def import_module(path, parent_module, module_name, dynamic=1, async=False, init=True):
-#     JS("""
-#     module = $pyjs.modules_hash[module_name];
-#     if (typeof module == 'function' && module.__was_initialized__ == true) {
-#         return null;
-#     }
-#     if (module_name == 'sys' || module_name == 'pyjslib') {
-#         module();
-#         return null;
-#     }
-#     """)
-#     module = None
-#     names = module_name.split(".")
-#     importName = ''
-#     # Import all modules in the chain (import a.b.c)
-#     for name in names:
-#         importName += name
-#         JS("""module = $pyjs.modules_hash[importName];""")
-#         if isUndefined(module):
-#             raise ImportError("No module named " + importName)
-#         if JS("module.__was_initialized__ != true"):
-#             # Module wasn't initialized
-#             module()
-#         importName += '.'
-#     return None
+platform = JS("$pyjs.platform")
 
 @compiler.noSourceTracking
-def __import__(searchList, path, context, module_name=None):
-    available = JS("$pyjs.available_modules_dict")
-    if isUndefined(available):
-        # Convert the $pyjs.available_modules js array to
-        # a Python dictionary. Lookups in the dictionary with has_key are
-        # way faster than a __contains__ lookup in a list.
-        # This hack needs attention if the $pyjs.available_modules gets
-        # updated after creation of the dictionary
-        available = {}
-        for m in list(JS("$pyjs.available_modules")):
-            available[m] = False
-        # Store the dictionary for later use
-        JS("$pyjs.available_modules_dict = available;")
-    searchList = list(searchList)
-    found = False
-    for mod_path in searchList:
-        if mod_path in available:
-            found = True
-            break
-    if not found:
-        raise ImportError(
-            "No module named " + path + ' (context=' + context + ')')
-    module = None
-    try:
-        module = JS("$pyjs.loaded_modules[mod_path]")
-        if JS("typeof module.__was_initialized__ != 'undefined'"):
-            return
-    except:
-        pass
-    # initialize all modules/packages
+def ___import___(path, context, module_name=None, get_base=True):
     save_track_module = JS("$pyjs.track.module")
-    importName = ''
-    parts = mod_path.split('.')
+    module = JS("$pyjs.loaded_modules[path]")
+    in_context = (not context is None)
+    parts = path.split('.')
+    def dyn_load(importName):
+            if JS("typeof $pyjs.loaded_modules['dynamic'] == 'undefined'"):
+                JS("$pyjs.track.module = save_track_module;")
+                debugger()
+                raise ImportError(
+                    "No module named 'dynamic' in context ___import___")
+
+            try:
+                dynamic.ajax_import("lib/" + importName + ".__" + platform + "__.js")
+            except:
+                pass
+            module = JS("$pyjs.loaded_modules[importName]")
+            if JS("typeof module == 'undefined'"):
+                try:
+                    dynamic.ajax_import("lib/" + importName + ".js")
+                except:
+                    pass
+                module = JS("$pyjs.loaded_modules[importName]")
+            return module
+    parent_module = None
+    if in_context:
+        importName = context + '.'
+    else:
+        importName = ''
     l = len(parts)
     for i, name in enumerate(parts):
         importName += name
-        JS("module = $pyjs.loaded_modules[importName];")
+        if in_context:
+            module = JS("$pyjs.loaded_modules[importName]")
+            if i == 0:
+                if JS("typeof module != 'undefined'"):
+                    if JS("typeof $pyjs.loaded_modules[context + '.' + path] != 'undefined'"):
+                        # module is already loaded
+                        if JS("typeof $pyjs.loaded_modules[context + '.' + path].__was_initialized__ != 'undefined'"):
+                            debugger()
+                            break
+                else:
+                    module = dyn_load(importName)
+                    if JS("typeof module == 'undefined'"):
+                        in_context = False
+                        if JS("typeof $pyjs.loaded_modules[path] != 'undefined'"):
+                            # module is already loaded
+                            if JS("typeof $pyjs.loaded_modules[path].__was_initialized__ != 'undefined'"):
+                                break
+                        importName = name
+                        module = JS("$pyjs.loaded_modules[importName]")
+        else:
+            module = JS("$pyjs.loaded_modules[importName]")
         if JS("typeof module == 'undefined'"):
-            raise ImportError(
-                "No module named " + importName + ', ' + path + ' in context ' + context)
-        if i == 0:
+            module = dyn_load(importName)
+            if JS("typeof module == 'undefined'"):
+                if not parent_module is None and hasattr(parent_module, name):
+                    break
+                JS("$pyjs.track.module = save_track_module;")
+                raise ImportError(
+                    "No module named " + importName + ', ' + path + ' in context ' + context)
+        if i == 0 and not in_context:
             JS("$pyjs.__modules__[importName] = module;")
         if l==i+1:
             # This is the last module, we set the module name here
@@ -99,157 +95,16 @@ def __import__(searchList, path, context, module_name=None):
         else:
             module(None)
         importName += '.'
+        parent_module = module
     JS("$pyjs.track.module = save_track_module;")
-
-
-# FIXME: dynamic=1, async=False are useless here (?). Only dynamic modules
-# are loaded with load_module and it's always "async"
-@compiler.noSourceTracking
-def load_module(path, parent_module, module_name, dynamic=1, async=False):
-    """
-    """
-
-    JS("""
-        var cache_file;
-        var module = $pyjs.modules_loaded[module_name];
-        if (typeof module == 'function') {
-            return true;
-        }
-
-        if (!dynamic) {
-            // There's no way we can load a none dynamic module
-            return false;
-        }
-
-        if (path == null)
-        {
-            path = './';
-        }
-
-        var override_name = sys.platform + "." + module_name;
-        if (((sys.overrides != null) &&
-             (sys.overrides.has_key(override_name))))
-        {
-            cache_file =  sys.overrides.__getitem__(override_name) ;
-        }
-        else
-        {
-            cache_file =  module_name ;
-        }
-
-        cache_file = (path + cache_file + '.cache.js' ) ;
-
-        //alert("cache " + cache_file + " " + module_name + " " + parent_module);
-
-        onload_fn = '';
-
-        // this one tacks the script onto the end of the DOM
-        pyjs_load_script(cache_file, onload_fn, async);
-
-        try {
-            loaded = (typeof $pyjs.modules_loaded[module_name] == 'function');
-        } catch ( e ) {
-        }
-        if (loaded) {
-            return true;
-        }
-        return false;
-    """)
-
-@compiler.noSourceTracking
-def load_module_wait(proceed_fn, parent_mod, module_list, dynamic):
-    module_list = module_list.getArray()
-    JS("""
-    var wait_count = 0;
-    var timeoutperiod = 1;
-    if (dynamic)
-        var timeoutperiod = 1;
-
-    var wait = function() {
-        wait_count++;
-        //write_dom(".");
-        var loaded = true;
-        for (var i in module_list) {
-            if (typeof $pyjs.modules_loaded[module_list[i]] != 'function') {
-                loaded = false;
-                break;
-            }
-        }
-        if (!loaded) {
-            setTimeout(wait, timeoutperiod);
-        } else {
-            if (proceed_fn.importDone)
-                proceed_fn.importDone(proceed_fn);
-            else
-                proceed_fn();
-            //$doc.body.removeChild(element);
-        }
-    };
-    wait();
-""")
-
-class Modload:
-
-    # All to-be-imported module names are in app_modlist
-    # Since we're only _loading_ the modules here, we can do that in almost
-    # any order. There's one limitation: a child/sub module cannot be loaded
-    # unless its parent is loaded. It has to be chained in the module list.
-    # (1) $pyjs.modules.pyjamas
-    # (2) $pyjs.modules.pyjamas.ui
-    # (3) $pyjs.modules.pyjamas.ui.Widget
-    # Therefore, all modules are collected and sorted on the depth (i.e. the
-    # number of dots in it)
-    # As long as we don't move on to the next depth unless all modules of the
-    # previous depth are loaded, we won't trun into unchainable modules
-    # The execution of the module code is done when the import statement is
-    # reached, or after loading the modules for the main module.
-    def __init__(self, path, app_modlist, app_imported_fn, dynamic,
-                 parent_mod):
-        self.app_modlist = app_modlist
-        self.app_imported_fn = app_imported_fn
-        self.path = path
-        self.dynamic = dynamic
-        self.parent_mod = parent_mod
-        self.modules = {}
-        for modlist in self.app_modlist:
-            for mod in modlist:
-                depth = len(mod.split('.'))
-                if not self.modules.has_key(depth):
-                    self.modules[depth] = []
-                self.modules[depth].append(mod)
-        self.depths = self.modules.keys()
-        self.depths.sort()
-        self.depths.reverse()
-
-    def next(self):
-        if not self.dynamic:
-            # All modules are static. Just start the main module.
-            self.app_imported_fn()
-            return
-        depth = self.depths.pop()
-        # Initiate the loading of the modules.
-        for app in self.modules[depth]:
-            load_module(self.path, self.parent_mod, app, self.dynamic, True);
-
-        if len(self.depths) == 0:
-            # This is the last depth. Start the main module after loading these
-            # modules.
-            load_module_wait(self.app_imported_fn, self.parent_mod, self.modules[depth], self.dynamic)
+    if in_context:
+        importName = context + '.' + parts[0]
+    else:
+        if get_base == True:
+            importName = parts[0]
         else:
-            # After loading the modules, to the next depth.
-            load_module_wait(getattr(self, "next"), self.parent_mod, self.modules[depth], self.dynamic)
-
-
-def get_module(module_name):
-    ev = "__mod = %s;" % module_name
-    JS("pyjs_eval(ev);")
-    return __mod
-
-def preload_app_modules(path, app_modnames, app_imported_fn, dynamic,
-                        parent_mod=None):
-
-    loader = Modload(path, app_modnames, app_imported_fn, dynamic, parent_mod)
-    loader.next()
+            importName = path
+    return JS("$pyjs.loaded_modules[importName]")
 
 class BaseException:
 
@@ -1536,7 +1391,11 @@ def getattr(obj, name, default_value=None):
             return method.__get__(null, obj.__class__);
         }
     }
-    if (!pyjslib.isFunction(obj[name])) return obj[name];
+    if (    (!pyjslib.isFunction(obj[name]))
+        || (typeof obj.__is_instance__ == 'undefined'
+            && typeof obj[name].__is_instance__ == 'undefined')) {
+        return obj[name];
+    }
     var fnwrap = function() {
         var args = [];
         for (var i = 0; i < arguments.length; i++) {
@@ -2072,5 +1931,11 @@ def any(iterable):
 
 init()
 
-# Next line is needed for debug option
-import sys
+def __import__(name, globals={}, locals={}, fromlist=[], level=-1):
+    module = ___import___(name, None)
+    if not module is None and hasattr(module, '__was_initialized__'):
+        return module
+    raise ImportError("No module named " + name)
+
+import sys # needed for debug option
+import dynamic # needed for ___import___

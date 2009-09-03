@@ -7,7 +7,7 @@ if True:
     import imports.child, imports.circ1
 from imports import exec_order, imports as IMPORTS
 from imports import exec_order as EXEC_ORDER
-
+import I18N
 
 from imports.classes import WithAttribute
 
@@ -502,6 +502,29 @@ class ClassTest(UnitTest):
             x = p._x
         except AttributeError, e:
             self.assertTrue(True)
+
+    def testDynamicLoading(self):
+        self.assertEqual(I18N.i18n.example(),
+                         'This is an example')
+        self.assertEqual(I18N.domain.i18n.example(),
+                         'This is a domain example')
+        self.assertEqual(I18N.domain.subdomain.i18n.example(),
+                         'This is a subdomain example')
+        self.assertEqual(I18N.i18n.another_example(),
+                         'This is another example')
+        self.assertEqual(I18N.domain.i18n.another_example(),
+                         'This is another example')
+        I18N.set_locale('en_US')
+        self.assertEqual(I18N.i18n.example(),
+                         'This is an en_US example')
+        self.assertEqual(I18N.domain.i18n.example(),
+                         'This is a domain en_US example')
+        self.assertEqual(I18N.domain.subdomain.i18n.example(),
+                         'This is a subdomain en_US example')
+        self.assertEqual(I18N.i18n.another_example(),
+                         'This is another example')
+        self.assertEqual(I18N.domain.i18n.another_example(),
+                         'This is another example')
 
 
 class PassMeAClass(object):

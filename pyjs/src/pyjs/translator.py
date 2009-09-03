@@ -232,6 +232,7 @@ Other_JavaScript_Keywords = frozenset((
 ))
 
 PYJSLIB_BUILTIN_FUNCTIONS=frozenset((
+    "__import__",
     "abs",
     "all",
     "any",
@@ -1398,16 +1399,18 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
 
             mod = self.lookup(importName)
             package_mod = self.lookup(importName.split('.', 1)[0])
+
+            import_stmt = None
             if (   mod[0] != 'root-module'
                 or (assignBase and not package_mod[0] in ['root-module', 'module'])
                ):
                 # the import statement
-                stmt = "pyjslib.__import__([%s], '%s', '%s');" % (
-                            ', '.join(["'%s'"% n for n in searchList]),
-                            importName,
-                            self.raw_module_name,
-                            )
-                print >> self.output, self.spacing() + stmt
+                import_stmt = "pyjslib.___import___('%s', '%s'" % (
+                                    importName,
+                                    self.raw_module_name,
+                                    )
+                if not assignBase:
+                    print >> self.output, self.spacing() + import_stmt + ');'
                 self._lhsFromName(importName, top_level, current_klass, modtype)
                 self.add_imported_module(importName)
             if assignBase:
@@ -1415,6 +1418,8 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                 package_name = importName.split('.')[0]
                 if importAs:
                     ass_name = importAs
+                    if not import_stmt is None:
+                        import_stmt += ',null , false'
                 else:
                     ass_name = package_name
                 lhs = self._lhsFromName(ass_name, top_level, current_klass, modtype)
@@ -1422,7 +1427,10 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                     mod_name = importName
                 else:
                     mod_name = ass_name
-                stmt = "%s = $pyjs.__modules__['%s'];"% (lhs, mod_name)
+                if import_stmt is None:
+                    stmt = "%s = $pyjs.__modules__['%s'];"% (lhs, mod_name)
+                else:
+                    stmt = "%s = %s);"% (lhs, import_stmt)
                 print >> self.output, self.spacing() + stmt
 
     def _from(self, node, current_klass, top_level = False, root_level = False):
@@ -2492,14 +2500,14 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
     def _while(self, node, current_klass):
         test = self.expr(node.test, current_klass)
-        print >>self.output, "    while (" + self.track_call(self.inline_bool_code(test), node.lineno) + ") {"
+        print >>self.output, self.indent() + "while (" + self.track_call(self.inline_bool_code(test), node.lineno) + ") {"
         if isinstance(node.body, ast.Stmt):
             for child in node.body.nodes:
                 self._stmt(child, current_klass)
         else:
             raise TranslationError(
                 "unsupported type (in _while)", node.body, self.module_name)
-        print >>self.output, "    }"
+        print >>self.output, self.dedent() + "}"
 
 
     def _const(self, node):

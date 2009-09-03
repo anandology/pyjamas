@@ -7,11 +7,15 @@ import pyjs
 
 
 if pyjs.pyjspth is None:
-    LIB_PATH = os.path.join(os.path.dirname(__file__), 'lib')
+    PYLIB_PATH = os.path.join(os.path.dirname(__file__), 'lib')
     BUILTIN_PATH = os.path.join(os.path.dirname(__file__), 'builtin')
+    PYJAMASLIB_PATH = os.path.split(os.path.dirname(__file__))[0]
+    PYJAMASLIB_PATH = os.path.split(PYJAMASLIB_PATH)[0]
+    PYJAMASLIB_PATH = os.path.join(os.path.split(PYJAMASLIB_PATH)[0], 'library')
 else:
-    LIB_PATH = os.path.join(pyjs.pyjspth, "pyjs", "src", "pyjs", "lib")
+    PYLIB_PATH = os.path.join(pyjs.pyjspth, "pyjs", "src", "pyjs", "lib")
     BUILTIN_PATH = os.path.join(pyjs.pyjspth, "pyjs", "src", "pyjs", "builtin")
+    PYJAMASLIB_PATH = os.path.join(pyjs.pyjspth, "library")
 
 _path_cache= {}
 def module_path(name, path):
@@ -56,17 +60,19 @@ class BaseLinker(object):
 
     platform_parents = {}
 
-    def __init__(self, top_module, output='output',
+    def __init__(self, modules, output='output',
                  debug=False, 
                  js_libs=[], static_js_libs=[], early_static_js_libs=[], late_static_js_libs=[], dynamic_js_libs=[],
                  early_static_app_libs = [],
                  platforms=[], path=[],
                  translator_arguments={},
                  compile_inplace=False):
+        modules = [mod.replace(os.sep, '.') for mod in modules]
         self.js_path = os.path.abspath(output)
-        self.path = path + [LIB_PATH]
+        self.path = path + [PYLIB_PATH]
         self.platforms = platforms
-        self.top_module = top_module
+        self.top_module = modules[0]
+        self.modules = modules
         self.output = os.path.abspath(output)
         self.js_libs = list(js_libs)
         self.static_js_libs = list(static_js_libs)
@@ -86,10 +92,10 @@ class BaseLinker(object):
         for platform in [None] + self.platforms:
             self.visit_start_platform(platform)
             old_path = self.path
-            self.path = [BUILTIN_PATH, LIB_PATH]
+            self.path = [BUILTIN_PATH, PYLIB_PATH, PYJAMASLIB_PATH]
             self.visit_modules(['pyjslib'], platform)
             self.path = old_path
-            self.visit_modules([self.top_module], platform)
+            self.visit_modules(self.modules, platform)
             self.visit_end_platform(platform)
         self.visit_end()
 
