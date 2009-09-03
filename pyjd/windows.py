@@ -191,6 +191,8 @@ SW_SHOW = 5
 SW_HIDE = 0
 
 WM_DESTROY = 2
+WM_SETFOCUS = 7
+WM_KILLFOCUS = 8
 WM_SETREDRAW = 11
 WM_PAINT = 15
 WM_MOUSEMOVE = 512
@@ -534,6 +536,7 @@ GetCapture = windll.user32.GetCapture
 ReleaseCapture = windll.user32.ReleaseCapture
 ScreenToClient = windll.user32.ScreenToClient
 ClientToScreen = windll.user32.ClientToScreen
+SetFocus = windll.user32.SetFocus
 
 GetMessagePos = windll.user32.GetMessagePos
 BeginDeferWindowPos = windll.user32.BeginDeferWindowPos

@@ -18,7 +18,7 @@ from ctypes import *
 from ctypes.wintypes import *
 
 import comtypes
-from comtypes import IUnknown
+from comtypes import IUnknown, GUID, COMMETHOD
 from comtypes.automation import IDispatch, VARIANT
 from comtypes.client import wrap, GetModule
 from comtypes.client.dynamic import Dispatch
@@ -30,6 +30,7 @@ if not hasattr(sys, 'frozen'):
     GetModule('shdocvw.dll')
     GetModule('msxml2.dll')
     GetModule('mshtml.tlb') 
+    #GetModule('progdlg.tlb') 
 
 from comtypes.gen import SHDocVw
 from comtypes.gen import MSXML2
@@ -39,6 +40,38 @@ atl = windll.atl                  # If this fails, you need atl.dll
 
 # do this after gen stuff, above
 import mshtmlevents 
+
+SID_SShellBrowser = GUID("{000214E2-0000-0000-C000-000000000046}")
+
+class IOleWindow(IUnknown):
+    _case_insensitive_ = True
+    u'IOleWindow Interface'
+    _iid_ = GUID('{00000114-0000-0000-C000-000000000046}')
+    _idlflags_ = []
+
+    _methods_ = [
+        COMMETHOD([], HRESULT, 'GetWindow',
+                  ( ['in'], POINTER(HWND), 'pHwnd' ),
+                  )
+        ]
+
+# http://www.mail-archive.com/comtypes-users@lists.sourceforge.net/msg00439.html
+class IServiceProvider(IUnknown):
+    _iid_ = GUID('{6D5140C1-7436-11CE-8034-00AA006009FA}')
+
+    # Overridden QueryService to make it nicer to use (passing it an
+    # interface and it returns a pointer to that interface)
+    def QueryService(self, serviceIID, interface):
+        p = POINTER(interface)()
+        self._QueryService(byref(serviceIID), byref(interface._iid_), byref(p))
+        return p
+
+    _methods_ = [
+        COMMETHOD([], HRESULT, 'QueryService',
+                  ( ['in'], POINTER(GUID), 'guidService' ),
+                  ( ['in'], POINTER(GUID), 'riid' ),
+                  ( ['in'], POINTER(c_void_p), 'ppvObject' ))
+        ]
 
 class EventSink(object):
     # some DWebBrowserEvents
@@ -175,6 +208,8 @@ class Browser(EventSink):
         self.conn = mshtmlevents.GetEvents(self.pBrowser, sink=self,
                         interface=SHDocVw.DWebBrowserEvents2)
 
+        #print "browser HWND", SetFocus(self.pBrowser.HWND)
+
     def _alert(self, txt):
         self.getDomWindow().alert(txt)
 
@@ -195,6 +230,19 @@ class Browser(EventSink):
         cw = c_int(self.hwnd)
         ShowWindow(cw, c_int(SW_SHOW))
         UpdateWindow(cw)
+
+
+        # http://msdn.microsoft.com/en-us/library/aa752126%28VS.85%29.aspx
+        wba = self.pBrowser.QueryInterface(IServiceProvider)
+        wn = wrap(wba.QueryService(SID_SShellBrowser, IOleWindow))
+
+        hwnd = 0
+        pHnd = c_void_p(hwnd)
+        wn.GetWindow(pHnd)
+
+        #PostMessage(pHnd.value, WM_SETFOCUS,0,0)
+        print SetFocus(pHnd.value)
+        print self.hwnd, pHnd.value
 
     def getDomDocument(self):
         return Dispatch(self.pBrowser.Document)
@@ -298,6 +346,9 @@ timer_q = []
 
 WM_USER_TIMER = RegisterWindowMessage("Timer Notify")
 
+global wv
+wv = None
+
 def MainWin(one_event):
 
     # Pump Messages
@@ -320,19 +371,18 @@ def MainWin(one_event):
 
         if not TranslateAccelerator( 
                         wv.hwnd,  #handle to receiving window 
-                        haccel,    #handle to active accelerator table 
-                        pMsg)):     #message data 
+                        NULL,    #handle to active accelerator table 
+                        pMsg):     #message data 
             TranslateMessage(pMsg)
             DispatchMessage(pMsg)
+        else:
+            print msg
 
         if one_event:
             break
 
     return msg.wParam
     
-global wv
-wv = None
-
 def add_timer_queue(fn):
     timer_q.append(fn)
     PostMessage(c_int(wv.hwnd), UINT(WM_USER_TIMER), WPARAM(0), LPARAM(0xffff))
