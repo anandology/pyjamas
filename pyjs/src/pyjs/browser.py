@@ -124,6 +124,12 @@ class BrowserLinker(linker.BaseLinker):
         f.close()
         return res
 
+    def unique_list_values(self, lst):
+        keys = {}
+        for k in lst:
+            keys[k] = 1
+        return keys.keys()
+
     def _generate_app_file(self, platform):
         # TODO: cache busting
         template = self.read_boilerplate('all.cache.html')
@@ -169,15 +175,15 @@ class BrowserLinker(linker.BaseLinker):
             return 'js@'+os.path.basename(path)+'.'+hashlib.md5(path).hexdigest()
 
         if self.multi_file:
-            dynamic_js_libs += [m for m in list(self.js_libs) if not m in static_js_libs]
-            dynamic_app_libs = [m for m in done if not m in early_static_app_libs]
+            dynamic_js_libs = self.unique_list_values(dynamic_js_libs + [m for m in list(self.js_libs) if not m in static_js_libs])
+            dynamic_app_libs = self.unique_list_values([m for m in done if not m in early_static_app_libs])
         else:
-            static_js_libs += [m for m in list(self.js_libs) if not m in dynamic_js_libs]
-            static_app_libs = [m for m in done if not m in early_static_app_libs]
+            static_js_libs = self.unique_list_values(static_js_libs + [m for m in list(self.js_libs) if not m in dynamic_js_libs])
+            static_app_libs = self.unique_list_values([m for m in done if not m in early_static_app_libs])
 
         import hashlib
-        dynamic_modules = available_modules + [js_modname(lib) for lib in dynamic_js_libs]
-        available_modules += early_static_app_libs + dynamic_modules
+        dynamic_modules = self.unique_list_values(available_modules + [js_modname(lib) for lib in dynamic_js_libs])
+        available_modules = self.unique_list_values(available_modules + early_static_app_libs + dynamic_modules)
         if len(dynamic_modules) > 0:
             dynamic_modules = "['" + "','".join(dynamic_modules) + "']"
         else:

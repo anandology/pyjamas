@@ -614,19 +614,18 @@ class Translator:
         self.indent_level = 0
         self.__unique_ids__ = {}
 
-        if '.' in module_name:
-            vdec = ''
-        else:
+        print >>self.output, self.spacing() + "/* start module: %s */" % module_name
+        if not '.' in module_name:
             #if module_name != self.jsname(module_name):
             #    raise TranslationError(
             #        "reserved word used for top-level module %r" % module_name,
             #        mod, self.module_name)
 
-            vdec = 'var '
-        print >>self.output, self.spacing() + "/* start module: %s */" % module_name
-        print >>self.output, self.indent() + '%s%s = $pyjs.loaded_modules["%s"] = function (__mod_name__) {' % (vdec, self.js_module_name, module_name)
+            print >>self.output, self.spacing() + 'var %s;' % self.js_module_name
+        print >>self.output, self.indent() + "$pyjs.loaded_modules['%s'] = function (__mod_name__) {" % module_name
+        print >>self.output, self.spacing() + "if($pyjs.loaded_modules['%s'].__was_initialized__) return %s;"% (module_name, self.js_module_name)
+        print >>self.output, self.spacing() + '%s = $pyjs.loaded_modules["%s"];' % (self.js_module_name, module_name)
 
-        print >>self.output, self.spacing() + "if("+self.js_module_name+".__was_initialized__) return %s;"% self.js_module_name
         print >>self.output, self.spacing() + self.js_module_name+".__was_initialized__ = true;"
         print >>self.output, self.spacing() + "if (__mod_name__ == null) __mod_name__ = '%s';" % (mn)
         lhs = "%s.__name__" % self.js_module_name

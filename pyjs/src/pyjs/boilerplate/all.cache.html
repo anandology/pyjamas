@@ -79,7 +79,7 @@ var onExecutionError = function (exception, name) {
 };
 
 function app_imported() {
-    pyjslib('pyjslib');
+    $pyjs.loaded_modules['pyjslib']('pyjslib');
     $pyjs.__modules__.pyjslib = $pyjs.loaded_modules['pyjslib']
     pyjslib.__import__(
                ['%(app_name)s'],
