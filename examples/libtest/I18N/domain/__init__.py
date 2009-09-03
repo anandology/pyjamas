@@ -1,5 +1,4 @@
 
-
 class I18N(object):
     def example(self):
         return "This is a domain example"

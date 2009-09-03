@@ -522,9 +522,9 @@ class ClassTest(UnitTest):
         self.assertEqual(I18N.domain.subdomain.i18n.example(),
                          'This is a subdomain en_US example')
         self.assertEqual(I18N.i18n.another_example(),
-                         'This is another example')
+                         'This is en_US another example')
         self.assertEqual(I18N.domain.i18n.another_example(),
-                         'This is another example')
+                         'This is en_US another example')
 
 
 class PassMeAClass(object):
