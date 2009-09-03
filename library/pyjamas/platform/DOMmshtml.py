@@ -1,11 +1,19 @@
 
+def get_listener(item):
+    if item is None:
+        return None
+    return listeners.get(item.uniqueID)
+
+def set_listener(item, listener):
+    listeners[item.uniqueID] = listener
+
 
 def _dispatchEvent(sender, event, useCap):
     if not event:
         evt = wnd().event
     else:
         evt = event
-    print "_dispatchEvent", sender, evt, evt.returnValue
+    #print "_dispatchEvent", sender, evt, evt.type, evt.returnValue
 
     if evt.returnValue is None:
         evt.returnValue = True
@@ -15,7 +23,7 @@ def _dispatchEvent(sender, event, useCap):
     cap = getCaptureElement()
     listener = get_listener(cap)
     if cap and listener:
-        print "_dispatchEvent capture", cap, listener
+        #print "_dispatchEvent capture", cap, listener
         dispatchEvent(evt, cap, listener)
         return
 
