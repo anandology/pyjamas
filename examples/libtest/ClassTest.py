@@ -345,6 +345,7 @@ class ClassTest(UnitTest):
         self.assertEqual(exec_order[1], 'circ2-1')
         self.assertEqual(EXEC_ORDER[2], 'circ2-2')
         self.assertEqual(imports.exec_order[3], 'circ1-2')
+        self.assertEqual(imports.exec_order[3], IMPORTS.exec_order[3])
 
         # import imports.child # FIXME: if the import statement is here in stead of at the top, this fails on compiling
         teststring = 'import test'

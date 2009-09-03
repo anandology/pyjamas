@@ -1906,9 +1906,10 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 self.local_prefix = local_prefix
                 self.push_lookup(private_scope)
                 self.track_lineno(child, True)
+                rhs = self.expr(child.expr, current_klass)
                 lhs = "%s.%s" % (local_prefix, child.nodes[0].name)
                 lhs = self.add_lookup('attribute', child.nodes[0].name, lhs)
-                print >>self.output, self.spacing() + "%s = %s;" % (lhs, self.expr(child.expr, current_klass))
+                print >>self.output, self.spacing() + "%s = %s;" % (lhs, rhs)
                 private_scope = self.pop_lookup()
             elif isinstance(child, ast.Discard) and isinstance(child.expr, ast.Const):
                 # Probably a docstring, turf it
