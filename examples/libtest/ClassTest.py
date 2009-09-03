@@ -5,7 +5,7 @@ from UnitTest import UnitTest, IN_BROWSER
 # import a, b, c
 if True:
     import imports.child, imports.circ1
-from imports import exec_order
+from imports import exec_order, imports as IMPORTS
 from imports import exec_order as EXEC_ORDER
 
 

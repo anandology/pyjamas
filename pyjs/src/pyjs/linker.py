@@ -47,6 +47,8 @@ def module_path(name, path):
 
     elif packages:
         res = packages[sorted(packages)[-1]]
+        if not packages.has_key(name):
+            return None
     _path_cache[k] = res
     return res
 
