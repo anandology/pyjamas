@@ -160,7 +160,7 @@ class GWTCanvasImplDefault:
             gradient = str(gradient)
         elif not isinstance(gradient, str): # is it a colorString?
             gradient = gradient.getObject() # it's a gradient object
-        self.canvasContext.strokeStyle = gradient
+        self.canvasContext.strokeStyle = cvt(gradient)
 
 
     def setFillStyle(self, gradient):
