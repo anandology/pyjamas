@@ -1699,6 +1699,8 @@ class PlotPanel (AbsolutePanel):
     """
     def isContainedIn(self, container, et):
 
+        if container is None:
+            return False
         return DOM.isOrHasChild(et, container)
 
         # XXX ???? ehh??

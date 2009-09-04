@@ -184,6 +184,8 @@ def insertListItem(select, text, value, index):
     newOption.value=value
 
 def isOrHasChild(parent, child):
+    if not parent:
+        return False
     while child:
         if parent.uniqueID == child.uniqueID:
             return True
