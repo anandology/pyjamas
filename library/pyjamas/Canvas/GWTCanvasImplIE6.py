@@ -18,6 +18,7 @@ import math
 
 from pyjamas import DOM
 from __pyjamas__ import JS, doc
+from pyjamas.ui.Widget import Widget
 
 
 
@@ -106,10 +107,43 @@ class GWTCanvasImplIE6:
         self.currentY = y
 
 
-    def drawImage(self, img, sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight):
+    def drawImage(self, img, *args):
 
-        fullWidth = img.getWidth()
-        fullHeight = img.getHeight()
+        if isinstance(img, Widget):
+            fullWidth = img.getWidth()
+            fullHeight = img.getHeight()
+            img = img.getElement()
+        else:
+            fullWidth = DOM.getIntAttribute(img, "offsetWidth")
+            fullHeight = DOM.getIntAttribute(img, "offsetHeight")
+        if len(args) == 8:
+            sourceX = args[0]
+            sourceY = args[1]
+            sourceWidth = args[2]
+            sourceHeight = args[3]
+            destX = args[4]
+            destY = args[5]
+            destWidth = args[6]
+            destHeight = args[7]
+        elif len(args) == 4:
+            sourceX = 0
+            sourceY = 0
+            sourceWidth = fullWidth
+            sourceHeight = fullHeight
+            destX = args[0]
+            destY = args[1]
+            destWidth = args[2]
+            destHeight = args[3]
+        elif len(args) == 2:
+            sourceX = 0
+            sourceY = 0
+            sourceWidth = fullWidth
+            sourceHeight = fullHeight
+            destX = args[0]
+            destY = args[1]
+            destWidth = fullWidth
+            destHeight = fullHeight
+    
 
         vmlStr = [] # JSOStack.getScratchArray()
 
