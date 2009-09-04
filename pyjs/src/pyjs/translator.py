@@ -347,7 +347,7 @@ class __Pyjamas__(object):
         if (     isinstance(node.args[0], ast.Const)
              and isinstance(node.args[0].value, str)
            ):
-            translator.debug = False
+            translator.ignore_debug = True
             return node.args[0].value, not re_return.search(node.args[0].value) is None
         else:
             raise TranslationError(
@@ -359,7 +359,7 @@ class __Pyjamas__(object):
             raise TranslationError(
                 "wnd function doesn't support arguments",
                 node.node)
-        translator.debug = False
+        translator.ignore_debug = True
         return '$wnd', False
 
     def doc(self, translator, node):
@@ -367,7 +367,7 @@ class __Pyjamas__(object):
             raise TranslationError(
                 "doc function doesn't support arguments",
                 node.node)
-        translator.debug = False
+        translator.ignore_debug = True
         return '$doc', False
 
     def jsinclude(self, translator, node):
@@ -383,7 +383,7 @@ class __Pyjamas__(object):
             except IOError, e:
                 raise TranslationError(
                     "Cannot include file '%s': %s" % (node.args[0].value, e))
-            translator.debug = False
+            translator.ignore_debug = True
             return data, False
         else:
             raise TranslationError(
@@ -435,7 +435,7 @@ class __Pyjamas__(object):
                     "jsimport location argument must be early, middle or late",
                 node.node)
         translator.add_imported_js(path, mode, location)
-        translator.debug = False
+        translator.ignore_debug = True
         return '', False
 
     def debugger(self, translator, node):
@@ -443,7 +443,7 @@ class __Pyjamas__(object):
             raise TranslationError(
                 "debugger function doesn't support arguments",
                 node.node)
-        translator.debug = False
+        translator.ignore_debug = True
         return 'debugger', False
 
     def setCompilerOptions(self, translator, node):
@@ -467,7 +467,7 @@ class __Pyjamas__(object):
                 raise TranslationError(
                     "setCompilerOptions invalid option '%s'" % option,
                     node.node)
-        translator.debug = False
+        translator.ignore_debug = True
         return '', False
 
 __pyjamas__ = __Pyjamas__()
@@ -595,6 +595,7 @@ class Translator:
         self.findFile = findFile
         # compile options
         self.debug = debug
+        self.ignore_debug = False
         self.print_statements = print_statements
         self.function_argument_checking = function_argument_checking
         self.attribute_checking = attribute_checking
@@ -961,7 +962,7 @@ class Translator:
                 self.track_lines[node.lineno] = self.get_line_trace(node)
 
     def track_call(self, call_code, lineno=None):
-        if self.debug and len(call_code.strip()) > 0:
+        if not self.ignore_debug and self.debug and len(call_code.strip()) > 0:
             dbg = self.uniqid("$pyjs_dbg_")
             mod = self.raw_module_name
             call_code = """\
@@ -1582,6 +1583,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
 
     def _callfunc_code(self, v, current_klass):
 
+        self.ignore_debug = False
         if isinstance(v.node, ast.Name):
             name_type, pyname, jsname, depth, is_local = self.lookup(v.node.name)
             if name_type == '__pyjamas__':
@@ -1694,10 +1696,9 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         return call_code
 
     def _callfunc(self, v, current_klass):
-        self.push_options()
         call_code = self._callfunc_code(v, current_klass)
-        call_code = self.track_call(call_code, v.lineno)
-        self.pop_options()
+        if not self.ignore_debug:
+            call_code = self.track_call(call_code, v.lineno)
         return call_code
 
     def _print(self, node, current_klass):
