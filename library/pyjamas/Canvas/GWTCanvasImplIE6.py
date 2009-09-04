@@ -111,10 +111,9 @@ class GWTCanvasImplIE6:
 
         if isinstance(img, Widget):
             img = img.getElement()
-        fullWidth = DOM.getIntAttribute(img, "offsetWidth")
-        fullHeight = DOM.getIntAttribute(img, "offsetHeight")
+        fullWidth = img.width
+        fullHeight = img.height
 
-        print "drawImage", len(args), args
         if len(args) == 8:
             sourceX = args[0]
             sourceY = args[1]
@@ -143,11 +142,6 @@ class GWTCanvasImplIE6:
             destWidth = fullWidth
             destHeight = fullHeight
     
-        if not fullWidth:
-            fullWidth = sourceWidth
-        if not fullHeight:
-            fullHeight = sourceHeight
-
         vmlStr = [] # JSOStack.getScratchArray()
 
         vmlStr.append("<v:group style=\"position:absolute;width:10;height:10;")
@@ -194,9 +188,9 @@ class GWTCanvasImplIE6:
         vmlStr.append("\" style=\"")
 
         vmlStr.append("width:")
-        vmlStr.append(str(int(destWidth * 100)))
+        vmlStr.append(str(int(destWidth * 10)))
         vmlStr.append(";height:")
-        vmlStr.append(str(int(destHeight * 100)))
+        vmlStr.append(str(int(destHeight * 10)))
         vmlStr.append(";\" cropleft=\"")
         vmlStr.append(str(sourceX / fullWidth))
         vmlStr.append("\" croptop=\"")

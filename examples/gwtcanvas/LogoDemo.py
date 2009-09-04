@@ -114,8 +114,8 @@ class LogoDemo(SimpleCanvasDemo):
         # destination dimensions).
         #log.writebr(str(self.img))
         #log.writebr(DOM.getAttribute("src"))
-        self.canvas.drawImage(self.img, 84, 74, 100, 100, 10, 10, 200, 200)
-        #self.canvas.drawImage(self.img, 84, 74)
+        #self.canvas.drawImage(self.img, 84, 74, 100, 100, 10, 10, 200, 200)
+        self.canvas.drawImage(self.img, 84, 74)
 
         # draw an animated version
         self.canvas.translate(300, 200)
