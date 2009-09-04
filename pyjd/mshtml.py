@@ -73,7 +73,7 @@ class IOleWindow(IUnknown):
 
     _methods_ = [
         COMMETHOD([], HRESULT, 'GetWindow',
-                  ( ['in'], POINTER(HWND), 'pHwnd' ))
+                  ( ['in'], POINTER(c_void_p), 'pHwnd' ))
         ]
 
 class IOleInPlaceActiveObject(IOleWindow):
@@ -275,12 +275,12 @@ class Browser(EventSink):
         wba = self.pBrowser.QueryInterface(IServiceProvider)
         wn = wrap(wba.QueryService(SID_SShellBrowser, IOleWindow))
 
-        hwnd = c_ulong(0)
+        hwnd = c_void_p(0)
         pHnd = byref(hwnd)
         wn.GetWindow(pHnd)
 
         #PostMessage(pHnd.value, WM_SETFOCUS,0,0)
-        SetFocus(pHnd.value)
+        SetFocus(hwnd)
         #print self.hwnd, pHnd.value
 
     def getDomDocument(self):
