@@ -221,8 +221,7 @@ class SuiteDemoControls (Composite):
     
     # colours
     def onClickColours(self, sender):
-        if timer is not None:
-            timer.cancel()
+        self.chart.run = False
         
         self.canvas.saveContext()
         self.canvas.clear()
