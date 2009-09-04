@@ -35,11 +35,6 @@ class JSOStack:
         return [];
         """)
     
-    def getScratchArray(self):
-        self.scratch.clear()
-        return self.scratch
-
-
     def __init__(self):
         self.scratch = self.__new__()
 
@@ -74,11 +69,6 @@ class JSOStack:
         return this._minY;
         """)
 
-
-    def isEmpty(self):
-        JS("""
-        return (this.length == 0);
-        """)
 
 
     def join(self):
@@ -131,13 +121,13 @@ class JSOStack:
     * For backwards compatibility with IE5 and because this is marginally faster
     * than push() in IE6.
     """
-    def push(self,pathStr):
+    def append(self,pathStr):
         JS("""
         this[this.length] = pathStr;
         """)
 
 
-    def size(self):
+    def __len__(self):
         JS("""
         return this.length;
         """)

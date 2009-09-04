@@ -23,7 +23,7 @@ from __pyjamas__ import JS, doc
 
 from pyjamas.canvas.GWTCanvasImplIE6Consts import BUTT, DESTINATION_OVER, SOURCE_OVER
 from pyjamas.canvas import GWTCanvasConsts 
-#from pyjamas.canvas import JSOStack 
+from pyjamas.canvas.JSOStack import JSOStack 
 from pyjamas.canvas import PathElement 
 from pyjamas.canvas.VMLContext import VMLContext
 
@@ -34,6 +34,13 @@ def addNamespace():
         doc().createStyleSheet().cssText = "v\\:*{behavior:url(#default#VML);}";
     }
     """)
+
+"""*
+* Takes in a and returns a floored int.
+* Leverages the fact that bitwise OR intifies the value.
+"""
+def doubleToFlooredInt(val):
+    return val or 0
 
 
 """*
@@ -51,8 +58,7 @@ class GWTCanvasImplIE6:
         * StringBuilder.append() & toString() because of the extra collections
         * overhead.
         """
-        #self.pathStr = JSOStack.JSOStack.create()
-        self.pathStr = [] # buggrit.  use a list.
+        self.pathStr = JSOStack()
 
         """*
         * Stack uses preallocated arrays which makes push() slightly faster than
@@ -71,13 +77,6 @@ class GWTCanvasImplIE6:
         self.parentWidth = 0
 
 
-    """*
-    * Takes in a and returns a floored int.
-    * Leverages the fact that bitwise OR intifies the value.
-    """
-    def doubleToFlooredInt(self, val):
-        return val or 0
-
 
     def arc(self, x, y, radius, startAngle, endAngle, anticlockwise):
         self.pathStr.append(PathElement.arc(x, y, radius, startAngle, endAngle,
@@ -85,13 +84,11 @@ class GWTCanvasImplIE6:
 
 
     def beginPath(self):
-        #self.pathStr.clear()
-        self.pathStr = []
+        self.pathStr.clear()
 
 
     def clear(self, width=0, height=0):
-        #self.pathStr.clear()
-        self.pathStr = []
+        self.pathStr.clear()
         DOM.setInnerHTML(self.parentElement, "")
 
     def closePath(self):
@@ -184,10 +181,10 @@ class GWTCanvasImplIE6:
 
 
     def fill(self):
-        if self.pathStr.isEmpty():
+        if len(self.pathStr) == 0:
             return
 
-        shapeStr = JSOStack.getScratchArray()
+        shapeStr = [] #JSOStack.getScratchArray()
         shapeStr.push("<v:shape style=\"position:absolute;width:10;height:10;\" coordsize=\"100,100\" fillcolor=\"")
         shapeStr.push(self.context.fillStyle)
         shapeStr.push("\" stroked=\"f\" path=\"")
@@ -248,13 +245,13 @@ class GWTCanvasImplIE6:
     def fillRect(self, x, y, w, h):
         w += x
         h += y
-        beginPath()
-        moveTo(x, y)
-        lineTo(x, h)
-        lineTo(w, h)
-        lineTo(w, y)
-        closePath()
-        fill()
+        self.beginPath()
+        self.moveTo(x, y)
+        self.lineTo(x, h)
+        self.lineTo(w, h)
+        self.lineTo(w, y)
+        self.closePath()
+        self.fill()
         self.pathStr.clear()
 
 
@@ -498,7 +495,7 @@ class GWTCanvasImplIE6:
         if self.pathStr.isEmpty():
             return
 
-        shapeStr = JSOStack.getScratchArray()
+        shapeStr = [] #JSOStack.getScratchArray()
         shapeStr.push("<v:shape style=\"position:absolute;width:10;height:10;\" coordsize=\"100,100\" filled=\"f\" strokecolor=\"")
         shapeStr.push(self.context.strokeStyle)
         shapeStr.push("\" strokeweight=\"")
