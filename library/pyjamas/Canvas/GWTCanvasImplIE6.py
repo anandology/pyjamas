@@ -411,8 +411,8 @@ class GWTCanvasImplIE6:
 
 
     def setFillStyle(self, fillStyle):
-        fillStyle = fillStyle.trim()
-        if fillStyle.startsWith("rgba("):
+        fillStyle = fillStyle.strip()
+        if fillStyle.startswith("rgba("):
             end = fillStyle.find(")", 12)
             if end > -1:
                 guts = fillStyle[5:end].split(",")
@@ -432,7 +432,7 @@ class GWTCanvasImplIE6:
 
 
     def setGlobalCompositeOperation(self, gco):
-        gco = gco.trim()
+        gco = gco.strip()
         if gco.lower == GWTCanvasConsts.SOURCE_OVER:
             self.context.globalCompositeOperation = SOURCE_OVER
         elif gco.lower == GWTCanvasConsts.DESTINATION_OVER:
@@ -478,8 +478,8 @@ class GWTCanvasImplIE6:
 
 
     def setStrokeStyle(self, strokeStyle):
-        strokeStyle = strokeStyle.trim()
-        if strokeStyle.startsWith("rgba("):
+        strokeStyle = strokeStyle.strip()
+        if strokeStyle.startswith("rgba("):
             end = strokeStyle.find(")", 12)
             if end > -1:
                 guts = strokeStyle[5:end].split(",")
