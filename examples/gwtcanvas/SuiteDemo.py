@@ -326,7 +326,7 @@ class SuiteDemoControls (Composite):
         for i in range(1, 6):
             self.canvas.saveContext()
             self.canvas.setFillStyle(Color.Color("rgb(%d,%d,255" % \
-                                 ((51 * i), (255 - 51 * i) + ",255)")))
+                                 (51 * i, 255 - 51 * i)))
             for j in range(i * 6):
                 self.canvas.rotate( (math.pi * 2 / (i * 6)))
                 self.canvas.beginPath()
