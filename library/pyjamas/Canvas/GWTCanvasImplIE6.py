@@ -143,6 +143,11 @@ class GWTCanvasImplIE6:
             destWidth = fullWidth
             destHeight = fullHeight
     
+        if not fullWidth:
+            fullWidth = sourceWidth
+        if not fullHeight:
+            fullHeight = sourceHeight
+
         vmlStr = [] # JSOStack.getScratchArray()
 
         vmlStr.append("<v:group style=\"position:absolute;width:10;height:10;")
