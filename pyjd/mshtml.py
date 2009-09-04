@@ -275,8 +275,8 @@ class Browser(EventSink):
         wba = self.pBrowser.QueryInterface(IServiceProvider)
         wn = wrap(wba.QueryService(SID_SShellBrowser, IOleWindow))
 
-        hwnd = 0
-        pHnd = c_void_p(hwnd)
+        hwnd = c_ulong(0)
+        pHnd = byref(hwnd)
         wn.GetWindow(pHnd)
 
         #PostMessage(pHnd.value, WM_SETFOCUS,0,0)
