@@ -23,6 +23,8 @@ from pyjamas import DOM
 
 from pyjamas.canvas.GWTCanvasImplIE6Consts import BUTT, DESTINATION_OVER, SOURCE_OVER
 from pyjamas.canvas import GWTCanvasConsts 
+from pyjamas.canvas import JSOStack 
+from pyjamas.canvas import PathElement 
 
 
 
@@ -75,7 +77,7 @@ class GWTCanvasImplIE6:
 
     def arc(self, x, y, radius, startAngle, endAngle, anticlockwise):
         self.pathStr.push(PathElement.arc(x, y, radius, startAngle, endAngle,
-        anticlockwise, this))
+                                            anticlockwise, self))
 
 
     def beginPath(self):
@@ -103,7 +105,7 @@ class GWTCanvasImplIE6:
 
 
     def cubicCurveTo(self, cp1x, cp1y, cp2x, cp2y, x, y):
-        self.pathStr.push(PathElement.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y, this))
+        self.pathStr.push(PathElement.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y, self))
         self.currentX = x
         self.currentY = y
 
@@ -113,7 +115,7 @@ class GWTCanvasImplIE6:
         fullWidth = img.getWidth()
         fullHeight = img.getHeight()
 
-        JSOStack<String> vmlStr = JSOStack.getScratchArray()
+        vmlStr = JSOStack.getScratchArray()
 
         vmlStr.push("<v:group style=\"position:absolute;width:10;height:10;")
         dX = getCoordX(matrix, destX, destY)
@@ -125,33 +127,33 @@ class GWTCanvasImplIE6:
 
             # We create a padding bounding box to prevent clipping.
             vmlStr.push("padding-right:")
-            vmlStr.push(self.parentWidth + "px;")
+            vmlStr.push(str(self.parentWidth) + "px;")
             vmlStr.push("padding-bottom:")
-            vmlStr.push(self.parentHeight + "px;")
+            vmlStr.push(str(self.parentHeight) + "px;")
             vmlStr.push("filter:progid:DXImageTransform.Microsoft.Matrix(M11='")
-            vmlStr.push("" + self.matrix[0])
+            vmlStr.push("" + str(self.matrix[0]))
             vmlStr.push("',")
             vmlStr.push("M12='")
-            vmlStr.push("" + self.matrix[1])
+            vmlStr.push("" + str(self.matrix[1]))
             vmlStr.push("',")
             vmlStr.push("M21='")
-            vmlStr.push("" + self.matrix[3])
+            vmlStr.push("" + str(self.matrix[3]))
             vmlStr.push("',")
             vmlStr.push("M22='")
-            vmlStr.push("" + self.matrix[4])
+            vmlStr.push("" + str(self.matrix[4]))
             vmlStr.push("',")
             vmlStr.push("Dx='")
-            vmlStr.push("" + math.floor(((dX / 10))))
+            vmlStr.push("" + str(math.floor(((dX / 10)))))
             vmlStr.push("',")
             vmlStr.push("Dy='")
-            vmlStr.push("" + math.floor(((dY / 10))))
+            vmlStr.push("" + str(math.floor(((dY / 10)))))
             vmlStr.push("', SizingMethod='clip');")
 
-         else:
+        else:
             vmlStr.push("left:")
-            vmlStr.push((int) dX / 10 + "px;")
+            vmlStr.push("%dpx;" % int(dX / 10))
             vmlStr.push("top:")
-            vmlStr.push((int) dY / 10 + "px")
+            vmlStr.push("%dpx" % int(dY / 10))
 
 
         vmlStr.push("\" coordsize=\"100,100\" coordorigin=\"0,0\"><v:image src=\"")
@@ -159,28 +161,27 @@ class GWTCanvasImplIE6:
         vmlStr.push("\" style=\"")
 
         vmlStr.push("width:")
-        vmlStr.push(String.valueOf((int) (destWidth * 10)))
+        vmlStr.push(str(int(destWidth * 100)))
         vmlStr.push(";height:")
-        vmlStr.push(String.valueOf((int) (destHeight * 10)))
+        vmlStr.push(str(int(destHeight * 100)))
         vmlStr.push(";\" cropleft=\"")
-        vmlStr.push(String.valueOf(sourceX / fullWidth))
+        vmlStr.push(str(sourceX / fullWidth))
         vmlStr.push("\" croptop=\"")
-        vmlStr.push(String.valueOf(sourceY / fullHeight))
+        vmlStr.push(str(sourceY / fullHeight))
         vmlStr.push("\" cropright=\"")
-        vmlStr.push(String.valueOf((fullWidth - sourceX - sourceWidth) / fullWidth))
+        vmlStr.push(str((fullWidth - sourceX - sourceWidth) / fullWidth))
         vmlStr.push("\" cropbottom=\"")
-        vmlStr.push(String.valueOf((fullHeight - sourceY - sourceHeight)
-        / fullHeight))
+        vmlStr.push(str((fullHeight - sourceY - sourceHeight) / fullHeight))
         vmlStr.push("\"/></v:group>")
 
-        insert("BeforeEnd", vmlStr.join())
+        self.insert("BeforeEnd", vmlStr.join())
 
 
     def fill(self):
         if self.pathStr.isEmpty():
             return
 
-        JSOStack<String> shapeStr = JSOStack.getScratchArray()
+        shapeStr = JSOStack.getScratchArray()
         shapeStr.push("<v:shape style=\"position:absolute;width:10;height:10;\" coordsize=\"100,100\" fillcolor=\"")
         shapeStr.push(self.context.fillStyle)
         shapeStr.push("\" stroked=\"f\" path=\"")
@@ -188,15 +189,16 @@ class GWTCanvasImplIE6:
         shapeStr.push(self.pathStr.join())
 
         shapeStr.push(" e\"><v:fill opacity=\"")
-        shapeStr.push("" + self.context.globalAlpha * self.context.fillAlpha)
+        shapeStr.push(str(self.context.globalAlpha * self.context.fillAlpha))
 
-        if self.context.fillGradient is not None  and  self.context.fillGradient.colorStops.size() > 0:
-            ArrayList<ColorStop> colorStops = self.context.fillGradient.colorStops
+        if (self.context.fillGradient is not None  and  
+                   len(self.context.fillGradient.colorStops) > 0):
+            colorStops = self.context.fillGradient.colorStops
 
             shapeStr.push("\" color=\"")
-            shapeStr.push(colorStops.get(0).color.toString())
+            shapeStr.push(str(colorStops[0].color))
             shapeStr.push("\" color2=\"")
-            shapeStr.push(colorStops.get(colorStops.size() - 1).color.toString())
+            shapeStr.push(str(colorStops[colorStops.size() - 1].color))
             shapeStr.push("\" type=\"")
             shapeStr.push(self.context.fillGradient.type)
 
@@ -213,11 +215,11 @@ class GWTCanvasImplIE6:
 
             # Now add all the color stops
             colors = ""
-            for i in range(1, len(colorStops):
+            for i in range(1, len(colorStops)):
                 cs = colorStops[i]
                 stopPosn = cs.offset * gradLength
                 # /(math.min(((stopPosn / fillLength) * 100), 100))
-                colors += "%d%%" % (100 - (int) (((stopPosn / fillLength) * 100)) )
+                colors += "%d%%" % (100 - int(((stopPosn / fillLength) * 100)))
                 colors += str(cs.color) + ","
                 if stopPosn > fillLength:
                     break
@@ -255,16 +257,16 @@ class GWTCanvasImplIE6:
 
 
     def getCoordX(self, matrix, x, y):
-        int coordX = doubleToFlooredInt(math.floor(10 * (matrix[0] * x + matrix[1]
-        * y + matrix[2]) - 4.5f))
+        coordX = doubleToFlooredInt(math.floor(10 * (matrix[0] * x + matrix[1]
+                                * y + matrix[2]) - 4.5))
         # record current point to derive bounding box of current open path.
         self.pathStr.logCoordX(coordX / 10)
         return coordX
 
 
     def getCoordY(self, matrix, x, y):
-        int coordY = doubleToFlooredInt(math.floor(10 * (matrix[3] * x + matrix[4]
-        * y + matrix[5]) - 4.5f))
+        coordY = doubleToFlooredInt(math.floor(10 * (matrix[3] * x + matrix[4]
+                                        * y + matrix[5]) - 4.5))
         # record current point to derive bounding box of current open path.
         self.pathStr.logCoordY(coordY / 10)
         return coordY
@@ -281,7 +283,7 @@ class GWTCanvasImplIE6:
     def getGlobalCompositeOperation(self):
         if self.context.globalCompositeOperation == DESTINATION_OVER:
             return GWTCanvasConsts.DESTINATION_OVER
-         else:
+        else:
             return GWTCanvasConsts.SOURCE_OVER
 
 
@@ -310,13 +312,13 @@ class GWTCanvasImplIE6:
 
 
     def lineTo(self, x, y):
-        self.pathStr.push(PathElement.lineTo(x, y, this))
+        self.pathStr.push(PathElement.lineTo(x, y, self))
         self.currentX = x
         self.currentY = y
 
 
     def moveTo(self, x, y):
-        self.pathStr.push(PathElement.moveTo(x, y, this))
+        self.pathStr.push(PathElement.moveTo(x, y, self))
         self.currentX = x
         self.currentY = y
 
@@ -326,16 +328,16 @@ class GWTCanvasImplIE6:
         cp1y = (self.currentY + 2.0 / 3.0 * (cpy - self.currentY))
         cp2x = (cp1x + (x - self.currentX) / 3.0)
         cp2y = (cp1y + (y - self.currentY) / 3.0)
-        self.pathStr.push(PathElement.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y, this))
+        self.pathStr.push(PathElement.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y, self))
         self.currentX = x
         self.currentY = y
 
 
     def rect(self, x, y, w, h):
-        self.pathStr.push(PathElement.moveTo(x, y, this))
-        self.pathStr.push(PathElement.lineTo(x + w, y, this))
-        self.pathStr.push(PathElement.lineTo(x + w, y + h, this))
-        self.pathStr.push(PathElement.lineTo(x, y + h, this))
+        self.pathStr.push(PathElement.moveTo(x, y, self))
+        self.pathStr.push(PathElement.lineTo(x + w, y, self))
+        self.pathStr.push(PathElement.lineTo(x + w, y + h, self))
+        self.pathStr.push(PathElement.lineTo(x, y + h, self))
         self.pathStr.push(PathElement.closePath())
         self.currentX = x
         self.currentY = y + h
@@ -399,21 +401,21 @@ class GWTCanvasImplIE6:
 
 
     def setFillStyle(self, gradient):
-        self.context.fillGradient = (CanvasGradientImplIE6) gradient
+        self.context.fillGradient = gradient
 
 
     def setFillStyle(self, fillStyle):
         fillStyle = fillStyle.trim()
         if fillStyle.startsWith("rgba("):
-            int end = fillStyle.find(")", 12)
+            end = fillStyle.find(")", 12)
             if end > -1:
                 guts = fillStyle[5:end].split(",")
                 if len(guts) == 4:
-                    self.context.fillAlpha = Double.parseDouble(guts[3])
+                    self.context.fillAlpha = float(guts[3])
                     self.context.fillStyle = "rgb(" + guts[0] + "," + guts[1] + "," + guts[2] + ")"
 
 
-         else:
+        else:
             self.context.fillAlpha = 1
             self.context.fillStyle = fillStyle
 
@@ -427,7 +429,7 @@ class GWTCanvasImplIE6:
         gco = gco.trim()
         if gco.lower == GWTCanvasConsts.SOURCE_OVER:
             self.context.globalCompositeOperation = SOURCE_OVER
-         elif gco.lower == GWTCanvasConsts.DESTINATION_OVER:
+        elif gco.lower == GWTCanvasConsts.DESTINATION_OVER:
             self.context.globalCompositeOperation = DESTINATION_OVER
 
 
@@ -435,7 +437,7 @@ class GWTCanvasImplIE6:
     def setLineCap(self, lineCap):
         if lineCap.strip().lower == GWTCanvasConsts.BUTT:
             self.context.lineCap = BUTT
-         else:
+        else:
             self.context.lineCap = lineCap
 
 
@@ -472,15 +474,15 @@ class GWTCanvasImplIE6:
     def setStrokeStyle(self, strokeStyle):
         strokeStyle = strokeStyle.trim()
         if strokeStyle.startsWith("rgba("):
-            int end = strokeStyle.find(")", 12)
+            end = strokeStyle.find(")", 12)
             if end > -1:
                 guts = strokeStyle[5:end].split(",")
                 if len(guts) == 4:
-                    self.context.strokeAlpha = Double.parseDouble(guts[3])
+                    self.context.strokeAlpha = float(guts[3])
                     self.context.strokeStyle = "rgb(" + guts[0] + "," + guts[1] + "," + guts[2] + ")"
 
 
-         else:
+        else:
             self.context.strokeAlpha = 1
             self.context.strokeStyle = strokeStyle
 
@@ -490,7 +492,7 @@ class GWTCanvasImplIE6:
         if self.pathStr.isEmpty():
             return
 
-        JSOStack<String> shapeStr = JSOStack.getScratchArray()
+        shapeStr = JSOStack.getScratchArray()
         shapeStr.push("<v:shape style=\"position:absolute;width:10;height:10;\" coordsize=\"100,100\" filled=\"f\" strokecolor=\"")
         shapeStr.push(self.context.strokeStyle)
         shapeStr.push("\" strokeweight=\"")
