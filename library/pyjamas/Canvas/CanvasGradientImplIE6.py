@@ -33,8 +33,8 @@ class CanvasGradientImplIE6:
         self.endRad = 0
         self.dx = x1 - x0
         self.dy = y1 - y0
-        self.length =  math.sqrt((dx * dx) + (dy * dy))
-        self.angle = int(math.atan(dx / dy) * 180 / math.pi) + 180
+        self.length =  math.sqrt((self.dx * self.dx) + (self.dy * self.dy))
+        self.angle = int(math.atan(self.dx / self.dy) * 180 / math.pi) + 180
         
         self.colorStops = []
     
