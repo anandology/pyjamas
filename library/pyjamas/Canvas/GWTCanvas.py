@@ -19,6 +19,7 @@ from pyjamas.Canvas.Color import Color
 from pyjamas.Canvas.LinearGradientImplDefault import LinearGradientImplDefault
 from pyjamas.Canvas.RadialGradientImplDefault import RadialGradientImplDefault
 from pyjamas.Canvas.GWTCanvasImplDefault import GWTCanvasImplDefault
+from pyjamas.Canvas.GWTCanvasImplIE6 import GWTCanvasImplIE6
 
 
 
@@ -55,7 +56,7 @@ class GWTCanvas(Widget):
         * Impl Instance. Compiler should statify all the methods, so we do not end up
         * with duplicate code for each canvas instance.
         """
-        self.impl = GWTCanvasImplDefault()
+        self.impl = self._getCanvasImpl()
         
         self.coordHeight = 0
         self.coordWidth = 0
@@ -65,6 +66,8 @@ class GWTCanvas(Widget):
         self.setPixelHeight(pixelY)
         self.setCoordSize(coordX, coordY)
     
+    def _getCanvasImpl():
+        return GWTCanvasImplDefault()
     
     """*
     * Draws an arc. If the context has a non-empty path, then the method must add

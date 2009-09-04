@@ -23,12 +23,12 @@ import math
 """*
 * Path Constants.
 """
-String ARC = " ar"
-String CLOSE = " x"
-String END = " e"
-String LINETO = " l"
-String MOVETO = " m"
-String CUBIC = " c"
+ARC = " ar"
+CLOSE = " x"
+END = " e"
+LINETO = " l"
+MOVETO = " m"
+CUBIC = " c"
 
 def arc(x, y, radius, startAngle, endAngle, antiClockwise, canvas):
     
@@ -38,7 +38,7 @@ def arc(x, y, radius, startAngle, endAngle, antiClockwise, canvas):
     if not antiClockwise:
         realStartAngle = endAngle
         realEndAngle = startAngle
-     else:
+    else:
         realStartAngle = startAngle
         realEndAngle = endAngle
     
