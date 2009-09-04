@@ -16,9 +16,13 @@
 
 from pyjamas.ui.Widget import Widget
 from pyjamas.Canvas.Color import Color
+
 from pyjamas.Canvas.LinearGradientImplDefault import LinearGradientImplDefault
 from pyjamas.Canvas.RadialGradientImplDefault import RadialGradientImplDefault
 from pyjamas.Canvas.GWTCanvasImplDefault import GWTCanvasImplDefault
+
+from pyjamas.Canvas.LinearGradientImplIE6 import LinearGradientImplIE6
+from pyjamas.Canvas.RadialGradientImplIE6 import RadialGradientImplIE6
 from pyjamas.Canvas.GWTCanvasImplIE6 import GWTCanvasImplIE6
 
 
@@ -56,7 +60,7 @@ class GWTCanvas(Widget):
         * Impl Instance. Compiler should statify all the methods, so we do not end up
         * with duplicate code for each canvas instance.
         """
-        self.impl = self._getCanvasImpl()
+        self.impl = self.getCanvasImpl()
         
         self.coordHeight = 0
         self.coordWidth = 0
@@ -66,7 +70,7 @@ class GWTCanvas(Widget):
         self.setPixelHeight(pixelY)
         self.setCoordSize(coordX, coordY)
     
-    def _getCanvasImpl(self):
+    def getCanvasImpl(self):
         return GWTCanvasImplDefault()
     
     """*
