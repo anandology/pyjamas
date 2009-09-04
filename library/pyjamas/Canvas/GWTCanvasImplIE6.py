@@ -411,7 +411,7 @@ class GWTCanvasImplIE6:
 
 
     def setFillStyle(self, fillStyle):
-        fillStyle = fillStyle.strip()
+        fillStyle = str(fillStyle).strip()
         if fillStyle.startswith("rgba("):
             end = fillStyle.find(")", 12)
             if end > -1:
@@ -478,7 +478,7 @@ class GWTCanvasImplIE6:
 
 
     def setStrokeStyle(self, strokeStyle):
-        strokeStyle = strokeStyle.strip()
+        strokeStyle = str(strokeStyle).strip()
         if strokeStyle.startswith("rgba("):
             end = strokeStyle.find(")", 12)
             if end > -1:
