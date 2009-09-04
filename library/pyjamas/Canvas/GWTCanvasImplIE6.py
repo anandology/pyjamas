@@ -23,8 +23,9 @@ from __pyjamas__ import JS, doc
 
 from pyjamas.canvas.GWTCanvasImplIE6Consts import BUTT, DESTINATION_OVER, SOURCE_OVER
 from pyjamas.canvas import GWTCanvasConsts 
-from pyjamas.canvas import JSOStack 
+#from pyjamas.canvas import JSOStack 
 from pyjamas.canvas import PathElement 
+from pyjamas.canvas.VMLContext import VMLContext
 
 def addNamespace():
     JS("""
@@ -50,7 +51,8 @@ class GWTCanvasImplIE6:
         * StringBuilder.append() & toString() because of the extra collections
         * overhead.
         """
-        self.pathStr = JSOStack.create()
+        #self.pathStr = JSOStack.JSOStack.create()
+        self.pathStr = [] # buggrit.  use a list.
 
         """*
         * Stack uses preallocated arrays which makes push() slightly faster than
@@ -78,7 +80,7 @@ class GWTCanvasImplIE6:
 
 
     def arc(self, x, y, radius, startAngle, endAngle, anticlockwise):
-        self.pathStr.push(PathElement.arc(x, y, radius, startAngle, endAngle,
+        self.pathStr.append(PathElement.arc(x, y, radius, startAngle, endAngle,
                                             anticlockwise, self))
 
 
@@ -91,7 +93,7 @@ class GWTCanvasImplIE6:
         DOM.setInnerHTML(self.parentElement, "")
 
     def closePath(self):
-        self.pathStr.push(PathElement.closePath())
+        self.pathStr.append(PathElement.closePath())
 
 
     def createElement(self):
@@ -107,7 +109,7 @@ class GWTCanvasImplIE6:
 
 
     def cubicCurveTo(self, cp1x, cp1y, cp2x, cp2y, x, y):
-        self.pathStr.push(PathElement.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y, self))
+        self.pathStr.append(PathElement.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y, self))
         self.currentX = x
         self.currentY = y
 
@@ -117,9 +119,9 @@ class GWTCanvasImplIE6:
         fullWidth = img.getWidth()
         fullHeight = img.getHeight()
 
-        vmlStr = JSOStack.getScratchArray()
+        vmlStr = [] # JSOStack.getScratchArray()
 
-        vmlStr.push("<v:group style=\"position:absolute;width:10;height:10;")
+        vmlStr.append("<v:group style=\"position:absolute;width:10;height:10;")
         dX = getCoordX(matrix, destX, destY)
         dY = getCoordY(matrix, destX, destY)
 
@@ -128,53 +130,53 @@ class GWTCanvasImplIE6:
         if self.context.matrix[0] != 1  or  self.context.matrix[1] != 0:
 
             # We create a padding bounding box to prevent clipping.
-            vmlStr.push("padding-right:")
-            vmlStr.push(str(self.parentWidth) + "px;")
-            vmlStr.push("padding-bottom:")
-            vmlStr.push(str(self.parentHeight) + "px;")
-            vmlStr.push("filter:progid:DXImageTransform.Microsoft.Matrix(M11='")
-            vmlStr.push("" + str(self.matrix[0]))
-            vmlStr.push("',")
-            vmlStr.push("M12='")
-            vmlStr.push("" + str(self.matrix[1]))
-            vmlStr.push("',")
-            vmlStr.push("M21='")
-            vmlStr.push("" + str(self.matrix[3]))
-            vmlStr.push("',")
-            vmlStr.push("M22='")
-            vmlStr.push("" + str(self.matrix[4]))
-            vmlStr.push("',")
-            vmlStr.push("Dx='")
-            vmlStr.push("" + str(math.floor(((dX / 10)))))
-            vmlStr.push("',")
-            vmlStr.push("Dy='")
-            vmlStr.push("" + str(math.floor(((dY / 10)))))
-            vmlStr.push("', SizingMethod='clip');")
+            vmlStr.append("padding-right:")
+            vmlStr.append(str(self.parentWidth) + "px;")
+            vmlStr.append("padding-bottom:")
+            vmlStr.append(str(self.parentHeight) + "px;")
+            vmlStr.append("filter:progid:DXImageTransform.Microsoft.Matrix(M11='")
+            vmlStr.append("" + str(self.matrix[0]))
+            vmlStr.append("',")
+            vmlStr.append("M12='")
+            vmlStr.append("" + str(self.matrix[1]))
+            vmlStr.append("',")
+            vmlStr.append("M21='")
+            vmlStr.append("" + str(self.matrix[3]))
+            vmlStr.append("',")
+            vmlStr.append("M22='")
+            vmlStr.append("" + str(self.matrix[4]))
+            vmlStr.append("',")
+            vmlStr.append("Dx='")
+            vmlStr.append("" + str(math.floor(((dX / 10)))))
+            vmlStr.append("',")
+            vmlStr.append("Dy='")
+            vmlStr.append("" + str(math.floor(((dY / 10)))))
+            vmlStr.append("', SizingMethod='clip');")
 
         else:
-            vmlStr.push("left:")
-            vmlStr.push("%dpx;" % int(dX / 10))
-            vmlStr.push("top:")
-            vmlStr.push("%dpx" % int(dY / 10))
+            vmlStr.append("left:")
+            vmlStr.append("%dpx;" % int(dX / 10))
+            vmlStr.append("top:")
+            vmlStr.append("%dpx" % int(dY / 10))
 
 
-        vmlStr.push("\" coordsize=\"100,100\" coordorigin=\"0,0\"><v:image src=\"")
-        vmlStr.push(img.getSrc())
-        vmlStr.push("\" style=\"")
+        vmlStr.append("\" coordsize=\"100,100\" coordorigin=\"0,0\"><v:image src=\"")
+        vmlStr.append(img.getSrc())
+        vmlStr.append("\" style=\"")
 
-        vmlStr.push("width:")
-        vmlStr.push(str(int(destWidth * 100)))
-        vmlStr.push(";height:")
-        vmlStr.push(str(int(destHeight * 100)))
-        vmlStr.push(";\" cropleft=\"")
-        vmlStr.push(str(sourceX / fullWidth))
-        vmlStr.push("\" croptop=\"")
-        vmlStr.push(str(sourceY / fullHeight))
-        vmlStr.push("\" cropright=\"")
-        vmlStr.push(str((fullWidth - sourceX - sourceWidth) / fullWidth))
-        vmlStr.push("\" cropbottom=\"")
-        vmlStr.push(str((fullHeight - sourceY - sourceHeight) / fullHeight))
-        vmlStr.push("\"/></v:group>")
+        vmlStr.append("width:")
+        vmlStr.append(str(int(destWidth * 100)))
+        vmlStr.append(";height:")
+        vmlStr.append(str(int(destHeight * 100)))
+        vmlStr.append(";\" cropleft=\"")
+        vmlStr.append(str(sourceX / fullWidth))
+        vmlStr.append("\" croptop=\"")
+        vmlStr.append(str(sourceY / fullHeight))
+        vmlStr.append("\" cropright=\"")
+        vmlStr.append(str((fullWidth - sourceX - sourceWidth) / fullWidth))
+        vmlStr.append("\" cropbottom=\"")
+        vmlStr.append(str((fullHeight - sourceY - sourceHeight) / fullHeight))
+        vmlStr.append("\"/></v:group>")
 
         self.insert("BeforeEnd", vmlStr.join())
 
@@ -314,13 +316,13 @@ class GWTCanvasImplIE6:
 
 
     def lineTo(self, x, y):
-        self.pathStr.push(PathElement.lineTo(x, y, self))
+        self.pathStr.append(PathElement.lineTo(x, y, self))
         self.currentX = x
         self.currentY = y
 
 
     def moveTo(self, x, y):
-        self.pathStr.push(PathElement.moveTo(x, y, self))
+        self.pathStr.append(PathElement.moveTo(x, y, self))
         self.currentX = x
         self.currentY = y
 
@@ -330,17 +332,17 @@ class GWTCanvasImplIE6:
         cp1y = (self.currentY + 2.0 / 3.0 * (cpy - self.currentY))
         cp2x = (cp1x + (x - self.currentX) / 3.0)
         cp2y = (cp1y + (y - self.currentY) / 3.0)
-        self.pathStr.push(PathElement.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y, self))
+        self.pathStr.append(PathElement.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y, self))
         self.currentX = x
         self.currentY = y
 
 
     def rect(self, x, y, w, h):
-        self.pathStr.push(PathElement.moveTo(x, y, self))
-        self.pathStr.push(PathElement.lineTo(x + w, y, self))
-        self.pathStr.push(PathElement.lineTo(x + w, y + h, self))
-        self.pathStr.push(PathElement.lineTo(x, y + h, self))
-        self.pathStr.push(PathElement.closePath())
+        self.pathStr.append(PathElement.moveTo(x, y, self))
+        self.pathStr.append(PathElement.lineTo(x + w, y, self))
+        self.pathStr.append(PathElement.lineTo(x + w, y + h, self))
+        self.pathStr.append(PathElement.lineTo(x, y + h, self))
+        self.pathStr.append(PathElement.closePath())
         self.currentX = x
         self.currentY = y + h
 
