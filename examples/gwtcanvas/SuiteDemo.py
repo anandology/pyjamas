@@ -26,6 +26,7 @@ from pyjamas.ui.VerticalPanel import VerticalPanel
 from pyjamas.ui.Widget import Widget
 
 from pyjamas.Canvas import Color
+from pyjamas.Canvas import GWTCanvasConsts
 
 import time
 
@@ -104,10 +105,10 @@ class SuiteDemoControls (Composite):
         self.canvas.translate(40, 40)
         self.canvas.setFillStyle(Color.Color("#f00"))
         self.canvas.fillRect(75, 50, 100, 100)
-        self.canvas.setGlobalCompositeOperation(GWTCanvas.DESTINATION_OVER)
+        self.canvas.setGlobalCompositeOperation(GWTCanvasConsts.DESTINATION_OVER)
         self.canvas.setFillStyle(Color.Color("#0f0"))
         self.canvas.fillRect(110, 110, 100, 100)
-        self.canvas.setGlobalCompositeOperation(GWTCanvas.SOURCE_OVER)
+        self.canvas.setGlobalCompositeOperation(GWTCanvasConsts.SOURCE_OVER)
         self.canvas.setFillStyle(Color.Color("#00f"))
         self.canvas.fillRect(40, 85, 100, 100)
         self.canvas.restoreContext()
@@ -367,17 +368,17 @@ class SuiteDemoControls (Composite):
         self.canvas.stroke()
         self.canvas.setStrokeStyle(Color.Color("#9CFF00"))
         self.canvas.setLineWidth(15)
-        self.canvas.setLineCap(GWTCanvas.BUTT)
+        self.canvas.setLineCap(GWTCanvasConsts.BUTT)
         self.canvas.beginPath()
         self.canvas.moveTo(25, 10)
         self.canvas.lineTo(25, 140)
         self.canvas.stroke()
-        self.canvas.setLineCap(GWTCanvas.ROUND)
+        self.canvas.setLineCap(GWTCanvasConsts.ROUND)
         self.canvas.beginPath()
         self.canvas.moveTo(75, 10)
         self.canvas.lineTo(75, 140)
         self.canvas.stroke()
-        self.canvas.setLineCap(GWTCanvas.SQUARE)
+        self.canvas.setLineCap(GWTCanvasConsts.SQUARE)
         self.canvas.beginPath()
         self.canvas.moveTo(125, 10)
         self.canvas.lineTo(125, 140)
@@ -387,7 +388,7 @@ class SuiteDemoControls (Composite):
         self.canvas.translate(170, 0)
         self.canvas.setStrokeStyle(Color.Color("#9CFF00"))
         self.canvas.setLineWidth(10)
-        self.canvas.setLineJoin(GWTCanvas.ROUND)
+        self.canvas.setLineJoin(GWTCanvasConsts.ROUND)
         self.canvas.beginPath()
         self.canvas.moveTo(-5, 5)
         self.canvas.lineTo(35, 45)
@@ -395,7 +396,7 @@ class SuiteDemoControls (Composite):
         self.canvas.lineTo(115, 45)
         self.canvas.lineTo(155, 5)
         self.canvas.stroke()
-        self.canvas.setLineJoin(GWTCanvas.BEVEL)
+        self.canvas.setLineJoin(GWTCanvasConsts.BEVEL)
         self.canvas.beginPath()
         self.canvas.moveTo(-5, 5 + 40)
         self.canvas.lineTo(35, 45 + 40)
@@ -403,7 +404,7 @@ class SuiteDemoControls (Composite):
         self.canvas.lineTo(115, 45 + 40)
         self.canvas.lineTo(155, 5 + 40)
         self.canvas.stroke()
-        self.canvas.setLineJoin(GWTCanvas.MITER)
+        self.canvas.setLineJoin(GWTCanvasConsts.MITER)
         self.canvas.beginPath()
         self.canvas.moveTo(-5, 5 + 80)
         self.canvas.lineTo(35, 45 + 80)
@@ -508,7 +509,7 @@ class SuiteDemo (SimpleCanvasDemo):
     
     def stopDemo(self):
         self.run = False
-        self.canvas.setBackgroundColor(GWTCanvas.TRANSPARENT)
+        self.canvas.setBackgroundColor(GWTCanvasConsts.TRANSPARENT)
     
     def getTimeSeconds(self):
         return time.time() % 60.0
