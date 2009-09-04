@@ -20,54 +20,6 @@ from pyjamas.Canvas.LinearGradientImplDefault import LinearGradientImplDefault
 from pyjamas.Canvas.RadialGradientImplDefault import RadialGradientImplDefault
 from pyjamas.Canvas.GWTCanvasImplDefault import GWTCanvasImplDefault
 
-"""*
-* Use this constant as a parameter for the {@link #setLineJoin(String)}
-* method.
-"""
-BEVEL = "bevel"
-
-"""*
-* Use this constant as a parameter for the {@link #setLineCap(String)}
-* method.
-"""
-BUTT = "butt"
-
-"""*
-* Use this constant as a parameter for the
-* {@link #setGlobalCompositeOperation(String)} method.
-"""
-DESTINATION_OVER = "destination-over"
-
-"""*
-* Use this constant as a parameter for the {@link #setLineJoin(String)}
-* method.
-"""
-MITER = "miter"
-
-"""*
-* Use this constant either as a parameter for the {@link #setLineCap(String)}
-* or the {@link #setLineJoin(String)} method.
-"""
-ROUND = "round"
-
-"""*
-* Use this constant as a parameter for the
-* {@link #setGlobalCompositeOperation(String)} method.
-"""
-SOURCE_OVER = "source-over"
-
-"""*
-* Use this constant as a parameter for the {@link #setLineCap(String)}
-* method.
-"""
-SQUARE = "square"
-
-"""*
-* Use this constant as a parameter for the {@link #setBackgroundColor(Color)}
-* method.
-"""
-TRANSPARENT = Color("")
-
 
 
 """*
