@@ -237,7 +237,7 @@ class GWTCanvasImplIE6:
 
 
         shapeStr.append("\"></v:fill></v:shape>")
-        daStr = shapeStr.join()
+        daStr = ''.join(shapeStr)
         # Window.alert(daStr)
         self.insert(self.context.globalCompositeOperation, daStr)
 
@@ -492,22 +492,22 @@ class GWTCanvasImplIE6:
 
 
     def stroke(self):
-        if self.pathStr.isEmpty():
+        if len(self.pathStr) == 0:
             return
 
         shapeStr = [] #JSOStack.getScratchArray()
         shapeStr.append("<v:shape style=\"position:absolute;width:10;height:10;\" coordsize=\"100,100\" filled=\"f\" strokecolor=\"")
-        shapeStr.append(self.context.strokeStyle)
+        shapeStr.append(str(self.context.strokeStyle))
         shapeStr.append("\" strokeweight=\"")
-        shapeStr.append("" + self.context.lineWidth)
+        shapeStr.append(str(self.context.lineWidth))
         shapeStr.append("px\" path=\"")
 
         shapeStr.append(self.pathStr.join())
 
         shapeStr.append(" e\"><v:stroke opacity=\"")
-        shapeStr.append("" + self.context.globalAlpha * self.context.strokeAlpha)
+        shapeStr.append("" + str(self.context.globalAlpha * self.context.strokeAlpha))
         shapeStr.append("\" miterlimit=\"")
-        shapeStr.append("" + self.context.miterLimit)
+        shapeStr.append(str(self.context.miterLimit))
         shapeStr.append("\" joinstyle=\"")
         shapeStr.append(self.context.lineJoin)
         shapeStr.append("\" endcap=\"")
