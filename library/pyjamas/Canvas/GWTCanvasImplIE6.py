@@ -30,7 +30,7 @@ from pyjamas.canvas import GWTCanvasConsts
 * Deferred binding implementation of GWTCanvas for IE6. It is an implementation
 * of canvas on top of VML.
 """
-class GWTCanvasImplIE6 implements GWTCanvasImpl:
+class GWTCanvasImplIE6:
 
     def __init__(self):
         JS("""
@@ -54,9 +54,9 @@ class GWTCanvasImplIE6 implements GWTCanvasImpl:
         """
         self.contextStack = []
 
-        currentX = 0
+        self.currentX = 0
 
-        currentY = 0
+        self.currentY = 0
 
         self.parentElement = None
 
@@ -104,8 +104,8 @@ class GWTCanvasImplIE6 implements GWTCanvasImpl:
 
     def cubicCurveTo(self, cp1x, cp1y, cp2x, cp2y, x, y):
         self.pathStr.push(PathElement.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y, this))
-        currentX = x
-        currentY = y
+        self.currentX = x
+        self.currentY = y
 
 
     def drawImage(self, img, sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight):
@@ -311,24 +311,24 @@ class GWTCanvasImplIE6 implements GWTCanvasImpl:
 
     def lineTo(self, x, y):
         self.pathStr.push(PathElement.lineTo(x, y, this))
-        currentX = x
-        currentY = y
+        self.currentX = x
+        self.currentY = y
 
 
     def moveTo(self, x, y):
         self.pathStr.push(PathElement.moveTo(x, y, this))
-        currentX = x
-        currentY = y
+        self.currentX = x
+        self.currentY = y
 
 
     def quadraticCurveTo(self, cpx, cpy, x, y):
-        cp1x = (currentX + 2.0 / 3.0 * (cpx - currentX))
-        cp1y = (currentY + 2.0 / 3.0 * (cpy - currentY))
-        cp2x = (cp1x + (x - currentX) / 3.0)
-        cp2y = (cp1y + (y - currentY) / 3.0)
+        cp1x = (self.currentX + 2.0 / 3.0 * (cpx - self.currentX))
+        cp1y = (self.currentY + 2.0 / 3.0 * (cpy - self.currentY))
+        cp2x = (cp1x + (x - self.currentX) / 3.0)
+        cp2y = (cp1y + (y - self.currentY) / 3.0)
         self.pathStr.push(PathElement.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y, this))
-        currentX = x
-        currentY = y
+        self.currentX = x
+        self.currentY = y
 
 
     def rect(self, x, y, w, h):
@@ -337,8 +337,8 @@ class GWTCanvasImplIE6 implements GWTCanvasImpl:
         self.pathStr.push(PathElement.lineTo(x + w, y + h, this))
         self.pathStr.push(PathElement.lineTo(x, y + h, this))
         self.pathStr.push(PathElement.closePath())
-        currentX = x
-        currentY = y + h
+        self.currentX = x
+        self.currentY = y + h
 
 
     def restoreContext(self):
