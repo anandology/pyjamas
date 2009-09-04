@@ -18,7 +18,7 @@ import math
 
 
 
-
+from pyjamas.Canvas.ColorStop import ColorStop
 
 """*
 * Gradients for IE6 implementation need some extra meta info.
