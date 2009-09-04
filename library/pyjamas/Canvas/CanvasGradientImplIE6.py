@@ -40,13 +40,13 @@ class CanvasGradientImplIE6:
     
     def addColorStop(self, offset, color):
         newColorStop = ColorStop(offset, color)
-        for i in range(len(colorStops)):
-            cs = colorStops[i]
+        for i in range(len(self.colorStops)):
+            cs = self.colorStops[i]
             if offset < cs.offset:
                 self.colorStops.add(i, newColorStop)
                 return
             
-        eslf.colorStops.add(newColorStop)
+        self.colorStops.add(newColorStop)
     
     
     """*
