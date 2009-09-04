@@ -85,11 +85,13 @@ class GWTCanvasImplIE6:
 
 
     def beginPath(self):
-        self.pathStr.clear()
+        #self.pathStr.clear()
+        self.pathStr = []
 
 
     def clear(self, width=0, height=0):
-        self.pathStr.clear()
+        #self.pathStr.clear()
+        self.pathStr = []
         DOM.setInnerHTML(self.parentElement, "")
 
     def closePath(self):
@@ -98,7 +100,7 @@ class GWTCanvasImplIE6:
 
     def createElement(self):
         self.context = VMLContext()
-        self.matrix = context.matrix
+        self.matrix = self.context.matrix
         return self.createParentElement()
 
 
@@ -387,12 +389,12 @@ class GWTCanvasImplIE6:
 
 
     def setCoordHeight(self, elem, height):
-        DOM.setElementAttribute(elem, "width", int(height))
+        DOM.setElemAttribute(elem, "width", int(height))
         self.clear(0, 0)
 
 
     def setCoordWidth(self, elem, width):
-        DOM.setElementAttribute(elem, "width", int(width))
+        DOM.setElemAttribute(elem, "width", int(width))
         self.clear(0, 0)
 
 
