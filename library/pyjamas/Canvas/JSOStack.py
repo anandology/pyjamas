@@ -2,7 +2,7 @@
 * Copyright 2008 Google Inc.
 *
 * Licensed under the Apache License, Version 2.0 (the "License"); you may not
-* use this file except in compliance with the License. You may obtain a copy of
+* use self file except in compliance with the License. You may obtain a copy of
 * the License at
 *
 * http:#www.apache.org/licenses/LICENSE-2.0
@@ -17,119 +17,62 @@
 
 
 
-"""*
-* JSO Overlay for an array. Treated as a Stack.
-*
-* @param <T>
-"""
 class JSOStack:
     
-    """
-    * Pre-initialized JSOStack to be used for transient string concatenations
-    * without having to instantiate a object. JavaScript is single threaded
-    * so we don't have to worry about races.
-    """
-    
-    def __new__(self):
-        JS("""
-        return [];
-        """)
-    
     def __init__(self):
-        self.scratch = self.__new__()
-
+        self.clear()
 
     def clear(self):
-        JS("""
-        this.length = 0;
-        this._minX = this._minY = this._maxX = this._maxY = null;
-        """)
-
+        self.scratch = []
+        self._minX = None
+        self._minY = None
+        self._maxX = None
+        self._maxY = None
 
     def getMaxCoordX(self):
-        JS("""
-        return this._maxX;
-        """)
-
+        return self._maxX
 
     def getMaxCoordY(self):
-        JS("""
-        return this._maxY;
-        """)
-
+        return self._maxY
 
     def getMinCoordX(self):
-        JS("""
-        return this._minX;
-        """)
-
+        return self._minX
 
     def getMinCoordY(self):
-        JS("""
-        return this._minY;
-        """)
-
-
+        return self._minY
 
     def join(self):
-        JS("""
-        return this.join("");
-        """)
+        return "".join(self.scratch)
 
-
-    def logCoordX(self,coordX):
-        JS("""
-        if (!this._minX) {
-            this._minX = coordX;
-            this._maxX = coordX;
-        } else {
-            if (this._minX > coordX) {
-                this._minX = coordX;
-            } else {
-                if (this._maxX < coordX) {
-                    this._maxX = coordX;
-                }
-            }
-        }
-        """)
-
+    def logCoordX(self, coordX):
+        if self._minX is None :
+            self._minX = coordX
+            self._maxX = coordX
+        else:
+            if (self._minX > coordX):
+                self._minX = coordX
+            else:
+                if (self._maxX < coordX):
+                    self._maxX = coordX
 
     def logCoordY(self,coordY):
-        JS("""
-        if (!this._minY) {
-            this._minY = coordY;
-            this._maxY = coordY;
-        } else {
-            if (this._minY > coordY) {
-                this._minY = coordY;
-            } else {
-                if (this._maxY < coordY) {
-                    this._maxY = coordY;
-                }
-            }
-        }
-        """)
-
+        if self._minY is None :
+            self._minY = coordY
+            self._maxY = coordY
+        else:
+            if (self._minY > coordY):
+                self._minY = coordY
+            else:
+                if (self._maxY < coordY):
+                    self._maxY = coordY
 
     def pop(self):
-        JS("""
-        return this.pop();
-        """)
+        return self.scratch.pop()
 
-
-    """
-    * For backwards compatibility with IE5 and because this is marginally faster
-    * than push() in IE6.
-    """
-    def append(self,pathStr):
-        JS("""
-        this[this.length] = pathStr;
-        """)
-
+    def append(self, pathStr):
+        self.scratch.append(pathStr)
 
     def __len__(self):
-        JS("""
-        return this.length;
-        """)
+        return len(self.scratch)
 
 

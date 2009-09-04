@@ -30,9 +30,9 @@ from pyjamas.Canvas.VMLContext import VMLContext
 
 def addNamespace():
     JS("""
-    if (!doc().namespaces["v"]) {
-        doc().namespaces.add("v", "urn:schemas-microsoft-com:vml");
-        doc().createStyleSheet().cssText = "v\\:*{behavior:url(#default#VML);}";
+    if (!$doc.namespaces["v"]) {
+        $doc.namespaces.add("v", "urn:schemas-microsoft-com:vml");
+        $doc.createStyleSheet().cssText = "v\\:*{behavior:url(#default#VML);}";
     }
     """)
 
@@ -44,7 +44,12 @@ def addNamespace():
 class GWTCanvasImplIE6:
 
     def __init__(self):
-        addNamespace()
+        try:
+            ns = doc().namespaces.item("v")
+        except:
+            doc().namespaces.add("v", "urn:schemas-microsoft-com:vml")
+            doc().createStyleSheet().cssText = "v\\:*{behavior:url(#default#VML);}"
+        
 
 
         """*
