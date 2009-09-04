@@ -110,12 +110,11 @@ class GWTCanvasImplIE6:
     def drawImage(self, img, *args):
 
         if isinstance(img, Widget):
-            fullWidth = img.getWidth()
-            fullHeight = img.getHeight()
             img = img.getElement()
-        else:
-            fullWidth = DOM.getIntAttribute(img, "offsetWidth")
-            fullHeight = DOM.getIntAttribute(img, "offsetHeight")
+        fullWidth = DOM.getIntAttribute(img, "offsetWidth")
+        fullHeight = DOM.getIntAttribute(img, "offsetHeight")
+
+        print "drawImage", len(args), args
         if len(args) == 8:
             sourceX = args[0]
             sourceY = args[1]
@@ -144,12 +143,11 @@ class GWTCanvasImplIE6:
             destWidth = fullWidth
             destHeight = fullHeight
     
-
         vmlStr = [] # JSOStack.getScratchArray()
 
         vmlStr.append("<v:group style=\"position:absolute;width:10;height:10;")
-        dX = getCoordX(matrix, destX, destY)
-        dY = getCoordY(matrix, destX, destY)
+        dX = self.getCoordX(self.matrix, destX, destY)
+        dY = self.getCoordY(self.matrix, destX, destY)
 
         # If we have a transformation matrix with rotation/scale, we
         # apply a filter
@@ -167,16 +165,16 @@ class GWTCanvasImplIE6:
             vmlStr.append("" + str(self.matrix[1]))
             vmlStr.append("',")
             vmlStr.append("M21='")
-            vmlStr.append("" + str(self.matrix[3]))
+            vmlStr.append(str(self.matrix[3]))
             vmlStr.append("',")
             vmlStr.append("M22='")
-            vmlStr.append("" + str(self.matrix[4]))
+            vmlStr.append(str(self.matrix[4]))
             vmlStr.append("',")
             vmlStr.append("Dx='")
-            vmlStr.append("" + str(math.floor(((dX / 10)))))
+            vmlStr.append(str(math.floor(((dX / 10)))))
             vmlStr.append("',")
             vmlStr.append("Dy='")
-            vmlStr.append("" + str(math.floor(((dY / 10)))))
+            vmlStr.append(str(math.floor(((dY / 10)))))
             vmlStr.append("', SizingMethod='clip');")
 
         else:
@@ -187,7 +185,7 @@ class GWTCanvasImplIE6:
 
 
         vmlStr.append("\" coordsize=\"100,100\" coordorigin=\"0,0\"><v:image src=\"")
-        vmlStr.append(img.getSrc())
+        vmlStr.append(DOM.getAttribute(img, "src"))
         vmlStr.append("\" style=\"")
 
         vmlStr.append("width:")
