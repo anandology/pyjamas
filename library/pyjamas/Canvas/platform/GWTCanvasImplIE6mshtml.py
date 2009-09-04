@@ -15,7 +15,8 @@
 """
 
 def addNamespace():
-    if not doc().namespaces.has_key("v"):
+    print doc().namespaces.item("v")
+    if not doc().namespaces.item("v"):
         doc().namespaces.add("v", "urn:schemas-microsoft-com:vml")
         doc().createStyleSheet().cssText = "v\\:*{behavior:url(#default#VML);}"
     
