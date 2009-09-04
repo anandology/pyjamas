@@ -520,9 +520,9 @@ def cmp(a,b):
     } else if ((typeof b == 'object' || typeof b == 'function') && typeof b.__cmp__ == 'function') {
         return -b.__cmp__(a);
     }
+    if (a == b) return 0;
     if (a > b) return 1;
-    if (b > a) return -1;
-    return 0;
+    return -1;
     """)
 
 # for List.sort()

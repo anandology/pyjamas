@@ -203,9 +203,7 @@ class ListTest(UnitTest):
         b2 = B()
         l1 = [b1, b2]
         l2 = [b2, b1]
-        self.assertFalse(l1==l2,
-                         'TODO: List comparison with plain objects not implemented')
-
+        self.assertFalse(l1==l2, 'TODO: cmp() plain objects fails')
 
     def testCmpListTuple(self):
         t1 = (1,2,3)
