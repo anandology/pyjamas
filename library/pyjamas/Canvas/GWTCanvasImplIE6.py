@@ -177,7 +177,7 @@ class GWTCanvasImplIE6:
         vmlStr.append(str((fullHeight - sourceY - sourceHeight) / fullHeight))
         vmlStr.append("\"/></v:group>")
 
-        self.insert("BeforeEnd", vmlStr.join())
+        self.insert("BeforeEnd", ''.join(vmlStr))
 
 
     def fill(self):
@@ -505,7 +505,7 @@ class GWTCanvasImplIE6:
         shapeStr.append(self.pathStr.join())
 
         shapeStr.append(" e\"><v:stroke opacity=\"")
-        shapeStr.append("" + str(self.context.globalAlpha * self.context.strokeAlpha))
+        shapeStr.append(str(self.context.globalAlpha * self.context.strokeAlpha))
         shapeStr.append("\" miterlimit=\"")
         shapeStr.append(str(self.context.miterLimit))
         shapeStr.append("\" joinstyle=\"")
@@ -514,7 +514,7 @@ class GWTCanvasImplIE6:
         shapeStr.append(self.context.lineCap)
 
         shapeStr.append("\"></v:stroke></v:shape>")
-        self.insert(self.context.globalCompositeOperation, shapeStr.join())
+        self.insert(self.context.globalCompositeOperation, ''.join(shapeStr))
 
 
     def strokeRect(self, x, y, w, h):
