@@ -185,25 +185,25 @@ class GWTCanvasImplIE6:
             return
 
         shapeStr = [] #JSOStack.getScratchArray()
-        shapeStr.push("<v:shape style=\"position:absolute;width:10;height:10;\" coordsize=\"100,100\" fillcolor=\"")
-        shapeStr.push(self.context.fillStyle)
-        shapeStr.push("\" stroked=\"f\" path=\"")
+        shapeStr.append("<v:shape style=\"position:absolute;width:10;height:10;\" coordsize=\"100,100\" fillcolor=\"")
+        shapeStr.append(self.context.fillStyle)
+        shapeStr.append("\" stroked=\"f\" path=\"")
 
-        shapeStr.push(self.pathStr.join())
+        shapeStr.append(self.pathStr.join())
 
-        shapeStr.push(" e\"><v:fill opacity=\"")
-        shapeStr.push(str(self.context.globalAlpha * self.context.fillAlpha))
+        shapeStr.append(" e\"><v:fill opacity=\"")
+        shapeStr.append(str(self.context.globalAlpha * self.context.fillAlpha))
 
         if (self.context.fillGradient is not None  and  
                    len(self.context.fillGradient.colorStops) > 0):
             colorStops = self.context.fillGradient.colorStops
 
-            shapeStr.push("\" color=\"")
-            shapeStr.push(str(colorStops[0].color))
-            shapeStr.push("\" color2=\"")
-            shapeStr.push(str(colorStops[colorStops.size() - 1].color))
-            shapeStr.push("\" type=\"")
-            shapeStr.push(self.context.fillGradient.type)
+            shapeStr.append("\" color=\"")
+            shapeStr.append(str(colorStops[0].color))
+            shapeStr.append("\" color2=\"")
+            shapeStr.append(str(colorStops[colorStops.size() - 1].color))
+            shapeStr.append("\" type=\"")
+            shapeStr.append(self.context.fillGradient.type)
 
             minX = self.pathStr.getMinCoordX()
             maxX = self.pathStr.getMaxCoordX()
@@ -228,15 +228,15 @@ class GWTCanvasImplIE6:
                     break
 
 
-            shapeStr.push("\" colors=\"")
-            # shapeStr.push(colors)
-            shapeStr.push("50% white,51% #0f0,100% #fff,")
-            shapeStr.push("\" angle=\"")
-            #shapeStr.push(str(self.context.fillGradient.angle))
-            shapeStr.push("180" + "")
+            shapeStr.append("\" colors=\"")
+            # shapeStr.append(colors)
+            shapeStr.append("50% white,51% #0f0,100% #fff,")
+            shapeStr.append("\" angle=\"")
+            #shapeStr.append(str(self.context.fillGradient.angle))
+            shapeStr.append("180" + "")
 
 
-        shapeStr.push("\"></v:fill></v:shape>")
+        shapeStr.append("\"></v:fill></v:shape>")
         daStr = shapeStr.join()
         # Window.alert(daStr)
         self.insert(self.context.globalCompositeOperation, daStr)
@@ -496,37 +496,37 @@ class GWTCanvasImplIE6:
             return
 
         shapeStr = [] #JSOStack.getScratchArray()
-        shapeStr.push("<v:shape style=\"position:absolute;width:10;height:10;\" coordsize=\"100,100\" filled=\"f\" strokecolor=\"")
-        shapeStr.push(self.context.strokeStyle)
-        shapeStr.push("\" strokeweight=\"")
-        shapeStr.push("" + self.context.lineWidth)
-        shapeStr.push("px\" path=\"")
+        shapeStr.append("<v:shape style=\"position:absolute;width:10;height:10;\" coordsize=\"100,100\" filled=\"f\" strokecolor=\"")
+        shapeStr.append(self.context.strokeStyle)
+        shapeStr.append("\" strokeweight=\"")
+        shapeStr.append("" + self.context.lineWidth)
+        shapeStr.append("px\" path=\"")
 
-        shapeStr.push(self.pathStr.join())
+        shapeStr.append(self.pathStr.join())
 
-        shapeStr.push(" e\"><v:stroke opacity=\"")
-        shapeStr.push("" + self.context.globalAlpha * self.context.strokeAlpha)
-        shapeStr.push("\" miterlimit=\"")
-        shapeStr.push("" + self.context.miterLimit)
-        shapeStr.push("\" joinstyle=\"")
-        shapeStr.push(self.context.lineJoin)
-        shapeStr.push("\" endcap=\"")
-        shapeStr.push(self.context.lineCap)
+        shapeStr.append(" e\"><v:stroke opacity=\"")
+        shapeStr.append("" + self.context.globalAlpha * self.context.strokeAlpha)
+        shapeStr.append("\" miterlimit=\"")
+        shapeStr.append("" + self.context.miterLimit)
+        shapeStr.append("\" joinstyle=\"")
+        shapeStr.append(self.context.lineJoin)
+        shapeStr.append("\" endcap=\"")
+        shapeStr.append(self.context.lineCap)
 
-        shapeStr.push("\"></v:stroke></v:shape>")
+        shapeStr.append("\"></v:stroke></v:shape>")
         self.insert(self.context.globalCompositeOperation, shapeStr.join())
 
 
     def strokeRect(self, x, y, w, h):
         w += x
         h += y
-        beginPath()
-        moveTo(x, y)
-        lineTo(x, h)
-        lineTo(w, h)
-        lineTo(w, y)
-        closePath()
-        stroke()
+        self.beginPath()
+        self.moveTo(x, y)
+        self.lineTo(x, h)
+        self.lineTo(w, h)
+        self.lineTo(w, y)
+        self.closePath()
+        self.stroke()
         self.pathStr.clear()
 
 

@@ -42,7 +42,7 @@ class JSOStack:
         return self._minY
 
     def join(self):
-        return self.scratch.join("")
+        return "".join(self.scratch)
 
     def logCoordX(self, coordX):
         if self._minX is None :
