@@ -636,6 +636,8 @@ class SuiteDemo (SimpleCanvasDemo):
         x1 = r0 - o
         y1 = 0
         i = 1
+        x2 = None
+        y2 = None
         self.canvas.beginPath()
         self.canvas.moveTo(x1, y1)
         while x2 != r0 - o  and  y2 != 0  and  i < p:
