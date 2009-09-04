@@ -46,7 +46,7 @@ class CanvasGradientImplIE6:
                 self.colorStops.append(i, newColorStop)
                 return
             
-        self.colorStops.add(newColorStop)
+        self.colorStops.append(newColorStop)
     
     
     """*
