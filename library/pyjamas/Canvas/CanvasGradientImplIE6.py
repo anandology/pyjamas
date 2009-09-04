@@ -43,7 +43,7 @@ class CanvasGradientImplIE6:
         for i in range(len(self.colorStops)):
             cs = self.colorStops[i]
             if offset < cs.offset:
-                self.colorStops.add(i, newColorStop)
+                self.colorStops.append(i, newColorStop)
                 return
             
         self.colorStops.add(newColorStop)
