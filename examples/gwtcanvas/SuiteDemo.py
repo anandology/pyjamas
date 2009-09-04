@@ -16,7 +16,7 @@
 
 import math
 
-from pyjamas import Timer
+from pyjamas.Timer import Timer
 from pyjamas.ui.Button import Button
 from pyjamas.ui.Composite import Composite
 from pyjamas.ui import HasAlignment
@@ -325,7 +325,7 @@ class SuiteDemoControls (Composite):
         self.canvas.scale(1.6, 1.6)
         for i in range(1, 6):
             self.canvas.saveContext()
-            self.canvas.setFillStyle(Color.Color("rgb(%d,%d,255" % \
+            self.canvas.setFillStyle(Color.Color("rgb(%d,%d,255)" % \
                                  (51 * i, 255 - 51 * i)))
             for j in range(i * 6):
                 self.canvas.rotate( (math.pi * 2 / (i * 6)))
@@ -456,8 +456,8 @@ class SuiteDemoControls (Composite):
         self.canvas.setFillStyle(Color.Color("rgb(255,51,0)"))
         self.canvas.fillRect(0, 112.5, 150, 37.5)
         for i in range(10):
-            self.canvas.setFillStyle(Color.Color("rgba(255,255,255,"
-            + ((i + 1) / 10.0) + ")"))
+            self.canvas.setFillStyle(Color.Color("rgba(255,255,255,%d)" %
+                                                ((i + 1) / 10.0)))
             for j in range(4):
                 self.canvas.fillRect(5 + i * 14.0, 5 + j * 37.5, 14, 27.5)
             
@@ -577,8 +577,8 @@ class SuiteDemo (SimpleCanvasDemo):
         self.canvas.restoreContext()
         
         sec = self.getTimeSeconds()
-        min = self.getTimeMinutes() + secs / 60.0
-        hr = self.getTimeHours() + mins / 60.0
+        min = self.getTimeMinutes() + sec / 60.0
+        hr = self.getTimeHours() + min / 60.0
 
         self.canvas.setFillStyle(Color.BLACK)
         
