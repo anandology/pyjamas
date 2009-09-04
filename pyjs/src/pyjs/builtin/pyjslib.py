@@ -917,6 +917,25 @@ class Dict:
         """)
 
     @compiler.noSourceTracking
+    def __cmp__(self, d):
+        if not isinstance(d, Dict):
+            raise TypeError("dict.__cmp__(x,y) requires y to be a 'dict'")
+        self_keys = self.keys()
+        d_keys = d.keys()
+        if JS("""self_keys.l.length < d_keys.l.length"""):
+            return -1
+        if JS("""self_keys.l.length > d_keys.l.length"""):
+            return 1
+        idx = 0
+        while idx < JS("self_keys.l.length"):
+            k = JS("self_keys.l[idx]")
+            c = cmp(self[k], d[k])
+            if c != 0:
+                return c
+            idx += 1
+        return 0
+
+    @compiler.noSourceTracking
     def __len__(self):
         JS("""
         var size=0;

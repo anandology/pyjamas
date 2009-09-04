@@ -120,3 +120,13 @@ class DictTest(UnitTest):
         except KeyError, e:
             self.assertEqual(e[0], "popitem(): dictionary is empty")
 
+    def testCmp(self):
+        self.assertEqual(cmp({}, {}), 0)
+        self.assertEqual(cmp({},{'1':1}), -1)
+        self.assertEqual(cmp({'1':1}, {'1':1}), 0)
+        self.assertEqual(cmp({'1':1}, {'1':2}), -1)
+        self.assertEqual(cmp({'1':1}, {'1':0}), 1)
+        self.assertEqual(cmp({'1':1, '2':2}, {'1':0}), 1)
+        self.assertEqual(cmp({'1':1, '2':2}, {'1':2}), 1)
+        self.assertEqual(cmp({'1':1, '2':2}, {'2':2, '1':1}), 0)
+

@@ -584,7 +584,10 @@ class ArgsTest(UnitTest):
         # This fails...
         values = varargs_kwargs2(1, {'a':1})
         self.assertEquals(values[0], 1)
-        self.assertEquals(values[1], {'a':1})
+        try:
+            self.assertEquals(values[1], {'a':1})
+        except TypeError, e:
+            self.fail("Last arg in *args,**kwargs is dict problem")
 
     def testKwArgsInherit(self):
 
