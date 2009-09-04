@@ -18,7 +18,6 @@ import math
 
 from pyjamas import Timer
 from pyjamas.ui.Button import Button
-from pyjamas.ui.ClickListener import ClickListener
 from pyjamas.ui.Composite import Composite
 from pyjamas.ui import HasAlignment
 from pyjamas.ui.HorizontalPanel import HorizontalPanel
@@ -26,7 +25,7 @@ from pyjamas.ui.Label import Label
 from pyjamas.ui.VerticalPanel import VerticalPanel
 from pyjamas.ui.Widget import Widget
 
-from pyjamas.Canvas.Color import Color
+from pyjamas.Canvas import Color
 
 import time
 
@@ -103,13 +102,13 @@ class SuiteDemoControls (Composite):
         self.canvas.saveContext()
         self.canvas.clear()
         self.canvas.translate(40, 40)
-        self.canvas.setFillStyle(Color("#f00"))
+        self.canvas.setFillStyle(Color.Color("#f00"))
         self.canvas.fillRect(75, 50, 100, 100)
         self.canvas.setGlobalCompositeOperation(GWTCanvas.DESTINATION_OVER)
-        self.canvas.setFillStyle(Color("#0f0"))
+        self.canvas.setFillStyle(Color.Color("#0f0"))
         self.canvas.fillRect(110, 110, 100, 100)
         self.canvas.setGlobalCompositeOperation(GWTCanvas.SOURCE_OVER)
-        self.canvas.setFillStyle(Color("#00f"))
+        self.canvas.setFillStyle(Color.Color("#00f"))
         self.canvas.fillRect(40, 85, 100, 100)
         self.canvas.restoreContext()
     
@@ -120,8 +119,8 @@ class SuiteDemoControls (Composite):
         self.canvas.saveContext()
         self.canvas.clear()
         self.canvas.translate(30, 30)
-        self.canvas.setFillStyle(Color("#fff"))
-        self.canvas.setStrokeStyle(Color("#fff"))
+        self.canvas.setFillStyle(Color.Color("#fff"))
+        self.canvas.setStrokeStyle(Color.Color("#fff"))
         self.canvas.beginPath()
         self.canvas.moveTo(25, 25)
         self.canvas.lineTo(105, 25)
@@ -154,8 +153,8 @@ class SuiteDemoControls (Composite):
         self.canvas.saveContext()
         self.canvas.clear()
         self.canvas.translate(30, 70)
-        self.canvas.setFillStyle(Color("#f0f"))
-        self.canvas.setStrokeStyle(Color("#0ff"))
+        self.canvas.setFillStyle(Color.Color("#f0f"))
+        self.canvas.setStrokeStyle(Color.Color("#0ff"))
         self.canvas.setLineWidth(2)
         for i in range(4):
             for j in range(3):
@@ -175,7 +174,7 @@ class SuiteDemoControls (Composite):
             
         
         self.canvas.translate(160, 20)
-        self.canvas.setStrokeStyle(Color("#ff0"))
+        self.canvas.setStrokeStyle(Color.Color("#ff0"))
         self.canvas.setLineWidth(4)
         self.canvas.beginPath()
         self.canvas.arc(75, 75, 50, 0,  (math.pi * 2), True)
@@ -195,8 +194,8 @@ class SuiteDemoControls (Composite):
         self.canvas.saveContext()
         self.canvas.clear()
         self.canvas.translate(30, 70)
-        self.canvas.setFillStyle(Color("#f00"))
-        self.canvas.setStrokeStyle(Color("#0f0"))
+        self.canvas.setFillStyle(Color.Color("#f00"))
+        self.canvas.setStrokeStyle(Color.Color("#0f0"))
         self.canvas.setLineWidth(2)
         self.canvas.beginPath()
         self.canvas.moveTo(75, 25)
@@ -227,11 +226,11 @@ class SuiteDemoControls (Composite):
         self.canvas.saveContext()
         self.canvas.clear()
         self.canvas.translate(20, 20)
-        self.canvas.setFillStyle(Color(255, 165, 0))
-        self.canvas.setStrokeStyle(Color("#FFA500"))
+        self.canvas.setFillStyle(Color.Color(255, 165, 0))
+        self.canvas.setStrokeStyle(Color.Color("#FFA500"))
         for i in range(6):
             for j in range(6):
-                self.canvas.setFillStyle(Color(int (math.floor(255 - 42.5 * i)),
+                self.canvas.setFillStyle(Color.Color(int (math.floor(255 - 42.5 * i)),
                 int(math.floor(255 - 42.5 * j), 0)))
                 self.canvas.fillRect(j * 25, i * 25, 25, 25)
             
@@ -239,7 +238,7 @@ class SuiteDemoControls (Composite):
         self.canvas.translate(160, 160)
         for i in range(6):
             for j in range(6):
-                self.canvas.setStrokeStyle(Color(0,
+                self.canvas.setStrokeStyle(Color.Color(0,
                 int( math.floor(255 - 42.5 * i)),
                 int( math.floor(255 - 42.5 * j))))
                 self.canvas.beginPath()
@@ -254,7 +253,7 @@ class SuiteDemoControls (Composite):
     def onClickTranslate(self, sender):
         self.chart.run = False
         
-        color = [ Color("#fc0"), Color("#0cf"), Color("#cf0") ]
+        color = [ Color.Color("#fc0"), Color.Color("#0cf"), Color.Color("#cf0") ]
         self.canvas.saveContext()
         self.canvas.clear()
         self.canvas.translate(25, 25)
@@ -277,7 +276,7 @@ class SuiteDemoControls (Composite):
         self.canvas.saveContext()
         self.canvas.clear()
         self.canvas.translate(25, 25)
-        self.canvas.setStrokeStyle(Color("#fc0"))
+        self.canvas.setStrokeStyle(Color.Color("#fc0"))
         self.canvas.setLineWidth(1.5)
         self.canvas.saveContext()
         self.canvas.translate(50, 50)
@@ -289,7 +288,7 @@ class SuiteDemoControls (Composite):
         self.canvas.scale(0.75, 0.75)
         drawSpirograph(2000, 22, 6, 5)
         self.canvas.restoreContext()
-        self.canvas.setStrokeStyle(Color("#0cf"))
+        self.canvas.setStrokeStyle(Color.Color("#0cf"))
         self.canvas.saveContext()
         self.canvas.translate(50, 150)
         self.canvas.scale(1, 0.75)
@@ -301,7 +300,7 @@ class SuiteDemoControls (Composite):
         self.canvas.scale(1, 0.75)
         drawSpirograph(2000, 22, 6, 5)
         self.canvas.restoreContext()
-        self.canvas.setStrokeStyle(Color("#cf0"))
+        self.canvas.setStrokeStyle(Color.Color("#cf0"))
         self.canvas.saveContext()
         self.canvas.translate(50, 250)
         self.canvas.scale(0.75, 1)
@@ -325,7 +324,7 @@ class SuiteDemoControls (Composite):
         self.canvas.scale(1.6, 1.6)
         for i in range(1, 6):
             self.canvas.saveContext()
-            self.canvas.setFillStyle(Color("rgb(" + (51 * i) + ","
+            self.canvas.setFillStyle(Color.Color("rgb(" + (51 * i) + ","
             + (255 - 51 * i) + ",255)"))
             for j in range(i * 6):
                 self.canvas.rotate( (math.pi * 2 / (i * 6)))
@@ -347,7 +346,7 @@ class SuiteDemoControls (Composite):
         self.canvas.scale(0.9, 0.9)
         self.canvas.translate(30, 40)
         self.canvas.saveContext()
-        self.canvas.setStrokeStyle(Color("#9CFF00"))
+        self.canvas.setStrokeStyle(Color.Color("#9CFF00"))
         for i in range(10):
             self.canvas.setLineWidth(1 + i)
             self.canvas.beginPath()
@@ -358,7 +357,7 @@ class SuiteDemoControls (Composite):
         self.canvas.restoreContext()
         self.canvas.saveContext()
         self.canvas.translate(0, 170)
-        self.canvas.setStrokeStyle(Color("#09f"))
+        self.canvas.setStrokeStyle(Color.Color("#09f"))
         self.canvas.setLineWidth(2)
         self.canvas.beginPath()
         self.canvas.moveTo(10, 10)
@@ -366,7 +365,7 @@ class SuiteDemoControls (Composite):
         self.canvas.moveTo(10, 140)
         self.canvas.lineTo(140, 140)
         self.canvas.stroke()
-        self.canvas.setStrokeStyle(Color("#9CFF00"))
+        self.canvas.setStrokeStyle(Color.Color("#9CFF00"))
         self.canvas.setLineWidth(15)
         self.canvas.setLineCap(GWTCanvas.BUTT)
         self.canvas.beginPath()
@@ -386,7 +385,7 @@ class SuiteDemoControls (Composite):
         self.canvas.restoreContext()
         self.canvas.saveContext()
         self.canvas.translate(170, 0)
-        self.canvas.setStrokeStyle(Color("#9CFF00"))
+        self.canvas.setStrokeStyle(Color.Color("#9CFF00"))
         self.canvas.setLineWidth(10)
         self.canvas.setLineJoin(GWTCanvas.ROUND)
         self.canvas.beginPath()
@@ -415,10 +414,10 @@ class SuiteDemoControls (Composite):
         self.canvas.restoreContext()
         self.canvas.saveContext()
         self.canvas.translate(170, 170)
-        self.canvas.setStrokeStyle(Color("#09f"))
+        self.canvas.setStrokeStyle(Color.Color("#09f"))
         self.canvas.setLineWidth(2)
         self.canvas.strokeRect(-5, 50, 160, 50)
-        self.canvas.setStrokeStyle(Color("#9CFF00"))
+        self.canvas.setStrokeStyle(Color.Color("#9CFF00"))
         self.canvas.setLineWidth(10)
         self.canvas.setMiterLimit(10)
         self.canvas.beginPath()
@@ -447,16 +446,16 @@ class SuiteDemoControls (Composite):
         self.canvas.saveContext()
         self.canvas.clear()
         self.canvas.translate(20, 180)
-        self.canvas.setFillStyle(Color("rgb(255,221,0)"))
+        self.canvas.setFillStyle(Color.Color("rgb(255,221,0)"))
         self.canvas.fillRect(0, 0, 150, 37.5)
-        self.canvas.setFillStyle(Color("rgb(102,204,0)"))
+        self.canvas.setFillStyle(Color.Color("rgb(102,204,0)"))
         self.canvas.fillRect(0, 37.5, 150, 37.5)
-        self.canvas.setFillStyle(Color("rgb(0,153,255)"))
+        self.canvas.setFillStyle(Color.Color("rgb(0,153,255)"))
         self.canvas.fillRect(0, 75, 150, 37.5)
-        self.canvas.setFillStyle(Color("rgb(255,51,0)"))
+        self.canvas.setFillStyle(Color.Color("rgb(255,51,0)"))
         self.canvas.fillRect(0, 112.5, 150, 37.5)
         for i in range(10):
-            self.canvas.setFillStyle(Color("rgba(255,255,255,"
+            self.canvas.setFillStyle(Color.Color("rgba(255,255,255,"
             + ((i + 1) / 10.0) + ")"))
             for j in range(4):
                 self.canvas.fillRect(5 + i * 14.0, 5 + j * 37.5, 14, 27.5)
@@ -466,15 +465,15 @@ class SuiteDemoControls (Composite):
         self.canvas.saveContext()
         self.canvas.translate(180, 20)
         self.canvas.setGlobalAlpha(1.0)
-        self.canvas.setFillStyle(Color("#FD0"))
+        self.canvas.setFillStyle(Color.Color("#FD0"))
         self.canvas.fillRect(0, 0, 75, 75)
-        self.canvas.setFillStyle(Color("#6C0"))
+        self.canvas.setFillStyle(Color.Color("#6C0"))
         self.canvas.fillRect(75, 0, 75, 75)
-        self.canvas.setFillStyle(Color("#09F"))
+        self.canvas.setFillStyle(Color.Color("#09F"))
         self.canvas.fillRect(0, 75, 75, 75)
-        self.canvas.setFillStyle(Color("#F30"))
+        self.canvas.setFillStyle(Color.Color("#F30"))
         self.canvas.fillRect(75, 75, 75, 75)
-        self.canvas.setFillStyle(Color("#FFF"))
+        self.canvas.setFillStyle(Color.Color("#FFF"))
         self.canvas.setGlobalAlpha(0.2)
         for i in range(7):
             self.canvas.beginPath()
@@ -538,8 +537,8 @@ class SuiteDemo (SimpleCanvasDemo):
         self.canvas.saveContext()
         self.canvas.beginPath()
         self.canvas.setLineWidth(7)
-        self.canvas.setStrokeStyle(Color("#325FA2"))
-        self.canvas.setFillStyle(Color("#fff"))
+        self.canvas.setStrokeStyle(Color.Color("#325FA2"))
+        self.canvas.setFillStyle(Color.Color("#fff"))
         self.canvas.arc(0, 0, 142, 0,  (math.pi * 2), True)
         self.canvas.fill()
         self.canvas.arc(0, 0, 142, 0,  (math.pi * 2), True)
@@ -606,8 +605,8 @@ class SuiteDemo (SimpleCanvasDemo):
         # Write seconds
         self.canvas.saveContext()
         self.canvas.rotate( (sec * math.pi / 30))
-        self.canvas.setStrokeStyle(Color("#D40000"))
-        self.canvas.setFillStyle(Color("#D40000"))
+        self.canvas.setStrokeStyle(Color.Color("#D40000"))
+        self.canvas.setFillStyle(Color.Color("#D40000"))
         self.canvas.setLineWidth(3)
         self.canvas.beginPath()
         self.canvas.moveTo(-30, 0)
@@ -624,7 +623,7 @@ class SuiteDemo (SimpleCanvasDemo):
         self.canvas.arc(95, 0, 10, 0,  (math.pi * 2), True)
         self.canvas.stroke()
         self.canvas.beginPath()
-        self.canvas.setFillStyle(Color("#555"))
+        self.canvas.setFillStyle(Color.Color("#555"))
         self.canvas.arc(0, 0, 3, 0,  (math.pi * 2), True)
         self.canvas.fill()
         self.canvas.restoreContext()
