@@ -231,7 +231,8 @@ class SuiteDemoControls (Composite):
         for i in range(6):
             for j in range(6):
                 self.canvas.setFillStyle(Color.Color(int (math.floor(255 - 42.5 * i)),
-                int(math.floor(255 - 42.5 * j), 0)))
+                                                     int(math.floor(255 - 42.5 * j)),
+                                                     0))
                 self.canvas.fillRect(j * 25, i * 25, 25, 25)
             
         
@@ -243,7 +244,7 @@ class SuiteDemoControls (Composite):
                 int( math.floor(255 - 42.5 * j))))
                 self.canvas.beginPath()
                 self.canvas.arc(12.5 + j * 25, 12.5 + i * 25, 10, 0,
-                 (math.pi * 2), True)
+                                     (math.pi * 2), True)
                 self.canvas.stroke()
             
         
@@ -262,7 +263,7 @@ class SuiteDemoControls (Composite):
                 self.canvas.setStrokeStyle(color[j])
                 self.canvas.saveContext()
                 self.canvas.translate(50 + j * 100, 50 + i * 100)
-                drawSpirograph(2000, 20.0 * (j + 2) / (j + 1), -8.0 * (i + 3)
+                self.drawSpirograph(2000, 20.0 * (j + 2) / (j + 1), -8.0 * (i + 3)
                 / (i + 1), 10.0)
                 self.canvas.restoreContext()
             
@@ -280,37 +281,37 @@ class SuiteDemoControls (Composite):
         self.canvas.setLineWidth(1.5)
         self.canvas.saveContext()
         self.canvas.translate(50, 50)
-        drawSpirograph(2000, 22, 6, 5)
+        self.drawSpirograph(2000, 22, 6, 5)
         self.canvas.translate(100, 0)
         self.canvas.scale(0.75, 0.75)
-        drawSpirograph(2000, 22, 6, 5)
+        self.drawSpirograph(2000, 22, 6, 5)
         self.canvas.translate(133.333, 0)
         self.canvas.scale(0.75, 0.75)
-        drawSpirograph(2000, 22, 6, 5)
+        self.drawSpirograph(2000, 22, 6, 5)
         self.canvas.restoreContext()
         self.canvas.setStrokeStyle(Color.Color("#0cf"))
         self.canvas.saveContext()
         self.canvas.translate(50, 150)
         self.canvas.scale(1, 0.75)
-        drawSpirograph(2000, 22, 6, 5)
+        self.drawSpirograph(2000, 22, 6, 5)
         self.canvas.translate(100, 0)
         self.canvas.scale(1, 0.75)
-        drawSpirograph(2000, 22, 6, 5)
+        self.drawSpirograph(2000, 22, 6, 5)
         self.canvas.translate(100, 0)
         self.canvas.scale(1, 0.75)
-        drawSpirograph(2000, 22, 6, 5)
+        self.drawSpirograph(2000, 22, 6, 5)
         self.canvas.restoreContext()
         self.canvas.setStrokeStyle(Color.Color("#cf0"))
         self.canvas.saveContext()
         self.canvas.translate(50, 250)
         self.canvas.scale(0.75, 1)
-        drawSpirograph(2000, 22, 6, 5)
+        self.drawSpirograph(2000, 22, 6, 5)
         self.canvas.translate(133.333, 0)
         self.canvas.scale(0.75, 1)
-        drawSpirograph(2000, 22, 6, 5)
+        self.drawSpirograph(2000, 22, 6, 5)
         self.canvas.translate(177.777, 0)
         self.canvas.scale(0.75, 1)
-        drawSpirograph(2000, 22, 6, 5)
+        self.drawSpirograph(2000, 22, 6, 5)
         self.canvas.restoreContext()
         self.canvas.restoreContext()
     
