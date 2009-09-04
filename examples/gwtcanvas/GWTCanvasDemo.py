@@ -101,7 +101,7 @@ class GWTCanvasDemo:
         self.currentDemo.drawDemo()
 
 if __name__ == '__main__':
-    pyjd.setup("http://127.0.0.1/examples/gwtcanvas/public/GWTCanvasDemo.html")
+    pyjd.setup("./public/GWTCanvasDemo.html")
     app =  GWTCanvasDemo()
     app.onModuleLoad()
     pyjd.run()

@@ -14,7 +14,7 @@
 * the License.
 """
 
-
+import math
 
 
 
@@ -23,9 +23,8 @@
 """*
 * Gradients for IE6 implementation need some extra meta info.
 """
-class CanvasGradientImplIE6(CanvasGradient):
+class CanvasGradientImplIE6:
     def __init__(self, x0, y0, x1, y1):
-        CanvasGradient.__init__(self)
         self.startX = x0
         self.startY = y0
         self.endX = x1
@@ -35,13 +34,13 @@ class CanvasGradientImplIE6(CanvasGradient):
         self.dx = x1 - x0
         self.dy = y1 - y0
         self.length =  math.sqrt((dx * dx) + (dy * dy))
-        self.angle = int(math.atan(dx / dy) * 180 / Math.PI) + 180)
+        self.angle = int(math.atan(dx / dy) * 180 / math.pi) + 180
         
         self.colorStops = []
     
     def addColorStop(self, offset, color):
         newColorStop = ColorStop(offset, color)
-        for i in range(len(colorStops):
+        for i in range(len(colorStops)):
             cs = colorStops[i]
             if offset < cs.offset:
                 self.colorStops.add(i, newColorStop)
