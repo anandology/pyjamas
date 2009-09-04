@@ -22,11 +22,11 @@ from pyjamas.ui.Widget import Widget
 
 
 
-from pyjamas.canvas.GWTCanvasImplIE6Consts import BUTT, DESTINATION_OVER, SOURCE_OVER
-from pyjamas.canvas import GWTCanvasConsts 
-from pyjamas.canvas.JSOStack import JSOStack 
-from pyjamas.canvas import PathElement 
-from pyjamas.canvas.VMLContext import VMLContext
+from pyjamas.Canvas.GWTCanvasImplIEConsts import BUTT, DESTINATION_OVER, SOURCE_OVER
+from pyjamas.Canvas import GWTCanvasConsts 
+from pyjamas.Canvas.JSOStack import JSOStack 
+from pyjamas.Canvas import PathElement 
+from pyjamas.Canvas.VMLContext import VMLContext
 
 def addNamespace():
     JS("""

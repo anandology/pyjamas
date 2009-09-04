@@ -16,7 +16,7 @@
 
 
 from pyjamas.Canvas import GWTCanvasConsts
-from pyjamas.Canvas import GWTCanvasImplIE6Consts
+from pyjamas.Canvas import GWTCanvasImplIEConsts
 
 """*
 * The VML context abstraction for the Internet Explorer implementation.
@@ -41,13 +41,13 @@ class VMLContext:
             self.fillAlpha         =  1
             self.miterLimit          = 10
             self.lineWidth         =  1
-            self.lineCap           =  GWTCanvasImplIE6Consts.BUTT
+            self.lineCap           =  GWTCanvasImplIEConsts.BUTT
             self.lineJoin          =  GWTCanvasConsts.MITER
             self.strokeStyle         =  "#000"
             self.fillStyle         =  "#000"
             self.fillGradient = None
             self.strokeGradient = None
-            self.globalCompositeOperation  =  GWTCanvasImplIE6Consts.SOURCE_OVER
+            self.globalCompositeOperation  =  GWTCanvasImplIEConsts.SOURCE_OVER
 
             return
 
