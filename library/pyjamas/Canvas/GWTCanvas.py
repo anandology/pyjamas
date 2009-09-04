@@ -66,7 +66,7 @@ class GWTCanvas(Widget):
         self.setPixelHeight(pixelY)
         self.setCoordSize(coordX, coordY)
     
-    def _getCanvasImpl():
+    def _getCanvasImpl(self):
         return GWTCanvasImplDefault()
     
     """*

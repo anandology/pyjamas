@@ -17,7 +17,7 @@
 import math
 
 from pyjamas import DOM
-
+from __pyjamas__ import JS, doc
 
 
 
@@ -26,6 +26,13 @@ from pyjamas.canvas import GWTCanvasConsts
 from pyjamas.canvas import JSOStack 
 from pyjamas.canvas import PathElement 
 
+def addNamespace():
+    JS("""
+    if (!doc().namespaces["v"]) {
+        doc().namespaces.add("v", "urn:schemas-microsoft-com:vml");
+        doc().createStyleSheet().cssText = "v\\:*{behavior:url(#default#VML);}";
+    }
+    """)
 
 
 """*
@@ -35,12 +42,7 @@ from pyjamas.canvas import PathElement
 class GWTCanvasImplIE6:
 
     def __init__(self):
-        JS("""
-        if (!$doc.namespaces["v"]) {
-            $doc.namespaces.add("v", "urn:schemas-microsoft-com:vml");
-            $doc.createStyleSheet().cssText = "v\\:*{behavior:url(#default#VML);}";
-        }
-        """)
+        addNamespace()
 
 
         """*
