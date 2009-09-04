@@ -320,6 +320,9 @@ class ListTest(UnitTest):
         else:
             self.fail("ValueError not raised")
 
+        l = [[1],[2],[3]]
+        self.assertEqual(l.index([2]), 1)
+
     def testAugAssign(self):
         l = [10, 10.0]
         def getidx(x):
@@ -356,6 +359,14 @@ class ListTest(UnitTest):
 
         l = [(x,y) for x in vec1 if x >= 3 for y in vec2 if y > 3]
         self.assertTrue(l == [(3, 4), (3, 6), (5, 4), (5, 6)], 'double')
+
+    def testListContains(self):
+        l = [['monkey'], ['patch'], ['fish'], ['chips']]
+        self.assertTrue(['fish'] in l, "['fish'] in l")
+
+        l = [{'monkey':1}, {'patch':1}, {'fish':1}, {'chips':1}]
+        self.assertTrue({'fish':1} in l, "{'fish':1} in l")
+
 
 class A:
     def __cmp__(self, other):

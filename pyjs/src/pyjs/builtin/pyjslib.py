@@ -554,30 +554,30 @@ class List:
     @compiler.noSourceTracking
     def __init__(self, data=None):
         JS("""
-        this.l = [];
-        this.extend(data);
+        self.l = [];
+        self.extend(data);
         """)
 
     @compiler.noSourceTracking
     def append(self, item):
-        JS("""    this.l[this.l.length] = item;""")
+        JS("""    self.l[self.l.length] = item;""")
 
     @compiler.noSourceTracking
     def extend(self, data):
         JS("""
         if (pyjslib.isArray(data)) {
-            n = this.l.length;
+            n = self.l.length;
             for (var i=0; i < data.length; i++) {
-                this.l[n+i]=data[i];
+                self.l[n+i]=data[i];
                 }
             }
         else if (pyjslib.isIteratable(data)) {
             var iter=data.__iter__();
-            var i=this.l.length;
+            var i=self.l.length;
             try {
                 while (true) {
                     var item=iter.next();
-                    this.l[i++]=item;
+                    self.l[i++]=item;
                     }
                 }
             catch (e) {
@@ -589,39 +589,55 @@ class List:
     @compiler.noSourceTracking
     def remove(self, value):
         JS("""
-        var index=this.index(value);
+        var index=self.index(value);
         if (index<0) {
             throw(pyjslib.ValueError("list.remove(x): x not in list"));
         }
-        this.l.splice(index, 1);
+        self.l.splice(index, 1);
         return true;
         """)
 
     @compiler.noSourceTracking
     def index(self, value, start=0):
         JS("""
-        var result = this.l.indexOf(value, start);
-        if (result >= 0)
-            return result;
+        if (typeof value == 'number' || typeof value == 'string') {
+            start = self.l.indexOf(value, start);
+            if (start >= 0)
+                return start;
+        } else {
+            var len = self.l.length >>> 0;
+
+            start = (start < 0)
+                    ? Math.ceil(start)
+                    : Math.floor(start);
+            if (start < 0)
+                start += len;
+
+            for (; start < len; start++) {
+                if (start in self.l &&
+                    pyjslib.cmp(self.l[start], value) == 0)
+                    return start;
+            }
+        }
         """)
         raise ValueError("list.index(x): x not in list")
 
     @compiler.noSourceTracking
     def insert(self, index, value):
-        JS("""    var a = this.l; this.l=a.slice(0, index).concat(value, a.slice(index));""")
+        JS("""    var a = self.l; self.l=a.slice(0, index).concat(value, a.slice(index));""")
 
     @compiler.noSourceTracking
     def pop(self, index = -1):
         JS("""
-        if (index<0) index += this.l.length;
-        if (index < 0 || index >= this.l.length) {
-            if (this.l.length == 0) {
+        if (index<0) index += self.l.length;
+        if (index < 0 || index >= self.l.length) {
+            if (self.l.length == 0) {
                 throw(pyjslib.IndexError("pop from empty list"));
             }
             throw(pyjslib.IndexError("pop index out of range"));
         }
-        var a = this.l[index];
-        this.l.splice(index, 1);
+        var a = self.l[index];
+        self.l.splice(index, 1);
         return a;
         """)
 
@@ -641,43 +657,43 @@ class List:
     @compiler.noSourceTracking
     def __getslice__(self, lower, upper):
         JS("""
-        if (upper==null) return pyjslib.List(this.l.slice(lower));
-        return pyjslib.List(this.l.slice(lower, upper));
+        if (upper==null) return pyjslib.List(self.l.slice(lower));
+        return pyjslib.List(self.l.slice(lower, upper));
         """)
 
     @compiler.noSourceTracking
     def __getitem__(self, index):
         JS("""
-        if (index < 0) index += this.l.length;
-        if (index < 0 || index >= this.l.length) {
+        if (index < 0) index += self.l.length;
+        if (index < 0 || index >= self.l.length) {
             throw(pyjslib.IndexError("list index out of range"));
         }
-        return this.l[index];
+        return self.l[index];
         """)
 
     @compiler.noSourceTracking
     def __setitem__(self, index, value):
         JS("""
-        if (index < 0) index += this.l.length;
-        if (index < 0 || index >= this.l.length) {
+        if (index < 0) index += self.l.length;
+        if (index < 0 || index >= self.l.length) {
             throw(pyjslib.IndexError("list assignment index out of range"));
         }
-        this.l[index]=value;
+        self.l[index]=value;
         """)
 
     @compiler.noSourceTracking
     def __delitem__(self, index):
         JS("""
-        if (index < 0) index += this.l.length;
-        if (index < 0 || index >= this.l.length) {
+        if (index < 0) index += self.l.length;
+        if (index < 0 || index >= self.l.length) {
             throw(pyjslib.IndexError("list assignment index out of range"));
         }
-        this.l.splice(index, 1);
+        self.l.splice(index, 1);
         """)
 
     @compiler.noSourceTracking
     def __len__(self):
-        JS("""    return this.l.length;""")
+        JS("""    return self.l.length;""")
 
     @compiler.noSourceTracking
     @compiler.noDebug
@@ -692,7 +708,7 @@ class List:
     def __iter__(self):
         JS("""
         var i = 0;
-        var l = this.l;
+        var l = self.l;
         return {
             'next': function() {
                 if (i >= l.length) {
@@ -708,7 +724,7 @@ class List:
 
     @compiler.noSourceTracking
     def reverse(self):
-        JS("""    this.l.reverse();""")
+        JS("""    self.l.reverse();""")
 
     def sort(self, cmp=None, key=None, reverse=False):
         if cmp is None:
@@ -761,20 +777,20 @@ class Tuple:
     @compiler.noSourceTracking
     def __init__(self, data=None):
         JS("""
-        this.l = [];
+        self.l = [];
         if (pyjslib.isArray(data)) {
-            n = this.l.length;
+            n = self.l.length;
             for (var i=0; i < data.length; i++) {
-                this.l[n+i]=data[i];
+                self.l[n+i]=data[i];
                 }
             }
         else if (pyjslib.isIteratable(data)) {
             var iter=data.__iter__();
-            var i=this.l.length;
+            var i=self.l.length;
             try {
                 while (true) {
                     var item=iter.next();
-                    this.l[i++]=item;
+                    self.l[i++]=item;
                     }
                 }
             catch (e) {
@@ -799,20 +815,20 @@ class Tuple:
     @compiler.noSourceTracking
     def __getslice__(self, lower, upper):
         JS("""
-        if (upper==null) return pyjslib.Tuple(this.l.slice(lower));
-        return pyjslib.Tuple(this.l.slice(lower, upper));
+        if (upper==null) return pyjslib.Tuple(self.l.slice(lower));
+        return pyjslib.Tuple(self.l.slice(lower, upper));
         """)
 
     @compiler.noSourceTracking
     def __getitem__(self, index):
         JS("""
-        if (index<0) index = this.l.length + index;
-        return this.l[index];
+        if (index<0) index = self.l.length + index;
+        return self.l[index];
         """)
 
     @compiler.noSourceTracking
     def __len__(self):
-        JS("""    return this.l.length;""")
+        JS("""    return self.l.length;""")
 
     @compiler.noSourceTracking
     def __contains__(self, value):
@@ -822,7 +838,7 @@ class Tuple:
     def __iter__(self):
         JS("""
         var i = 0;
-        var l = this.l;
+        var l = self.l;
         return {
             'next': function() {
                 if (i >= l.length) {
@@ -873,14 +889,14 @@ class Dict:
     @compiler.noSourceTracking
     def __init__(self, data=None):
         JS("""
-        this.d = {};
+        self.d = {};
 
         if (pyjslib.isArray(data)) {
             for (var i = 0; i < data.length; i++) {
                 var item=data[i];
-                this.__setitem__(item[0], item[1]);
+                self.__setitem__(item[0], item[1]);
                 //var sKey=pyjslib.hash(item[0]);
-                //this.d[sKey]=item[1];
+                //self.d[sKey]=item[1];
                 }
             }
         else if (pyjslib.isIteratable(data)) {
@@ -888,7 +904,7 @@ class Dict:
             try {
                 while (true) {
                     var item=iter.next();
-                    this.__setitem__(item.__getitem__(0), item.__getitem__(1));
+                    self.__setitem__(item.__getitem__(0), item.__getitem__(1));
                     }
                 }
             catch (e) {
@@ -897,7 +913,7 @@ class Dict:
             }
         else if (pyjslib.isObject(data)) {
             for (var key in data) {
-                this.__setitem__(key, data[key]);
+                self.__setitem__(key, data[key]);
                 }
             }
         """)
@@ -906,14 +922,14 @@ class Dict:
     def __setitem__(self, key, value):
         JS("""
         var sKey = pyjslib.hash(key);
-        this.d[sKey]=[key, value];
+        self.d[sKey]=[key, value];
         """)
 
     @compiler.noSourceTracking
     def __getitem__(self, key):
         JS("""
         var sKey = pyjslib.hash(key);
-        var value=this.d[sKey];
+        var value=self.d[sKey];
         if (pyjslib.isUndefined(value)){
             throw pyjslib.KeyError(key);
         }
@@ -923,7 +939,7 @@ class Dict:
     @compiler.noSourceTracking
     def __nonzero__(self):
         JS("""
-        for (var i in this.d){
+        for (var i in self.d){
             return true;
         }
         return false;
@@ -935,24 +951,34 @@ class Dict:
             raise TypeError("dict.__cmp__(x,y) requires y to be a 'dict'")
         self_keys = self.keys()
         d_keys = d.keys()
-        if JS("""self_keys.l.length < d_keys.l.length"""):
-            return -1
-        if JS("""self_keys.l.length > d_keys.l.length"""):
-            return 1
-        idx = 0
-        while idx < JS("self_keys.l.length"):
-            k = JS("self_keys.l[idx]")
-            c = cmp(self[k], d[k])
-            if c != 0:
-                return c
-            idx += 1
-        return 0
+        JS("""
+        if (self_keys.l.length < d_keys.l.length) {
+            return -1;
+        }
+        if (self_keys.l.length > d_keys.l.length) {
+            return 1;
+        }
+        self_keys.sort();
+        d_keys.sort();
+        var c, sKey;
+        for (var idx = 0; idx < self_keys.l.length; idx++) {
+            c = pyjslib.cmp(self_keys.l[idx], d_keys.l[idx]);
+            if (c != 0) {
+                return c;
+            }
+            sKey = pyjslib.hash(self_keys.l[idx]);
+            c = pyjslib.cmp(self.d[sKey][1], d.d[sKey][1]);
+            if (c != 0) {
+                return c;
+            }
+        }
+        return 0;""")
 
     @compiler.noSourceTracking
     def __len__(self):
         JS("""
         var size=0;
-        for (var i in this.d) size++;
+        for (var i in self.d) size++;
         return size;
         """)
 
@@ -964,22 +990,22 @@ class Dict:
     def __delitem__(self, key):
         JS("""
         var sKey = pyjslib.hash(key);
-        delete this.d[sKey];
+        delete self.d[sKey];
         """)
 
     @compiler.noSourceTracking
     def __contains__(self, key):
         JS("""
         var sKey = pyjslib.hash(key);
-        return (pyjslib.isUndefined(this.d[sKey])) ? false : true;
+        return (pyjslib.isUndefined(self.d[sKey])) ? false : true;
         """)
 
     @compiler.noSourceTracking
     def keys(self):
         JS("""
         var keys=new pyjslib.List();
-        for (var key in this.d) {
-            keys.append(this.d[key][0]);
+        for (var key in self.d) {
+            keys.append(self.d[key][0]);
         }
         return keys;
         """)
@@ -988,7 +1014,7 @@ class Dict:
     def values(self):
         JS("""
         var values=new pyjslib.List();
-        for (var key in this.d) values.append(this.d[key][1]);
+        for (var key in self.d) values.append(self.d[key][1]);
         return values;
         """)
 
@@ -996,8 +1022,8 @@ class Dict:
     def items(self):
         JS("""
         var items = new pyjslib.List();
-        for (var key in this.d) {
-          var kv = this.d[key];
+        for (var key in self.d) {
+          var kv = self.d[key];
           items.append(new pyjslib.List(kv));
           }
           return items;
