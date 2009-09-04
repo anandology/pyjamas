@@ -350,7 +350,7 @@ class GWTCanvasImplIE6:
 
 
     def restoreContext(self):
-        if not self.contextStack.isEmpty():
+        if len(self.contextStack) > 0:
             self.context = self.contextStack.pop()
             self.matrix = self.context.matrix
 
@@ -370,7 +370,7 @@ class GWTCanvasImplIE6:
 
 
     def saveContext(self):
-        self.contextStack.push(self.context)
+        self.contextStack.append(self.context)
         self.context = VMLContext(self.context)
         self.matrix = self.context.matrix
 

@@ -45,6 +45,8 @@ class VMLContext:
             self.lineJoin          =  GWTCanvasConsts.MITER
             self.strokeStyle         =  "#000"
             self.fillStyle         =  "#000"
+            self.fillGradient = None
+            self.strokeGradient = None
             self.globalCompositeOperation  =  GWTCanvasImplIE6Consts.SOURCE_OVER
 
             return
