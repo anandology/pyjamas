@@ -55,10 +55,10 @@ def arc(x, y, radius, startAngle, endAngle, antiClockwise, canvas):
     cy = canvas.getCoordY(matrix, x, y)
     arcX = (context.arcScaleX * ar)
     arcY = (context.arcScaleY * ar)
-    return (ARC + str(GWTCanvasImplIE6.doubleToFlooredInt(cx - arcX + 0.5)) + ","
-        + str(GWTCanvasImplIE6.doubleToFlooredInt(cy + arcY + 0.5)) + " "
-        + str(GWTCanvasImplIE6.doubleToFlooredInt(cx + arcX + 0.5)) + ","
-        + str(GWTCanvasImplIE6.doubleToFlooredInt(cy - arcY + 0.5)) + " "
+    return (ARC + str(int(math.floor((cx - arcX + 0.5)))) + ","
+        + str(int(math.floor(cy + arcY + 0.5))) + " "
+        + str(int(math.floor(cx + arcX + 0.5))) + ","
+        + str(int(math.floor(cy - arcY + 0.5))) + " "
         + str(canvas.getCoordX(matrix, startX, startY)) + ","
         + str(canvas.getCoordY(matrix, startX, startY)) + " "
         + str(canvas.getCoordX(matrix, endX, endY)) + ","

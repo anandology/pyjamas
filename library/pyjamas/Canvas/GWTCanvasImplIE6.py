@@ -35,13 +35,6 @@ def addNamespace():
     }
     """)
 
-"""*
-* Takes in a and returns a floored int.
-* Leverages the fact that bitwise OR intifies the value.
-"""
-def doubleToFlooredInt(val):
-    return val or 0
-
 
 """*
 * Deferred binding implementation of GWTCanvas for IE6. It is an implementation
@@ -260,16 +253,16 @@ class GWTCanvasImplIE6:
 
 
     def getCoordX(self, matrix, x, y):
-        coordX = doubleToFlooredInt(math.floor(10 * (matrix[0] * x + matrix[1]
-                                * y + matrix[2]) - 4.5))
+        coordX = int(math.floor((math.floor(10 * (matrix[0] * x + matrix[1]
+                                * y + matrix[2]) - 4.5))))
         # record current point to derive bounding box of current open path.
         self.pathStr.logCoordX(coordX / 10)
         return coordX
 
 
     def getCoordY(self, matrix, x, y):
-        coordY = doubleToFlooredInt(math.floor(10 * (matrix[3] * x + matrix[4]
-                                        * y + matrix[5]) - 4.5))
+        coordY = int(math.floor((math.floor(10 * (matrix[3] * x + matrix[4]
+                                        * y + matrix[5]) - 4.5))))
         # record current point to derive bounding box of current open path.
         self.pathStr.logCoordY(coordY / 10)
         return coordY
