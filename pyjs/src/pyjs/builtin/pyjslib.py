@@ -448,6 +448,30 @@ String.prototype.upper = String.prototype.toUpperCase;
 String.prototype.lower = String.prototype.toLowerCase;
 """)
 
+    # Patching of the standard javascript Array object
+    # This makes it imposible to use for (k in Array())
+    JS("""
+if (!Array.prototype.indexOf) {
+    Array.prototype.indexOf = function(elt /*, from*/) {
+        var len = this.length >>> 0;
+
+        var from = Number(arguments[1]) || 0;
+        from = (from < 0)
+                ? Math.ceil(from)
+                : Math.floor(from);
+        if (from < 0)
+            from += len;
+
+        for (; from < len; from++) {
+            if (from in this &&
+                this[from] === elt)
+                return from;
+        }
+        return -1;
+    };
+}
+""")
+
     JS("""
 pyjslib.abs = Math.abs;
 """)
@@ -576,12 +600,9 @@ class List:
     @compiler.noSourceTracking
     def index(self, value, start=0):
         JS("""
-        var length=this.l.length;
-        for (var i=start; i<length; i++) {
-            if (this.l[i]==value) {
-                return i;
-                }
-            }
+        var result = this.l.indexOf(value, start);
+        if (result >= 0)
+            return result;
         """)
         raise ValueError("list.index(x): x not in list")
 
@@ -795,15 +816,7 @@ class Tuple:
 
     @compiler.noSourceTracking
     def __contains__(self, value):
-        JS("""
-        var length=this.l.length;
-        for (var i=0; i<length; i++) {
-            if (this.l[i]===value) {
-                return true;
-                }
-            }
-        """)
-        return False
+        return JS('self.l.indexOf(value)>=0')
 
     @compiler.noSourceTracking
     def __iter__(self):
@@ -863,7 +876,7 @@ class Dict:
         this.d = {};
 
         if (pyjslib.isArray(data)) {
-            for (var i in data) {
+            for (var i = 0; i < data.length; i++) {
                 var item=data[i];
                 this.__setitem__(item[0], item[1]);
                 //var sKey=pyjslib.hash(item[0]);

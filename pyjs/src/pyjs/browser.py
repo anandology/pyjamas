@@ -35,11 +35,11 @@ class BrowserLinker(linker.BaseLinker):
 
     # parents are specified in most-specific last
     platform_parents = {
-        'mozilla':['browser', 'array_extras'],
+        'mozilla':['browser'],
         'ie6':['browser'],
-        'safari':['browser', 'array_extras'],
-        'oldmoz':['browser', 'array_extras'],
-        'opera':['browser', 'array_extras'],
+        'safari':['browser'],
+        'oldmoz':['browser'],
+        'opera':['browser'],
         }
 
     def __init__(self, *args, **kwargs):
