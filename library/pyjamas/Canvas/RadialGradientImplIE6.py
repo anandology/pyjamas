@@ -14,6 +14,7 @@
 * the License.
 """
 
+from pyjamas.Canvas.CanvasGradientImplIE6 import CanvasGradientImplIE6 
 
 """*
 *  IE6 deferred binding of Gradient Factory will create instances of this class

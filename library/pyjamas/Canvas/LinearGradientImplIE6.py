@@ -14,12 +14,13 @@
 * the License.
 """
 
+from pyjamas.Canvas.CanvasGradientImplIE6 import CanvasGradientImplIE6
 
 """*
 * IE6 implementation of Linear Gradient. This is instantiated by IE6 deferred binding
 * of GradientFactory.
 """
-class LinearGradientImplIE6 extends CanvasGradientImplIE6:
+class LinearGradientImplIE6 (CanvasGradientImplIE6):
 
     def __init__(self, x0, y0, x1, y1):
         CanvasGradientImplIE6.__init__(self, x0,y0,x1,y1)
