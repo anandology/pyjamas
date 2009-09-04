@@ -15,7 +15,7 @@
 """
 
 
-
+from pyjamas.Canvas.Color import Color
 
 """*
 * Simple storage object for an offset and color corresponding
@@ -27,7 +27,6 @@ class ColorStop:
         self.offset = myOffset
         self.color = myColor
     
-    
     def cloneColorStop(self):
-        return ColorStop(self.offset, Color(str(self.color()))
+        return ColorStop(self.offset, Color(str(self.color())))
 
