@@ -6,8 +6,23 @@ import pygwt
 from __pyjamas__ import JS
 if sys.platform not in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
     from __pyjamas__ import get_main_frame
+    import pyjd
 
 handlers = {}
+
+class XULrunnerHackCallback:
+    def __init__(self, htr, mode, user, pwd, url, postData=None, handler=None,
+                        return_xml=0, content_type='text/plain charset=utf8'):
+        pass
+
+    def callback(self):
+        if self.mode == 'GET':
+            return self.htr.asyncGetImpl(self.user, self.pwd, self.url, self.handler)
+        else:
+            return self.htr.asyncPostImpl(self.user, self.pwd, self.url,
+                                         self.postData, self.handler,
+                                         self.return_xml, self.content_type)
+
 
 class HTTPRequest:
     # also callable as: asyncPost(self, url, postData, handler)
@@ -147,7 +162,16 @@ class HTTPRequest:
             xmlHttp.open("GET", url)
         xmlHttp.setRequestHeader("Content-Type", "text/plain charset=utf-8")
         # TODO: xmlHttp.onreadystatechange = self.onReadyStateChange
+
+        if mf.platform == 'webkit' or mf.platform == 'mshtml':
+            mf._addXMLHttpRequestEventListener(xmlHttp, "onreadystatechange",
+                                         self.onReadyStateChange)
+        else:
+            mf._addXMLHttpRequestEventListener(xmlHttp, "load",
+                                         self.onLoad)
+        handlers[xmlHttp] = handler
         xmlHttp.send('')
+
         return True
     
         #except:

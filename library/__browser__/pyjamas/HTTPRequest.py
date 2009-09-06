@@ -12,7 +12,7 @@ class HTTPRequest:
                                   content_type)
 
     # also callable as: asyncGet(self, url, handler)
-    def asyncGet(self, user, pwd, url, handler, returnxml=0):
+    def asyncGet(self, user, pwd, url=None, handler=None, returnxml=0):
         if url is None:
             return self.asyncGetImpl(None, None, user, pwd, returnxml)
         return self.asyncGetImpl(user, pwd, url, handler, returnxml)

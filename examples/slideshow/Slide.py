@@ -56,7 +56,7 @@ class Slide(Sink):
 
         name = self.name.replace(" ", "_")
         name = name.lower()
-        HTTPRequest().asyncPost("%s.txt" % name, "", SlideLoader(self))
+        HTTPRequest().asyncGet("%s.txt" % name, SlideLoader(self))
 
     def setSlide(self, text):
         self.loaded = True

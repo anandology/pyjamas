@@ -65,12 +65,7 @@ class Slideshow:
         RootPanel().add(self.panel)
         RootPanel().add(self.b)
 
-        # kludgy way to detect "real" pyjd / pyjs difference.
-        # there's a bug in XULRunner nsIXMLHttpRequest which
-        # stops it from working (open "NS_ERROR_NOT_INITIALISED")
-        #if not hasattr(pyjd, "Browser"):
-        Timer(1000, self)
-        #DOM.buttonClick(self.b.getElement())
+        self.loadSinks()
 
     def onClick(self, sender):
         self.loadSinks()
@@ -106,7 +101,7 @@ class Slideshow:
         self.curSink.onShow()
         
     def loadSinks(self):
-        HTTPRequest().asyncPost("slides.txt", "", SlideListLoader(self))
+        HTTPRequest().asyncGet("slides.txt", SlideListLoader(self))
 
 
     def setSlides(self, slides):
