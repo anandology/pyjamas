@@ -156,6 +156,22 @@ class Browser(WebView):
         pass
         #print "loading", progress, self.getDomWindow().location.href
 
+    def _trigger_fake_button(self):
+        doc = self.getDomDocument()
+        wnd = self.getDomWindow()
+        element = self._hack_timer_workaround_bug_button
+        evt = doc.createEvent('MouseEvents')
+        evt.initMouseEvent("click", True, True, wnd, 1, 0, 0, 0, 0, False,
+                                    False, False, False, 0, element)
+        element.dispatchEvent(evt)
+
+    def _timer_callback_workaround(self, *args):
+
+        global timer_q
+        while timer_q:
+            fn = timer_q.pop()
+            fn()
+
 def is_loaded():
     return wv.already_initialised
 
@@ -164,6 +180,10 @@ timer_q = []
 
 def add_timer_queue(fn):
     timer_q.append(fn)
+    wv._trigger_fake_button()
+
+    #DOM.buttonClick(self.b.getElement())
+
     # hope and pray that an event occurs!
     #event = gtk.gdk.new()
     #gtk.gdk.push(event)
@@ -172,17 +192,17 @@ def run(one_event=False, block=True):
     if one_event:
         if block or gtk.events_pending():
             gtk.main_iteration()
+            sys.stdout.flush()
     else:
         while 1:
             gtk.main_iteration()
-
-            if timer_q:
-                fn = timer_q.pop()
-                fn()
+            sys.stdout.flush()
 
         #gtk.main()
 
 def setup(application, appdir=None, width=800, height=600):
+
+    gtk.gdk.threads_init()
 
     win = gtk.Window(gtk.WINDOW_TOPLEVEL)
     win.set_size_request(width, height)
@@ -198,7 +218,7 @@ def setup(application, appdir=None, width=800, height=600):
     wv.load_app()
 
     while 1:
-        if is_loaded():
+        if is_loaded() and not gtk.events_pending():
             return
         run(one_event=True)
 

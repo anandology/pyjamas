@@ -43,6 +43,9 @@ def set_listener(item, listener):
     else:
         listeners[hash(item)] = listener
 
+# ugh, *spew*, *hurl* http://code.google.com/p/pyjamas/issues/detail?id=213
+hack_timer_workaround_bug_button = None
+
 def init():
 
     mf = get_main_frame()

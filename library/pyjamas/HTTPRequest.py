@@ -107,7 +107,6 @@ class HTTPRequest:
         else:
             # EEK!  xmlhttprequest.open in xpcom is a miserable bastard.
             #xmlHttp.open("POST", url, True, '', '')
-            print xmlHttp.open, dir(xmlHttp.open)
             print url, xmlHttp.open("POST", url)
         xmlHttp.setRequestHeader("Content-Type", content_type)
         xmlHttp.setRequestHeader("Content-Length", str(len(postData)))

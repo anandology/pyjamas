@@ -16,6 +16,7 @@ from pyjamas.HTTPRequest import HTTPRequest
 from SlideLoader import SlideListLoader
 from pyjamas.Timer import Timer
 from pyjamas.ui.Button import Button
+from pyjamas import DOM
 
 class Slideshow:
 
@@ -67,8 +68,9 @@ class Slideshow:
         # kludgy way to detect "real" pyjd / pyjs difference.
         # there's a bug in XULRunner nsIXMLHttpRequest which
         # stops it from working (open "NS_ERROR_NOT_INITIALISED")
-        if not hasattr(pyjd, "Browser"):
-            Timer(1, self)
+        #if not hasattr(pyjd, "Browser"):
+        Timer(1000, self)
+        #DOM.buttonClick(self.b.getElement())
 
     def onClick(self, sender):
         self.loadSinks()
