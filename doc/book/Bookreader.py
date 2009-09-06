@@ -85,7 +85,7 @@ class Bookreader:
 
         Window.addWindowResizeListener(self)
 
-        History().addHistoryListener(self)
+        History.addHistoryListener(self)
         RootPanel().add(self.panel)
 
 
@@ -119,7 +119,7 @@ class Bookreader:
         self.curSink.onShow()
         
     def loadSinks(self):
-        HTTPRequest().asyncPost("contents.txt", "", ChapterListLoader(self))
+        HTTPRequest().asyncGet("contents.txt", ChapterListLoader(self))
 
     def setChapters(self, chapters):
         for l in chapters:
@@ -128,7 +128,7 @@ class Bookreader:
             self.sink_list.addSink(Chapter.init(name, desc))
 
         #Show the initial screen.
-        initToken = History().getToken()
+        initToken = History.getToken()
         if len(initToken):
             self.onHistoryChanged(initToken)
         else:
