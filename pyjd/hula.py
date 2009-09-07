@@ -9,7 +9,6 @@ hulahop.startup(gecko_path)
 from hulahop.webview import WebView
 
 import gtk
-import gobject
 import xpcom
 
 from xpcom.nsError import *
@@ -113,6 +112,11 @@ class Browser(WebView):
         win.addEventListener(event_name, listener, True)
         return listener
 
+    def getDOMParser(self):
+        xml_svc_cls = components.classes[ \
+            "@mozilla.org/xmlextras/domparser;1"]
+        return xml_svc_cls.createInstance(interfaces.nsIDOMParser)
+        
     def getXmlHttpRequest(self):
         xml_svc_cls = components.classes[ \
             "@mozilla.org/xmlextras/xmlhttprequest;1"]

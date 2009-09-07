@@ -90,3 +90,4 @@ class ProgressListener(gobject.GObject):
 
     def onStatusChange(self, webProgress, request, status, message):
         pass
+

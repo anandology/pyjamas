@@ -1,29 +1,8 @@
+#import pyjd - FIXME: import gtk doesn't work under hulahop, it's already loaded
 import gtk
 from pyjamas.HTTPRequest import HTTPRequest
 from __pyjamas__ import JS
-
-def create_xml_doc(text):
-    JS("""
-try //Internet Explorer
-  {
-  xmlDoc=new ActiveXObject("Microsoft.XMLDOM");
-  xmlDoc.async="false";
-  xmlDoc.loadXML(text);
-  }
-catch(e)
-  {
-  try //Firefox, Mozilla, Opera, etc.
-    {
-    parser=new DOMParser();
-    xmlDoc=parser.parseFromString(text,"text/xml");
-    }
-  catch(e)
-  {
-    return null;
-  }
-  }
-  return xmlDoc;
-  """)
+from pyjamas.XMLDoc import create_xml_doc
 
 class XMLloader:
     def __init__(self, panel):
@@ -66,7 +45,7 @@ class XMLload:
 
 if __name__ == '__main__':
 
-    #pyjd.setup("./public/XMLload.html")
+    #pyjd.setup("./public/AutoGtk.html")
     app = XMLload()
     app.onModuleLoad()
     #pyjd.run()
