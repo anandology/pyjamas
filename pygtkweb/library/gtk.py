@@ -1,3 +1,4 @@
+import pyjd
 from pyjamas import log
 
 import browser
@@ -49,7 +50,7 @@ class GObject:
         self.callbacks = {}
         self.connections = 0
 
-    def connect(self, detailed_signal, handler, data=None):
+    def connect(self, detailed_signal, handler, *data):
         detailed_signal = detailed_signal.replace('_', '-')
         l = self.callbacks.setdefault(detailed_signal,[])
         l.append((handler, data))
@@ -59,14 +60,20 @@ class GObject:
     def connect_object(self, detailed_signal, handler, gobject, data=None):
         detailed_signal = detailed_signal.replace('_', '-')
         def inner(widget, data):
-            handler(widget, data)
+            if handler.func_code.co_argcount == 1:
+                handler(widget)
+            else:
+                handler(widget, data)
         self.connect(detailed_signal, inner, data)
 
     def emit(self, detailed_signal, *args):
         detailed_signal = detailed_signal.replace('_', '-')
         if self.callbacks.has_key(detailed_signal):
             for pair in self.callbacks[detailed_signal]:
-                pair[0](self,pair[1])
+                if pair[1]:
+                    pair[0](self, *pair[1])
+                else:
+                    pair[0](self)
 
     def dom_event(self, event, element):
         pass
@@ -282,7 +289,6 @@ class HBox(Box):
         else:
             count = len(self.children)
         container = self.widget_cont
-        horiz_inc = (container.getWidth() - 2*self.margin - fix_width) / count
         left = self.margin
         for child in self.children:
             if len(self.children) != 1:
@@ -292,6 +298,9 @@ class HBox(Box):
                                  self.spacing + child.padding
         container.setPxStyle('minHeight', self.minheight)
         container.setPxStyle('minWidth', self.minwidth)
+
+        count = max(count, 1)
+        horiz_inc = (container.getWidth() - 2*self.margin - fix_width) / count
 
         for child in self.children:
             child_container = child.widget_cont
@@ -337,8 +346,6 @@ class VBox(Box):
                                   child.padding + 2 * child.margin
         else:
             count = len(self.children)
-        vert_inc = (self.widget_cont.getHeight() - 2 * self.margin -
-                    fix_height) / count
         top = self.margin
         for child in self.children:
             if len(self.children) != 1:
@@ -349,6 +356,9 @@ class VBox(Box):
         self.widget_cont.setPxStyle('minHeight', self.minheight)
         self.widget_cont.setPxStyle('minWidth', self.minwidth)
 
+        count = max(count, 1)
+        vert_inc = (self.widget_cont.getHeight() - 2 * self.margin -
+                    fix_height) / count
         for child in self.children:
             child.widget_cont.setPxStyle('width', self.widget_cont.getWidth() -
                                                   2 * self.margin)
@@ -457,7 +467,7 @@ class ToggleButton(Button):
         self.istoggled = False
         self.widget_int.setProperty('className', 'togglebutton')
 
-    def toggled(self, widget, event, data=None):
+    def toggled(self, widget, event=None, data=None):
         self.istoggled = not self.istoggled
         if self.istoggled:
             self.widget_int.setProperty('className', 'togglebutton-toggled')
@@ -504,12 +514,12 @@ class CheckButton(ToggleButton):
         #TODO Check that no more than one widget is added.
         ToggleButton.add(self, child)
 
-    def toggled(self, widget, event, data=None):
+    def toggled(self, widget, event=None, data=None):
         self.istoggled = not self.istoggled
         if self.istoggled:
-            self.check.setProperty('checked', True)
+            self.check.setProperty('checked', "1")
         else:
-            self.check.setProperty('checked', False)
+            self.check.setProperty('checked', None)
 
     def _redraw(self):
         ToggleButton._redraw(self)
@@ -538,7 +548,7 @@ class RadioButton(CheckButton):
             self.group = group.group
             RadioButton.groups[self.group].append(self)
 
-    def toggled(self, widget, event, data=None):
+    def toggled(self, widget, event=None, data=None):
         if RadioButton.running:
             return
         RadioButton.running = True
@@ -677,7 +687,7 @@ class Range(Widget):
     def set_update_policy(self, policy):
         pass
 
-    def _adjustment_value_changed(self):
+    def _adjustment_value_changed(self, sender):
         self.value.setHTML(str(self.adjustment.get_value()))
 
     def _adjustment_changed(self):
@@ -721,11 +731,9 @@ class Scale(Range):
     def get_value_pos(self):
         return self.value_pos
 
-    def _adjustment_value_changed(self):
+    def _adjustment_value_changed(self, sender):
         value = self.adjustment.get_value()
-        JS('''
-        value = value.toFixed(self.digits);
-        ''')
+        value = browser.round_val(value, self.digits)
         self.value.setHTML(str(value))
 
     def _move_cursor(self, event):
@@ -797,7 +805,7 @@ class VScale(Scale):
                 line.setPxStyle('left', (container_width - line_width) / 2)
                 line.setPxStyle('top', 0)
                 line.setPxStyle('height', container_height - value_height - 4)
-        self._adjustment_value_changed()
+        self._adjustment_value_changed(self)
 
     def _move_cursor(self, event):
         Scale._move_cursor(self, event)
@@ -819,8 +827,8 @@ class VScale(Scale):
         else:
             self.adjustment.set_value(value)
 
-    def _adjustment_value_changed(self):
-        Scale._adjustment_value_changed(self)
+    def _adjustment_value_changed(self, sender):
+        Scale._adjustment_value_changed(self, self)
         value = self.adjustment.get_value()
         if self.draw_value:
             value = round(value, self.digits)
@@ -888,7 +896,7 @@ class HScale(Scale):
                 line.setPxStyle('top', container_height / 2 -
                                        (line_height + value_height + 2) / 2)
                 line.setPxStyle('width', container_width - 2)
-        self._adjustment_value_changed()
+        self._adjustment_value_changed(self)
 
     def _move_cursor(self, event):
         Scale._move_cursor(self, event)
@@ -911,8 +919,8 @@ class HScale(Scale):
         else:
             self.adjustment.set_value(value)
 
-    def _adjustment_value_changed(self):
-        Scale._adjustment_value_changed(self)
+    def _adjustment_value_changed(self, sender):
+        Scale._adjustment_value_changed(self, self)
         value = self.adjustment.get_value()
         if self.draw_value:
             value = round(value, self.digits)
@@ -961,7 +969,7 @@ class Scrollbar(Range):
         browser.Document.document.catchEvents(['mousemove'], self)
         browser.Document.document.catchEvents(['mouseup'], self)
 
-    def _adjustment_value_changed(self):
+    def _adjustment_value_changed(self, sender):
         pass
 
     def _move_cursor(self, event):
@@ -1007,7 +1015,7 @@ class HScrollbar(Scrollbar):
                       self.adjustment.page_size / 100.0
         cursor_size = max(cursor_size, 30)
         self.cursor.setPxStyle('width', cursor_size)
-        self._adjustment_value_changed()
+        self._adjustment_value_changed(self)
 
     def _move_cursor(self, event):
         Scrollbar._move_cursor(self, event)
@@ -1036,8 +1044,8 @@ class HScrollbar(Scrollbar):
         else:
             self.adjustment.set_value(value)
 
-    def _adjustment_value_changed(self):
-        Scrollbar._adjustment_value_changed(self)
+    def _adjustment_value_changed(self, sender):
+        Scrollbar._adjustment_value_changed(self, self)
         value = self.adjustment.get_value()
         x = (value - self.adjustment.lower) / \
             (self.adjustment.upper - self.adjustment.page_size) * \
@@ -1074,7 +1082,7 @@ class VScrollbar(Scrollbar):
                       self.adjustment.page_size / 100.0
         cursor_size = max(cursor_size, 30)
         self.cursor.setPxStyle('height', cursor_size)
-        self._adjustment_value_changed()
+        self._adjustment_value_changed(self)
 
     def _move_cursor(self, event):
         Scrollbar._move_cursor(self, event)
@@ -1103,7 +1111,7 @@ class VScrollbar(Scrollbar):
         else:
             self.adjustment.set_value(value)
 
-    def _adjustment_value_changed(self):
+    def _adjustment_value_changed(self, sender):
         Scrollbar._adjustment_value_changed(self)
         value = self.adjustment.get_value()
         y = (value - self.adjustment.lower) / \
@@ -1168,8 +1176,8 @@ class MenuShell(Container):
         container.setStyle('bottom', '')
         container.setStyle('top', '')
         container.setStyle('zIndex', '100')
-        widget_int.setStyle('position', 'absolute')
         self.widget_int = self.widget_cont
+        self.widget_int.setStyle('position', 'absolute')
         container.setProperty('className', 'menushell')
         self.hide()
         browser.Document.append(self.widget_cont)
@@ -1413,3 +1421,4 @@ def main():
 def main_quit():
     #TODO: In popups, close it !
     browser.Document.setContent('This application has finalized !')
+

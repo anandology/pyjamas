@@ -37,6 +37,8 @@ elif engine == 'hulahop':
 elif engine == 'mshtml':
     from mshtml import *
 
+sys.path = [os.path.join(pyjdinitpth, 'pygtkweb', 'library')] + sys.path
+
 import importers
 importers._test_revamp()
 

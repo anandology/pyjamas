@@ -119,7 +119,13 @@ def copyFunction(target, source):
 def addCode(target, source):
     target.nodes.append(source)
 
+def copyAssign(target, source):
+    target.nodes = source.nodes
+    target.expr = source.expr
+    target.lineno = source.lineno
 
+def eqNodes(nodes1, nodes2):
+        return str(nodes1) == str(nodes2)
 
 def replaceClassMethods(tree, class_name, class_node):
     # find class to replace

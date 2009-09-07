@@ -9,6 +9,8 @@ hulahop.startup(gecko_path)
 from hulahop.webview import WebView
 
 import gtk
+import gtk.gdk
+import gobject
 import xpcom
 
 from xpcom.nsError import *

@@ -1,4 +1,18 @@
-from __pyjamas__ import JS
+from __pyjamas__ import JS, doc, wnd, get_main_frame
+
+listeners = {}
+
+def mash_attrib(name, joiner='-'):
+    return name
+
+def get_listener(item):
+    pass
+
+def set_listener(item, listener):
+    pass
+
+def round_val(val, digits):
+    return JS('val.toFixed(digits);')
 
 class Element:
     def __init__(self, tag=None, element=None):
@@ -103,6 +117,9 @@ class Element:
         JS('''
         return this.element.innerHTML;
         ''')
+
+    def on_browser_event(self, view, e, ignore):
+        pass
 
     def catchEvents(self, name, object):
         JS('''

@@ -86,6 +86,11 @@ class ImportManager:
 
         parts = fqname.split('.')
 
+        print "_import_hook", parts
+        # pyjamas-gtk hack
+        if parts[0] in ['gtk', 'gdk', 'pygtk', 'gobject']:
+            parts = ['pygtkweb'] + parts
+
         # determine the context of this import
         parent = self._determine_import_context(globals)
 
