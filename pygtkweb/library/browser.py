@@ -41,27 +41,27 @@ class Element:
     def getX(self):
         JS('''
         var obj = this.element;
-	    var curleft = 0;
-    	if (obj.offsetParent) {
-	    	curleft = obj.offsetLeft
-		    while (obj = obj.offsetParent) {
-			    curleft += obj.offsetLeft
-		    }
-	    }
-	    return curleft;
+        var curleft = 0;
+        if (obj.offsetParent) {
+            curleft = obj.offsetLeft
+            while (obj = obj.offsetParent) {
+                curleft += obj.offsetLeft
+            }
+        }
+        return curleft;
         ''')
 
     def getY(self):
         JS('''
         var obj = this.element;
-	    var curtop = 0;
-    	if (obj.offsetParent) {
-	    	curtop = obj.offsetTop
-		    while (obj = obj.offsetParent) {
-			    curtop += obj.offsetTop
-		    }
-	    }
-	    return curtop;
+        var curtop = 0;
+        if (obj.offsetParent) {
+            curtop = obj.offsetTop
+            while (obj = obj.offsetParent) {
+                curtop += obj.offsetTop
+            }
+        }
+        return curtop;
         ''')
 
     def getWidth(self):
@@ -125,9 +125,9 @@ class Element:
         JS('''
         var tmp = function(e) {
             if (!e) var e = $wnd.event;
-        	if (e.target) targ = e.target;
-	        else if (e.srcElement) targ = e.srcElement;
-	        if (targ.nodeType == 3) targ = targ.parentNode;
+            if (e.target) targ = e.target;
+            else if (e.srcElement) targ = e.srcElement;
+            if (targ.nodeType == 3) targ = targ.parentNode;
             if (targ.__ref)
                 object.dom_event(e, targ.__ref);
             else
