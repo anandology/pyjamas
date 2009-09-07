@@ -75,6 +75,7 @@ class JSONParser:
     
     # TODO: __init__ parameters
     def jsObjectToPyObject(self, obj):
+        print obj
         JS("""
         if (pyjslib.isArray(obj)) {
             for (var i in obj) obj[i] = this.jsObjectToPyObject(obj[i]);
@@ -87,7 +88,10 @@ class JSONParser:
                 
                 var new_obj = eval("new " + class_name + "()");
                 delete obj["__jsonclass__"];
-                for (var i in obj) new_obj[i] = this.jsObjectToPyObject(obj[i]);
+                for (var i in obj) {
+                    j = i.replace(/^((prototype)|(call)|(apply)|(constructor)|(name))$/, '\$\$\$\$$1');
+                    new_obj[j] = this.jsObjectToPyObject(obj[i]);
+                }
                 obj = new_obj;
                 }
             else {
