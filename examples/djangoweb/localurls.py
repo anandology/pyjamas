@@ -7,7 +7,9 @@ STATIC = str(os.path.join(os.path.dirname(__file__), 'media/output/fckeditor').r
 OTHERS = str(os.path.join(os.path.dirname(__file__), 'media/output').replace('\\','/'))
 
 urlpatterns = patterns('',
-		(r'^#(P<hash>.*)$', 'djangoweb.webpages.views.index'),
+		#(r'?(P<hash>.*)$', 'djangoweb.webpages.views.index'),
+		#(r'^(?P<path>.*)#(?P<hash>.*)', 'djangoweb.webpages.views.index'),
+		#(r'^#(?P<hash>.*)$', 'djangoweb.webpages.views.index'),
 		(r'^$', 'djangoweb.webpages.views.index'),
 		(r'^services/pages/$', 'djangoweb.webpages.views.service'),
 		(r'^fckeditor/(?P<path>.*)$', 'django.views.static.serve',

@@ -83,7 +83,7 @@ def getTitle():
     return doc().title
 
 def open(url, name, features):
-    document.parent.open(url, name, features)
+    wnd().open(url, name, features)
 
 def setMargin(size):
     doc().body.style.margin = size;

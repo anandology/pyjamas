@@ -43,7 +43,7 @@ class WebApp:
         self.pages[ref] = htp
 
     def onHistoryChanged(self, token):
-        #log.writebr("onHistoryChanged %s" % token)
+        log.writebr("onHistoryChanged %s" % token)
         if self.pages.has_key(token):
             self.setPage(token)
             return

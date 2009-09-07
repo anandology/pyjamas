@@ -13,7 +13,10 @@ from RichTextEditor import RichTextEditor
 
 from pyjamas import Window
 
+fileedit_url = '/fckeditor/editor/filemanager/browser/default/browser.html?Connector=/fckeditor%2Feditor%2Ffilemanager%2Fconnectors%2Fpy%2Fconnector.py' # good grieeef, could this get any longer??
+
 from HTMLDialog import HTMLDialog 
+from Popups import FileDialog 
 
 class WebPageEdit(Composite):
     def __init__(self, sink):
@@ -21,7 +24,7 @@ class WebPageEdit(Composite):
 
         self.remote = sink.remote
 
-        panel = VerticalPanel(Width="100%")
+        panel = VerticalPanel(Width="100%", Spacing=8)
 
         self.view = Button("View", self)
         self.newpage = Button("New", self)
@@ -38,16 +41,22 @@ class WebPageEdit(Composite):
         self.todoList.setWidth("200px")
         self.todoList.addClickListener(self)
 
+        self.fDialogButton = Button("Upload Files", self)
+        
         self.status = HTML()
+
+        panel.add(HTML("Status:"))
         panel.add(self.status)
-        panel.add(Label("Add New Page:"))
+        panel.add(self.fDialogButton)
+        panel.add(Label("Create New Page (doesn't save current one!):"))
+        panel.add(self.newpage)
+        panel.add(Label("Add/Edit New Page:"))
         panel.add(self.todoTextName)
-        panel.add(Label("New Page HTML:"))
-        panel.add(self.todoTextArea)
-        panel.add(Label("Click to Edit:"))
+        panel.add(Label("Click to Load and Edit (doesn't save current one!):"))
         panel.add(self.todoList)
         panel.add(self.view)
-        panel.add(self.newpage)
+        panel.add(Label("New Page HTML.  Click 'save' icon to save.  (pagename is editable as well)"))
+        panel.add(self.todoTextArea)
 
         self.setWidget(panel)
 
@@ -102,6 +111,15 @@ class WebPageEdit(Composite):
             p.setHeight(Window.getClientHeight()-40)
             p.show()
             return
+        elif sender == self.fDialogButton:
+            Window.open(fileedit_url, "fileupload", "width=800,height=600")
+            return
+            dlg = FileDialog(fileedit_url)
+            left = self.fDialogButton.getAbsoluteLeft() + 10
+            top = self.fDialogButton.getAbsoluteTop() + 10
+            dlg.setPopupPosition(left, top)
+            dlg.show()
+
 
         id = self.remote.getPage(sender.getValue(sender.getSelectedIndex()),self)
         if id<0:
@@ -131,4 +149,5 @@ class WebPageEdit(Composite):
 
     def onRemoteError(self, code, message, request_info):
         self.status.setHTML("Server Error or Invalid Response: ERROR " + str(code) + " - " + str(message))
+
 

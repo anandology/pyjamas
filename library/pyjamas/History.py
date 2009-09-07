@@ -6,6 +6,7 @@ from __pyjamas__ import JS, doc, wnd
 if sys.platform not in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
     from __pyjamas__ import get_main_frame
 
+global historyToken
 historyToken = ''
 
 historyListeners = []
@@ -45,11 +46,12 @@ def forward():
     wnd().history.forward()
 
 def getToken():
+    global historyToken
     return historyToken
 
-def newItem(historyToken):
-    print "History - new item", historyToken
-    onHistoryChanged(historyToken)
+def newItem(ht):
+    print "History - new item", ht
+    onHistoryChanged(ht)
     return
 
     JS("""
@@ -60,29 +62,29 @@ def newItem(historyToken):
     """)
 
 # TODO - fireHistoryChangedAndCatch not implemented
-def onHistoryChanged(historyToken):
+def onHistoryChanged(ht):
     #UncaughtExceptionHandler handler = GWT.getUncaughtExceptionHandler();
     #if (handler != null)
     #   fireHistoryChangedAndCatch(historyToken, handler);
     #else
-    fireHistoryChangedImpl(historyToken)
+    fireHistoryChangedImpl(ht)
 
 # TODO
 def fireHistoryChangedAndCatch():
     pass
 
-def fireHistoryChangedImpl(historyToken):
+def fireHistoryChangedImpl(ht):
     for listener in historyListeners:
-        listener.onHistoryChanged(historyToken)
+        listener.onHistoryChanged(ht)
 
 def removeHistoryListener(listener):
     historyListeners.remove(listener)
 
 def init():
     print "history: TODO"
-    global __historyToken
-    __historyToken = ''
-    onHistoryChanged(__historyToken)
+    global historyToken
+    historyToken = ''
+    onHistoryChanged(historyToken)
     return
     JS("""
     $wnd.__historyToken = '';

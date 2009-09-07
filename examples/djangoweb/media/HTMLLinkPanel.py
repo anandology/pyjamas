@@ -10,11 +10,11 @@ class HTMLLinkPanel(HTMLPanel):
         self.title = title
         HTMLPanel.__init__(self, html, **kwargs)
 
-    def replaceLinks(self):
-        """ replaces <a href="#pagename">sometext</a> with:
+    def replaceLinks(self, tagname="a"):
+        """ replaces <tag href="#pagename">sometext</tag> with:
             Hyperlink("sometext", "pagename")
         """
-        tags = self.findTags("a")
+        tags = self.findTags(tagname)
         pageloc = Window.getLocation()
         pagehref = pageloc.getPageHref()
         for el in tags:

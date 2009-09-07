@@ -23,10 +23,12 @@ import Trees
 import Frames
 import Tabs
 from Logger import Logger
+from pyjamas import log
 
 class KitchenSink:
 
     def onHistoryChanged(self, token):
+        log.writebr("onHistoryChanged: %s" % token)
         info = self.sink_list.find(token)
         if info:
             self.show(info, False)

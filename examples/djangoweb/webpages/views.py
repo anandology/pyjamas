@@ -2,24 +2,43 @@
 
 from jsonrpc import *
 from djangoweb.webpages.models import Page 
+from django.template import loader
 from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.template import RequestContext, Template
+from django.http import HttpResponseRedirect, HttpResponse
+import urllib
 
 service = JSONRPCService()
 
-def index(request):
-    pth = request.path.split('#')
-    if len(pth) == 2:
-        name = pth[1]
-    else:
-        name = 'index'
-	page = Page.objects.get(name=name)
-    args = {'title': page.name,
-            'noscript': page.text
+def index(request, path=None):
+    f = open("/tmp/log.txt", "a")
+    f.write("path: %s\n" % str(path))
+    f.write("request: %s\n" % str(request))
+    path = request.GET.get('page', None)
+    if path == '':
+        path = 'index'
+    f.write("pth: %s \n" % (path))
+    if path is None:
+        # workaround in history tokens: must have a query
+        return HttpResponseRedirect("./?page=#index")
+    p = Page.objects.get(name=path)
+    f.write("page: %s \n" % (str(p)))
+    f.close()
+    args = {'title': p.name,
+            'noscript': p.text
             }
     context_instance=RequestContext(request)
     context_instance.autoescape=False
-    return render_to_response('index.html', args, context_instance)
+    try:
+        template = Page.objects.get(name='index.html')
+    except Page.DoesNotExist:
+        template = None
+    if not template:
+        return render_to_response('index.html', args, context_instance)
+    tpl = loader.get_template_from_string(template)
+    context_instance.update(args)
+    tpl = tpl.render(context_instance)
+    return HttpResponse(tpl)
 
 @jsonremote(service)
 def getPage (request, num):
