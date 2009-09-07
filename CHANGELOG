@@ -1,6 +1,10 @@
                     Changes made to Pyjamas since 0.6
                     ---------------------------------
 
+ * All attributes are accessed as v['attr'] and not as v.attr anymore
+   This circumvents a bug in IE with javascript keywords:
+     (v.super is not allowed, but v['super'] is)
+
  * Added __cmp__ to dict class
 
  * Make compile options effective in runtime options
