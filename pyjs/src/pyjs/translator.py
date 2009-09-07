@@ -307,13 +307,13 @@ SCOPE_KEY = 0
 # arguments is one of Other_JavaScript_Keywords, but is used 
 # in function/method initialization and therefore forbidden
 pyjs_vars_remap_names = ['arguments',]
-pyjs_vars_remap = []
+pyjs_vars_remap = {}
 for a in pyjs_vars_remap_names:
-    pyjs_vars_remap.append(re.compile('^%s$' % a))
+    pyjs_vars_remap[a] = '$$' + a
 for a in JavaScript_Reserved_Words:
-    pyjs_vars_remap.append(re.compile('^%s$' % a))
+    pyjs_vars_remap[a] = '$$' + a
 for a in ECMAScipt_Reserved_Words:
-    pyjs_vars_remap.append(re.compile('^%s$' % a))
+    pyjs_vars_remap[a] = '$$' + a
 
 # Attributes that should be remapped in classes
 pyjs_attrib_remap_names = [\
@@ -322,14 +322,14 @@ pyjs_attrib_remap_names = [\
     # http://code.google.com/p/chromium/issues/detail?id=12871
     'name',
 ]
-pyjs_attrib_remap = []
+pyjs_attrib_remap = {}
 for a in pyjs_attrib_remap_names:
-    pyjs_attrib_remap.append(re.compile('(.*(^|[.]))(%s_*)(([.].*)|$)' % a))
+    pyjs_attrib_remap[a] = '$$' + a
 # Specific for IE6:
 for a in JavaScript_Reserved_Words:
-    pyjs_attrib_remap.append(re.compile('(.*(^|[.]))(%s_*)(([.].*)|$)' % a))
+    pyjs_attrib_remap[a] = '$$' + a
 for a in ECMAScipt_Reserved_Words:
-    pyjs_attrib_remap.append(re.compile('(.*(^|[.]))(%s_*)(([.].*)|$)' % a))
+    pyjs_attrib_remap[a] = '$$' + a
 
 debug_options = {}
 speed_options = {}
@@ -805,44 +805,20 @@ class Translator:
             code = code % 'pyjslib.staticmethod(%s)'
         return (staticmethod, classmethod, code)
 
-    def remap_regex(self, re_list, *words):
-        dbg = 0
-        if words[0] == 'name': dbg = 1
-        if dbg: print 'remap_regex words:', words
-        mapped = []
-        single_word = False
-        if len(words) == 1:
-            if isinstance(words[0], list) or \
-               isinstance(words[0], tuple):
-                words = words[0]
-            else:
-                single_word = True
-        for word in words:
-            if dbg: print 'remap_regex word:', word
-            for r in re_list:
-                if dbg: print 'remap_regex r:', r
-                if r.match(word):
-                    word = word + '_'
-                    break
-            mapped.append(word)
-        if dbg: print 'remap_regex mapped:', mapped
-        if single_word:
-            return mapped[0]
-        return mapped
-
     def vars_remap(self, word):
-        for r in pyjs_vars_remap:
-            if r.match(word):
-                return word + "_"
+        if word in pyjs_vars_remap:
+           return pyjs_vars_remap[word]
         return word
 
     def attrib_remap(self, word):
-        for r in pyjs_attrib_remap:
-            m = r.match(word)
-            if m:
-                m = m.groups()
-                word = m[0] + m[2] + '_' + m[3]
-        return word
+        attr = []
+        words = word.split('.')
+        for word in words:
+            if word in pyjs_attrib_remap:
+               attr.append(pyjs_attrib_remap[word])
+            else:
+               attr.append(word)
+        return '.'.join(attr)
 
     def push_lookup(self, scope = None):
         if not scope:
@@ -853,7 +829,7 @@ class Translator:
         return self.lookup_stack.pop()
 
     def jsname(self, name_type, jsname):
-        if name_type != 'builtin' or name_type == 'variable':
+        if name_type != 'builtin':
             if jsname.find('.') >= 0:
                 jsname = self.attrib_remap(jsname)
                 jsname = jsname.split('.', 1)
@@ -1919,8 +1895,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 self.push_lookup(private_scope)
                 self.track_lineno(child, True)
                 rhs = self.expr(child.expr, current_klass)
-                lhs = "%s.%s" % (local_prefix, child.nodes[0].name)
-                lhs = self.add_lookup('attribute', child.nodes[0].name, lhs)
+                name = "%s.%s" % (local_prefix, child.nodes[0].name)
+                lhs = self.add_lookup('attribute', child.nodes[0].name, name)
                 print >>self.output, self.spacing() + "%s = %s;" % (lhs, rhs)
                 private_scope = self.pop_lookup()
             elif isinstance(child, ast.Discard) and isinstance(child.expr, ast.Const):
