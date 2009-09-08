@@ -1257,7 +1257,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             for v in revargs:
                 print >> output, """\
 %(s)s\tif (typeof %(v)s != 'undefined') {
-%(s)s\t\tif (typeof %(v)s['$pyjs_is_kwarg'] != 'undefined') {
+%(s)s\t\tif (%(v)s != null && typeof %(v)s['$pyjs_is_kwarg'] != 'undefined') {
 %(s)s\t\t\t%(k)s = %(v)s;
 %(s)s\t\t\t%(v)s = arguments[%(a)d];
 %(s)s\t\t}
