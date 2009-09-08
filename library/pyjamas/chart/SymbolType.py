@@ -189,7 +189,7 @@ class SymbolType:
     def __init__(self, widthMultiplier, heightMultiplier,
                         pixelPadLeft, pixelPadRight, 
                         pixelPadTop, pixelPadBottom,
-                        isHorizontallyBanded=1):
+                        isHorizontallyBanded=None):
         AnnotationLocation.validateMultipliers(widthMultiplier,
                                                heightMultiplier)
         self.widthMultiplier = widthMultiplier
