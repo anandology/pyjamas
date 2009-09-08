@@ -569,9 +569,8 @@ class List:
             n = self.l.length;
             for (var i=0; i < data.length; i++) {
                 self.l[n+i]=data[i];
-                }
             }
-        else if (pyjslib.isIteratable(data)) {
+        } else if (pyjslib.isIteratable(data)) {
             var iter=data.__iter__();
             var i=self.l.length;
             try {
@@ -581,9 +580,11 @@ class List:
                     }
                 }
             catch (e) {
-                if (e.__name__ != 'StopIteration') throw e;
+                if (e.__name__ != 'StopIteration') {
+                    throw e;
                 }
             }
+        }
         """)
 
     @compiler.noSourceTracking
@@ -782,21 +783,21 @@ class Tuple:
             n = self.l.length;
             for (var i=0; i < data.length; i++) {
                 self.l[n+i]=data[i];
-                }
             }
-        else if (pyjslib.isIteratable(data)) {
+        } else if (pyjslib.isIteratable(data)) {
             var iter=data.__iter__();
             var i=self.l.length;
             try {
                 while (true) {
                     var item=iter.next();
                     self.l[i++]=item;
-                    }
                 }
-            catch (e) {
-                if (e.__name__ != 'StopIteration') throw e;
+            } catch (e) {
+                if (e.__name__ != 'StopIteration') {
+                    throw e;
                 }
             }
+        }
         """)
 
     @compiler.noSourceTracking
@@ -897,25 +898,24 @@ class Dict:
                 self.__setitem__(item[0], item[1]);
                 //var sKey=pyjslib.hash(item[0]);
                 //self.d[sKey]=item[1];
-                }
             }
-        else if (pyjslib.isIteratable(data)) {
+        } else if (pyjslib.isIteratable(data)) {
             var iter=data.__iter__();
             try {
                 while (true) {
                     var item=iter.next();
                     self.__setitem__(item.__getitem__(0), item.__getitem__(1));
-                    }
                 }
-            catch (e) {
-                if (e.__name__ != 'StopIteration') throw e;
+            } catch (e) {
+                if (e.__name__ != 'StopIteration') {
+                    throw e;
                 }
             }
-        else if (pyjslib.isObject(data)) {
+        } else if (pyjslib.isObject(data)) {
             for (var key in data) {
                 self.__setitem__(key, data[key]);
-                }
             }
+        }
         """)
 
     @compiler.noSourceTracking
@@ -1221,7 +1221,9 @@ def range(start, stop = None, step = 1):
     JS("""
     return {
         'next': function() {
-            if ((step > 0 && start >= stop) || (step < 0 && start <= stop)) throw pyjslib.StopIteration;
+            if ((step > 0 && start >= stop) || (step < 0 && start <= stop)) {
+                throw pyjslib.StopIteration;
+            }
             var rval = start;
             start += step;
             return rval;
@@ -1701,9 +1703,9 @@ def toJSObjects(x):
 def sprintf(strng, args):
     # See http://docs.python.org/library/stdtypes.html
     constructor = get_pyjs_classtype(args)
-    JS("""
-    var re_dict = /([^%]*)%[(]([^)]+)[)]([#0\x20\0x2B-]*)(\d+)?(\.\d+)?[hlL]?(.)((.|\\n)*)/;
-    var re_list = /([^%]*)%([#0\x20\x2B-]*)(\*|(\d+))?(\.\d+)?[hlL]?(.)((.|\\n)*)/;
+    JS(r"""
+    var re_dict = /([^%]*)%[(]([^)]+)[)]([#0\x20\x2B-]*)(\d+)?(\.\d+)?[hlL]?(.)((.|\n)*)/;
+    var re_list = /([^%]*)%([#0\x20\x2B-]*)(\*|(\d+))?(\.\d+)?[hlL]?(.)((.|\n)*)/;
     var re_exp = /(.*)([+-])(.*)/;
 """)
     strlen = len(strng)

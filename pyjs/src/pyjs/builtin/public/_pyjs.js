@@ -20,7 +20,7 @@ function $pyjs_kwargs_call(obj, func, star_args, dstar_args, args)
                 args[0][i] = dstar_args.__getitem__(i)
             }
         } catch (e) {
-            if (e != pyjslib.StopIteration) {
+            if (e.__name__ != 'StopIteration') {
                 throw e;
             }
         }
@@ -44,7 +44,7 @@ function $pyjs_kwargs_call(obj, func, star_args, dstar_args, args)
                     i++;
                 }
             } catch (e) {
-                if (e != pyjslib.StopIteration) {
+                if (e.__name__ != 'StopIteration') {
                     throw e;
                 }
             }
