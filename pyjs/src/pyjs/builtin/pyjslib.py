@@ -202,7 +202,7 @@ pyjslib.TryElse.message = 'TryElse';
 pyjslib.StopIteration = function () { };
 pyjslib.StopIteration.prototype = new Error();
 pyjslib.StopIteration.__name__ = 'StopIteration';
-pyjslib.StopIteration.message = 'StopIteration';
+//pyjslib.StopIteration.message = 'StopIteration';
 """)
 
     # Patching of the standard javascript String object
