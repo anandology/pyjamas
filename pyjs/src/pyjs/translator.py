@@ -1070,7 +1070,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
 """ % (kwargname, maxargs1)
             s = self.spacing()
             print >> output, """\
-%(s)sif (typeof %(kwargname)s != 'object' || %(kwargname)s.__is_instance__ !== true || %(kwargname)s.__name__ != 'Dict') {\
+%(s)sif (typeof %(kwargname)s != 'object' || %(kwargname)s.__name__ != 'Dict' || typeof %(kwargname)s.$pyjs_is_kwarg == 'undefined') {\
 """ % locals()
             if node.varargs:
                 print >> output, """\
@@ -1078,6 +1078,8 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
 """ % locals()
             print >> output, """\
 %(s)s\t%(kwargname)s = arguments[arguments.length+1];
+%(s)s} else {
+%(s)s\tdelete %(kwargname)s['$pyjs_is_kwarg'];
 %(s)s}\
 """ % locals()
 
@@ -1111,7 +1113,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
 """ % (kwargname, maxargs2)
             s = self.spacing()
             print >> output, """\
-%(s)sif (typeof %(kwargname)s != 'object' || %(kwargname)s.__is_instance__ !== true || %(kwargname)s.__name__ != 'Dict') {\
+%(s)sif (typeof %(kwargname)s != 'object' || %(kwargname)s.__name__ != 'Dict' || typeof %(kwargname)s.$pyjs_is_kwarg == 'undefined') {\
 """ % locals()
             if node.varargs:
                 print >> output, """\
@@ -1119,6 +1121,8 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
 """ % locals()
             print >> output, """\
 %(s)s\t%(kwargname)s = arguments[arguments.length+1];
+%(s)s} else {
+%(s)s\tdelete %(kwargname)s['$pyjs_is_kwarg'];
 %(s)s}\
 """ % locals()
 
@@ -1170,7 +1174,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
 """ % (kwargname, maxargs)
             s = self.spacing()
             print >> output, """\
-%(s)sif (typeof %(kwargname)s != 'object' || %(kwargname)s.__is_instance__ !== true || %(kwargname)s.__name__ != 'Dict') {\
+%(s)sif (typeof %(kwargname)s != 'object' || %(kwargname)s.__name__ != 'Dict' || typeof %(kwargname)s.$pyjs_is_kwarg == 'undefined') {\
 """ % locals()
             if node.varargs:
                 print >> output, """\
@@ -1178,6 +1182,8 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
 """ % locals()
             print >> output, """\
 %(s)s\t%(kwargname)s = arguments[arguments.length+1];
+%(s)s} else {
+%(s)s\tdelete %(kwargname)s['$pyjs_is_kwarg'];
 %(s)s}\
 """ % locals()
 
@@ -1212,12 +1218,12 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             self._varargs_handler(node, varargname, maxargs)
 
         if node.kwargs:
-            print >> output, """\
-        var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[arguments.length];\
+            print >> output, self.spacing() + """\
+var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[arguments.length];\
 """ % (kwargname, maxargs)
             s = self.spacing()
             print >> output, """\
-%(s)sif (typeof %(kwargname)s != 'object' || %(kwargname)s.__is_instance__ !== true || %(kwargname)s.__name__ != 'Dict') {\
+%(s)sif (typeof %(kwargname)s != 'object' || %(kwargname)s.__name__ != 'Dict' || typeof %(kwargname)s.$pyjs_is_kwarg == 'undefined') {\
 """ % locals()
             if node.varargs:
                 print >> output, """\
@@ -1251,7 +1257,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             for v in revargs:
                 print >> output, """\
 %(s)s\tif (typeof %(v)s != 'undefined') {
-%(s)s\t\tif (pyjslib['get_pyjs_classtype'](%(v)s) == 'Dict') {
+%(s)s\t\tif (typeof %(v)s['$pyjs_is_kwarg'] != 'undefined') {
 %(s)s\t\t\t%(k)s = %(v)s;
 %(s)s\t\t\t%(v)s = arguments[%(a)d];
 %(s)s\t\t}

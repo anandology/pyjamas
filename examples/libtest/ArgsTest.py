@@ -172,7 +172,26 @@ class ArgsTest(UnitTest):
         self.assertEquals(values[3][2], 3)
         self.assertEquals(values[4]["x"], 4)
         self.assertEquals(values[4]["y"], 5)
-        
+
+    def testEdgeCall(self):
+        values = foo7(1,2,3,b=2)
+        self.assertEqual(values[0], 1)
+        self.assertEqual(values[1], (2,3))
+        self.assertEqual(values[2], {'b':2})
+
+        values = foo7(1, 2, 3, {'b':2})
+        self.assertEqual(values[0], 1)
+        self.assertEqual(values[1], (2,3,{'b':2}))
+        self.assertEqual(values[2], {})
+
+        vaules = foo8(1, b=2)
+        self.assertEqual(vaules[0], 1)
+        self.assertEqual(vaules[1], {'b':2})
+
+        vaules = foo8({'b':2})
+        self.assertEqual(vaules[0], {'b':2})
+        self.assertEqual(vaules[1], {})
+
     def testSimpleCtorCall(self):
         values = ArgsTestClass_foo(1, 2, 3).x
         self.assertEquals(values[0], 1)
@@ -331,6 +350,25 @@ class ArgsTest(UnitTest):
         self.assertEquals(values[1]["x"], 4)
         self.assertEquals(values[1]["y"], 5)
         
+    def testEdgeMethodCall(self):
+        values = ArgsTestClass().foo7(1,2,3,b=2)
+        self.assertEqual(values[0], 1)
+        self.assertEqual(values[1], (2,3))
+        self.assertEqual(values[2], {'b':2})
+
+        values = ArgsTestClass().foo7(1, 2, 3, {'b':2})
+        self.assertEqual(values[0], 1)
+        self.assertEqual(values[1], (2,3,{'b':2}))
+        self.assertEqual(values[2], {})
+
+        vaules = ArgsTestClass().foo8(1, b=2)
+        self.assertEqual(vaules[0], 1)
+        self.assertEqual(vaules[1], {'b':2})
+
+        vaules = ArgsTestClass().foo8({'b':2})
+        self.assertEqual(vaules[0], {'b':2})
+        self.assertEqual(vaules[1], {})
+
     def testSimpleStaticMethodCall(self):
         values = ArgsTestClass2.foo(1, 2, 3)
         self.assertEquals(values[0], 1)
@@ -362,7 +400,6 @@ class ArgsTest(UnitTest):
         self.assertEquals(values[0], None)
         self.assertEquals(values[1], None)
         self.assertEquals(values[2], True)
-        
         
     def testDefaultValuesStaticMethodCall(self):
         values = ArgsTestClass2.foo3(b=7)
@@ -403,7 +440,26 @@ class ArgsTest(UnitTest):
         self.assertEquals(values[0][2], 3)
         self.assertEquals(values[1]["x"], 4)
         self.assertEquals(values[1]["y"], 5)
- 
+
+    def testEdgeStaticMethodCall(self):
+        values = ArgsTestClass2.foo7(1,2,3,b=2)
+        self.assertEqual(values[0], 1)
+        self.assertEqual(values[1], (2,3))
+        self.assertEqual(values[2], {'b':2})
+
+        values = ArgsTestClass2.foo7(1, 2, 3, {'b':2})
+        self.assertEqual(values[0], 1)
+        self.assertEqual(values[1], (2,3,{'b':2}))
+        self.assertEqual(values[2], {})
+
+        vaules = ArgsTestClass2.foo8(1, b=2)
+        self.assertEqual(vaules[0], 1)
+        self.assertEqual(vaules[1], {'b':2})
+
+        vaules = ArgsTestClass2.foo8({'b':2})
+        self.assertEqual(vaules[0], {'b':2})
+        self.assertEqual(vaules[1], {})
+
     def testSimpleClassMethodCall(self):
         values = ArgsTestClass3.foo(1, 2, 3)
         self.assertEquals(values[0], 1)
@@ -477,6 +533,25 @@ class ArgsTest(UnitTest):
         self.assertEquals(values[1]["x"], 4)
         self.assertEquals(values[1]["y"], 5)
         
+    def testEdgeClassMethodCall(self):
+        values = ArgsTestClass3.foo7(1,2,3,b=2)
+        self.assertEqual(values[0], 1)
+        self.assertEqual(values[1], (2,3))
+        self.assertEqual(values[2], {'b':2})
+
+        values = ArgsTestClass3.foo7(1, 2, 3, {'b':2})
+        self.assertEqual(values[0], 1)
+        self.assertEqual(values[1], (2,3,{'b':2}))
+        self.assertEqual(values[2], {})
+
+        vaules = ArgsTestClass3.foo8(1, b=2)
+        self.assertEqual(vaules[0], 1)
+        self.assertEqual(vaules[1], {'b':2})
+
+        vaules = ArgsTestClass3.foo8({'b':2})
+        self.assertEqual(vaules[0], {'b':2})
+        self.assertEqual(vaules[1], {})
+
     def testSimpleIndirectClassMethodCall(self):
         values = ArgsTestClass3().foo(1, 2, 3)
         self.assertEquals(values[0], 1)
@@ -581,7 +656,6 @@ class ArgsTest(UnitTest):
         self.assertEquals(values[0], 1)
         self.assertEquals(values[1]['a'], 1)
 
-        # This fails...
         values = varargs_kwargs2(1, {'a':1})
         self.assertEquals(values[0], 1)
         try:
@@ -655,6 +729,12 @@ def foo5(a, b, c, **kwargs):
 def foo6(a, b, c, *args, **kwargs):
     return (a, b, c, args, kwargs)
 
+def foo7(a, *args, **kwargs):
+    return (a, args, kwargs)
+    
+def foo8(a, **kwargs):
+    return (a, kwargs)
+    
 class ArgsTestClass_foo:
     def __init__(self, a, b, c):
         self.x = [a, b, c]
@@ -698,6 +778,12 @@ class ArgsTestClass:
     def foo6(self, *args, **kwargs):
         return (args, kwargs)
     
+    def foo7(self, a, *args, **kwargs):
+        return (a, args, kwargs)
+    
+    def foo8(self, a, **kwargs):
+        return (a, kwargs)
+    
 
 class ArgsTestClass2:
     @staticmethod
@@ -724,6 +810,14 @@ class ArgsTestClass2:
     def foo6(*args, **kwargs):
         return (args, kwargs)
 
+    @staticmethod
+    def foo7(a, *args, **kwargs):
+        return (a, args, kwargs)
+    
+    @staticmethod
+    def foo8(a, **kwargs):
+        return (a, kwargs)
+    
 class ArgsTestClass3:
     @classmethod
     def foo(self, a, b, c):
@@ -749,6 +843,14 @@ class ArgsTestClass3:
     def foo6(self, *args, **kwargs):
         return (args, kwargs)
 
+    @classmethod
+    def foo7(self, a, *args, **kwargs):
+        return (a, args, kwargs)
+    
+    @classmethod
+    def foo8(self, a, **kwargs):
+        return (a, kwargs)
+    
 
 class KwArgs:
     def __init__(self, z=7, zz=77, **kwargs):

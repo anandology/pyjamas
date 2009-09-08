@@ -64,7 +64,7 @@ function $pyjs_kwargs_call(obj, func, star_args, dstar_args, args)
         var __args__ = new Array(null, null);
     }
 
-    var a, aname, _idx , idx;
+    var a, aname, _idx , idx, res;
     _idx = idx = 1;
     if (obj === null) {
         if (func.__is_instance__ === false) {
@@ -104,10 +104,14 @@ function $pyjs_kwargs_call(obj, func, star_args, dstar_args, args)
         for (var kwname in args[0]) {
             $pyjs__exception_func_unexpected_keyword(func.__name__, kwname);
         }
-    } else {
-        _args.push(pyjslib.Dict(args[0]));
+        return func.apply(obj, _args);
     }
-    return func.apply(obj, _args);
+    a = pyjslib.Dict(args[0]);
+    a['$pyjs_is_kwarg'] = true;
+    _args.push(a);
+    res = func.apply(obj, _args);
+    delete a['$pyjs_is_kwarg'];
+    return res;
 }
 
 function $pyjs__exception_func_param(func_name, minargs, maxargs, nargs) {
