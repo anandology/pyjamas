@@ -65,7 +65,7 @@ class Slideshow:
     def onError(self, text, code):
         self.slide.setHTML(text + "<br />" + code)
 
-if __name__ == '__main__:
+if __name__ == '__main__':
     app = Slideshow()
     app.onModuleLoad()
 }}
