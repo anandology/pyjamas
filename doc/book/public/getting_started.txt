@@ -14,7 +14,7 @@ bin/ subdirectory.  Run buildout, and it will create bin/pyjsbuild
 and bin/pyjscompile.  You now have a development environment that is
 tailored specifically to your system (known as a developer sandbox).
 
-Mext, browse to the examples directory.
+Next, browse to the examples directory.
 You will find a script called "buildall.sh".  If you just want to
 compile the "helloworld" example, browse to the examples/helloworld
 directory, and you will see a "build.sh" file and a README.  Follow
