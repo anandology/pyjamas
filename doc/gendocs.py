@@ -37,16 +37,17 @@ included: Inherited objects are mixed in with non-inherited objects.
 import glob
 from os.path import abspath, pathsep
 import os
-os.environ['PYTHONPATH'] += (pathsep + abspath('../stubs') + 
-                             pathsep + abspath('../library') + 
-                             pathsep + abspath('../addons'))
-paths = glob.glob(abspath('../library/*.py'))+glob.glob(abspath('../addons/*.py'))
-command = ['epydoc.py', "-v",  "-v",
+paths = glob.glob(abspath('../library/pyjamas/*.py')) + \
+        glob.glob(abspath('../library/pyjamas/ui/*.py')) + \
+        glob.glob(abspath('../library/pyjamas/Canvas/*.py')) + \
+        glob.glob(abspath('../bin/*.py'))
+print paths
+command = ['epydoc', "-v",  "-v",
            '--parse-only',
            '--html',
            '-o', 'api', 
-           '--name', 'pyjamas', 
-           '--url', 'http://pyjamas.pyworks.org/', 
+           '--name', 'Pyjamas', 
+           '--url', 'http://pyjs.org', 
            ]+list(paths)
 
 def quote_shell(x):
