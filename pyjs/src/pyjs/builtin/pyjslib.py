@@ -446,6 +446,26 @@ String.prototype.__setitem__ = function(idx, val) {
 
 String.prototype.upper = String.prototype.toUpperCase;
 String.prototype.lower = String.prototype.toLowerCase;
+
+String.prototype.__add__ = function(y) {
+    if (typeof y != "string") {
+        throw pyjslib.TypeError("cannot concatenate 'str' and non-str objects");
+    }
+    return this + y;
+}
+
+String.prototype.__mul__ = function(n) {
+    if (typeof n != "number") {
+        throw pyjslib.TypeError("can't multiply sequence by non-int of type 'str'");
+    }
+    var s = '';
+    while (n--) {
+        s += this;
+    }
+    return s;
+}
+String.prototype.__rmul__ = String.prototype.__mul__;
+
 """)
 
     # Patching of the standard javascript Array object
@@ -488,7 +508,9 @@ class Class:
 def eq(a,b):
     # All 'python' classes and types are implemented as objects/functions.
     # So, for speed, do a typeof X / X.__cmp__  on a/b.
-    # Checking for the existance of .__cmp__ is expensive...
+    # Checking for the existance of .__cmp__ is expensive when it doesn't exist
+    #setCompilerOptions("InlineEq")
+    #return a == b
     JS("""
     if (a === null) {
         if (b === null) return true;
@@ -533,7 +555,10 @@ def bool(v):
     # this needs to stay in native code without any dependencies here,
     # because this is used by if and while, we need to prevent
     # recursion
-    # (!v?false:(v === true?:v:(v != 'object?Boolean(v):(typeof v.__nonzero__ == 'function': v.__nonzero__():(typeof v.__len__ == 'function'?v.__len__()>0:true)))))
+    #setCompilerOptions("InlineBool")
+    #if v:
+    #    return True
+    #return False
     JS("""
     if (!v) return false;
     switch(typeof v){
@@ -772,6 +797,23 @@ class List:
         return s;
         """)
 
+    def __add__(self, y):
+        if not isinstance(y, self):
+            raise TypeError("can only concatenate list to list")
+        return list(self.l.concat(y.l))
+
+    def __mul__(self, n):
+        if not isNumber(n):
+            raise TypeError("can't multiply sequence by non-int")
+        a = []
+        while n:
+            n -= 1
+            a.extend(self.l)
+        return a
+
+    def __rmul__(self, n):
+        return self.__mul__(n)
+
 list = List
 
 class Tuple:
@@ -883,6 +925,23 @@ class Tuple:
         s += ")";
         return s;
         """)
+
+    def __add__(self, y):
+        if not isinstance(y, self):
+            raise TypeError("can only concatenate tuple to tuple")
+        return tuple(self.l.concat(y.l))
+
+    def __mul__(self, n):
+        if not isNumber(n):
+            raise TypeError("can't multiply sequence by non-int")
+        a = []
+        while n:
+            n -= 1
+            a.extend(self.l)
+        return a
+
+    def __rmul__(self, n):
+        return self.__mul__(n)
 
 tuple = Tuple
 
@@ -1380,9 +1439,9 @@ def int(text, radix=None):
 @compiler.noSourceTracking
 def len(object):
     JS("""
+    if (object === null) return 0;
     if (typeof object.__len__ == 'function') return object.__len__();
     if (typeof object.length != 'undefined') return object.length;
-    if (object === null) return 0;
     throw pyjslib.TypeError("object has no len()")
     """)
 
@@ -1401,6 +1460,8 @@ def isinstance(object_, classinfo):
     if not isObject(object_):
         return False
     if _isinstance(classinfo, Tuple):
+        if _isinstance(object_, Tuple):
+            return True
         for ci in classinfo:
             if isinstance(object_, ci):
                 return True
@@ -1603,6 +1664,77 @@ def hash(obj):
     }
     """)
 
+
+def op_uadd(v):
+    raise TypeError("bad operand type for unary +: '%r'" % v)
+
+def op_usub(v):
+    raise TypeError("bad operand type for unary -: '%r'" % v)
+
+def op_add(x, y):
+    JS("""
+    if (typeof x == typeof y && (typeof x == 'number' || typeof x == 'string')) {
+        return x + y;
+    }
+    if (x !== null && y !== null) {
+        if (typeof x['__add__'] != 'undefined') return x.__add__(y);
+        if (typeof y['__radd__'] != 'undefined') return y.__radd__(x);
+        if (typeof y['__add__'] != 'undefined') return y.__add__(x);
+    }
+    throw pyjslib['TypeError']("unsupported operand type(s) for +: '%r', '%r'" % (x, y))
+""")
+
+def op_sub(x, y):
+    JS("""
+    if (typeof x == typeof y && (typeof x == 'number' || typeof x == 'string')) {
+        return x - y;
+    }
+    if (x !== null && y !== null) {
+        if (typeof x['__sub__'] != 'undefined') return x.__sub__(y);
+        if (typeof y['__rsub__'] != 'undefined') return y.__rsub__(x);
+    }
+    throw pyjslib['TypeError']("unsupported operand type(s) for -: '%r', '%r'" % (x, y))
+""")
+
+def op_div(x, n):
+    JS("""
+    if (typeof x == 'number' && typeof n == 'number') {
+        return x / y;
+    }
+    if (x !== null && n !== null) {
+        if (typeof x['__div__'] != 'undefined') return x.__div__(n);
+        if (typeof n['__rdiv__'] != 'undefined') return n.__rdiv__(x);
+    }
+    throw pyjslib['TypeError']("unsupported operand type(s) for /: '%r', '%r'" % (x, n))
+""")
+
+def op_mul(x, n):
+    JS("""
+    if (typeof x == 'number' && typeof n == 'number') {
+        return x * y;
+    }
+    if (x !== null && n !== null) {
+        if (typeof x['__mul__'] != 'undefined') return x.__mul__(n);
+        if (typeof n['__rmul__'] != 'undefined') return n.__rmul__(x);
+        if (typeof n['__mul__'] != 'undefined') return n.__mul__(x);
+    }
+    throw pyjslib['TypeError']("unsupported operand type(s) for *: '%r', '%r'" % (x, n))
+""")
+
+def op_mod(x, y):
+    JS("""
+    if (typeof x == typeof y && typeof x == 'number') {
+        return x % y;
+    }
+    if (typeof x == 'string') {
+        return pyjslib.sprintf(x, y);
+    }
+    if (x !== null && y !== null) {
+        if (typeof x['__mod__'] != 'undefined') return x.__mod__(y);
+        if (typeof y['__rmod__'] != 'undefined') return y.__rmod__(x);
+    }
+    throw pyjslib['TypeError']("unsupported operand type(s) for %: '%r', '%r'" % (x, y))
+""")
 
 # type functions from Douglas Crockford's Remedial Javascript: http://www.crockford.com/javascript/remedial.html
 @compiler.noSourceTracking

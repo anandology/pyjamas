@@ -267,6 +267,14 @@ class StringTest(UnitTest):
         except IndexError, e:
             self.assertEqual(e[0], 'string index out of range')
 
+    def testOperator(self):
+        self.assertEqual("1".__add__("2"), "12")
+        self.assertEqual("1".__mul__(2), "11")
+        self.assertEqual("1".__rmul__(3), "111")
+        self.assertEqual("2" * 3, "222")
+        self.assertEqual(3 * "3", "333")
+
+
 class ClassWithOwnToString(object):
 
     def toString(self):

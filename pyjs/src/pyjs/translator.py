@@ -455,8 +455,8 @@ class __Pyjamas__(object):
                 node.node)
             option = arg.value
             if translator.decorator_compiler_options.has_key(option):
-                var, val = translator.decorator_compiler_options[option]
-                setattr(translator, var, val)
+                for var, val in translator.decorator_compiler_options[option]:
+                    setattr(translator, var, val)
             elif option == "Speed":
                 for var in speed_options:
                     setattr(translator, var, speed_options[var])
@@ -545,24 +545,34 @@ def mod_var_name_decl(raw_module_name):
 class Translator:
 
     decorator_compiler_options = {\
-        'Debug': ('debug', True),
-        'noDebug': ('debug', False),
-        'PrintStatements': ('print_statements', True),
-        'noPrintStatements': ('print_statements', False),
-        'FunctionArgumentChecking': ('function_argument_checking', True),
-        'noFunctionArgumentChecking': ('function_argument_checking', False),
-        'AttributeChecking': ('attribute_checking', True),
-        'noAttributeChecking': ('attribute_checking', False),
-        'BoundMethods': ('bound_methods', True),
-        'noBoundMethods': ('bound_methods', False),
-        'Descriptors': ('descriptors', True),
-        'noDescriptors': ('descriptors', False),
-        'SourceTracking': ('source_tracking', True),
-        'noSourceTracking': ('source_tracking', False),
-        'LineTracking': ('line_tracking', True),
-        'noLineTracking': ('line_tracking', False),
-        'StoreSource': ('store_source', True),
-        'noStoreSource': ('store_source', False),
+        'Debug': [('debug', True)],
+        'noDebug': [('debug', False)],
+        'PrintStatements': [('print_statements', True)],
+        'noPrintStatements': [('print_statements', False)],
+        'FunctionArgumentChecking': [('function_argument_checking', True)],
+        'noFunctionArgumentChecking': [('function_argument_checking', False)],
+        'AttributeChecking': [('attribute_checking', True)],
+        'noAttributeChecking': [('attribute_checking', False)],
+        'BoundMethods': [('bound_methods', True)],
+        'noBoundMethods': [('bound_methods', False)],
+        'Descriptors': [('descriptors', True)],
+        'noDescriptors': [('descriptors', False)],
+        'SourceTracking': [('source_tracking', True)],
+        'noSourceTracking': [('source_tracking', False)],
+        'LineTracking': [('line_tracking', True)],
+        'noLineTracking': [('line_tracking', False)],
+        'StoreSource': [('store_source', True)],
+        'noStoreSource': [('store_source', False)],
+        'noInlineBool': [('inline_bool', False)],
+        'InlineBool': [('inline_bool', True)],
+        'noInlineLen': [('inline_len', False)],
+        'InlineLen': [('inline_len', True)],
+        'noInlineEq': [('inline_eq', False)],
+        'InlineEq': [('inline_eq', True)],
+        'noInlineCode': [('inline_bool', False),('inline_len', False),('inline_eq', False)],
+        'InlineCode': [('inline_bool', True),('inline_len', True),('inline_eq', True)],
+        'noOperatorFuncs': [('operator_funcs', False)],
+        'OperatorFuncs': [('operator_funcs', True)],
     }
 
     def __init__(self, mn, module_name, raw_module_name, src, mod, output,
@@ -576,6 +586,8 @@ class Translator:
                  source_tracking=True,
                  line_tracking=True,
                  store_source=True,
+                 inline_code=True,
+                 operator_funcs=True,
                 ):
 
         self.js_module_name = self.jsname("variable", module_name)
@@ -604,7 +616,10 @@ class Translator:
         self.source_tracking = source_tracking
         self.line_tracking = line_tracking
         self.store_source = store_source
-        self.inline_bool = False
+        self.inline_bool = inline_code
+        self.inline_len = inline_code
+        self.inline_eq = inline_code
+        self.operator_funcs = operator_funcs
 
         self.imported_modules = []
         self.imported_js = []
@@ -771,7 +786,8 @@ class Translator:
                     if d.expr.name == 'compiler':
                         # Special case: compiler option
                         if self.decorator_compiler_options.has_key(d.attrname):
-                            setattr(self, self.decorator_compiler_options[d.attrname][0], self.decorator_compiler_options[d.attrname][1])
+                            for var, val in self.decorator_compiler_options[d.attrname]:
+                                setattr(self, var, val)
                         else:
                             raise TranslationError(
                                 "Unknown compiler option '%s'" % d.attrname, node, self.module_name)
@@ -861,6 +877,8 @@ class Translator:
 
     def add_lookup(self, name_type, pyname, jsname, depth = -1):
         jsname = self.jsname(name_type, jsname)
+        if self.lookup_stack[depth].has_key(pyname):
+            name_type = self.lookup_stack[depth][pyname][0]
         self.lookup_stack[depth][pyname] = (name_type, pyname, jsname)
         return jsname
 
@@ -912,7 +930,7 @@ class Translator:
             jsname = self.lookup_stack[-1][name][2]
             if (     not jsname.find('[') >= 0
                  and not pyname in ignore_py_vars
-                 and not nametype in ['__pyjamas__', '__javascript__']
+                 and not nametype in ['__pyjamas__', '__javascript__','global']
                ):
                 names.append(jsname)
         if len(names) > 0:
@@ -936,11 +954,31 @@ class Translator:
                 self.imported_modules.append(_importName)
             _importName += '.'
 
-    def inline_bool_code(self, expr):
+    def inline_bool_code(self, e):
         if self.inline_bool:
-            self.add_lookup('variable', '$bool', '$bool')
-            return """(!(%(v)s=%(e)s)?false:(%(v)s===true?true:(typeof %(v)s!='object'?Boolean(%(v)s):(typeof %(v)s.__nonzero__=='function'?%(v)s.__nonzero__():(typeof %(v)s.__len__=='function'?%(v)s.__len__()>0:true)))))""" % {'v': '$bool', 'e': expr}
-        return "pyjslib['bool'](%s)" % expr
+            v = self.uniqid('$bool')
+            self.add_lookup('variable', v, v)
+            return """(!(%(v)s=%(e)s)?false:(%(v)s===true?true:(typeof %(v)s!='object'?Boolean(%(v)s):(typeof %(v)s.__nonzero__=='function'?%(v)s.__nonzero__():(typeof %(v)s.__len__=='function'?%(v)s.__len__()>0:true)))))""" % locals()
+        return "pyjslib['bool'](%(e)s)" % locals()
+
+    def inline_len_code(self, e):
+        if self.inline_len:
+            v = self.uniqid('$len')
+            self.add_lookup('variable', v, v)
+            return """((%(v)s=%(e)s) === null?0:(typeof %(v)s.__len__ == 'function'?%(v)s.__len__():(typeof %(v)s.length != 'undefined'?%(v)s.length:throw pyjslib.TypeError("object has no len()"))))""" % locals()
+        return "pyjslib['len'](%(e)s)" % locals()
+
+    def inline_eq_code(self, e1, e2):
+        if self.inline_eq:
+            v1 = self.uniqid('$eq')
+            v2 = self.uniqid('$eq')
+            self.add_lookup('variable', v1, v1)
+            self.add_lookup('variable', v2, v2)
+            return """((%(v1)s=%(e1)s)===(%(v2)s=%(e2)s)&&%(v1)s===null?true:(%(v1)s===null?false:(%(v2)s===null?false:\
+((typeof %(v1)s=='object'||typeof %(v1)s=='function')&&typeof %(v1)s.__cmp__=='function'?%(v1)s.__cmp__(%(v2)s) == 0:\
+((typeof %(v2)s=='object'||typeof %(v2)s=='function')&&typeof %(v2)s.__cmp__=='function'?%(v2)s.__cmp__(%(v1)s) == 0:\
+%(v1)s==%(v2)s)))))""" % locals()
+        return "pyjslib['eq'](%(e1)s, %(e2)s)" % locals()
 
     def md5(self, node):
         return hashlib.md5(self.raw_module_name + str(node.lineno) + repr(node)).hexdigest()
@@ -2169,9 +2207,11 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             # XXX HACK!  don't allow += on return result of getattr.
             # TODO: create a temporary variable or something.
             lhs = self.attrib_join(self._getattr(v, current_klass, False))
+            lhs_ass = ast.AssAttr(v.expr, v.attrname, "OP_ASSIGN", node.lineno)
         elif isinstance(v, ast.Name):
-            lhs = self._name(node.node, current_klass)
-        elif isinstance(v, ast.Subscript):
+            lhs = self._name(v, current_klass)
+            lhs_ass = ast.AssName(v.name, "OP_ASSIGN", node.lineno)
+        elif isinstance(v, ast.Subscript) or self.operator_funcs:
             if len(v.subs) != 1:
                 raise TranslationError(
                     "must have one sub (in _assign)", v, self.module_name)
@@ -2198,10 +2238,20 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         else:
             raise TranslationError(
                 "unsupported type (in _augassign)", v, self.module_name)
-        op = node.op
-        rhs = self.expr(node.expr, current_klass)
-        print >>self.output, self.spacing() + lhs + " " + op + " " + rhs + ";"
-
+        try:
+            op_ass = astOP(node.op)
+        except:
+            op_ass = None
+        if not self.operator_funcs or op_ass is None:
+            op = node.op
+            rhs = self.expr(node.expr, current_klass)
+            print >>self.output, self.spacing() + lhs + " " + op + " " + rhs + ";"
+            return
+        if isinstance(v, ast.Name):
+            self.add_lookup('global', v.name, lhs)
+        op = astOP(node.op)
+        tnode = ast.Assign([lhs_ass], op((v, node.expr)))
+        return self._assign(tnode, current_klass, top_level)
 
     def _lhsFromName(self, name, top_level, current_klass, set_name_type = 'variable'):
         name_type, pyname, jsname, depth, is_local = self.lookup(name)
@@ -2317,7 +2367,6 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             print "b", repr(node.expr), rhs
         print >>self.output, self.spacing() + lhs + " " + op + " " + rhs + ";"
 
-
     def _discard(self, node, current_klass):
         
         if isinstance(node.expr, ast.CallFunc):
@@ -2387,9 +2436,9 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         rhs = self.expr(rhs_node, current_klass)
 
         if op == "==":
-            return self.track_call("pyjslib['eq'](%s, %s)" % (lhs, rhs), node.lineno)
+            return self.track_call(self.inline_eq_code(lhs, rhs), node.lineno)
         if op == "!=":
-            return self.track_call("!pyjslib['eq'](%s, %s)" % (lhs, rhs), node.lineno)
+            return self.track_call("!"+self.inline_eq_code(lhs, rhs), node.lineno)
         if op == "<":
             return self.track_call("(pyjslib['cmp'](%s, %s) == -1)" % (lhs, rhs), node.lineno)
         if op == "<=":
@@ -2535,27 +2584,80 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 "unsupported type (in _const)", node, self.module_name)
 
     def _unaryadd(self, node, current_klass):
-        return self.expr(node.expr, current_klass)
+        if not self.operator_funcs:
+            return self.expr(node.expr, current_klass)
+        e = self.expr(node.expr, current_klass)
+        v = self.uniqid('$uadd')
+        return """(typeof (%(v)s=%(e)s)=='number'?%(v)s:pyjslib['op_uadd'](%(v)s))""" % locals()
 
     def _unarysub(self, node, current_klass):
-        return "-" + self.expr(node.expr, current_klass)
+        if not self.operator_funcs:
+            return "-" + self.expr(node.expr, current_klass)
+        e = self.expr(node.expr, current_klass)
+        v = self.uniqid('$usub')
+        return """(typeof (%(v)s=%(e)s)=='number'?-%(v)s:pyjslib['op_usub'](%(v)s))""" % locals()
 
     def _add(self, node, current_klass):
-        return self.expr(node.left, current_klass) + " + " + self.expr(node.right, current_klass)
+        if not self.operator_funcs:
+            return self.expr(node.left, current_klass) + " + " + self.expr(node.right, current_klass)
+        e1 = self.expr(node.left, current_klass)
+        e2 = self.expr(node.right, current_klass)
+        v1 = self.uniqid('$add')
+        v2 = self.uniqid('$add')
+        self.add_lookup('variable', v1, v1)
+        self.add_lookup('variable', v2, v2)
+        return """(typeof (%(v1)s=%(e1)s)==typeof (%(v2)s=%(e2)s) && (typeof %(v1)s=='number'||typeof %(v1)s=='string')?%(v1)s+%(v2)s:\
+pyjslib['op_add'](%(v1)s,%(v2)s))""" % locals()
 
     def _sub(self, node, current_klass):
-        return self.expr(node.left, current_klass) + " - " + self.expr(node.right, current_klass)
+        if not self.operator_funcs:
+            return self.expr(node.left, current_klass) + " - " + self.expr(node.right, current_klass)
+        e1 = self.expr(node.left, current_klass)
+        e2 = self.expr(node.right, current_klass)
+        v1 = self.uniqid('$sub')
+        v2 = self.uniqid('$sub')
+        self.add_lookup('variable', v1, v1)
+        self.add_lookup('variable', v2, v2)
+        return """(typeof (%(v1)s=%(e1)s)==typeof (%(v2)s=%(e2)s) && (typeof %(v1)s=='number'||typeof %(v1)s=='string')?%(v1)s-%(v2)s:\
+pyjslib['op_sub'](%(v1)s,%(v2)s))""" % locals()
 
     def _div(self, node, current_klass):
-        return self.expr(node.left, current_klass) + " / " + self.expr(node.right, current_klass)
+        if not self.operator_funcs:
+            return self.expr(node.left, current_klass) + " / " + self.expr(node.right, current_klass)
+        e1 = self.expr(node.left, current_klass)
+        e2 = self.expr(node.right, current_klass)
+        v1 = self.uniqid('$div')
+        v2 = self.uniqid('$div')
+        self.add_lookup('variable', v1, v1)
+        self.add_lookup('variable', v2, v2)
+        return """(typeof (%(v1)s=%(e1)s)==typeof (%(v2)s=%(e2)s) && typeof %(v1)s=='number'?%(v1)s/%(v2)s:\
+pyjslib['op_div'](%(v1)s,%(v2)s))""" % locals()
 
     def _mul(self, node, current_klass):
-        return self.expr(node.left, current_klass) + " * " + self.expr(node.right, current_klass)
+        if not self.operator_funcs:
+            return self.expr(node.left, current_klass) + " * " + self.expr(node.right, current_klass)
+        e1 = self.expr(node.left, current_klass)
+        e2 = self.expr(node.right, current_klass)
+        v1 = self.uniqid('$mul')
+        v2 = self.uniqid('$mul')
+        self.add_lookup('variable', v1, v1)
+        self.add_lookup('variable', v2, v2)
+        return """(typeof (%(v1)s=%(e1)s)==typeof (%(v2)s=%(e2)s) && typeof %(v1)s=='number'?%(v1)s*%(v2)s:\
+pyjslib['op_mul'](%(v1)s,%(v2)s))""" % locals()
 
     def _mod(self, node, current_klass):
         if isinstance(node.left, ast.Const) and isinstance(node.left.value, StringType):
-           return self.track_call("pyjslib['sprintf']("+self.expr(node.left, current_klass) + ", " + self.expr(node.right, current_klass)+")", node.lineno)
-        return self.expr(node.left, current_klass) + " % " + self.expr(node.right, current_klass)
+            return self.track_call("pyjslib['sprintf']("+self.expr(node.left, current_klass) + ", " + self.expr(node.right, current_klass)+")", node.lineno)
+        if not self.operator_funcs:
+            return self.expr(node.left, current_klass) + " % " + self.expr(node.right, current_klass)
+        e1 = self.expr(node.left, current_klass)
+        e2 = self.expr(node.right, current_klass)
+        v1 = self.uniqid('$mod')
+        v2 = self.uniqid('$mod')
+        self.add_lookup('variable', v1, v1)
+        self.add_lookup('variable', v2, v2)
+        return """(typeof (%(v1)s=%(e1)s)==typeof (%(v2)s=%(e2)s) && typeof %(v1)s=='number'?%(v1)s%%%(v2)s:\
+pyjslib['op_mod'](%(v1)s,%(v2)s))""" % locals()
 
     def _power(self, node, current_klass):
         return "Math.pow("+self.expr(node.left, current_klass) + "," + self.expr(node.right, current_klass) + ")"
@@ -2795,6 +2897,8 @@ def translate(sources, output_file, module_name=None,
               source_tracking=True,
               line_tracking=True,
               store_source=True,
+              inline_code=False,
+              operator_funcs=True,
              ):
     sources = map(os.path.abspath, sources)
     output_file = os.path.abspath(output_file)
@@ -2831,6 +2935,8 @@ def translate(sources, output_file, module_name=None,
                    source_tracking = source_tracking,
                    line_tracking = line_tracking,
                    store_source = store_source,
+                   inline_code = inline_code,
+                   operator_funcs = operator_funcs,
                   )
     output.close()
     return t.imported_modules, t.imported_js
@@ -3046,6 +3152,8 @@ class AppTranslator:
                  source_tracking=True,
                  line_tracking=True,
                  store_source=True,
+                 inline_code=False,
+                 operator_funcs=True,
                 ):
         self.extension = ".py"
         self.print_statements = print_statements
@@ -3063,6 +3171,8 @@ class AppTranslator:
         self.source_tracking = source_tracking
         self.line_tracking = line_tracking
         self.store_source = store_source
+        self.inline_code = inline_code
+        self.operator_funcs = operator_funcs
 
         if not parser:
             self.parser = PlatformParser()
@@ -3118,6 +3228,8 @@ class AppTranslator:
                        source_tracking = self.source_tracking,
                        line_tracking = self.line_tracking,
                        store_source = self.store_source,
+                       inline_code = self.inline_code,
+                       operator_funcs = self.operator_funcs,
                       )
 
         module_str = output.getvalue()
@@ -3285,6 +3397,31 @@ def add_compile_options(parser):
     debug_options['store_source'] = True
     pythonic_options['store_source'] = True
 
+    parser.add_option("--no-inline-code",
+                      dest = "inline_code",
+                      action="store_false",
+                      help = "Do not generate inline code for bool/eq/len",
+                     )
+    parser.add_option("--inline-code",
+                      dest = "inline_code",
+                      action="store_true",
+                      help = "Generate inline code for bool/eq/len",
+                     )
+    speed_options['inline_code'] = True
+
+    parser.add_option("--no-operator-funcs",
+                      dest = "operator_funcs",
+                      action="store_false",
+                      help = "Do not generate function calls for operators",
+                     )
+    parser.add_option("--operator-funcs",
+                      dest = "operator_funcs",
+                      action="store_true",
+                      help = "Generate function calls for operators",
+                     )
+    speed_options['operator_funcs'] = False
+    pythonic_options['operator_funcs'] = True
+
 
     def set_multiple(option, opt_str, value, parser, **kwargs):
         for k in kwargs.keys():
@@ -3317,6 +3454,8 @@ def add_compile_options(parser):
                         source_tracking = False,
                         line_tracking = False,
                         store_source = False,
+                        inline_code = False,
+                        operator_funcs = False,
                        )
 
 
@@ -3358,6 +3497,8 @@ def main():
               source_tracking = options.source_tracking,
               line_tracking = options.line_tracking,
               store_source = options.store_source,
+              inline_code = options.inline_code,
+              operator_funcs = options.operator_funcs,
     ),
 
 if __name__ == "__main__":
