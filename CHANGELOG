@@ -7,10 +7,6 @@
    FocusPanel and FocusWidget both get that functionality (thanks to
    guenter walser)
 
- * Added --operator-funcs to enable non-number operation such as [1]+[2]
-
- * Added --inline-code to speedup eq/bool/len (saves expensive function calls)
-
  * All attributes are accessed as v['attr'] and not as v.attr anymore
    This circumvents a bug in IE with javascript keywords:
      (v.super is not allowed, but v['super'] is)

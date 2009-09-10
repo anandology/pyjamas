@@ -424,10 +424,7 @@ def build_script():
         descriptors=options.descriptors,
         source_tracking=options.source_tracking,
         line_tracking=options.line_tracking,
-        store_source=options.store_source,
-        inline_code = options.inline_code,
-        operator_funcs = options.operator_funcs,
-    )
+        store_source=options.store_source)
 
     l = BrowserLinker(args,
                       output=options.output,
