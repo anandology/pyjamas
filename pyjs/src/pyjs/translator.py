@@ -710,6 +710,8 @@ class Translator:
                 self._stmt(child, None, True)
             elif isinstance(child, ast.AssAttr):
                 self._assattr(child, None)
+            elif isinstance(child, ast.AssName):
+                self._assname(child, None)
             else:
                 raise TranslationError(
                     "unsupported type (in __init__)",
@@ -2707,6 +2709,14 @@ pyjslib['op_mod'](%(v1)s,%(v2)s))""" % locals()
         lhs = self._lhsFromAttr(node, current_klass)
         if node.flags == "OP_DELETE":
             print >>self.output, self.spacing() + "pyjslib['delattr'](%s, '%s');" % (lhs, attr_name)
+        else:
+            raise TranslationError(
+                "unsupported flag (in _assign)", v, self.module_name)
+
+    def _assname(self, node, current_klass):
+        name_type, pyname, jsname, depth, is_local = self.lookup(node.name)
+        if node.flags == "OP_DELETE":
+            print >>self.output, self.spacing() + "delete %s;" % (jsname,)
         else:
             raise TranslationError(
                 "unsupported flag (in _assign)", v, self.module_name)
