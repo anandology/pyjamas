@@ -1,6 +1,8 @@
                     Changes made to Pyjamas since 0.6
                     ---------------------------------
 
+ * Added an substantial portion of re module
+
  * Added --operator-funcs to enable non-number operation such as [1]+[2]
 
  * Added --inline-code to speedup eq/bool/len (saves expensive function calls)

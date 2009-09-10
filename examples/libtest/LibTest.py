@@ -34,6 +34,8 @@ from TimeModuleTest import TimeModuleTest
 from TypeCompatibilityTest import TypeCompatibilityTest
 from UrllibModuleTest import UrllibModuleTest
 from Base64ModuleTest import Base64ModuleTest
+from ReModuleTest import ReModuleTest
+
 
 def main():
     LoopTest().run()
@@ -59,6 +61,7 @@ def main():
     TypeCompatibilityTest().run()
     UrllibModuleTest().run()
     Base64ModuleTest().run()
+    ReModuleTest().run()
 
 if __name__ == '__main__':
     main()
