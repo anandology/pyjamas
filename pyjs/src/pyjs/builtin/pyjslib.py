@@ -492,6 +492,10 @@ if (!Array.prototype.indexOf) {
 }
 """)
 
+    # Patching of the standard javascript RegExp
+    JS("""
+RegExp.prototype.Exec = RegExp.prototype.exec;
+""")
     JS("""
 pyjslib.abs = Math.abs;
 """)
@@ -1156,6 +1160,10 @@ class Dict:
     @compiler.noSourceTracking
     def copy(self):
         return Dict(self.items())
+
+    @compiler.noSourceTracking
+    def clear(self):
+        self.d = JS("{}")
 
     @compiler.noSourceTracking
     def __str__(self):
