@@ -32,14 +32,3 @@ class FocusWidget(Widget, FocusHandler, KeyboardHandler,
         ClickHandler.__init__(self)
         MouseHandler.__init__(self)
 
-    def isEnabled(self):
-        try:
-            return not DOM.getBooleanAttribute(self.getElement(), "disabled")
-        except TypeError:
-            return True
-        except AttributeError:
-            return True
-
-    def setEnabled(self, enabled):
-        DOM.setBooleanAttribute(self.getElement(), "disabled", not enabled)
-

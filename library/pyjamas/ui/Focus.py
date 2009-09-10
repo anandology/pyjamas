@@ -52,3 +52,25 @@ class FocusMixin:
     def setTabIndex(self, index):
         setTabIndex(self.getElement(), index)
 
+    def isEnabled(self):
+        try:
+            return not DOM.getBooleanAttribute(self.getElement(), "disabled")
+        except TypeError:
+            return True
+        except AttributeError:
+            return True
+
+    def setEnabled(self, enabled):
+        DOM.setBooleanAttribute(self.getElement(), "disabled", not enabled)
+
+    def isReadonly(self):
+        try:
+            return not DOM.getBooleanAttribute(self.getElement(), "readOnly")
+        except TypeError:
+            return True
+        except AttributeError:
+            return True
+    
+    def setReadonly(self, readonly):
+        DOM.setBooleanAttribute(self.getElement(), "readOnly", readonly)
+

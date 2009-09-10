@@ -3,6 +3,10 @@
 
  * Added an substantial portion of re module
 
+ * added isReadOnly and getReadOnly functions to FocusMixin, such that
+   FocusPanel and FocusWidget both get that functionality (thanks to
+   guenter walser)
+
  * Added --operator-funcs to enable non-number operation such as [1]+[2]
 
  * Added --inline-code to speedup eq/bool/len (saves expensive function calls)
