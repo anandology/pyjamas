@@ -750,16 +750,14 @@ class Translator:
             self.debug, self.print_statements, self.function_argument_checking,
             self.attribute_checking, self.bound_methods, self.descriptors,
             self.source_tracking, self.line_tracking, self.store_source,
-            self.inline_bool, self.inline_eq, self.inline_len,
-            self.operator_funcs,
+            self.inline_bool, 
         ))
     def pop_options(self):
         (\
             self.debug, self.print_statements, self.function_argument_checking,
             self.attribute_checking, self.bound_methods, self.descriptors,
             self.source_tracking, self.line_tracking, self.store_source,
-            self.inline_bool, self.inline_eq, self.inline_len,
-            self.operator_funcs,
+            self.inline_bool, 
         ) = self.option_stack.pop()
 
     def parse_decorators(self, node, funcname, current_class = None, top_level = False):
