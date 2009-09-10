@@ -251,6 +251,10 @@ class StringTest(UnitTest):
         # Check for handling of newlines in format string
         self.assertEqual("\n%(s1)s\n%(s1)s\n" % testdict, '\nstring\nstring\n')
 
+    def testSprintfVar(self):
+        f = "%s"
+        self.assertEqual(f % 'test', 'test')
+
     def testIndex(self):
         s = "12345"
         self.assertEqual(s[0], '1')
