@@ -414,7 +414,7 @@ Create a file, public/TestRect.html, with the following contents:
         <title>Test Rectangle Javascript Object</title>
     </head>
     <body bgcolor="white">
-        <script language="javascript" src="pygwt.js"></script>
+        <script language="javascript" src="bootstrap.js"></script>
     </body>
 </html>
 }}
@@ -691,7 +691,7 @@ Next, create a file, public/TestDict.html, with the following contents:
         <title>Test Dictionary Javascript Object</title>
     </head>
     <body bgcolor="white">
-        <script language="javascript" src="pygwt.js"></script>
+        <script language="javascript" src="bootstrap.js"></script>
     </body>
 </html>
 }}

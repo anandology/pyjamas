@@ -1175,7 +1175,7 @@ Here is the pyjamas "Kitchen Sink" html file, as an example:
         <title>KitchenSink</title>
     </head>
     <body bgcolor="white">
-        <script language="javascript" src="pygwt.js"></script>
+        <script language="javascript" src="bootstrap.js"></script>
 
 	<iframe id='__pygwt_historyFrame' style='width:0;height:0;border:0'></iframe>
     </body>
