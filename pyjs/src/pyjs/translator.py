@@ -866,6 +866,8 @@ class Translator:
 
     def add_lookup(self, name_type, pyname, jsname, depth = -1):
         jsname = self.jsname(name_type, jsname)
+        if self.lookup_stack[depth].has_key(pyname):
+            name_type = self.lookup_stack[depth][pyname][0]
         self.lookup_stack[depth][pyname] = (name_type, pyname, jsname)
         return jsname
 
@@ -917,7 +919,7 @@ class Translator:
             jsname = self.lookup_stack[-1][name][2]
             if (     not jsname.find('[') >= 0
                  and not pyname in ignore_py_vars
-                 and not nametype in ['__pyjamas__', '__javascript__']
+                 and not nametype in ['__pyjamas__', '__javascript__', 'global']
                ):
                 names.append(jsname)
         if len(names) > 0:
