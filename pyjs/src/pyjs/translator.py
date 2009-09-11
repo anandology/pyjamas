@@ -455,8 +455,8 @@ class __Pyjamas__(object):
                 node.node)
             option = arg.value
             if translator.decorator_compiler_options.has_key(option):
-                var, val = translator.decorator_compiler_options[option]
-                setattr(translator, var, val)
+                for var, val in translator.decorator_compiler_options[option]:
+                    setattr(translator, var, val)
             elif option == "Speed":
                 for var in speed_options:
                     setattr(translator, var, speed_options[var])
@@ -545,24 +545,24 @@ def mod_var_name_decl(raw_module_name):
 class Translator:
 
     decorator_compiler_options = {\
-        'Debug': ('debug', True),
-        'noDebug': ('debug', False),
-        'PrintStatements': ('print_statements', True),
-        'noPrintStatements': ('print_statements', False),
-        'FunctionArgumentChecking': ('function_argument_checking', True),
-        'noFunctionArgumentChecking': ('function_argument_checking', False),
-        'AttributeChecking': ('attribute_checking', True),
-        'noAttributeChecking': ('attribute_checking', False),
-        'BoundMethods': ('bound_methods', True),
-        'noBoundMethods': ('bound_methods', False),
-        'Descriptors': ('descriptors', True),
-        'noDescriptors': ('descriptors', False),
-        'SourceTracking': ('source_tracking', True),
-        'noSourceTracking': ('source_tracking', False),
-        'LineTracking': ('line_tracking', True),
-        'noLineTracking': ('line_tracking', False),
-        'StoreSource': ('store_source', True),
-        'noStoreSource': ('store_source', False),
+        'Debug': [('debug', True)],
+        'noDebug': [('debug', False)],
+        'PrintStatements': [('print_statements', True)],
+        'noPrintStatements': [('print_statements', False)],
+        'FunctionArgumentChecking': [('function_argument_checking', True)],
+        'noFunctionArgumentChecking': [('function_argument_checking', False)],
+        'AttributeChecking': [('attribute_checking', True)],
+        'noAttributeChecking': [('attribute_checking', False)],
+        'BoundMethods': [('bound_methods', True)],
+        'noBoundMethods': [('bound_methods', False)],
+        'Descriptors': [('descriptors', True)],
+        'noDescriptors': [('descriptors', False)],
+        'SourceTracking': [('source_tracking', True)],
+        'noSourceTracking': [('source_tracking', False)],
+        'LineTracking': [('line_tracking', True)],
+        'noLineTracking': [('line_tracking', False)],
+        'StoreSource': [('store_source', True)],
+        'noStoreSource': [('store_source', False)],
     }
 
     def __init__(self, mn, module_name, raw_module_name, src, mod, output,
@@ -775,7 +775,8 @@ class Translator:
                     if d.expr.name == 'compiler':
                         # Special case: compiler option
                         if self.decorator_compiler_options.has_key(d.attrname):
-                            setattr(self, self.decorator_compiler_options[d.attrname][0], self.decorator_compiler_options[d.attrname][1])
+                            for var, val in self.decorator_compiler_options[d.attrname]:
+                                setattr(self, var, val)
                         else:
                             raise TranslationError(
                                 "Unknown compiler option '%s'" % d.attrname, node, self.module_name)
