@@ -563,6 +563,14 @@ class Translator:
         'noLineTracking': [('line_tracking', False)],
         'StoreSource': [('store_source', True)],
         'noStoreSource': [('store_source', False)],
+        'noInlineBool': [('inline_bool', False)],
+        'InlineBool': [('inline_bool', True)],
+        'noInlineLen': [('inline_len', False)],
+        'InlineLen': [('inline_len', True)],
+        'noInlineEq': [('inline_eq', False)],
+        'InlineEq': [('inline_eq', True)],
+        'noInlineCode': [('inline_bool', False),('inline_len', False),('inline_eq', False)],
+        'InlineCode': [('inline_bool', True),('inline_len', True),('inline_eq', True)],
     }
 
     def __init__(self, mn, module_name, raw_module_name, src, mod, output,
@@ -576,6 +584,7 @@ class Translator:
                  source_tracking=True,
                  line_tracking=True,
                  store_source=True,
+                 inline_code=True,
                 ):
 
         self.js_module_name = self.jsname("variable", module_name)
@@ -604,7 +613,9 @@ class Translator:
         self.source_tracking = source_tracking
         self.line_tracking = line_tracking
         self.store_source = store_source
-        self.inline_bool = False
+        self.inline_bool = inline_code
+        self.inline_len = inline_code
+        self.inline_eq = inline_code
 
         self.imported_modules = []
         self.imported_js = []
@@ -750,14 +761,14 @@ class Translator:
             self.debug, self.print_statements, self.function_argument_checking,
             self.attribute_checking, self.bound_methods, self.descriptors,
             self.source_tracking, self.line_tracking, self.store_source,
-            self.inline_bool, 
+            self.inline_bool, self.inline_eq, self.inline_len,
         ))
     def pop_options(self):
         (\
             self.debug, self.print_statements, self.function_argument_checking,
             self.attribute_checking, self.bound_methods, self.descriptors,
             self.source_tracking, self.line_tracking, self.store_source,
-            self.inline_bool, 
+            self.inline_bool, self.inline_eq, self.inline_len,
         ) = self.option_stack.pop()
 
     def parse_decorators(self, node, funcname, current_class = None, top_level = False):
@@ -943,11 +954,43 @@ class Translator:
                 self.imported_modules.append(_importName)
             _importName += '.'
 
-    def inline_bool_code(self, expr):
+    def inline_bool_code(self, e):
         if self.inline_bool:
-            self.add_lookup('variable', '$bool', '$bool')
-            return """(!(%(v)s=%(e)s)?false:(%(v)s===true?true:(typeof %(v)s!='object'?Boolean(%(v)s):(typeof %(v)s.__nonzero__=='function'?%(v)s.__nonzero__():(typeof %(v)s.__len__=='function'?%(v)s.__len__()>0:true)))))""" % {'v': '$bool', 'e': expr}
-        return "pyjslib['bool'](%s)" % expr
+            v = self.uniqid('$bool')
+            self.add_lookup('variable', v, v)
+            s = self.spacing()
+            return """(!(%(v)s=%(e)s)?false:
+%(s)s\t(%(v)s===true?true:
+%(s)s\t\t(typeof %(v)s!='object'?Boolean(%(v)s):
+%(s)s\t\t\t(typeof %(v)s.__nonzero__=='function'?%(v)s.__nonzero__():
+%(s)s\t\t\t\t(typeof %(v)s.__len__=='function'?%(v)s.__len__()>0:
+%(s)s\t\t\t\ttrue)))))""" % locals()
+        return "pyjslib['bool'](%(e)s)" % locals()
+
+    def inline_len_code(self, e):
+        if self.inline_len:
+            v = self.uniqid('$len')
+            self.add_lookup('variable', v, v)
+            s = self.spacing()
+            return """((%(v)s=%(e)s) === null?0:
+%(s)s\t(typeof %(v)s.__len__ == 'function'?%(v)s.__len__():
+%(s)s\t\t(typeof %(v)s.length != 'undefined'?%(v)s.length:
+%(s)s\t\t\tthrow pyjslib.TypeError("object has no len()"))))""" % locals()
+        return "pyjslib['len'](%(e)s)" % locals()
+
+    def inline_eq_code(self, e1, e2):
+        if self.inline_eq:
+            v1 = self.uniqid('$eq')
+            v2 = self.uniqid('$eq')
+            self.add_lookup('variable', v1, v1)
+            self.add_lookup('variable', v2, v2)
+            s = self.spacing()
+            return """((%(v1)s=%(e1)s)===(%(v2)s=%(e2)s)&&%(v1)s===null?true:
+%(s)s\t(%(v1)s===null?false:(%(v2)s===null?false:
+%(s)s\t\t((typeof %(v1)s=='object'||typeof %(v1)s=='function')&&typeof %(v1)s.__cmp__=='function'?%(v1)s.__cmp__(%(v2)s) == 0:
+%(s)s\t\t\t((typeof %(v2)s=='object'||typeof %(v2)s=='function')&&typeof %(v2)s.__cmp__=='function'?%(v2)s.__cmp__(%(v1)s) == 0:
+%(s)s\t\t\t\t%(v1)s==%(v2)s)))))""" % locals()
+        return "pyjslib['eq'](%(e1)s, %(e2)s)" % locals()
 
     def md5(self, node):
         return hashlib.md5(self.raw_module_name + str(node.lineno) + repr(node)).hexdigest()
@@ -2177,7 +2220,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             # TODO: create a temporary variable or something.
             lhs = self.attrib_join(self._getattr(v, current_klass, False))
         elif isinstance(v, ast.Name):
-            lhs = self._name(node.node, current_klass)
+            lhs = self._name(v, current_klass)
         elif isinstance(v, ast.Subscript):
             if len(v.subs) != 1:
                 raise TranslationError(
@@ -2208,7 +2251,6 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         op = node.op
         rhs = self.expr(node.expr, current_klass)
         print >>self.output, self.spacing() + lhs + " " + op + " " + rhs + ";"
-
 
     def _lhsFromName(self, name, top_level, current_klass, set_name_type = 'variable'):
         name_type, pyname, jsname, depth, is_local = self.lookup(name)
@@ -2394,9 +2436,9 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         rhs = self.expr(rhs_node, current_klass)
 
         if op == "==":
-            return self.track_call("pyjslib['eq'](%s, %s)" % (lhs, rhs), node.lineno)
+            return self.track_call(self.inline_eq_code(lhs, rhs), node.lineno)
         if op == "!=":
-            return self.track_call("!pyjslib['eq'](%s, %s)" % (lhs, rhs), node.lineno)
+            return self.track_call("!"+self.inline_eq_code(lhs, rhs), node.lineno)
         if op == "<":
             return self.track_call("(pyjslib['cmp'](%s, %s) == -1)" % (lhs, rhs), node.lineno)
         if op == "<=":
@@ -2810,6 +2852,7 @@ def translate(sources, output_file, module_name=None,
               source_tracking=True,
               line_tracking=True,
               store_source=True,
+              inline_code=False,
              ):
     sources = map(os.path.abspath, sources)
     output_file = os.path.abspath(output_file)
@@ -2846,6 +2889,7 @@ def translate(sources, output_file, module_name=None,
                    source_tracking = source_tracking,
                    line_tracking = line_tracking,
                    store_source = store_source,
+                   inline_code = inline_code,
                   )
     output.close()
     return t.imported_modules, t.imported_js
@@ -3061,6 +3105,7 @@ class AppTranslator:
                  source_tracking=True,
                  line_tracking=True,
                  store_source=True,
+                 inline_code=False,
                 ):
         self.extension = ".py"
         self.print_statements = print_statements
@@ -3078,6 +3123,7 @@ class AppTranslator:
         self.source_tracking = source_tracking
         self.line_tracking = line_tracking
         self.store_source = store_source
+        self.inline_code = inline_code
 
         if not parser:
             self.parser = PlatformParser()
@@ -3133,6 +3179,7 @@ class AppTranslator:
                        source_tracking = self.source_tracking,
                        line_tracking = self.line_tracking,
                        store_source = self.store_source,
+                       inline_code = self.inline_code,
                       )
 
         module_str = output.getvalue()
@@ -3300,6 +3347,18 @@ def add_compile_options(parser):
     debug_options['store_source'] = True
     pythonic_options['store_source'] = True
 
+    parser.add_option("--no-inline-code",
+                      dest = "inline_code",
+                      action="store_false",
+                      help = "Do not generate inline code for bool/eq/len",
+                     )
+    parser.add_option("--inline-code",
+                      dest = "inline_code",
+                      action="store_true",
+                      help = "Generate inline code for bool/eq/len",
+                     )
+    speed_options['inline_code'] = True
+
 
     def set_multiple(option, opt_str, value, parser, **kwargs):
         for k in kwargs.keys():
@@ -3332,6 +3391,7 @@ def add_compile_options(parser):
                         source_tracking = False,
                         line_tracking = False,
                         store_source = False,
+                        inline_code = False,
                        )
 
 
@@ -3373,6 +3433,7 @@ def main():
               source_tracking = options.source_tracking,
               line_tracking = options.line_tracking,
               store_source = options.store_source,
+              inline_code = options.inline_code,
     ),
 
 if __name__ == "__main__":

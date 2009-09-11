@@ -492,7 +492,9 @@ class Class:
 def eq(a,b):
     # All 'python' classes and types are implemented as objects/functions.
     # So, for speed, do a typeof X / X.__cmp__  on a/b.
-    # Checking for the existance of .__cmp__ is expensive...
+    # Checking for the existance of .__cmp__ is expensive when it doesn't exist
+    #setCompilerOptions("InlineEq")
+    #return a == b
     JS("""
     if (a === null) {
         if (b === null) return true;
@@ -537,7 +539,10 @@ def bool(v):
     # this needs to stay in native code without any dependencies here,
     # because this is used by if and while, we need to prevent
     # recursion
-    # (!v?false:(v === true?:v:(v != 'object?Boolean(v):(typeof v.__nonzero__ == 'function': v.__nonzero__():(typeof v.__len__ == 'function'?v.__len__()>0:true)))))
+    #setCompilerOptions("InlineBool")
+    #if v:
+    #    return True
+    #return False
     JS("""
     if (!v) return false;
     switch(typeof v){
