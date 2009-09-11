@@ -2017,7 +2017,12 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 print >> self.output, self.spacing() + "throw (%s);" % self.expr(
                     node.expr1, current_klass)
         else:
-            print >> self.output, self.spacing() + "throw ($pyjs.__last_exception__?$pyjs.__last_exception__.error:pyjslib['TypeError']('exceptions must be classes, instances, or strings (deprecated), not NoneType'));"
+            s = self.spacing()
+            print >> self.output, """\
+%(s)sthrow ($pyjs.__last_exception__?
+%(s)s\t$pyjs.__last_exception__.error:
+%(s)s\tpyjslib['TypeError']('exceptions must be classes, instances, or strings (deprecated), not NoneType'));\
+""" % locals()
 
     def _method(self, node, current_klass, class_name, class_name_, local_prefix):
         self.push_options()
@@ -2880,27 +2885,36 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                     'attr': attr, 
                     'attr_left': attr_left, 
                     'attr_right': attr_right,
+                    's': self.spacing(),
                 }
             if self.bound_methods or self.descriptors:
                 if not self.descriptors:
                     getattr_condition = "typeof %(attr)s == 'function' && %(attr_left)s.__is_instance__"
                 else:
-                    getattr_condition = """%(attr_left)s !== null && %(attr_left)s.__is_instance__ && (typeof %(attr)s == 'function')||(%(attr_left)s['%(attr_right)s'] !== null && typeof %(attr_left)s['%(attr_right)s']['__get__'] == 'function')"""
+                    getattr_condition = """%(attr_left)s !== null && %(attr_left)s.__is_instance__ && 
+(typeof %(attr)s == 'function')||
+(%(attr_left)s['%(attr_right)s'] !== null && 
+typeof %(attr_left)s['%(attr_right)s']['__get__'] == 'function')"""
                 attr_code = """\
-(""" + getattr_condition + """?\
-pyjslib['getattr'](%(attr_left)s, '%(attr_right)s'):\
-%(attr)s)\
+(""" + getattr_condition + """?
+\tpyjslib['getattr'](%(attr_left)s, '%(attr_right)s'):
+\t%(attr)s)\
 """
+                attr_code = ('\n'+self.spacing()+"\t\t").join(attr_code.split('\n'))
             else:
                 attr_code = "%(attr)s"
             attr_code = attr_code % pdict
             pdict['attr_code'] = attr_code
+            s = self.spacing()
+            pdict['s'] = s
 
             if not self.attribute_checking:
                 attr = attr_code
             else:
                 if attr.find('(') < 0 and not self.debug:
-                    attr = """(typeof %(attr)s=='undefined'?(function(){throw new TypeError("%(attr)s is undefined")})():%(attr_code)s)""" % pdict
+                    attr = """(typeof %(attr)s=='undefined'?
+%(s)s\t\t(function(){throw new TypeError("%(attr)s is undefined")})():
+%(s)s\t\t%(attr_code)s)""" % pdict
                 else:
                     attr_ = attr
                     if self.source_tracking or self.debug:
@@ -2910,7 +2924,12 @@ pyjslib['getattr'](%(attr_left)s, '%(attr_right)s'):\
                         attr_ = self.attrib_join(self._getattr(node, current_klass))
                         self.source_tracking = _source_tracking
                         self.debug = _debug
-                    attr = """(function(){var $pyjs__testval="""+attr+""";return (typeof $pyjs__testval=='undefined'?(function(){throw new TypeError(\""""+attr_+""" is undefined")})():$pyjs__testval)})()"""
+                    attr = """(function(){
+%(s)s\tvar $pyjs__testval=%(attr)s;
+%(s)s\treturn (typeof $pyjs__testval=='undefined'?
+%(s)s\t\t(function(){throw new TypeError(\"%(attr_)s is undefined")})():
+%(s)s\t\t$pyjs__testval);
+%(s)s})()""" % {'s': self.spacing(), 'attr': attr, 'attr_': attr_}
             return attr
         elif isinstance(node, ast.List):
             return self._list(node, current_klass)
