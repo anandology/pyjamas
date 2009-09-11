@@ -832,7 +832,10 @@ class Tuple:
     @compiler.noSourceTracking
     def __getitem__(self, index):
         JS("""
-        if (index<0) index = self.l.length + index;
+        if (index < 0) index += self.l.length;
+        if (index < 0 || index >= self.l.length) {
+            throw(pyjslib.IndexError("tuple index out of range"));
+        }
         return self.l[index];
         """)
 
