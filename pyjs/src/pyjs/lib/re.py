@@ -308,6 +308,16 @@ class SRE_Pattern:
         # Return a list of all non-overlapping matches of pattern in string.
         if not endpos is None:
             string = string[:endpos]
+        all = []
+        while True:
+            m = self.search(string, pos)
+            if m is None:
+                break
+            span = m.span()
+            all.append(string[span[0]:span[1]])
+            pos = span[1]
+        return all
+        # Next line bugs in FF2
         return list(string[pos:].match(self.findall_code))
 
     def sub(self, repl, string, count=0):

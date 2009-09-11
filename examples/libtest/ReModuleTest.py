@@ -67,10 +67,10 @@ class ReModuleTest(UnitTest.UnitTest):
         m = re.search("ab", "dab abba a b")
         self.assertFalse(m is None, """re.search("ab", "dab abba a b")""")
 
-    # bug #258 - this is throwing a syntax error in FF2
-    #def testFindallBasics(self):
-    #    e = re.compile("e").findall("Where are all these eees")
-    #    self.assertEqual(len(e), 8)
+    # bug #258 - this is throwing a javascript syntax error in FF2
+    def testFindallBasics(self):
+        e = re.compile("e").findall("Where are all these eees")
+        self.assertEqual(len(e), 8)
 
     def testSubBasics(self):
         matches = []
