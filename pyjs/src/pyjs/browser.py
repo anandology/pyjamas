@@ -426,6 +426,7 @@ def build_script():
         line_tracking=options.line_tracking,
         store_source=options.store_source,
         inline_code = options.inline_code,
+        operator_funcs = options.operator_funcs,
     )
 
     l = BrowserLinker(args,
