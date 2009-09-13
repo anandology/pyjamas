@@ -22,7 +22,7 @@ class HTMLLinkPanel(HTMLPanel):
             l = href.split("#")
             if len(l) != 2:
                 continue
-            if l[0] != pagehref:
+            if not l[0].startswith(pagehref):
                 continue
             token = l[1]
             if not token:
