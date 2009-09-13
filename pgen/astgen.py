@@ -20,8 +20,10 @@ def load_boilerplate(file):
     buf = f.read()
     f.close()
     i = buf.find('### ''PROLOGUE')
-    pro = buf[i+12:].strip()
-    return pro, ''
+    j = buf.find('### ''EPILOGUE')
+    pro = buf[i+12:j].strip()
+    epi = buf[j+12:].strip()
+    return pro, epi
 
 def strip_default(arg):
     """Return the argname from an 'arg = default' string"""
@@ -90,69 +92,102 @@ class NodeInfo:
 
     def gen_source(self):
         buf = StringIO()
+        print >> buf, "class %s(Node):" % self.name
         self._gen_init(buf)
         print >> buf
-        self._gen_walkChildren(buf)
+        self._gen_getChildren(buf)
         print >> buf
-        bufAux = StringIO()
-        self._gen_repr(bufAux)
+        self._gen_getChildNodes(buf)
+        print >> buf
+        self._gen_repr(buf)
         buf.seek(0, 0)
-        bufAux.seek(0, 0)
-        return buf.read(), bufAux.read()
+        return buf.read()
 
     def _gen_init(self, buf):
-        print >> buf, "# --------------------------------------------------------"
-        print >> buf, "class %s:\n" % self.name
         if self.args:
-            print >> buf, "    def __init__ (self, %s, lineno):\n" % (self.args)
+            print >> buf, "    def __init__(self, %s, lineno=None):" % self.args
         else:
-            print >> buf, "    def __init__(self, lineno):\n" 
-        print >>buf, "        self.nodeName = \"%s\";" % self.name
+            print >> buf, "    def __init__(self, lineno=None):"
         if self.argnames:
             for name in self.argnames:
-                print >> buf, "        self.%s = %s;" % (name, name)
-        print >> buf, "        self.lineno = lineno;"
+                print >> buf, "        self.%s = %s" % (name, name)
+        print >> buf, "        self.lineno = lineno"
         # Copy the lines in self.init, indented four spaces.  The rstrip()
         # business is to get rid of the four spaces if line happens to be
         # empty, so that reindent.py is happy with the output.
         for line in self.init:
-            print >> buf, line.rstrip()
+            print >> buf, ("    " + line).rstrip()
 
-    def _gen_walkChildren(self, buf):
-        print >> buf, "    def walkChildren(self, handler, args):"
+    def _gen_getChildren(self, buf):
+        print >> buf, "    def getChildren(self):"
         if len(self.argnames) == 0:
-            print >> buf, "        return;"
+            print >> buf, "        return ()"
         else:
             if self.hardest_arg < P_NESTED:
-                for c in self.argnames:
-                    print >>buf, "        ret = handler.visit(self.%s, args);" % c
-                    print >>buf, "        if ret: self.%s = ret" % c
+                clist = COMMA.join(["self.%s" % c
+                                    for c in self.argnames])
+                if self.nargs == 1:
+                    print >> buf, "        return %s," % clist
+                else:
+                    print >> buf, "        return %s" % clist
             else:
+                if len(self.argnames) == 1:
+                    print >> buf, "        return tuple(flatten(self.%s))" % self.argnames[0]
+                else:
+                    print >> buf, "        children = []"
+                    template = "        children.%s(%sself.%s%s)"
+                    for name in self.argnames:
+                        if self.argprops[name] == P_NESTED:
+                            print >> buf, template % ("extend", "flatten(",
+                                                      name, ")")
+                        else:
+                            print >> buf, template % ("append", "", name, "")
+                    print >> buf, "        return tuple(children)"
+
+    def _gen_getChildNodes(self, buf):
+        print >> buf, "    def getChildNodes(self):"
+        if len(self.argnames) == 0:
+            print >> buf, "        return ()"
+        else:
+            if self.hardest_arg < P_NESTED:
+                clist = ["self.%s" % c
+                         for c in self.argnames
+                         if self.argprops[c] == P_NODE]
+                if len(clist) == 0:
+                    print >> buf, "        return ()"
+                elif len(clist) == 1:
+                    print >> buf, "        return %s," % clist[0]
+                else:
+                    print >> buf, "        return %s" % COMMA.join(clist)
+            else:
+                print >> buf, "        nodelist = []"
+                template = "        nodelist.%s(%sself.%s%s)"
                 for name in self.argnames:
-                    if self.argprops[name] == P_NESTED:
-                        print >> buf, "        for i_%(name)s in range(len(self.%(name)s)):\n" % {'name':name}
-                        print >> buf, "            ret = handler.visit(self.%(name)s[i_%(name)s], args);" % {'name': name}
-                        print >> buf, "            if ret: self.%(name)s[i_%(name)s] = ret\n" % {'name': name}
-                    else:
-                        print >> buf, "        ret = handler.visit(self.%s, args);" % name
-                        print >> buf, "        if ret: self.%s = ret" % name
+                    if self.argprops[name] == P_NONE:
+                        tmp = ("        if self.%s is not None:\n"
+                               "            nodelist.append(self.%s)")
+                        print >> buf, tmp % (name, name)
+                    elif self.argprops[name] == P_NESTED:
+                        print >> buf, template % ("extend", "flatten_nodes(",
+                                                  name, ")")
+                    elif self.argprops[name] == P_NODE:
+                        print >> buf, template % ("append", "", name, "")
+                print >> buf, "        return tuple(nodelist)"
 
     def _gen_repr(self, buf):
-        # can't use actual type, or extend prototype because it's inside the
-        # non-debug no-symbol-leaking big function
-        print >> buf, "if (node.nodeName=== '%s'):" % self.name
+        print >> buf, "    def __repr__(self):"
         if self.argnames:
-            fmts = []
-            for name in self.argnames:
-                fmts.append(name + "=%s")
-            fmt = COMMA.join(fmts)
-            vals = ["astDump(node.%s)" % name for name in self.argnames]
+            fmt = COMMA.join(["%s"] * self.nargs)
+            if '(' in self.args:
+                fmt = '(%s)' % fmt
+            vals = ["repr(self.%s)" % name for name in self.argnames]
             vals = COMMA.join(vals)
-            print >> buf, '    return sprintf("%s(%s)", %s)' % \
+            if self.nargs == 1:
+                vals = vals + ","
+            print >> buf, '        return "%s(%s)" %% (%s)' % \
                   (self.name, fmt, vals)
         else:
-            print >> buf, '    return "%s()"' % self.name
-        print >> buf, "}"
+            print >> buf, '        return "%s()"' % self.name
 
 rx_init = re.compile('init\((.*)\):')
 
@@ -182,79 +217,72 @@ def parse_spec(file):
     return sorted(classes.values(), key=lambda n: n.name)
 
 def main():
-    prologue, epilogue = load_boilerplate(sys.argv[0])
-    mainf = open(sys.argv[1], "w")
-    auxf = open(sys.argv[2], "w")
-    print >>mainf, prologue
-    print >>mainf
-    print >>auxf, """// This file is automatically generated by pgen/astgen.py
-
-function astDump(node)
-{
-    if node is None: return "None";
-    if isinstance(node, str): return Node
-    if isinstance(node, bool): return Node
-    if isinstance(node, int): return Node
-    if (Object.prototype.toString.apply(node) === '[object Array]')
-        ret = ''
-        for i in range(len(node)):
-            ret += astDump(node[i]);
-            if i != len(node) - 1):
-                ret += ",";
-        return ret
-
-"""
+    prologue, epilogue = load_boilerplate(sys.argv[-1])
+    print prologue
+    print
     classes = parse_spec(SPEC)
     for info in classes:
-        a,b = info.gen_source()
-        print >>mainf, a
-        print >>auxf, b
-    print >>mainf, epilogue
-    print >>auxf, "}\n"
-    mainf.close()
-    auxf.close()
-
+        print info.gen_source()
+    print epilogue
 
 if __name__ == "__main__":
     main()
     sys.exit(0)
 
-"""
 ### PROLOGUE
-# abstract syntax node definitions
-# 
-# This file is automatically generated by pgen/astgen.py
+"""Python abstract syntax node definitions
 
-OP_ASSIGN = 'OP_ASSIGN';
-OP_DELETE = 'OP_DELETE';
-OP_APPLY = 'OP_APPLY';
-
-SC_LOCAL = 1;
-SC_GLOBAL = 2;
-SC_FREE = 3;
-SC_CELL = 4;
-SC_UNKNOWN = 5;
-
-CO_OPTIMIZED = 0x0001;
-CO_NEWLOCALS = 0x0002;
-CO_VARARGS = 0x0004;
-CO_VARKEYWORDS = 0x0008;
-CO_NESTED = 0x0010;
-CO_GENERATOR = 0x0020;
-CO_GENERATOR_ALLOWED = 0;
-CO_FUTURE_DIVISION = 0x2000;
-CO_FUTURE_ABSIMPORT = 0x4000;
-CO_FUTURE_WITH_STATEMENT = 0x8000;
-CO_FUTURE_PRINT_FUNCTION = 0x10000;
+This file is automatically generated by Tools/compiler/astgen.py
+"""
+from consts import CO_VARARGS, CO_VARKEYWORDS
 
 def flatten(seq):
     l = []
-    for i in range(len(seq)):
-        if len(seq[i]) > 0:
-            subf = flatten(seq[i])
-            l += subf
+    for elt in seq:
+        t = type(elt)
+        if t is tuple or t is list:
+            for elt2 in flatten(elt):
+                l.append(elt2)
         else:
-            l.append(seq[i])
+            l.append(elt)
     return l
 
-#"""
+def flatten_nodes(seq):
+    return [n for n in flatten(seq) if isinstance(n, Node)]
+
+nodes = {}
+
+class Node:
+    """Abstract base class for ast nodes."""
+    def getChildren(self):
+        pass # implemented by subclasses
+    def __iter__(self):
+        for n in self.getChildren():
+            yield n
+    def asList(self): # for backwards compatibility
+        return self.getChildren()
+    def getChildNodes(self):
+        pass # implemented by subclasses
+
+class EmptyNode(Node):
+    pass
+
+class Expression(Node):
+    # Expression is an artificial node class to support "eval"
+    nodes["expression"] = "Expression"
+    def __init__(self, node):
+        self.node = node
+
+    def getChildren(self):
+        return self.node,
+
+    def getChildNodes(self):
+        return self.node,
+
+    def __repr__(self):
+        return "Expression(%s)" % (repr(self.node))
+
+### EPILOGUE
+for name, obj in globals().items():
+    if isinstance(obj, type) and issubclass(obj, Node):
+        nodes[name.lower()] = obj
