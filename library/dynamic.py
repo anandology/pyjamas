@@ -56,13 +56,15 @@ def load(url, onreadystatechange=None, on_load_fn=None, async=False):
         req.send(None)
         if async:
             return None
-        while (req.status == 0 and req.responseText == ""):
+        while True:
             if (    req.status == 200
                  or (req.status == 0 and req.responseText)
                ):
                 if not on_load_fn is None:
                     on_load_fn(None, req)
                 return req
+            if req.status != 0 or req.responseText != "":
+                break
     except:
         pass
     raise AjaxError("Synchronous error", req.status)
