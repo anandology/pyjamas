@@ -5,6 +5,9 @@ IN_BROWSER = sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']
 IN_JS = sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz',
                          'safari', 'spidermonkey']
 
+if IN_BROWSER:
+    from pyjamas.Timer import Timer
+
 class UnitTest:
 
     def __init__(self):
@@ -12,6 +15,7 @@ class UnitTest:
         self.tests_failed=0
         self.tests_passed=0
         self.test_methods=[]
+        self.test_idx = None
 
         # define alternate names for methods
         self.assertEqual = self.failUnlessEqual
@@ -21,17 +25,38 @@ class UnitTest:
         self.assertFalse = self.failIf
         self.assertTrue = self.failUnless
 
+    def _run_test(self, test_method_name):
+        self.getTestMethods()
+
+        test_method=getattr(self, test_method_name)
+        self.current_test_name = test_method_name
+        self.setUp()
+        test_method()
+        self.tearDown()
+        self.current_test_name = None
+
     def run(self):
         self.getTestMethods()
-        for test_method_name in self.test_methods:
-            test_method=getattr(self, test_method_name)
-            self.current_test_name = test_method_name
-            self.setUp()
-            test_method()
-            self.tearDown()
-            self.current_test_name = None
+        if not IN_BROWSER:
+            for test_method_name in self.test_methods:
+                self._run_test(test_method_name)
+            self.displayStats()
+            self.start_next_test()
+            return
+        self.test_idx = 0
+        Timer(1, self)
 
-        self.displayStats()
+    def onTimer(self, tid):
+        for i in range(10):
+            if self.test_idx >= len(self.test_methods):
+                self.displayStats()
+                self.test_idx = 'DONE'
+                self.start_next_test()
+                return
+
+            self._run_test(self.test_methods[self.test_idx])
+            self.test_idx += 1
+        Timer(1, self)
 
     def setUp(self):
         pass

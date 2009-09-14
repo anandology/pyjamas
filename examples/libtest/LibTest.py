@@ -36,32 +36,53 @@ from UrllibModuleTest import UrllibModuleTest
 from Base64ModuleTest import Base64ModuleTest
 from ReModuleTest import ReModuleTest
 
+from pyjamas import log
+
+class RunTests:
+    def __init__(self, tests):
+        self.tests = tests
+        self.test_idx = 0
+        for t in self.tests:
+            t.start_next_test = self.start_test
+
+    def start_test(self):
+        if self.test_idx >= len(self.tests):
+            return
+        idx = self.test_idx
+        self.test_idx += 1
+        self.tests[idx].run()
 
 def main():
-    LoopTest().run()
-    BoolTest().run()
-    ListTest().run()
-    TupleTest().run()
-    FunctionTest().run()
-    ExceptionTest().run()
-    ClassTest().run()
-    StringTest().run()
-    SetTest().run()
-    ArgsTest().run()
-    VarsTest().run()
-    AttributeTest().run()
-    NameTest().run()
-    DictTest().run()
+
+    tests = [ LoopTest(),
+        BoolTest(),
+        ListTest(),
+        TupleTest(),
+        FunctionTest(),
+        ExceptionTest(),
+        ClassTest(),
+        StringTest(),
+        SetTest(),
+        ArgsTest(),
+        VarsTest(),
+        AttributeTest(),
+        NameTest(),
+        DictTest(),
+        BuiltinTest(),
+        TypeCompatibilityTest(),
+        MD5Test(),
+        TimeModuleTest(),
+        UrllibModuleTest(),
+        Base64ModuleTest(),
+        ReModuleTest(),
+    ]
     if IN_BROWSER:
-        JSOTest().run()
-        WindowTest().run()
-    BuiltinTest().run()
-    TypeCompatibilityTest().run()
-    MD5Test().run()
-    TimeModuleTest().run()
-    UrllibModuleTest().run()
-    Base64ModuleTest().run()
-    ReModuleTest().run()
+        tests += [ JSOTest(),
+                    WindowTest(),
+                    ]
+
+    t = RunTests(tests)
+    t.start_test()
 
 if __name__ == '__main__':
     main()
