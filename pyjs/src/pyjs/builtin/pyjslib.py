@@ -68,7 +68,7 @@ def ___import___(path, context, module_name=None, get_base=True):
                     break
                 JS("$pyjs.track.module = save_track_module;")
                 raise ImportError(
-                    "No module named " + importName + ', ' + path + ' in context ' + context)
+                    "No module named %s, %s in context %s" % (importName, path, context))
         if i == 0 and not in_context:
             JS("$pyjs.__modules__[importName] = module;")
         if l==i+1:
