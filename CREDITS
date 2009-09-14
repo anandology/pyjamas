@@ -30,7 +30,8 @@ Beni Kerniavsky
 Henk Punt
 Mathias Waack - <Mathias.Waack@rantzau.de>
 Guenter Walser - <guenter.walser@wanagu.at>
-
+Martin Blais - <blais@furius.ca>
+Scott Graham
 
 Erik gets a special mention for the contribution of the "Showcase".
 
@@ -58,6 +59,8 @@ James - thank you for kick-starting this project.
 
 Henk Punt, for pyjd/windows.py - this saved an enormous dependency
 (pywin32, at 5mb) for the MSHTML port.
+
+Scott Graham for the work in Skulpt on the parser/translator
 
 And of course, a huge amount of thanks goes to Google and the engineers
 there that produced GWT, on which pyjamas is originally based.

@@ -1,7 +1,13 @@
 """Python AST pretty-printer.
 
+Copyright(C) 2007, Martin Blais <blais@furius.ca>
+
 This module exports a function that can be used to print a human-readable
 version of the AST.
+
+This code is downloaded verbatim from:
+    http://code.activestate.com/recipes/533146/
+
 """
 __author__ = 'Martin Blais <blais@furius.ca>'
 
