@@ -1,9 +1,13 @@
 from __pyjamas__ import JS
 
 class Datetime:
-    def __init__(self, year=None, month=None, day=None, hours=None, minutes=None, seconds=None):
+    def __init__(self, year=None, month=None, day=None, hours=None, minutes=None, seconds=None, microseconds=None, tzinfo=None):
+        if tzinfo != None:
+            raise NontImplementedError("tzinfo")
         JS("""	
-	if (seconds != null)
+    if (microseconds != null)
+        self.date = new Date(year, month, day, hours, minutes, seconds, 0.5+microseconds/1000.0);
+	else if (seconds != null)
 	    self.date = new Date(year, month, day, hours, minutes, seconds);
 	else if (minutes != null)
 	    self.date = new Date(year, month, day, hours, minutes);
@@ -51,6 +55,12 @@ class Datetime:
     def getSeconds(self):
 	return self.date.getSeconds()
 
+    def getMilliseconds(self):
+        return self.date.getMilliseconds()
+
+    def getMicroseconds(self):
+        return self.date.getMilliseconds() * 1000
+
     def getTime(self):
 	return self.date.getTime()
 
@@ -74,6 +84,12 @@ class Datetime:
 
     def setSeconds(self, value):
 	self.date.setSeconds(value)
+
+    def setMilliseconds(self, value):
+        self.date.setMilliseconds(value)
+
+    def setMicroseconds(self, value):
+        self.date.setMilliseconds(0.5+value/1000.0)
 
     def setTime(self, value):
 	self.date.setTime(value)
