@@ -2,12 +2,13 @@
 # Warning: this is an alpha module and might be removed/renamed in
 # later pyjamas versions
 #
-from __pyjamas__ import wnd, doc, JS
+from __pyjamas__ import wnd, doc, JS, setCompilerOptions
 from __javascript__ import ActiveXObject, XMLHttpRequest
 from pyjamas import DOM
 from __pyjamas__ import debugger
 import sys
 
+setCompilerOptions("noSourceTracking", "noLineTracking", "noStoreSource")
 
 class AjaxError(RuntimeError):
     pass
@@ -36,6 +37,7 @@ def createHttpRequest():
 #
 
 def load(url, onreadystatechange=None, on_load_fn=None, async=False):
+    setCompilerOptions("noDebug")
     wnd().status = ('Loading ' + url)
     req = createHttpRequest()
 
@@ -49,16 +51,20 @@ def load(url, onreadystatechange=None, on_load_fn=None, async=False):
 
     # next line is in JS() for IE6
     JS("req.onreadystatechange = onreadystatechange")
-    res = req.open("GET", url , async)
-    req.send(None)
-    if async:
-        return None
-    if (    req.status == 200
-         or (req.status == 0 and req.responseText)
-       ):
-        if not on_load_fn is None:
-            on_load_fn(None, req)
-        return req
+    req.open("GET", url , async)
+    try:
+        req.send(None)
+        if async:
+            return None
+        while (req.status == 0 and req.responseText == ""):
+            if (    req.status == 200
+                 or (req.status == 0 and req.responseText)
+               ):
+                if not on_load_fn is None:
+                    on_load_fn(None, req)
+                return req
+    except:
+        pass
     raise AjaxError("Synchronous error", req.status)
 
 def inject(values, namespace = None, names=None):
@@ -137,6 +143,7 @@ def eval(str):
 #
 
 def ajax_eval(url, on_load_fn, async):
+    setCompilerOptions("noDebug")
     def onready(evnt, req):
         str = req.responseText
         activate_javascript(str)
@@ -147,6 +154,7 @@ def ajax_eval(url, on_load_fn, async):
 
 __imported__ = {}
 def ajax_import(url, namespace=None, names=None):
+    setCompilerOptions("noDebug")
     if __imported__.has_key(url):
         module = __imported__[url]
     else:

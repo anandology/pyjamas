@@ -89,21 +89,21 @@ def ___import___(path, context, module_name=None, get_base=True):
     return JS("$pyjs.loaded_modules[importName]")
 
 def __dynamic_load__(importName):
-    JS("""
-    try {
-        pyjslib.dynamic.ajax_import("lib/" + importName + ".__" + platform + "__.js");
-    } catch (e) {
-    }
-    module = $pyjs.loaded_modules[importName];
-    if (typeof module == 'undefined') {
-        try {
-            pyjslib.dynamic.ajax_import("lib/" + importName + ".js");
-        } catch (e) {
-        }
-        module = $pyjs.loaded_modules[importName];
-    }
+    setCompilerOptions("noDebug")
+    module = JS("""$pyjs.loaded_modules[importName]""")
+    if JS("""typeof module == 'undefined'"""):
+        try:
+            dynamic.ajax_import("lib/" + importName + ".__" + platform + "__.js")
+            module = JS("""$pyjs.loaded_modules[importName]""")
+        except:
+            pass
+    if JS("""typeof module == 'undefined'"""):
+        try:
+            dynamic.ajax_import("lib/" + importName + ".js")
+            module = JS("""$pyjs.loaded_modules[importName]""")
+        except:
+            pass
     return module
-""")
 
 class BaseException:
 
