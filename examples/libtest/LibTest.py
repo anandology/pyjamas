@@ -42,46 +42,47 @@ class RunTests:
     def __init__(self, tests):
         self.tests = tests
         self.test_idx = 0
-        for t in self.tests:
-            t.start_next_test = self.start_test
 
     def start_test(self):
         if self.test_idx >= len(self.tests):
             return
         idx = self.test_idx
         self.test_idx += 1
-        self.tests[idx].run()
+
+        test_kls = self.tests[idx]
+        t = test_kls()
+        t.start_next_test = self.start_test
+        t.run()
 
 def main():
 
-    tests = [ LoopTest(),
-        BoolTest(),
-        ListTest(),
-        TupleTest(),
-        FunctionTest(),
-        ExceptionTest(),
-        ClassTest(),
-        StringTest(),
-        SetTest(),
-        ArgsTest(),
-        VarsTest(),
-        AttributeTest(),
-        NameTest(),
-        DictTest(),
-        BuiltinTest(),
-        TypeCompatibilityTest(),
-        MD5Test(),
-        TimeModuleTest(),
-        UrllibModuleTest(),
-        Base64ModuleTest(),
-        ReModuleTest(),
+    test_classes = [ LoopTest,
+        BoolTest,
+        ListTest,
+        TupleTest,
+        FunctionTest,
+        ExceptionTest,
+        ClassTest,
+        StringTest,
+        SetTest,
+        ArgsTest,
+        VarsTest,
+        AttributeTest,
+        NameTest,
+        DictTest,
+        BuiltinTest,
+        TypeCompatibilityTest,
+        MD5Test,
+        TimeModuleTest,
+        UrllibModuleTest,
+        Base64ModuleTest,
+        ReModuleTest,
     ]
     if IN_BROWSER:
-        tests += [ JSOTest(),
-                    WindowTest(),
-                    ]
+        test_classes.append(JSOTest)
+        test_classes.append(WindowTest)
 
-    t = RunTests(tests)
+    t = RunTests(test_classes)
     t.start_test()
 
 if __name__ == '__main__':
