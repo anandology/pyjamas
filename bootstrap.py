@@ -8,16 +8,17 @@ version = '0.6p1'
 import os
 import sys
 
-pyjsbuild = """#!%s
+pyjsbuild = """#!%(exec)s
 
-pyjsversion = r'%s'
-pyjspth = r'%s'
+pyjsversion = r'%(ver)s'
+pyjspth = r'%(pyjspth)s'
 
 import os
 import sys
-sys.path[0:0] = [r'%s']
+sys.path[0:0] = [r'%(pth)s']
+sys.path.append(os.path.join(pyjspth, 'pgen'))
 import pyjs
-pyjs.pyjspth = r'%s'
+pyjs.pyjspth = pyjspth
 pyjs.path += [os.path.join(pyjspth, 'library'),
 os.path.join(pyjspth, 'addons'),
 ]
@@ -30,17 +31,17 @@ if __name__ == '__main__':
     pyjs.browser.build_script()
 """
 
-pyjscompile = """#!%s
+pyjscompile = """#!%(exec)s
 
-pyjsversion = r'%s'
-pyjspth = r'%s'
+pyjsversion = r'%(ver)s'
+pyjspth = r'%(pyjspth)s'
 
 import os
 import sys
-sys.path[0:0] = [r'%s']
+sys.path[0:0] = [r'%(pth)s']
 
 import pyjs.translator
-pyjs.pyjspth = r'%s'
+pyjs.pyjspth = pyjspth
 pyjs.path += [os.path.join(pyjspth, 'library')]
 
 if __name__ == '__main__':
@@ -82,7 +83,10 @@ def make_cmd(prefix, pth, pyjsversion, pyjspth, cmdname, txt):
     if os.path.exists(cmd):
         os.unlink(cmd)
     f = open(cmd, "w")
-    f.write(txt % (sys.executable, pyjsversion, pyjspth, pth, pyjspth))
+    f.write(txt % {'exec': sys.executable, 
+                   'ver': pyjsversion,
+                   'pyjspth': pyjspth, 
+                   'pth': pth})
     f.close()
 
     if hasattr(os, "chmod"):

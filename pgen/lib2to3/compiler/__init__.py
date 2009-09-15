@@ -24,3 +24,4 @@ compileFile(filename)
 from compiler.transformer import parse, parseFile
 from compiler.visitor import walk
 from compiler.pycodegen import compile, compileFile
+from compiler import ast

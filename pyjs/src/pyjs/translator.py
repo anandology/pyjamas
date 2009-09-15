@@ -15,8 +15,6 @@
 
 import sys
 from types import StringType
-import compiler
-from compiler import ast
 import os
 import copy
 from cStringIO import StringIO
@@ -344,7 +342,7 @@ class __Pyjamas__(object):
             raise TranslationError(
                 "JS function requires one argument",
                 node.node)
-        if (     isinstance(node.args[0], ast.Const)
+        if (     isinstance(node.args[0], translator.ast.Const)
              and isinstance(node.args[0].value, str)
            ):
             translator.ignore_debug = True
@@ -375,7 +373,7 @@ class __Pyjamas__(object):
             raise TranslationError(
                 "jsinclude function requires one argument",
                 node.node)
-        if (     isinstance(node.args[0], ast.Const)
+        if (     isinstance(node.args[0], translator.ast.Const)
              and isinstance(node.args[0].value, str)
            ):
             try:
@@ -399,7 +397,7 @@ class __Pyjamas__(object):
                 "jsimport function requires at least one, and at most three arguments",
                 node.node)
         for arg in node.args:
-            if not isinstance(arg, ast.Const):
+            if not isinstance(arg, translator.ast.Const):
                 raise TranslationError(
                     "jsimport function only supports constant arguments",
                 node.node)
@@ -449,7 +447,7 @@ class __Pyjamas__(object):
     def setCompilerOptions(self, translator, node):
         global speed_options, pythonic_options
         for arg in node.args:
-            if not isinstance(arg, ast.Const) or not isinstance(arg.value, str):
+            if not isinstance(arg, translator.ast.Const) or not isinstance(arg.value, str):
                 raise TranslationError(
                     "jsimport function only supports constant string arguments",
                 node.node)
@@ -575,7 +573,8 @@ class Translator:
         'OperatorFuncs': [('operator_funcs', True)],
     }
 
-    def __init__(self, mn, module_name, raw_module_name, src, mod, output,
+    def __init__(self, compiler,
+                 mn, module_name, raw_module_name, src, mod, output,
                  dynamic=0, findFile=None,
                  debug = False,
                  print_statements=True,
@@ -590,6 +589,8 @@ class Translator:
                  operator_funcs=True,
                 ):
 
+        self.compiler = compiler
+        self.ast = compiler.ast
         self.js_module_name = self.jsname("variable", module_name)
         if module_name:
             self.module_prefix = module_name + "."
@@ -672,45 +673,45 @@ class Translator:
         for child in mod.node:
             self.has_js_return = False
             self.track_lineno(child)
-            if isinstance(child, ast.Function):
+            if isinstance(child, self.ast.Function):
                 self._function(child, None, True, False)
-            elif isinstance(child, ast.Class):
+            elif isinstance(child, self.ast.Class):
                 self._class(child)
-            elif isinstance(child, ast.Import):
+            elif isinstance(child, self.ast.Import):
                 self._import(child, None, True, True)
-            elif isinstance(child, ast.From):
+            elif isinstance(child, self.ast.From):
                 self._from(child, None, True, True)
-            elif isinstance(child, ast.Discard):
+            elif isinstance(child, self.ast.Discard):
                 self._discard(child, None)
-            elif isinstance(child, ast.Assign):
+            elif isinstance(child, self.ast.Assign):
                 self._assign(child, None, True)
-            elif isinstance(child, ast.AugAssign):
+            elif isinstance(child, self.ast.AugAssign):
                 self._augassign(child, None, True)
-            elif isinstance(child, ast.If):
+            elif isinstance(child, self.ast.If):
                 self._if(child, None, True)
-            elif isinstance(child, ast.For):
+            elif isinstance(child, self.ast.For):
                 self._for(child, None)
-            elif isinstance(child, ast.While):
+            elif isinstance(child, self.ast.While):
                 self._while(child, None)
-            elif isinstance(child, ast.Subscript):
+            elif isinstance(child, self.ast.Subscript):
                 self._subscript_stmt(child, None)
-            elif isinstance(child, ast.Global):
+            elif isinstance(child, self.ast.Global):
                 self._global(child, None)
-            elif isinstance(child, ast.Printnl):
+            elif isinstance(child, self.ast.Printnl):
                self._print(child, None)
-            elif isinstance(child, ast.Print):
+            elif isinstance(child, self.ast.Print):
                self._print(child, None)
-            elif isinstance(child, ast.TryExcept):
+            elif isinstance(child, self.ast.TryExcept):
                 self._tryExcept(child, None, True)
-            elif isinstance(child, ast.TryFinally):
+            elif isinstance(child, self.ast.TryFinally):
                 self._tryFinally(child, None, True)
-            elif isinstance(child, ast.Raise):
+            elif isinstance(child, self.ast.Raise):
                 self._raise(child, None)
-            elif isinstance(child, ast.Stmt):
+            elif isinstance(child, self.ast.Stmt):
                 self._stmt(child, None, True)
-            elif isinstance(child, ast.AssAttr):
+            elif isinstance(child, self.ast.AssAttr):
                 self._assattr(child, None)
-            elif isinstance(child, ast.AssName):
+            elif isinstance(child, self.ast.AssName):
                 self._assname(child, None)
             else:
                 raise TranslationError(
@@ -787,8 +788,8 @@ class Translator:
         classmethod = False
         lineno=node.lineno
         for d in node.decorators:
-            if isinstance(d, ast.Getattr):
-                if isinstance(d.expr, ast.Name):
+            if isinstance(d, self.ast.Getattr):
+                if isinstance(d.expr, self.ast.Name):
                     if d.expr.name == 'compiler':
                         # Special case: compiler option
                         if self.decorator_compiler_options.has_key(d.attrname):
@@ -798,26 +799,26 @@ class Translator:
                             raise TranslationError(
                                 "Unknown compiler option '%s'" % d.attrname, node, self.module_name)
                     else:
-                        #tnode = ast.Assign([ast.AssName(funcname, "OP_ASSIGN", lineno=lineno)],
-                        #                   ast.CallFunc(d, [ast.Name(funcname)], lineno=lineno),
+                        #tnode = self.ast.Assign([self.ast.AssName(funcname, "OP_ASSIGN", lineno=lineno)],
+                        #                   self.ast.CallFunc(d, [self.ast.Name(funcname)], lineno=lineno),
                         #                   lineno=lineno)
                         #self._assign(tnode, current_class, top_level)
-                        tnode = ast.CallFunc(d, [ast.Name('%s')], lineno=lineno)
+                        tnode = self.ast.CallFunc(d, [self.ast.Name('%s')], lineno=lineno)
                         code = code % self._callfunc_code(tnode, None)
                 else:
                     raise TranslationError(
                         "Unsupported decorator '%s'" % d.attrname, node, self.module_name)
-            elif isinstance(d, ast.Name):
+            elif isinstance(d, self.ast.Name):
                 if d.name == 'staticmethod':
                     staticmethod = True
                 elif d.name == 'classmethod':
                     classmethod = True
                 else:
-                    #tnode = ast.Assign([ast.AssName(funcname, "OP_ASSIGN", lineno=lineno)],
-                    #                   ast.CallFunc(ast.Name(d.name), [ast.Name(funcname)], lineno=lineno),
+                    #tnode = self.ast.Assign([self.ast.AssName(funcname, "OP_ASSIGN", lineno=lineno)],
+                    #                   self.ast.CallFunc(self.ast.Name(d.name), [self.ast.Name(funcname)], lineno=lineno),
                     #                   lineno=lineno)
                     #self._assign(tnode, current_class, top_level)
-                    tnode = ast.CallFunc(d, [ast.Name('%s')], lineno=lineno)
+                    tnode = self.ast.CallFunc(d, [self.ast.Name('%s')], lineno=lineno)
                     code = code % self._callfunc_code(tnode, None)
             else:
                 raise TranslationError(
@@ -1596,7 +1597,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             lastStmt = node.code.nodes[-1]
         else:
             lastStmt = None
-        if not isinstance(lastStmt, ast.Return):
+        if not isinstance(lastStmt, self.ast.Return):
             if self.source_tracking:
                 print >>self.output, self.spacing() + "$pyjs.trackstack.pop();$pyjs.track=$pyjs.trackstack.pop();$pyjs.trackstack.push($pyjs.track);"
             # FIXME: check why not on on self._isNativeFunc(lastStmt)
@@ -1640,7 +1641,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
     def _callfunc_code(self, v, current_klass):
 
         self.ignore_debug = False
-        if isinstance(v.node, ast.Name):
+        if isinstance(v.node, self.ast.Name):
             name_type, pyname, jsname, depth, is_local = self.lookup(v.node.name)
             if name_type == '__pyjamas__':
                 try:
@@ -1664,33 +1665,33 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                 else:
                     call_name = jsname
             call_args = []
-        elif isinstance(v.node, ast.Getattr):
-            if isinstance(v.node.expr, ast.Name):
+        elif isinstance(v.node, self.ast.Getattr):
+            if isinstance(v.node.expr, self.ast.Name):
                 attrname = self.attrib_remap(v.node.attrname)
                 call_name = self._name2(v.node.expr, current_klass, attrname)
                 call_args = []
-            elif isinstance(v.node.expr, ast.Getattr):
+            elif isinstance(v.node.expr, self.ast.Getattr):
                 call_name = self.attrib_join(self._getattr2(v.node.expr, current_klass, v.node.attrname))
                 call_args = []
-            elif isinstance(v.node.expr, ast.CallFunc):
+            elif isinstance(v.node.expr, self.ast.CallFunc):
                 call_name = self._callfunc(v.node.expr, current_klass) + "." + v.node.attrname
                 call_args = []
-            elif isinstance(v.node.expr, ast.Subscript):
+            elif isinstance(v.node.expr, self.ast.Subscript):
                 call_name = self._subscript(v.node.expr, current_klass) + "." + v.node.attrname
                 call_args = []
-            elif isinstance(v.node.expr, ast.Const):
+            elif isinstance(v.node.expr, self.ast.Const):
                 call_name = self.expr(v.node.expr, current_klass) + "." + v.node.attrname
                 call_args = []
-            elif isinstance(v.node.expr, ast.Slice):
+            elif isinstance(v.node.expr, self.ast.Slice):
                 call_name = self._slice(v.node.expr, current_klass) + "." + v.node.attrname
                 call_args = []
             else:
                 raise TranslationError(
                     "unsupported type (in _callfunc)", v.node.expr, self.module_name)
-        elif isinstance(v.node, ast.CallFunc):
+        elif isinstance(v.node, self.ast.CallFunc):
             call_name = self._callfunc(v.node, current_klass)
             call_args = []
-        elif isinstance(v.node, ast.Subscript):
+        elif isinstance(v.node, self.ast.Subscript):
             call_name = self._subscript(v.node, current_klass)
             call_args = []
         else:
@@ -1708,7 +1709,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             dstar_arg_name = self.expr(v.dstar_args, current_klass)
 
         for ch4 in v.args:
-            if isinstance(ch4, ast.Keyword):
+            if isinstance(ch4, self.ast.Keyword):
                 kwarg = ch4.name + ":" + self.expr(ch4.expr, current_klass)
                 kwargs.append(kwarg)
             else:
@@ -1763,11 +1764,11 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         for ch4 in node.nodes:
             arg = self.expr(ch4, current_klass)
             call_args.append(arg)
-        print >>self.output, self.spacing() + self.track_call("pyjslib['printFunc']([%s], %d)" % (', '.join(call_args), int(isinstance(node, ast.Printnl))), node.lineno) + ';'
+        print >>self.output, self.spacing() + self.track_call("pyjslib['printFunc']([%s], %d)" % (', '.join(call_args), int(isinstance(node, self.ast.Printnl))), node.lineno) + ';'
 
     def _tryFinally(self, node, current_klass, top_level=False):
         body = node.body
-        if not isinstance(node.body, ast.TryExcept):
+        if not isinstance(node.body, self.ast.TryExcept):
             body = node
         node.body.final = node.final
         self._tryExcept(body, current_klass, top_level=top_level)
@@ -1829,7 +1830,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                     if expr.lineno:
                         lineno = expr.lineno
                     l = []
-                    if isinstance(expr, ast.Tuple):
+                    if isinstance(expr, self.ast.Tuple):
                         for x in expr.nodes:
                             l.append("(%s_name == %s.__name__)" % (pyjs_try_err, self.expr(x, current_klass)))
                     else:
@@ -1837,7 +1838,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                     print >> self.output, "%sif (%s) {" % (else_str, "||".join(l))
                 self.indent()
                 print >> self.output, self.spacing() + "$pyjs.__last_exception__.except_lineno = %d;" % lineno
-                tnode = ast.Assign([ast.AssName(errName, "OP_ASSIGN", lineno)], ast.Name(pyjs_try_err, lineno), lineno)
+                tnode = self.ast.Assign([self.ast.AssName(errName, "OP_ASSIGN", lineno)], self.ast.Name(pyjs_try_err, lineno), lineno)
                 self._assign(tnode, current_klass, top_level)
                 for stmt in handler[2]:
                     self._stmt(stmt, current_klass)
@@ -1862,17 +1863,17 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
     # but incurring a 100% performance penalty. oops.
     def _getattr(self, v, current_klass, use_getattr=False):
         attr_name = self.attrib_remap(v.attrname)
-        if isinstance(v.expr, ast.Name):
+        if isinstance(v.expr, self.ast.Name):
             obj = self._name(v.expr, current_klass, return_none_for_module=True)
             if not use_getattr or attr_name == '__class__' or \
                     attr_name == '__name__':
                 return [obj, attr_name]
             return ["pyjslib['getattr'](%s, '%s')" % (obj, attr_name)]
-        elif isinstance(v.expr, ast.Getattr):
+        elif isinstance(v.expr, self.ast.Getattr):
             return self._getattr(v.expr, current_klass) + [attr_name]
-        elif isinstance(v.expr, ast.Subscript):
+        elif isinstance(v.expr, self.ast.Subscript):
             return [self._subscript(v.expr, self.modpfx()), attr_name]
-        elif isinstance(v.expr, ast.CallFunc):
+        elif isinstance(v.expr, self.ast.CallFunc):
             return [self._callfunc(v.expr, self.modpfx()), attr_name]
         else:
             raise TranslationError(
@@ -1904,9 +1905,9 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         return jsname + "." + attr_name
 
     def _getattr2(self, v, current_klass, attr_name):
-        if isinstance(v.expr, ast.Getattr):
+        if isinstance(v.expr, self.ast.Getattr):
             return self._getattr2(v.expr, current_klass, v.attrname) + [attr_name]
-        if isinstance(v.expr, ast.Name):
+        if isinstance(v.expr, self.ast.Name):
             name_type, pyname, jsname, depth, is_local = self.lookup(v.expr.name)
             if name_type is None:
                 jsname = self.scopeName(v.expr.name, depth, is_local)
@@ -1919,7 +1920,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         current_klass.__md5__ = self.md5(node)
         init_method = None
         for child in node.code:
-            if isinstance(child, ast.Function):
+            if isinstance(child, self.ast.Function):
                 current_klass.add_function(child.name)
                 if child.name == "__init__":
                     init_method = child
@@ -1928,10 +1929,10 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         else:
             base_classes = []
             for node_base in node.bases:
-                if isinstance(node_base, ast.Name):
+                if isinstance(node_base, self.ast.Name):
                     node_base_name = node_base.name
                     base_class = self._name(node_base, None)
-                elif isinstance(node_base, ast.Getattr):
+                elif isinstance(node_base, self.ast.Getattr):
                     # the bases are not in scope of the class so do not
                     # pass our class to self._name
                     node_base_name = node_base.attrname
@@ -1956,9 +1957,9 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
         private_scope = {}
         for child in node.code:
-            if isinstance(child, ast.Pass):
+            if isinstance(child, self.ast.Pass):
                 pass
-            elif isinstance(child, ast.Function):
+            elif isinstance(child, self.ast.Function):
                 self.local_prefix = None
                 self._method(child, current_klass, class_name, class_name, local_prefix)
                 self.push_lookup(private_scope)
@@ -1969,7 +1970,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 print >>self.output, self.spacing() + "%s = %s;" % (jsname, decorator_code)
                 self.add_lookup('method', child.name, "pyjslib['staticmethod'](%s)" % jsname)
                 private_scope = self.pop_lookup()
-            elif isinstance(child, ast.Assign):
+            elif isinstance(child, self.ast.Assign):
                 self.local_prefix = local_prefix
                 self.push_lookup(private_scope)
                 self.track_lineno(child, True)
@@ -1978,7 +1979,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 lhs = self.add_lookup('attribute', child.nodes[0].name, name)
                 print >>self.output, self.spacing() + "%s = %s;" % (lhs, rhs)
                 private_scope = self.pop_lookup()
-            elif isinstance(child, ast.Discard) and isinstance(child.expr, ast.Const):
+            elif isinstance(child, self.ast.Discard) and isinstance(child.expr, self.ast.Const):
                 # Probably a docstring, turf it
                 pass
             else:
@@ -2099,7 +2100,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             lastStmt = node.code.nodes[-1]
         else:
             lastStmt = None
-        if not isinstance(lastStmt, ast.Return):
+        if not isinstance(lastStmt, self.ast.Return):
             if self.source_tracking:
                 print >>self.output, self.spacing() + "$pyjs.trackstack.pop();$pyjs.track=$pyjs.trackstack.pop();$pyjs.trackstack.push($pyjs.track);"
             if not self._isNativeFunc(lastStmt):
@@ -2124,9 +2125,9 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.pop_lookup()
 
     def _isNativeFunc(self, node):
-        if isinstance(node, ast.Discard):
-            if isinstance(node.expr, ast.CallFunc):
-                if isinstance(node.expr.node, ast.Name):
+        if isinstance(node, self.ast.Discard):
+            if isinstance(node.expr, self.ast.CallFunc):
+                if isinstance(node.expr.node, self.ast.Name):
                     name_type, pyname, jsname, depth, is_local = self.lookup(node.expr.node.name)
                     if name_type == '__pyjamas__' and jsname == NATIVE_JS_FUNC_NAME:
                         return True
@@ -2135,47 +2136,47 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
     def _stmt(self, node, current_klass, top_level = False):
         self.track_lineno(node)
 
-        if isinstance(node, ast.Return):
+        if isinstance(node, self.ast.Return):
             self._return(node, current_klass)
-        elif isinstance(node, ast.Break):
+        elif isinstance(node, self.ast.Break):
             self._break(node, current_klass)
-        elif isinstance(node, ast.Continue):
+        elif isinstance(node, self.ast.Continue):
             self._continue(node, current_klass)
-        elif isinstance(node, ast.Assign):
+        elif isinstance(node, self.ast.Assign):
             self._assign(node, current_klass, top_level)
-        elif isinstance(node, ast.AugAssign):
+        elif isinstance(node, self.ast.AugAssign):
             self._augassign(node, current_klass, top_level)
-        elif isinstance(node, ast.Discard):
+        elif isinstance(node, self.ast.Discard):
             self._discard(node, current_klass)
-        elif isinstance(node, ast.If):
+        elif isinstance(node, self.ast.If):
             self._if(node, current_klass, top_level)
-        elif isinstance(node, ast.For):
+        elif isinstance(node, self.ast.For):
             self._for(node, current_klass)
-        elif isinstance(node, ast.While):
+        elif isinstance(node, self.ast.While):
             self._while(node, current_klass)
-        elif isinstance(node, ast.Subscript):
+        elif isinstance(node, self.ast.Subscript):
             self._subscript_stmt(node, current_klass)
-        elif isinstance(node, ast.Global):
+        elif isinstance(node, self.ast.Global):
             self._global(node, current_klass)
-        elif isinstance(node, ast.Pass):
+        elif isinstance(node, self.ast.Pass):
             pass
-        elif isinstance(node, ast.Function):
+        elif isinstance(node, self.ast.Function):
             self._function(node, current_klass, top_level, True)
-        elif isinstance(node, ast.Printnl):
+        elif isinstance(node, self.ast.Printnl):
            self._print(node, current_klass)
-        elif isinstance(node, ast.Print):
+        elif isinstance(node, self.ast.Print):
            self._print(node, current_klass)
-        elif isinstance(node, ast.TryExcept):
+        elif isinstance(node, self.ast.TryExcept):
             self._tryExcept(node, current_klass, top_level)
-        elif isinstance(node, ast.TryFinally):
+        elif isinstance(node, self.ast.TryFinally):
             self._tryFinally(node, current_klass, top_level)
-        elif isinstance(node, ast.Raise):
+        elif isinstance(node, self.ast.Raise):
             self._raise(node, current_klass)
-        elif isinstance(node, ast.Import):
+        elif isinstance(node, self.ast.Import):
             self._import(node, current_klass, top_level)
-        elif isinstance(node, ast.From):
+        elif isinstance(node, self.ast.From):
             self._from(node, current_klass, top_level)
-        elif isinstance(node, ast.AssAttr):
+        elif isinstance(node, self.ast.AssAttr):
             self._assattr(node, current_klass)
         else:
             raise TranslationError(
@@ -2213,37 +2214,37 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
     def _augassign(self, node, current_klass, top_level = False):
         def astOP(op):
             if op == "+=":
-                return ast.Add
+                return self.ast.Add
             elif op == "-=":
-                return ast.Sub
+                return self.ast.Sub
             elif op == "*=":
-                return ast.Mul
+                return self.ast.Mul
             elif op == "/=":
-                return ast.Div
+                return self.ast.Div
             elif op == "%=":
-                return ast.Mod
+                return self.ast.Mod
             else:
                 raise TranslationError(
                  "unsupported OP (in _augassign)", node, self.module_name)
         v = node.node
-        if isinstance(v, ast.Getattr):
+        if isinstance(v, self.ast.Getattr):
             # XXX HACK!  don't allow += on return result of getattr.
             # TODO: create a temporary variable or something.
             lhs = self.attrib_join(self._getattr(v, current_klass, False))
-            lhs_ass = ast.AssAttr(v.expr, v.attrname, "OP_ASSIGN", node.lineno)
-        elif isinstance(v, ast.Name):
+            lhs_ass = self.ast.AssAttr(v.expr, v.attrname, "OP_ASSIGN", node.lineno)
+        elif isinstance(v, self.ast.Name):
             lhs = self._name(v, current_klass)
-            lhs_ass = ast.AssName(v.name, "OP_ASSIGN", node.lineno)
-        elif isinstance(v, ast.Subscript) or self.operator_funcs:
+            lhs_ass = self.ast.AssName(v.name, "OP_ASSIGN", node.lineno)
+        elif isinstance(v, self.ast.Subscript) or self.operator_funcs:
             if len(v.subs) != 1:
                 raise TranslationError(
                     "must have one sub (in _assign)", v, self.module_name)
-            lhs = ast.Subscript(v.expr, "OP_ASSIGN", v.subs)
+            lhs = self.ast.Subscript(v.expr, "OP_ASSIGN", v.subs)
             expr = v.expr
             subs = v.subs
-            if not (isinstance(v.subs[0], ast.Const) or \
-                    isinstance(v.subs[0], ast.Name)) or \
-               not isinstance(v.expr, ast.Name):
+            if not (isinstance(v.subs[0], self.ast.Const) or \
+                    isinstance(v.subs[0], self.ast.Name)) or \
+               not isinstance(v.expr, self.ast.Name):
                 # There's something complex here.
                 # Neither a simple x[0] += ?
                 # Nore a simple x[y] += ?
@@ -2253,10 +2254,10 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 self.add_lookup('variable', augexpr, augexpr)
                 print >>self.output, self.spacing() + "var " + augexpr + " = " + self.expr(expr, current_klass) + ";"
                 self.add_lookup('variable', augsub, augsub)
-                lhs = ast.Subscript(ast.Name(augexpr), "OP_ASSIGN", [ast.Name(augsub)])
-                v = ast.Subscript(ast.Name(augexpr), v.flags, [ast.Name(augsub)])
+                lhs = self.ast.Subscript(self.ast.Name(augexpr), "OP_ASSIGN", [self.ast.Name(augsub)])
+                v = self.ast.Subscript(self.ast.Name(augexpr), v.flags, [self.ast.Name(augsub)])
             op = astOP(node.op)
-            tnode = ast.Assign([lhs], op((v, node.expr)))
+            tnode = self.ast.Assign([lhs], op((v, node.expr)))
             return self._assign(tnode, current_klass, top_level)
         else:
             raise TranslationError(
@@ -2270,10 +2271,10 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             rhs = self.expr(node.expr, current_klass)
             print >>self.output, self.spacing() + lhs + " " + op + " " + rhs + ";"
             return
-        if isinstance(v, ast.Name):
+        if isinstance(v, self.ast.Name):
             self.add_lookup('global', v.name, lhs)
         op = astOP(node.op)
-        tnode = ast.Assign([lhs_ass], op((v, node.expr)))
+        tnode = self.ast.Assign([lhs_ass], op((v, node.expr)))
         return self._assign(tnode, current_klass, top_level)
 
     def _lhsFromName(self, name, top_level, current_klass, set_name_type = 'variable'):
@@ -2296,13 +2297,13 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         return lhs
 
     def _lhsFromAttr(self, v, current_klass):
-        if isinstance(v.expr, ast.Name):
+        if isinstance(v.expr, self.ast.Name):
             lhs = self._name(v.expr, current_klass)
-        elif isinstance(v.expr, ast.Getattr):
+        elif isinstance(v.expr, self.ast.Getattr):
             lhs = self.attrib_join(self._getattr(v, current_klass)[:-1])
-        elif isinstance(v.expr, ast.Subscript):
+        elif isinstance(v.expr, self.ast.Subscript):
             lhs = self._subscript(v.expr, current_klass)
-        elif isinstance(v.expr, ast.CallFunc):
+        elif isinstance(v.expr, self.ast.CallFunc):
             lhs = self._callfunc(v.expr, current_klass)
         else:
             raise TranslationError(
@@ -2312,16 +2313,16 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
     def _assign(self, node, current_klass, top_level = False):
         if len(node.nodes) != 1:
             tempvar = self.uniqid("$assign")
-            tnode = ast.Assign([ast.AssName(tempvar, "OP_ASSIGN", node.lineno)], node.expr, node.lineno)
+            tnode = self.ast.Assign([self.ast.AssName(tempvar, "OP_ASSIGN", node.lineno)], node.expr, node.lineno)
             self._assign(tnode, current_klass, False)
             for v in node.nodes:
-               tnode2 = ast.Assign([v], ast.Name(tempvar, node.lineno), node.lineno)
+               tnode2 = self.ast.Assign([v], self.ast.Name(tempvar, node.lineno), node.lineno)
                self._assign(tnode2, current_klass, top_level)
             return
 
         dbg = 0
         v = node.nodes[0]
-        if isinstance(v, ast.AssAttr):
+        if isinstance(v, self.ast.AssAttr):
             attr_name = self.attrib_remap(v.attrname)
             rhs = self.expr(node.expr, current_klass)
             lhs = self._lhsFromAttr(v, current_klass)
@@ -2335,7 +2336,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 return
             lhs += '.' + attr_name
 
-        elif isinstance(v, ast.AssName):
+        elif isinstance(v, self.ast.AssName):
             rhs = self.expr(node.expr, current_klass)
             lhs = self._lhsFromName(v.name, top_level, current_klass)
             if v.flags == "OP_ASSIGN":
@@ -2343,7 +2344,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             else:
                 raise TranslationError(
                     "unsupported flag (in _assign)", v, self.module_name)
-        elif isinstance(v, ast.Subscript):
+        elif isinstance(v, self.ast.Subscript):
             if v.flags == "OP_ASSIGN":
                 obj = self.expr(v.expr, current_klass)
                 if len(v.subs) != 1:
@@ -2356,18 +2357,18 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             else:
                 raise TranslationError(
                     "unsupported flag (in _assign)", v, self.module_name)
-        elif isinstance(v, (ast.AssList, ast.AssTuple)):
+        elif isinstance(v, (self.ast.AssList, self.ast.AssTuple)):
             tempName = self.uniqid("$tupleassign")
             print >>self.output, self.spacing() + "var " + tempName + " = " + \
                                  self.expr(node.expr, current_klass) + ";"
             for index,child in enumerate(v.getChildNodes()):
                 rhs = self.track_call(tempName + ".__getitem__(" + str(index) + ")", v.lineno)
 
-                if isinstance(child, ast.AssAttr):
+                if isinstance(child, self.ast.AssAttr):
                     lhs = self._lhsFromAttr(child, current_klass) + '.' + self.attrib_remap(child.attrname)
-                elif isinstance(child, ast.AssName):
+                elif isinstance(child, self.ast.AssName):
                     lhs = self._lhsFromName(child.name, top_level, current_klass)
-                elif isinstance(child, ast.Subscript):
+                elif isinstance(child, self.ast.Subscript):
                     if child.flags == "OP_ASSIGN":
                         obj = self.expr(child.expr, current_klass)
                         if len(child.subs) != 1:
@@ -2392,16 +2393,16 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
     def _discard(self, node, current_klass):
         
-        if isinstance(node.expr, ast.CallFunc):
+        if isinstance(node.expr, self.ast.CallFunc):
             expr = self._callfunc(node.expr, current_klass)
-            if isinstance(node.expr.node, ast.Name):
+            if isinstance(node.expr.node, self.ast.Name):
                 name_type, pyname, jsname, depth, is_local = self.lookup(node.expr.node.name)
                 if name_type == '__pyjamas__' and jsname == NATIVE_JS_FUNC_NAME:
                     print >>self.output, expr
                     return
             print >>self.output, self.spacing() + expr + ";"
 
-        elif isinstance(node.expr, ast.Const):
+        elif isinstance(node.expr, self.ast.Const):
             # we can safely remove all constants that are discarded,
             # e.g None fo empty expressions after a unneeded ";" or
             # mostly important to remove doc strings
@@ -2438,7 +2439,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         else:
             print >>self.output, self.indent() + keyword + " {"
 
-        if isinstance(consequence, ast.Stmt):
+        if isinstance(consequence, self.ast.Stmt):
             for child in consequence.nodes:
                 self._stmt(child, current_klass, top_level)
         else:
@@ -2500,11 +2501,11 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         assign_tuple = ""
 
         # based on Bob Ippolito's Iteration in Javascript code
-        if isinstance(node.assign, ast.AssName):
+        if isinstance(node.assign, self.ast.AssName):
             assign_name = self.add_lookup('variable', node.assign.name, node.assign.name)
             if node.assign.flags == "OP_ASSIGN":
                 op = "="
-        elif isinstance(node.assign, ast.AssTuple):
+        elif isinstance(node.assign, self.ast.AssTuple):
             op = "="
             i = 0
             for child in node.assign:
@@ -2520,21 +2521,21 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             raise TranslationError(
                 "unsupported type (in _for)", node.assign, self.module_name)
 
-        if isinstance(node.list, ast.Name):
+        if isinstance(node.list, self.ast.Name):
             list_expr = self._name(node.list, current_klass)
-        elif isinstance(node.list, ast.Getattr):
+        elif isinstance(node.list, self.ast.Getattr):
             list_expr = self.attrib_join(self._getattr(node.list, current_klass))
-        elif isinstance(node.list, ast.CallFunc):
+        elif isinstance(node.list, self.ast.CallFunc):
             list_expr = self._callfunc(node.list, current_klass)
-        elif isinstance(node.list, ast.Subscript):
+        elif isinstance(node.list, self.ast.Subscript):
             list_expr = self._subscript(node.list, current_klass)
-        elif isinstance(node.list, ast.Const):
+        elif isinstance(node.list, self.ast.Const):
             list_expr = self._const(node.list)
-        elif isinstance(node.list, ast.Const):
+        elif isinstance(node.list, self.ast.Const):
             list_expr = self._const(node.list)
-        elif isinstance(node.list, ast.List):
+        elif isinstance(node.list, self.ast.List):
             list_expr = self._list(node.list, current_klass)
-        elif isinstance(node.list, ast.Slice):
+        elif isinstance(node.list, self.ast.Slice):
             list_expr = self._slice(node.list, current_klass)
         else:
             raise TranslationError(
@@ -2576,7 +2577,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
     def _while(self, node, current_klass):
         test = self.expr(node.test, current_klass)
         print >>self.output, self.indent() + "while (" + self.track_call(self.inline_bool_code(test), node.lineno) + ") {"
-        if isinstance(node.body, ast.Stmt):
+        if isinstance(node.body, self.ast.Stmt):
             for child in node.body.nodes:
                 self._stmt(child, current_klass)
         else:
@@ -2683,7 +2684,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 %(s)s\tpyjslib['op_mul'](%(v1)s,%(v2)s))""" % locals()
 
     def _mod(self, node, current_klass):
-        if isinstance(node.left, ast.Const) and isinstance(node.left.value, StringType):
+        if isinstance(node.left, self.ast.Const) and isinstance(node.left.value, StringType):
             return self.track_call("pyjslib['sprintf']("+self.expr(node.left, current_klass) + ", " + self.expr(node.right, current_klass)+")", node.lineno)
         if not self.operator_funcs:
             return self.expr(node.left, current_klass) + " % " + self.expr(node.right, current_klass)
@@ -2771,8 +2772,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
     def _lambda(self, node, current_klass):
         function_name = self.uniqid("$lambda")
         print >> self.output, "var",
-        code_node = ast.Stmt([ast.Return(node.code, node.lineno)], node.lineno)
-        func_node = ast.Function(None, function_name, node.argnames, node.defaults, node.flags, None, code_node, node.lineno)
+        code_node = self.ast.Stmt([self.ast.Return(node.code, node.lineno)], node.lineno)
+        func_node = self.ast.Function(None, function_name, node.argnames, node.defaults, node.flags, None, code_node, node.lineno)
         self._function(func_node, current_klass, False, True)
         return function_name
 
@@ -2785,18 +2786,18 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         print >> self.output, "function(){"
         print >> self.output, "var %s = pyjslib['List']();" % resultlist
 
-        tnode = ast.Discard(ast.CallFunc(ast.Getattr(ast.Name(resultlist), 'append'), [node.expr], None, None))
+        tnode = self.ast.Discard(self.ast.CallFunc(self.ast.Getattr(self.ast.Name(resultlist), 'append'), [node.expr], None, None))
         for qual in node.quals[::-1]:
             if len(qual.ifs) > 1:
                 raise TranslationError(
                     "unsupported ifs (in _listcomp)", node, self.module_name)
             tassign = qual.assign
             tlist = qual.list
-            tbody = ast.Stmt([tnode])
+            tbody = self.ast.Stmt([tnode])
             if len(qual.ifs) == 1:
-                tbody = ast.Stmt([ast.If([(qual.ifs[0].test, tbody)], None, qual.ifs[0].lineno)])
+                tbody = self.ast.Stmt([self.ast.If([(qual.ifs[0].test, tbody)], None, qual.ifs[0].lineno)])
             telse_ = None
-            tnode = ast.For(tassign, tlist, tbody, telse_, node.lineno)
+            tnode = self.ast.For(tassign, tlist, tbody, telse_, node.lineno)
         self._for(tnode, current_klass)
 
         print >> self.output, "return %s;}()" % resultlist,
@@ -2829,54 +2830,54 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             self.add_lookup(name_type, pyname, jsname)
 
     def expr(self, node, current_klass):
-        if isinstance(node, ast.Const):
+        if isinstance(node, self.ast.Const):
             return self._const(node)
         # @@@ not sure if the parentheses should be here or in individual operator functions - JKT
-        elif isinstance(node, ast.Mul):
+        elif isinstance(node, self.ast.Mul):
             return " ( " + self._mul(node, current_klass) + " ) "
-        elif isinstance(node, ast.Add):
+        elif isinstance(node, self.ast.Add):
             return " ( " + self._add(node, current_klass) + " ) "
-        elif isinstance(node, ast.Sub):
+        elif isinstance(node, self.ast.Sub):
             return " ( " + self._sub(node, current_klass) + " ) "
-        elif isinstance(node, ast.Div):
+        elif isinstance(node, self.ast.Div):
             return " ( " + self._div(node, current_klass) + " ) "
-        elif isinstance(node, ast.FloorDiv):
+        elif isinstance(node, self.ast.FloorDiv):
             return " pyjslib['int']( " + self._div(node, current_klass) + " ) "
-        elif isinstance(node, ast.Mod):
+        elif isinstance(node, self.ast.Mod):
             return self._mod(node, current_klass)
-        elif isinstance(node, ast.Power):
+        elif isinstance(node, self.ast.Power):
             return self._power(node, current_klass)
-        elif isinstance(node, ast.UnaryAdd):
+        elif isinstance(node, self.ast.UnaryAdd):
             return self._unaryadd(node, current_klass)
-        elif isinstance(node, ast.UnarySub):
+        elif isinstance(node, self.ast.UnarySub):
             return self._unarysub(node, current_klass)
-        elif isinstance(node, ast.Not):
+        elif isinstance(node, self.ast.Not):
             return self._not(node, current_klass)
-        elif isinstance(node, ast.Or):
+        elif isinstance(node, self.ast.Or):
             return self._or(node, current_klass)
-        elif isinstance(node, ast.And):
+        elif isinstance(node, self.ast.And):
             return self._and(node, current_klass)
-        elif isinstance(node, ast.Invert):
+        elif isinstance(node, self.ast.Invert):
             return self._invert(node, current_klass)
-        elif isinstance(node, ast.Bitand):
+        elif isinstance(node, self.ast.Bitand):
             return "("+self._bitand(node, current_klass)+")"
-        elif isinstance(node,ast.LeftShift):
+        elif isinstance(node,self.ast.LeftShift):
             return self._bitshiftleft(node, current_klass)
-        elif isinstance(node, ast.RightShift):
+        elif isinstance(node, self.ast.RightShift):
             return self._bitshiftright(node, current_klass)
-        elif isinstance(node, ast.Bitxor):
+        elif isinstance(node, self.ast.Bitxor):
             return "("+self._bitxor(node, current_klass)+")"
-        elif isinstance(node, ast.Bitor):
+        elif isinstance(node, self.ast.Bitor):
             return "("+self._bitor(node, current_klass)+")"
-        elif isinstance(node, ast.Compare):
+        elif isinstance(node, self.ast.Compare):
             return self._compare(node, current_klass)
-        elif isinstance(node, ast.CallFunc):
+        elif isinstance(node, self.ast.CallFunc):
             return self._callfunc(node, current_klass)
-        elif isinstance(node, ast.Name):
+        elif isinstance(node, self.ast.Name):
             return self._name(node, current_klass)
-        elif isinstance(node, ast.Subscript):
+        elif isinstance(node, self.ast.Subscript):
             return self._subscript(node, current_klass)
-        elif isinstance(node, ast.Getattr):
+        elif isinstance(node, self.ast.Getattr):
             attr_ = self._getattr(node, current_klass)
             attr = self.attrib_join(attr_)
             attr_left = self.attrib_join(attr_[:-1])
@@ -2931,24 +2932,32 @@ typeof %(attr_left)s['%(attr_right)s']['__get__'] == 'function')"""
 %(s)s\t\t$pyjs__testval);
 %(s)s})()""" % {'s': self.spacing(), 'attr': attr, 'attr_': attr_, 'attr_code': attr_code, }
             return attr
-        elif isinstance(node, ast.List):
+        elif isinstance(node, self.ast.List):
             return self._list(node, current_klass)
-        elif isinstance(node, ast.Dict):
+        elif isinstance(node, self.ast.Dict):
             return self._dict(node, current_klass)
-        elif isinstance(node, ast.Tuple):
+        elif isinstance(node, self.ast.Tuple):
             return self._tuple(node, current_klass)
-        elif isinstance(node, ast.Slice):
+        elif isinstance(node, self.ast.Slice):
             return self._slice(node, current_klass)
-        elif isinstance(node, ast.Lambda):
+        elif isinstance(node, self.ast.Lambda):
             return self._lambda(node, current_klass)
-        elif isinstance(node, ast.ListComp):
+        elif isinstance(node, self.ast.ListComp):
             return self._listcomp(node, current_klass)
         else:
             raise TranslationError(
                 "unsupported type (in expr)", node, self.module_name)
 
+def import_compiler(internal_ast):
 
-def translate(sources, output_file, module_name=None,
+    if internal_ast:
+        from lib2to3 import compiler
+    else:
+        import compiler
+
+    return compiler
+
+def translate(compiler, sources, output_file, module_name=None,
               debug=False,
               print_statements = True,
               function_argument_checking=True,
@@ -2961,6 +2970,7 @@ def translate(sources, output_file, module_name=None,
               inline_code=False,
               operator_funcs=True,
              ):
+
     sources = map(os.path.abspath, sources)
     output_file = os.path.abspath(output_file)
     if not module_name:
@@ -2977,7 +2987,7 @@ def translate(sources, output_file, module_name=None,
                 flags.add(l.strip()[7:])
         f.close()
         if tree:
-            tree = merge(module_name, tree, current_tree, flags)
+            tree = merge(compiler.ast, module_name, tree, current_tree, flags)
         else:
             tree = current_tree
     #XXX: if we have an override the sourcefile and the tree is not the same!
@@ -2986,7 +2996,8 @@ def translate(sources, output_file, module_name=None,
     f.close()
     output = file(output_file, 'w')
 
-    t = Translator(module_name, module_name, module_name, src, tree, output,
+    t = Translator(compiler,
+                   module_name, module_name, module_name, src, tree, output,
                    debug = debug,
                    print_statements = print_statements,
                    function_argument_checking = function_argument_checking,
@@ -3002,20 +3013,20 @@ def translate(sources, output_file, module_name=None,
     output.close()
     return t.imported_modules, t.imported_js
 
-def merge(module_name, tree1, tree2, flags):
+def merge(ast, module_name, tree1, tree2, flags):
     if 'FULL_OVERRIDE' in flags:
         return tree2
     for child in tree2.node:
         if isinstance(child, ast.Function):
-            replaceFunction(tree1, child.name, child)
+            replaceFunction(ast, tree1, child.name, child)
         elif isinstance(child, ast.Class):
-            replaceClassMethods(tree1, child.name, child)
+            replaceClassMethods(ast, tree1, child.name, child)
         else:
             raise TranslationError(
                 "Do not know how to merge %s" % child, child, module_name)
     return tree1
 
-def replaceFunction(tree, function_name, function_node):
+def replaceFunction(ast, tree, function_name, function_node):
     # find function to replace
     for child in tree.node:
         if isinstance(child, ast.Function) and child.name == function_name:
@@ -3035,7 +3046,7 @@ def addCode(target, source):
 
 
 
-def replaceClassMethods(tree, class_name, class_node):
+def replaceClassMethods(ast, tree, class_name, class_node):
     # find class to replace
     old_class_node = None
     for child in tree.node:
@@ -3080,12 +3091,14 @@ def replaceClassMethods(tree, class_name, class_node):
 
 
 class PlatformParser:
-    def __init__(self, platform_dir = "", verbose=True, chain_plat=None):
+    def __init__(self, compiler,
+                       platform_dir = "", verbose=True, chain_plat=None):
         self.platform_dir = platform_dir
         self.parse_cache = {}
         self.platform = ""
         self.verbose = verbose
         self.chain_plat = chain_plat
+        self.compiler = compiler
 
     def setPlatform(self, platform):
         self.platform = platform
@@ -3099,7 +3112,7 @@ class PlatformParser:
                 mod, override = self.chain_plat.parseModule(module_name,
                                                             file_name)
             else:
-                mod = compiler.parseFile(file_name)
+                mod = self.compiler.parseFile(file_name)
             self.parse_cache[file_name] = mod
         else:
             mod = self.parse_cache[file_name]
@@ -3108,10 +3121,10 @@ class PlatformParser:
         platform_file_name = self.generatePlatformFilename(file_name)
         if self.platform and os.path.isfile(platform_file_name):
             mod = copy.deepcopy(mod)
-            mod_override = compiler.parseFile(platform_file_name)
+            mod_override = self.compiler.parseFile(platform_file_name)
             if self.verbose:
                 print "Merging", module_name, self.platform
-            self.merge(mod, mod_override)
+            self.merge(smod, mod_override)
             override = True
 
         if self.verbose:
@@ -3131,7 +3144,7 @@ class PlatformParser:
     def replaceFunction(self, tree, function_name, function_node):
         # find function to replace
         for child in tree.node:
-            if isinstance(child, ast.Function) and child.name == function_name:
+            if isinstance(child, self.ast.Function) and child.name == function_name:
                 self.copyFunction(child, function_node)
                 return
         raise TranslationError(
@@ -3142,7 +3155,7 @@ class PlatformParser:
         # find class to replace
         old_class_node = None
         for child in tree.node:
-            if isinstance(child, ast.Class) and child.name == class_name:
+            if isinstance(child, self.ast.Class) and child.name == class_name:
                 old_class_node = child
                 break
 
@@ -3152,10 +3165,10 @@ class PlatformParser:
 
         # replace methods
         for node in class_node.code:
-            if isinstance(node, ast.Function):
+            if isinstance(node, self.ast.Function):
                 found = False
                 for child in old_class_node.code:
-                    if isinstance(child, ast.Function) and child.name == node.name:
+                    if isinstance(child, self.ast.Function) and child.name == node.name:
                         found = True
                         self.copyFunction(child, node)
                         break
@@ -3164,17 +3177,17 @@ class PlatformParser:
                     raise TranslationError(
                         "class method not found: " + class_name + "." + node.name,
                         node, self.module_name)
-            elif isinstance(node, ast.Assign) and \
-                 isinstance(node.nodes[0], ast.AssName):
+            elif isinstance(node, self.ast.Assign) and \
+                 isinstance(node.nodes[0], self.ast.AssName):
                 found = False
                 for child in old_class_node.code:
-                    if isinstance(child, ast.Assign) and \
+                    if isinstance(child, self.ast.Assign) and \
                         self.eqNodes(child.nodes, node.nodes):
                         found = True
                         self.copyAssign(child, node)
                 if not found:
                     self.addCode(old_class_node.code, node)
-            elif isinstance(node, ast.Pass):
+            elif isinstance(node, self.ast.Pass):
                 pass
             else:
                 raise TranslationError(
@@ -3202,7 +3215,8 @@ def dotreplace(fname):
 
 class AppTranslator:
 
-    def __init__(self, library_dirs=[], parser=None, dynamic=False,
+    def __init__(self, compiler,
+                 library_dirs=[], parser=None, dynamic=False,
                  verbose=True,
                  debug=False,
                  print_statements=True,
@@ -3216,6 +3230,7 @@ class AppTranslator:
                  inline_code=False,
                  operator_funcs=True,
                 ):
+        self.compiler = compiler
         self.extension = ".py"
         self.print_statements = print_statements
         self.library_modules = []
@@ -3236,7 +3251,7 @@ class AppTranslator:
         self.operator_funcs = operator_funcs
 
         if not parser:
-            self.parser = PlatformParser()
+            self.parser = PlatformParser(self.compiler)
         else:
             self.parser = parser
 
@@ -3278,7 +3293,8 @@ class AppTranslator:
             override_name = "%s.%s" % (self.parser.platform.lower(),
                                            module_name)
             self.overrides[override_name] = override_name
-        t = Translator(mn, module_name, module_name, src, mod, output, 
+        t = Translator(self.compiler,
+                       mn, module_name, module_name, src, mod, output, 
                        self.dynamic, self.findFile, 
                        debug = self.debug,
                        print_statements = self.print_statements,
@@ -3341,6 +3357,12 @@ class AppTranslator:
 
 def add_compile_options(parser):
     global debug_options, speed_options, pythonic_options
+
+    parser.add_option("--internal-ast",
+                      dest="internal_ast",
+                      action="store_true",
+                      help="Use internal AST parser instead of standard python one"
+                     )
 
     parser.add_option("--debug-wrap",
                       dest="debug",
@@ -3538,6 +3560,8 @@ def main():
 
     if len(args)<1:
         parser.error("incorrect number of arguments")
+
+    import_compiler(options.internal_ast)
 
     if not options.output:
         parser.error("No output file specified")

@@ -12,27 +12,28 @@
 Module: doc*, node
 Stmt: nodes!
 Decorators: nodes!
-Function_: decorators&, name*, argnames*, defaults!, varargs, kwargs, doc*, code
+Function: decorators&, name*, argnames*, defaults!, varargs, kwargs, doc*, code
 Lambda: argnames*, defaults!, varargs, kwargs, code
-Class_: name*, bases!, doc*, code, decorators&
+Class: name*, bases!, doc*, code, decorators&
 Pass: 
-Break_: 
-Continue_: 
-For_: assign, list, body, else_&
-While_: test, body, else_&
-With_: expr, vars&, body
-If_: tests!, else_&
+Break: 
+Continue: 
+For: assign, list, body, else_&
+While: test, body, else_&
+With: expr, vars&, body
+If: tests!, else_&
 IfExp: test, then, else_
 Exec: expr, locals&, globals&
 From: modname*, names*, level*
-Import_: names*
+Import: names*
 Raise: expr1&, expr2&, expr3&
 TryFinally: body, final_
 TryExcept: body, handlers!, else_&
-Return_: value
-Yield_: value
-Const_: value*
-Print: nodes!, dest&, nl
+Return: value
+Yield: value
+Const: value*
+Print: nodes!, dest&
+Printnl: nodes!, dest&, nl
 Discard: expr
 AugAssign: node, op*, expr
 Assign: nodes!, expr

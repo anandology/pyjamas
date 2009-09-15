@@ -265,7 +265,7 @@ class Bitxor(Node):
     def __repr__(self):
         return "Bitxor(%s)" % (repr(self.nodes),)
 
-class Break_(Node):
+class Break(Node):
     def __init__(self, lineno=None):
         self.lineno = lineno
 
@@ -276,7 +276,7 @@ class Break_(Node):
         return ()
 
     def __repr__(self):
-        return "Break_()"
+        return "Break()"
 
 class CallFunc(Node):
     def __init__(self, node, args, star_args, dstar_args, lineno=None):
@@ -307,7 +307,7 @@ class CallFunc(Node):
     def __repr__(self):
         return "CallFunc(%s, %s, %s, %s)" % (repr(self.node), repr(self.args), repr(self.star_args), repr(self.dstar_args))
 
-class Class_(Node):
+class Class(Node):
     def __init__(self, name, bases, doc, code, decorators, lineno=None):
         self.name = name
         self.bases = bases
@@ -334,7 +334,7 @@ class Class_(Node):
         return tuple(nodelist)
 
     def __repr__(self):
-        return "Class_(%s, %s, %s, %s, %s)" % (repr(self.name), repr(self.bases), repr(self.doc), repr(self.code), repr(self.decorators))
+        return "Class(%s, %s, %s, %s, %s)" % (repr(self.name), repr(self.bases), repr(self.doc), repr(self.code), repr(self.decorators))
 
 class Compare(Node):
     def __init__(self, expr, ops, lineno=None):
@@ -357,7 +357,7 @@ class Compare(Node):
     def __repr__(self):
         return "Compare(%s, %s)" % (repr(self.expr), repr(self.ops))
 
-class Const_(Node):
+class Const(Node):
     def __init__(self, value, lineno=None):
         self.value = value
         self.lineno = lineno
@@ -369,9 +369,9 @@ class Const_(Node):
         return ()
 
     def __repr__(self):
-        return "Const_(%s)" % (repr(self.value),)
+        return "Const(%s)" % (repr(self.value),)
 
-class Continue_(Node):
+class Continue(Node):
     def __init__(self, lineno=None):
         self.lineno = lineno
 
@@ -382,7 +382,7 @@ class Continue_(Node):
         return ()
 
     def __repr__(self):
-        return "Continue_()"
+        return "Continue()"
 
 class Decorators(Node):
     def __init__(self, nodes, lineno=None):
@@ -499,7 +499,7 @@ class FloorDiv(Node):
     def __repr__(self):
         return "FloorDiv(%s, %s)" % (repr(self.left), repr(self.right))
 
-class For_(Node):
+class For(Node):
     def __init__(self, assign, list, body, else_, lineno=None):
         self.assign = assign
         self.list = list
@@ -525,7 +525,7 @@ class For_(Node):
         return tuple(nodelist)
 
     def __repr__(self):
-        return "For_(%s, %s, %s, %s)" % (repr(self.assign), repr(self.list), repr(self.body), repr(self.else_))
+        return "For(%s, %s, %s, %s)" % (repr(self.assign), repr(self.list), repr(self.body), repr(self.else_))
 
 class From(Node):
     def __init__(self, modname, names, level, lineno=None):
@@ -543,7 +543,7 @@ class From(Node):
     def __repr__(self):
         return "From(%s, %s, %s)" % (repr(self.modname), repr(self.names), repr(self.level))
 
-class Function_(Node):
+class Function(Node):
     def __init__(self, decorators, name, argnames, defaults, varargs, kwargs, doc, code, lineno=None):
         self.decorators = decorators
         self.name = name
@@ -578,7 +578,7 @@ class Function_(Node):
         return tuple(nodelist)
 
     def __repr__(self):
-        return "Function_(%s, %s, %s, %s, %s, %s, %s, %s)" % (repr(self.decorators), repr(self.name), repr(self.argnames), repr(self.defaults), repr(self.varargs), repr(self.kwargs), repr(self.doc), repr(self.code))
+        return "Function(%s, %s, %s, %s, %s, %s, %s, %s)" % (repr(self.decorators), repr(self.name), repr(self.argnames), repr(self.defaults), repr(self.varargs), repr(self.kwargs), repr(self.doc), repr(self.code))
 
 class GenExpr(Node):
     def __init__(self, code, lineno=None):
@@ -686,23 +686,7 @@ class Global(Node):
     def __repr__(self):
         return "Global(%s)" % (repr(self.names),)
 
-class IfExp(Node):
-    def __init__(self, test, then, else_, lineno=None):
-        self.test = test
-        self.then = then
-        self.else_ = else_
-        self.lineno = lineno
-
-    def getChildren(self):
-        return self.test, self.then, self.else_
-
-    def getChildNodes(self):
-        return self.test, self.then, self.else_
-
-    def __repr__(self):
-        return "IfExp(%s, %s, %s)" % (repr(self.test), repr(self.then), repr(self.else_))
-
-class If_(Node):
+class If(Node):
     def __init__(self, tests, else_, lineno=None):
         self.tests = tests
         self.else_ = else_
@@ -722,9 +706,25 @@ class If_(Node):
         return tuple(nodelist)
 
     def __repr__(self):
-        return "If_(%s, %s)" % (repr(self.tests), repr(self.else_))
+        return "If(%s, %s)" % (repr(self.tests), repr(self.else_))
 
-class Import_(Node):
+class IfExp(Node):
+    def __init__(self, test, then, else_, lineno=None):
+        self.test = test
+        self.then = then
+        self.else_ = else_
+        self.lineno = lineno
+
+    def getChildren(self):
+        return self.test, self.then, self.else_
+
+    def getChildNodes(self):
+        return self.test, self.then, self.else_
+
+    def __repr__(self):
+        return "IfExp(%s, %s, %s)" % (repr(self.test), repr(self.then), repr(self.else_))
+
+class Import(Node):
     def __init__(self, names, lineno=None):
         self.names = names
         self.lineno = lineno
@@ -736,7 +736,7 @@ class Import_(Node):
         return ()
 
     def __repr__(self):
-        return "Import_(%s)" % (repr(self.names),)
+        return "Import(%s)" % (repr(self.names),)
 
 class Invert(Node):
     def __init__(self, expr, lineno=None):
@@ -1004,6 +1004,28 @@ class Power(Node):
         return "Power(%s, %s)" % (repr(self.left), repr(self.right))
 
 class Print(Node):
+    def __init__(self, nodes, dest, lineno=None):
+        self.nodes = nodes
+        self.dest = dest
+        self.lineno = lineno
+
+    def getChildren(self):
+        children = []
+        children.extend(flatten(self.nodes))
+        children.append(self.dest)
+        return tuple(children)
+
+    def getChildNodes(self):
+        nodelist = []
+        nodelist.extend(flatten_nodes(self.nodes))
+        if self.dest is not None:
+            nodelist.append(self.dest)
+        return tuple(nodelist)
+
+    def __repr__(self):
+        return "Print(%s, %s)" % (repr(self.nodes), repr(self.dest))
+
+class Printnl(Node):
     def __init__(self, nodes, dest, nl, lineno=None):
         self.nodes = nodes
         self.dest = dest
@@ -1026,7 +1048,7 @@ class Print(Node):
         return tuple(nodelist)
 
     def __repr__(self):
-        return "Print(%s, %s, %s)" % (repr(self.nodes), repr(self.dest), repr(self.nl))
+        return "Printnl(%s, %s, %s)" % (repr(self.nodes), repr(self.dest), repr(self.nl))
 
 class Raise(Node):
     def __init__(self, expr1, expr2, expr3, lineno=None):
@@ -1055,7 +1077,7 @@ class Raise(Node):
     def __repr__(self):
         return "Raise(%s, %s, %s)" % (repr(self.expr1), repr(self.expr2), repr(self.expr3))
 
-class Return_(Node):
+class Return(Node):
     def __init__(self, value, lineno=None):
         self.value = value
         self.lineno = lineno
@@ -1067,7 +1089,7 @@ class Return_(Node):
         return self.value,
 
     def __repr__(self):
-        return "Return_(%s)" % (repr(self.value),)
+        return "Return(%s)" % (repr(self.value),)
 
 class RightShift(Node):
     def __init__(self, left, right, lineno=None):
@@ -1266,7 +1288,7 @@ class UnarySub(Node):
     def __repr__(self):
         return "UnarySub(%s)" % (repr(self.expr),)
 
-class While_(Node):
+class While(Node):
     def __init__(self, test, body, else_, lineno=None):
         self.test = test
         self.body = body
@@ -1289,9 +1311,9 @@ class While_(Node):
         return tuple(nodelist)
 
     def __repr__(self):
-        return "While_(%s, %s, %s)" % (repr(self.test), repr(self.body), repr(self.else_))
+        return "While(%s, %s, %s)" % (repr(self.test), repr(self.body), repr(self.else_))
 
-class With_(Node):
+class With(Node):
     def __init__(self, expr, vars, body, lineno=None):
         self.expr = expr
         self.vars = vars
@@ -1314,9 +1336,9 @@ class With_(Node):
         return tuple(nodelist)
 
     def __repr__(self):
-        return "With_(%s, %s, %s)" % (repr(self.expr), repr(self.vars), repr(self.body))
+        return "With(%s, %s, %s)" % (repr(self.expr), repr(self.vars), repr(self.body))
 
-class Yield_(Node):
+class Yield(Node):
     def __init__(self, value, lineno=None):
         self.value = value
         self.lineno = lineno
@@ -1328,7 +1350,7 @@ class Yield_(Node):
         return self.value,
 
     def __repr__(self):
-        return "Yield_(%s)" % (repr(self.value),)
+        return "Yield(%s)" % (repr(self.value),)
 
 for name, obj in globals().items():
     if isinstance(obj, type) and issubclass(obj, Node):

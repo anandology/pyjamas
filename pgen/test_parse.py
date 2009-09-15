@@ -1,16 +1,12 @@
 import os
 import sys
 import traceback
-from lib2to3.pgen2.parse import Parser
-from lib2to3.pgen2.driver import Driver
-#from parse_tables import Grammar
-from lib2to3.pgen2.driver import load_grammar
-g = load_grammar("Grammar.txt")
 
 from astpprint import getAststr, printAst
-from lib2to3 import pytree
 
+from lib2to3 import compiler as test_compiler
 from lib2to3.compiler.transformer import Transformer
+from lib2to3.compiler import parser as test_parser
 
 #g = Grammar()
 
@@ -21,9 +17,9 @@ def compare_compilers(fname):
 
     path, fname_out = os.path.split(fname)
 
-    #file = open(fname)
-    #s = parser.suite(file.read())
-    #print "tuple", s.totuple()
+    f = open(fname)
+    txt = f.read()
+    f.close()
 
     try:
         x1 = compiler.parseFile(fname)
@@ -32,12 +28,11 @@ def compare_compilers(fname):
         ys1 = traceback.format_exc(limit=0)
         
 
-    d = Driver(g )
-
     try:
-        x = d.parse_file(fname)
-        t = Transformer()
-        y = t.compile_node(x)
+        #x = test_parser.suite(txt)
+        #t = Transformer()
+        #y = t.compile_node(x)
+        y = test_compiler.parseFile(fname)
         ys = getAststr(y)
 
     except SyntaxError:

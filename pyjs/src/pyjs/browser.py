@@ -316,7 +316,7 @@ class BrowserLinker(linker.BaseLinker):
 
 def build_script():
     usage = """
-    usage: %prog [options] <application module name
+    usage: %prog [options] <application module name>
 
     This is the command line builder for the pyjamas project, which can
     be used to build Ajax applications from Python.
@@ -390,6 +390,8 @@ def build_script():
         else:
             args.append(a)
 
+    compiler = translator.import_compiler(options.internal_ast)
+
     if options.log_level is not None:
         import logging
         logging.basicConfig(level=options.log_level)
@@ -430,6 +432,7 @@ def build_script():
     )
 
     l = BrowserLinker(args,
+                      compiler=compiler,
                       output=options.output,
                       platforms=app_platforms,
                       path=pyjs.path,

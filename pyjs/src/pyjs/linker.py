@@ -69,6 +69,7 @@ class BaseLinker(object):
     platform_parents = {}
 
     def __init__(self, modules, output='output',
+                 compiler=None,
                  debug=False, 
                  js_libs=[], static_js_libs=[], early_static_js_libs=[], late_static_js_libs=[], dynamic_js_libs=[],
                  early_static_app_libs = [], unlinked_modules = [], keep_lib_files = False,
@@ -76,6 +77,7 @@ class BaseLinker(object):
                  translator_arguments={},
                  compile_inplace=False):
         modules = [mod.replace(os.sep, '.') for mod in modules]
+        self.compiler = compiler
         self.js_path = os.path.abspath(output)
         self.top_module = modules[0]
         self.modules = modules
@@ -188,7 +190,8 @@ class BaseLinker(object):
             else:
                 logging.info('Translating module:%s platform:%s out:%r' % (
                     module_name, platform or '-', out_file))
-                deps, js_libs = translator.translate([file_path] +  overrides,
+                deps, js_libs = translator.translate(self.compiler,
+                                            [file_path] +  overrides,
                                             out_file,
                                             module_name=module_name,
                                             **self.translator_arguments)
