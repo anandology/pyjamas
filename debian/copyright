@@ -1,80 +1,93 @@
 This package was debianized by Luke Kenneth Casson Leighton <lkcl@lkcl.net>
-on Thu, 30 Jul 2009 21:20
+on Thu, 30 Jul 2009 21:20 
 
 It was downloaded from http://pyjs.org
 
-Upstream Authors:
+Files: *
+License: Apache
+Copyright: 2008, 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
+Copyright: 2006, 2007 James Tauber
+Copyright: 2006 Google, Inc.
+Copyright: 2009, Willie Gollino - wgollino@yahoo.com
+Copyright: 2009, Dobes Vandermeer - dobesv@gmail.com
+Copyright: 2009, Bernd Dorn - <bernd.dorn@lovelysystems.com>
+Copyright: 2009, Jürgen Kartnaller - <kartnaller@lovelysystems.com>
+Copyright: 2007, Luis Pamirez
+Copyright: 2008, 2009 Erik Westra - ewestra [at] gmail [dot] com
+Copyright: 2003 Henk Punt
+Copyright: Vicente J. Ruiz Jurado - vjrj@ourproject.org
+Copyright: Gerard Labadie - gerard.labadie@gmail.com
+Copyright: Stephan Diehl - stephan.diehl@gmx.net
+Copyright: John Lehman - j1o1h1n@gmail.com
+Copyright: G Clinch
+Copyright: Kees Boss
+Copyright: Radoslav Kirov
+Copyright: Beni Kerniavsky
+Copyright: Mathias Waack <Mathias.Waack@rantzau.de>
 
-    Luke Kenneth Casson Leighton <lkcl@lkcl.net>
-    James Tauber
-    Google, Inc.
-    Willie Gollino - wgollino@yahoo.com
-    Dobes Vandermeer - dobesv@gmail.com
-    Bernd Dorn - <bernd.dorn@lovelysystems.com>
-    Jürgen Kartnaller - <kartnaller@lovelysystems.com>
-    Luis Pamirez
-    Erik Westra - ewestra [at] gmail [dot] com
+Files: examples/jsonrpc/public/services/phpolait/*
+Copyright: 2005 Michal Migurski
+Copyright: 2006 Craig Mason-Jones
+License: GPL-2
 
-Other Contributors:
+Files: examples/gcharttestapp/* library/pyjamas/chart/*
+Copyright: 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
+Copyright: 2007,2008,2009 John C. Gunther
+License: Apache
 
-    Vicente J. Ruiz Jurado - vjrj@ourproject.org
-    Gerard Labadie - gerard.labadie@gmail.com
-    Stephan Diehl - stephan.diehl@gmx.net
-    John Lehman - j1o1h1n@gmail.com
-    G Clinch
-    Kees Boss
-    Radoslav Kirov
-    Beni Kerniavsky
-    Henk Punt (for pyjd/windows.py)
-    Mathias Waack <Mathias.Waack@rantzau.de>
+Files: examples/gwtcanvas/* library/pyjamas/Canvas/*
+Copyright: 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
+Copyright: 2006 Google Inc.
+License: Apache
 
-Copyright:
+Files: examples/jsonrpc/public/services/simplejson/*
+Copyright: (C) 2006-2009 Bob Ippolito <bob@redivi.com>
+License: MIT License
 
-    Copyright (C) 2008, 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
-    Copyright (C) 2006, 2007 James Tauber
-    Copyright (C) 2006 Google, Inc.
-    Copyright (C) 2003 Henk Punt
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
 
-Licenses:
+ The above copyright notice and this permission notice shall be included in all
+ copies or substantial portions of the Software.
 
-    Apache 2 - /usr/share/common-licenses/Apache-2.0
-    --------
-
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-
-        http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
-
-
-    GPLv2 - /usr/share/common-licenses/GPL-2
-    -----
-
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Library General Public
-    License as published by the Free Software Foundation; either
-    version 2 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Library General Public License for more details.
-
-    You should have received a copy of the GNU Library General Public
-    License along with this library; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston MA  02110-1301 USA
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE.
 
 
-pyjd/windows.py is written by Henk Punt:
+Files: pyjd/sessionhistory.py
+Copyright: 2007, One Laptop Per Child
+License: GPL-2
 
-    Copyright (C) 2003 Henk Punt
+Files: pyjd/importers.py, pyjd/imputil.py
+License: PSF 
+Copyright: 2001, 2002, 2003, 2004, 2005, 2006 Python Software Foundation
+Copyright: 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
 
+Files: pyjd/pywebkitgtk.py
+Copyright: 2006, Red Hat, Inc.
+Copyright: 2007, One Laptop Per Child
+Copyright: 2007 Jan Alonzo <jmalonzo@unpluggable.com>
+Copyright: 2009, Luke Kenneth Casson Leighton <lkcl@lkcl.net>
+License: GPL-2
+
+Files: pyjd/hula.py, pyjd/progresslistener.py
+Copyright: 2006, Red Hat, Inc.
+Copyright: 2007, One Laptop Per Child
+Copyright: 2009, Luke Kenneth Casson Leighton <lkcl@lkcl.net>
+License: GPL-2
+
+Files: pyjd/windows.py
+Copyright: 2003 Henk Punt
+License: MIT
     Permission is hereby granted, free of charge, to any person obtaining
     a copy of this software and associated documentation files (the
     "Software"), to deal in the Software without restriction, including
@@ -95,8 +108,73 @@ pyjd/windows.py is written by Henk Punt:
     WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE
 
 
+Files: pgen/astprint.py
+License: MIT
+Copyright: 2007, Martin Blais <blais@furius.ca>
 
-The Debian packaging is Copyright (C) 2009, Luke Kenneth Casson Leighton <lkcl@lkcl.net>
-and is licensed under the Apache 2.0 License.
+Files: pgen/*
+License: PSF or MIT
+Copyright: 2001, 2002, 2003, 2004, 2005, 2006 Python Software Foundation
+Copyright: 2009, Scott Graham
+Copyright: 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
 
+Files: debian/*
+License: Apache
+Copyright: 2009, Luke Kenneth Casson Leighton <lkcl@lkcl.net>
+
+License: PSF
+    http://www.python.org/psf/license/
+    http://www.python.org/download/releases/2.6.2/license/
+
+License: GPL-2
+    /usr/share/common-licenses/GPL-2
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public
+    License along with this library; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston MA  02110-1301 USA
+
+License: Apache
+    /usr/share/common-licenses/Apache-2.0
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+License: MIT
+    Permission is hereby granted, free of charge, to any person obtaining
+    a copy of this software and associated documentation files (the
+    "Software"), to deal in the Software without restriction, including
+    without limitation the rights to use, copy, modify, merge, publish,
+    distribute, sublicense, and/or sell copies of the Software, and to
+    permit persons to whom the Software is furnished to do so, subject to
+    the following conditions:
+
+    The above copyright notice and this permission notice shall be
+    included in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+    NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+    LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+    OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+    WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE
 
