@@ -46,7 +46,7 @@ class ListTest(UnitTest):
 
         added = l1 + l2
 
-        self.assertTrue( added == [1,2,3,4], "TODO: #222 - a lot of work implementing __coerce__ etc.")
+        self.assertTrue( added == [1,2,3,4], "l1 + l2")
 
         l1 += l2
         self.assertTrue(l1 == [1,2,3,4], "l1 += l2")
