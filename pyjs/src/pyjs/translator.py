@@ -2925,11 +2925,11 @@ typeof %(attr_left)s['%(attr_right)s']['__get__'] == 'function')"""
                         self.source_tracking = _source_tracking
                         self.debug = _debug
                     attr = """(function(){
-%(s)s\tvar $pyjs__testval=%(attr)s;
+%(s)s\tvar $pyjs__testval=%(attr_code)s;
 %(s)s\treturn (typeof $pyjs__testval=='undefined'?
 %(s)s\t\t(function(){throw new TypeError(\"%(attr_)s is undefined")})():
 %(s)s\t\t$pyjs__testval);
-%(s)s})()""" % {'s': self.spacing(), 'attr': attr, 'attr_': attr_}
+%(s)s})()""" % {'s': self.spacing(), 'attr': attr, 'attr_': attr_, 'attr_code': attr_code, }
             return attr
         elif isinstance(node, ast.List):
             return self._list(node, current_klass)
