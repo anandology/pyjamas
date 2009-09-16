@@ -85,3 +85,43 @@ class GeneratorTest(UnitTest):
             r.append(y)
         self.assertEqual(r, [1, 2])
 
+    def testSimpleTryBody(self):
+        def fn():
+            i = 1
+            try:
+                yield i+1
+                yield i+2
+            except:
+                pass
+
+        r = []
+        for i in fn():
+            r.append(i)
+        self.assertEqual(r, [2,3])
+
+        def fn():
+            y = 0
+            while y == 0:
+                try:
+                    y += 1
+                    yield y
+                    y += 1
+                    yield y
+                finally:
+                    y += 2
+            yield y
+
+        r = []
+        for i in fn():
+            r.append(i)
+        self.assertEqual(r, [1,2,4])
+
+    def testSend(self):
+        def fn(value=None):
+            while True:
+                value = (yield value)
+
+        g = fn(1)
+        self.assertEqual(g.next(), 1)
+        self.assertEqual(g.next(), None)
+        self.assertEqual(g.send(2), 2)

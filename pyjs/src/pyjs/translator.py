@@ -271,6 +271,7 @@ PYJSLIB_BUILTIN_CLASSES=[
     "AttributeError",
     "BaseException",
     "Exception",
+    "GeneratorExit",
     "ImportError",
     "IndexError",
     "KeyError",
@@ -1610,15 +1611,16 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         self.output = save_output
         print >>self.output, self.local_js_vars_decl(local_arg_names)
         if self.is_generator:
-            print >>self.output, self.spacing(), "var $generator_state = [0], $yield_value = null;"
+            print >>self.output, self.spacing(), "var $generator_state = [0], $yield_value = null, $exc = null;"
             print >>self.output, self.spacing(), "var $generator = function () {};"
             print >>self.output, self.spacing(), "var $generator = function () {};"
-            print >>self.output, self.spacing(), "$generator.next = function () {$yield_value = null;return $generator.__next(null);};"
-            print >>self.output, self.spacing(), "$generator.__iter__ = function () {return $generator;};"
-            print >>self.output, self.spacing(), "$generator.send = function ($val) {$yield_value = $val;return $generator.__next(null);};"
-            print >>self.output, self.spacing(), "$generator.throw = function ($exc) {return $generator.__next($exc);};"
-            #print >>self.output, self.spacing(), "$generator.close = function ($exc) {return $generator.__next(null, pyjslib.);};"
-            print >>self.output, self.spacing(), "$generator.__next = function ($exc) {"
+            print >>self.output, self.spacing(), "$generator['next'] = function () {$yield_value = $exc = null;return $generator['__next']();};"
+            print >>self.output, self.spacing(), "$generator['__iter__'] = function () {return $generator;};"
+            print >>self.output, self.spacing(), "$generator['send'] = function ($val) {$yield_value = $val;$exc = null;return $generator['__next']();};"
+            print >>self.output, self.spacing(), "$generator['throw'] = function ($exc_type, $exc_value) {$yield_value = null;$exc=(typeof $exc_value == 'undefined'?$exc_type():$exc_type($exc_value));return $generator['__next']();};"
+            #print >>self.output, self.spacing(), "$generator['close'] = function ($exc) {return $generator['__next'](null, pyjslib.);};"
+            print >>self.output, self.spacing(), "$generator['__next'] = function () {"
+            print >>self.output, self.spacing(), "var $yielding = false;"
             print >>self.output, captured_output
             print >>self.output, self.spacing(), "throw pyjslib['StopIteration'];"
             print >>self.output, self.spacing(), "}"
@@ -1677,11 +1679,16 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         print >>self.output, self.spacing() + "$yield_value = " + expr + ";"
         if self.source_tracking:
             print >>self.output, self.spacing() + "$pyjs.trackstack.pop();$pyjs.track=$pyjs.trackstack.pop();$pyjs.trackstack.push($pyjs.track);"
+        print >>self.output, self.spacing() + "$yielding = true;"
         print >>self.output, self.spacing() + "return $yield_value;"
         self.generator_states[-1] += 1
         self.dedent()
-        print >>self.output, self.spacing() + "case %d: $generator_state[%d]++;if (typeof $exc != 'undefined' && $exc != null) throw $exc;" % (self.generator_states[-1], len(self.generator_states)-1)
+        print >>self.output, self.spacing() + "case %d: $generator_state[%d]++;if (typeof $exc != 'undefined' && $exc != null) {$yielding = null;throw $exc;}" % (self.generator_states[-1], len(self.generator_states)-1)
         self.indent()
+
+    def _yield_expr(self, node, current_klass):
+        self._yield(node, current_klass)
+        return '$yield_value'
 
 
     def _break(self, node, current_klass):
@@ -1828,15 +1835,29 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         self._tryExcept(body, current_klass, top_level=top_level)
 
     def _tryExcept(self, node, current_klass, top_level=False):
+        is_generator = self.is_generator
 
         self.stacksize_depth += 1
         pyjs_try_err = '$pyjs_try_err'
         if self.source_tracking:
             print >>self.output, self.spacing() + "var $pyjs__trackstack_size_%d = $pyjs.trackstack.length;" % self.stacksize_depth
+        if is_generator:
+            self.generator_states[-1] += 1
+            self.dedent()
+            print >>self.output, self.indent() + """case %d:""" % (self.generator_states[-1],)
         print >>self.output, self.indent() + "try {"
+        self.generator_states.append(0)
+        if is_generator:
+            print >>self.output, self.indent() + """switch ($generator_state[%d]) {""" % (len(self.generator_states)-1,)
+            print >>self.output, self.indent() + """case 0: $generator_state[%d]++;$generator_state[%d]=0;""" % (len(self.generator_states)-1,len(self.generator_states))
 
         for stmt in node.body.nodes:
             self._stmt(stmt, current_klass)
+        if is_generator:
+            print >>self.output, self.spacing() + "default:"
+            print >>self.output, self.dedent() + "}"
+        del self.generator_states[-1]
+
         if hasattr(node, 'else_') and node.else_:
             print >> self.output, self.spacing() + "throw pyjslib['TryElse'];"
         print >> self.output, self.dedent() + "} catch(%s) {" % pyjs_try_err
@@ -1908,6 +1929,9 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         if hasattr(node, 'final'):
             print >>self.output, self.dedent() + "} finally {"
             self.indent()
+            if self.is_generator:
+                print >>self.output, self.spacing() + "if ($yielding === true) return $yield_value;"
+                #print >>self.output, self.spacing() + "if ($yielding === null) throw $exc;"
             for stmt in node.final:
                 self._stmt(stmt, current_klass)
         print >>self.output, self.dedent()  + "}"
@@ -3040,6 +3064,8 @@ typeof %(attr_left)s['%(attr_right)s']['__get__'] == 'function')"""
             return self._lambda(node, current_klass)
         elif isinstance(node, self.ast.ListComp):
             return self._listcomp(node, current_klass)
+        elif isinstance(node, self.ast.Yield):
+            return self._yield_expr(node, current_klass)
         else:
             raise TranslationError(
                 "unsupported type (in expr)", node, self.module_name)
