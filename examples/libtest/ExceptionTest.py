@@ -240,3 +240,11 @@ class ExceptionTest(UnitTest):
             self.fail("TypeError should not be ignored")
         except TypeError, e:
             self.assertEqual(e.args[0], 'TypeError')
+
+    def testCatchSuperException(self):
+        try:
+            raise TypeError('test')
+        except Exception, e:
+            self.assertTrue(True)
+        except:
+            self.fail("Failed to catch exception: bug #254")

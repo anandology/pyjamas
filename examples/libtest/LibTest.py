@@ -13,6 +13,8 @@ from BoolTest import BoolTest
 from FunctionTest import FunctionTest
 from NameTest import NameTest
 from DictTest import DictTest
+from BuiltinTest import BuiltinTest
+from GeneratorTest import GeneratorTest
 
 if IN_JS:
     from JSOTest import JSOTest
@@ -28,7 +30,6 @@ else:
 import sys
 if sys.platform != 'spidermonkey':
     from WindowTest import WindowTest
-from BuiltinTest import BuiltinTest
 from MD5Test import MD5Test
 from TimeModuleTest import TimeModuleTest
 from TypeCompatibilityTest import TypeCompatibilityTest
@@ -71,6 +72,7 @@ def main():
         NameTest,
         DictTest,
         BuiltinTest,
+        GeneratorTest,
         TypeCompatibilityTest,
         MD5Test,
         TimeModuleTest,
