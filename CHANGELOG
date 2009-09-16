@@ -1,6 +1,8 @@
                     Changes made to Pyjamas since 0.6
                     ---------------------------------
 
+ * Added support for simple generators (yield statement)
+
  * Added an substantial portion of re module
 
  * added isReadOnly and getReadOnly functions to FocusMixin, such that

@@ -672,6 +672,8 @@ class Translator:
         self.track_lineno(mod, True)
         for child in mod.node:
             self.has_js_return = False
+            self.is_generator = False
+            self.generator_states = [0]
             self.track_lineno(child)
             if isinstance(child, self.ast.Function):
                 self._function(child, None, True, False)
@@ -1530,6 +1532,10 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         self.push_options()
         save_has_js_return = self.has_js_return
         self.has_js_return = False
+        save_is_generator = self.is_generator
+        self.is_generator = False
+        save_generator_states = self.generator_states
+        self.generator_states = [0]
 
         if local:
             function_name = node.name
@@ -1587,22 +1593,50 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             self.output = StringIO()
             for child in node.code:
                 self._stmt(child, None)
+        elif self.is_generator:
+            self.generator_states = [0]
+            self.output = StringIO()
+            if self.source_tracking:
+                print >>self.output, self.spacing() + "$pyjs.track={module:'%s',lineno:%d};$pyjs.trackstack.push($pyjs.track);" % (self.raw_module_name, node.lineno)
+            self.track_lineno(node, True)
+            print >>self.output, self.indent() + """switch ($generator_state[%d]) {""" % (len(self.generator_states)-1,)
+            print >>self.output, self.indent() + """case 0: $generator_state[%d]++;$generator_state[%d]=0;""" % (len(self.generator_states)-1,len(self.generator_states))
+            for child in node.code:
+                self._stmt(child, None)
+            self.dedent()
+            print >>self.output, self.dedent() + "}"
+
         captured_output = self.output.getvalue()
         self.output = save_output
         print >>self.output, self.local_js_vars_decl(local_arg_names)
-        print >>self.output, captured_output,
-
-        # we need to return null always, so it is not undefined
-        if node.code.nodes:
-            lastStmt = node.code.nodes[-1]
+        if self.is_generator:
+            print >>self.output, self.spacing(), "var $generator_state = [0], $yield_value = null;"
+            print >>self.output, self.spacing(), "var $generator = function () {};"
+            print >>self.output, self.spacing(), "var $generator = function () {};"
+            print >>self.output, self.spacing(), "$generator.next = function () {$yield_value = null;return $generator.__next(null);};"
+            print >>self.output, self.spacing(), "$generator.__iter__ = function () {return $generator;};"
+            print >>self.output, self.spacing(), "$generator.send = function ($val) {$yield_value = $val;return $generator.__next(null);};"
+            print >>self.output, self.spacing(), "$generator.throw = function ($exc) {return $generator.__next($exc);};"
+            #print >>self.output, self.spacing(), "$generator.close = function ($exc) {return $generator.__next(null, pyjslib.);};"
+            print >>self.output, self.spacing(), "$generator.__next = function ($exc) {"
+            print >>self.output, captured_output
+            print >>self.output, self.spacing(), "throw pyjslib['StopIteration'];"
+            print >>self.output, self.spacing(), "}"
+            print >>self.output, self.spacing(), "return $generator;"
         else:
-            lastStmt = None
-        if not isinstance(lastStmt, self.ast.Return):
-            if self.source_tracking:
-                print >>self.output, self.spacing() + "$pyjs.trackstack.pop();$pyjs.track=$pyjs.trackstack.pop();$pyjs.trackstack.push($pyjs.track);"
-            # FIXME: check why not on on self._isNativeFunc(lastStmt)
-            if not self._isNativeFunc(lastStmt):
-                print >>self.output, self.spacing() + "return null;"
+            print >>self.output, captured_output,
+
+            # we need to return null always, so it is not undefined
+            if node.code.nodes:
+                lastStmt = node.code.nodes[-1]
+            else:
+                lastStmt = None
+            if not isinstance(lastStmt, self.ast.Return):
+                if self.source_tracking:
+                    print >>self.output, self.spacing() + "$pyjs.trackstack.pop();$pyjs.track=$pyjs.trackstack.pop();$pyjs.trackstack.push($pyjs.track);"
+                # FIXME: check why not on on self._isNativeFunc(lastStmt)
+                if not self._isNativeFunc(lastStmt):
+                    print >>self.output, self.spacing() + "return null;"
 
         print >>self.output, self.dedent() + "};"
         print >>self.output, self.spacing() + "%s.__name__ = '%s';\n" % (function_name, node.name)
@@ -1612,6 +1646,9 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         if decorator_code:
             decorator_code = decorator_code % function_name
             print >>self.output, self.spacing() + "%s = %s;" % (function_name, decorator_code)
+
+        self.generator_states = save_generator_states
+        self.is_generator = save_is_generator
         self.has_js_return = save_has_js_return
         self.pop_options()
         self.pop_lookup()
@@ -1628,6 +1665,23 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             print >>self.output, self.spacing() + "return $pyjs__ret;"
         else:
             print >>self.output, self.spacing() + "return " + expr + ";"
+
+
+    def _yield(self, node, current_klass):
+        # http://www.python.org/doc/2.5.2/ref/yieldexpr.html
+        self.is_generator = True
+        expr = self.expr(node.value, current_klass)
+        # in python a function call always returns None, so we do it
+        # here too
+        self.track_lineno(node)
+        print >>self.output, self.spacing() + "$yield_value = " + expr + ";"
+        if self.source_tracking:
+            print >>self.output, self.spacing() + "$pyjs.trackstack.pop();$pyjs.track=$pyjs.trackstack.pop();$pyjs.trackstack.push($pyjs.track);"
+        print >>self.output, self.spacing() + "return $yield_value;"
+        self.generator_states[-1] += 1
+        self.dedent()
+        print >>self.output, self.spacing() + "case %d: $generator_state[%d]++;if (typeof $exc != 'undefined' && $exc != null) throw $exc;" % (self.generator_states[-1], len(self.generator_states)-1)
+        self.indent()
 
 
     def _break(self, node, current_klass):
@@ -2138,6 +2192,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
         if isinstance(node, self.ast.Return):
             self._return(node, current_klass)
+        #elif isinstance(node, ast.Yield):
+        #    self._yield(node, current_klass)
         elif isinstance(node, self.ast.Break):
             self._break(node, current_klass)
         elif isinstance(node, self.ast.Continue):
@@ -2407,6 +2463,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             # e.g None fo empty expressions after a unneeded ";" or
             # mostly important to remove doc strings
             return
+        elif isinstance(node.expr, self.ast.Yield):
+            self._yield(node.expr, current_klass)
         else:
             raise TranslationError(
                 "unsupported type, must be call or const (in _discard)", node.expr,  self.module_name)
@@ -2499,6 +2557,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
     def _for(self, node, current_klass):
         assign_name = ""
         assign_tuple = ""
+        is_generator = self.is_generator
 
         # based on Bob Ippolito's Iteration in Javascript code
         if isinstance(node.assign, self.ast.AssName):
@@ -2555,13 +2614,26 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         s = self.spacing()
         print >>self.output, """\
 %(s)s%(iterator_name)s = """ % locals() + self.track_call("%(list_expr)s.__iter__()" % locals(), node.lineno) + ';'
+        if is_generator:
+            self.generator_states[-1] += 1
+            self.dedent()
+            print >>self.output, self.spacing() + "case %d:" % (self.generator_states[-1], )
+            self.indent()
         print >>self.output, self.indent() + """try {"""
         print >>self.output, self.indent() + """while (true) {"""
+        self.generator_states.append(0)
+        if is_generator:
+            print >>self.output, self.indent() + """switch ($generator_state[%d]) {""" % (len(self.generator_states)-1,)
+            print >>self.output, self.indent() + """case 0: $generator_state[%d]++;$generator_state[%d]=0;""" % (len(self.generator_states)-1,len(self.generator_states))
         print >>self.output, self.spacing() + """%(lhs)s %(op)s""" % locals(),
         print >>self.output, self.track_call("%(iterator_name)s.next()"% locals(), node.lineno) + ";"
         print >>self.output, self.spacing() + """%(assign_tuple)s""" % locals()
         for node in node.body.nodes:
             self._stmt(node, current_klass)
+        del self.generator_states[-1]
+        if is_generator:
+            print >>self.output, self.dedent(), "$generator_state[%d] = 0;" % (len(self.generator_states),)
+            print >>self.output, self.dedent() + "}"
         print >>self.output, self.dedent() + "}"
         print >>self.output, self.dedent() + "} catch (e) {"
         self.indent()
@@ -2579,15 +2651,35 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             self.stacksize_depth -= 1
 
     def _while(self, node, current_klass):
+        is_generator = self.is_generator
         test = self.expr(node.test, current_klass)
-        print >>self.output, self.indent() + "while (" + self.track_call(self.inline_bool_code(test), node.lineno) + ") {"
+        if is_generator:
+            self.generator_states[-1] += 1
+            self.dedent()
+            print >>self.output, self.indent() + """case %d:""" % (self.generator_states[-1],)
+            print >>self.output, self.indent() + "while (($generator_state[%d] == %d && $generator_state[%d] != 0)||(" % (\
+		(len(self.generator_states)-1, self.generator_states[-1], len(self.generator_states))) + \
+ 		self.track_call(self.inline_bool_code(test), node.lineno) + ")) {"
+        else:
+            print >>self.output, self.indent() + "while (" + self.track_call(self.inline_bool_code(test), node.lineno) + ") {"
+        self.generator_states.append(0)
+        if is_generator:
+            print >>self.output, self.indent() + """switch ($generator_state[%d]) {""" % (len(self.generator_states)-1,)
+            print >>self.output, self.indent() + """case 0: $generator_state[%d]++;$generator_state[%d]=0;""" % (len(self.generator_states)-1,len(self.generator_states))
         if isinstance(node.body, self.ast.Stmt):
             for child in node.body.nodes:
                 self._stmt(child, current_klass)
         else:
             raise TranslationError(
                 "unsupported type (in _while)", node.body, self.module_name)
+        if is_generator:
+            print >>self.output, self.spacing() + "$generator_state[%d] = 0;" % (len(self.generator_states)-1, )
+            print >>self.output, self.dedent() + "}"
+        del self.generator_states[-1]
         print >>self.output, self.dedent() + "}"
+        if is_generator:
+            self.generator_states[-1] += 1
+            print >>self.output, self.dedent() + "$generator_state[%d] = %s;" % (len(self.generator_states)-1, self.generator_states[-1])
 
 
     def _const(self, node):
