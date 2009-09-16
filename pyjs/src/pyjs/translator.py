@@ -1033,7 +1033,7 @@ try{var %(dbg)s_res=%(call_code)s;}catch(%(dbg)s_err){
         } catch (s) {};
         $pyjs.__last_exception_stack__ = save_stack;
         if ($pyjs_msg !== $pyjs.debug_msg) {
-            alert("Module %(mod)s at line %(lineno)s :\\n" + %(dbg)s_err + $pyjs_msg);
+            pyjslib['debugReport']("Module %(mod)s at line %(lineno)s :\\n" + %(dbg)s_err + $pyjs_msg);
             $pyjs.debug_msg = $pyjs_msg;
             debugger;
         }

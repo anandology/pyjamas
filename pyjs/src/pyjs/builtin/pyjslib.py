@@ -2061,6 +2061,12 @@ def sprintf(strng, args):
     return ''.join(result)
 
 @compiler.noSourceTracking
+def debugReport(msg):
+    JS("""
+    alert(msg);
+    """)
+
+@compiler.noSourceTracking
 def printFunc(objs, newline):
     JS("""
     if ($wnd.console==undefined)  return;
