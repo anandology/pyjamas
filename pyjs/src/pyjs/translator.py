@@ -2514,7 +2514,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                     assign_name = "temp_" + child_name
                 self.add_lookup('variable', child_name, child_name)
                 s = self.spacing()
-                assign_tuple += """%(s)svar %(child_name)s %(op)s """ % locals()
+                child_name = self.add_lookup('variable', child_name, child_name)
+                assign_tuple += """%(s)s%(child_name)s %(op)s """ % locals()
                 assign_tuple += self.track_call("%(assign_name)s.__getitem__(%(i)i)" % locals(), node.lineno) + ';'
                 i += 1
         else:
@@ -2542,15 +2543,18 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 "unsupported type (in _for)", node.list, self.module_name)
 
         assign_name = self.add_lookup('variable', assign_name, assign_name)
-        lhs = "var " + assign_name
-        iterator_name = "__" + assign_name
+        lhs = assign_name
+        iterator_name = "$__" + assign_name
+        self.add_lookup('variable', iterator_name, iterator_name)
 
         if self.source_tracking:
             self.stacksize_depth += 1
-            print >>self.output, self.spacing() + "var $pyjs__trackstack_size_%d=$pyjs.trackstack.length;" % self.stacksize_depth
+            var_trackstack_size = "$pyjs__trackstack_size_%d" % self.stacksize_depth
+            self.add_lookup('variable', var_trackstack_size, var_trackstack_size)
+            print >>self.output, self.spacing() + "%s=$pyjs.trackstack.length;" % var_trackstack_size
         s = self.spacing()
         print >>self.output, """\
-%(s)svar %(iterator_name)s = """ % locals() + self.track_call("%(list_expr)s.__iter__()" % locals(), node.lineno) + ';'
+%(s)s%(iterator_name)s = """ % locals() + self.track_call("%(list_expr)s.__iter__()" % locals(), node.lineno) + ';'
         print >>self.output, self.indent() + """try {"""
         print >>self.output, self.indent() + """while (true) {"""
         print >>self.output, self.spacing() + """%(lhs)s %(op)s""" % locals(),
