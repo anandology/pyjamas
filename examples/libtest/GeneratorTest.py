@@ -1,6 +1,6 @@
 from UnitTest import UnitTest
 
-#from __pyjamas__ import debugger
+from __pyjamas__ import debugger
 
 class GeneratorTest(UnitTest):
 
@@ -143,3 +143,27 @@ class GeneratorTest(UnitTest):
         self.assertEqual(g.next(), 1)
         self.assertEqual(g.next(), None)
         self.assertEqual(g.send(2), 2)
+
+    def testMixed(self):
+        def fn(value = None):
+            for i in [-1,0,1,2,3,4]:
+                if i < 0:
+                    continue
+                elif i == 0:
+                    yield 0
+                elif i == 1:
+                    yield 1
+                    yield value
+                    yield 2
+                else:
+                    try:
+                        v = i/value
+                    except:
+                        v = i
+                    yield v
+
+        r = []
+        for i in fn():
+            r.append(i)
+        self.assertEqual(r, [0, 1, None, 2, 2, 3, 4])
+
