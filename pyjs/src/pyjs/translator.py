@@ -1056,15 +1056,27 @@ try{var %(dbg)s_res=%(call_code)s;}catch(%(dbg)s_err){
 
     def generator(self, code):
         if self.is_generator:
-            print >>self.output, self.spacing(), "var $generator_state = [0], $generator_exc = [null], $yield_value = null, $exc = null;"
-            print >>self.output, self.spacing(), "var $generator = function () {};"
-            print >>self.output, self.spacing(), "$generator['next'] = function () {$yield_value = $exc = null;return $generator['__next']();};"
-            print >>self.output, self.spacing(), "$generator['__iter__'] = function () {return $generator;};"
-            print >>self.output, self.spacing(), "$generator['send'] = function ($val) {$yield_value = $val;$exc = null;return $generator['__next']();};"
-            print >>self.output, self.spacing(), "$generator['throw'] = function ($exc_type, $exc_value) {$yield_value = null;$exc=(typeof $exc_value == 'undefined'?$exc_type():$exc_type($exc_value));return $generator['__next']();};"
-            #print >>self.output, self.spacing(), "$generator['close'] = function ($exc) {return $generator['__next'](null, pyjslib.);};"
-            print >>self.output, self.indent(), "$generator['__next'] = function () {"
-            print >>self.output, self.spacing(), "var $yielding = false;"
+            s = self.spacing()
+            print >>self.output, """\
+%(s)svar $generator_state = [0], $generator_exc = [null], $yield_value = null, $exc = null;
+%(s)svar $generator = function () {};
+%(s)s$generator['next'] = function () {$yield_value = $exc = null;return $generator['__next']();};
+%(s)s$generator['__iter__'] = function () {return $generator;};
+%(s)s$generator['send'] = function ($val) {$yield_value = $val;$exc = null;return $generator['__next']();};
+%(s)s$generator['throw'] = function ($exc_type, $exc_value) {
+%(s)s\t$yield_value = null;
+%(s)s\t$exc=(typeof $exc_value == 'undefined'?$exc_type():$exc_type($exc_value));
+%(s)s\ttry {
+%(s)s\t\treturn $generator['__next']();
+%(s)s\t} catch (e) {
+%(s)s\t\t$generator_state[0] = -1;
+%(s)s\t\tthrow (e);
+%(s)s\t}
+%(s)s};
+%(s)s$generator['close'] = function ($exc) {return $generator['throw'](null, pyjslib['GeneratorExit']);};
+%(s)s$generator['__next'] = function () {
+%(s)s\tvar $yielding = false;""" % locals()
+            self.indent()
             print >>self.output, code
             print >>self.output, self.spacing(), "throw pyjslib['StopIteration'];"
             print >>self.output, self.dedent(), "}"
@@ -1087,6 +1099,8 @@ try{var %(dbg)s_res=%(call_code)s;}catch(%(dbg)s_err){
                 print >>self.output, self.indent() + """if ($generator_state[%d] == 0) {""" % (n_states-1,)
                 print >>self.output, self.spacing() + """for (var $i = %d ; $i < $generator_state.length; $i++) $generator_state[$i]=0;""" % (n_states, )
                 print >>self.output, self.spacing() + """$generator_state[%d]=0;""" % (n_states,)
+                if n_states == 1:
+                    self.generator_throw()
             else:
                 if increment:
                     print >>self.output, self.spacing() + """$generator_state[%d]=%d;""" % (n_states-1, state)
@@ -1105,6 +1119,13 @@ try{var %(dbg)s_res=%(call_code)s;}catch(%(dbg)s_err){
     def generator_del_state(self):
         if self.is_generator:
             del self.generator_states[-1]
+
+    def generator_throw(self):
+        print >>self.output, self.indent() + "if (typeof $exc != 'undefined' && $exc != null) {"
+        print >>self.output, self.spacing() + "$yielding = null;"
+        print >>self.output, self.spacing() + "$generator_state[%d] = -1" % (len(self.generator_states)-1,)
+        print >>self.output, self.spacing() + "throw $exc;"
+        print >>self.output, self.dedent() + "}"
 
 
     def func_args(self, node, current_klass, function_name, bind_type, args, stararg, dstararg):
@@ -1735,10 +1756,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         print >>self.output, self.spacing() + "$generator_state[%d] = %d;" % (len(self.generator_states)-1, self.generator_states[-1]+1)
         print >>self.output, self.spacing() + "return $yield_value;"
         self.generator_switch_case(increment=True)
-        print >>self.output, self.indent() + "if (typeof $exc != 'undefined' && $exc != null) {"
-        print >>self.output, self.spacing() + "$yielding = null;"
-        print >>self.output, self.spacing() + "throw $exc;"
-        print >>self.output, self.dedent() + "}"
+        self.generator_throw()
 
     def _yield_expr(self, node, current_klass):
         self._yield(node, current_klass)
@@ -2666,9 +2684,9 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 print >>self.output, self.indent() +keyword + " (" + self.track_call(self.inline_bool_code(expr), test.lineno)+") {"
             else:
                 self.generator_states[-1] += 1
-                print >>self.output, self.indent() +keyword + "(($generator_state[%d]==%d)||(" % (\
-                    len(self.generator_states)-1, self.generator_states[-1], ) + \
-                    self.track_call(self.inline_bool_code(expr), test.lineno)+")) {"
+                print >>self.output, self.indent() +keyword + "(($generator_state[%d]==%d)||($generator_state[%d]<%d&&(" % (\
+                    len(self.generator_states)-1, self.generator_states[-1], len(self.generator_states)-1, self.generator_states[-1],) + \
+                    self.track_call(self.inline_bool_code(expr), test.lineno)+"))) {"
                 print >>self.output, self.spacing() + "$generator_state[%d]=%d;" % (len(self.generator_states)-1, self.generator_states[-1])
 
         else:

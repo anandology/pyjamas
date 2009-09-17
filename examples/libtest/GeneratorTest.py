@@ -1,6 +1,6 @@
 from UnitTest import UnitTest
 
-#from __pyjamas__ import debugger
+from __pyjamas__ import debugger
 
 class GeneratorTest(UnitTest):
 
@@ -246,6 +246,66 @@ class GeneratorTest(UnitTest):
         self.assertEqual(g.next(), None)
         self.assertEqual(g.send(2), 2)
 
+    def testThrow(self):
+        def fn():
+            yield 1
+            yield 2
+
+        g = fn()
+        try:
+            r = g.throw(TypeError, 'test1')
+            self.fail("Exception expected (1)")
+        except TypeError, e:
+            self.assertTrue(e, 'test1')
+        try:
+            r = g.next()
+            self.fail("StopIteration expected (1)")
+        except StopIteration:
+            self.assertTrue(True)
+
+        g = fn()
+        self.assertEqual(g.next(), 1)
+        try:
+            r = g.throw(TypeError, 'test2')
+            self.fail("Exception expected (2)")
+        except TypeError, e:
+            self.assertTrue(e, 'test2')
+        try:
+            r = g.next()
+            self.fail("StopIteration expected (2)")
+        except StopIteration:
+            self.assertTrue(True)
+
+
+        def fn():
+            try:
+                yield 1
+                yield 2
+            except:
+                yield 3
+
+        g = fn()
+        try:
+            r = g.throw(TypeError, 'test3')
+            self.fail("Exception expected (3)")
+        except TypeError, e:
+            self.assertTrue(e, 'test3')
+
+        debugger()
+        g = fn()
+        self.assertEqual(g.next(), 1)
+        try:
+            r = g.throw(TypeError, 'test4')
+            self.assertEqual(r, 3)
+        except TypeError, e:
+            self.fail("No exception expected (4)")
+        try:
+            r = g.next()
+            self.fail("StopIteration expected (4)")
+        except StopIteration:
+            self.assertTrue(True)
+
+
     def testMixed(self):
         def fn(value = None):
             for i in [-1,0,1,2,3,4]:
@@ -255,6 +315,7 @@ class GeneratorTest(UnitTest):
                     yield 0
                 elif i == 1:
                     yield 1
+                    i = 0
                     yield value
                     yield 2
                 else:
