@@ -2224,6 +2224,11 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.has_js_return = False
         save_has_yield = self.has_yield
         self.has_yield = False
+        save_is_generator = self.is_generator
+        self.is_generator = False
+        save_generator_states = self.generator_states
+        self.generator_states = [0]
+
         method_name = self.attrib_remap(node.name)
         jsmethod_name = local_prefix + '.' + method_name
 
@@ -2279,27 +2284,47 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.track_lineno(node, True)
         for child in node.code:
             self._stmt(child, current_klass)
-        if self.source_tracking and self.has_js_return:
+        if not self.has_yield and self.source_tracking and self.has_js_return:
             self.source_tracking = False
             self.output = StringIO()
             for child in node.code:
                 self._stmt(child, None)
+        elif self.has_yield:
+            if self.has_js_return:
+                self.source_tracking = False
+            self.is_generator = True
+            self.generator_states = [0]
+            self.output = StringIO()
+            self.indent()
+            if self.source_tracking:
+                print >>self.output, self.spacing() + "$pyjs.track={module:'%s',lineno:%d};$pyjs.trackstack.push($pyjs.track);" % (self.raw_module_name, node.lineno)
+            self.track_lineno(node, True)
+            self.generator_switch_open()
+            self.generator_switch_case(increment=False)
+            for child in node.code:
+                self._stmt(child, None)
+            self.generator_switch_case(increment=True)
+            self.generator_switch_close()
+            self.dedent()
+
         captured_output = self.output.getvalue()
         self.output = save_output
         print >>self.output, self.local_js_vars_decl(local_arg_names)
-        print >>self.output, captured_output,
-
-
-        # we need to return null always, so it is not undefined
-        if node.code.nodes:
-            lastStmt = node.code.nodes[-1]
+        if self.is_generator:
+            self.generator(captured_output)
         else:
-            lastStmt = None
-        if not isinstance(lastStmt, self.ast.Return):
-            if self.source_tracking:
-                print >>self.output, self.spacing() + "$pyjs.trackstack.pop();$pyjs.track=$pyjs.trackstack.pop();$pyjs.trackstack.push($pyjs.track);"
-            if not self._isNativeFunc(lastStmt):
-                print >>self.output, self.spacing() + "return null;"
+            print >>self.output, captured_output,
+
+            # we need to return null always, so it is not undefined
+            if node.code.nodes:
+                lastStmt = node.code.nodes[-1]
+            else:
+                lastStmt = None
+            if not isinstance(lastStmt, self.ast.Return):
+                if self.source_tracking:
+                    print >>self.output, self.spacing() + "$pyjs.trackstack.pop();$pyjs.track=$pyjs.trackstack.pop();$pyjs.trackstack.push($pyjs.track);"
+                if not self._isNativeFunc(lastStmt):
+                    print >>self.output, self.spacing() + "return null;"
 
         print >>self.output, self.dedent() + "}"
 
@@ -2315,6 +2340,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         #else:
         #    self._kwargs_parser(node, method_name, normal_arg_names[1:], current_klass, True)
 
+        self.generator_states = save_generator_states
+        self.is_generator = save_is_generator
         self.has_yield = save_has_yield
         self.has_js_return = save_has_js_return
         self.pop_options()

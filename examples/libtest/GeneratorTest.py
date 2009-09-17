@@ -34,6 +34,12 @@ class GeneratorTest(UnitTest):
             r.append(i)
         self.assertEqual(r, [0, 1, 1, 100, 101, 109])
 
+        a = A()
+        r = []
+        for i in a.fn():
+            r.append(i)
+        self.assertEqual(r, [1,2])
+
     def testSimpleFor(self):
         def fn():
             for i in [1,2]:
@@ -215,4 +221,10 @@ class GeneratorTest(UnitTest):
         for i in fn():
             r.append(i)
         self.assertEqual(r, [0, 1, None, 2, 2, 3, 4])
+
+
+class A(object):
+    def fn(self):
+        yield 1
+        yield 2
 
