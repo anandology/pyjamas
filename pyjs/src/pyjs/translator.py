@@ -1074,7 +1074,6 @@ try{var %(dbg)s_res=%(call_code)s;}catch(%(dbg)s_err){
 
     def generator_switch_open(self):
         if self.is_generator:
-            print >>self.output, self.indent() + """switch ($generator_state[%d]) {""" % (len(self.generator_states)-1,)
             self.indent()
 
     def generator_switch_case(self, increment):
@@ -1085,27 +1084,17 @@ try{var %(dbg)s_res=%(call_code)s;}catch(%(dbg)s_err){
             state = self.generator_states[-1]
             if self.generator_states[-1] == 0:
                 self.dedent()
-                print >>self.output, self.indent() + """case 0:"""
+                print >>self.output, self.indent() + """if ($generator_state[%d] == 0) {""" % (n_states-1,)
                 print >>self.output, self.spacing() + """for (var $i = %d ; $i < $generator_state.length; $i++) $generator_state[$i]=0;""" % (n_states, )
                 print >>self.output, self.spacing() + """$generator_state[%d]=0;""" % (n_states,)
             else:
                 if increment:
                     print >>self.output, self.spacing() + """$generator_state[%d]=%d;""" % (n_states-1, state)
-                self.dedent()
-                print >>self.output, self.indent() + """case %d:""" % (state,)
-
-    def generator_switch_default(self):
-        if self.is_generator:
-            self.dedent()
-            print >>self.output, self.indent() + "default:"
-
-    def generator_switch_break(self):
-        if self.is_generator:
-            print >>self.output, self.spacing() + "break;"
+                print >>self.output, self.dedent() + "}"
+                print >>self.output, self.indent() + """if ($generator_state[%d] == %d) {""" % (n_states-1, state)
 
     def generator_switch_close(self):
         if self.is_generator:
-            self.dedent()
             print >>self.output, self.dedent() + "}"
 
     def generator_add_state(self):
@@ -1757,6 +1746,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
 
 
     def _break(self, node, current_klass):
+        self.generator_switch_case(increment=True)
         print >>self.output, self.spacing() + "break;"
 
 
