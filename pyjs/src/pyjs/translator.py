@@ -632,6 +632,7 @@ class Translator:
         self.lookup_stack = [{}]
         self.indent_level = 0
         self.__unique_ids__ = {}
+        self.try_depth = -1
 
         print >>self.output, self.spacing() + "/* start module: %s */" % module_name
         if not '.' in module_name:
@@ -676,6 +677,7 @@ class Translator:
             self.has_yield = False
             self.is_generator = False
             self.generator_states = [0]
+            self.state_max_depth = 0
             self.track_lineno(child)
             if isinstance(child, self.ast.Function):
                 self._function(child, None, True, False)
@@ -1054,7 +1056,7 @@ try{var %(dbg)s_res=%(call_code)s;}catch(%(dbg)s_err){
 
     def generator(self, code):
         if self.is_generator:
-            print >>self.output, self.spacing(), "var $generator_state = [0], $yield_value = null, $exc = null;"
+            print >>self.output, self.spacing(), "var $generator_state = [0], $generator_exc = [null], $yield_value = null, $exc = null;"
             print >>self.output, self.spacing(), "var $generator = function () {};"
             print >>self.output, self.spacing(), "$generator['next'] = function () {$yield_value = $exc = null;return $generator['__next']();};"
             print >>self.output, self.spacing(), "$generator['__iter__'] = function () {return $generator;};"
@@ -1073,6 +1075,7 @@ try{var %(dbg)s_res=%(call_code)s;}catch(%(dbg)s_err){
     def generator_switch_open(self):
         if self.is_generator:
             print >>self.output, self.indent() + """switch ($generator_state[%d]) {""" % (len(self.generator_states)-1,)
+            self.indent()
 
     def generator_switch_case(self, increment):
         if self.is_generator:
@@ -1081,9 +1084,13 @@ try{var %(dbg)s_res=%(call_code)s;}catch(%(dbg)s_err){
             n_states = len(self.generator_states)
             state = self.generator_states[-1]
             if self.generator_states[-1] == 0:
-                print >>self.output, self.indent() + """case 0: $generator_state[%d]=0;""" % (n_states,)
+                self.dedent()
+                print >>self.output, self.indent() + """case 0:"""
+                print >>self.output, self.spacing() + """for (var $i = %d ; $i < $generator_state.length; $i++) $generator_state[$i]=0;""" % (n_states, )
+                print >>self.output, self.spacing() + """$generator_state[%d]=0;""" % (n_states,)
             else:
-                print >>self.output, self.spacing() + """$generator_state[%d]=%d;""" % (n_states-1, state)
+                if increment:
+                    print >>self.output, self.spacing() + """$generator_state[%d]=%d;""" % (n_states-1, state)
                 self.dedent()
                 print >>self.output, self.indent() + """case %d:""" % (state,)
 
@@ -1091,6 +1098,10 @@ try{var %(dbg)s_res=%(call_code)s;}catch(%(dbg)s_err){
         if self.is_generator:
             self.dedent()
             print >>self.output, self.indent() + "default:"
+
+    def generator_switch_break(self):
+        if self.is_generator:
+            print >>self.output, self.spacing() + "break;"
 
     def generator_switch_close(self):
         if self.is_generator:
@@ -1100,6 +1111,7 @@ try{var %(dbg)s_res=%(call_code)s;}catch(%(dbg)s_err){
     def generator_add_state(self):
         if self.is_generator:
             self.generator_states.append(0)
+            self.state_max_depth = len(self.generator_states)
 
     def generator_del_state(self):
         if self.is_generator:
@@ -1888,8 +1900,10 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         self._tryExcept(body, current_klass, top_level=top_level)
 
     def _tryExcept(self, node, current_klass, top_level=False):
-
+        self.try_depth += 1
         self.stacksize_depth += 1
+        save_state_max_depth = self.state_max_depth
+        self.state_max_depth = len(self.generator_states)
         pyjs_try_err = '$pyjs_try_err'
         if self.source_tracking:
             print >>self.output, self.spacing() + "var $pyjs__trackstack_size_%d = $pyjs.trackstack.length;" % self.stacksize_depth
@@ -1898,25 +1912,46 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         self.generator_add_state()
         self.generator_switch_open()
         self.generator_switch_case(increment=False)
+        if self.is_generator:
+            print >> self.output, self.spacing() + "$generator_exc[%d] = null;" % (self.try_depth, )
+        self.generator_switch_case(increment=True)
 
         for stmt in node.body.nodes:
             self._stmt(stmt, current_klass)
 
         self.generator_switch_case(increment=True)
-        self.generator_switch_close()
-        self.generator_del_state()
-
+        if self.is_generator:
+            print >> self.output, self.spacing() + "if (typeof $generator_exc[%d] != 'undefined' && $generator_exc[%d] !== null) throw $generator_exc[%d];" % (\
+                self.try_depth, self.try_depth, self.try_depth)
         if hasattr(node, 'else_') and node.else_:
             print >> self.output, self.spacing() + "throw pyjslib['TryElse'];"
+            self.generator_switch_case(increment=True)
+
+        self.generator_switch_case(increment=True)
+        self.generator_switch_close()
+
         print >> self.output, self.dedent() + "} catch(%s) {" % pyjs_try_err
         self.indent()
+        if self.is_generator:
+            print >> self.output, self.spacing() + "$generator_exc[%d] = %s;" % (self.try_depth, pyjs_try_err)
+        try_state_max_depth = self.state_max_depth
+        self.generator_states += [0 for i in range(save_state_max_depth+1, try_state_max_depth)]
+        self.state_max_depth = len(self.generator_states)
 
         if hasattr(node, 'else_') and node.else_:
             print >> self.output, self.indent() + """\
 if (%(e)s.__name__ == 'TryElse') {""" % {'e': pyjs_try_err}
 
+            self.generator_add_state()
+            self.generator_switch_open()
+            self.generator_switch_case(increment=False)
+
             for stmt in node.else_:
                 self._stmt(stmt, current_klass)
+
+            self.generator_switch_case(increment=True)
+            self.generator_switch_close()
+            self.generator_del_state()
 
             print >> self.output, self.dedent() + """} else {"""
             self.indent()
@@ -1938,6 +1973,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         pyjs_try_err = self.add_lookup('variable', pyjs_try_err, pyjs_try_err)
         if hasattr(node, 'handlers'):
             else_str = self.spacing()
+            if len(node.handlers) == 1 and node.handlers[0][0] is None:
+                else_str += "if (true) "
             for handler in node.handlers:
                 lineno = handler[2].nodes[0].lineno
                 expr = handler[0]
@@ -1963,8 +2000,18 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 print >> self.output, self.spacing() + "$pyjs.__last_exception__.except_lineno = %d;" % lineno
                 tnode = self.ast.Assign([self.ast.AssName(errName, "OP_ASSIGN", lineno)], self.ast.Name(pyjs_try_err, lineno), lineno)
                 self._assign(tnode, current_klass, top_level)
+
+                self.generator_add_state()
+                self.generator_switch_open()
+                self.generator_switch_case(increment=False)
+
                 for stmt in handler[2]:
                     self._stmt(stmt, current_klass)
+
+                self.generator_switch_case(increment=True)
+                self.generator_switch_close()
+                self.generator_del_state()
+
                 print >> self.output, self.dedent() + "}"
                 else_str = "else "
 
@@ -1972,7 +2019,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 # No default catcher, create one to fall through
                 print >> self.output, "%s{ throw %s; }" % (else_str, pyjs_try_err)
         if hasattr(node, 'else_') and node.else_:
-            print >> self.output, self.dedent() + "}",
+            print >> self.output, self.dedent() + "}"
 
         if hasattr(node, 'final'):
             print >>self.output, self.dedent() + "} finally {"
@@ -1980,9 +2027,25 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             if self.is_generator:
                 print >>self.output, self.spacing() + "if ($yielding === true) return $yield_value;"
                 #print >>self.output, self.spacing() + "if ($yielding === null) throw $exc;"
+
+            else_except_state_max_depth = self.state_max_depth
+            self.generator_states = self.generator_states[:save_state_max_depth]
+            self.generator_states += [0 for i in range(save_state_max_depth, else_except_state_max_depth)]
+            self.generator_add_state()
+            self.generator_switch_open()
+            self.generator_switch_case(increment=False)
+
             for stmt in node.final:
                 self._stmt(stmt, current_klass)
+
+            self.generator_switch_case(increment=True)
+            self.generator_switch_close()
+            self.generator_states = self.generator_states[:save_state_max_depth+1]
+
         print >>self.output, self.dedent()  + "}"
+        self.generator_del_state()
+        self.state_max_depth = save_state_max_depth
+        self.try_depth -= 1
         self.stacksize_depth -= 1
 
     # XXX: change use_getattr to True to enable "strict" compilation
@@ -2123,6 +2186,9 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         if node.expr3:
             raise TranslationError("More than two expressions unsupported",
                                    node, self.module_name)
+        if self.is_generator:
+            print >> self.output, self.spacing() + "$generator_state[%d]=%d;" % (len(self.generator_states)-1, self.generator_states[-1]+1)
+
         if node.expr1:
             if node.expr2:
                 print >> self.output, """
@@ -2150,6 +2216,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 %(s)s\t$pyjs.__last_exception__.error:
 %(s)s\tpyjslib['TypeError']('exceptions must be classes, instances, or strings (deprecated), not NoneType'));\
 """ % locals()
+        self.generator_switch_case(increment=True)
 
     def _method(self, node, current_klass, class_name, class_name_, local_prefix):
         self.push_options()

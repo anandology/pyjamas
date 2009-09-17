@@ -1,6 +1,6 @@
 from UnitTest import UnitTest
 
-from __pyjamas__ import debugger
+#from __pyjamas__ import debugger
 
 class GeneratorTest(UnitTest):
 
@@ -133,6 +133,55 @@ class GeneratorTest(UnitTest):
         for i in fn():
             r.append(i)
         self.assertEqual(r, [1,2,4])
+
+    def testSimpleTryExceptElseFinally(self):
+        def fn(n):
+            for i in range(n):
+                try:
+                    if i == 0:
+                        yield "try %d" % i
+                    elif i < 3:
+                        raise TypeError(i)
+                    elif i == 3:
+                        raise KeyError(i)
+                except TypeError, e:
+                    yield "TypeError %d (1)" % i
+                    yield "TypeError %d (2)" % i
+                except:
+                    yield "Exception %d (1)" % i
+                    yield "Exception %d (2)" % i
+                else:
+                    yield "else %d (1)" % i
+                    yield "else %d (2)" % i
+                finally:
+                    yield "finally %d (1)" % i
+                    yield "finally %d (2)" % i
+
+        r = []
+        for i in fn(5):
+            r.append(i)
+        self.assertEqual(r, ['try 0',
+                             'else 0 (1)',
+                             'else 0 (2)',
+                             'finally 0 (1)',
+                             'finally 0 (2)',
+                             'TypeError 1 (1)',
+                             'TypeError 1 (2)',
+                             'finally 1 (1)',
+                             'finally 1 (2)',
+                             'TypeError 2 (1)',
+                             'TypeError 2 (2)',
+                             'finally 2 (1)',
+                             'finally 2 (2)',
+                             'Exception 3 (1)',
+                             'Exception 3 (2)',
+                             'finally 3 (1)',
+                             'finally 3 (2)',
+                             'else 4 (1)',
+                             'else 4 (2)', 
+                             'finally 4 (1)',
+                             'finally 4 (2)'])
+
 
     def testSend(self):
         def fn(value=None):
