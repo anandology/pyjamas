@@ -1,6 +1,6 @@
 from UnitTest import UnitTest
 
-from __pyjamas__ import debugger
+#from __pyjamas__ import debugger
 
 class GeneratorTest(UnitTest):
 
@@ -291,7 +291,6 @@ class GeneratorTest(UnitTest):
         except TypeError, e:
             self.assertTrue(e, 'test3')
 
-        debugger()
         g = fn()
         self.assertEqual(g.next(), 1)
         try:
@@ -304,6 +303,63 @@ class GeneratorTest(UnitTest):
             self.fail("StopIteration expected (4)")
         except StopIteration:
             self.assertTrue(True)
+
+    def testClose(self):
+        def fn():
+            yield 1
+            yield 2
+
+        g = fn()
+        try:
+            r = g.close()
+            self.assertEqual(r, None)
+        except:
+            self.fail("No exception expected (1)")
+        try:
+            r = g.next()
+            self.fail("StopIteration expected (1)")
+        except StopIteration:
+            self.assertTrue(True)
+        try:
+            r = g.close()
+            self.assertEqual(r, None)
+        except StopIteration:
+            self.fail("No exception expected (1)")
+
+        g = fn()
+        self.assertEqual(g.next(), 1)
+        try:
+            r = g.close()
+            self.assertEqual(r, None)
+        except TypeError, e:
+            self.fail("No exception expected (2)")
+        try:
+            r = g.next()
+            self.fail("StopIteration expected (2)")
+        except StopIteration:
+            self.assertTrue(True)
+
+        def fn():
+            try:
+                yield 1
+            except:
+                yield 2
+
+        g = fn()
+        try:
+            r = g.close()
+            self.assertEqual(r, None)
+        except TypeError, e:
+            self.fail("No exception expected (3)")
+
+        g = fn()
+        self.assertEqual(g.next(), 1)
+        try:
+            r = g.close()
+            self.fail("RuntimeError expected (4)")
+        except RuntimeError, e:
+            self.assertEqual(e[0], 'generator ignored GeneratorExit')
+
 
 
     def testMixed(self):

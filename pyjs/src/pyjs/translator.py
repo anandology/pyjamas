@@ -1073,7 +1073,17 @@ try{var %(dbg)s_res=%(call_code)s;}catch(%(dbg)s_err){
 %(s)s\t\tthrow (e);
 %(s)s\t}
 %(s)s};
-%(s)s$generator['close'] = function ($exc) {return $generator['throw'](null, pyjslib['GeneratorExit']);};
+%(s)s$generator['close'] = function () {
+%(s)s\t$yield_value = null;
+%(s)s\t$exc=pyjslib['GeneratorExit'];
+%(s)s\ttry {
+%(s)s\t\tif (typeof $generator['__next']() != 'undefined') throw pyjslib['RuntimeError']('generator ignored GeneratorExit');
+%(s)s\t} catch (e) {
+%(s)s\t\t$generator_state[0] = -1;
+%(s)s\t\tif (e.__name__ == 'StopIteration' || e.__name__ == 'GeneratorExit') return null;
+%(s)s\t\tthrow (e);
+%(s)s\t}
+%(s)s};
 %(s)s$generator['__next'] = function () {
 %(s)s\tvar $yielding = false;""" % locals()
             self.indent()
