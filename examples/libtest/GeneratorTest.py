@@ -85,6 +85,24 @@ class GeneratorTest(UnitTest):
             r.append(y)
         self.assertEqual(r, [1, 2])
 
+    def testSimpleIfThenElse(self):
+        def fn(n):
+            while n < 3:
+                if n < 0:
+                    yield "less than zero"
+                elif n == 0:
+                    yield "zero"
+                elif n == 1:
+                    yield "one"
+                else:
+                    yield "more than one"
+                n += 1
+
+        r = []
+        for i in fn(-1):
+            r.append(i)
+        self.assertEqual(r, ['less than zero', 'zero', 'one', 'more than one'])
+
     def testSimpleTryBody(self):
         def fn():
             i = 1

@@ -1673,9 +1673,9 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         # http://www.python.org/doc/2.5.2/ref/yieldexpr.html
         self.is_generator = True
         expr = self.expr(node.value, current_klass)
-        # in python a function call always returns None, so we do it
-        # here too
         self.track_lineno(node)
+        #print >>self.output, self.spacing() + "$generator_state[%d] = %d;" % (len(self.generator_states)-1, self.generator_states[-1]+1)
+
         print >>self.output, self.spacing() + "$yield_value = " + expr + ";"
         if self.source_tracking:
             print >>self.output, self.spacing() + "$pyjs.trackstack.pop();$pyjs.track=$pyjs.trackstack.pop();$pyjs.trackstack.push($pyjs.track);"
@@ -2495,6 +2495,12 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
 
     def _if(self, node, current_klass, top_level = False):
+        self.generator_states.append(0)
+        if self.is_generator:
+            print >>self.output, self.spacing() + "$generator_state[%d] = 0;" % (len(self.generator_states),)
+            self.dedent()
+            self.generator_states[-2] += 1
+            print >>self.output, self.indent() + "case %s:" % (self.generator_states[-2],)
         for i in range(len(node.tests)):
             test, consequence = node.tests[i]
             if i == 0:
@@ -2511,15 +2517,38 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             consequence = node.else_
 
             self._if_test(keyword, test, consequence, current_klass)
+        del self.generator_states[-1]
 
 
     def _if_test(self, keyword, test, consequence, current_klass, top_level = False):
+        is_generator = self.is_generator
         if test:
             expr = self.expr(test, current_klass)
 
-            print >>self.output, self.indent() +keyword + " (" + self.track_call(self.inline_bool_code(expr), test.lineno)+") {"
+            if not is_generator:
+                print >>self.output, self.indent() +keyword + " (" + self.track_call(self.inline_bool_code(expr), test.lineno)+") {"
+            else:
+                self.generator_states[-1] += 1
+                print >>self.output, self.indent() +keyword + "(($generator_state[%d]==%d)||(" % (\
+                    len(self.generator_states)-1, self.generator_states[-1], ) + \
+                    self.track_call(self.inline_bool_code(expr), test.lineno)+")) {"
+                print >>self.output, self.spacing() + "$generator_state[%d]=%d;" % (len(self.generator_states)-1, self.generator_states[-1])
+                self.generator_states[-1] += 1
+
         else:
-            print >>self.output, self.indent() + keyword + " {"
+            if not is_generator:
+                print >>self.output, self.indent() + keyword + " {"
+            else:
+                self.generator_states[-1] += 1
+                print >>self.output, self.indent() + keyword + " if ($generator_state[%d]==0||$generator_state[%d]==%d) {" % (\
+                    len(self.generator_states)-1, len(self.generator_states)-1, self.generator_states[-1], )
+                print >>self.output, self.spacing() + "$generator_state[%d]=%d;" % (len(self.generator_states)-1, self.generator_states[-1])
+                self.generator_states[-1] += 1
+
+        if is_generator:
+            self.generator_states.append(0)
+            print >>self.output, self.indent() + """switch ($generator_state[%d]) {""" % (len(self.generator_states)-1,)
+            print >>self.output, self.indent() + """case 0: $generator_state[%d]++;$generator_state[%d]=0;""" % (len(self.generator_states)-1,len(self.generator_states))
 
         if isinstance(consequence, self.ast.Stmt):
             for child in consequence.nodes:
@@ -2527,6 +2556,12 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         else:
             raise TranslationError(
                 "unsupported type (in _if_test)", consequence,  self.module_name)
+
+        if is_generator:
+            print >>self.output, self.dedent() + "default:"
+            print >>self.output, self.dedent() + "}"
+            del self.generator_states[-1]
+            print >>self.output, self.spacing() + "$generator_state[%d]++;" % (len(self.generator_states)-1,)
 
         print >>self.output, self.dedent() + "}"
 
