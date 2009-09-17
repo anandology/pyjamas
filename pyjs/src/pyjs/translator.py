@@ -2788,7 +2788,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
         print >>self.output, self.indent() + """try {"""
         if self.is_generator:
- 		    print >>self.output, self.indent() + "for (;true;$generator_state[%d] = 0) {" % (len(self.generator_states), )
+            print >>self.output, self.indent() + "for (;true;$generator_state[%d] = 0) {" % (len(self.generator_states), )
         else:
             print >>self.output, self.indent() + """while (true) {"""
         self.generator_add_state()
@@ -2826,8 +2826,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         if self.is_generator:
             self.generator_switch_case(increment=True)
             print >>self.output, self.indent() + "for (;($generator_state[%d] == %d && $generator_state[%d] != 0)||(" % (\
-		        (len(self.generator_states)-1, self.generator_states[-1], len(self.generator_states))) + \
- 		        self.track_call(self.inline_bool_code(test), node.lineno) + ");$generator_state[%d] = 0) {" % (len(self.generator_states), )
+                (len(self.generator_states)-1, self.generator_states[-1], len(self.generator_states))) + \
+                self.track_call(self.inline_bool_code(test), node.lineno) + ");$generator_state[%d] = 0) {" % (len(self.generator_states), )
         else:
             print >>self.output, self.indent() + "while (" + self.track_call(self.inline_bool_code(test), node.lineno) + ") {"
 
