@@ -1982,9 +1982,11 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                     l = []
                     if isinstance(expr, self.ast.Tuple):
                         for x in expr.nodes:
-                            l.append("(%s_name == %s.__name__)" % (pyjs_try_err, self.expr(x, current_klass)))
+                            l.append("((%s_name == %s.__name__)||pyjslib['_isinstance'](%s,%s))" % (pyjs_try_err, 
+                                self.expr(x, current_klass),pyjs_try_err, self.expr(x, current_klass)))
                     else:
-                        l = [ "%s_name == %s.__name__" % (pyjs_try_err, self.expr(expr, current_klass)) ]
+                        l = [ "(%s_name == %s.__name__)||pyjslib['_isinstance'](%s,%s)" % (pyjs_try_err, 
+                                self.expr(expr, current_klass),pyjs_try_err, self.expr(expr, current_klass)) ]
                     print >> self.output, "%sif (%s) {" % (else_str, "||".join(l))
                 self.indent()
                 print >> self.output, self.spacing() + "$pyjs.__last_exception__.except_lineno = %d;" % lineno
@@ -2002,12 +2004,14 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 self.generator_switch_close()
                 self.generator_del_state()
 
-                print >> self.output, self.dedent() + "}"
+                print >> self.output, self.dedent() + "}",
                 else_str = "else "
 
             if node.handlers[-1][0]:
                 # No default catcher, create one to fall through
                 print >> self.output, "%s{ throw %s; }" % (else_str, pyjs_try_err)
+            else:
+                print >> self.output
         if hasattr(node, 'else_') and node.else_:
             print >> self.output, self.dedent() + "}"
 
