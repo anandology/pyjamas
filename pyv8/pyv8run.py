@@ -16,7 +16,6 @@ usage = """
 
 currentdir = abspath(dirname(__file__))
 pyjspth = abspath(join(dirname(__file__), ".."))
-print currentdir, pyjspth
 sys.path = [(join(pyjspth, "pyjs", "src"))] + sys.path
 
 import pyjs
@@ -25,8 +24,6 @@ pyjs.pyjspth = pyjspth
 pyjs.path += [os.path.join(pyjspth, 'library'),
             os.path.join(pyjspth, 'addons'),
 ]
-
-print pyjs.path
 
 #currentdir = abspath(dirname(dirname(__file__)))
 #builddir = abspath("..")
@@ -48,14 +45,14 @@ class Global(PyV8.JSClass):
     def pyv8_print_fn(self, arg):
         print arg
     def pyv8_import_module(self, parent_name, module_name):
-        print "pyv8_import_module", parent_name, module_name
+        #print "pyv8_import_module", parent_name, module_name
         exec "import " + module_name
         return locals()[module_name]
 
     def pyv8_load(self, modules):
         for i in range(len(modules)):
             fname = modules[i]
-            print "pyv8_load", fname
+            #print "pyv8_load", fname
             fp = open(fname, 'r')
             txt = fp.read()
             fp.close()
