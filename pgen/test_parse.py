@@ -9,6 +9,7 @@ from astpprint import getAststr, printAst
 
 if test_pyjs:
     from lib2to3 import compiler as test_compiler
+    from lib2to3.compiler.transformer import Transformer
     from lib2to3.compiler import parser as test_parser
 
 #g = Grammar()
