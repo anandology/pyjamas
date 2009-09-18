@@ -361,6 +361,31 @@ class GeneratorTest(UnitTest):
             self.assertEqual(e[0], 'generator ignored GeneratorExit')
 
 
+    def testPEP255(self):
+
+        def fib():
+            a, b = 0, 1
+            while 1:
+                yield b
+                a, b = b, a+b
+
+        g = fib()
+        r = []
+        for i in range(6):
+            r.append(g.next())
+        self.assertEqual(r, [1, 1, 2, 3, 5, 8])
+
+        me = None
+        def g():
+            i = me.next()
+            yield i
+        me = g()
+        try:
+            me.next()
+            self.fail("ValueError expected")
+        except ValueError, e:
+            self.assertEqual(e[0], 'generator already executing')
+
 
     def testMixed(self):
         def fn(value = None):

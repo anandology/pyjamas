@@ -1058,34 +1058,65 @@ try{var %(dbg)s_res=%(call_code)s;}catch(%(dbg)s_err){
         if self.is_generator:
             s = self.spacing()
             print >>self.output, """\
-%(s)svar $generator_state = [0], $generator_exc = [null], $yield_value = null, $exc = null;
+%(s)svar $generator_state = [0], $generator_exc = [null], $yield_value = null, $exc = null, $is_executing=false;
 %(s)svar $generator = function () {};
-%(s)s$generator['next'] = function () {$yield_value = $exc = null;return $generator['__next']();};
+%(s)s$generator['next'] = function () {
+%(s)s\t$yield_value = $exc = null;
+%(s)s\ttry {
+%(s)s\t\tvar $res = $generator['__next']();
+%(s)s\t} catch (e) {
+%(s)s\t\t$is_executing=false;
+%(s)s\t\tthrow e;
+%(s)s\t}
+%(s)s\t$is_executing=false;
+%(s)s\treturn $res;
+%(s)s};
 %(s)s$generator['__iter__'] = function () {return $generator;};
-%(s)s$generator['send'] = function ($val) {$yield_value = $val;$exc = null;return $generator['__next']();};
+%(s)s$generator['send'] = function ($val) {
+%(s)s\t$yield_value = $val;
+%(s)s\t$exc = null;
+%(s)s\ttry {
+%(s)s\t\tvar $res = $generator['__next']();
+%(s)s\t} catch (e) {
+%(s)s\t\t$is_executing=false;
+%(s)s\t\tthrow e;
+%(s)s\t}
+%(s)s\t$is_executing=false;
+%(s)s\treturn $res;
+%(s)s};
 %(s)s$generator['throw'] = function ($exc_type, $exc_value) {
 %(s)s\t$yield_value = null;
 %(s)s\t$exc=(typeof $exc_value == 'undefined'?$exc_type():$exc_type($exc_value));
 %(s)s\ttry {
-%(s)s\t\treturn $generator['__next']();
+%(s)s\t\tvar $res = $generator['__next']();
 %(s)s\t} catch (e) {
 %(s)s\t\t$generator_state[0] = -1;
+%(s)s\t\t$is_executing=false;
 %(s)s\t\tthrow (e);
 %(s)s\t}
+%(s)s\t$is_executing=false;
+%(s)s\treturn $res;
 %(s)s};
 %(s)s$generator['close'] = function () {
 %(s)s\t$yield_value = null;
 %(s)s\t$exc=pyjslib['GeneratorExit'];
 %(s)s\ttry {
-%(s)s\t\tif (typeof $generator['__next']() != 'undefined') throw pyjslib['RuntimeError']('generator ignored GeneratorExit');
+%(s)s\t\tvar $res = $generator['__next']();
+%(s)s\t\t$is_executing=false;
+%(s)s\t\tif (typeof $res != 'undefined') throw pyjslib['RuntimeError']('generator ignored GeneratorExit');
 %(s)s\t} catch (e) {
 %(s)s\t\t$generator_state[0] = -1;
+%(s)s\t\t$is_executing=false;
 %(s)s\t\tif (e.__name__ == 'StopIteration' || e.__name__ == 'GeneratorExit') return null;
 %(s)s\t\tthrow (e);
 %(s)s\t}
+%(s)s\treturn $res;
 %(s)s};
 %(s)s$generator['__next'] = function () {
-%(s)s\tvar $yielding = false;""" % locals()
+%(s)s\tvar $yielding = false;
+%(s)s\tif ($is_executing) throw pyjslib['ValueError']('generator already executing');
+%(s)s\t$is_executing = true;
+""" % locals()
             self.indent()
             print >>self.output, code
             print >>self.output, self.spacing(), "throw pyjslib['StopIteration'];"
