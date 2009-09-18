@@ -416,8 +416,12 @@ if __name__ == "__main__":
     import symtable
 
     def get_names(syms):
-        return [s for s in [s.get_name() for s in syms.get_symbols()]
-                if not (s.startswith('_[') or s.startswith('.'))]
+        res = []
+        for sym in syms.get_symbols():
+            s = sym.get_name()
+            if not (s.startswith('_[') or s.startswith('.')):
+                res.append(s)
+        return res
 
     for file in sys.argv[1:]:
         print file
