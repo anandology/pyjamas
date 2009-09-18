@@ -22,10 +22,10 @@ except AttributeError:
 
 callfunc_opcode_info = {
     # (Have *args, Have **args) : opcode
-    (0,0) : "CALL_FUNCTION",
-    (1,0) : "CALL_FUNCTION_VAR",
-    (0,1) : "CALL_FUNCTION_KW",
-    (1,1) : "CALL_FUNCTION_VAR_KW",
+    (0) : "CALL_FUNCTION",
+    (1) : "CALL_FUNCTION_VAR",
+    (2) : "CALL_FUNCTION_KW",
+    (3) : "CALL_FUNCTION_VAR_KW",
 }
 
 LOOP = 1
@@ -1058,9 +1058,9 @@ class CodeGenerator:
             self.visit(node.star_args)
         if node.dstar_args is not None:
             self.visit(node.dstar_args)
-        have_star = node.star_args is not None
-        have_dstar = node.dstar_args is not None
-        opcode = callfunc_opcode_info[have_star, have_dstar]
+        have_star = node.star_args is not None and 1 or 0
+        have_dstar = node.dstar_args is not None and 2 or 0
+        opcode = callfunc_opcode_info[have_star + have_dstar]
         self.emit(opcode, kw << 8 | pos)
 
     def visitPrint(self, node, newline=0):
