@@ -1143,9 +1143,8 @@ try{var %(dbg)s_res=%(call_code)s;}catch(%(dbg)s_err){
             state = self.generator_states[-1]
             if self.generator_states[-1] == 0:
                 self.dedent()
-                print >>self.output, self.indent() + """if ($generator_state[%d] == 0) {""" % (n_states-1,)
-                print >>self.output, self.spacing() + """for (var $i = %d ; $i < $generator_state.length; $i++) $generator_state[$i]=0;""" % (n_states, )
-                print >>self.output, self.spacing() + """$generator_state[%d]=0;""" % (n_states,)
+                print >>self.output, self.indent() + """if (typeof $generator_state[%d] == 'undefined' || $generator_state[%d] == 0) {""" % (n_states-1, n_states-1)
+                self.generator_clear_state()
                 if n_states == 1:
                     self.generator_throw()
             else:
@@ -1166,6 +1165,11 @@ try{var %(dbg)s_res=%(call_code)s;}catch(%(dbg)s_err){
     def generator_del_state(self):
         if self.is_generator:
             del self.generator_states[-1]
+
+    def generator_clear_state(self):
+        if self.is_generator:
+            n_states = len(self.generator_states)
+            print >>self.output, self.spacing() + """for (var $i = %d ; $i < ($generator_state.length<%d?%d:$generator_state.length); $i++) $generator_state[$i]=0;""" % (n_states-1, n_states+1, n_states+1)
 
     def generator_throw(self):
         print >>self.output, self.indent() + "if (typeof $exc != 'undefined' && $exc != null) {"
@@ -2112,6 +2116,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             self.generator_states = self.generator_states[:save_state_max_depth+1]
 
         print >>self.output, self.dedent()  + "}"
+        self.generator_clear_state()
         self.generator_del_state()
         self.state_max_depth = save_state_max_depth
         self.try_depth -= 1

@@ -142,6 +142,28 @@ class GeneratorTest(UnitTest):
         self.assertEqual(r, [1,2,4])
 
     def testSimpleTryExceptElseFinally(self):
+        def f():
+            try:
+                yield 1
+                raise ZeroDivisionError('')
+            except:
+                yield 2
+        self.assertEqual(list(f()), [1, 2])
+
+        def f():
+            try:
+                yield 1
+                try:
+                    yield 3
+                    raise ZeroDivisionError('')
+                except:
+                    yield 4
+                raise ZeroDivisionError('')
+            except:
+                yield 2
+        self.assertEqual(list(f()), [1, 3, 4, 2])
+
+
         def fn(n):
             for i in range(n):
                 try:
@@ -422,6 +444,32 @@ class GeneratorTest(UnitTest):
             self.fail("StopIteration expected")
         except StopIteration:
             self.assertTrue(True)
+
+        return
+        def f():
+            try:
+                yield 1
+                try:
+                    yield 2
+                    raise ZeroDivisionError()
+                    #1/0
+                    yield 3  # never get here
+                except ZeroDivisionError:
+                    yield 4
+                    yield 5
+                    raise
+                except:
+                    yield 6
+                yield 7     # the "raise" above stops this
+            except:
+                yield 8
+            yield 9
+            try:
+                x = 12
+            finally:
+                yield 10
+            yield 11
+        self.assertEqual(list(f()), [1, 2, 4, 5, 8, 9, 10, 11])
 
 
     def testMixed(self):
