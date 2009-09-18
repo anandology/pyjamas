@@ -98,19 +98,22 @@ class BaseLinker(object):
         self.remove_files = {}
 
     def __call__(self):
-        self.visited_modules = {}
-        self.done = {}
-        self.dependencies = {}
-        self.visit_start()
-        for platform in [None] + self.platforms:
-            self.visit_start_platform(platform)
-            old_path = self.path
-            self.path = [BUILTIN_PATH, PYLIB_PATH, PYJAMASLIB_PATH]
-            self.visit_modules(['pyjslib'], platform)
-            self.path = old_path
-            self.visit_modules(self.modules, platform)
-            self.visit_end_platform(platform)
-        self.visit_end()
+        try:
+            self.visited_modules = {}
+            self.done = {}
+            self.dependencies = {}
+            self.visit_start()
+            for platform in [None] + self.platforms:
+                self.visit_start_platform(platform)
+                old_path = self.path
+                self.path = [BUILTIN_PATH, PYLIB_PATH, PYJAMASLIB_PATH]
+                self.visit_modules(['pyjslib'], platform)
+                self.path = old_path
+                self.visit_modules(self.modules, platform)
+                self.visit_end_platform(platform)
+            self.visit_end()
+        except translator.TranslationError, e:
+            raise e
 
     def visit_modules(self, module_names, platform=None, parent_file = None):
         prefix = ''
