@@ -2,6 +2,7 @@
 
 import PyV8
 
+import os
 import sys
 import compiler
 
@@ -12,19 +13,31 @@ usage = """
   usage: %prog [options] <application module name or path>
 """
 
-currentdir = abspath(dirname(dirname(__file__)))
-builddir = abspath("..")
-sys.path = [(join(builddir, "pyjs", "src"))] + sys.path
-print sys.path
+
+currentdir = abspath(dirname(__file__))
+pyjspth = abspath(join(dirname(__file__), ".."))
+print currentdir, pyjspth
+sys.path = [(join(pyjspth, "pyjs", "src"))] + sys.path
 
 import pyjs
 
+pyjs.pyjspth = pyjspth
+pyjs.path += [os.path.join(pyjspth, 'library'),
+            os.path.join(pyjspth, 'addons'),
+]
 
-app_library_dirs = [
-    currentdir,
-    join(builddir, "library/builtins"),
-    join(builddir, "library"),
-    join(builddir, "addons")]
+print pyjs.path
+
+#currentdir = abspath(dirname(dirname(__file__)))
+#builddir = abspath("..")
+#sys.path = [(join(builddir, "pyjs", "src"))] + sys.path
+#print sys.path
+
+#app_library_dirs = [
+#    currentdir,
+#    join(builddir, "library/builtins"),
+#    join(builddir, "library"),
+#    join(builddir, "addons")]
  
 def tostrlist(l):
     l = map(lambda x: "'%s'" % x, l)
@@ -42,7 +55,7 @@ class Global(PyV8.JSClass):
     def pyv8_load(self, modules):
         for i in range(len(modules)):
             fname = modules[i]
-            print fname
+            print "pyv8_load", fname
             fp = open(fname, 'r')
             txt = fp.read()
             fp.close()
@@ -57,7 +70,6 @@ from pyjs import linker
 from pyjs import translator
 from pyjs import util
 from optparse import OptionParser
-import pyjs
 
 PLATFORM='pyv8'
 
@@ -183,7 +195,7 @@ class PyV8Linker(linker.BaseLinker):
 
         # locals - go into template via locals()
         module_files=tostrlist(done)
-        print "module_files", module_files
+        #print "module_files", module_files
         js_lib_files=tostrlist(self.js_libs)
         early_static_js_libs=str(self.js_libs)[1:-1]
         late_static_js_libs = [] + self.late_static_js_libs
@@ -203,17 +215,27 @@ def build_script():
     """
     parser = OptionParser(usage = usage)
     translator.add_compile_options(parser)
+
+    parser.add_option(
+        "--dynamic",
+        dest="unlinked_modules",
+        action="append",
+        help="regular expression for modules that will not be linked and thus loaded dynamically"
+        )
+
     # override the default because we want print
     parser.set_defaults(print_statements=True)
     linker.add_linker_options(parser)
     options, args = parser.parse_args()
-    if len(args) != 1:
+    if len(args) == 0:
         parser.error("incorrect number of arguments")
 
     pyjs.path = ["."] + pyjs.path
-    top_module = args[0]
+    #top_module = args[0]
     for d in options.library_dirs:
         pyjs.path.append(os.path.abspath(d))
+
+    print "paths:", pyjs.path
 
     translator_arguments=dict(
         debug=options.debug,
@@ -225,11 +247,11 @@ def build_script():
         store_source=options.store_source,
         )
 
-    l = PyV8Linker([top_module],
+    l = PyV8Linker(args, #[top_module],
                            output=options.output,
                            platforms=[PLATFORM],
                            path=pyjs.path,
-                            compiler=compiler,
+                           compiler=compiler,
                            translator_arguments=translator_arguments)
     l()
 

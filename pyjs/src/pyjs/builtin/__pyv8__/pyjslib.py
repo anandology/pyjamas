@@ -29,3 +29,10 @@ def __dynamic_load__(importName):
         module = pyv8_import_module(None, importName)
     return module
 
+@compiler.noSourceTracking
+def debugReport(msg):
+    JS("""
+    pyv8_print_fn(msg);
+    """)
+
+
