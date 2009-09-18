@@ -1783,6 +1783,15 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         self.pop_options()
         self.pop_lookup()
 
+    def _assert(self, node, current_klass):
+        expr = self.expr(node.test, current_klass)
+        if node.fail:
+            fail = self.expr(node.fail, current_klass)
+        else:
+            fail = ''
+        print >>self.output, self.spacing() + "if !( " + expr + " ) {;"
+        print >>self.output, self.spacing() + "   throw pyjslib['AssertionError'](%s);" % fail
+        print >>self.output, self.spacing() + " ) {;"
 
     def _return(self, node, current_klass):
         expr = self.expr(node.value, current_klass)
@@ -2243,6 +2252,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 self.push_lookup(private_scope)
                 self.track_lineno(child, True)
                 rhs = self.expr(child.expr, current_klass)
+                print "rhs", rhs
+                print child.nodes[0]
                 name = "%s.%s" % (local_prefix, child.nodes[0].name)
                 lhs = self.add_lookup('attribute', child.nodes[0].name, name)
                 print >>self.output, self.spacing() + "%s = %s;" % (lhs, rhs)
@@ -2484,6 +2495,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             self._from(node, current_klass, top_level)
         elif isinstance(node, self.ast.AssAttr):
             self._assattr(node, current_klass)
+        elif isinstance(node, self.ast.Assert):
+            self._assert(node, current_klass)
         else:
             raise TranslationError(
                 "unsupported type (in _stmt)", node, self.module_name)

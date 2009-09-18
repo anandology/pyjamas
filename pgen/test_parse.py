@@ -4,14 +4,16 @@ import traceback
 
 from astpprint import getAststr, printAst
 
-from lib2to3 import compiler as test_compiler
-from lib2to3.compiler.transformer import Transformer
-from lib2to3.compiler import parser as test_parser
+if test_pyjs:
+    from lib2to3 import compiler as test_compiler
+    from lib2to3.compiler.transformer import Transformer
+    from lib2to3.compiler import parser as test_parser
 
 #g = Grammar()
 
-import compiler
-import parser
+if test_std:
+    import compiler
+    import parser
 
 def compare_compilers(fname):
 
@@ -21,37 +23,37 @@ def compare_compilers(fname):
     txt = f.read()
     f.close()
 
-    try:
-        x1 = compiler.parseFile(fname)
-        ys1 = getAststr(x1)
-    except SyntaxError:
-        ys1 = traceback.format_exc(limit=0)
-        
+    if test_std:
+        try:
+            x1 = compiler.parseFile(fname)
+            ys1 = getAststr(x1)
+        except SyntaxError:
+            ys1 = traceback.format_exc(limit=0)
+            
+    if test_pyjs:
+        try:
+            y = test_compiler.parseFile(fname)
+            ys = getAststr(y)
 
-    try:
-        #x = test_parser.suite(txt)
-        #t = Transformer()
-        #y = t.compile_node(x)
-        y = test_compiler.parseFile(fname)
-        ys = getAststr(y)
+        except SyntaxError:
+            ys = traceback.format_exc(limit=1)
 
-    except SyntaxError:
-        ys = traceback.format_exc(limit=1)
-        #traceback.print_exc()
-
-    if ys == ys1:
-        print "passed"
-        return
+    if test_pyjs and test_std:
+        if ys == ys1:
+            print "passed"
+            return
 
     print "failed."
 
-    f = open(fname_out+".ast", "w")
-    f.write(ys)
-    f.close()
+    if test_pyjs:
+        f = open(fname_out+".ast", "w")
+        f.write(ys)
+        f.close()
 
-    f = open(fname_out+".ast.std", "w")
-    f.write(ys1)
-    f.close()
+    if test_std:
+        f = open(fname_out+".ast.std", "w")
+        f.write(ys1)
+        f.close()
 
 import sys
 for arg in sys.argv[1:]:

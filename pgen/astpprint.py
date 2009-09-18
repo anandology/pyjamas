@@ -40,18 +40,25 @@ def rec_node(node, level, indent, write):
         write(node.__class__.__name__)
         write('(')
 
-        if any(isinstance(child, Node) for child in node.getChildren()):
-            for i, child in enumerate(node.getChildren()):
-                if i != 0:
-                    write(',')
-                write('\n')
-                rec_node(child, level+1, indent, write)
+        i = 0
+        for child in node.getChildren():
+            if not isinstance(child, Node):
+                continue
+            if i != 0:
+                write(',')
             write('\n')
-            write(pfx)
-        else:
+            rec_node(child, level+1, indent, write)
+            i += 1
+        if i == 0:
             # None of the children as nodes, simply join their repr on a single
             # line.
-            write(', '.join(repr(child) for child in node.getChildren()))
+            res = []
+            for child in node.getChildren():
+                res.append(repr(child))
+            write(', '.join(res))
+        else:
+            write('\n')
+            write(pfx)
 
         write(')')
 

@@ -40,6 +40,19 @@ From http://code.google.com/p/pyjamas/issues, for 0.6 release:
 Python Builtins TODO
 ---------------
 
+translator support for:
+
+    * GenExpr and GenExprInner
+        - if any(isinstance(child, Node) for child in node.getChildren()):
+        - write(', '.join(repr(child) for child in node.getChildren()))
+
+    * Conditional in classes:
+        class foo:
+            if True:
+                def fn(self):
+                    pass
+
+
 #234 from Beni Cherniavsky:
 
 Python builtins missing under pyjs:

@@ -135,6 +135,9 @@ class Exception(BaseException):
 class StandardError(Exception):
     pass
 
+class AssertionError(Exception):
+    pass
+
 class GeneratorExit(Exception):
     pass
 

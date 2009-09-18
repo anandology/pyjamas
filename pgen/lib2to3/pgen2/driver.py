@@ -21,7 +21,7 @@ import logging
 import sys
 
 # Pgen imports
-from . import grammar, parse, token, tokenize, pgen
+from lib2to3.pgen import grammar, parse, token, tokenize, pgen
 
 
 class Driver(object):

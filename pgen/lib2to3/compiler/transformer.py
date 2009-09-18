@@ -1103,103 +1103,95 @@ class Transformer:
         else:
             stmts.append(result)
 
-    if hasattr(symbol, 'comp_for'):
-        def com_list_constructor(self, nodelist):
-            # listmaker: test ( list_for | (',' test)* [','] )
-            values = []
-            for i in range(len(nodelist.children)):
-                if nodelist.children[i].type == symbol.comp_for:
-                    assert len(nodelist.children[i:]) == 1
-                    return self.com_list_comprehension(values[0],
-                                                       nodelist.children[i])
-                elif nodelist.children[i].type == token.COMMA:
-                    continue
-                values.append(self.com_node(nodelist.children[i]))
-            return List(values, lineno=values[0].lineno)
+    def com_list_constructor(self, nodelist):
+        # listmaker: test ( list_for | (',' test)* [','] )
+        values = []
+        for i in range(len(nodelist.children)):
+            if nodelist.children[i].type == symbol.comp_for:
+                assert len(nodelist.children[i:]) == 1
+                return self.com_list_comprehension(values[0],
+                                                   nodelist.children[i])
+            elif nodelist.children[i].type == token.COMMA:
+                continue
+            values.append(self.com_node(nodelist.children[i]))
+        return List(values, lineno=values[0].lineno)
 
-        def com_list_comprehension(self, expr, node):
-            # list_iter: list_for | list_if
-            # list_for: 'for' exprlist 'in' testlist [list_iter]
-            # list_if: 'if' test [list_iter]
+    def com_list_comprehension(self, expr, node):
+        # list_iter: list_for | list_if
+        # list_for: 'for' exprlist 'in' testlist [list_iter]
+        # list_if: 'if' test [list_iter]
 
-            # XXX should raise SyntaxError for assignment
+        # XXX should raise SyntaxError for assignment
 
-            lineno = node.children[0].context
-            fors = []
-            while node:
-                t = node.children[0].value
-                if t == 'for':
-                    assignNode = self.com_assign(node.children[1], OP_ASSIGN)
-                    listNode = self.com_node(node.children[3])
-                    newfor = ListCompFor(assignNode, listNode, [])
-                    newfor.lineno = node.children[0].context
-                    fors.append(newfor)
-                    if len(node.children) == 4:
-                        node = None
-                    else:
-                        node = self.com_list_iter(node.children[4])
-                elif t == 'if':
-                    test = self.com_node(node.children[1])
-                    newif = ListCompIf(test, lineno=node.children[0].context)
-                    newfor.ifs.append(newif)
-                    if len(node.children) == 2:
-                        node = None
-                    else:
-                        node = self.com_list_iter(node.children[2])
+        lineno = node.children[0].context
+        fors = []
+        while node:
+            t = node.children[0].value
+            if t == 'for':
+                assignNode = self.com_assign(node.children[1], OP_ASSIGN)
+                listNode = self.com_node(node.children[3])
+                newfor = ListCompFor(assignNode, listNode, [])
+                newfor.lineno = node.children[0].context
+                fors.append(newfor)
+                if len(node.children) == 4:
+                    node = None
                 else:
-                    raise SyntaxError, \
-                          ("unexpected list comprehension element: %s %d"
-                           % (node, lineno))
-            return ListComp(expr, fors, lineno=lineno)
-
-        def com_list_iter(self, node):
-            assert node.type == symbol.comp_iter
-            return node.children[0]
-    else:
-        def com_list_constructor(self, nodelist):
-            values = []
-            for i in range(0, len(nodelist.children), 2):
-                values.append(self.com_node(nodelist.children[i]))
-            return List(values, lineno=values[0].lineno)
-
-    if hasattr(symbol, 'gen_for'):
-        def com_generator_expression(self, expr, node):
-            # gen_iter: gen_for | gen_if
-            # gen_for: 'for' exprlist 'in' test [gen_iter]
-            # gen_if: 'if' test [gen_iter]
-
-            lineno = node.children[0].context
-            fors = []
-            while node:
-                t = node.children[0].value
-                if t == 'for':
-                    assignNode = self.com_assign(node.children[1], OP_ASSIGN)
-                    genNode = self.com_node(node.children[3])
-                    newfor = GenExprFor(assignNode, genNode, [],
-                                        lineno=node.children[0].context)
-                    fors.append(newfor)
-                    if (len(node.children)) == 4:
-                        node = None
-                    else:
-                        node = self.com_gen_iter(node.children[4])
-                elif t == 'if':
-                    test = self.com_node(node.children[1])
-                    newif = GenExprIf(test, lineno=node.children[0].context)
-                    newfor.ifs.append(newif)
-                    if len(node.children) == 2:
-                        node = None
-                    else:
-                        node = self.com_gen_iter(node.children[2])
+                    node = self.com_list_iter(node.children[4])
+            elif t == 'if':
+                test = self.com_node(node.children[1])
+                newif = ListCompIf(test, lineno=node.children[0].context)
+                newfor.ifs.append(newif)
+                if len(node.children) == 2:
+                    node = None
                 else:
-                    raise SyntaxError, \
-                            ("unexpected generator expression element: %s %d"
-                             % (node, lineno))
-            fors[0].is_outmost = True
-            return GenExpr(GenExprInner(expr, fors), lineno=lineno)
+                    node = self.com_list_iter(node.children[2])
+            else:
+                raise SyntaxError, \
+                      ("unexpected list comprehension element: %s %d"
+                       % (node, lineno))
+        return ListComp(expr, fors, lineno=lineno)
 
-        def com_gen_iter(self, node):
-            assert node.type == symbol.gen_iter
-            return node.children[0]
+    def com_list_iter(self, node):
+        assert node.type == symbol.comp_iter
+        return node.children[0]
+
+    def com_generator_expression(self, expr, node):
+        # gen_iter: gen_for | gen_if
+        # gen_for: 'for' exprlist 'in' test [gen_iter]
+        # gen_if: 'if' test [gen_iter]
+
+        lineno = node.children[0].context
+        fors = []
+        while node:
+            t = node.children[0].value
+            if t == 'for':
+                assignNode = self.com_assign(node.children[1], OP_ASSIGN)
+                genNode = self.com_node(node.children[3])
+                newfor = GenExprFor(assignNode, genNode, [],
+                                    lineno=node.children[0].context)
+                fors.append(newfor)
+                if (len(node.children)) == 4:
+                    node = None
+                else:
+                    node = self.com_gen_iter(node.children[4])
+            elif t == 'if':
+                test = self.com_node(node.children[1])
+                newif = GenExprIf(test, lineno=node.children[0].context)
+                newfor.ifs.append(newif)
+                if len(node.children) == 2:
+                    node = None
+                else:
+                    node = self.com_gen_iter(node.children[2])
+            else:
+                raise SyntaxError, \
+                        ("unexpected generator expression element: %s %d"
+                         % (node, lineno))
+        fors[0].is_outmost = True
+        return GenExpr(GenExprInner(expr, fors), lineno=lineno)
+
+    def com_gen_iter(self, node):
+        assert node.type == symbol.gen_iter
+        return node.children[0]
 
     def com_dictmaker(self, nodelist):
         # dictmaker: test ':' test (',' test ':' value)* [',']
