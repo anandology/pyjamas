@@ -403,6 +403,27 @@ class GeneratorTest(UnitTest):
         self.assertEqual(list(f2()), [42])
 
 
+        def f():
+            v = 1/0 # See issue #265
+            return {}['not-there']
+        def g():
+            yield f()  # the zero division exception propagates
+            yield 42   # and we'll never get here
+        k = g()
+        try:
+            k.next()
+            self.fail("Exception expected")
+        except ZeroDivisionError, e:
+            self.assertTrue(True)
+        except:
+            self.assertTrue(True, "ZeroDivisionError expected")
+        try:
+            k.next()
+            self.fail("StopIteration expected")
+        except StopIteration:
+            self.assertTrue(True)
+
+
     def testMixed(self):
         def fn(value = None):
             for i in [-1,0,1,2,3,4]:
