@@ -679,7 +679,7 @@ class Translator:
             self.has_yield = False
             self.is_generator = False
             self.generator_states = [0]
-            self.state_max_depth = 0
+            self.state_max_depth = 1
             self.track_lineno(child)
             if isinstance(child, self.ast.Function):
                 self._function(child, None, True, False)
@@ -2113,8 +2113,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
             self.generator_switch_case(increment=True)
             self.generator_switch_close()
-            self.generator_states = self.generator_states[:save_state_max_depth+1]
 
+        self.generator_states = self.generator_states[:save_state_max_depth+1]
         print >>self.output, self.dedent()  + "}"
         self.generator_clear_state()
         self.generator_del_state()
