@@ -1793,7 +1793,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             fail = self.expr(node.fail, current_klass)
         else:
             fail = ''
-        print >>self.output, self.spacing() + "if !( " + expr + " ) {;"
+        print >>self.output, self.spacing() + "if (!( " + expr + " )) {;"
         print >>self.output, self.spacing() + "   throw pyjslib['AssertionError'](%s);" % fail
         print >>self.output, self.spacing() + " ) {;"
 

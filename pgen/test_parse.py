@@ -2,6 +2,9 @@ import os
 import sys
 import traceback
 
+test_pyjs = True
+test_std = False
+
 from astpprint import getAststr, printAst
 
 if test_pyjs:
