@@ -1245,7 +1245,7 @@ def staticmethod(func):
         }
         return func.apply(null,args);
     };
-    fnwrap.__name__ = name;
+    fnwrap.__name__ = func.__name__;
     fnwrap.__args__ = func.__args__;
     fnwrap.__bind_type__ = 0;
     return fnwrap;
