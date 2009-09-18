@@ -1557,6 +1557,16 @@ def getattr(obj, name, default_value=None):
     """)
 
 @compiler.noSourceTracking
+def _del(obj):
+    JS("""
+    if (typeof obj.__delete__ == 'function') {
+        obj.__delete__(obj);
+    } else {
+        delete obj;
+    }
+    """)
+
+@compiler.noSourceTracking
 def delattr(obj, name):
     JS("""
     if (!pyjslib.isObject(obj)) {
@@ -1565,11 +1575,7 @@ def delattr(obj, name):
     if ((pyjslib.isUndefined(obj[name])) ||(typeof(obj[name]) == "function") ){
         throw pyjslib.AttributeError(obj.__name__+" instance has no attribute '"+ name+"'");
     }
-    if (typeof obj[name].__delete__ == 'function') {
-        obj[name].__delete__(obj);
-    } else {
-        delete obj[name];
-    }
+    pyjslib._del(obj[name]);
     """)
 
 @compiler.noSourceTracking

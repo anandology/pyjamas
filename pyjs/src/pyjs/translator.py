@@ -2529,6 +2529,15 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             self._assattr(node, current_klass)
         elif isinstance(node, self.ast.Assert):
             self._assert(node, current_klass)
+        elif isinstance(node, self.ast.AssName):
+            # TODO: support other OP_xxx types and move this to
+            # a separate function
+            if node.flags == "OP_DELETE":
+                name = self._lhsFromName(node.name, top_level, current_klass)
+                print >>self.output, self.spacing() + "pyjslib['_del'](%s);" % name
+            else:
+                raise TranslationError(
+                    "unsupported AssName type (in _stmt)", node, self.module_name)
         else:
             raise TranslationError(
                 "unsupported type (in _stmt)", node, self.module_name)
