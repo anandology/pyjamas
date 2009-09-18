@@ -17,6 +17,7 @@ import pyjamas.DOM as DOM
 
 from __pyjamas__ import doc
 from pyjamas.Window import alert
+from pyjamas import Window
 import sys
 
 has_getAsText = True
@@ -40,7 +41,8 @@ class FileOpenDlg(DialogBox):
                 self.dockPanel.add(msg, DockPanel.NORTH)
                 location =  fileLocation
                 if fileLocation.find("://") < 0:
-                    base = str(doc().location)
+                    base = Window.getLocation().getHref()
+                    print base
                     if base.find('/') >= 0:
                         sep = '/'
                     else:
