@@ -141,7 +141,7 @@ class FlowGraph:
             for j, b in l:
                 del blocks[index[b]]
             # Insert the chain in the proper location
-            blocks[i:i + 1] = [cur] + chain
+            blocks = blocks[:i] + [cur] + [chain] + blocks[i + 1:] 
             # Finally, re-compute the block indexes
             for i in range(len(blocks)):
                 index[blocks[i]] = i
@@ -187,7 +187,8 @@ class FlowGraph:
             chains.remove(c)
             chains.insert(goes_before, c)
 
-        del blocks[:]
+        while len(blocks) > 0:
+            del blocks[0]
         for c in chains:
             for b in c:
                 blocks.append(b)
@@ -315,6 +316,13 @@ class PyFlowGraph(FlowGraph):
 
     def __init__(self, name, filename, args=(), optimized=0, klass=None):
         self.super_init()
+        self.hasjrel = misc.Set()
+        self.hasjabs = misc.Set()
+        for i in dis.hasjrel:
+            self.hasjrel.add(dis.opname[i])
+        for i in dis.hasjabs:
+            self.hasjabs.add(dis.opname[i])
+
         self.name = name
         self.filename = filename
         self.docstring = None
@@ -342,6 +350,14 @@ class PyFlowGraph(FlowGraph):
             if isinstance(var, TupleArg):
                 self.varnames[i] = var.getName()
         self.stage = RAW
+
+        for name, obj in dir(self):
+            if name[:9] == "_convert_":
+                opname = name[9:]
+                self._converters[opname] = obj
+
+        for num in range(len(dis.opname)):
+            opnum[dis.opname[num]] = num
 
     def setDocstring(self, doc):
         self.docstring = doc
@@ -454,12 +470,13 @@ class PyFlowGraph(FlowGraph):
                 insts[i] = opname, begin[inst[1]]
         self.stage = FLAT
 
-    hasjrel = misc.Set()
-    for i in dis.hasjrel:
-        hasjrel.add(dis.opname[i])
-    hasjabs = misc.Set()
-    for i in dis.hasjabs:
-        hasjabs.add(dis.opname[i])
+    # MOVED to constructor
+    #hasjrel = misc.Set()
+    #for i in dis.hasjrel:
+    #    hasjrel.add(dis.opname[i])
+    #hasjabs = misc.Set()
+    #for i in dis.hasjabs:
+    #    hasjabs.add(dis.opname[i])
 
     def convertArgs(self):
         """Convert arguments from symbolic to concrete form"""
@@ -554,11 +571,12 @@ class PyFlowGraph(FlowGraph):
 
     # similarly for other opcodes...
 
-    for name, obj in locals().items():
-        if name[:9] == "_convert_":
-            opname = name[9:]
-            _converters[opname] = obj
-    del name, obj, opname
+    # MOVED to constructor
+    #for name, obj in locals().items():
+    #    if name[:9] == "_convert_":
+    #        opname = name[9:]
+    #        _converters[opname] = obj
+    #del name, obj, opname
 
     def makeByteCode(self):
         assert self.stage == CONV
@@ -582,9 +600,10 @@ class PyFlowGraph(FlowGraph):
         self.stage = DONE
 
     opnum = {}
-    for num in range(len(dis.opname)):
-        opnum[dis.opname[num]] = num
-    del num
+    # MOVED to constructor
+    #for num in range(len(dis.opname)):
+    #    opnum[dis.opname[num]] = num
+    #del num
 
     def newCodeObject(self):
         assert self.stage == DONE
