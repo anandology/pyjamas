@@ -28,7 +28,7 @@ else:
 # spidermonkey has no window implementation, but we like to test the
 # import of pyjamas.Window in pure python too
 import sys
-if sys.platform != 'spidermonkey':
+if sys.platform != 'spidermonkey' and sys.platform != 'pyv8':
     from WindowTest import WindowTest
 from MD5Test import MD5Test
 from TimeModuleTest import TimeModuleTest
@@ -36,8 +36,6 @@ from TypeCompatibilityTest import TypeCompatibilityTest
 from UrllibModuleTest import UrllibModuleTest
 from Base64ModuleTest import Base64ModuleTest
 from ReModuleTest import ReModuleTest
-
-from pyjamas import log
 
 class RunTests:
     def __init__(self, tests):

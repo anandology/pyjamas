@@ -12,7 +12,7 @@ import UnitTest
 from md5 import md5
 
 if sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz',
-                    'safari', 'spidermonkey']:
+                    'safari', 'spidermonkey', 'pyv8']:
     from __pyjamas__ import JS
 
     def hexstr(s):

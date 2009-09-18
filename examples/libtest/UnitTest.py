@@ -3,7 +3,7 @@ import sys
 
 IN_BROWSER = sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']
 IN_JS = sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz',
-                         'safari', 'spidermonkey']
+                         'safari', 'spidermonkey', 'pyv8']
 
 if IN_BROWSER:
     from pyjamas.Timer import Timer
