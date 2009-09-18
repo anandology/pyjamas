@@ -25,6 +25,10 @@ After the europython merge we have still some things to change.
    python modules.  i strongly recommend dropping cmd-line and using
    python-spidermonkey.]
 
+- implement Backquote in translator
+
+- implement classes inside classes in translator
+
 From http://code.google.com/p/pyjamas/issues, for 0.6 release:
 
 97  Enhancement ui.Tree Widgets have too much whitespace around their contents
@@ -53,7 +57,7 @@ Easy to implement:
     sorted
     zip
 
-Requive work to implement:
+Require work to implement:
     buffer (deprecated, irrelevant)
     bytearray (new in 2.6)
     coerce (somewhat deprecated)

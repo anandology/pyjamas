@@ -1,4 +1,5 @@
 from UnitTest import UnitTest
+from write import write, writebr
 
 #from __pyjamas__ import debugger
 
@@ -426,9 +427,121 @@ class GeneratorTest(UnitTest):
             r.append(i)
         self.assertEqual(r, [0, 1, None, 2, 2, 3, 4])
 
+    def __BrokenTestPyJS__testExceptionShouldTerminateGenerator(self):
+
+        def f():
+            raise ValueError, "deliberate exception"
+        def g():
+            yield f()  # the zero division exception propagates
+            yield 42   # and we'll never get here
+
+        k = g()
+
+        try:
+            k.next()
+            self.fail("generator didn't raise exception or it wasn't caught")
+        except ValueError, e:
+            self.assertEqual(e.message, "deliberate exception")
+
+        try:
+            k.next()
+            self.fail("generator didn't raise StopIteration exception or it wasn't caught")
+        except StopIteration, e:
+            self.assertEqual(e.message, "")
+
+    def __BrokenTestPyJS__testRecursiveGenerator(self):
+
+        # Create a Tree from a list.
+        def tree(list):
+            n = len(list)
+            if n == 0:
+                return []
+            i = n / 2
+            return Tree(list[i], tree(list[:i]), tree(list[i+1:]))
+
+        # A recursive generator that generates Tree labels in in-order.
+        def inorder(t):
+            if t:
+                for x in inorder(t.left):
+                    yield x
+                yield t.label
+                for x in inorder(t.right):
+                    yield x
+
+        # Show it off: create a tree.
+        s = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        t = tree(s)
+        # Print the nodes of the tree in in-order.
+        res = ''
+        for x in t:
+            res += x
+        self.assertEqual(s, res)
+
+    def __BrokenPyJSTest__testYieldNotAllowedInTryExceptFinally(self):
+        def f():
+            try:
+                yield 1
+                try:
+                    yield 2
+                    raise ValueError
+                    yield 3  # never get here
+                except ValueError:
+                    yield 4
+                    yield 5
+                    raise
+                except:
+                    yield 6
+                yield 7     # the "raise" above stops this
+            except:
+                yield 8
+            yield 9
+            try:
+                x = 12
+            finally:
+                yield 10
+            yield 11
+
+        self.assertEqual(list(f()), [1, 2, 4, 5, 8, 9, 10, 11])
+
+    def __BrokenPyJSTest__testResumeBannedWhilstRunning(self):
+        
+        try:
+            self.num_iter_calls = 0
+            def g():
+                self.num_iter_calls += 1
+                #writebr("number of generator calls (there should only be 1): %d" % self.num_iter_calls)
+                if self.num_iter_calls == 2:
+                    self.fail("generator cannot be resumed whilst already running")
+                    return
+                    
+                i = me.next()
+                yield i
+            me = g()
+            me.next()
+        except ValueError, e:
+            self.assertEqual(e.message, "generator already executing")
 
 class A(object):
     def fn(self):
         yield 1
         yield 2
+
+# A binary tree class.
+class Tree:
+
+    def __init__(self, label, left=None, right=None):
+        self.label = label
+        self.left = left
+        self.right = right
+
+    def __repr__(self, level=0, indent="    "):
+        s = level*indent + str(self.label)
+        if self.left:
+            s = s + "\n" + self.left.__repr__(level+1, indent)
+        if self.right:
+            s = s + "\n" + self.right.__repr__(level+1, indent)
+        return s
+
+    def __iter__(self):
+        return inorder(self)
 
