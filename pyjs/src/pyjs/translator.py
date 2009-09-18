@@ -2289,15 +2289,27 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self._assign(node, current_klass, True)
 
     def _raise(self, node, current_klass):
-        if node.expr3:
-            raise TranslationError("More than two expressions unsupported",
-                                   node, self.module_name)
         if self.is_generator:
             print >> self.output, self.spacing() + "$generator_state[%d]=%d;" % (len(self.generator_states)-1, self.generator_states[-1]+1)
 
         if node.expr1:
             if node.expr2:
-                print >> self.output, """
+                if node.expr3:
+                    print >> self.output, """
+    %(s)svar $pyjs__raise_expr1 = %(expr1)s;
+    %(s)svar $pyjs__raise_expr2 = %(expr2)s;
+    %(s)svar $pyjs__raise_expr3 = %(expr3)s;
+    %(s)sif ($pyjs__raise_expr2 !== null && $pyjs__raise_expr1.__is_instance__ === true) {
+    %(s)s\tthrow (pyjslib['TypeError']('instance exception may not have a separate value'))
+    %(s)s}
+    %(s)s\tthrow ($pyjs__raise_expr1.apply($pyjs__raise_expr1, $pyjs__raise_expr2, $pyjs__raise_expr3));
+    """ % { 's': self.spacing(),
+            'expr1': self.expr(node.expr1, current_klass),
+            'expr2': self.expr(node.expr2, current_klass),
+            'expr3': self.expr(node.expr3, current_klass),
+          }
+                else:
+                    print >> self.output, """
 %(s)svar $pyjs__raise_expr1 = %(expr1)s;
 %(s)svar $pyjs__raise_expr2 = %(expr2)s;
 %(s)sif ($pyjs__raise_expr2 !== null && $pyjs__raise_expr1.__is_instance__ === true) {
