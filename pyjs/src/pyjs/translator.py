@@ -1064,8 +1064,10 @@ try{var %(dbg)s_res=%(call_code)s;}catch(%(dbg)s_err){
 %(s)s\t$yield_value = $exc = null;
 %(s)s\ttry {
 %(s)s\t\tvar $res = $generator['__next']();
+%(s)s\t\tif (typeof $res == 'undefined') throw pyjslib.StopIteration;
 %(s)s\t} catch (e) {
 %(s)s\t\t$is_executing=false;
+%(s)s\t\t$generator_state[0] = -1;
 %(s)s\t\tthrow e;
 %(s)s\t}
 %(s)s\t$is_executing=false;
@@ -1077,7 +1079,9 @@ try{var %(dbg)s_res=%(call_code)s;}catch(%(dbg)s_err){
 %(s)s\t$exc = null;
 %(s)s\ttry {
 %(s)s\t\tvar $res = $generator['__next']();
+%(s)s\t\tif (typeof $res == 'undefined') throw pyjslib.StopIteration;
 %(s)s\t} catch (e) {
+%(s)s\t\t$generator_state[0] = -1;
 %(s)s\t\t$is_executing=false;
 %(s)s\t\tthrow e;
 %(s)s\t}
@@ -1103,7 +1107,7 @@ try{var %(dbg)s_res=%(call_code)s;}catch(%(dbg)s_err){
 %(s)s\ttry {
 %(s)s\t\tvar $res = $generator['__next']();
 %(s)s\t\t$is_executing=false;
-%(s)s\t\tif (typeof $res != 'undefined') throw pyjslib['RuntimeError']('generator ignored GeneratorExit');
+%(s)s\t\tif (typeof $res != 'undefined') throw pyjslib.RuntimeError('generator ignored GeneratorExit');
 %(s)s\t} catch (e) {
 %(s)s\t\t$generator_state[0] = -1;
 %(s)s\t\t$is_executing=false;
@@ -1114,12 +1118,12 @@ try{var %(dbg)s_res=%(call_code)s;}catch(%(dbg)s_err){
 %(s)s};
 %(s)s$generator['__next'] = function () {
 %(s)s\tvar $yielding = false;
-%(s)s\tif ($is_executing) throw pyjslib['ValueError']('generator already executing');
+%(s)s\tif ($is_executing) throw pyjslib.ValueError('generator already executing');
 %(s)s\t$is_executing = true;
 """ % locals()
             self.indent()
             print >>self.output, code
-            print >>self.output, self.spacing(), "throw pyjslib['StopIteration'];"
+            print >>self.output, self.spacing(), "throw pyjslib.StopIteration;"
             print >>self.output, self.dedent(), "}"
             print >>self.output, self.spacing(), "return $generator;"
         else:
@@ -1775,7 +1779,17 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         # in python a function call always returns None, so we do it
         # here too
         self.track_lineno(node)
-        if self.source_tracking:
+        if self.is_generator:
+            if isinstance(node.value, self.ast.Const):
+                if node.value.value is None:
+                    if self.source_tracking:
+                        print >>self.output, self.spacing() + "$pyjs.trackstack.pop();$pyjs.track=$pyjs.trackstack.pop();$pyjs.trackstack.push($pyjs.track);"
+                    print >>self.output, self.spacing() + "return;"
+                    return
+            raise TranslationError(
+                "'return' with argument inside generator",
+                 node, self.module_name)
+        elif self.source_tracking:
             print >>self.output, self.spacing() + "var $pyjs__ret = " + expr + ";"
             print >>self.output, self.spacing() + "$pyjs.trackstack.pop();$pyjs.track=$pyjs.trackstack.pop();$pyjs.trackstack.push($pyjs.track);"
             print >>self.output, self.spacing() + "return $pyjs__ret;"

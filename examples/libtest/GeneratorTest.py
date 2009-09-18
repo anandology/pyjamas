@@ -362,6 +362,7 @@ class GeneratorTest(UnitTest):
 
 
     def testPEP255(self):
+        # http://www.python.org/dev/peps/pep-0255/
 
         def fib():
             a, b = 0, 1
@@ -385,6 +386,20 @@ class GeneratorTest(UnitTest):
             self.fail("ValueError expected")
         except ValueError, e:
             self.assertEqual(e[0], 'generator already executing')
+
+        def f1():
+            try:
+                return
+            except:
+               yield 1
+        self.assertEqual(list(f1()), [])
+
+        def f2():
+            try:
+                raise StopIteration
+            except:
+                yield 42
+        self.assertEqual(list(f2()), [42])
 
 
     def testMixed(self):
