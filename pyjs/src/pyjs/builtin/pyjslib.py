@@ -159,6 +159,9 @@ class LookupError(StandardError):
 class RuntimeError(StandardError):
     pass
 
+class ArithmeticError(StandardError):
+    pass
+
 class KeyError(LookupError):
 
     def __str__(self):
@@ -172,6 +175,9 @@ class IndexError(LookupError):
     pass
 
 class NotImplementedError(RuntimeError):
+    pass
+
+class ZeroDivisionError(ArithmeticError):
     pass
 
 def init():

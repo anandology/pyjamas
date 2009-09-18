@@ -80,6 +80,14 @@ class ExceptionTest(UnitTest):
             return
         self.fail("LookupError should be caught")
 
+    def testZeroDivisionError(self):
+        try:
+            v = 1/0
+        except ZeroDivisionError, err:
+            self.assertEqual(err.__class__.__name__, 'ZeroDivisionError')
+            return
+        self.fail("ZeroDivisionError should be caught bug #265")
+
     def testStrReprSingleArg(self):
         args = ('test',)
 
