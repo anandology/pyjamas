@@ -40,7 +40,7 @@ class FileOpenDlg(DialogBox):
                 self.dockPanel.add(msg, DockPanel.NORTH)
                 location =  fileLocation
                 if fileLocation.find("://") < 0:
-                    base = '' + doc().location
+                    base = str(doc().location)
                     if base.find('/') >= 0:
                         sep = '/'
                     else:

@@ -32,10 +32,11 @@ class Summary(FlexTable):
       print 'setEntries:', entries
       try:
         #tt = time.localtime(time.time())
-        tt = []
-        tt[0] = int(self.date[:4])
-        tt[1] = int(self.date[4:6])
-        tt[2] = int(self.date[6:8])
+        tt = [0] * 9
+        if self.date:
+            tt[0] = int(self.date[:4])
+            tt[1] = int(self.date[4:6])
+            tt[2] = int(self.date[6:8])
         tt[3] = 0
         tt[4] = 0
         tt[5] = 0

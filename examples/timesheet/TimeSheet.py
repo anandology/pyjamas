@@ -1,3 +1,5 @@
+import pyjd
+
 try:
     import puremvc.patterns.facade
 except:
@@ -35,5 +37,7 @@ def main():
     app.sendNotification(Notification.STARTUP, appFrame)
 
 if __name__ == '__main__':
+    pyjd.setup("./public/TimeSheet.html")
     main()
+    pyjd.run()
 
