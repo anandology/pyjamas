@@ -1686,7 +1686,11 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
 
         arg_names = []
         for arg in node.argnames:
-            arg_names.append(self.add_lookup('variable', arg, arg))
+            if isinstance(arg, tuple):
+                for a in arg:
+                    arg_names.append(self.add_lookup('variable', a, a))
+            else:
+                arg_names.append(self.add_lookup('variable', arg, arg))
         normal_arg_names = list(arg_names)
         if node.kwargs:
             kwargname = normal_arg_names.pop()
@@ -2343,7 +2347,11 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.push_lookup()
         arg_names = []
         for arg in node.argnames:
-            arg_names.append(self.add_lookup('variable', arg, arg))
+            if isinstance(arg, tuple):
+                for a in arg:
+                    arg_names.append(self.add_lookup('variable', a, a))
+            else:
+                arg_names.append(self.add_lookup('variable', arg, arg))
 
         normal_arg_names = arg_names[0:]
         if node.kwargs:

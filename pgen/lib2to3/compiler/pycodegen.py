@@ -872,7 +872,10 @@ class CodeGenerator:
 
     def visitImport(self, node):
         self.set_lineno(node)
-        level = 0 if self.graph.checkFlag(CO_FUTURE_ABSIMPORT) else -1
+        if self.graph.checkFlag(CO_FUTURE_ABSIMPORT):
+            level = 0
+        else:
+            level = -1
         for name, alias in node.names:
             if VERSION > 1:
                 self.emit('LOAD_CONST', level)
@@ -960,15 +963,9 @@ class CodeGenerator:
         for child in node.nodes:
             self.visit(child)
 
-    if VERSION > 1:
-        visitAssTuple = _visitAssSequence
-        visitAssList = _visitAssSequence
-    else:
-        def visitAssTuple(self, node):
-            self._visitAssSequence(node, 'UNPACK_TUPLE')
-
-        def visitAssList(self, node):
-            self._visitAssSequence(node, 'UNPACK_LIST')
+    # assume VERSION > 1
+    visitAssTuple = _visitAssSequence
+    visitAssList = _visitAssSequence
 
     # augmented assignment
 
