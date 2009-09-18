@@ -635,6 +635,9 @@ class Translator:
         self.indent_level = 0
         self.__unique_ids__ = {}
         self.try_depth = -1
+        self.is_generator = False
+        self.generator_states = []
+        self.state_max_depth = len(self.generator_states)
 
         print >>self.output, self.spacing() + "/* start module: %s */" % module_name
         if not '.' in module_name:
@@ -678,8 +681,6 @@ class Translator:
             self.has_js_return = False
             self.has_yield = False
             self.is_generator = False
-            self.generator_states = [0]
-            self.state_max_depth = 1
             self.track_lineno(child)
             if isinstance(child, self.ast.Function):
                 self._function(child, None, True, False)
@@ -1668,6 +1669,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         self.is_generator = False
         save_generator_states = self.generator_states
         self.generator_states = [0]
+        self.state_max_depth = len(self.generator_states)
 
         if local:
             function_name = node.name
@@ -1773,6 +1775,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             print >>self.output, self.spacing() + "%s = %s;" % (function_name, decorator_code)
 
         self.generator_states = save_generator_states
+        self.state_max_depth = len(self.generator_states)
         self.is_generator = save_is_generator
         self.has_yield = save_has_yield
         self.has_js_return = save_has_js_return
@@ -1972,12 +1975,15 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         self.try_depth += 1
         self.stacksize_depth += 1
         save_state_max_depth = self.state_max_depth
-        self.state_max_depth = len(self.generator_states)
+        start_states = len(self.generator_states)
         pyjs_try_err = '$pyjs_try_err'
         if self.source_tracking:
             print >>self.output, self.spacing() + "var $pyjs__trackstack_size_%d = $pyjs.trackstack.length;" % self.stacksize_depth
         self.generator_switch_case(increment=True)
         print >>self.output, self.indent() + "try {"
+        if self.is_generator:
+            print >> self.output, self.spacing() + "if (typeof $generator_exc[%d] != 'undefined' && $generator_exc[%d] !== null) throw $generator_exc[%d];" % (\
+                self.try_depth, self.try_depth, self.try_depth)
         self.generator_add_state()
         self.generator_switch_open()
         self.generator_switch_case(increment=False)
@@ -1989,9 +1995,6 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             self._stmt(stmt, current_klass)
 
         self.generator_switch_case(increment=True)
-        if self.is_generator:
-            print >> self.output, self.spacing() + "if (typeof $generator_exc[%d] != 'undefined' && $generator_exc[%d] !== null) throw $generator_exc[%d];" % (\
-                self.try_depth, self.try_depth, self.try_depth)
         if hasattr(node, 'else_') and node.else_:
             print >> self.output, self.spacing() + "throw pyjslib['TryElse'];"
             self.generator_switch_case(increment=True)
@@ -2005,7 +2008,6 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             print >> self.output, self.spacing() + "$generator_exc[%d] = %s;" % (self.try_depth, pyjs_try_err)
         try_state_max_depth = self.state_max_depth
         self.generator_states += [0 for i in range(save_state_max_depth+1, try_state_max_depth)]
-        self.state_max_depth = len(self.generator_states)
 
         if hasattr(node, 'else_') and node.else_:
             print >> self.output, self.indent() + """\
@@ -2114,13 +2116,15 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             self.generator_switch_case(increment=True)
             self.generator_switch_close()
 
-        self.generator_states = self.generator_states[:save_state_max_depth+1]
+        self.generator_states = self.generator_states[:start_states+1]
         print >>self.output, self.dedent()  + "}"
+        if self.is_generator:
+            print >> self.output, self.spacing() + "$generator_exc[%d] = null;" % (self.try_depth, )
         self.generator_clear_state()
         self.generator_del_state()
-        self.state_max_depth = save_state_max_depth
         self.try_depth -= 1
         self.stacksize_depth -= 1
+        self.generator_switch_case(increment=True)
 
     # XXX: change use_getattr to True to enable "strict" compilation
     # but incurring a 100% performance penalty. oops.
@@ -2302,6 +2306,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.is_generator = False
         save_generator_states = self.generator_states
         self.generator_states = [0]
+        self.state_max_depth = len(self.generator_states)
 
         method_name = self.attrib_remap(node.name)
         jsmethod_name = local_prefix + '.' + method_name
@@ -2415,6 +2420,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         #    self._kwargs_parser(node, method_name, normal_arg_names[1:], current_klass, True)
 
         self.generator_states = save_generator_states
+        self.state_max_depth = len(self.generator_states)
         self.is_generator = save_is_generator
         self.has_yield = save_has_yield
         self.has_js_return = save_has_js_return

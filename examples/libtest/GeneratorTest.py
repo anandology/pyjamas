@@ -445,7 +445,6 @@ class GeneratorTest(UnitTest):
         except StopIteration:
             self.assertTrue(True)
 
-        return
         def f():
             try:
                 yield 1
