@@ -2251,12 +2251,24 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 self.local_prefix = local_prefix
                 self.push_lookup(private_scope)
                 self.track_lineno(child, True)
-                rhs = self.expr(child.expr, current_klass)
-                print "rhs", rhs
-                print child.nodes[0]
-                name = "%s.%s" % (local_prefix, child.nodes[0].name)
-                lhs = self.add_lookup('attribute', child.nodes[0].name, name)
-                print >>self.output, self.spacing() + "%s = %s;" % (lhs, rhs)
+                v = child.nodes[0]
+                if isinstance(v, self.ast.Subscript):
+                    if v.flags == "OP_ASSIGN":
+                        obj = self.expr(v.expr, current_klass)
+                        if len(v.subs) != 1:
+                            raise TranslationError(
+                                "must have one sub (in _assign)", v, self.module_name)
+                        idx = self.expr(v.subs[0], current_klass)
+                        value = self.expr(child.expr, current_klass)
+                        print >>self.output, self.spacing() + obj + ".__setitem__(" + idx + ", " + value + ")" + ';'
+                    else:
+                        raise TranslationError(
+                            "unsupported flag (in _assign)", v, self.module_name)
+                else:
+                    rhs = self.expr(child.expr, current_klass)
+                    name = "%s.%s" % (local_prefix, child.nodes[0].name)
+                    lhs = self.add_lookup('attribute', child.nodes[0].name, name)
+                    print >>self.output, self.spacing() + "%s = %s;" % (lhs, rhs)
                 private_scope = self.pop_lookup()
             elif isinstance(child, self.ast.Discard) and isinstance(child.expr, self.ast.Const):
                 # Probably a docstring, turf it

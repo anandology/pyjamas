@@ -11,6 +11,18 @@ import I18N
 
 from imports.classes import WithAttribute
 
+global names
+names = {}
+
+class SubAssignBase(object):
+    names['SubAssign'] = 'SubAssign'
+    def __init__(self):
+        pass
+
+class SubAssign(SubAssignBase):
+    def __init__(self):
+        SubAssignBase.__init__(self)
+    names['SubAssignBase'] = 'SubAssignBase'
 
 class GetAttribute():
     # This class definition fails at startup
@@ -18,6 +30,10 @@ class GetAttribute():
 
 
 class ClassTest(UnitTest):
+
+    def testSubAssign(self):
+        self.assertEquals(names['SubAssignBase'], 'SubAssignBase')
+        self.assertEquals(names['SubAssign'], 'SubAssign')
 
     # test Class.x
     def testClassVars(self):
