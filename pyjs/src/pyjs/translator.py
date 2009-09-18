@@ -255,6 +255,7 @@ PYJSLIB_BUILTIN_FUNCTIONS=frozenset((
     "max",
     "min",
     "oct",
+    "open",
     "ord",
     "pow",
     "range",

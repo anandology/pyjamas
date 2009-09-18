@@ -518,6 +518,10 @@ class Class:
         return self.name
 
 @compiler.noSourceTracking
+def open(fname, mode='r'):
+    raise NotImplementedError("open is not implemented in browsers")
+
+@compiler.noSourceTracking
 def eq(a,b):
     # All 'python' classes and types are implemented as objects/functions.
     # So, for speed, do a typeof X / X.__cmp__  on a/b.

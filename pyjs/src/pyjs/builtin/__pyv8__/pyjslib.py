@@ -35,4 +35,8 @@ def debugReport(msg):
     pyv8_print_fn(msg);
     """)
 
+@compiler.noSourceTracking
+def open(fname, mode='r'):
+    return JS("pyv8_open(fname, mode);")
+
 
