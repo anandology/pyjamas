@@ -3,7 +3,7 @@ import sys
 import traceback
 
 test_pyjs = True
-test_std = False
+test_std = True
 
 from astpprint import getAststr, printAst
 
@@ -41,10 +41,12 @@ def compare_compilers(fname):
         except SyntaxError:
             ys = traceback.format_exc(limit=1)
 
-    if test_pyjs and test_std:
-        if ys == ys1:
-            print "passed"
-            return
+    if not test_pyjs and not test_std:
+        return
+
+    if ys == ys1:
+        print "passed"
+        return
 
     print "failed."
 
