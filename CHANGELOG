@@ -1,6 +1,13 @@
                     Changes made to Pyjamas since 0.6
                     ---------------------------------
 
+ * Re-enabled and fixed up pyv8run.py, which now successfully runs
+   LibTest when translated to javascript (and passes 99.95%)
+
+ * added support for Subscript Assignment in class definitions:
+   class SubAssignBase(object):
+       names['SubAssign'] = 'SubAssign'
+
  * Added support for generators (yield statement)
 
  * Added an substantial portion of re module
