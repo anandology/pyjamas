@@ -1575,7 +1575,11 @@ def delattr(obj, name):
     if ((pyjslib.isUndefined(obj[name])) ||(typeof(obj[name]) == "function") ){
         throw pyjslib.AttributeError(obj.__name__+" instance has no attribute '"+ name+"'");
     }
-    pyjslib._del(obj[name]);
+    if (typeof obj[name].__delete__ == 'function') {
+        obj[name].__delete__(obj);
+    } else {
+        delete obj[name];
+    }
     """)
 
 @compiler.noSourceTracking
