@@ -10,6 +10,11 @@ class A(object):
     def getX(self):
         return self.x
 
+def fib(n):
+    if n<3:
+        return 1
+    return fib(n-2)+fib(n-1)
+
 class LoopTest(UnitTest):
 
     def testLoop1(self):
@@ -17,6 +22,20 @@ class LoopTest(UnitTest):
         loops = 0
         a = A(1)
         while time.time()<(t+0.4):
-            loops+=1
-            x = a.getX()
+            for i in range(100):
+                loops+=1
+                x = a.getX()
         writebr("Loops in 0.4 seconds: %s"  % loops)
+
+    def testLoop2(self):
+        t = time.time()
+        loops = 0
+        while time.time()<(t+0.4):
+            for i in range(100):
+                loops+=1
+                fib(10)
+        writebr("Loops in 0.4 seconds: %s"  % loops)
+
+if __name__ == '__main__':
+    l = LoopTest()
+    l.run()

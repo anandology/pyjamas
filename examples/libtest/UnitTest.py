@@ -41,7 +41,8 @@ class UnitTest:
             for test_method_name in self.test_methods:
                 self._run_test(test_method_name)
             self.displayStats()
-            self.start_next_test()
+            if hasattr(self, "start_next_test"):
+                self.start_next_test()
             return
         self.test_idx = 0
         Timer(1, self)
