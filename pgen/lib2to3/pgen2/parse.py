@@ -11,8 +11,8 @@ how this parsing engine works.
 """
 
 # Local imports
-from . import token
-from .. import symbol
+from lib2to3.pgen2 import token
+from lib2to3 import symbol
 
 class Node:
     def __init__(self, type, value, context, children):

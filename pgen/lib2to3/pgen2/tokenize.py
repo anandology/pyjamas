@@ -32,7 +32,8 @@ __credits__ = \
 import string, re
 from lib2to3.pgen2.token import *
 
-from . import token
+from lib2to3.pgen import token
+
 __all__ = [x for x in dir(token) if x[0] != '_'] + ["tokenize",
            "generate_tokens", "untokenize"]
 del token
@@ -117,24 +118,24 @@ endprogs = {"'": re.compile(Single), '"': re.compile(Double),
             'b': None, 'B': None}
 
 triple_quoted = {}
-for t in ("'''", '"""',
+for t in ["'''", '"""',
           "r'''", 'r"""', "R'''", 'R"""',
           "u'''", 'u"""', "U'''", 'U"""',
           "b'''", 'b"""', "B'''", 'B"""',
           "ur'''", 'ur"""', "Ur'''", 'Ur"""',
           "uR'''", 'uR"""', "UR'''", 'UR"""',
           "br'''", 'br"""', "Br'''", 'Br"""',
-          "bR'''", 'bR"""', "BR'''", 'BR"""',):
+          "bR'''", 'bR"""', "BR'''", 'BR"""']:
     triple_quoted[t] = t
 single_quoted = {}
-for t in ("'", '"',
+for t in ["'", '"',
           "r'", 'r"', "R'", 'R"',
           "u'", 'u"', "U'", 'U"',
           "b'", 'b"', "B'", 'B"',
           "ur'", 'ur"', "Ur'", 'Ur"',
           "uR'", 'uR"', "UR'", 'UR"',
           "br'", 'br"', "Br'", 'Br"',
-          "bR'", 'bR"', "BR'", 'BR"', ):
+          "bR'", 'bR"', "BR'", 'BR"' ]:
     single_quoted[t] = t
 
 tabsize = 8

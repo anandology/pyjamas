@@ -7,9 +7,9 @@
 import os
 
 # Local imports
-from .pgen2 import token
-from .pgen2 import driver
-from . import pytree
+from lib2to3/pgen2 import token
+from lib2to3/pgen2 import driver
+from lib2to3 import pytree
 
 # The grammar file
 _GRAMMAR_FILE = os.path.join(os.path.dirname(__file__), "Grammar.txt")
