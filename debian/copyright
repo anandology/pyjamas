@@ -42,22 +42,22 @@ Files: examples/employeeadmin/*
 Copyright: 2007-08 Toby de Havilland
 License: Apache
 
-Files: examples/jsonrpc/public/services/jsonrpc/*, examples/infohierarchy/public/services/jsonrpc/*, examples/test/cgi-bin/jsonrpc/*
+Files: examples/jsonrpc/public/services/jsonrpc/* examples/infohierarchy/public/services/jsonrpc/*, examples/test/cgi-bin/jsonrpc/*
 Copyright: 2006 Jan-Klaas Kollhof
 License: GPL-2
 
-Files: library/pyjamas/dnd/*, examples/dnd/*
+Files: library/pyjamas/dnd/* examples/dnd/*
 Copyright: 2009 Fred Sauer
 Copyright: 2007 Fred Sauer
 Copyright: 2008 Fred Sauer
 License: Apache
 
-Files: examples/jsonrpc/public/services/phpolait/*, examples/dynamictable/public/phpolait/JSON.php
+Files: examples/jsonrpc/public/services/phpolait/* examples/dynamictable/public/phpolait/JSON.php
 Copyright: 2005 Michal Migurski
 Copyright: 2006 Craig Mason-Jones
 License: GPL-2
 
-Files: examples/gcharttestapp/*, library/pyjamas/chart/*
+Files: examples/gcharttestapp/* library/pyjamas/chart/*
 Copyright: 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
 Copyright: 2007,2008,2009 John C. Gunther
 License: Apache
@@ -70,24 +70,6 @@ License: Apache
 Files: examples/jsonrpc/public/services/simplejson/*
 Copyright: (C) 2006-2009 Bob Ippolito <bob@redivi.com>
 License: MIT
-
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
-
- The above copyright notice and this permission notice shall be included in all
- copies or substantial portions of the Software.
-
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- SOFTWARE.
 
 Files: pyjs/src/pyjs/lib/md5.py
 Copyright: 1996 Henri Torgemane.
@@ -108,7 +90,7 @@ Files: pyjd/sessionhistory.py
 Copyright: 2007, One Laptop Per Child
 License: GPL-2
 
-Files: pyjd/importers.py, pyjd/imputil.py
+Files: pyjd/importers.py pyjd/imputil.py
 License: PSF 
 Copyright: 2001, 2002, 2003, 2004, 2005, 2006 Python Software Foundation
 Copyright: 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
@@ -120,7 +102,7 @@ Copyright: 2007 Jan Alonzo <jmalonzo@unpluggable.com>
 Copyright: 2009, Luke Kenneth Casson Leighton <lkcl@lkcl.net>
 License: GPL-2
 
-Files: pyjd/hula.py, pyjd/progresslistener.py
+Files: pyjd/hula.py pyjd/progresslistener.py
 Copyright: 2006, Red Hat, Inc.
 Copyright: 2007, One Laptop Per Child
 Copyright: 2009, Luke Kenneth Casson Leighton <lkcl@lkcl.net>
@@ -145,11 +127,11 @@ Copyright: 1995-1997 Peter Mattis, Spencer Kimball and Josh MacDonald
 Copyright: 2001-2004 John Finlay
 License: GPL-2
 
-Files: examples/djangowanted/media/public/fckconfig.js, examples/djangoweb/media/public/fckconfig.js
+Files: examples/djangowanted/media/public/fckconfig.js examples/djangoweb/media/public/fckconfig.js
 Copyright: 2003-2009 Frederico Caldeira Knabben
 License: MPL-1.1 or LGPL-2.1 or GPL-2
 
-Files: examples/mail/public/leftCorner.gif, examples/mail/public/rightCorner.gif
+Files: examples/mail/public/leftCorner.gif examples/mail/public/rightCorner.gif
 Copyright: 2008, Apple, Inc.
 License: Apache
 
@@ -160,25 +142,6 @@ License: MIT or GPL-2
 Files: pyjd/windows.py
 Copyright: 2003 Henk Punt
 License: MIT
-    Permission is hereby granted, free of charge, to any person obtaining
-    a copy of this software and associated documentation files (the
-    "Software"), to deal in the Software without restriction, including
-    without limitation the rights to use, copy, modify, merge, publish,
-    distribute, sublicense, and/or sell copies of the Software, and to
-    permit persons to whom the Software is furnished to do so, subject to
-    the following conditions:
-
-    The above copyright notice and this permission notice shall be
-    included in all copies or substantial portions of the Software.
-
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-    NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-    LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-    OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-    WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE
-
 
 Files: pgen/astprint.py
 License: MIT

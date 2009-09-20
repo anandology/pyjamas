@@ -227,6 +227,7 @@ class DebSect:
                 self.not_matches.add(word2)
 
         if self.not_matches:
+            print
             print"   ** ** ** ** **"
             for m in self.not_matches:
                 print "   ** not matches:", m
@@ -279,17 +280,10 @@ if current_debsect:
 
 dc.close()
 
-def check_in(l1, l2):
-    res = []
-    for fname in l1:
-        if fname not in l2:
-            res.append(fname)
-    return res
-
 # remove already-matching: further down takes precedence
 for i in range(1, len(copyright_sects)):
     for j in range(i):
-        print i, j, copyright_sects[i].file_pattern, copyright_sects[j].file_pattern
+        #print i, j, copyright_sects[i].file_pattern, copyright_sects[j].file_pattern
         copyright_sects[j].remove_files(copyright_sects[i].files)
     
 for dc in copyright_sects:
@@ -297,6 +291,13 @@ for dc in copyright_sects:
     dc.check_copyright_matches()
     print
 
+#def check_in(l1, l2):
+#    res = []
+#    for fname in l1:
+#        if fname not in l2:
+#            res.append(fname)
+#    return res
+#
 #not_in = check_in(all_files, listed_files)
 #for fname in not_in:
 #    print fname
