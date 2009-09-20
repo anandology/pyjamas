@@ -16,7 +16,7 @@ Copyright: 2006 Google, Inc.
 Copyright: 2009, Willie Gollino - wgollino@yahoo.com
 Copyright: 2009, Dobes Vandermeer - dobesv@gmail.com
 Copyright: 2009, Bernd Dorn - <bernd.dorn@lovelysystems.com>
-Copyright: 2009, Jürgen Kartnaller - <kartnaller@lovelysystems.com>
+Copyright: 2009, Jurgen Kartnaller - <kartnaller@lovelysystems.com>
 Copyright: 2007, Luis Pamirez
 Copyright: 2008, 2009 Erik Westra - ewestra [at] gmail [dot] com
 Copyright: 2003 Henk Punt
@@ -122,6 +122,10 @@ License: PSF or MIT
 Copyright: 2001, 2002, 2003, 2004, 2005, 2006 Python Software Foundation
 Copyright: 2009, Scott Graham
 Copyright: 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
+Copyright: 2004-2005 Elemental Security, Inc.
+Copyright: 2006 Google, Inc.
+Copyright: 1997-1998 Greg Stein.
+Copyright: 2007, Martin Blais <blais@furius.ca>
 
 Files: debian/*
 License: Apache

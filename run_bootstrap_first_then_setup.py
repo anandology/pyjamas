@@ -38,6 +38,8 @@ def get_files(d):
         (pth, fname) = os.path.split(p)
         if fname == "output":
             continue
+        if fname == "PureMVC_Python_1_0":
+            continue
         if fname[-4:] == ".pyc": # ehmm.. no.
             continue 
         if os.path.isdir(p):
