@@ -38,7 +38,7 @@ Description: Python web widget toolkit and Python-to-Javascript compiler
  All these are directly available, rather than requiring additional
  components.
  .
- This package is a meta-package that installs the javascript compiler;
+ This package is a metapackage that installs the javascript compiler;
  Pyjamas Desktop; the user-interface widget set library and other useful
  libraries.
 

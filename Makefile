@@ -1,4 +1,4 @@
-VERSION=0.6p1
+VERSION=0.6
 DEBSUBVERSION=1
 
 help:
@@ -50,6 +50,6 @@ debian-build:
 	cd deb && lintian -I pyjamas-doc_${VERSION}-${DEBSUBVERSION}_all.deb
 	cd deb && lintian -I pyjamas-ui_${VERSION}-${DEBSUBVERSION}_all.deb
 	cd deb && lintian -I pyjamas_${VERSION}-${DEBSUBVERSION}.dsc
-	cd deb && lintian -l pyjamas-gchart_${VERSION}-${DEBSUBVERSION}_all.deb
+	cd deb && lintian -I pyjamas-gchart_${VERSION}-${DEBSUBVERSION}_all.deb
 #	cd deb && lintian -l pyjamas-pygtkweb_${VERSION}-${DEBSUBVERSION}_all.deb
 

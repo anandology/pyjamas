@@ -82,7 +82,7 @@ if __name__ == '__main__':
     """
 
     setup(name = "Pyjamas",
-        version = "0.6p1",
+        version = "0.6",
         description = "Pyjamas Widget API for Web applications, in Python",
         long_description = open('README', 'rt').read(),
         url = "http://pyjs.org",
