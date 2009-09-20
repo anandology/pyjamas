@@ -12,13 +12,17 @@ Files: *
 License: Apache
 Copyright: 2008, 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
 Copyright: 2006, 2007 James Tauber
+Copyright: 2006, James Tauber and contributors
 Copyright: 2006 Google, Inc.
+Copyright: 2007 Google, Inc.
+Copyright: 2008 Google Inc.
+Copyright: 2006-2009 Google, Inc.
 Copyright: 2009, Willie Gollino - wgollino@yahoo.com
 Copyright: 2009, Dobes Vandermeer - dobesv@gmail.com
 Copyright: 2009, Bernd Dorn - <bernd.dorn@lovelysystems.com>
 Copyright: 2009, Jurgen Kartnaller - <kartnaller@lovelysystems.com>
 Copyright: 2007, Luis Pamirez
-Copyright: 2008, 2009 Erik Westra - ewestra [at] gmail [dot] com
+Copyright: 2008, 2009 Erik Westra <ewestra@gmail.com>
 Copyright: 2003 Henk Punt
 Copyright: Vicente J. Ruiz Jurado - vjrj@ourproject.org
 Copyright: Gerard Labadie - gerard.labadie@gmail.com
@@ -27,22 +31,58 @@ Copyright: John Lehman - j1o1h1n@gmail.com
 Copyright: G Clinch
 Copyright: Kees Boss
 Copyright: Radoslav Kirov
+Copyright: 2009 Johan Wouters
+Copyright: 2009 Laszlo Krekacs
 Copyright: Beni Kerniavsky
 Copyright: Mathias Waack <Mathias.Waack@rantzau.de>
+Copyright: 2009, Radoslav Kirov
+Copyright: 2009 Yi Choong (http://code.google.com/u/yitchoong/)
 
-Files: examples/jsonrpc/public/services/phpolait/*
+Files: pyjs/src/pyjs/lib/md5.py
+Copyright: 1996 Henri Torgemane.
+License: Other
+ Permission to use, copy, modify, and distribute this software
+ and its documentation for any purposes and without
+ fee is hereby granted provided that this copyright notice
+ appears in all copies. 
+ Of course, this soft is provided "as is" without express or implied
+ warranty of any kind.
+
+Files: examples/employeeadmin/*
+Copyright: 2007-08 Toby de Havilland
+License: Apache
+
+Files: run_bootstrap_first_then_setup.py
+Copyright: 2007-2008 The PyAMF Project
+Copyright: 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
+License: Apache
+
+Files: examples/jsonrpc/public/services/jsonrpc/*, examples/infohierarchy/public/services/jsonrpc/*, examples/test/cgi-bin/jsonrpc/*
+Copyright: 2006 Jan-Klaas Kollhof
+License: GPL-2
+
+Copyright: 2006 Craig Mason-Jones
+License: GPL-2
+
+Files: library/pyjamas/dnd/*, examples/dnd/*
+Copyright: 2009 Fred Sauer
+Copyright: 2007 Fred Sauer
+Copyright: 2008 Fred Sauer
+License: Apache
+
+Files: examples/jsonrpc/public/services/phpolait/*, examples/dynamictable/public/phpolait/JSON.php
 Copyright: 2005 Michal Migurski
 Copyright: 2006 Craig Mason-Jones
 License: GPL-2
 
-Files: examples/gcharttestapp/* library/pyjamas/chart/*
+Files: examples/gcharttestapp/*, library/pyjamas/chart/*
 Copyright: 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
 Copyright: 2007,2008,2009 John C. Gunther
 License: Apache
 
 Files: examples/gwtcanvas/* library/pyjamas/Canvas/*
 Copyright: 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
-Copyright: 2006 Google Inc.
+Copyright: 2008 Google Inc.
 License: Apache
 
 Files: examples/jsonrpc/public/services/simplejson/*
@@ -89,6 +129,33 @@ Copyright: 2006, Red Hat, Inc.
 Copyright: 2007, One Laptop Per Child
 Copyright: 2009, Luke Kenneth Casson Leighton <lkcl@lkcl.net>
 License: GPL-2
+
+Files: dev/bootstrap.py
+Copyright: 2006 Zope Corporation and Contributors.
+License: ZPL-2.1
+
+Files: pygtkweb/demos/goalie.gif
+Copyright: 1997, Totally Hip Software Inc. Hip Clips!
+License: GPL-2
+
+Files: pygtkweb/demos/023-calendar.py
+Copyright: 1998 Cesar Miquel, Shawn T. Amundson, Mattias Gronlund
+Copyright: 2001-2004 John Finlay
+Copyright: 2000 Tony Gale
+License: GPL-2
+
+Files: pygtkweb/demos/068-scribblesimple.py
+Copyright: 1995-1997 Peter Mattis, Spencer Kimball and Josh MacDonald
+Copyright: 2001-2004 John Finlay
+License: GPL-2
+
+Files: examples/mail/public/leftCorner.gif, examples/mail/public/rightCorner.gif
+Copyright: 2008, Apple, Inc.
+License: Apache
+
+Files: examples/jquery/public/jquery*.js
+Copyright: 2008 John Resig (jquery.com)
+License: MIT, GPL
 
 Files: pyjd/windows.py
 Copyright: 2003 Henk Punt
@@ -186,4 +253,51 @@ License: MIT
     LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
     OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
     WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE
+
+License: ZPL-2.1
+    Zope Public License (ZPL) Version 2.1
+
+    A copyright notice accompanies this license document that
+    identifies the copyright holders.
+
+    This license has been certified as open source. It has also been
+    designated as GPL compatible by the Free Software Foundation
+    (FSF).
+
+    Redistribution and use in source and binary forms, with or
+    without modification, are permitted provided that the following
+    conditions are met:
+
+    1. Redistributions in source code must retain the accompanying
+    copyright notice, this list of conditions, and the following
+    disclaimer.
+    2. Redistributions in binary form must reproduce the accompanying
+    copyright notice, this list of conditions, and the following
+    disclaimer in the documentation and/or other materials provided
+    with the distribution.
+    3. Names of the copyright holders must not be used to endorse
+    or promote products derived from this software without prior
+    written permission from the copyright holders.
+    4. The right to distribute this software or to use it for any
+    purpose does not give you the right to use Servicemarks (sm)
+    or Trademarks (tm) of the copyright holders. Use of them is
+    covered by separate agreement with the copyright holders.
+    5. If any files are modified, you must cause the modified files
+    to carry prominent notices stating that you changed the files
+    and the date of any change.
+
+    Disclaimer
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ``AS IS''
+    AND ANY EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+    LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+    FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+    COPYRIGHT HOLDERS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+    SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+    NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+    STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+    ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+    ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 

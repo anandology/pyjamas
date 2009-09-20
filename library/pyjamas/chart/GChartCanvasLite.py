@@ -1,8 +1,9 @@
 """
-* Copyright 2007,2008,2009 John C. Gunther, except that most of this
-* GChartCanvasLite interface was extracted from GWTCanvas, a part of the
-* GWT incubator project, which is Copyright Google, Inc. and also
-* licenced under Apache 2.0.
+* Copyright 2007,2008,2009 John C. Gunther
+* Most of this GChartCanvasLite interface was extracted from GWTCanvas,
+* a part of the GWT incubator project
+* which is Copyright Google, Inc.
+* and also licenced under Apache 2.0.
 *
 * Copyright (C) 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
 *
