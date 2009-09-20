@@ -51,10 +51,10 @@ install: build
 	                  $(py_setup_install_args) --root=debian/pyjamas-build
 
 	# move pyjamas-build canvas to pyjamas-canvas
-	mkdir -p debian/pyjamas-canvas/usr/share/pyjamas/library/pyjamas/canvas
-	mv debian/pyjamas-build/usr/share/pyjamas/library/pyjamas/canvas/* \
-	   debian/pyjamas-canvas/usr/share/pyjamas/library/pyjamas/canvas
-	rm -fr debian/pyjamas-build/usr/share/pyjamas/library/pyjamas/canvas
+	mkdir -p debian/pyjamas-canvas/usr/share/pyjamas/library/pyjamas/Canvas
+	mv debian/pyjamas-build/usr/share/pyjamas/library/pyjamas/Canvas/* \
+	   debian/pyjamas-canvas/usr/share/pyjamas/library/pyjamas/Canvas
+	rm -fr debian/pyjamas-build/usr/share/pyjamas/library/pyjamas/Canvas
 
 	# move pyjamas-build gchart to pyjamas-gchart
 	mkdir -p debian/pyjamas-gchart/usr/share/pyjamas/library/pyjamas/chart

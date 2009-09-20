@@ -1,4 +1,4 @@
-# Copyright (c) 2007-2008 The PyAMF Project.
+# Copyright (C) 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
 # See LICENSE for details.
 
 from distutils.core import setup

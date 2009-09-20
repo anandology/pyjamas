@@ -3,6 +3,11 @@ on Thu, 30 Jul 2009 21:20
 
 It was downloaded from http://pyjs.org
 
+Format-Specification:http://svn.debian.org/wsvn/dep/web/deps/dep5.mdwn?op=file&rev=59
+Name: pyjamas
+Maintainer: Luke Kenneth Casson Leighton <lkcl@lkcl.net>
+Source: http://pyjs.org
+
 Files: *
 License: Apache
 Copyright: 2008, 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>

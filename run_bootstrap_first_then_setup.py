@@ -1,21 +1,15 @@
-# Copyright (c) 2007-2008 The PyAMF Project.
+# Copyright (C) 2007-2008 The PyAMF Project.
+# Copyright (C) 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
 # See LICENSE for details.
-
-#from ez_setup import use_setuptools
-
-#use_setuptools()
 
 import glob
 from distutils.core import setup , run_setup
-
-#from setuptools import setup, find_packages
-#from setuptools.command import test
-#from setuptools.command.install import install
 
 import sys
 import os
 
 keyw = """\
+Pyjamas, GUI, Compiler, AJAX, Widget Set
 """
 
 datadir = os.path.join("share", "pyjamas")
@@ -44,7 +38,7 @@ def get_files(d):
         (pth, fname) = os.path.split(p)
         if fname == "output":
             continue
-        if fname[-4:] == ".pyc": # ehmm.. noooo.
+        if fname[-4:] == ".pyc": # ehmm.. no.
             continue 
         if os.path.isdir(p):
             get_dir(p)
