@@ -1173,6 +1173,11 @@ try{var %(dbg)s_res=%(call_code)s;}catch(%(dbg)s_err){
             n_states = len(self.generator_states)
             print >>self.output, self.spacing() + """for (var $i = %d ; $i < ($generator_state.length<%d?%d:$generator_state.length); $i++) $generator_state[$i]=0;""" % (n_states-1, n_states+1, n_states+1)
 
+    def generator_reset_state(self):
+        if self.is_generator:
+            n_states = len(self.generator_states)
+            print >>self.output, self.spacing() + """$generator_state.splice(%d, $generator_state.length-%d)""" % (n_states, n_states)
+
     def generator_throw(self):
         print >>self.output, self.indent() + "if (typeof $exc != 'undefined' && $exc != null) {"
         print >>self.output, self.spacing() + "$yielding = null;"
@@ -2987,8 +2992,10 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         test = self.expr(node.test, current_klass)
         if self.is_generator:
             self.generator_switch_case(increment=True)
-            print >>self.output, self.indent() + "for (;($generator_state[%d] == %d && $generator_state[%d] != 0)||(" % (\
-                (len(self.generator_states)-1, self.generator_states[-1], len(self.generator_states))) + \
+            self.generator_reset_state()
+            self.generator_switch_case(increment=True)
+            print >>self.output, self.indent() + "for (;($generator_state[%d] > 0)||(" % (\
+                (len(self.generator_states),)) + \
                 self.track_call(self.inline_bool_code(test), node.lineno) + ");$generator_state[%d] = 0) {" % (len(self.generator_states), )
         else:
             print >>self.output, self.indent() + "while (" + self.track_call(self.inline_bool_code(test), node.lineno) + ") {"
