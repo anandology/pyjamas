@@ -269,63 +269,63 @@ class GeneratorTest(UnitTest):
         self.assertEqual(g.next(), None)
         self.assertEqual(g.send(2), 2)
 
-#    def testThrow(self):
-#        def fn():
-#            yield 1
-#            yield 2
-#
-#        g = fn()
-#        try:
-#            r = g.throw(TypeError, 'test1')
-#            self.fail("Exception expected (1)")
-#        except TypeError, e:
-#            self.assertTrue(e, 'test1')
-#        try:
-#            r = g.next()
-#            self.fail("StopIteration expected (1)")
-#        except StopIteration:
-#            self.assertTrue(True)
-#
-#        g = fn()
-#        self.assertEqual(g.next(), 1)
-#        try:
-#            r = g.throw(TypeError, 'test2')
-#            self.fail("Exception expected (2)")
-#        except TypeError, e:
-#            self.assertTrue(e, 'test2')
-#        try:
-#            r = g.next()
-#            self.fail("StopIteration expected (2)")
-#        except StopIteration:
-#            self.assertTrue(True)
-#
-#
-#        def fn():
-#            try:
-#                yield 1
-#                yield 2
-#            except:
-#                yield 3
-#
-#        g = fn()
-#        try:
-#            r = g.throw(TypeError, 'test3')
-#            self.fail("Exception expected (3)")
-#        except TypeError, e:
-#            self.assertTrue(e, 'test3')
-#
-#        g = fn()
-#        self.assertEqual(g.next(), 1)
-#        try:
-#            r = g.throw(TypeError, 'test4')
-#            self.assertEqual(r, 3)
-#        except TypeError, e:
-#            self.fail("No exception expected (4)")
-#        try:
-#            r = g.next()
-#            self.fail("StopIteration expected (4)")
-#        except StopIteration:
-#            self.assertTrue(True)
+    def testThrow(self):
+        def fn():
+            yield 1
+            yield 2
+
+        g = fn()
+        try:
+            r = g.throw(TypeError, 'test1')
+            self.fail("Exception expected (1)")
+        except TypeError, e:
+            self.assertTrue(e, 'test1')
+        try:
+            r = g.next()
+            self.fail("StopIteration expected (1)")
+        except StopIteration:
+            self.assertTrue(True)
+
+        g = fn()
+        self.assertEqual(g.next(), 1)
+        try:
+            r = g.throw(TypeError, 'test2')
+            self.fail("Exception expected (2)")
+        except TypeError, e:
+            self.assertTrue(e, 'test2')
+        try:
+            r = g.next()
+            self.fail("StopIteration expected (2)")
+        except StopIteration:
+            self.assertTrue(True)
+
+
+        def fn():
+            try:
+                yield 1
+                yield 2
+            except:
+                yield 3
+
+        g = fn()
+        try:
+            r = g.throw(TypeError, 'test3')
+            self.fail("Exception expected (3)")
+        except TypeError, e:
+            self.assertTrue(e, 'test3')
+
+        g = fn()
+        self.assertEqual(g.next(), 1)
+        try:
+            r = g.throw(TypeError, 'test4')
+            self.assertEqual(r, 3)
+        except TypeError, e:
+            self.fail("No exception expected (4)")
+        try:
+            r = g.next()
+            self.fail("StopIteration expected (4)")
+        except StopIteration:
+            self.assertTrue(True)
 
     def testClose(self):
         def fn():
@@ -384,7 +384,7 @@ class GeneratorTest(UnitTest):
             self.assertEqual(e[0], 'generator ignored GeneratorExit')
 
 
-    def testPEP255(self):
+    def testPEP255_fib(self):
         # http://www.python.org/dev/peps/pep-0255/
 
         def fib():
@@ -399,6 +399,7 @@ class GeneratorTest(UnitTest):
             r.append(g.next())
         self.assertEqual(r, [1, 1, 2, 3, 5, 8])
 
+    def testPEP255_recursion(self):
         me = None
         def g():
             i = me.next()
@@ -410,6 +411,7 @@ class GeneratorTest(UnitTest):
         except ValueError, e:
             self.assertEqual(e[0], 'generator already executing')
 
+    def testPEP255_return(self):
         def f1():
             try:
                 return
@@ -425,6 +427,7 @@ class GeneratorTest(UnitTest):
         self.assertEqual(list(f2()), [42])
 
 
+    def testPEP255_exceptionPropagation(self):
         def f():
             v = 1/0 # See issue #265
             return {}['not-there']
@@ -445,6 +448,7 @@ class GeneratorTest(UnitTest):
         except StopIteration:
             self.assertTrue(True)
 
+    def testPEP255_tryExceptFinally(self):
         def f():
             try:
                 yield 1
@@ -469,6 +473,57 @@ class GeneratorTest(UnitTest):
                 yield 10
             yield 11
         self.assertEqual(list(f()), [1, 2, 4, 5, 8, 9, 10, 11])
+
+    def testPEP255_exampleRecursive(self):
+        global inorder
+
+        # A recursive generator that generates Tree labels in in-order.
+        def _inorder(t):
+            if t:
+                for x in inorder(t.left):
+                    yield x
+                yield t.label
+                for x in inorder(t.right):
+                    yield x
+        inorder = _inorder
+
+        # Show it off: create a tree.
+        s = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        t = tree(s)
+        # Print the nodes of the tree in in-order.
+        res = ''
+        for x in t:
+            res += x
+        self.assertEqual(s, res)
+
+    def testPEP255_exampleNonRecursive(self):
+        global inorder
+
+        # A non-recursive generator.
+        def _inorder(node):
+            stack = []
+            while node:
+                while node.left:
+                    stack.append(node)
+                    node = node.left
+                yield node.label
+                while not node.right:
+                    try:
+                        node = stack.pop()
+                    except IndexError:
+                        return
+                    yield node.label
+                node = node.right
+        inorder = _inorder
+
+        # Show it off: create a tree.
+        s = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        t = tree(s)
+        # Print the nodes of the tree in in-order.
+        res = ''
+        for x in t:
+            res += x
+        self.assertEqual(s, res)
 
 
     def testMixed(self):
@@ -495,105 +550,13 @@ class GeneratorTest(UnitTest):
             r.append(i)
         self.assertEqual(r, [0, 1, None, 2, 2, 3, 4])
 
-    def __BrokenTestPyJS__testExceptionShouldTerminateGenerator(self):
-
-        def f():
-            raise ValueError, "deliberate exception"
-        def g():
-            yield f()  # the zero division exception propagates
-            yield 42   # and we'll never get here
-
-        k = g()
-
-        try:
-            k.next()
-            self.fail("generator didn't raise exception or it wasn't caught")
-        except ValueError, e:
-            self.assertEqual(e.message, "deliberate exception")
-
-        try:
-            k.next()
-            self.fail("generator didn't raise StopIteration exception or it wasn't caught")
-        except StopIteration, e:
-            self.assertEqual(e.message, "")
-
-    def __BrokenTestPyJS__testRecursiveGenerator(self):
-
-        # Create a Tree from a list.
-        def tree(list):
-            n = len(list)
-            if n == 0:
-                return []
-            i = n / 2
-            return Tree(list[i], tree(list[:i]), tree(list[i+1:]))
-
-        # A recursive generator that generates Tree labels in in-order.
-        def inorder(t):
-            if t:
-                for x in inorder(t.left):
-                    yield x
-                yield t.label
-                for x in inorder(t.right):
-                    yield x
-
-        # Show it off: create a tree.
-        s = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        t = tree(s)
-        # Print the nodes of the tree in in-order.
-        res = ''
-        for x in t:
-            res += x
-        self.assertEqual(s, res)
-
-    def __BrokenPyJSTest__testYieldNotAllowedInTryExceptFinally(self):
-        def f():
-            try:
-                yield 1
-                try:
-                    yield 2
-                    raise ValueError
-                    yield 3  # never get here
-                except ValueError:
-                    yield 4
-                    yield 5
-                    raise
-                except:
-                    yield 6
-                yield 7     # the "raise" above stops this
-            except:
-                yield 8
-            yield 9
-            try:
-                x = 12
-            finally:
-                yield 10
-            yield 11
-
-        self.assertEqual(list(f()), [1, 2, 4, 5, 8, 9, 10, 11])
-
-    def __BrokenPyJSTest__testResumeBannedWhilstRunning(self):
-        
-        try:
-            self.num_iter_calls = 0
-            def g():
-                self.num_iter_calls += 1
-                #writebr("number of generator calls (there should only be 1): %d" % self.num_iter_calls)
-                if self.num_iter_calls == 2:
-                    self.fail("generator cannot be resumed whilst already running")
-                    return
-                    
-                i = me.next()
-                yield i
-            me = g()
-            me.next()
-        except ValueError, e:
-            self.assertEqual(e.message, "generator already executing")
 
 class A(object):
     def fn(self):
         yield 1
         yield 2
 
+inorder = None
 # A binary tree class.
 class Tree:
 
@@ -603,7 +566,7 @@ class Tree:
         self.right = right
 
     def __repr__(self, level=0, indent="    "):
-        s = level*indent + str(self.label)
+        s = level*indent + repr(self.label)
         if self.left:
             s = s + "\n" + self.left.__repr__(level+1, indent)
         if self.right:
@@ -612,4 +575,12 @@ class Tree:
 
     def __iter__(self):
         return inorder(self)
+
+# Create a Tree from a list.
+def tree(list):
+    n = len(list)
+    if n == 0:
+	return []
+    i = n / 2
+    return Tree(list[i], tree(list[:i]), tree(list[i+1:]))
 
