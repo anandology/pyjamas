@@ -1858,6 +1858,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
     def _callfunc_code(self, v, current_klass):
 
         self.ignore_debug = False
+        method_name = None
         if isinstance(v.node, self.ast.Name):
             name_type, pyname, jsname, depth, is_local = self.lookup(v.node.name)
             if name_type == '__pyjamas__':
@@ -1883,24 +1884,28 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                     call_name = jsname
             call_args = []
         elif isinstance(v.node, self.ast.Getattr):
+            attrname = self.attrib_remap(v.node.attrname)
             if isinstance(v.node.expr, self.ast.Name):
-                attrname = self.attrib_remap(v.node.attrname)
-                call_name = self._name2(v.node.expr, current_klass, attrname)
+                call_name, method_name = self._name2(v.node.expr, current_klass, attrname)
                 call_args = []
             elif isinstance(v.node.expr, self.ast.Getattr):
                 call_name = self.attrib_join(self._getattr2(v.node.expr, current_klass, v.node.attrname))
                 call_args = []
             elif isinstance(v.node.expr, self.ast.CallFunc):
-                call_name = self._callfunc(v.node.expr, current_klass) + "." + v.node.attrname
+                call_name = self._callfunc(v.node.expr, current_klass)
+                method_name = attrname
                 call_args = []
             elif isinstance(v.node.expr, self.ast.Subscript):
-                call_name = self._subscript(v.node.expr, current_klass) + "." + v.node.attrname
+                call_name = self._subscript(v.node.expr, current_klass)
+                method_name = attrname
                 call_args = []
             elif isinstance(v.node.expr, self.ast.Const):
-                call_name = self.expr(v.node.expr, current_klass) + "." + v.node.attrname
+                call_name = self.expr(v.node.expr, current_klass)
+                method_name = attrname
                 call_args = []
             elif isinstance(v.node.expr, self.ast.Slice):
-                call_name = self._slice(v.node.expr, current_klass) + "." + v.node.attrname
+                call_name = self._slice(v.node.expr, current_klass)
+                method_name = attrname
                 call_args = []
             else:
                 raise TranslationError(
@@ -1943,28 +1948,21 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                 star_arg_name = 'null'
             if not dstar_arg_name:
                 dstar_arg_name = 'null'
-            if call_name[-1] == ')':
-                # Function call, or an entity (...)
-                call_this = None
-            else:
-                try:
-                    call_this, method_name = call_name.rsplit(".", 1)
-                except ValueError:
-                    # Must be a function call ...
-                    call_this = None
-            if call_this is None:
+            if method_name is None:
                 call_code = ("$pyjs_kwargs_call(null, "+call_name+", "
                                   + star_arg_name 
                                   + ", " + dstar_arg_name
                                   + ", ["+fn_args+"]"
                                   + ")")
             else:
-                call_code = ("$pyjs_kwargs_call("+call_this+", '"+method_name+"', "
+                call_code = ("$pyjs_kwargs_call("+call_name+", '"+method_name+"', "
                                   + star_arg_name 
                                   + ", " + dstar_arg_name
                                   + ", ["+fn_args+"]"
                                   + ")")
         else:
+            if not method_name is None:
+                call_name = "%s['%s']" % (call_name, method_name)
             call_code = call_name + "(" + ", ".join(call_args) + ")"
         return call_code
 
@@ -2188,7 +2186,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         name_type, pyname, jsname, depth, is_local = self.lookup(v.name)
         if name_type is None:
             jsname = self.scopeName(v.name, depth, is_local)
-        return jsname + "." + attr_name
+        return jsname, attr_name
 
     def _getattr2(self, v, current_klass, attr_name):
         if isinstance(v.expr, self.ast.Getattr):
