@@ -2214,7 +2214,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             return [jsname, v.attrname, attr_name]
         return [self.expr(v.expr, current_klass), v.attrname, attr_name]
 
-    def _class(self, node):
+    def _class(self, node, parent_class = None):
         class_name = self.modpfx() + node.name
         current_klass = Klass(class_name)
         current_klass.__md5__ = self.md5(node)
@@ -2548,6 +2548,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             self._assattr(node, current_klass)
         elif isinstance(node, self.ast.Assert):
             self._assert(node, current_klass)
+        elif isinstance(node, self.ast.Class):
+            self._class(node, current_klass)
         elif isinstance(node, self.ast.AssName):
             # TODO: support other OP_xxx types and move this to
             # a separate function

@@ -548,6 +548,24 @@ class ClassTest(UnitTest):
         self.assertEqual(I18N.domain.i18n.another_example(),
                          'This is en_US another example')
 
+    def testClassesAnywhere(self):
+        class A(object):
+            def __init__(self, what):
+                if not what:
+                    class B(object):
+                        def __init__(self):
+                            self.v = 0
+                else:
+                    class B(object):
+                        def __init__(self):
+                            self.v = 1
+                self.b = B()
+ 
+        a = A(0)
+        self.assertEqual(a.b.v, 0)
+        a = A(1)
+        self.assertEqual(a.b.v, 1)
+
 
 class PassMeAClass(object):
     def __init__(self):
