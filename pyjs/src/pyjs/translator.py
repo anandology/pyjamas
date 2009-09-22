@@ -2901,14 +2901,14 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
     def _not(self, node, current_klass):
         expr = self.expr(node.expr, current_klass)
 
-        return "!pyjslib.bool(" + expr + ")"
+        return "!" + self.inline_bool_code(expr)
 
     def _or(self, node, current_klass):
-        expr = "("+(") || (".join([self.expr(child, current_klass) for child in node.nodes]))+')'
+        expr = "("+("||".join([self.inline_bool_code(self.expr(child, current_klass)) for child in node.nodes]))+')'
         return expr
 
     def _and(self, node, current_klass):
-        expr = "("+(") && (".join([self.expr(child, current_klass) for child in node.nodes]))+")"
+        expr = "("+("&&".join([self.inline_bool_code(self.expr(child, current_klass)) for child in node.nodes]))+")"
         return expr
 
     def _for(self, node, current_klass):
