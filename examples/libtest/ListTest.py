@@ -361,6 +361,9 @@ class ListTest(UnitTest):
         l = [(x,y) for x in vec1 if x >= 3 for y in vec2 if y > 3]
         self.assertTrue(l == [(3, 4), (3, 6), (5, 4), (5, 6)], 'double')
 
+        l = [i for i in [j for j in [1,2,3]]]
+        self.assertTrue(l == [1,2,3])
+
     def testListContains(self):
         l = [['monkey'], ['patch'], ['fish'], ['chips']]
         self.assertTrue(['fish'] in l, "['fish'] in l")
