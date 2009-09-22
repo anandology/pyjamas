@@ -142,3 +142,23 @@ class BuiltinTest(UnitTest):
         self.assertEqual((1 << 2) - 1, 3, "shift error 2")
         self.assertEqual(1 & 3 + 1, 0, "and error 1")
         self.assertEqual((1 & 3) + 1, 2, "and error 2")
+
+    def testLocals(self):
+        v1 = 1
+        v2 = 2
+
+        local_vars = locals()
+        self.assertEqual(len(local_vars), 3)
+        self.assertEqual(local_vars['v1'], 1)
+
+        def fn1():
+            a = 1
+            def fn2():
+                b = 1
+                c = locals()
+                return c
+            return fn2()
+
+        local_vars = fn1()
+        self.assertEqual(local_vars, {'b': 1})
+

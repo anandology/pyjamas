@@ -1003,7 +1003,7 @@ class Dict:
     @compiler.noSourceTracking
     def __setitem__(self, key, value):
         JS("""
-        if (typeof value != undefined) {
+        if (typeof value != 'undefined') {
             var sKey = pyjslib.hash(key);
             self.d[sKey]=[key, value];
         }

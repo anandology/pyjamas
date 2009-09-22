@@ -1887,6 +1887,8 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                          v.node, self.module_name)
                 except TranslationError, e:
                     raise TranslationError(e.msg, v, self.module_name)
+            elif v.node.name == 'locals':
+                return """pyjslib.dict({%s})""" % (",".join(["'%s': %s" % (pyname, self.lookup_stack[-1][pyname][2]) for pyname in self.lookup_stack[-1] if self.lookup_stack[-1][pyname][0] not in ['global']]))
             else:
                 if name_type is None:
                     # What to do with a (yet) unknown name?
@@ -3296,6 +3298,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 name_type = 'variable'
                 pyname = name
                 jsname = self.scopeName(name, depth, is_local)
+            else:
+                name_type = 'global'
             self.add_lookup(name_type, pyname, jsname)
 
     def expr(self, node, current_klass):
