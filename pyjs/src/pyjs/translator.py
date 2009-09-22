@@ -3332,7 +3332,10 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         then = self.expr(node.then, current_klass)
         else_ = self.expr(node.else_, current_klass)
         return "((%(test)s) ? (%(then)s) : (%(else_)s))" % locals()
-        
+
+    def _backquote(self, node, current_klass):
+        return "pyjslib.repr(%s)" % self.expr(node.expr, current_klass)
+
     def expr(self, node, current_klass):
         if isinstance(node, self.ast.Const):
             return self._const(node)
@@ -3453,6 +3456,8 @@ typeof %(attr_left)s['%(attr_right)s']['__get__'] == 'function')"""
             return self._if_expr(node, current_klass)
         elif isinstance(node, self.ast.Yield):
             return self._yield_expr(node, current_klass)
+        elif isinstance(node, self.ast.Backquote):
+            return self._backquote(node, current_klass)
         else:
             raise TranslationError(
                 "unsupported type (in expr)", node, self.module_name)

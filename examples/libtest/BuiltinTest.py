@@ -144,6 +144,7 @@ class BuiltinTest(UnitTest):
         self.assertEqual(repr(t2), "('aa', 'bb')")
         self.assertEqual(repr(d1), "{'a': 1, 'b': 'B'}")
         self.assertEqual(repr(d2), "{1: [1, 2, 3], 2: ['a', 'b', 'c'], 3: (4, 5, 6, 7), 4: ('aa', 'bb'), 5: {'a': 1, 'b': 'B'}}")
+        self.assertEqual(`l1`, '[1, 2, 3]')
 
     def testIsInstance(self):
 
