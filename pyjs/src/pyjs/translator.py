@@ -2961,6 +2961,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             list_expr = self._list(node.list, current_klass)
         elif isinstance(node.list, self.ast.Slice):
             list_expr = self._slice(node.list, current_klass)
+        elif isinstance(node.list, self.ast.ListComp):
+            list_expr = self._listcomp(node.list, current_klass)
         else:
             raise TranslationError(
                 "unsupported type (in _for)", node.list, self.module_name)
