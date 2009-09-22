@@ -500,6 +500,11 @@ class YieldVisitor(ASTVisitor):
     def visitYield(self, node, *args):
         self.has_yield = True
 
+class GeneratorExitVisitor(YieldVisitor):
+    has_yield = False
+    def visitReturn(self, node, *args):
+        self.has_yield = True
+
 class Klass:
 
     klasses = {}
@@ -1998,7 +2003,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
     def _tryExcept(self, node, current_klass, top_level=False):
         save_is_generator = self.is_generator
         if self.is_generator:
-            self.is_generator = compiler.walk(node, YieldVisitor(), walker=YieldVisitor()).has_yield
+            self.is_generator = compiler.walk(node, GeneratorExitVisitor(), walker=GeneratorExitVisitor()).has_yield
         self.try_depth += 1
         self.stacksize_depth += 1
         save_state_max_depth = self.state_max_depth
@@ -2791,7 +2796,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
     def _if(self, node, current_klass, top_level = False):
         save_is_generator = self.is_generator
         if self.is_generator:
-            self.is_generator = compiler.walk(node, YieldVisitor(), walker=YieldVisitor()).has_yield
+            self.is_generator = compiler.walk(node, GeneratorExitVisitor(), walker=GeneratorExitVisitor()).has_yield
         if self.is_generator:
             print >>self.output, self.spacing() + "$generator_state[%d] = 0;" % (len(self.generator_states)+1,)
             self.generator_switch_case(increment=True)
@@ -2909,7 +2914,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
     def _for(self, node, current_klass):
         save_is_generator = self.is_generator
         if self.is_generator:
-            self.is_generator = compiler.walk(node, YieldVisitor(), walker=YieldVisitor()).has_yield
+            self.is_generator = compiler.walk(node, GeneratorExitVisitor(), walker=GeneratorExitVisitor()).has_yield
         assign_name = ""
         assign_tuple = ""
 
@@ -3010,7 +3015,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
     def _while(self, node, current_klass):
         save_is_generator = self.is_generator
         if self.is_generator:
-            self.is_generator = compiler.walk(node, YieldVisitor(), walker=YieldVisitor()).has_yield
+            self.is_generator = compiler.walk(node, GeneratorExitVisitor(), walker=GeneratorExitVisitor()).has_yield
         test = self.expr(node.test, current_klass)
         if self.is_generator:
             self.generator_switch_case(increment=True)
