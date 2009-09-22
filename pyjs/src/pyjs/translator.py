@@ -21,6 +21,8 @@ from cStringIO import StringIO
 import re
 import hashlib
 import logging
+import compiler
+from compiler.visitor import ASTVisitor
 
 import pyjs
 
@@ -492,6 +494,11 @@ def escapejs(value):
         value = value.replace(bad, good)
     return value
 
+
+class YieldVisitor(ASTVisitor):
+    has_yield = False
+    def visitYield(self, node, *args):
+        self.has_yield = True
 
 class Klass:
 
@@ -1989,6 +1996,9 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         self._tryExcept(body, current_klass, top_level=top_level)
 
     def _tryExcept(self, node, current_klass, top_level=False):
+        save_is_generator = self.is_generator
+        if self.is_generator:
+            self.is_generator = compiler.walk(node, YieldVisitor(), walker=YieldVisitor()).has_yield
         self.try_depth += 1
         self.stacksize_depth += 1
         save_state_max_depth = self.state_max_depth
@@ -2142,6 +2152,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.try_depth -= 1
         self.stacksize_depth -= 1
         self.generator_switch_case(increment=True)
+        self.is_generator = save_is_generator
 
     # XXX: change use_getattr to True to enable "strict" compilation
     # but incurring a 100% performance penalty. oops.
@@ -2778,6 +2789,9 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
 
     def _if(self, node, current_klass, top_level = False):
+        save_is_generator = self.is_generator
+        if self.is_generator:
+            self.is_generator = compiler.walk(node, YieldVisitor(), walker=YieldVisitor()).has_yield
         if self.is_generator:
             print >>self.output, self.spacing() + "$generator_state[%d] = 0;" % (len(self.generator_states)+1,)
             self.generator_switch_case(increment=True)
@@ -2790,19 +2804,20 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 keyword = "else if"
 
             self.lookup_stack[-1]
-            self._if_test(keyword, test, consequence, current_klass, top_level)
+            self._if_test(keyword, test, consequence, node, current_klass, top_level)
 
         if node.else_:
             keyword = "else"
             test = None
             consequence = node.else_
 
-            self._if_test(keyword, test, consequence, current_klass)
+            self._if_test(keyword, test, consequence, node, current_klass)
         if self.is_generator:
             print >>self.output, self.spacing() + "$generator_state[%d]=0;" % (len(self.generator_states)-1,)
         self.generator_del_state()
+        self.is_generator = save_is_generator
 
-    def _if_test(self, keyword, test, consequence, current_klass, top_level = False):
+    def _if_test(self, keyword, test, consequence, node, current_klass, top_level = False):
         if test:
             expr = self.expr(test, current_klass)
 
@@ -2824,9 +2839,10 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                     len(self.generator_states)-1, len(self.generator_states)-1, self.generator_states[-1], )
                 print >>self.output, self.spacing() + "$generator_state[%d]=%d;" % (len(self.generator_states)-1, self.generator_states[-1])
 
-        self.generator_add_state()
-        self.generator_switch_open()
-        self.generator_switch_case(increment=False)
+        if self.is_generator:
+            self.generator_add_state()
+            self.generator_switch_open()
+            self.generator_switch_case(increment=False)
 
         if isinstance(consequence, self.ast.Stmt):
             for child in consequence.nodes:
@@ -2891,6 +2907,9 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         return expr
 
     def _for(self, node, current_klass):
+        save_is_generator = self.is_generator
+        if self.is_generator:
+            self.is_generator = compiler.walk(node, YieldVisitor(), walker=YieldVisitor()).has_yield
         assign_name = ""
         assign_tuple = ""
 
@@ -2985,8 +3004,13 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 %(s)s}
 %(s)s$pyjs.track.module='%(m)s';""" % {'s': self.spacing(), 'd': self.stacksize_depth, 'm': self.raw_module_name}
             self.stacksize_depth -= 1
+        self.generator_switch_case(increment=True)
+        self.is_generator = save_is_generator
 
     def _while(self, node, current_klass):
+        save_is_generator = self.is_generator
+        if self.is_generator:
+            self.is_generator = compiler.walk(node, YieldVisitor(), walker=YieldVisitor()).has_yield
         test = self.expr(node.test, current_klass)
         if self.is_generator:
             self.generator_switch_case(increment=True)
@@ -2995,12 +3019,12 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             print >>self.output, self.indent() + "for (;($generator_state[%d] > 0)||(" % (\
                 (len(self.generator_states),)) + \
                 self.track_call(self.inline_bool_code(test), node.lineno) + ");$generator_state[%d] = 0) {" % (len(self.generator_states), )
+
+            self.generator_add_state()
+            self.generator_switch_open()
+            self.generator_switch_case(increment=False)
         else:
             print >>self.output, self.indent() + "while (" + self.track_call(self.inline_bool_code(test), node.lineno) + ") {"
-
-        self.generator_add_state()
-        self.generator_switch_open()
-        self.generator_switch_case(increment=False)
 
         if isinstance(node.body, self.ast.Stmt):
             for child in node.body.nodes:
@@ -3009,12 +3033,14 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             raise TranslationError(
                 "unsupported type (in _while)", node.body, self.module_name)
 
-        self.generator_switch_case(increment=True)
-        self.generator_switch_close()
-        self.generator_del_state()
+        if self.is_generator:
+            self.generator_switch_case(increment=True)
+            self.generator_switch_close()
+            self.generator_del_state()
 
         print >>self.output, self.dedent() + "}"
         self.generator_switch_case(increment=True)
+        self.is_generator = save_is_generator
 
 
     def _const(self, node):
