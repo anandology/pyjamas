@@ -707,6 +707,17 @@ class List:
         return pyjslib.List(self.l.slice(lower, upper));
         """)
 
+    def __delslice__(self, lower, upper):
+        JS("""
+        var n = upper - lower;
+        if (upper==null) {
+            n =  self.l.length;
+        }
+        if (!lower) lower = 0;
+        if (n > 0) self.l.splice(lower, n);
+        """)
+        return None
+
     @compiler.noSourceTracking
     def __getitem__(self, index):
         JS("""
@@ -1332,6 +1343,24 @@ def slice(object, lower, upper):
     if (pyjslib.isObject(object) && object.slice)
         return object.slice(lower, upper);
 
+    return null;
+    """)
+
+def __delslice(object, lower, upper):
+    JS("""
+    if (typeof object.__delslice__ == 'function') {
+        return object.__delslice__(lower, upper);
+    }
+    if (object.__getslice__ == 'function' && object.__delitem__ == 'function') {
+        if (upper == null) {
+            upper = pyjslib.len(object);
+        }
+        for (var i = lower; i < upper; i++) {
+            object.__delitem__(i);
+        }
+        return null;
+    }
+    throw pyjslib.TypeError('object does not support item deletion');
     return null;
     """)
 

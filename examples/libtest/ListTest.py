@@ -52,6 +52,8 @@ class ListTest(UnitTest):
         self.assertTrue(l1 == [1,2,3,4], "l1 += l2")
 
     def testDelete(self):
+        self.assertTrue(delete_value == [1, 2, 5], "%s == [1, 2, 5]" % (delete_value,))
+
         value = [0, 1, 2, 3, 4]
         del value[4]
         self.assertTrue(len(value) is 4)
@@ -73,6 +75,11 @@ class ListTest(UnitTest):
         except IndexError, e:
             self.assertEqual(e[0], "list assignment index out of range")
 
+        value = [0, 1, 2, 3, 4]
+        del value[1:3]
+        self.assertTrue(value == [0, 3, 4], "%s == [0, 3, 4]" % value)
+        del value[:]
+        self.assertTrue(value == [], "%s = []" % value)
 
     def testSortNoKwArgs(self):
         l1 = ['c', 'd', 'a', 'b']
@@ -379,3 +386,6 @@ class A:
 class B:
     pass
 
+delete_value = [1,2,3,4,5]
+del delete_value[3]
+del delete_value[2:3]

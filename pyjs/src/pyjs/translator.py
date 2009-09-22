@@ -735,6 +735,8 @@ class Translator:
                 self._assattr(child, None)
             elif isinstance(child, self.ast.AssName):
                 self._assname(child, None)
+            elif isinstance(child, self.ast.Slice):
+                print >> self.output, self.spacing() + self._slice(child, None)
             else:
                 raise TranslationError(
                     "unsupported type (in __init__)",
@@ -2555,6 +2557,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             self._assert(node, current_klass)
         elif isinstance(node, self.ast.Class):
             self._class(node, current_klass)
+        elif isinstance(node, self.ast.Slice):
+            print >>self.output, self.spacing() + self._slice(node, current_klass)
         elif isinstance(node, self.ast.AssName):
             # TODO: support other OP_xxx types and move this to
             # a separate function
@@ -3280,14 +3284,16 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         return captured_output.getvalue()
 
     def _slice(self, node, current_klass):
+        lower = "0"
+        upper = "null"
+        if node.lower != None:
+            lower = self.expr(node.lower, current_klass)
+        if node.upper != None:
+            upper = self.expr(node.upper, current_klass)
         if node.flags == "OP_APPLY":
-            lower = "null"
-            upper = "null"
-            if node.lower != None:
-                lower = self.expr(node.lower, current_klass)
-            if node.upper != None:
-                upper = self.expr(node.upper, current_klass)
             return  "pyjslib['slice'](" + self.expr(node.expr, current_klass) + ", " + lower + ", " + upper + ")"
+        elif node.flags == "OP_DELETE":
+            return  "pyjslib['__delslice'](" + self.expr(node.expr, current_klass) + ", " + lower + ", " + upper + ")"
         else:
             raise TranslationError(
                 "unsupported flag (in _slice)", node, self.module_name)
