@@ -8,8 +8,33 @@ if False:
     import builtin
 import builtin
 
+def other(**kwargs):
+    return kwargs
+
+def foo(some, long, list, of, arguments):
+     additional = 5
+     return other(**locals())
+
+class ColourThing(object):
+     def rgb():
+         def fset(self, rgb):
+             self.r, self.g, self.b = rgb
+         def fget(self):
+             return (self.r, self.g, self.b)
+         return property(**locals()) 
+
 class Foo:
     pass
+
+class LocalsTest:
+    def __init__(self):
+        pass
+
+    def testargs(self, test1, test2):
+        return locals()
+
+    def testkwargs(self, test1=None, test2=None):
+        return locals()
 
 class BuiltinTest(UnitTest):
 
@@ -162,3 +187,22 @@ class BuiltinTest(UnitTest):
         local_vars = fn1()
         self.assertEqual(local_vars, {'b': 1})
 
+        args = {'test1': 5, 'test2': 'hello'}
+        la = LocalsTest()
+        argsreturn = la.testkwargs(**args)
+        args['self'] = la
+        self.assertEqual(args, argsreturn)
+
+        del args['self']
+        argsreturn = la.testargs(**args)
+        args['self'] = la
+        self.assertEqual(args, argsreturn)
+
+        t = ColourThing()
+        t.rgb = 1
+        self.assertEqual(t.rgb, 1)
+
+        args = foo(0, 1, 2, 3, 4)
+        self.assertEqual(args, {'some': 0, 'additional': 5,
+                                'of': 3, 'list': 2,
+                                'long': 1, 'arguments': 4})
