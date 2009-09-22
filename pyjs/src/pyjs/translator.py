@@ -2511,8 +2511,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
         if isinstance(node, self.ast.Return):
             self._return(node, current_klass)
-        #elif isinstance(node, ast.Yield):
-        #    self._yield(node, current_klass)
+        elif isinstance(node, self.ast.Yield):
+            self._yield(node, current_klass)
         elif isinstance(node, self.ast.Break):
             self._break(node, current_klass)
         elif isinstance(node, self.ast.Continue):
@@ -2557,6 +2557,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             self._assert(node, current_klass)
         elif isinstance(node, self.ast.Class):
             self._class(node, current_klass)
+        #elif isinstance(node, self.ast.CallFunc):
+        #    self._callfunc(node, current_klass)
         elif isinstance(node, self.ast.Slice):
             print >>self.output, self.spacing() + self._slice(node, current_klass)
         elif isinstance(node, self.ast.AssName):
@@ -3300,6 +3302,66 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.pop_lookup()
         return captured_output.getvalue()
 
+    def _genexpr(self, node, current_klass):
+        save_has_yield = self.has_yield
+        self.has_yield = True
+        save_is_generator = self.is_generator
+        self.is_generator = True
+        save_generator_states = self.generator_states
+        self.generator_states = [0]
+        self.state_max_depth = len(self.generator_states)
+
+        if not isinstance(node.code, self.ast.GenExprInner):
+            raise TranslationError(
+                "unsupported code (in _genexpr)", node, self.module_name)
+        if node.argnames != ['.0']:
+            raise TranslationError(
+                "argnames not supported (in _genexpr)", node, self.module_name)
+        if node.kwargs:
+            raise TranslationError(
+                "kwargs not supported (in _genexpr)", node, self.module_name)
+        if node.varargs:
+            raise TranslationError(
+                "varargs not supported (in _genexpr)", node, self.module_name)
+        save_output = self.output
+        self.output = StringIO()
+        self.indent()
+        self.generator_switch_open()
+        self.generator_switch_case(increment=False)
+        tnode = self.ast.Yield(node.code.expr, node.lineno)
+        for qual in node.code.quals[::-1]:
+            if isinstance(qual, self.ast.GenExprFor):
+                if len(qual.ifs) > 1:
+                    raise TranslationError(
+                        "unsupported ifs (in _genexpr)", node.code, self.module_name)
+                tassign = qual.assign
+                titer = qual.iter
+                tbody = self.ast.Stmt([tnode])
+                tis_outmost = qual.is_outmost
+                if len(qual.ifs) == 1:
+                    tbody = self.ast.Stmt([self.ast.If([(qual.ifs[0].test, tbody)], None, qual.ifs[0].lineno)])
+                telse_ = None
+                tnode = self.ast.For(tassign, titer, tbody, telse_, node.lineno)
+                self._for(tnode, current_klass)
+            else:
+                raise TranslationError(
+                    "unsupported quals (in _genexpr)", node.code, self.module_name)
+        self.generator_switch_case(increment=True)
+        self.generator_switch_close()
+
+        captured_output = self.output.getvalue()
+        self.output = StringIO()
+        print >> self.output, "function(){"
+        self.generator(captured_output)
+        print >> self.output, self.dedent() + "}()"
+        captured_output = self.output.getvalue()
+        self.output = save_output
+        self.generator_states = save_generator_states
+        self.state_max_depth = len(self.generator_states)
+        self.is_generator = save_is_generator
+        self.has_yield = save_has_yield
+        return captured_output
+
     def _slice(self, node, current_klass):
         lower = "0"
         upper = "null"
@@ -3458,6 +3520,8 @@ typeof %(attr_left)s['%(attr_right)s']['__get__'] == 'function')"""
             return self._yield_expr(node, current_klass)
         elif isinstance(node, self.ast.Backquote):
             return self._backquote(node, current_klass)
+        elif isinstance(node, self.ast.GenExpr):
+            return self._genexpr(node, current_klass)
         else:
             raise TranslationError(
                 "unsupported type (in expr)", node, self.module_name)

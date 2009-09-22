@@ -550,6 +550,25 @@ class GeneratorTest(UnitTest):
             r.append(i)
         self.assertEqual(r, [0, 1, None, 2, 2, 3, 4])
 
+    def testGenExp(self):
+        g = (child for child in [1,2,3])
+        self.assertEqual(g.next(), 1)
+        self.assertEqual(g.next(), 2)
+
+        try:
+            g.throw(KeyError, 'test')
+        except KeyError, e:
+            self.assertEqual(e[0], 'test')
+
+        if any(isinstance(child, int) for child in [1,2,3]):
+            self.assertTrue(True)
+        else:
+            self.fail("any(isinstance(child, int) for child in [1,2,3])")
+        if any(isinstance(child, int) for child in ['1','2','3']):
+            self.fail("any(isinstance(child, int) for child in ['1','2','3'])")
+        else:
+            self.assertTrue(True)
+
 
 class A(object):
     def fn(self):
@@ -580,7 +599,7 @@ class Tree:
 def tree(list):
     n = len(list)
     if n == 0:
-	return []
+        return []
     i = n / 2
     return Tree(list[i], tree(list[:i]), tree(list[i+1:]))
 
