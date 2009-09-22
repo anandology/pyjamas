@@ -206,3 +206,10 @@ class BuiltinTest(UnitTest):
         self.assertEqual(args, {'some': 0, 'additional': 5,
                                 'of': 3, 'list': 2,
                                 'long': 1, 'arguments': 4})
+
+    def testIfExp(self):
+        var = 1 if True else 0
+        self.assertEqual(var, 1)
+        var = 1 if False else 0
+        self.assertEqual(var, 0)
+

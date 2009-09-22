@@ -3304,6 +3304,12 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 name_type = 'global'
             self.add_lookup(name_type, pyname, jsname)
 
+    def _if_expr(self, node, current_klass):
+        test = self.expr(node.test, current_klass)
+        then = self.expr(node.then, current_klass)
+        else_ = self.expr(node.else_, current_klass)
+        return "((%(test)s) ? (%(then)s) : (%(else_)s))" % locals()
+        
     def expr(self, node, current_klass):
         if isinstance(node, self.ast.Const):
             return self._const(node)
@@ -3420,6 +3426,8 @@ typeof %(attr_left)s['%(attr_right)s']['__get__'] == 'function')"""
             return self._lambda(node, current_klass)
         elif isinstance(node, self.ast.ListComp):
             return self._listcomp(node, current_klass)
+        elif isinstance(node, self.ast.IfExp):
+            return self._if_expr(node, current_klass)
         elif isinstance(node, self.ast.Yield):
             return self._yield_expr(node, current_klass)
         else:
