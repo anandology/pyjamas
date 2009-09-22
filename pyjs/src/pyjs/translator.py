@@ -3331,7 +3331,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         test = self.expr(node.test, current_klass)
         then = self.expr(node.then, current_klass)
         else_ = self.expr(node.else_, current_klass)
-        return "((%(test)s) ? (%(then)s) : (%(else_)s))" % locals()
+        return "(" + self.inline_bool_code(test) + "? (%(then)s) : (%(else_)s))" % locals()
 
     def _backquote(self, node, current_klass):
         return "pyjslib.repr(%s)" % self.expr(node.expr, current_klass)

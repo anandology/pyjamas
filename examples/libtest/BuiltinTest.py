@@ -213,4 +213,7 @@ class BuiltinTest(UnitTest):
         self.assertEqual(var, 1)
         var = 1 if False else 0
         self.assertEqual(var, 0)
-
+        var = 1 if [] else 0
+        self.assertEqual(var, 0)
+        var = 1 if not [] else 0
+        self.assertEqual(var, 1)
