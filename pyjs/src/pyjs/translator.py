@@ -2215,7 +2215,10 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         return [self.expr(v.expr, current_klass), v.attrname, attr_name]
 
     def _class(self, node, parent_class = None):
-        class_name = self.modpfx() + node.name
+        if parent_class is None:
+            class_name = self.modpfx() + node.name
+        else:
+            class_name = node.name
         current_klass = Klass(class_name)
         current_klass.__md5__ = self.md5(node)
         init_method = None
