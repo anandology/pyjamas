@@ -2747,6 +2747,23 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             else:
                 raise TranslationError(
                     "unsupported flag (in _assign)", v, self.module_name)
+        elif isinstance(v, self.ast.Slice):
+            if v.flags == "OP_ASSIGN":
+                if not v.lower:
+                    lower = 0
+                else:
+                    lower = self.expr(v.lower, current_klass)
+                if not v.upper:
+                    upper = 'null'
+                else:
+                    upper = self.expr(v.upper, current_klass)
+                obj = self.expr(v.expr, current_klass)
+                value = self.expr(node.expr, current_klass)
+                print >>self.output, self.spacing() + self.track_call("pyjslib.__setslice(%s, %s, %s, %s)" % (obj, lower, upper, value), v.lineno) + ';'
+                return
+            else:
+                raise TranslationError(
+                    "unsupported flag (in _assign)", v, self.module_name)
         elif isinstance(v, (self.ast.AssList, self.ast.AssTuple)):
             tempName = self.uniqid("$tupleassign")
             print >>self.output, self.spacing() + "var " + tempName + " = " + \

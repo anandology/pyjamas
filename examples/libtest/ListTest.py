@@ -51,6 +51,13 @@ class ListTest(UnitTest):
         l1 += l2
         self.assertTrue(l1 == [1,2,3,4], "l1 += l2")
 
+    def testSliceSet(self):
+        value = [1,2,3]
+        value[1:2] = [11,12]
+        self.assertTrue(value == [1, 11, 12, 3], "%s == [1, 11, 12, 3]" % value)
+        value[3:] = [21,22,23]
+        self.assertTrue(value == [1, 11, 12, 21, 22, 23], "%s == [1, 11, 12, 21, 22, 23]" % value)
+
     def testDelete(self):
         self.assertTrue(delete_value == [1, 2, 5], "%s == [1, 2, 5]" % (delete_value,))
 

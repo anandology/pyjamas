@@ -718,6 +718,14 @@ class List:
         """)
         return None
 
+    def __setslice__(self, lower, upper, data):
+        self.__delslice__(lower, upper)
+        tail = self.__getslice__(lower, None)
+        self.__delslice__(lower, None)
+        self.extend(data)
+        self.extend(tail)
+        return None
+
     @compiler.noSourceTracking
     def __getitem__(self, index):
         JS("""
@@ -1361,6 +1369,15 @@ def __delslice(object, lower, upper):
         return null;
     }
     throw pyjslib.TypeError('object does not support item deletion');
+    return null;
+    """)
+
+def __setslice(object, lower, upper, value):
+    JS("""
+    if (typeof object.__setslice__ == 'function') {
+        return object.__setslice__(lower, upper, value);
+    }
+    throw pyjslib.TypeError('object does not support __setslice__');
     return null;
     """)
 
