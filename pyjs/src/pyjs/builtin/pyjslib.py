@@ -1286,8 +1286,8 @@ def super(type_, object_or_type = None):
             return obj[name].apply(object_or_type,args);
         };
         fnwrap.__name__ = name;
-        fnwrap.__args__ = obj.__args__;
-        fnwrap.__bind_type__ = obj.__bind_type__;
+        fnwrap.__args__ = obj[name].__args__;
+        fnwrap.__bind_type__ = obj[name].__bind_type__;
         return fnwrap;
     }
     for (var m in fn) {
@@ -1295,6 +1295,7 @@ def super(type_, object_or_type = None):
             obj[m] = wrapper(fn, m);
         }
     }
+    obj.__is_instance__ = object_or_type.__is_instance__;
     return obj;
     """)
 

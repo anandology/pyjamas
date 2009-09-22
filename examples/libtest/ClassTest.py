@@ -356,6 +356,12 @@ class ClassTest(UnitTest):
         except AttributeError, e:
             self.assertTrue(True)
 
+    def testSuperArgTest(self):
+        a2 = SuperArg2(a=1,b=2,c=3)
+        a3 = SuperArg3(a=1,b=2,c=3)
+        self.assertEqual(["SuperArg2",a2.a1_args], ['SuperArg2', [('a', 1), ('b', 2), ('c', 3)]])
+        self.assertEqual(["SuperArg3",a3.a1_args], ['SuperArg3', [('a', 1), ('b', 2), ('c', 3)]])
+
     def testImportTest(self):
         self.assertEqual(imports.exec_order[0], 'circ1-1')
         self.assertEqual(exec_order[1], 'circ2-1')
@@ -883,4 +889,18 @@ class NewStylePropertyDecorating(object):
     @x.deleter
     def x(self):
         del self._x
+
+class SuperArg1(object) :
+    def __init__(self,a=None,b=None,c=None) :
+        self.a1_args = [('a', a),('b',b),('c',c)]
+
+class SuperArg2(SuperArg1) :
+    def __init__(self,a=None,b=None,c=None) :
+        self.a2_args = [('a', a),('b',b),('c',c)]
+        super(SuperArg2,self).__init__(a=a,b=b,c=c)
+
+class SuperArg3(SuperArg1) :
+    def __init__(self,a=None,b=None,c=None) :
+        self.a3_args = [('a', a),('b',b),('c',c)]
+        super(SuperArg3,self).__init__(a,b,c)
 
