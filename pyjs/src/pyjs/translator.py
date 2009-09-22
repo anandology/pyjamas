@@ -2901,7 +2901,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
     def _not(self, node, current_klass):
         expr = self.expr(node.expr, current_klass)
 
-        return "!(" + expr + ")"
+        return "!pyjslib.bool(" + expr + ")"
 
     def _or(self, node, current_klass):
         expr = "("+(") || (".join([self.expr(child, current_klass) for child in node.nodes]))+')'

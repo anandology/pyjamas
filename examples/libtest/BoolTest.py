@@ -83,9 +83,16 @@ class BoolTest(UnitTest):
     def testIfStatement(self):
         if([]):
             self.fail("Empty lists should not evaluate to True in If")
+        else:
+            self.assertTrue(True)
         if([1]):
-            return
-        self.fail("None-empty lists should evaluate to True in If")
+            self.assertTrue(True)
+	else:
+            self.fail("None-empty lists should evaluate to True in If")
+        if not []:
+            self.assertTrue(True)
+        else:
+            self.fail("Non empty lists should not evaluate to True in If")
 
     def testWhileStatement(self):
         while([]):
