@@ -3,7 +3,7 @@ import sys
 import traceback
 
 test_pyjs = True
-test_std = False
+test_std = True
 
 from astpprint import getAststr, printAst
 

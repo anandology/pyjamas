@@ -32,7 +32,7 @@ __credits__ = \
 import string, re
 from lib2to3.pgen2.token import *
 
-from lib2to3.pgen import token
+from lib2to3.pgen2 import token
 
 __all__ = [x for x in dir(token) if x[0] != '_'] + ["tokenize",
            "generate_tokens", "untokenize"]

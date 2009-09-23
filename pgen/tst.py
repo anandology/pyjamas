@@ -1,1 +1,2 @@
-del r
+print "hello"
+

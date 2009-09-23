@@ -336,37 +336,47 @@ for a in pyjs_attrib_remap_names:
 #    pyjs_attrib_remap[a] = '$$' + a
 
 
-# Bugfix compiler.transformer.Transformer.com_subscriptlist
-def com_subscriptlist(self, primary, nodelist, assigning):
-    # slicing:      simple_slicing | extended_slicing
-    # simple_slicing:   primary "[" short_slice "]"
-    # extended_slicing: primary "[" slice_list "]"
-    # slice_list:   slice_item ("," slice_item)* [","]
+# pass in the compiler module (lib2to3 pgen or "standard" python one)
+# and patch transformer. see http://bugs.python.org/issue6978
+def monkey_patch_broken_transformer(compiler):
 
-    import symbol, token
-    from compiler.transformer import extractLineNo
-    from compiler.ast import Subscript, Tuple, Ellipsis, Sliceobj
+    # assumes that compiler.transformer imports all these
+    extractLineNo = compiler.transformer.extractLineNo
+    token = compiler.transformer.token
+    symbol = compiler.transformer.symbol
+    Subscript = compiler.transformer.Subscript 
+    Tuple = compiler.transformer.Tuple 
+    Ellipsis = compiler.transformer.Ellipsis 
+    Sliceobj = compiler.transformer.Sliceobj 
 
-    # backwards compat slice for '[i:j]'
-    if len(nodelist) == 2:
-        sub = nodelist[1]
-        if (sub[1][0] == token.COLON or \
-                        (len(sub) > 2 and sub[2][0] == token.COLON)) and \
-                        sub[-1][0] != symbol.sliceop:
-            return self.com_slice(primary, sub, assigning)
+    # Bugfix compiler.transformer.Transformer.com_subscriptlist
+    def com_subscriptlist(self, primary, nodelist, assigning):
+        # slicing:      simple_slicing | extended_slicing
+        # simple_slicing:   primary "[" short_slice "]"
+        # extended_slicing: primary "[" slice_list "]"
+        # slice_list:   slice_item ("," slice_item)* [","]
 
-    subscripts = []
-    for i in range(1, len(nodelist), 2):
-        subscripts.append(self.com_subscript(nodelist[i]))
-    if len(nodelist) > 2:
-        tulplesub = [sub for sub in subscripts \
-                        if not (isinstance(sub, Ellipsis) or \
-                        isinstance(sub, Sliceobj))]
-        if len(tulplesub) == len(subscripts):
-            subscripts = [Tuple(subscripts)]
-    return Subscript(primary, assigning, subscripts,
-                     lineno=extractLineNo(nodelist))
-compiler.transformer.Transformer.com_subscriptlist = com_subscriptlist
+        # backwards compat slice for '[i:j]'
+        if len(nodelist) == 2:
+            sub = nodelist[1]
+            if (sub[1][0] == token.COLON or \
+                            (len(sub) > 2 and sub[2][0] == token.COLON)) and \
+                            sub[-1][0] != symbol.sliceop:
+                return self.com_slice(primary, sub, assigning)
+
+        subscripts = []
+        for i in range(1, len(nodelist), 2):
+            subscripts.append(self.com_subscript(nodelist[i]))
+        if len(nodelist) > 2:
+            tulplesub = [sub for sub in subscripts \
+                            if not (isinstance(sub, Ellipsis) or \
+                            isinstance(sub, Sliceobj))]
+            if len(tulplesub) == len(subscripts):
+                subscripts = [Tuple(subscripts)]
+        return Subscript(primary, assigning, subscripts,
+                         lineno=extractLineNo(nodelist))
+
+    compiler.transformer.Transformer.com_subscriptlist = com_subscriptlist
 
 debug_options = {}
 speed_options = {}
@@ -638,6 +648,8 @@ class Translator:
                  inline_code=True,
                  operator_funcs=True,
                 ):
+
+        monkey_patch_broken_transformer(compiler)
 
         self.compiler = compiler
         self.ast = compiler.ast
