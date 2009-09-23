@@ -2975,7 +2975,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
         assign_name = self.add_lookup('variable', assign_name, assign_name)
         lhs = assign_name
-        iterator_name = "$__" + assign_name
+        iterator_name = self.uniqid('$iter')
         self.add_lookup('variable', iterator_name, iterator_name)
 
         if self.source_tracking:

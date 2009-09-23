@@ -590,8 +590,8 @@ class ClassTest(UnitTest):
             d['a'] = 1
             l1 = []
             l2 = []
-            #for i in range(4):
-            #    l1.append(i)
+            for i in range(4):
+                l1.append(i)
             i = 0
             while i < 4:
                 l2.append(i)
