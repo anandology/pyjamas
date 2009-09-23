@@ -12,42 +12,41 @@ This code is downloaded verbatim from:
 __author__ = 'Martin Blais <blais@furius.ca>'
 
 import sys
-from compiler.ast import Node
 
 __all__ = ('printAst','getAststr')
 
 from StringIO import StringIO
 
-def getAststr(ast, indent='  ', initlevel=0):
+def getAststr(astmod, ast, indent='  ', initlevel=0):
     "Pretty-print an AST to the given output stream."
     stream = StringIO()
-    rec_node(ast, initlevel, indent, stream.write)
+    rec_node(astmod, ast, initlevel, indent, stream.write)
     stream.write('\n')
     stream.seek(0)
     return stream.read()
 
-def printAst(ast, indent='  ', stream=sys.stdout, initlevel=0):
+def printAst(astmod, ast, indent='  ', stream=sys.stdout, initlevel=0):
     "Pretty-print an AST to the given output stream."
-    rec_node(ast, initlevel, indent, stream.write)
+    rec_node(astmod, ast, initlevel, indent, stream.write)
     stream.write('\n')
     stream.flush()
 
-def rec_node(node, level, indent, write):
+def rec_node(astmod, node, level, indent, write):
     "Recurse through a node, pretty-printing it."
     pfx = indent * level
-    if isinstance(node, Node):
+    if isinstance(node, astmod.Node):
         write(pfx)
         write(node.__class__.__name__)
         write('(')
 
         i = 0
         for child in node.getChildren():
-            if not isinstance(child, Node):
+            if not isinstance(child, astmod.Node):
                 continue
             if i != 0:
                 write(',')
             write('\n')
-            rec_node(child, level+1, indent, write)
+            rec_node(astmod, child, level+1, indent, write)
             i += 1
         if i == 0:
             # None of the children as nodes, simply join their repr on a single
@@ -68,6 +67,7 @@ def rec_node(node, level, indent, write):
 
 
 def main():
+    from compiler import ast
     import optparse
     parser = optparse.OptionParser(__doc__.strip())
     opts, args = parser.parse_args()
@@ -79,7 +79,7 @@ def main():
     for fn in args:
         print '\n\n%s:\n' % fn
         try:
-            printAst(compiler.parseFile(fn), initlevel=1)
+            printAst(ast, compiler.parseFile(fn), initlevel=1)
         except SyntaxError, e:
             traceback.print_exc()
 

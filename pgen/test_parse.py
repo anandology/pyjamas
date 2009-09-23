@@ -29,14 +29,14 @@ def compare_compilers(fname):
     if test_std:
         try:
             x1 = compiler.parseFile(fname)
-            ys1 = getAststr(x1)
+            ys1 = getAststr(compiler.ast, x1)
         except SyntaxError:
             ys1 = traceback.format_exc(limit=0)
             
     if test_pyjs:
         try:
             y = test_compiler.parseFile(fname)
-            ys = getAststr(y)
+            ys = getAststr(test_compiler.ast, y)
 
         except SyntaxError:
             ys = traceback.format_exc(limit=1)

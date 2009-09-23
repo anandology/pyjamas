@@ -28,10 +28,10 @@ from pprint import pprint
 #   http://www.opensource.org/licenses/bsd-license.html
 # and replace OWNER, ORGANIZATION, and YEAR as appropriate.
 
-from compiler.ast import *
-import parser
+from lib2to3.compiler.ast import *
+from lib2to3.compiler import parser
 from lib2to3 import symbol
-import token
+from lib2to3.compiler import token
 
 class WalkerError(StandardError):
     pass
@@ -265,10 +265,12 @@ class Transformer:
         args = nodelist[-3].children[1]
 
         if args.type == symbol.varargslist:
-            names, defaults, flags = self.com_arglist(args.children)
+            names, defaults, varargs, varkeywords = \
+                         self.com_arglist(args.children)
         else:
             names = defaults = ()
-            flags = 0
+            varargs = False
+            varkeywords = False
         doc = self.get_docstring(nodelist[-1])
 
         # code for function
@@ -278,22 +280,26 @@ class Transformer:
             assert isinstance(code, Stmt)
             assert isinstance(code.nodes[0], Discard)
             del code.nodes[0]
-        return Function(decorators, name, names, defaults, flags, doc, code,
+        return Function(decorators, name, names, defaults,
+                        varargs, varkeywords, doc, code,
                      lineno=lineno)
 
     def lambdef(self, nodelist):
         # lambdef: 'lambda' [varargslist] ':' test
         #pprint(nodelist)
         if nodelist[1].type == symbol.varargslist:
-            names, defaults, flags = self.com_arglist(nodelist[1].children)
+            names, defaults, varargs, varkeywords = \
+                         self.com_arglist(nodelist[1].children)
         else:
             names = defaults = ()
-            flags = 0
+            varargs = False
+            varkeywords = False
 
         # code for lambda
         code = self.com_node(nodelist[-1])
 
-        return Lambda(names, defaults, flags, code, lineno=nodelist[0].context)
+        return Lambda(names, defaults, varargs, varkeywords, code,
+                      lineno=nodelist[0].context)
     old_lambdef = lambdef
 
     def classdef(self, nodelist):
@@ -316,7 +322,7 @@ class Transformer:
             assert isinstance(code.nodes[0], Discard)
             del code.nodes[0]
 
-        return Class(name, bases, doc, code, lineno=nodelist[1].context)
+        return Class(name, bases, doc, code, None, lineno=nodelist[1].context)
 
     def stmt(self, nodelist):
         return self.com_stmt(nodelist[0])
@@ -399,13 +405,14 @@ class Transformer:
             items.append(self.com_node(nodelist[i]))
         if nodelist[-1].type == token.COMMA:
             return Print(items, dest, lineno=nodelist[0].context)
-        return Printnl(items, dest, lineno=nodelist[0].context)
+        return Printnl(items, dest, True, lineno=nodelist[0].context)
 
     def del_stmt(self, nodelist):
         return self.com_assign(nodelist[1], OP_DELETE)
 
     def pass_stmt(self, nodelist):
-        return Pass(lineno=nodelist[0].context)
+        lineno=nodelist[0].context
+        return Pass(lineno=lineno)
 
     def break_stmt(self, nodelist):
         return Break(lineno=nodelist[0].context)
@@ -675,9 +682,9 @@ class Transformer:
         for i in range(2, len(nodelist), 2):
             right = self.com_node(nodelist[i])
             if nodelist[i-1].type == token.LEFTSHIFT:
-                node = LeftShift([node, right], lineno=nodelist[1].context)
+                node = LeftShift(node, right, lineno=nodelist[1].context)
             elif nodelist[i-1].type == token.RIGHTSHIFT:
-                node = RightShift([node, right], lineno=nodelist[1].context)
+                node = RightShift(node, right, lineno=nodelist[1].context)
             else:
                 raise ValueError, "unexpected token: %s" % nodelist[i-1].type
         return node
@@ -687,9 +694,9 @@ class Transformer:
         for i in range(2, len(nodelist), 2):
             right = self.com_node(nodelist[i])
             if nodelist[i-1].type == token.PLUS:
-                node = Add([node, right], lineno=nodelist[1].context)
+                node = Add(node, right, lineno=nodelist[1].context)
             elif nodelist[i-1].type == token.MINUS:
-                node = Sub([node, right], lineno=nodelist[1].context)
+                node = Sub(node, right, lineno=nodelist[1].context)
             else:
                 raise ValueError, "unexpected token: %s" % nodelist[i-1][0]
         return node
@@ -700,13 +707,13 @@ class Transformer:
             right = self.com_node(nodelist[i])
             t = nodelist[i-1].type
             if t == token.STAR:
-                node = Mul([node, right])
+                node = Mul(node, right)
             elif t == token.SLASH:
-                node = Div([node, right])
+                node = Div(node, right)
             elif t == token.PERCENT:
-                node = Mod([node, right])
+                node = Mod(node, right)
             elif t == token.DOUBLESLASH:
-                node = FloorDiv([node, right])
+                node = FloorDiv(node, right)
             else:
                 raise ValueError, "unexpected token: %s" % t
             node.lineno = nodelist[1].context
@@ -732,7 +739,7 @@ class Transformer:
         for i in range(1, len(nodelist)):
             elt = nodelist[i]
             if elt.type == token.DOUBLESTAR:
-                return Power([node, self.com_node(nodelist[i+1])],
+                return Power(node, self.com_node(nodelist[i+1]),
                              lineno=elt.context)
 
             node = self.com_apply_trailer(node, elt)
@@ -822,7 +829,8 @@ class Transformer:
         # fplist: fpdef (',' fpdef)* [',']
         names = []
         defaults = []
-        flags = 0
+        varargs = False
+        varkeywords = False
 
         i = 0
         while i < len(nodelist):
@@ -832,7 +840,7 @@ class Transformer:
                     node = nodelist[i+1]
                     if node.type == token.NAME:
                         names.append(node.value)
-                        flags = flags | CO_VARARGS
+                        varargs = True
                         i = i + 3
 
                 if i < len(nodelist):
@@ -843,7 +851,7 @@ class Transformer:
                     else:
                         raise ValueError, "unexpected token: %s" % t
                     names.append(node.value)
-                    flags = flags | CO_VARKEYWORDS
+                    varkeywords = True
 
                 break
 
@@ -862,7 +870,7 @@ class Transformer:
             # skip the comma
             i = i + 1
 
-        return names, defaults, flags
+        return names, defaults, varargs, varkeywords
 
     def com_fpdef(self, node):
         # fpdef: NAME | '(' fplist ')'
@@ -1219,7 +1227,8 @@ class Transformer:
 
     def com_call_function(self, primaryNode, nodelist):
         if nodelist.type == token.RPAR:
-            return CallFunc(primaryNode, [], lineno=extractLineNo(nodelist))
+            return CallFunc(primaryNode, [], None, None,
+                            lineno=extractLineNo(nodelist))
         args = []
         kw = 0
         star_node = dstar_node = None

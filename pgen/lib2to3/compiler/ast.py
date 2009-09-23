@@ -20,7 +20,7 @@ def flatten_nodes(seq):
 
 nodes = {}
 
-class Node:
+class Node(object):
     """Abstract base class for ast nodes."""
     def getChildren(self):
         pass # implemented by subclasses
@@ -31,6 +31,16 @@ class Node:
         return self.getChildren()
     def getChildNodes(self):
         pass # implemented by subclasses
+    def _get_lineno(self):
+        return self._lineno
+    def _set_lineno(self, lineno):
+        if lineno is not None and not isinstance(lineno, int):
+            self._context = lineno
+            self._lineno = lineno[1][0]
+        else:
+            self._lineno = lineno
+            self._context = None
+    lineno = property(_get_lineno, _set_lineno)
 
 class EmptyNode(Node):
     pass
@@ -39,6 +49,7 @@ class Expression(Node):
     # Expression is an artificial node class to support "eval"
     nodes["expression"] = "Expression"
     def __init__(self, node):
+        Node.__init__(self)
         self.node = node
 
     def getChildren(self):

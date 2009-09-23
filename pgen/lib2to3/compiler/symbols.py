@@ -1,8 +1,8 @@
 """Module symbol-table generator"""
 
-from compiler import ast
-from compiler.consts import SC_LOCAL, SC_GLOBAL, SC_FREE, SC_CELL, SC_UNKNOWN
-from compiler.misc import mangle
+from lib2to3.compiler import ast
+from lib2to3.compiler.consts import SC_LOCAL, SC_GLOBAL, SC_FREE, SC_CELL, SC_UNKNOWN
+from lib2to3.compiler.misc import mangle
 import types
 
 
