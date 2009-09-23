@@ -566,6 +566,46 @@ class ClassTest(UnitTest):
         a = A(1)
         self.assertEqual(a.b.v, 1)
 
+    def testClassDefinitionCode(self):
+        class A(object):
+            def __init__(self, what):
+                class B(object):
+                    if not what:
+                        def __init__(self):
+                            self.v = 0
+                    else:
+                        def __init__(self):
+                            self.v = 1
+                self.b = B()
+
+        a = A(0)
+        self.assertEqual(a.b.v, 0)
+        a = A(1)
+        self.assertEqual(a.b.v, 1)
+
+        class A(object):
+            l = [1,2,3]
+            l[1] = 22
+            d = {}
+            d['a'] = 1
+            l1 = []
+            l2 = []
+            #for i in range(4):
+            #    l1.append(i)
+            i = 0
+            while i < 4:
+                l2.append(i)
+                i += 1
+
+        a = A()
+        v = [1,22,3]
+        self.assertTrue(a.l == v, "%r == %r" % (a.l, v))
+        v = {'a': 1}
+        self.assertTrue(a.d == v, "%r == %r" % (a.d, v))
+        v = [0,1,2,3]
+        self.assertTrue(a.l1 == v, "%r == %r" % (a.l1, v))
+        self.assertTrue(a.l2 == v, "%r == %r" % (a.l2, v))
+
 
 class PassMeAClass(object):
     def __init__(self):

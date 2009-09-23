@@ -509,8 +509,9 @@ class Klass:
 
     klasses = {}
 
-    def __init__(self, name):
+    def __init__(self, name, name_scope):
         self.name = name
+        self.name_scope = name_scope
         self.klasses[name] = self
         self.functions = set()
 
@@ -640,6 +641,7 @@ class Translator:
 
         self.imported_modules = []
         self.imported_js = []
+        self.is_class_definition = False
         self.local_prefix = None
         self.track_lines = {}
         self.stacksize_depth = 0
@@ -891,7 +893,7 @@ class Translator:
         raise RuntimeError("attrib_remap %s" % words)
 
     def push_lookup(self, scope = None):
-        if not scope:
+        if scope is None:
             scope = {}
         self.lookup_stack.append(scope)
 
@@ -908,6 +910,9 @@ class Translator:
 
     def add_lookup(self, name_type, pyname, jsname, depth = -1):
         jsname = self.jsname(name_type, jsname)
+        if self.local_prefix is not None:
+            if jsname.find(self.local_prefix) != 0:
+                jsname = self.jsname(name_type, "%s.%s" % (self.local_prefix, jsname))
         if self.lookup_stack[depth].has_key(pyname):
             name_type = self.lookup_stack[depth][pyname][0]
         self.lookup_stack[depth][pyname] = (name_type, pyname, jsname)
@@ -1680,6 +1685,8 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             print >> self.output, self.spacing() + "%s = %s;" % (lhs, rhs)
 
     def _function(self, node, current_klass, top_level, local):
+        if self.is_class_definition:
+            return self._method(node, current_klass)
         self.push_options()
         save_has_js_return = self.has_js_return
         self.has_js_return = False
@@ -2223,14 +2230,10 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             class_name = self.modpfx() + node.name
         else:
             class_name = node.name
-        current_klass = Klass(class_name)
+        local_prefix = '$cls_definition'
+        name_scope = {}
+        current_klass = Klass(class_name, name_scope)
         current_klass.__md5__ = self.md5(node)
-        init_method = None
-        for child in node.code:
-            if isinstance(child, self.ast.Function):
-                current_klass.add_function(child.name)
-                if child.name == "__init__":
-                    init_method = child
         if len(node.bases) == 0:
             base_classes = [("object", "pyjslib.object")]
         else:
@@ -2253,8 +2256,6 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
         if node.name in ['object', 'pyjslib.Object', 'pyjslib.object']:
             base_classes = []
-        local_prefix = '$cls_definition'
-        self.local_prefix = None
         class_name = self.add_lookup('class', node.name, class_name)
         print >>self.output, self.indent() + class_name + """ = (function(){
 %(s)svar $cls_instance = $pyjs__class_instance('%(n)s');
@@ -2262,54 +2263,18 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 %(s)svar $method;
 %(s)s%(p)s.__md5__ = '%(m)s';""" % {'s': self.spacing(), 'n': node.name, 'p': local_prefix, 'm': current_klass.__md5__}
 
-        private_scope = {}
+        self.push_lookup(name_scope)
         for child in node.code:
-            if isinstance(child, self.ast.Pass):
-                pass
-            elif isinstance(child, self.ast.Function):
-                self.local_prefix = None
-                self._method(child, current_klass, class_name, class_name, local_prefix)
-                self.push_lookup(private_scope)
-                name = "%s.%s" % (local_prefix, child.name)
-                jsname = self.add_lookup('method', child.name, name)
-                staticmethod, classmethod, decorator_code = self.parse_decorators(child, child.name, current_klass, False)
-                decorator_code = decorator_code % '$method'
-                print >>self.output, self.spacing() + "%s = %s;" % (jsname, decorator_code)
-                self.add_lookup('method', child.name, "pyjslib['staticmethod'](%s)" % jsname)
-                private_scope = self.pop_lookup()
-            elif isinstance(child, self.ast.Assign):
-                self.local_prefix = local_prefix
-                self.push_lookup(private_scope)
-                self.track_lineno(child, True)
-                v = child.nodes[0]
-                if isinstance(v, self.ast.Subscript):
-                    if v.flags == "OP_ASSIGN":
-                        obj = self.expr(v.expr, current_klass)
-                        if len(v.subs) != 1:
-                            raise TranslationError(
-                                "must have one sub (in _assign)", v, self.module_name)
-                        idx = self.expr(v.subs[0], current_klass)
-                        value = self.expr(child.expr, current_klass)
-                        print >>self.output, self.spacing() + obj + ".__setitem__(" + idx + ", " + value + ")" + ';'
-                    else:
-                        raise TranslationError(
-                            "unsupported flag (in _assign)", v, self.module_name)
-                else:
-                    rhs = self.expr(child.expr, current_klass)
-                    name = "%s.%s" % (local_prefix, child.nodes[0].name)
-                    lhs = self.add_lookup('attribute', child.nodes[0].name, name)
-                    print >>self.output, self.spacing() + "%s = %s;" % (lhs, rhs)
-                private_scope = self.pop_lookup()
-            elif isinstance(child, self.ast.Discard) and isinstance(child.expr, self.ast.Const):
-                # Probably a docstring, turf it
-                pass
-            else:
-                raise TranslationError(
-                    "unsupported type (in _class)", child, self.module_name)
+            self.is_class_definition = True
+            self.local_prefix = local_prefix
+            self._stmt(child, current_klass)
         print >>self.output, """\
 %(s)sreturn $pyjs__class_function($cls_instance, %(local_prefix)s, 
 %(s)s                            new Array(""" % {'s': self.spacing(), 'local_prefix': local_prefix}  + ",".join(map(lambda x: x[1], base_classes)) + """));
 %s})();""" % self.dedent()
+        self.pop_lookup()
+        self.is_class_definition = None
+        self.local_prefix = None
 
     def classattr(self, node, current_klass):
         self._assign(node, current_klass, True)
@@ -2362,7 +2327,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 """ % locals()
         self.generator_switch_case(increment=True)
 
-    def _method(self, node, current_klass, class_name, class_name_, local_prefix):
+    def _method(self, node, current_klass):
         self.push_options()
         save_has_js_return = self.has_js_return
         self.has_js_return = False
@@ -2373,15 +2338,20 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         save_generator_states = self.generator_states
         self.generator_states = [0]
         self.state_max_depth = len(self.generator_states)
+        save_local_prefix = self.local_prefix
 
         method_name = self.attrib_remap(node.name)
-        jsmethod_name = local_prefix + '.' + method_name
+        jsmethod_name = self.add_lookup('method', method_name, method_name)
+
+        self.local_prefix = None
+        self.is_class_definition = None
 
         staticmethod, classmethod, decorator_code = self.parse_decorators(node, method_name, current_klass, False)
 
         if node.name == '__new__':
             staticmethod = True
 
+        self.pop_lookup()
         self.push_lookup()
         arg_names = []
         for arg in node.argnames:
@@ -2496,6 +2466,15 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.has_js_return = save_has_js_return
         self.pop_options()
         self.pop_lookup()
+
+        self.push_lookup(current_klass.name_scope)
+        staticmethod, classmethod, decorator_code = self.parse_decorators(node, node.name, current_klass, False)
+        decorator_code = decorator_code % '$method'
+        print >>self.output, self.spacing() + "%s = %s;" % (jsmethod_name, decorator_code)
+        self.add_lookup('method', node.name, "pyjslib['staticmethod'](%s)" % jsmethod_name)
+        self.local_prefix = save_local_prefix
+        self.is_class_definition = True
+
 
     def _isNativeFunc(self, node):
         if isinstance(node, self.ast.Discard):
