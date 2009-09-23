@@ -109,9 +109,23 @@ class ListBox(FocusWidget):
         DOM.setIntAttribute(self.getElement(), "selectedIndex", index)
 
     def selectValue(self, value):
-        for n in range(self.getItemCount()):
+        """ selects the ListBox according to a value.
+            to select by item, see selectItem.
             # http://code.google.com/p/pyjamas/issues/detail?id=63
-            if self.getItemText(n) == value:
+        """
+        for n in range(self.getItemCount()):
+            if self.getValue(n) == value:
+                self.setSelectedIndex(n)
+                return n
+        return None
+
+    def selectItem(self, item):
+        """ selects the ListBox according to an item's text
+            to select by value, see selectValue.
+            # http://code.google.com/p/pyjamas/issues/detail?id=63
+        """
+        for n in range(self.getItemCount()):
+            if self.getItemText(n) == item:
                 self.setSelectedIndex(n)
                 return n
         return None
