@@ -340,6 +340,9 @@ for a in pyjs_attrib_remap_names:
 # and patch transformer. see http://bugs.python.org/issue6978
 def monkey_patch_broken_transformer(compiler):
 
+    if compiler.__name__ != 'compiler':
+        return # don't patch pgen.lib2to3.compiler.transformer!
+
     # assumes that compiler.transformer imports all these
     extractLineNo = compiler.transformer.extractLineNo
     token = compiler.transformer.token

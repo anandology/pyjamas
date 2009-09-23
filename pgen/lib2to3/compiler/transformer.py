@@ -411,8 +411,7 @@ class Transformer:
         return self.com_assign(nodelist[1], OP_DELETE)
 
     def pass_stmt(self, nodelist):
-        lineno=nodelist[0].context
-        return Pass(lineno=lineno)
+        return Pass(lineno=nodelist[0].context)
 
     def break_stmt(self, nodelist):
         return Break(lineno=nodelist[0].context)
@@ -1308,6 +1307,12 @@ class Transformer:
         subscripts = []
         for i in range(0, len(nodelist.children), 2):
             subscripts.append(self.com_subscript(nodelist.children[i]))
+        if len(nodelist.children) > 2:
+            tulplesub = [sub for sub in subscripts \
+                            if not (isinstance(sub, Ellipsis) or \
+                            isinstance(sub, Sliceobj))]
+            if len(tulplesub) == len(subscripts):
+                subscripts = [Tuple(subscripts)]
         return Subscript(primary, assigning, subscripts,
                          lineno=extractLineNo(nodelist))
 
