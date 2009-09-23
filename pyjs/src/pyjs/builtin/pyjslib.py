@@ -881,6 +881,9 @@ class Tuple:
         }
         """)
 
+    def __hash__(self):
+        return '$tuple$' + str(self.l)
+
     @compiler.noSourceTracking
     def __cmp__(self, l):
         if not isinstance(l, Tuple):
