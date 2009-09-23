@@ -569,6 +569,12 @@ class GeneratorTest(UnitTest):
         else:
             self.assertTrue(True)
 
+        # #269 - whoops!  webkit barfs / infinite loop on this one
+        #a = A()
+        #g = (child for child in a.fn())
+        #self.assertEqual(g.next(), 1)
+        #self.assertEqual(g.next(), 2)
+
 
 class A(object):
     def fn(self):
