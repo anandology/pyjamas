@@ -64,7 +64,8 @@ class FormPanel(SimplePanel):
         FormPanel_formId += 1
         formName = "FormPanel_" + str(FormPanel_formId)
         DOM.setAttribute(element, "target", formName)
-        DOM.setInnerHTML(element, "<iframe name='" + formName + "' src=''>")
+        DOM.setInnerHTML(element, """<iframe name='%s' src="javascript:''">"""\
+                                  % frameName)
         self.iframe = DOM.getFirstChild(element)
 
         DOM.setIntStyleAttribute(self.iframe, "width", 0)

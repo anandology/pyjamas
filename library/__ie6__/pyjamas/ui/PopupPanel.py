@@ -7,7 +7,7 @@ class PopupPanel:
         frame.scrolling = 'no';
         frame.frameBorder = 0;
         frame.style.position = 'absolute';
-        frame.src = '';
+        frame.src = "javascript:''";
         
         popup.__frame = frame;
         frame.__popup = popup;
