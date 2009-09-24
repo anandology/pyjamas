@@ -1128,15 +1128,29 @@ try{var %(dbg)s_res=%(call_code)s;}catch(%(dbg)s_err){
     def generator(self, code):
         if self.is_generator:
             s = self.spacing()
+            if self.source_tracking:
+                src1 = "var $pyjs__trackstack_size_%d = $pyjs.trackstack.length;" % self.stacksize_depth
+                src2 = """\
+%(s)ssys.save_exception_stack();
+%(s)sif ($pyjs.trackstack.length > $pyjs__trackstack_size_%(d)d) {
+%(s)s\t$pyjs.trackstack = $pyjs.trackstack.slice(0,$pyjs__trackstack_size_%(d)d);
+%(s)s\t$pyjs.track = $pyjs.trackstack.slice(-1)[0];
+%(s)s}
+%(s)s$pyjs.track.module='%(m)s';""" % {'s': self.spacing(), 'd': self.stacksize_depth, 'm': self.raw_module_name}
+            else:
+                src1 = src2 = ""
+
             print >>self.output, """\
 %(s)svar $generator_state = [0], $generator_exc = [null], $yield_value = null, $exc = null, $is_executing=false;
 %(s)svar $generator = function () {};
 %(s)s$generator['next'] = function () {
+%(src1)s
 %(s)s\t$yield_value = $exc = null;
 %(s)s\ttry {
 %(s)s\t\tvar $res = $generator['__next']();
 %(s)s\t\tif (typeof $res == 'undefined') throw pyjslib.StopIteration;
 %(s)s\t} catch (e) {
+%(src2)s
 %(s)s\t\t$is_executing=false;
 %(s)s\t\t$generator_state[0] = -1;
 %(s)s\t\tthrow e;
@@ -1146,12 +1160,14 @@ try{var %(dbg)s_res=%(call_code)s;}catch(%(dbg)s_err){
 %(s)s};
 %(s)s$generator['__iter__'] = function () {return $generator;};
 %(s)s$generator['send'] = function ($val) {
+%(src1)s
 %(s)s\t$yield_value = $val;
 %(s)s\t$exc = null;
 %(s)s\ttry {
 %(s)s\t\tvar $res = $generator['__next']();
 %(s)s\t\tif (typeof $res == 'undefined') throw pyjslib.StopIteration;
 %(s)s\t} catch (e) {
+%(src2)s
 %(s)s\t\t$generator_state[0] = -1;
 %(s)s\t\t$is_executing=false;
 %(s)s\t\tthrow e;
@@ -1160,11 +1176,13 @@ try{var %(dbg)s_res=%(call_code)s;}catch(%(dbg)s_err){
 %(s)s\treturn $res;
 %(s)s};
 %(s)s$generator['throw'] = function ($exc_type, $exc_value) {
+%(src1)s
 %(s)s\t$yield_value = null;
 %(s)s\t$exc=(typeof $exc_value == 'undefined'?$exc_type():$exc_type($exc_value));
 %(s)s\ttry {
 %(s)s\t\tvar $res = $generator['__next']();
 %(s)s\t} catch (e) {
+%(src2)s
 %(s)s\t\t$generator_state[0] = -1;
 %(s)s\t\t$is_executing=false;
 %(s)s\t\tthrow (e);
@@ -1173,6 +1191,7 @@ try{var %(dbg)s_res=%(call_code)s;}catch(%(dbg)s_err){
 %(s)s\treturn $res;
 %(s)s};
 %(s)s$generator['close'] = function () {
+%(src1)s
 %(s)s\t$yield_value = null;
 %(s)s\t$exc=pyjslib['GeneratorExit'];
 %(s)s\ttry {
@@ -1180,6 +1199,7 @@ try{var %(dbg)s_res=%(call_code)s;}catch(%(dbg)s_err){
 %(s)s\t\t$is_executing=false;
 %(s)s\t\tif (typeof $res != 'undefined') throw pyjslib.RuntimeError('generator ignored GeneratorExit');
 %(s)s\t} catch (e) {
+%(src2)s
 %(s)s\t\t$generator_state[0] = -1;
 %(s)s\t\t$is_executing=false;
 %(s)s\t\tif (e.__name__ == 'StopIteration' || e.__name__ == 'GeneratorExit') return null;
@@ -3337,6 +3357,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         save_generator_states = self.generator_states
         self.generator_states = [0]
         self.state_max_depth = len(self.generator_states)
+        self.push_options()
+        self.source_tracking = self.debug = False
 
         if not isinstance(node.code, self.ast.GenExprInner):
             raise TranslationError(
@@ -3387,6 +3409,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.state_max_depth = len(self.generator_states)
         self.is_generator = save_is_generator
         self.has_yield = save_has_yield
+        self.pop_options()
         return captured_output
 
     def _slice(self, node, current_klass):

@@ -1,7 +1,7 @@
 from UnitTest import UnitTest
 from write import write, writebr
 
-#from __pyjamas__ import debugger
+from __pyjamas__ import debugger
 
 class GeneratorTest(UnitTest):
 
@@ -551,6 +551,7 @@ class GeneratorTest(UnitTest):
         self.assertEqual(r, [0, 1, None, 2, 2, 3, 4])
 
     def testGenExp(self):
+        
         g = (child for child in [1,2,3])
         self.assertEqual(g.next(), 1)
         self.assertEqual(g.next(), 2)
@@ -570,10 +571,10 @@ class GeneratorTest(UnitTest):
             self.assertTrue(True)
 
         # #269 - whoops!  webkit barfs / infinite loop on this one
-        #a = A()
-        #g = (child for child in a.fn())
-        #self.assertEqual(g.next(), 1)
-        #self.assertEqual(g.next(), 2)
+        a = A()
+        g = (child for child in a.fn())
+        self.assertEqual(g.next(), 1)
+        self.assertEqual(g.next(), 2)
 
 
 class A(object):
