@@ -1,6 +1,24 @@
                     Changes made to Pyjamas since 0.6
                     ---------------------------------
 
+ * Added for in tuple
+
+ * Added support for locals()
+
+ * Added support for slice delete
+
+ * Added support of slice assignment
+
+ * Added support for IfExp (inline if expression)
+
+ * Added support for generator expressions
+
+ * Added support for any statement in class definition
+
+ * Added support backquote
+
+ * Added support for class definition anywhere
+
  * Re-enabled and fixed up pyv8run.py, which now successfully runs
    LibTest when translated to javascript (and passes 99.95%)
 
