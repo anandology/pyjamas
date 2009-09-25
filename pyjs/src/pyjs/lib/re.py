@@ -97,6 +97,8 @@ def escape(pattern):
 # --------------------------------------------------------------------
 # internals
 
+from __pyjamas__ import JS, debugger
+
 __inline_flags_re__ = JS(r"""new RegExp("[(][?][iLmsux]+[)]")""")
 
 _cache = {}
