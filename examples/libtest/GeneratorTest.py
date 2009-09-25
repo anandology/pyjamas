@@ -1,7 +1,7 @@
 from UnitTest import UnitTest
 from write import write, writebr
 
-from __pyjamas__ import debugger
+#from __pyjamas__ import debugger
 
 class GeneratorTest(UnitTest):
 
