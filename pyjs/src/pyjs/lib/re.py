@@ -1,4 +1,5 @@
-from __pyjamas__ import debugger
+
+#from __pyjamas__ import debugger
 
 
 # --------------------------------------------------------------------
@@ -96,9 +97,7 @@ def escape(pattern):
 # --------------------------------------------------------------------
 # internals
 
-from __pyjamas__ import JS, debugger
-
-__inline_flags_re__ = JS(r"""new RegExp("[(][?][iLmsux]+[)]", 'g')""")
+__inline_flags_re__ = JS(r"""new RegExp("[(][?][iLmsux]+[)]")""")
 
 _cache = {}
 _cache_repl = {}
@@ -111,11 +110,11 @@ def _compile(pat, flags=0):
     if p is not None:
         return p
 
-    if _cache.has_key(key):
-        return _cache[key]
     flgs = ""
-    m = __inline_flags_re__.Exec(pat)
-    if m is not None:
+    while True:
+        m = __inline_flags_re__.Exec(pat)
+        if m is None:
+            break
         pat = pat.__replace(__inline_flags_re__, "")
         for m in list(m):
             for c in m:

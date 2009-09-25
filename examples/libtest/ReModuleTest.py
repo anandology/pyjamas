@@ -47,8 +47,8 @@ class ReModuleTest(UnitTest.UnitTest):
         self.matchTest('test 5b', '(?s)Ab.cd', 0, 'Ab\ncd', ['Ab\ncd'], (0,5))
         # bug #288: even re.compile on these two tests puts webkit/chrome into
         # an infinite CPU loop.
-        #self.matchTest('test 6a', 'A(b).(c)d', re.I | re.S, 'ab\ncd', ['ab\ncd', 'b', 'c'], (0,5))
-        #self.matchTest('test 6b', '(?is)A(b).(c)d', 0, 'ab\ncd', ['ab\ncd', 'b', 'c'], (0,5))
+        self.matchTest('test 6a', 'A(b).(c)d', re.I | re.S, 'ab\ncd', ['ab\ncd', 'b', 'c'], (0,5))
+        self.matchTest('test 6b', '(?is)A(b).(c)d', 0, 'ab\ncd', ['ab\ncd', 'b', 'c'], (0,5))
 
         m = re.match("1..4", "1234")
         self.assertFalse(m is None, """re.match("1..4", "1234")""")
