@@ -293,7 +293,11 @@ function $pyjs__mro_merge(seqs) {
 function $pyjs__class_instance(class_name, module_name) {
     if (typeof module_name == 'undefined') module_name = typeof __mod_name__ == 'undefined' ? '__main__' : __mod_name__;
     var cls_fn = function(){
-        var instance = cls_fn.__new__.apply(null, [cls_fn]);
+        if (cls_fn.__is_int__ === null) {
+            var instance = cls_fn.__new__.apply(null, [cls_fn]);
+        } else {
+            var instance = cls_fn.__new__.apply(null, [cls_fn, arguments]);
+        }
         if (typeof instance.__init__ == 'function') {
             if (instance.__init__.apply(instance, arguments) != null) {
                 //throw '__init__() should return None';
@@ -313,6 +317,7 @@ function $pyjs__class_function(cls_fn, prop, bases) {
     if (typeof cls_fn != 'function') throw "compiler error? $pyjs__class_function: typeof cls_fn != 'function'";
     var class_name = cls_fn.__name__;
     var class_module = cls_fn.__module__;
+    cls_fn.__is_int__ = null;
     var base_mro_list = new Array()
     for (var i = 0; i < bases.length; i++) {
         if (bases[i].__mro__ != null) {

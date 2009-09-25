@@ -504,6 +504,15 @@ if (!Array.prototype.indexOf) {
 }
 """)
 
+    # Patching of the standard javascript Number
+    # which is in principle the python 'float'
+    JS("""
+Number.prototype.__is_int__ = false;
+Number.prototype.__init__ = function (value, radix) {
+    return null;
+};
+""")
+
     # Patching of the standard javascript RegExp
     JS("""
 RegExp.prototype.Exec = RegExp.prototype.exec;
@@ -594,6 +603,51 @@ def bool(v):
     }
     return Boolean(v);
     """)
+
+class float:
+    __is_int__ = False
+    def __new__(self, args):
+        JS("""
+        var v = Number(args[0]);
+        if (isNaN(v)) {
+            throw pyjslib.ValueError("invalid literal for float(): " + args[0]);
+        }
+        return v;
+""")
+
+class int:
+    __is_int__ = True
+    def __new__(self, args):
+        v = JS("new Number(args[0])")
+        radix = JS("typeof args[1] == 'undefined' ? null : args[1]")
+        JS("""
+        if (typeof args[0] == 'number' || typeof args[0].__is_int__ != 'undefined') {
+            if (radix !== null) {
+                throw pyjslib.TypeError("int() can't convert non-string with explicit base");
+            }
+            if (v > 0) {
+                v = Math.floor(v);
+            } else {
+                v = Math.ceil(v);
+            }
+        } else if (typeof args[0] == 'string') {
+            if (radix === null) {
+                radix = 10;
+            }
+            v = parseInt(v, radix);
+        } else {
+            throw pyjslib.TypeError("TypeError: int() argument must be a string or a number");
+        }
+        if (isNaN(v)) {
+            throw pyjslib.ValueError("invalid literal for int() with base " + radix + ": '" + args[0] + "'")
+        }
+        v.__is_int__ = true;
+        v.__init__ = self.__init__;
+""")
+        return v
+
+    def __init__(self, v, radix=None):
+        pass
 
 class List:
     @compiler.noSourceTracking
@@ -1490,30 +1544,6 @@ def repr(x):
        //var s = constructor.replace(new RegExp('_', "g"), '.');
        return "<" + constructor + " object>";
     """)
-
-@compiler.noSourceTracking
-def float(text):
-    JS("""
-    return parseFloat(text);
-    """)
-
-@compiler.noSourceTracking
-def int(text, radix=None):
-    _radix = radix
-    JS("""
-    if (radix === null) {
-        _radix = 10
-    } else {
-        if (typeof text != 'string') {
-            throw pyjslib.TypeError("int() can't convert non-string with explicit base");
-        }
-    }
-    var i = parseInt(text, _radix);
-    if (!isNaN(i)) {
-        return i;
-    }
-    """)
-    raise ValueError("invalid literal for int() with base %d: '%s'" % (_radix, text))
 
 @compiler.noSourceTracking
 def len(object):

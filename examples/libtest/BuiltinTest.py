@@ -63,6 +63,17 @@ class BuiltinTest(UnitTest):
         except TypeError, e:
             self.assertEqual(e[0], "int() can't convert non-string with explicit base")
 
+    def testFloat(self):
+        self.assertEqual(float("5.1"), 5.1)
+        self.assertEqual(float("09"), 9)
+        self.assertEqual(6.1, 6.1)
+
+        try:
+            float('not float')
+            self.fail("No float() argument error raised")
+        except ValueError, e:
+            self.assertEqual(e[0], "invalid literal for float(): not float")
+
     def testOrdChr(self):
         for i in range(256):
             self.assertEqual(ord(chr(i)), i)
