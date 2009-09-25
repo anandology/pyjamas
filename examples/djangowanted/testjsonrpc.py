@@ -1,5 +1,6 @@
 import unittest
 import jsonrpclib
+from pprint import pprint
 
 class TestJsolait(unittest.TestCase):
 
@@ -7,6 +8,9 @@ class TestJsolait(unittest.TestCase):
         unittest.TestCase.__init__(self, *args)
 
         self.s = jsonrpclib.ServerProxy("http://127.0.0.9/services/wanted/",
+                                        verbose=0)
+
+        self.f = jsonrpclib.ServerProxy("http://127.0.0.9/services/forms/",
                                         verbose=0)
 
     def item_equal(self, item, fields):
@@ -42,6 +46,9 @@ class TestJsolait(unittest.TestCase):
         item = reply["result"]
         self.assert_(item is None)
         
+    def test_itemform(self):
+        reply = self.f.itemform({}, {"describe": None})
+        pprint(reply)
 
 if __name__=="__main__":
     unittest.main()

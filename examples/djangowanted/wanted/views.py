@@ -8,6 +8,10 @@ from django.template import RequestContext, Template
 from django.http import HttpResponseRedirect, HttpResponse
 import urllib
 
+from wanted.forms import ItemForm
+
+formsservice = FormProcessor({'itemform': ItemForm})
+
 service = JSONRPCService()
 
 def index(request, path=None):

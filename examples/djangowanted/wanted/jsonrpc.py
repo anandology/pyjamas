@@ -4,6 +4,7 @@
 from django.utils import simplejson
 from django.http import HttpResponse
 import sys
+import traceback
 
 # JSONRPCService and jsonremote are used in combination to drastically
 # simplify the provision of JSONRPC services.  use as follows:
@@ -47,10 +48,16 @@ class JSONRPCService:
                 result = self.method_map[method](*params)
                 return response(id, result)
             except BaseException:
+                f = open("/tmp/log.txt", "w")
+                traceback.print_exc(file=f)
+                f.close()
                 etype, eval, etb = sys.exc_info()
                 return error(id, 100, '%s: %s' %(etype.__name__, eval))
             except:
                 etype, eval, etb = sys.exc_info()
+                f = open("/tmp/log.txt", "w")
+                traceback.print_exc(file=f)
+                f.close()
                 return error(id, 100, 'Exception %s: %s' %(etype, eval))
         else:
             return error(id, 100, 'method "%s" does not exist' % method)
@@ -107,6 +114,63 @@ def builderrors(form):
             d[error].append(unicode(errorval))
     return d
 
+
+# contains the list of arguments in each field
+field_names = {
+ 'CharField': ['max_length', 'min_length'],
+ 'IntegerField': ['max_value', 'min_value'],
+ 'FloatField': ['max_value', 'min_value'],
+ 'DecimalField': ['max_value', 'min_value', 'max_digits', 'decimal_places'],
+ 'DateField': ['input_formats'],
+ 'DateTimeField': ['input_formats'],
+ 'TimeField': ['input_formats'],
+ 'RegexField': ['max_length', 'min_length'], # sadly we can't get the expr
+ 'EmailField': ['max_length', 'min_length'],
+ 'URLField': ['max_length', 'min_length', 'verify_exists', 'user_agent'],
+ 'ChoiceField': ['choices'],
+ 'FilePathField': ['path', 'match', 'recursive', 'choices'],
+ 'IPAddressField': ['max_length', 'min_length'],
+ }
+
+def describe_field_errors(field):
+    res = {}
+    field_type = field.__class__.__name__
+    msgs = {}
+    for n, m in field.error_messages.items():
+        msgs[n] = unicode(m)
+    res['error_messages'] = msgs
+    if field_type in ['ComboField', 'MultiValueField', 'SplitDateTimeField']:
+        res['fields'] = map(describe_field, field.fields)
+    return res
+
+def describe_fields_errors(fields, field_names):
+    res = {}
+    if not field_names:
+        field_names = fields.keys()
+    for name in field_names:
+        field = fields[name]
+        res[name] = describe_field_errors(field)
+    return res
+
+def describe_field(field):
+    res = {}
+    field_type = field.__class__.__name__
+    for fname in field_names.get(field_type, []) + \
+          ['help_text', 'label', 'initial', 'required']:
+        res[fname] = getattr(field, fname)
+    if field_type in ['ComboField', 'MultiValueField', 'SplitDateTimeField']:
+        res['fields'] = map(describe_field, field.fields)
+    return res
+
+def describe_fields(fields, field_names):
+    res = {}
+    if not field_names:
+        field_names = fields.keys()
+    for name in field_names:
+        field = fields[name]
+        res[name] = describe_field(field)
+    return res
+
 class FormProcessor(JSONRPCService):
     def __init__(self, forms, _formcls=None):
 
@@ -115,18 +179,39 @@ class FormProcessor(JSONRPCService):
             for k in forms.keys():
                 s  = FormProcessor({}, forms[k])
                 self.add_method(k, s.__process)
-                #self.add_method(k, s)
         else:
             JSONRPCService.__init__(self, forms)
             self.formcls = _formcls
 
-    def __process(self, request, params):
+    def __process(self, request, params, command=None):
+
         f = self.formcls(params)
-        if f.is_valid():
-            #do stuff
+
+        if command is None: # just validate
+            if not f.is_valid():
+                return {'success':False, 'errors': builderrors(f)}
             return {'success':True}
-        else:
-            return {'success':False, 'errors': builderrors(f)}
+
+        elif command.has_key('describe_errors'):
+            field_names = command['describe_errors']
+            return describe_fields_errors(f.fields, field_names)
+
+        elif command.has_key('describe'):
+            field_names = command['describe']
+            return describe_fields(f.fields, field_names)
+
+        elif command.has_key('save'):
+            if not f.is_valid():
+                return {'success':False, 'errors': builderrors(f)}
+            instance = f.save() # XXX: if you want more, over-ride save.
+            return {'success': True, 'instance': json_convert(instance) }
+
+        elif command.has_key('html'):
+            return {'success': True, 'html': f.as_table()}
+
+        return "unrecognised command"
+
+
 
 
 # The following is incredibly convenient for saving vast amounts of
@@ -162,7 +247,6 @@ from django.core.serializers import serialize
 import datetime
 from datetime import date
 
-
 def dict_datetimeflatten(item):
     d = {}
     for k, v in item.items():
@@ -180,5 +264,4 @@ def json_convert(l, fields=None):
     for item in serialize('python', l, fields=fields):
         res.append(dict_datetimeflatten(item))
     return res
-
 
