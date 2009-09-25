@@ -294,7 +294,7 @@ function $pyjs__class_instance(class_name, module_name) {
     if (typeof module_name == 'undefined') module_name = typeof __mod_name__ == 'undefined' ? '__main__' : __mod_name__;
     var cls_fn = function(){
         var instance = cls_fn.__new__.apply(null, [cls_fn]);
-        if (instance.__init__) {
+        if (typeof instance.__init__ == 'function') {
             if (instance.__init__.apply(instance, arguments) != null) {
                 //throw '__init__() should return None';
                 throw pyjslib.TypeError('__init__() should return None');
