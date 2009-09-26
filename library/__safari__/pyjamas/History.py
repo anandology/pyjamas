@@ -8,7 +8,7 @@ def init():
     // Get the initial token from the url's hash component.
     var hash = $wnd.location.hash;
     if (hash.length > 0)
-        $wnd.__historyToken = decodeURIComponent(hash.substring(1));
+        $wnd.__historyToken = decodeURIComponent(hash.substring(1)).replace("%23", "#");
     else
         $wnd.__historyToken = '';
 
@@ -23,30 +23,26 @@ def init():
     if (tokenElement)
         $wnd.__historyToken = tokenElement.value;
     else
-        historyFrame.src = 'history.html?' + encodeURIComponent($wnd.__historyToken);
+        historyFrame.src = 'history.html?' + encodeURIComponent($wnd.__historyToken).replace("#", "%23");
 
-    // Expose the '__onHistoryChanged' function, which will be called by
-    // the history frame when it loads.
-    $wnd.__onHistoryChanged = function(token) {
-        // Change the URL and notify the application that its history frame
-        // is changing.
+    // Create the timer that checks the browser's url hash every 1/4 s.
+    $wnd.__checkHistory = function() {
+        var token = '', hash = $wnd.location.hash;
+        if (hash.length > 0)
+            token = decodeURIComponent(hash.substring(1)).replace("%23", "#");
+
         if (token != $wnd.__historyToken) {
             $wnd.__historyToken = token;
 
-            // TODO(jgw): fix the bookmark update, if possible.  The following code
-            // screws up the browser by (a) making it pretend that it's loading the
-            // page indefinitely, and (b) causing all text to disappear (!)
-            //        var base = $wnd.location.href;
-            //        var hashIdx = base.indexOf('#');
-            //        if (hashIdx != -1)
-            //          base = base.substring(0, hashIdx);
-            //        $wnd.location.replace(base + '#' + token);
-
-            // TODO - move init back into History
-            // this.onHistoryChanged(token);
+            pyjamas.History.newItem(token);
             pyjamas.History.onHistoryChanged(token);
         }
+
+        $wnd.setTimeout('__checkHistory()', 250);
     };
+
+    // Kick off the timer.
+    $wnd.__checkHistory();
 
     return true;
     """)
@@ -54,6 +50,12 @@ def init():
         
 def newItem(historyToken):
     JS("""
-    var iframe = $doc.getElementById('__pygwt_historyFrame');
-    iframe.contentWindow.location.href = 'history.html?' + historyToken;
+    // Safari gets into a weird state (issue 2905) when setting the hash
+    // component of the url to an empty string, but works fine as long as you
+    // at least add a '#' to the end of the url. So we get around this by
+    // recreating the url, rather than just setting location.hash.
+
+    $wnd.location = $wnd.location.href.split('#').__getitem__(0) + '#' +
+                   encodeURIComponent(historyToken).replace("#", "%23");
+
     """)
