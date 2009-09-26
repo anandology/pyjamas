@@ -109,10 +109,12 @@ class Control(FocusWidget, MouseHandler):
 
     def onKeyDown(self, sender, keycode, modifiers):
         if keycode == KeyboardListener.KEY_UP:
+            DOM.eventPreventDefault(DOM.eventGetCurrentEvent());
             new_value = self.processValue(self.value + self.step)
             self.setControlPos(new_value)
             self.setValue(new_value)
         elif keycode == KeyboardListener.KEY_DOWN:
+            DOM.eventPreventDefault(DOM.eventGetCurrentEvent());
             new_value = self.processValue(self.value - self.step)
             self.setControlPos(new_value)
             self.setValue(new_value)
@@ -130,7 +132,7 @@ class VerticalDemoSlider(Control):
 
         if not kwargs.has_key("StyleName"): kwargs['StyleName'] = "gwt-VerticalSlider"
 
-        element = DOM.createDiv()
+        element = Focus.createFocusable()
         DOM.setStyleAttribute(element, "position", "relative")
         DOM.setStyleAttribute(element, "overflow", "hidden")
 
@@ -231,6 +233,7 @@ class InputControl(Control):
 
     def onKeyPress(self, sender, keycode, modifiers):
         if keycode == KeyboardListener.KEY_ENTER:
+            DOM.eventPreventDefault(DOM.eventGetCurrentEvent());
             txt = self.input.getText()
             if not txt:
                 return

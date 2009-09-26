@@ -6,7 +6,7 @@ def blur(elem):
     // generally be unsuccessful, so we invoke blur() from outside of
     // the callback.
     $wnd.setTimeout(function() {
-                                   elem.blur();
+                                   elem.firstChild.blur();
                     },
                     0);
     """)
@@ -17,11 +17,11 @@ def createFocusable():
     var input = $doc.createElement('input');
     input.type = 'text';
     input.style.opacity = 0;
-    input.style.width = "1px";
-    input.style.height = "1px";
     input.style.zIndex = -1;
-    input.style.position = 'absolute';
+    input.style.width = '1px';
+    input.style.height = '1px';
     input.style.overflow = 'hidden';
+    input.style.position = 'absolute';
 
     input.addEventListener( 'blur',
                         function(evt)
@@ -54,7 +54,7 @@ def focus(elem):
     // generally be unsuccessful, so we invoke focus() from outside of
     // the callback.
     $wnd.setTimeout(function() {
-                                   elem.focus();
+                                   elem.firstChild.focus();
                     },
                     0);
     """)

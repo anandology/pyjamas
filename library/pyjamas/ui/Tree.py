@@ -42,6 +42,11 @@ class Tree(Widget):
         self.setElement(DOM.createDiv())
         DOM.setStyleAttribute(self.getElement(), "position", "relative")
         self.focusable = Focus.createFocusable()
+        # Hide focus outline in Mozilla/Webkit/Opera
+        DOM.setStyleAttribute(self.focusable, "outline", "0px")
+        # Hide focus outline in IE 6/7
+        DOM.setElemAttribute(self.focusable, "hideFocus", "true");
+
         DOM.setStyleAttribute(self.focusable, "fontSize", "0")
         DOM.setStyleAttribute(self.focusable, "position", "absolute")
         DOM.setIntStyleAttribute(self.focusable, "zIndex", -1)
@@ -52,7 +57,7 @@ class Tree(Widget):
 
         Widget.__init__(self, **kwargs)
 
-        self.sinkEvents(Event.MOUSEEVENTS | Event.ONCLICK | Event.KEYEVENTS)
+        self.sinkEvents(Event.ONMOUSEDOWN | Event.ONCLICK | Event.KEYEVENTS)
         #DOM.sinkEvents(self.focusable, Event.FOCUSEVENTS | Event.KEYEVENTS | DOM.getEventsSunk(self.focusable))
         DOM.sinkEvents(self.focusable, Event.FOCUSEVENTS)
 
