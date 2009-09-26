@@ -204,7 +204,9 @@ class FormProcessor(JSONRPCService):
             if not f.is_valid():
                 return {'success':False, 'errors': builderrors(f)}
             instance = f.save() # XXX: if you want more, over-ride save.
-            return {'success': True, 'instance': json_convert(instance) }
+            fields = command['save'] 
+            jc = json_convert([instance], fields=fields)[0]
+            return {'success': True, 'instance': jc}
 
         elif command.has_key('html'):
             return {'success': True, 'html': f.as_table()}
@@ -261,7 +263,15 @@ def dict_datetimeflatten(item):
 
 def json_convert(l, fields=None):
     res = []
-    for item in serialize('python', l, fields=fields):
+    for i in l:
+        item = serialize('python', [i], fields=fields)[0]
+        if fields:
+            for f in fields:
+                if not item['fields'].has_key(f):
+                    lg = open("/tmp/field.txt", "a")
+                    lg.write("%s %s %s\n" % (repr(item), repr(f), repr(type(getattr(i, str(f))))))
+                    lg.close()
+                    item['fields'][f] = json_convert([getattr(i, f)], )[0]
         res.append(dict_datetimeflatten(item))
     return res
 

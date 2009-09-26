@@ -1,12 +1,13 @@
 # Create your views here.
 
 from jsonrpc import *
-from djangowanted.wanted.models import Item, Flag, FlagType 
+from djangowanted.wanted.models import Item, Flag, FlagType
 from django.template import loader
 from django.shortcuts import render_to_response
 from django.template import RequestContext, Template
 from django.http import HttpResponseRedirect, HttpResponse
 import urllib
+from copy import copy
 
 from wanted.forms import ItemForm
 
@@ -44,13 +45,27 @@ def index(request, path=None):
     tpl = tpl.render(context_instance)
     return HttpResponse(tpl)
 
+
+def _getItem (item):
+    fields = copy(item._meta.get_all_field_names())
+    del fields[fields.index('flag')]
+    del fields[fields.index('id')]
+    for f in FlagType.objects.all():
+        fields.append(f.name)
+        try:
+            fg = Flag.objects.get(item=item.id, type=f.id)
+        except Flag.DoesNotExist:
+            fg = Flag()
+        setattr(item, f.name, fg)
+    return json_convert([item], fields=fields)[0]
+
 @jsonremote(service)
 def getItem (request, num):
     try:
         item = Item.objects.get(id=num)
     except Item.DoesNotExist:
         return None
-    return json_convert([item])[0]
+    return _getItem(item)
 
 @jsonremote(service)
 def getItemsByName (request, name):
@@ -75,7 +90,26 @@ def addItem (request, item):
     t.short_description = item['short_description']
     t.price = item['price']
     t.save()
-    return json_convert([t])[0]
+    fields = copy(t._meta.get_all_field_names())
+    del fields[fields.index('flag')]
+    del fields[fields.index('id')]
+    for f in FlagType.objects.all():
+        fields.append(f.name)
+        fv = item[f.name]
+        d = {'item': t.id, 'type': f.id, 'value': fv}
+        try:
+            fg = Flag.objects.get(item=t.id, type=f.id)
+        except Flag.DoesNotExist:
+            fg = Flag()
+            fg.item = t
+            fg.type = f
+        fg.value = fv
+        fg.save()
+        setattr(t, f.name, fg)
+    f = open("/tmp/additem.txt", "w")
+    f.write("%s %s\n" % (repr(fields), repr(dir(t))))
+    f.close()
+    return json_convert([t], fields=fields)[0]
 
 @jsonremote(service)
 def deleteItem (request, num):

@@ -8,38 +8,42 @@ class FlagForm(ModelForm):
     value = forms.CharField(max_length=255)
 
 class ItemForm(ModelForm):
+    class Meta:
+        model = Item
     name = forms.CharField(max_length=50)
     short_description = forms.CharField(max_length=100)
     description = forms.CharField(max_length=1000)
     price = forms.IntegerField()
-    def form_is_valid(self):
-        print self.instance.id
-        res = {}
+
+    def _is_valid(self):
+        res = ModelForm.is_valid(self)
+        if self.instance.id is None:
+            return res
         for f in FlagType.objects.all():
             fv = self.data[f.name]
-            print "field", f.name, fv
             d = {'item': self.instance.id, 'type': f.id, 'value': fv}
             try:
                 fg = Flag.objects.get(item=self.instance.id, type=f.id)
             except Flag.DoesNotExist:
-                fg = Flag()
+                continue
             ff = FlagForm(d, instance=fg)
-            res[f.name] = ff.is_valid()
+            if not ff.is_valid():
+                res = False
+                self.errors[f.name] = ff.errors
         return res
 
-    def form_save(self):
-        print self.instance.id
-        res = {}
+    def save(self):
+        res = ModelForm.save(self)
         for f in FlagType.objects.all():
             fv = self.data[f.name]
-            print "field", f.name, fv
             d = {'item': self.instance.id, 'type': f.id, 'value': fv}
             try:
                 fg = Flag.objects.get(item=self.instance.id, type=f.id)
             except Flag.DoesNotExist:
                 fg = Flag()
             ff = FlagForm(d, instance=fg)
-            res[f.name] = ff.save()
+            fv = ff.save()
+            setattr(res, f.name, fv)
         return res
 
     for f in FlagType.objects.all():
@@ -47,14 +51,26 @@ class ItemForm(ModelForm):
     #ItemForm.Meta.fields.append(str(f.name))
 
 def test_item_form():
-    i = Item()
-    d = {'name': 'fred', 'short_description': 'joe', 'description': 'longer', 'price': 20, 'vehicletype': 'a car', 'numdoors': '5'}
-    f = ItemForm(d, instance=i)
-    print f.is_valid()
-    it = f.save()
-    print f.form_is_valid()
-    f.form_save()
+    for idx in range(1,314):
+        try:
+            i = Item.objects.get(id=idx)
+        except Item.DoesNotExist:
+            i = Item()
+            i.id = idx
+        d = {'id': idx, 'name': 'fred %d' % (idx % 10), 'short_description': 'joe', 'description': 'longer', 'price': 20, 'vehicletype': 'a car', 'numdoors': 5}
+        f = ItemForm(d, instance=i)
+        if not f.is_valid():
+            for (e, k) in f.errors.items():
+                print e, k
+        it = f.save()
 
-    print it
+        print it, it.id, it.price, it.vehicletype.id, it.vehicletype.value, it.numdoors.value
 
-    print f.describe()
+        it.price = 25
+        if not f.is_valid():
+            for (e, k) in f.errors.items():
+                print e, k
+        it = f.save()
+
+        print it, it.id, it.price, it.vehicletype.id, it.vehicletype.value, it.numdoors.value
+
