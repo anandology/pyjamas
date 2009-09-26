@@ -77,7 +77,7 @@ you are out of luck and should entirely avoid using setup.py.
 First, you must use bootstrap.py to create suitable ./bin/pyjsbuild
 and ./bin/pyjscompile commands.  For example:
 
- python boostrap.py /usr/bin /usr/share/pyjamas
+ python bootstrap.py /usr/bin /usr/share/pyjamas
 
 After ./pyjd/__init__.py, ./bin/pyjsbuild and ./bin/pyjscompile have been
 created, they can now be installed system-wide, along with the libraries.
