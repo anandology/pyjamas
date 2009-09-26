@@ -22,7 +22,7 @@ class TestJsolait(unittest.TestCase):
                 v = v['fields']['value']
             self.assert_(v == fields[fname])
 
-    def test_createanddeleteitem(self):
+    def notest_createanddeleteitem(self):
         forsale = {'name': 'a car',
                    'short_description': 'a nice car',
                    'price': 20.0,
@@ -53,7 +53,7 @@ class TestJsolait(unittest.TestCase):
         item = reply["result"]
         self.assert_(item is None)
         
-    def notest_itemform(self):
+    def test_itemform(self):
         reply = self.f.itemform({}, {"describe": 
                                        ['name', 'description',
                                         'short_description',
@@ -69,6 +69,12 @@ class TestJsolait(unittest.TestCase):
                                         'vehicletype']})
 
         pprint(reply)
+        item = reply["result"]['instance']
+        to_delete = item['pk']
+
+        reply = self.f.itemform(to_delete, {"delete": None})
+        pprint(reply)
+
 
     def notest_itemformerror(self):
 

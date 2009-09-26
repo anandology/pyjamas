@@ -200,6 +200,10 @@ class FormProcessor(JSONRPCService):
             field_names = command['describe']
             return describe_fields(f.fields, field_names)
 
+        elif command.has_key('delete'):
+            instance = f.delete(params) 
+            return {'success': True}
+
         elif command.has_key('save'):
             if not f.is_valid():
                 return {'success':False, 'errors': builderrors(f)}

@@ -32,6 +32,19 @@ class ItemForm(ModelForm):
                 self.errors[f.name] = ff.errors
         return res
 
+    def delete(self, idx=None):
+        if idx is None:
+            instance = self.instance
+        else:
+            instance = Item.objects.get(id=idx)
+        for f in FlagType.objects.all():
+            try:
+                fg = Flag.objects.get(item=instance.id, type=f.id)
+            except Flag.DoesNotExist:
+                continue
+            fg.delete()
+        instance.delete()
+
     def save(self):
         res = ModelForm.save(self)
         for f in FlagType.objects.all():
