@@ -30,6 +30,7 @@ class Control(FocusWidget, MouseHandler):
         self.value = start_value
         self.valuechange_listeners = []
         self.dragging = False
+        self.drag_enabled = False
         
         if not kwargs.has_key("TabIndex"): kwargs['TabIndex'] = 0
         FocusWidget.__init__(self, element, **kwargs)
@@ -74,6 +75,7 @@ class Control(FocusWidget, MouseHandler):
         pass
 
     def onClick(self, sender=None):
+        self.setFocus(True);
         # work out the relative position of cursor
         event = DOM.eventGetCurrentEvent()
         mouse_x = DOM.eventGetClientX(event) 
@@ -92,10 +94,13 @@ class Control(FocusWidget, MouseHandler):
         VerticalDemoSlider.onLoseFocus(self, sender)
 
     def onMouseDown(self, sender, x, y):
+        # regardless of drag_enabled, onMouseDown must prevent
+        # default, in order to avoid losing focus.
+        DOM.eventPreventDefault(DOM.eventGetCurrentEvent());
+        if not self.drag_enabled:
+            return
         self.dragging = True
         DOM.setCapture(self.getElement())
-        self.setFocus(True);
-        DOM.eventPreventDefault(DOM.eventGetCurrentEvent());
         self.moveControl(x, y)
 
     def onMouseUp(self, sender, x, y):
@@ -149,6 +154,7 @@ class VerticalDemoSlider(Control):
 
         self.addClickListener(self)
         self.addFocusListener(self)
+        self.addMouseListener(self)
 
     def onFocus(self, sender):
         self.addStyleName("gwt-VerticalSlider-focussed")
@@ -201,8 +207,8 @@ class VerticalDemoSlider2(VerticalDemoSlider):
 
         VerticalDemoSlider.__init__(self, min_value, max_value, start_value,
                                     **kwargs)
-        self.addMouseListener(self)
         self.addKeyboardListener(self)
+        self.drag_enabled = True
 
 class InputControl(Control):
 
