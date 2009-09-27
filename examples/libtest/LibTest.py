@@ -37,52 +37,58 @@ from UrllibModuleTest import UrllibModuleTest
 from Base64ModuleTest import Base64ModuleTest
 from ReModuleTest import ReModuleTest
 
+from write import writebr
+
 class RunTests:
-    def __init__(self, tests):
-        self.tests = tests
+    def __init__(self):
+        self.testlist = {}
         self.test_idx = 0
 
+    def add(self, test):
+        self.testlist[len(self.testlist)] = test
+
     def start_test(self):
-        if self.test_idx >= len(self.tests):
+        if self.test_idx >= len(self.testlist):
             return
+
         idx = self.test_idx
         self.test_idx += 1
 
-        test_kls = self.tests[idx]
+        test_kls = self.testlist[idx]
         t = test_kls()
-        t.start_next_test = self.start_test
+        t.start_next_test = getattr(self, "start_test")
         t.run()
 
 def main():
 
-    test_classes = [ LoopTest,
-        BoolTest,
-        ListTest,
-        TupleTest,
-        FunctionTest,
-        ExceptionTest,
-        ClassTest,
-        StringTest,
-        SetTest,
-        ArgsTest,
-        VarsTest,
-        AttributeTest,
-        NameTest,
-        DictTest,
-        BuiltinTest,
-        GeneratorTest,
-        TypeCompatibilityTest,
-        MD5Test,
-        TimeModuleTest,
-        UrllibModuleTest,
-        Base64ModuleTest,
-        ReModuleTest,
-    ]
-    if IN_BROWSER:
-        test_classes.append(JSOTest)
-        test_classes.append(WindowTest)
+    t = RunTests()
+    t.add(LoopTest)
+    t.add(BoolTest)
+    t.add(ListTest)
+    t.add(TupleTest)
+    t.add(FunctionTest)
+    t.add(ExceptionTest)
+    t.add(ClassTest)
+    t.add(StringTest)
+    t.add(SetTest)
+    t.add(ArgsTest)
+    t.add(VarsTest)
+    t.add(AttributeTest)
+    t.add(NameTest)
+    t.add(DictTest)
+    t.add(BuiltinTest)
+    t.add(GeneratorTest)
+    t.add(TypeCompatibilityTest)
+    t.add(MD5Test)
+    t.add(TimeModuleTest)
+    t.add(UrllibModuleTest)
+    t.add(Base64ModuleTest)
+    t.add(ReModuleTest)
 
-    t = RunTests(test_classes)
+    if IN_BROWSER:
+        t.add(JSOTest)
+        t.add(WindowTest)
+
     t.start_test()
 
 if __name__ == '__main__':
