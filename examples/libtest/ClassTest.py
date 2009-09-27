@@ -406,21 +406,21 @@ class ClassTest(UnitTest):
         gregister("mscp1", ExampleMultiSuperclassParent1)
 
         pmc = ggetObject("passme")
-        self.assertEqual(pmc.foo(), "foo in PassMeAClass")
+        self.assertEqual(pmc.foo(), "foo in PassMeAClass", "foo !in PassMeAClass")
 
         try:
             pmc = ggetObject("mscp1", 5) 
         except:
             self.assertEqual(False, True, "Exception indicates bug in compiler: 'Error: uncaught exception: ExampleMultiSuperclassParent1() arguments after ** must be a dictionary 5'")
         else:
-            self.assertEqual(pmc.x, 5)
+            self.assertEqual(pmc.x, 5, "pass me class x != 5")
         try:
             pmc = ggetObject("exchild", 5, 7) # 5 is ignored
         except:
             self.assertEqual(False, True, "Exception indicates bug in compiler: 'Error: uncaught exception: ExampleChildClass() arguments after ** must be a dictionary 7'")
         else:
-            self.assertEqual(pmc.prop_a, 1)
-            self.assertEqual(pmc.prop_b, 7)
+            self.assertEqual(pmc.prop_a, 1, "pass me class prop_a != 1")
+            self.assertEqual(pmc.prop_b, 7, "pass me class prop_b != 7")
 
     def testClassFactory(self):
 
