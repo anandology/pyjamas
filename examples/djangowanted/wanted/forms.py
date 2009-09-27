@@ -10,10 +10,10 @@ class FlagForm(ModelForm):
 class ItemForm(ModelForm):
     class Meta:
         model = Item
-    name = forms.CharField(max_length=50)
-    short_description = forms.CharField(max_length=100)
+    name = forms.CharField(max_length=50, label="Name")
+    short_description = forms.CharField(max_length=100, label="Description")
     description = forms.CharField(max_length=1000)
-    price = forms.IntegerField()
+    price = forms.FloatField(label="Price")
 
     def _is_valid(self):
         res = ModelForm.is_valid(self)
@@ -60,7 +60,7 @@ class ItemForm(ModelForm):
         return res
 
     for f in FlagType.objects.all():
-        locals()[f.name] = forms.CharField(max_length=100)
+        locals()[f.name] = forms.CharField(max_length=100, label=f.description)
     #ItemForm.Meta.fields.append(str(f.name))
 
 def test_item_form():
