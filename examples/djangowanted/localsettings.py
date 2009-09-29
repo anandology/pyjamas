@@ -80,5 +80,5 @@ INSTALLED_APPS = (
     #'django.contrib.sessions',
     #'django.contrib.sites',
 	 'djangowanted.wanted',
-     'django_evolution',
+     'south',
 )

@@ -4,7 +4,7 @@ class Item(Model):
     name = CharField(max_length=50)
     short_description = CharField(max_length=100)
     description = TextField()
-    price = IntegerField()
+    price = IntegerField(max_length=10)
     created_date = DateField(auto_now=True, auto_now_add=True)
     updated_date = DateField(auto_now=True)
 
