@@ -12,7 +12,7 @@ class ItemForm(ModelForm):
         model = Item
     name = forms.CharField(max_length=50, label="Name")
     short_description = forms.CharField(max_length=100, label="Description")
-    description = forms.CharField(max_length=1000)
+    description = forms.CharField(max_length=1000, label="Details")
     price = forms.FloatField(label="Price")
 
     def _is_valid(self):
