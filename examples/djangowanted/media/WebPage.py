@@ -8,7 +8,7 @@ from pyjamas.JSONService import JSONProxy
 
 from pyjamas import Window
 from pyjamas import History
-from pyjamas.django import Form
+from pyjamas.django.Form import Form
 from pyjamas import log
 
 from WebPageEdit import WebPageEdit
@@ -98,6 +98,7 @@ if __name__ == "__main__":
     pyjd.setup("http://127.0.0.1:8000/site_media/WebPage.html")
 
     app = WebApp()
-    app.onModuleLoad()
+    #app.onModuleLoad()
+    app.onFormLoad()
     pyjd.run()
 

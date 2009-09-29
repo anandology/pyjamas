@@ -1,7 +1,7 @@
 # Create your views here.
 
 from jsonrpc import *
-from djangowanted.wanted.models import Item, Flag, FlagType
+from djangowanted.wanted.models import Item, Flag, FlagType, Page
 from django.template import loader
 from django.shortcuts import render_to_response
 from django.template import RequestContext, Template
@@ -16,19 +16,18 @@ formsservice = FormProcessor({'itemform': ItemForm})
 service = JSONRPCService()
 
 def index(request, path=None):
-    f = open("/tmp/log.txt", "a")
-    f.write("path: %s\n" % str(path))
-    f.write("request: %s\n" % str(request))
     path = request.GET.get('page', None)
     if path == '':
         path = 'index'
-    f.write("pth: %s \n" % (path))
     if path is None:
         # workaround in history tokens: must have a query
         return HttpResponseRedirect("./?page=#index")
-    p = Item.objects.get(name=path)
-    f.write("page: %s \n" % (str(p)))
-    f.close()
+    try:
+        p = Page.objects.get(name=path)
+    except Page.DoesNotExist:
+        p = None 
+    if not p and path == 'index':
+        return render_to_response('index.html', {'title':'', 'noscript':''})
     args = {'title': p.name,
             'noscript': p.text
             }
