@@ -3646,22 +3646,22 @@ def merge(ast, module_name, tree1, tree2, flags):
         return tree2
     for child in tree2.node:
         if isinstance(child, ast.Function):
-            replaceFunction(ast, tree1, child.name, child)
+            replaceFunction(ast, module_name, tree1, child.name, child)
         elif isinstance(child, ast.Class):
-            replaceClassMethods(ast, tree1, child.name, child)
+            replaceClassMethods(ast, module_name, tree1, child.name, child)
         else:
             raise TranslationError(
                 "Do not know how to merge %s" % child, child, module_name)
     return tree1
 
-def replaceFunction(ast, tree, function_name, function_node):
+def replaceFunction(ast, module_name, tree, function_name, function_node):
     # find function to replace
     for child in tree.node:
         if isinstance(child, ast.Function) and child.name == function_name:
             copyFunction(child, function_node)
             return
     raise TranslationError(
-        "function not found: " + function_name, function_node, None)
+        "function not found: " + function_name, function_node, module_name)
 
 def copyFunction(target, source):
     target.code = source.code
@@ -3674,7 +3674,7 @@ def addCode(target, source):
 
 
 
-def replaceClassMethods(ast, tree, class_name, class_node):
+def replaceClassMethods(ast, module_name, tree, class_name, class_node):
     # find class to replace
     old_class_node = None
     for child in tree.node:
@@ -3684,7 +3684,7 @@ def replaceClassMethods(ast, tree, class_name, class_node):
 
     if not old_class_node:
         raise TranslationError(
-            "class not found: " + class_name, class_node, self.module_name)
+            "class not found: " + class_name, class_node, module_name)
 
     # replace methods
     for node in class_node.code:
@@ -3699,7 +3699,7 @@ def replaceClassMethods(ast, tree, class_name, class_node):
             if not found:
                 raise TranslationError(
                     "class method not found: " + class_name + "." + node.name,
-                    node, self.module_name)
+                    node, module_name)
         elif isinstance(node, ast.Assign) and \
              isinstance(node.nodes[0], ast.AssName):
             found = False
