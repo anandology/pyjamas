@@ -25,6 +25,21 @@ class XULrunnerHackCallback:
 
 
 class HTTPRequest:
+    # also callable as: asyncPut(self, url, postData, handler)
+    def asyncPut(self, user, pwd, url, postData=None, handler=None,
+                        return_xml=0, content_type='text/plain charset=utf8'):
+        if postData is None:
+            return self.asyncPutImpl(None, None, user, pwd, url,
+                                      return_xml, content_type)
+        return self.asyncPutImpl(user, pwd, url, postData, handler,
+                                 return_xml, content_type)
+
+    # also callable as: asyncDelete(self, url, handler)
+    def asyncDelete(self, user, pwd, url=None, handler=None):
+        if url is None:
+            return self.asyncDeleteImpl(None, None, user, pwd)
+        return self.asyncDeleteImpl(user, pwd, url, handler)
+
     # also callable as: asyncPost(self, url, postData, handler)
     def asyncPost(self, user, pwd, url, postData=None, handler=None,
                         return_xml=0, content_type='text/plain charset=utf8'):
@@ -110,6 +125,69 @@ class HTTPRequest:
 
         return url
 
+    def asyncPutImpl(self, user, pwd, url, postData, handler, 
+                            return_xml, content_type):
+        mf = get_main_frame()
+        xmlHttp = self.doCreateXmlHTTPRequest()
+        url = self._convertUrlToAbsolute(url)
+        print "xmlHttp", user, pwd, url, postData, handler, dir(xmlHttp)
+        #try :
+        if mf.platform == 'webkit' or mf.platform == 'mshtml':
+            xmlHttp.open("PUT", url, True, '', '')
+        else:
+            # EEK!  xmlhttprequest.open in xpcom is a miserable bastard.
+            #xmlHttp.open("PUT", url, True, '', '')
+            print url, xmlHttp.open("PUT", url)
+        xmlHttp.setRequestHeader("Content-Type", content_type)
+        xmlHttp.setRequestHeader("Content-Length", str(len(postData)))
+        #for c in Cookies.get_crumbs():
+        #    xmlHttp.setRequestHeader("Set-Cookie", c)
+        #    print "setting cookie", c
+
+        if mf.platform == 'webkit' or mf.platform == 'mshtml':
+            mf._addXMLHttpRequestEventListener(xmlHttp, "onreadystatechange",
+                                         self.onReadyStateChange)
+        else:
+            mf._addXMLHttpRequestEventListener(xmlHttp, "load",
+                                         self.onLoad)
+        handlers[xmlHttp] = handler
+        xmlHttp.send(postData)
+            
+        return True
+    
+        #except:
+            #del xmlHttp.onreadystatechange
+        handler = None
+        xmlHttp = None
+        localHandler.onError(str(e))
+        return False
+        
+    def asyncDeleteImpl(self, user, pwd, url, handler):
+        mf = get_main_frame()
+        url = self._convertUrlToAbsolute(url)
+        xmlHttp = self.doCreateXmlHTTPRequest()
+        print dir(xmlHttp)
+        print user, pwd, url, handler
+        #try :
+
+        if mf.platform == 'webkit':
+            xmlHttp.open("DELETE", url, True, user, pwd)
+        else:
+            xmlHttp.open("DELETE", url)
+        xmlHttp.setRequestHeader("Content-Type", "text/plain charset=utf-8")
+        # TODO: xmlHttp.onreadystatechange = self.onReadyStateChange
+
+        if mf.platform == 'webkit' or mf.platform == 'mshtml':
+            mf._addXMLHttpRequestEventListener(xmlHttp, "onreadystatechange",
+                                         self.onReadyStateChange)
+        else:
+            mf._addXMLHttpRequestEventListener(xmlHttp, "load",
+                                         self.onLoad)
+        handlers[xmlHttp] = handler
+        xmlHttp.send('')
+
+        return True
+    
     def asyncPostImpl(self, user, pwd, url, postData, handler, 
                             return_xml, content_type):
         mf = get_main_frame()
