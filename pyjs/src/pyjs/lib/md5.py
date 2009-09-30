@@ -385,7 +385,7 @@ def hexstr(s):
     r = ''
     i = None
     for x in range(16):
-        JS("i = s[x];")
+        i = int(JS("s[x]"))
         r = r + h[(i >> 4) & 0xF] + h[i & 0xF]
     return r
 

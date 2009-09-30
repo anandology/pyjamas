@@ -634,6 +634,8 @@ class Translator:
         'InlineCode': [('inline_bool', True),('inline_len', True),('inline_eq', True)],
         'noOperatorFuncs': [('operator_funcs', False)],
         'OperatorFuncs': [('operator_funcs', True)],
+        'noNumberClasses': [('number_classes', False)],
+        'NumberClasses': [('number_classes', True)],
     }
 
     def __init__(self, compiler,
@@ -650,6 +652,7 @@ class Translator:
                  store_source=True,
                  inline_code=True,
                  operator_funcs=True,
+                 number_classes=True,
                 ):
 
         monkey_patch_broken_transformer(compiler)
@@ -686,6 +689,9 @@ class Translator:
         self.inline_len = inline_code
         self.inline_eq = inline_code
         self.operator_funcs = operator_funcs
+        self.number_classes = number_classes
+        if self.number_classes:
+            self.operator_funcs = True
 
         self.imported_modules = []
         self.imported_js = []
@@ -841,7 +847,7 @@ class Translator:
             self.attribute_checking, self.bound_methods, self.descriptors,
             self.source_tracking, self.line_tracking, self.store_source,
             self.inline_bool, self.inline_eq, self.inline_len,
-            self.operator_funcs,
+            self.operator_funcs, self.number_classes,
         ))
     def pop_options(self):
         (\
@@ -849,7 +855,7 @@ class Translator:
             self.attribute_checking, self.bound_methods, self.descriptors,
             self.source_tracking, self.line_tracking, self.store_source,
             self.inline_bool, self.inline_eq, self.inline_len,
-            self.operator_funcs,
+            self.operator_funcs, self.number_classes,
         ) = self.option_stack.pop()
 
     def parse_decorators(self, node, funcname, current_class = None, top_level = False):
@@ -2656,16 +2662,22 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         def astOP(op):
             if op == "+=":
                 return self.ast.Add
-            elif op == "-=":
+            if op == "-=":
                 return self.ast.Sub
-            elif op == "*=":
+            if op == "*=":
                 return self.ast.Mul
-            elif op == "/=":
+            if op == "/=":
                 return self.ast.Div
-            elif op == "%=":
+            if op == "%=":
                 return self.ast.Mod
-            else:
-                raise TranslationError(
+            if self.number_classes:
+                if op == "&=":
+                    return self.ast.Bitand
+                if op == "^=":
+                    return self.ast.Bitxor
+                if op == "|=":
+                    return self.ast.Bitor
+            raise TranslationError(
                  "unsupported OP (in _augassign)", node, self.module_name)
         v = node.node
         if isinstance(v, self.ast.Getattr):
@@ -2971,6 +2983,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             return "!" + self.track_call(rhs + ".__contains__(" + lhs + ")", node.lineno)
         if op == "is":
             op = "==="
+            return self.track_call("pyjslib['op_is'](%s, %s)" % (lhs, rhs), node.lineno)
         if op == "is not":
             op = "!=="
 
@@ -3133,12 +3146,16 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
     def _const(self, node):
         if isinstance(node.value, int):
-            return str(node.value)
+            if not self.number_classes:
+                return str(node.value)
+            return "pyjslib['int'](%s)" % str(node.value)
         elif isinstance(node.value, long):
             v = str(node.value)
             if v[-1] == 'L':
                 v = v[:-1]
-            return v
+            if not self.number_classes:
+                return v
+            return "pyjslib['long']('%s')" % v
         elif isinstance(node.value, float):
             return str(node.value)
         elif isinstance(node.value, basestring):
@@ -3203,16 +3220,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
     def _div(self, node, current_klass):
         if not self.operator_funcs:
             return self.expr(node.left, current_klass) + " / " + self.expr(node.right, current_klass)
-        e1 = self.expr(node.left, current_klass)
-        e2 = self.expr(node.right, current_klass)
-        v1 = self.uniqid('$div')
-        v2 = self.uniqid('$div')
-        self.add_lookup('variable', v1, v1)
-        self.add_lookup('variable', v2, v2)
-        s = self.spacing()
-        return """(typeof (%(v1)s=%(e1)s)==typeof (%(v2)s=%(e2)s) && typeof %(v1)s=='number'?
-%(s)s\t%(v1)s/%(v2)s:
-%(s)s\tpyjslib['op_div'](%(v1)s,%(v2)s))""" % locals()
+        return "pyjslib['op_div']("+self.expr(node.left, current_klass) + "," + self.expr(node.right, current_klass) + ")"
 
     def _mul(self, node, current_klass):
         if not self.operator_funcs:
@@ -3245,25 +3253,39 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 %(s)s\tpyjslib['op_mod'](%(v1)s,%(v2)s))""" % locals()
 
     def _power(self, node, current_klass):
-        return "Math.pow("+self.expr(node.left, current_klass) + "," + self.expr(node.right, current_klass) + ")"
+        if not self.operator_funcs:
+            return "Math.pow("+self.expr(node.left, current_klass) + "," + self.expr(node.right, current_klass) + ")"
+        return "pyjslib['op_pow']("+self.expr(node.left, current_klass) + "," + self.expr(node.right, current_klass) + ")"
 
     def _invert(self, node, current_klass):
-        return "(" + "~" + self.expr(node.expr, current_klass) + ")"
-
-    def _bitand(self, node, current_klass):
-        return "(" + " & ".join([self.expr(child, current_klass) for child in node.nodes]) + ")"
+        if not self.operator_funcs or not self.number_classes:
+            return "(" + "~" + self.expr(node.expr, current_klass) + ")"
+        return "pyjslib['op_invert']("+self.expr(node.expr, current_klass) + ")"
 
     def _bitshiftleft(self, node, current_klass):
-        return "(" + self.expr(node.left, current_klass) + " << " + self.expr(node.right, current_klass) + ")"
+        if not self.operator_funcs or not self.number_classes:
+            return "(" + self.expr(node.left, current_klass) + " << " + self.expr(node.right, current_klass) + ")"
+        return "pyjslib['op_bitshiftleft']("+self.expr(node.left, current_klass) + "," + self.expr(node.right, current_klass) + ")"
 
     def _bitshiftright(self, node, current_klass):
-        return "(" + self.expr(node.left, current_klass) + " >>> " + self.expr(node.right, current_klass) + ")"
+        if not self.operator_funcs or not self.number_classes:
+            return "(" + self.expr(node.left, current_klass) + " >>> " + self.expr(node.right, current_klass) + ")"
+        return "pyjslib['op_bitshiftright']("+self.expr(node.left, current_klass) + "," + self.expr(node.right, current_klass) + ")"
+
+    def _bitand(self, node, current_klass):
+        if not self.operator_funcs or not self.number_classes:
+            return "(" + " & ".join([self.expr(child, current_klass) for child in node.nodes]) + ")"
+        return "pyjslib['op_bitand'](" + ", ".join([self.expr(child, current_klass) for child in node.nodes]) + ")"
 
     def _bitxor(self,node, current_klass):
-        return "(" + " ^ ".join([self.expr(child, current_klass) for child in node.nodes]) + ")"
+        if not self.operator_funcs or not self.number_classes:
+            return "(" + " ^ ".join([self.expr(child, current_klass) for child in node.nodes]) + ")"
+        return "pyjslib['op_bitxor'](" + ", ".join([self.expr(child, current_klass) for child in node.nodes]) + ")"
 
     def _bitor(self, node, current_klass):
-        return "(" + " | ".join([self.expr(child, current_klass) for child in node.nodes]) + ")"
+        if not self.operator_funcs or not self.number_classes:
+            return "(" + " | ".join([self.expr(child, current_klass) for child in node.nodes]) + ")"
+        return "pyjslib['op_bitor'](" + ", ".join([self.expr(child, current_klass) for child in node.nodes]) + ")"
 
     def _subscript(self, node, current_klass):
         if node.flags == "OP_APPLY":
@@ -3599,6 +3621,7 @@ def translate(compiler, sources, output_file, module_name=None,
               store_source=True,
               inline_code=False,
               operator_funcs=True,
+              number_classes=True,
              ):
 
     sources = map(os.path.abspath, sources)
@@ -3639,6 +3662,7 @@ def translate(compiler, sources, output_file, module_name=None,
                    store_source = store_source,
                    inline_code = inline_code,
                    operator_funcs = operator_funcs,
+                   number_classes = number_classes,
                   )
     output.close()
     return t.imported_modules, t.imported_js
@@ -3859,6 +3883,7 @@ class AppTranslator:
                  store_source=True,
                  inline_code=False,
                  operator_funcs=True,
+                 number_classes=True,
                 ):
         self.compiler = compiler
         self.extension = ".py"
@@ -3879,6 +3904,7 @@ class AppTranslator:
         self.store_source = store_source
         self.inline_code = inline_code
         self.operator_funcs = operator_funcs
+        self.number_classes = number_classes
 
         if not parser:
             self.parser = PlatformParser(self.compiler)
@@ -3937,6 +3963,7 @@ class AppTranslator:
                        store_source = self.store_source,
                        inline_code = self.inline_code,
                        operator_funcs = self.operator_funcs,
+                       number_classes = self.number_classes,
                       )
 
         module_str = output.getvalue()
@@ -4135,6 +4162,19 @@ def add_compile_options(parser):
     speed_options['operator_funcs'] = False
     pythonic_options['operator_funcs'] = True
 
+    parser.add_option("--no-number-classes",
+                      dest = "number_classes",
+                      action="store_false",
+                      help = "Do not use number classes",
+                     )
+    parser.add_option("--number-classes",
+                      dest = "number_classes",
+                      action="store_true",
+                      help = "Use classes for numbers (float, int, long)",
+                     )
+    speed_options['number_classes'] = False
+    pythonic_options['number_classes'] = True
+
 
     def set_multiple(option, opt_str, value, parser, **kwargs):
         for k in kwargs.keys():
@@ -4169,6 +4209,7 @@ def add_compile_options(parser):
                         store_source = False,
                         inline_code = False,
                         operator_funcs = False,
+                        number_classes = False,
                        )
 
 
@@ -4214,6 +4255,7 @@ def main():
               store_source = options.store_source,
               inline_code = options.inline_code,
               operator_funcs = options.operator_funcs,
+              number_classes = options.number_classes,
     ),
 
 if __name__ == "__main__":
