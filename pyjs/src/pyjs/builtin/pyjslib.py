@@ -1482,6 +1482,7 @@ class long:
         }
 """)
         return v
+"""@CONSTANT_DECLARATION@"""
 
 if (1).__number__ == 'f':
     int.__number__ = 'f'

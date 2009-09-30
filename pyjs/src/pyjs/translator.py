@@ -707,6 +707,8 @@ class Translator:
         self.is_generator = False
         self.generator_states = []
         self.state_max_depth = len(self.generator_states)
+        self.constant_int = {}
+        self.constant_long = {}
 
         print >>self.output, self.spacing() + "/* start module: %s */" % module_name
         if not '.' in module_name:
@@ -804,6 +806,10 @@ class Translator:
             for l in self.track_lines.keys():
                 print >> self.output, self.spacing() + '''%s.__track_lines__[%d] = "%s";''' % (self.js_module_name, l, self.track_lines[l].replace('"', '\"'))
         print >> self.output, self.local_js_vars_decl([])
+        if captured_output.find("@CONSTANT_DECLARATION@") >= 0:
+            captured_output = captured_output.replace("@CONSTANT_DECLARATION@", self.constant_decl())
+        else:
+            print >> self.output, self.constant_decl()
         print >> self.output, captured_output,
 
         if attribute_checking:
@@ -1011,6 +1017,15 @@ class Translator:
                 return scopeName + name
             depth -= 1
         return self.modpfx() + name
+
+    def constant_decl(self):
+        s = self.spacing()
+        lines = []
+        for name in self.constant_int:
+            lines.append("%(s)sif (typeof $pyjs.constant_int[%(name)s] == 'undefined') $pyjs.constant_int[%(name)s] = pyjslib['int'](%(name)s);" % locals())
+        for name in self.constant_long:
+            lines.append("%(s)sif (typeof $pyjs.constant_long['%(name)s'] == 'undefined') $pyjs.constant_long['%(name)s'] = pyjslib['long']('%(name)s');" % locals())
+        return "\n".join(lines)
 
     def local_js_vars_decl(self, ignore_py_vars):
         names = []
@@ -2876,6 +2891,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             # we can safely remove all constants that are discarded,
             # e.g None fo empty expressions after a unneeded ";" or
             # mostly important to remove doc strings
+            if node.expr.value in ["@CONSTANT_DECLARATION@"]:
+                print >>self.output, node.expr.value
             return
         elif isinstance(node.expr, self.ast.Yield):
             self._yield(node.expr, current_klass)
@@ -3148,14 +3165,16 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         if isinstance(node.value, int):
             if not self.number_classes:
                 return str(node.value)
-            return "pyjslib['int'](%s)" % str(node.value)
+            self.constant_int[node.value] = 1
+            return "$pyjs.constant_int[%s]" % str(node.value)
         elif isinstance(node.value, long):
             v = str(node.value)
             if v[-1] == 'L':
                 v = v[:-1]
             if not self.number_classes:
                 return v
-            return "pyjslib['long']('%s')" % v
+            self.constant_long[node.value] = 1
+            return "$pyjs.constant_long['%s']" % v
         elif isinstance(node.value, float):
             return str(node.value)
         elif isinstance(node.value, basestring):
