@@ -18,7 +18,12 @@ class CharField(TextBox):
         self.min_length = kwargs.get('min_length', None)
         self.required = kwargs.get('required', None)
         if kwargs.get('initial'):
-            self.setText(kwargs['initial'])
+            self.setValue(kwargs['initial'])
+
+    def setValue(self, val):
+        if val is None:
+            val = ''
+        self.setText(val)
 
 class FloatField(TextBox):
     def __init__(self, **kwargs):
@@ -27,14 +32,20 @@ class FloatField(TextBox):
         self.min_length = kwargs.get('min_length', None)
         self.required = kwargs.get('required', None)
         if kwargs.get('initial'):
-            self.setText(kwargs['initial'])
+            self.setValue(kwargs['initial'])
+
+    def setValue(self, val):
+        if val is None:
+            val = ''
+        self.setText(val)
+
 
 widget_factory = {'CharField': CharField}
 
 class FormDescribeGrid:
 
-    def __init__(self, grid):
-        self.grid = grid
+    def __init__(self, sink):
+        self.sink = sink
 
     def onRemoteResponse(self,  response, request_info):
 
@@ -49,15 +60,18 @@ class FormDescribeGrid:
     def do_describe(self, fields):
 
         keys = fields.keys()
-        self.grid.resize(len(keys), 2)
+        self.sink.fields = keys
+        self.sink.grid.resize(len(keys), 2)
         for idx, fname in enumerate(fields.keys()):
             field = fields[fname]
+            if self.sink.data.has_key(fname):
+                field['initial'] = self.sink.data[fname]
             writebr("%s %s %d" % (fname, field['label'], idx))
             field_type = field['type']
             widget_kls = widget_factory.get(field_type, CharField)
             w = widget_kls(**field)
-            self.grid.setHTML(idx, 0, field['label'])
-            self.grid.setWidget(idx, 1, w)
+            self.sink.grid.setHTML(idx, 0, field['label'])
+            self.sink.grid.setWidget(idx, 1, w)
 
 class Form(Composite):
 
@@ -70,14 +84,25 @@ class Form(Composite):
 
         Composite.__init__(self, **kwargs)
         self.svc = svc
+        self.data = {}
         self.grid = Grid()
         self.initWidget(self.grid)
-        self.form = FormDescribeGrid(self.grid)
+        self.form = FormDescribeGrid(self)
         self.formsetup(data)
 
     def formsetup(self, data=None):
 
-        if data is None:
-            data = {}
+        self.data = data or {}
         self.svc(data, {'describe': None}, self.form)
+
+    def update_values(self, data = None):
+        if data is not None:
+            self.data = data
+
+        for idx, fname in enumerate(self.fields):
+            val = None
+            if self.data.has_key(fname):
+                val = self.sink.data[fname]
+            w = self.sink.grid.getWidget(idx, 1)
+            w.setValue(val)
 
