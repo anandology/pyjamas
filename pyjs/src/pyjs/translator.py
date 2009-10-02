@@ -2277,8 +2277,6 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             return [self._subscript(v.expr, self.modpfx()), attr_name]
         elif isinstance(v.expr, self.ast.CallFunc):
             return [self._callfunc(v.expr, self.modpfx()), attr_name]
-        elif isinstance(v.expr, self.ast.Const):
-            return [self._const(v.expr), attr_name]
         else:
             raise TranslationError(
                 "unsupported type (in _getattr)", v.expr, self.module_name)
