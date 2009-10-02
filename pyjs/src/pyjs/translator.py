@@ -701,8 +701,6 @@ class Translator:
         self.is_generator = False
         self.generator_states = []
         self.state_max_depth = len(self.generator_states)
-        self.constant_int = {}
-        self.constant_long = {}
 
         print >>self.output, self.spacing() + "/* start module: %s */" % module_name
         if not '.' in module_name:
@@ -800,10 +798,6 @@ class Translator:
             for l in self.track_lines.keys():
                 print >> self.output, self.spacing() + '''%s.__track_lines__[%d] = "%s";''' % (self.js_module_name, l, self.track_lines[l].replace('"', '\"'))
         print >> self.output, self.local_js_vars_decl([])
-        if captured_output.find("@CONSTANT_DECLARATION@") >= 0:
-            captured_output = captured_output.replace("@CONSTANT_DECLARATION@", self.constant_decl())
-        else:
-            print >> self.output, self.constant_decl()
         print >> self.output, captured_output,
 
         if attribute_checking:
@@ -2271,8 +2265,6 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             return [self._subscript(v.expr, self.modpfx()), attr_name]
         elif isinstance(v.expr, self.ast.CallFunc):
             return [self._callfunc(v.expr, self.modpfx()), attr_name]
-        elif isinstance(v.expr, self.ast.Const):
-            return [self._const(v.expr), attr_name]
         else:
             raise TranslationError(
                 "unsupported type (in _getattr)", v.expr, self.module_name)
@@ -2881,8 +2873,6 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             # we can safely remove all constants that are discarded,
             # e.g None fo empty expressions after a unneeded ";" or
             # mostly important to remove doc strings
-            if node.expr.value in ["@CONSTANT_DECLARATION@"]:
-                print >>self.output, node.expr.value
             return
         elif isinstance(node.expr, self.ast.Yield):
             self._yield(node.expr, current_klass)

@@ -1260,7 +1260,6 @@ class long:
         v.__init__ = self.__init__;
 """)
         return v
-"""@CONSTANT_DECLARATION@"""
 
 if (1).__number__ == JS("0x01"):
     int.__number__ = JS("0x01")
