@@ -429,7 +429,6 @@ def build_script():
         store_source=options.store_source,
         inline_code = options.inline_code,
         operator_funcs = options.operator_funcs,
-        number_classes = options.number_classes,
     )
 
     l = BrowserLinker(args,

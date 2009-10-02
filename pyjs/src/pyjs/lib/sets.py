@@ -46,7 +46,7 @@ class Set:
         JS("""
         var size=0;
         for (var i in self.d) size++;
-        return pyjslib['int'](size);
+        return size;
         """)
 
     def pop(self):

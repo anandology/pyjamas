@@ -15,44 +15,26 @@ def fib(n):
         return 1
     return fib(n-2)+fib(n-1)
 
-int0 = 0
-int1 = 1
-int2 = 2
-int3 = 3
-int10 = 10
-int100 = 100
-
-def fibc(n):
-    if n<int3:
-        return int1
-    return fibc(n-int2)+fibc(n-int1)
-
 class LoopTest(UnitTest):
 
     def testLoop1(self):
         t = time.time()
-        n = 1000
+        loops = 0
         a = A(1)
-        for i in range(n):
-            x = a.getX()
-        dt = time.time()-t
-        writebr("Loop1: %.2f/sec" % (n/dt))
+        while time.time()<(t+0.4):
+            for i in range(100):
+                loops+=1
+                x = a.getX()
+        writebr("Loops in 0.4 seconds: %s"  % loops)
 
     def testLoop2(self):
         t = time.time()
-        n = 100
-        for i in range(n):
-            fib(10)
-        dt = time.time()-t
-        writebr("Loop2: %.2f/sec" % (n/dt))
-
-    def testLoop3(self):
-        t = time.time()
-        n = 100
-        for i in range(n):
-            fibc(int10)
-        dt = time.time()-t
-        writebr("Loop3: %.2f/sec" % (n/dt))
+        loops = 0
+        while time.time()<(t+0.4):
+            for i in range(100):
+                loops+=1
+                fib(10)
+        writebr("Loops in 0.4 seconds: %s"  % loops)
 
 if __name__ == '__main__':
     l = LoopTest()
