@@ -17,7 +17,8 @@ from HTMLLinkPanel import HTMLLinkPanel
 class WebApp:
     def onFormLoad(self):
         self.formsvc = FormService()
-        self.form = Form(getattr(self.formsvc, "itemform"))
+        d = {'price': 20}
+        self.form = Form(getattr(self.formsvc, "itemform"), data=d)
         #self.describe(['name', 'description'])
         RootPanel().add(self.form)
 

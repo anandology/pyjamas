@@ -20,6 +20,15 @@ class CharField(TextBox):
         if kwargs.get('initial'):
             self.setText(kwargs['initial'])
 
+class FloatField(TextBox):
+    def __init__(self, **kwargs):
+        TextBox.__init__(self)
+        self.max_length = kwargs.get('max_length', None)
+        self.min_length = kwargs.get('min_length', None)
+        self.required = kwargs.get('required', None)
+        if kwargs.get('initial'):
+            self.setText(kwargs['initial'])
+
 widget_factory = {'CharField': CharField}
 
 class FormDescribeGrid:
@@ -54,10 +63,21 @@ class Form(Composite):
 
     def __init__(self, svc, **kwargs):
 
+        if kwargs.has_key('data'):
+            data = kwargs.pop('data')
+        else:
+            data = None
+
         Composite.__init__(self, **kwargs)
         self.svc = svc
         self.grid = Grid()
         self.initWidget(self.grid)
-        self.describe = FormDescribeGrid(self.grid)
-        self.svc({}, {'describe': None}, self.describe)
+        self.form = FormDescribeGrid(self.grid)
+        self.formsetup(data)
+
+    def formsetup(self, data=None):
+
+        if data is None:
+            data = {}
+        self.svc(data, {'describe': None}, self.form)
 
