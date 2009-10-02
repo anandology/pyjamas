@@ -95,7 +95,9 @@ class Form(Composite):
 
     def formsetup(self, data=None):
 
-        self.data = data or {}
+        if data is None:
+            data = {}
+        self.data = data
         writebr(repr(self.data))
         self.svc({}, {'describe': None}, self.form)
 

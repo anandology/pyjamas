@@ -96,7 +96,7 @@ class DataService(JSONProxy):
                   "deletePage"])
 
 if __name__ == "__main__":
-    pyjd.setup("http://127.0.0.9/")
+    pyjd.setup("http://127.0.0.9/pyjdblank.html")
 
     app = WebApp()
     #app.onModuleLoad()
