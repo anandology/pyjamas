@@ -64,12 +64,15 @@ class FormDescribeGrid:
         self.sink.grid.resize(len(keys), 2)
         for idx, fname in enumerate(fields.keys()):
             field = fields[fname]
-            if self.sink.data.has_key(fname):
+            if self.sink.data and self.sink.data.has_key(fname):
                 field['initial'] = self.sink.data[fname]
             writebr("%s %s %d" % (fname, field['label'], idx))
             field_type = field['type']
             widget_kls = widget_factory.get(field_type, CharField)
-            w = widget_kls(**field)
+            fv = {}
+            for (k, v) in field.items():
+                fv[str(k)] = v
+            w = widget_kls(**fv)
             self.sink.grid.setHTML(idx, 0, field['label'])
             self.sink.grid.setWidget(idx, 1, w)
 
@@ -81,10 +84,10 @@ class Form(Composite):
             data = kwargs.pop('data')
         else:
             data = None
+        writebr(repr(data))
 
         Composite.__init__(self, **kwargs)
         self.svc = svc
-        self.data = {}
         self.grid = Grid()
         self.initWidget(self.grid)
         self.form = FormDescribeGrid(self)
@@ -93,7 +96,8 @@ class Form(Composite):
     def formsetup(self, data=None):
 
         self.data = data or {}
-        self.svc(data, {'describe': None}, self.form)
+        writebr(repr(self.data))
+        self.svc({}, {'describe': None}, self.form)
 
     def update_values(self, data = None):
         if data is not None:

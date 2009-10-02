@@ -9,7 +9,7 @@ from pyjamas.ui.HTMLPanel import HTMLPanel
 from pyjamas.ui.Composite import Composite
 from pyjamas.ui import KeyboardListener
 
-from RichTextEditor import RichTextEditor
+#from RichTextEditor import RichTextEditor
 
 from pyjamas import Window
 

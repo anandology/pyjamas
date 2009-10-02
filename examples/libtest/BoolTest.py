@@ -114,3 +114,22 @@ class BoolTest(UnitTest):
             return
         self.fail("None-empty lists should evaluate to True in While")
 
+    def testLogic(self):
+    
+        d = {'hello': 5}
+        d2 = d or {}
+        try:
+            tst = d == d2
+            self.assertTrue(tst, "#297 -non-empty object or {} should return the object")
+        except TypeError:
+            self.fail("#297 TypeError should not have been thrown")
+            
+
+        d = {}
+        d2 = d or 5
+        try:
+            tst = d2 == 5
+            self.assertTrue(tst, "#297 'empty object or 5' should return 5")
+        except TypeError:
+            self.fail("#297 TypeError should not have been thrown")
+
