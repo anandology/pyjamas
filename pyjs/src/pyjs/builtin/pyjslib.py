@@ -389,11 +389,7 @@ String.prototype.endswith = function(suffix, start, end) {
 };
 
 String.prototype.ljust = function(width, fillchar) {
-    if (width.__number__ == 0x02) {
-        width == width.valueOf();
-    } else if (width.__number__ == 0x04) {
-        width == width.valueOf();
-    } else if (typeof(width) != 'number' ||
+    if (typeof(width) != 'number' ||
         parseInt(width) != width) {
         throw (pyjslib.TypeError("an integer is required"));
     }
@@ -407,11 +403,7 @@ String.prototype.ljust = function(width, fillchar) {
 };
 
 String.prototype.rjust = function(width, fillchar) {
-    if (width.__number__ == 0x02) {
-        width == width.valueOf();
-    } else if (width.__number__ == 0x04) {
-        width == width.valueOf();
-    } else if (typeof(width) != 'number' ||
+    if (typeof(width) != 'number' ||
         parseInt(width) != width) {
         throw (pyjslib.TypeError("an integer is required"));
     }
@@ -425,11 +417,7 @@ String.prototype.rjust = function(width, fillchar) {
 };
 
 String.prototype.center = function(width, fillchar) {
-    if (width.__number__ == 0x02) {
-        width == width.valueOf();
-    } else if (width.__number__ == 0x04) {
-        width == width.valueOf();
-    } else if (typeof(width) != 'number' ||
+    if (typeof(width) != 'number' ||
         parseInt(width) != width) {
         throw (pyjslib.TypeError("an integer is required"));
     }
@@ -479,11 +467,7 @@ String.prototype.__add__ = function(y) {
 }
 
 String.prototype.__mul__ = function(n) {
-    if (pyjslib['int'].__number__ == 0x01) {
-        if (Math.ceil(n) != n) {
-            throw pyjslib.TypeError("can't multiply sequence by non-int of type 'str'");
-        }
-    } else if (!(n.__number__ & 06)) {
+    if (typeof n != "number") {
         throw pyjslib.TypeError("can't multiply sequence by non-int of type 'str'");
     }
     var s = '';
@@ -621,7 +605,7 @@ def bool(v):
     """)
 
 class float:
-    __number__ = JS("0x01")
+    __is_int__ = False
     def __new__(self, args):
         JS("""
         var v = Number(args[0]);
@@ -630,559 +614,6 @@ class float:
         }
         return v;
 """)
-# Patching of the standard javascript Number
-# which is in principle the python 'float'
-JS("""
-Number.prototype.__class__ = Number.prototype;
-Number.prototype.__class_names__ = {0x01: 'float', 0x02: 'int', 0x04: 'long'}
-Number.prototype.__name__ = 'float'
-Number.prototype.__number__ = 0x01;
-Number.prototype.__init__ = function (value, radix) {
-    return null;
-};
-Number.prototype.__nonzero__ = function () {
-    return (this.valueOf() !== 0);
-}
-Number.prototype.__eq__ = function (y) {
-    switch ((this.__number__ << 8) | y.__number__) {
-        case 0x0101:
-            return this == y;
-        case 0x0201:
-        case 0x0401:
-            return this.valueOf() == y;
-        case 0x0102:
-        case 0x0104:
-            return this == y.valueOf();
-        case 0x0202:
-        case 0x0204:
-        case 0x0402:
-        case 0x0404:
-           return this.valueOf() == y.valueOf();
-    }
-}
-Number.prototype.__cmp__ = function (y) {
-    switch ((this.__number__ << 8) | y.__number__) {
-        case 0x0101:
-        case 0x0201:
-        case 0x0401:
-        case 0x0102:
-        case 0x0104:
-            if (this > y.valueOf()) return 1;
-            if (this < y.valueOf()) return -1;
-            return 0;
-        case 0x0202:
-        case 0x0204:
-        case 0x0402:
-        case 0x0404:
-            if (this.valueOf() > y.valueOf()) return 1;
-            if (this.valueOf() < y.valueOf()) return -1;
-            return 0;
-        default:
-            return -1;
-    }
-}
-
-Number.prototype.__pos__ = function () {
-    return this;
-}
-Number.prototype.__neg__ = function () {
-    if (this.__number__ === 0x01) {
-        return -this;
-    }
-    v = new Number(-this);
-    v.__number__ = this.__number__;
-    v.__name__ = v.__class_names__[this.__number__];
-    return v;
-}
-
-Number.prototype.__mul__ = function (y) {
-    switch ((this.__number__ << 8) | y.__number__) {
-        case 0x0101:
-        case 0x0201:
-        case 0x0401:
-        case 0x0102:
-        case 0x0104:
-            return this * y;
-        case 0x0202:
-        case 0x0204:
-        case 0x0402:
-        case 0x0404:
-            var v = new Number(this * y);
-            if (v >= 2147483648) {
-                v.__number__ = 0x04;
-            } else {
-                v.__number__ = (this.__number__ == 0x04? 0x04:y.__number__);
-            }
-            v.__name__ = v.__class_names__[this.__number__];
-            return v;
-        default:
-            if (typeof y.__rmul__ == 'function') {
-                return y.__rmul__(this);
-            }
-    }
-    throw pyjslib.TypeError("unsupported operand type(s) for *");
-}
-Number.prototype.__rmul__ = function (y) {
-    switch ((this.__number__ << 8) | y.__number__) {
-        case 0x0101:
-        case 0x0201:
-        case 0x0401:
-        case 0x0102:
-        case 0x0104:
-            return this * y;
-        case 0x0202:
-        case 0x0204:
-        case 0x0402:
-        case 0x0404:
-            var v = new Number(this * y);
-            if (v >= 2147483648) {
-                v.__number__ = 0x04;
-            } else {
-                v.__number__ = (this.__number__ == 0x04? 0x04:y.__number__);
-            }
-            v.__name__ = v.__class_names__[this.__number__];
-            return v;
-    }
-    throw pyjslib.TypeError("unsupported operand type(s) for *");
-}
-Number.prototype.__div__ = function (y) {
-    if (y.valueOf() == 0) {
-        switch (this.__number__) {
-            case 0x01:
-                throw pyjslib['ZeroDivisionError']('float division');
-            case 0x02:
-                throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
-            case 0x04:
-                throw pyjslib['ZeroDivisionError']('long division or modulo by zero');
-        }
-    }
-    switch ((this.__number__ << 8) | y.__number__) {
-        case 0x0101:
-        case 0x0201:
-        case 0x0401:
-        case 0x0102:
-        case 0x0104:
-            return this / y;
-        case 0x0202:
-        case 0x0204:
-        case 0x0402:
-        case 0x0404:
-            var v = this / y;
-            if (v > 0) {
-                v = new Number(Math.floor(v));
-            } else {
-                v = new Number(Math.ceil(v));
-            }
-            v.__number__ = (this.__number__ == 0x04? 0x04:y.__number__);
-            v.__name__ = v.__class_names__[this.__number__];
-            return v;
-        default:
-            if (typeof y.__rdiv__ == 'function') {
-                return y.__rdiv__(this);
-            }
-    }
-    throw pyjslib.TypeError("unsupported operand type(s) for /");
-}
-Number.prototype.__rdiv__ = function (y) {
-    if (this.valueOf() == 0) {
-        switch (y.__number__) {
-            case 0x01:
-                throw pyjslib['ZeroDivisionError']('float division');
-            case 0x02:
-                throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
-            case 0x04:
-                throw pyjslib['ZeroDivisionError']('long division or modulo by zero');
-        }
-    }
-    switch ((this.__number__ << 8) | y.__number__) {
-        case 0x0101:
-        case 0x0201:
-        case 0x0401:
-        case 0x0102:
-        case 0x0104:
-            return y / this;
-        case 0x0202:
-        case 0x0204:
-        case 0x0402:
-        case 0x0404:
-            var v = y / this;
-            if (v > 0) {
-                v = new Number(Math.floor(v));
-            } else {
-                v = new Number(Math.ceil(v));
-            }
-            v.__number__ = (this.__number__ == 0x04? 0x04:y.__number__);
-            v.__name__ = v.__class_names__[this.__number__];
-            return v;
-    }
-    throw pyjslib.TypeError("unsupported operand type(s) for /");
-}
-Number.prototype.__add__ = function (y) {
-    switch ((this.__number__ << 8) | y.__number__) {
-        case 0x0101:
-        case 0x0201:
-        case 0x0401:
-        case 0x0102:
-        case 0x0104:
-            return this + y;
-        case 0x0202:
-        case 0x0204:
-        case 0x0402:
-        case 0x0404:
-            var v = new Number(this + y);
-            if (v >= 2147483648) {
-                v.__number__ = 0x04;
-            } else {
-                v.__number__ = (this.__number__ == 0x04? 0x04:y.__number__);
-            }
-            v.__name__ = v.__class_names__[this.__number__];
-            return v;
-        default:
-            if (typeof y.__radd__ == 'function') {
-                return y.__radd__(this);
-            }
-    }
-    throw pyjslib.TypeError("unsupported operand type(s) for +");
-}
-Number.prototype.__radd__ = function (y) {
-    switch ((this.__number__ << 8) | y.__number__) {
-        case 0x0101:
-        case 0x0201:
-        case 0x0401:
-        case 0x0102:
-        case 0x0104:
-            return this + y;
-        case 0x0202:
-        case 0x0204:
-        case 0x0402:
-        case 0x0404:
-            var v = new Number(this + y);
-            if (v >= 2147483648) {
-                v.__number__ = 0x04;
-            } else {
-                v.__number__ = (this.__number__ == 0x04? 0x04:y.__number__);
-            }
-            v.__name__ = v.__class_names__[this.__number__];
-            return v;
-    }
-    throw pyjslib.TypeError("unsupported operand type(s) for +");
-}
-Number.prototype.__sub__ = function (y) {
-    switch ((this.__number__ << 8) | y.__number__) {
-        case 0x0101:
-        case 0x0201:
-        case 0x0401:
-        case 0x0102:
-        case 0x0104:
-            return this - y;
-        case 0x0202:
-        case 0x0204:
-        case 0x0402:
-        case 0x0404:
-            var v = new Number(this - y);
-            v.__number__ = (this.__number__ == 0x04? 0x04:y.__number__);
-            v.__name__ = v.__class_names__[this.__number__];
-            return v;
-        default:
-            if (typeof y.__rsub__ == 'function') {
-                return y.__rsub__(this);
-            }
-    }
-    throw pyjslib.TypeError("unsupported operand type(s) for -");
-}
-Number.prototype.__rsub__ = function (y) {
-    switch ((this.__number__ << 8) | y.__number__) {
-        case 0x0101:
-        case 0x0201:
-        case 0x0401:
-        case 0x0102:
-        case 0x0104:
-            return y - this;
-        case 0x0202:
-        case 0x0204:
-        case 0x0402:
-        case 0x0404:
-            var v = new Number(y - this);
-            v.__number__ = (this.__number__ == 0x04? 0x04:y.__number__);
-            v.__name__ = v.__class_names__[this.__number__];
-            return v;
-    }
-    throw pyjslib.TypeError("unsupported operand type(s) for -");
-}
-Number.prototype.__mod__ = function (y) {
-    if (y.valueOf() == 0) {
-        switch (this.__number__) {
-            case 0x01:
-                throw pyjslib['ZeroDivisionError']('float modulo');
-            case 0x02:
-                throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
-            case 0x04:
-                throw pyjslib['ZeroDivisionError']('long division or modulo by zero');
-        }
-    }
-    switch ((this.__number__ << 8) | y.__number__) {
-        case 0x0101:
-        case 0x0201:
-        case 0x0401:
-        case 0x0102:
-        case 0x0104:
-            return this % y;
-        case 0x0202:
-        case 0x0204:
-        case 0x0402:
-        case 0x0404:
-            var v = new Number(this % y);
-            v.__number__ = (this.__number__ == 0x04? 0x04:y.__number__);
-            v.__name__ = v.__class_names__[this.__number__];
-            return v;
-        default:
-            if (typeof y.__rmod__ == 'function') {
-                return y.__rmod__(this);
-            }
-    }
-    throw pyjslib.TypeError("unsupported operand type(s) for %");
-}
-Number.prototype.__rmod__ = function (y) {
-    if (this.valueOf() == 0) {
-        switch (y.__number__) {
-            case 0x01:
-                throw pyjslib['ZeroDivisionError']('float modulo');
-            case 0x02:
-                throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
-            case 0x04:
-                throw pyjslib['ZeroDivisionError']('long division or modulo by zero');
-        }
-    }
-    switch ((this.__number__ << 8) | y.__number__) {
-        case 0x0101:
-        case 0x0201:
-        case 0x0401:
-        case 0x0102:
-        case 0x0104:
-            return y % this;
-        case 0x0202:
-        case 0x0204:
-        case 0x0402:
-        case 0x0404:
-            var v = new Number(y % this);
-            v.__number__ = (this.__number__ == 0x04? 0x04:y.__number__);
-            v.__name__ = v.__class_names__[this.__number__];
-            return v;
-    }
-    throw pyjslib.TypeError("unsupported operand type(s) for %");
-}
-Number.prototype.__pow__ = function (y) {
-    switch ((this.__number__ << 8) | y.__number__) {
-        case 0x0101:
-        case 0x0201:
-        case 0x0401:
-        case 0x0102:
-        case 0x0104:
-            return Math.pow(this, y);
-        case 0x0202:
-        case 0x0204:
-        case 0x0402:
-        case 0x0404:
-            var v = new Number(Math.pow(this, y));
-            if (v >= 2147483648) {
-                v.__number__ = 0x04;
-            } else {
-                v.__number__ = (this.__number__ == 0x04? 0x04:y.__number__);
-            }
-            v.__name__ = v.__class_names__[this.__number__];
-            return v;
-        default:
-            if (typeof y.__rpow__ == 'function') {
-                return y.__rpow__(this);
-            }
-    }
-    throw pyjslib.TypeError("unsupported operand type(s) for ** or pow()");
-}
-Number.prototype.__rpow__ = function (y) {
-    switch ((this.__number__ << 8) | y.__number__) {
-        case 0x0101:
-        case 0x0201:
-        case 0x0401:
-        case 0x0102:
-        case 0x0104:
-            return Math.pow(y, this);
-        case 0x0202:
-        case 0x0204:
-        case 0x0402:
-        case 0x0404:
-            var v = new Number(Math.pow(y, this));
-            if (v >= 2147483648) {
-                v.__number__ = 0x04;
-            } else {
-                v.__number__ = (this.__number__ == 0x04? 0x04:y.__number__);
-            }
-            v.__name__ = v.__class_names__[this.__number__];
-            return v;
-    }
-    throw pyjslib.TypeError("unsupported operand type(s) for ** or pow()");
-}
-
-Number.prototype.__invert__ = function() {
-    if (this.__number__ !== 0x01) {
-        var v = new Number(~this);
-        v.__number__ = this.__number__;
-        v.__name__ = v.__class_names__[this.__number__];
-        return v;
-    }
-    throw pyjslib.TypeError("unsupported operand type(s) for ~");
-}
-Number.prototype.__and__ = function(y) {
-    switch ((this.__number__ << 8) | y.__number__) {
-        case 0x0202:
-        case 0x0204:
-        case 0x0402:
-        case 0x0404:
-            var v = new Number(this&y);
-            v.__number__ = (this.__number__ == 0x04? 0x04:y.__number__);
-            v.__name__ = v.__class_names__[this.__number__];
-            return v;
-    }
-    throw pyjslib.TypeError("unsupported operand type(s) for &");
-}
-Number.prototype.__rand__ = Number.prototype.__and__;
-Number.prototype.__or__ = function(y) {
-    switch ((this.__number__ << 8) | y.__number__) {
-        case 0x0202:
-        case 0x0204:
-        case 0x0402:
-        case 0x0404:
-            var v = new Number(this|y);
-            v.__number__ = (this.__number__ == 0x04? 0x04:y.__number__);
-            v.__name__ = v.__class_names__[this.__number__];
-            return v;
-    }
-    throw pyjslib.TypeError("unsupported operand type(s) for |");
-}
-Number.prototype.__ror__ = Number.prototype.__or__;
-Number.prototype.__xor__ = function(y) {
-    switch ((this.__number__ << 8) | y.__number__) {
-        case 0x0202:
-        case 0x0204:
-        case 0x0402:
-        case 0x0404:
-            var v = new Number(this^y);
-            v.__number__ = (this.__number__ == 0x04? 0x04:y.__number__);
-            v.__name__ = v.__class_names__[this.__number__];
-            return v;
-    }
-    throw pyjslib.TypeError("unsupported operand type(s) for ^");
-}
-Number.prototype.__rxor__ = Number.prototype.__xor__;
-Number.prototype.__lshift__ = function (y) {
-    switch ((this.__number__ << 8) | y.__number__) {
-        case 0x0202:
-        case 0x0204:
-        case 0x0402:
-        case 0x0404:
-            var v = 1<<y;
-            if (y > 30) {
-                v = Math.pow(2, y);
-            }
-            v = new Number(v*this);
-            if (v >= 2147483648) {
-                v.__number__ = 0x04;
-            } else {
-                v.__number__ = (this.__number__ == 0x04? 0x04:y.__number__);
-            }
-            v.__name__ = v.__class_names__[this.__number__]
-            return v;
-    }
-    throw pyjslib.TypeError("unsupported operand type(s) for <<");
-}
-Number.prototype.__rlshift__ = function (y) {
-    switch ((this.__number__ << 8) | y.__number__) {
-        case 0x0202:
-        case 0x0204:
-        case 0x0402:
-        case 0x0404:
-            var v = 1<<this;
-            if (y > 30) {
-                v = Math.pow(2, this);
-            }
-            v = new Number(v*this);
-            if (v >= 2147483648) {
-                v.__number__ = 0x04;
-            } else {
-                v.__number__ = (this.__number__ == 0x04? 0x04:y.__number__);
-            }
-            v.__name__ = v.__class_names__[this.__number__];
-            return v;
-    }
-    throw pyjslib.TypeError("unsupported operand type(s) for <<");
-}
-Number.prototype.__rshift__ = function (y) {
-    switch ((this.__number__ << 8) | y.__number__) {
-        case 0x0202:
-        case 0x0204:
-        case 0x0402:
-        case 0x0404:
-            var v = 1<<y;
-            if (y > 30) {
-                v = Math.pow(2, y);
-            }
-            v = this/v;
-            if (v < 0) {
-                v = new Number(Math.ceil(v));
-            } else {
-                v = new Number(Math.floor(v));
-            }
-            v.__number__ = (this.__number__ == 0x04? 0x04:y.__number__);
-            v.__name__ = v.__class_names__[this.__number__]
-            return v;
-    }
-    throw pyjslib.TypeError("unsupported operand type(s) for >>");
-}
-Number.prototype.__rrshift__ = function (y) {
-    switch ((this.__number__ << 8) | y.__number__) {
-        case 0x0202:
-        case 0x0204:
-        case 0x0402:
-        case 0x0404:
-            var v = 1<<this;
-            if (y > 30) {
-                v = Math.pow(2, this);
-            }
-            v = y/v;
-            if (v < 0) {
-                v = new Number(Math.ceil(v));
-            } else {
-                v = new Number(Math.floor(v));
-            }
-            v.__number__ = (this.__number__ == 0x04? 0x04:y.__number__);
-            v.__name__ = v.__class_names__[this.__number__];
-            return v;
-    }
-    throw pyjslib.TypeError("unsupported operand type(s) for >>");
-}
-Number.prototype.__str__ = function () {
-    return Number(this.valueOf()).toString()
-}
-Number.prototype.__repr__ = function () {
-    var s = this.toString();
-    switch (this.__number__) {
-        case 0x01:
-            if (s.find('.') < 0) {
-                return s + '.0';
-            }
-            return s;
-        case 0x04:
-            return s+'L';
-    }
-    return s;
-}
-Number.prototype.__hash__ = function () {
-    return this.valueOf();
-}
-""")
-
-
-class int:
-    __number__ = JS("0x02")
 
 class int:
     __is_int__ = True
@@ -1210,60 +641,11 @@ class int:
         if (isNaN(v)) {
             throw pyjslib.ValueError("invalid literal for int() with base " + radix + ": '" + args[0] + "'")
         }
-        if (self.__number__ == 0x02) {
-            v = new Number(v);
-            v.__number__ = 0x02;
-            v.__name__ = 'int'
-        }
-""")
-        return v
-
-# This should be a different implemention than the int. See python:
-#  - Include/longintrepr.h
-#  - Include/longobject.h
-#  - Objects/longobject.c
-class long:
-    __number__ = JS("0x04")
-    def __new__(self, args):
-        v = JS("new Number(args[0])")
-        radix = JS("typeof args[1] == 'undefined' ? null : args[1]")
-        JS("""
-        if (args[0].__number__ !== null) {
-            if (radix !== null) {
-                throw pyjslib.TypeError("int() can't convert non-string with explicit base");
-            }
-            if (v > 0) {
-                v = Math.floor(v);
-            } else {
-                v = Math.ceil(v);
-            }
-        } else if (typeof args[0] == 'string') {
-            if (radix === null) {
-                radix = 10;
-            }
-            if (v[-1] == 'L') {
-                v = v.slice(0,-1);
-            }
-            v = parseInt(v, radix);
-        } else {
-            throw pyjslib.TypeError("TypeError: int() argument must be a string or a number");
-        }
-        if (isNaN(v)) {
-            throw pyjslib.ValueError("invalid literal for int() with base " + radix + ": '" + args[0] + "'")
-        }
-        if (self.__number__ == 0x04) {
-            v = new Number(v);
-            v.__number__ = 0x04;
-            v.__name__ = 'long'
-        }
         v.__is_int__ = true;
         v.__init__ = self.__init__;
 """)
         return v
 
-if (1).__number__ == JS("0x01"):
-    int.__number__ = JS("0x01")
-    long.__number__ = JS("0x01")
     def __init__(self, v, radix=None):
         pass
 
@@ -2524,13 +1906,6 @@ def isNumber(a):
     return typeof a == 'number' && isFinite(a);
     """)
 
-def isInteger(a):
-    JS("""
-    if (a.__number__ & 06) return true;
-    if (pyjslib['int'] == 0x01 && a.__number__ == 0x01 && a == Math.ceil(a)) return true;
-    return false;
-    """)
-
 @compiler.noSourceTracking
 def toJSObjects(x):
     """
@@ -2734,7 +2109,6 @@ def sprintf(strng, args):
             result.append(left)
             if minlen == '*':
                 minlen = next_arg()
-                if not isInteger(minlen):
                 JS("minlen_type = typeof(minlen);")
                 if minlen_type != 'number' or \
                    int(minlen) != minlen:

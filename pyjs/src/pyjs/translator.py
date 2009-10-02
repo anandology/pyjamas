@@ -1006,17 +1006,6 @@ class Translator:
             depth -= 1
         return self.modpfx() + name
 
-    def constant_decl(self):
-        s = self.spacing()
-        lines = []
-        for name in self.constant_int:
-            lines.append("%(s)sif (typeof $pyjs.constant_int[%(name)s] == 'undefined') $pyjs.constant_int[%(name)s] = pyjslib['int'](%(name)s);" % locals())
-            #lines.append("%(s)svar $constant_int_%(name)s = pyjslib['int'](%(name)s);" % locals())
-        for name in self.constant_long:
-            lines.append("%(s)sif (typeof $pyjs.constant_long['%(name)s'] == 'undefined') $pyjs.constant_long['%(name)s'] = pyjslib['long']('%(name)s');" % locals())
-            #lines.append("%(s)svar $constant_long_%(name)s = pyjslib['long'](%(name)s);" % locals())
-        return "\n".join(lines)
-
     def local_js_vars_decl(self, ignore_py_vars):
         names = []
         for name in self.lookup_stack[-1].keys():
@@ -3142,21 +3131,11 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
     def _const(self, node):
         if isinstance(node.value, int):
-            if not self.number_classes:
-                return str(node.value)
-            self.constant_int[node.value] = 1
-            return "$pyjs.constant_int[%s]" % str(node.value)
-            #return "$constant_int_%s" % str(node.value)
             return str(node.value)
         elif isinstance(node.value, long):
             v = str(node.value)
             if v[-1] == 'L':
                 v = v[:-1]
-            if not self.number_classes:
-                return v
-            self.constant_long[node.value] = 1
-            return "$pyjs.constant_long['%s']" % v
-            #return "$constant_long_%s" % v
             return v
         elif isinstance(node.value, float):
             return str(node.value)
