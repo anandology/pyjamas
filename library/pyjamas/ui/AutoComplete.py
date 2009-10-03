@@ -21,6 +21,7 @@ class AutoCompleteTextBox(TextBox):
         self.popupAdded = False
         self.visible = False
 
+        self.choices.addClickListener(self)
         self.choices.addChangeListener(self)
 
         self.choicesPopup.add(self.choices)
