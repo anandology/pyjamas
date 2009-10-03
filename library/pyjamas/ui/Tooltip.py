@@ -9,12 +9,16 @@ from pyjamas.Timer import Timer
 tooltip_hide_timer = None
 
 class Tooltip(PopupPanel):
-    def __init__(self, sender, offsetX, offsetY, text, show_delay, hide_delay, styleName):
+    def __init__(self, sender, offsetX, offsetY, contents,
+                       show_delay, hide_delay, styleName):
+        """ contents may be a text string or it may be a widget
+        """
         PopupPanel.__init__(self, True)
         self.show_delay = show_delay
         self.hide_delay = hide_delay
         
-        contents = HTML(text)
+        if isinstance(contents, str):
+            contents = HTML(contents)
         self.add(contents)
 
         left = sender.getAbsoluteLeft() + offsetX
