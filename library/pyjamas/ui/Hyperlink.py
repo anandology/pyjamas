@@ -55,8 +55,8 @@ class Hyperlink(Widget, ClickHandler):
     def onBrowserEvent(self, event):
         Widget.onBrowserEvent(self, event)
         if DOM.eventGetType(event) == "click":
-            History.newItem(self.targetHistoryToken)
             DOM.eventPreventDefault(event)
+            History.newItem(self.targetHistoryToken)
 
     def setHTML(self, html):
         DOM.setInnerHTML(self.anchorElem, html)
