@@ -1815,29 +1815,29 @@ def op_sub(x, y):
     throw pyjslib['TypeError']("unsupported operand type(s) for -: '%r', '%r'" % (x, y))
 """)
 
-def op_div(x, n):
+def op_div(x, y):
     JS("""
-    if (typeof x == 'number' && typeof n == 'number') {
+    if (typeof x == 'number' && typeof y == 'number') {
         return x / y;
     }
-    if (x !== null && n !== null) {
-        if (typeof x['__div__'] != 'undefined') return x.__div__(n);
-        if (typeof n['__rdiv__'] != 'undefined') return n.__rdiv__(x);
+    if (x !== null && y !== null) {
+        if (typeof x['__div__'] != 'undefined') return x.__div__(y);
+        if (typeof y['__rdiv__'] != 'undefined') return y.__rdiv__(x);
     }
-    throw pyjslib['TypeError']("unsupported operand type(s) for /: '%r', '%r'" % (x, n))
+    throw pyjslib['TypeError']("unsupported operand type(s) for /: '%r', '%r'" % (x, y))
 """)
 
-def op_mul(x, n):
+def op_mul(x, y):
     JS("""
-    if (typeof x == 'number' && typeof n == 'number') {
+    if (typeof x == 'number' && typeof y == 'number') {
         return x * y;
     }
-    if (x !== null && n !== null) {
-        if (typeof x['__mul__'] != 'undefined') return x.__mul__(n);
-        if (typeof n['__rmul__'] != 'undefined') return n.__rmul__(x);
-        if (typeof n['__mul__'] != 'undefined') return n.__mul__(x);
+    if (x !== null && y !== null) {
+        if (typeof x['__mul__'] != 'undefined') return x.__mul__(y);
+        if (typeof y['__rmul__'] != 'undefined') return y.__rmul__(x);
+        if (typeof y['__mul__'] != 'undefined') return y.__mul__(x);
     }
-    throw pyjslib['TypeError']("unsupported operand type(s) for *: '%r', '%r'" % (x, n))
+    throw pyjslib['TypeError']("unsupported operand type(s) for *: '%r', '%r'" % (x, y))
 """)
 
 def op_mod(x, y):
