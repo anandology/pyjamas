@@ -3243,7 +3243,18 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 %(s)s\tpyjslib['op_mod'](%(v1)s,%(v2)s))""" % locals()
 
     def _power(self, node, current_klass):
-        return "Math.pow("+self.expr(node.left, current_klass) + "," + self.expr(node.right, current_klass) + ")"
+        if not self.operator_funcs:
+            return "Math.pow("+self.expr(node.left, current_klass) + "," + self.expr(node.right, current_klass) + ")"
+        e1 = self.expr(node.left, current_klass)
+        e2 = self.expr(node.right, current_klass)
+        v1 = self.uniqid('$pow')
+        v2 = self.uniqid('$pow')
+        self.add_lookup('variable', v1, v1)
+        self.add_lookup('variable', v2, v2)
+        s = self.spacing()
+        return """(typeof (%(v1)s=%(e1)s)==typeof (%(v2)s=%(e2)s) && typeof %(v1)s=='number'?
+%(s)s\tMath.pow(%(v1)s,%(v2)s):
+%(s)s\tpyjslib['op_pow'](%(v1)s,%(v2)s))""" % locals()
 
     def _invert(self, node, current_klass):
         return "(" + "~" + self.expr(node.expr, current_klass) + ")"

@@ -1855,6 +1855,18 @@ def op_mod(x, y):
     throw pyjslib['TypeError']("unsupported operand type(s) for %: '%r', '%r'" % (x, y))
 """)
 
+def op_pow(x, y):
+    JS("""
+    if (typeof x == typeof y && typeof x == 'number') {
+        return Math.pow(x, y);
+    }
+    if (x !== null && y !== null) {
+        if (typeof x['__pow__'] != 'undefined') return x.__pow__(y);
+        if (typeof y['__rpow__'] != 'undefined') return y.__rpow__(x);
+    }
+    throw pyjslib['TypeError']("unsupported operand type(s) for %: '%r', '%r'" % (x, y))
+""")
+
 # type functions from Douglas Crockford's Remedial Javascript: http://www.crockford.com/javascript/remedial.html
 @compiler.noSourceTracking
 def isObject(a):
