@@ -3198,6 +3198,20 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 %(s)s\t%(v1)s-%(v2)s:
 %(s)s\tpyjslib['op_sub'](%(v1)s,%(v2)s))""" % locals()
 
+    def _floordiv(self, node, current_klass):
+        if not self.operator_funcs:
+            return "Math.floor(%s/%s)" % (self.expr(node.left, current_klass), self.expr(node.right, current_klass)
+        e1 = self.expr(node.left, current_klass)
+        e2 = self.expr(node.right, current_klass)
+        v1 = self.uniqid('$floordiv')
+        v2 = self.uniqid('$floordiv')
+        self.add_lookup('variable', v1, v1)
+        self.add_lookup('variable', v2, v2)
+        s = self.spacing()
+        return """(typeof (%(v1)s=%(e1)s)==typeof (%(v2)s=%(e2)s) && typeof %(v1)s=='number'?
+%(s)s\t(v2!=0?%(v1)s/%(v2)s:throw pyjslib['ZeroDivisionError']('float divmod()'))
+%(s)s\tpyjslib['op_floordiv'](%(v1)s,%(v2)s))""" % locals()
+
     def _div(self, node, current_klass):
         if not self.operator_funcs:
             return self.expr(node.left, current_klass) + " / " + self.expr(node.right, current_klass)
@@ -3209,7 +3223,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.add_lookup('variable', v2, v2)
         s = self.spacing()
         return """(typeof (%(v1)s=%(e1)s)==typeof (%(v2)s=%(e2)s) && typeof %(v1)s=='number'?
-%(s)s\t%(v1)s/%(v2)s:
+%(s)s\t(v2!=0?%(v1)s/%(v2)s:throw pyjslib['ZeroDivisionError']('float division'))
 %(s)s\tpyjslib['op_div'](%(v1)s,%(v2)s))""" % locals()
 
     def _mul(self, node, current_klass):
@@ -3472,7 +3486,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         elif isinstance(node, self.ast.Div):
             return " ( " + self._div(node, current_klass) + " ) "
         elif isinstance(node, self.ast.FloorDiv):
-            return " pyjslib['int']( " + self._div(node, current_klass) + " ) "
+            return " ( " + self._floordiv(node, current_klass) + " ) "
         elif isinstance(node, self.ast.Mod):
             return self._mod(node, current_klass)
         elif isinstance(node, self.ast.Power):

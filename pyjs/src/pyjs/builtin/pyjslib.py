@@ -1815,9 +1815,27 @@ def op_sub(x, y):
     throw pyjslib['TypeError']("unsupported operand type(s) for -: '%r', '%r'" % (x, y))
 """)
 
+def op_floordiv(x, y):
+    JS("""
+    if (typeof x == 'number' && typeof y == 'number') {
+        if (y == 0) {
+            throw pyjslib['ZeroDivisionError']('float divmod()');
+        }
+        return Math.floor(x / y);
+    }
+    if (x !== null && y !== null) {
+        if (typeof x['__floordiv__'] != 'undefined') return x.__floordiv__(y);
+        if (typeof y['__rfloordiv__'] != 'undefined') return y.__rfloordiv__(x);
+    }
+    throw pyjslib['TypeError']("unsupported operand type(s) for //: '%r', '%r'" % (x, y))
+""")
+
 def op_div(x, y):
     JS("""
     if (typeof x == 'number' && typeof y == 'number') {
+        if (y == 0) {
+            throw pyjslib['ZeroDivisionError']('float division');
+        }
         return x / y;
     }
     if (x !== null && y !== null) {
