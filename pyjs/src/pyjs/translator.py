@@ -3200,7 +3200,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
     def _floordiv(self, node, current_klass):
         if not self.operator_funcs:
-            return "Math.floor(%s/%s)" % (self.expr(node.left, current_klass), self.expr(node.right, current_klass)
+            return "Math.floor(%s/%s)" % (self.expr(node.left, current_klass), self.expr(node.right, current_klass))
         e1 = self.expr(node.left, current_klass)
         e2 = self.expr(node.right, current_klass)
         v1 = self.uniqid('$floordiv')
@@ -3209,7 +3209,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.add_lookup('variable', v2, v2)
         s = self.spacing()
         return """(typeof (%(v1)s=%(e1)s)==typeof (%(v2)s=%(e2)s) && typeof %(v1)s=='number'?
-%(s)s\t(v2!=0?%(v1)s/%(v2)s:throw pyjslib['ZeroDivisionError']('float divmod()'))
+%(s)s\tMath.floor(%(v1)s/%(v2)s):
 %(s)s\tpyjslib['op_floordiv'](%(v1)s,%(v2)s))""" % locals()
 
     def _div(self, node, current_klass):
@@ -3223,7 +3223,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.add_lookup('variable', v2, v2)
         s = self.spacing()
         return """(typeof (%(v1)s=%(e1)s)==typeof (%(v2)s=%(e2)s) && typeof %(v1)s=='number'?
-%(s)s\t(v2!=0?%(v1)s/%(v2)s:throw pyjslib['ZeroDivisionError']('float division'))
+%(s)s\t%(v1)s/%(v2)s:
 %(s)s\tpyjslib['op_div'](%(v1)s,%(v2)s))""" % locals()
 
     def _mul(self, node, current_klass):
