@@ -3152,7 +3152,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
     def _unaryadd(self, node, current_klass):
         if not self.operator_funcs:
-            return self.expr(node.expr, current_klass)
+            return "(%s)" % self.expr(node.expr, current_klass)
         e = self.expr(node.expr, current_klass)
         v = self.uniqid('$uadd')
         s = self.spacing()
@@ -3162,7 +3162,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
     def _unarysub(self, node, current_klass):
         if not self.operator_funcs:
-            return "-" + self.expr(node.expr, current_klass)
+            return "-(%s)" % self.expr(node.expr, current_klass)
         e = self.expr(node.expr, current_klass)
         v = self.uniqid('$usub')
         s = self.spacing()
@@ -3172,7 +3172,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
     def _add(self, node, current_klass):
         if not self.operator_funcs:
-            return self.expr(node.left, current_klass) + " + " + self.expr(node.right, current_klass)
+            return "(%s)+(%s)" % (self.expr(node.left, current_klass), self.expr(node.right, current_klass))
         e1 = self.expr(node.left, current_klass)
         e2 = self.expr(node.right, current_klass)
         v1 = self.uniqid('$add')
@@ -3186,7 +3186,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
     def _sub(self, node, current_klass):
         if not self.operator_funcs:
-            return self.expr(node.left, current_klass) + " - " + self.expr(node.right, current_klass)
+            return "(%s)-(%s)" % (self.expr(node.left, current_klass), self.expr(node.right, current_klass))
         e1 = self.expr(node.left, current_klass)
         e2 = self.expr(node.right, current_klass)
         v1 = self.uniqid('$sub')
@@ -3214,7 +3214,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
     def _div(self, node, current_klass):
         if not self.operator_funcs:
-            return self.expr(node.left, current_klass) + " / " + self.expr(node.right, current_klass)
+            return "(%s)/(%s)" % (self.expr(node.left, current_klass), self.expr(node.right, current_klass))
         e1 = self.expr(node.left, current_klass)
         e2 = self.expr(node.right, current_klass)
         v1 = self.uniqid('$div')
@@ -3228,7 +3228,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
     def _mul(self, node, current_klass):
         if not self.operator_funcs:
-            return self.expr(node.left, current_klass) + " * " + self.expr(node.right, current_klass)
+            return "(%s)*(%s)" % (self.expr(node.left, current_klass), self.expr(node.right, current_klass))
         e1 = self.expr(node.left, current_klass)
         e2 = self.expr(node.right, current_klass)
         v1 = self.uniqid('$mul')
@@ -3244,7 +3244,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         if isinstance(node.left, self.ast.Const) and isinstance(node.left.value, StringType):
             return self.track_call("pyjslib['sprintf']("+self.expr(node.left, current_klass) + ", " + self.expr(node.right, current_klass)+")", node.lineno)
         if not self.operator_funcs:
-            return self.expr(node.left, current_klass) + " % " + self.expr(node.right, current_klass)
+            return "(%s)%%(%s)" % (self.expr(node.left, current_klass), self.expr(node.right, current_klass))
         e1 = self.expr(node.left, current_klass)
         e2 = self.expr(node.right, current_klass)
         v1 = self.uniqid('$mod')
@@ -3258,7 +3258,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
     def _power(self, node, current_klass):
         if not self.operator_funcs:
-            return "Math.pow("+self.expr(node.left, current_klass) + "," + self.expr(node.right, current_klass) + ")"
+            return "Math.pow(%s,%s)" % (self.expr(node.left, current_klass), self.expr(node.right, current_klass))
         e1 = self.expr(node.left, current_klass)
         e2 = self.expr(node.right, current_klass)
         v1 = self.uniqid('$pow')
@@ -3271,22 +3271,22 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 %(s)s\tpyjslib['op_pow'](%(v1)s,%(v2)s))""" % locals()
 
     def _invert(self, node, current_klass):
-        return "(" + "~" + self.expr(node.expr, current_klass) + ")"
-
-    def _bitand(self, node, current_klass):
-        return "(" + " & ".join([self.expr(child, current_klass) for child in node.nodes]) + ")"
+        return "~(%s)" % self.expr(node.expr, current_klass)
 
     def _bitshiftleft(self, node, current_klass):
-        return "(" + self.expr(node.left, current_klass) + " << " + self.expr(node.right, current_klass) + ")"
+        return "(%s)<<(%s)"% (self.expr(node.left, current_klass), self.expr(node.right, current_klass))
 
     def _bitshiftright(self, node, current_klass):
-        return "(" + self.expr(node.left, current_klass) + " >>> " + self.expr(node.right, current_klass) + ")"
+        return "(%s)>>>(%s)" % (self.expr(node.left, current_klass), self.expr(node.right, current_klass))
+
+    def _bitand(self, node, current_klass):
+        return "(%s)" % ")&(".join([self.expr(child, current_klass) for child in node.nodes])
 
     def _bitxor(self,node, current_klass):
-        return "(" + " ^ ".join([self.expr(child, current_klass) for child in node.nodes]) + ")"
+        return "(%s)" % ")^(".join([self.expr(child, current_klass) for child in node.nodes])
 
     def _bitor(self, node, current_klass):
-        return "(" + " | ".join([self.expr(child, current_klass) for child in node.nodes]) + ")"
+        return "(%s)" % ")|(".join([self.expr(child, current_klass) for child in node.nodes])
 
     def _subscript(self, node, current_klass):
         if node.flags == "OP_APPLY":
@@ -3478,15 +3478,15 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             return self._const(node)
         # @@@ not sure if the parentheses should be here or in individual operator functions - JKT
         elif isinstance(node, self.ast.Mul):
-            return " ( " + self._mul(node, current_klass) + " ) "
+            return self._mul(node, current_klass)
         elif isinstance(node, self.ast.Add):
-            return " ( " + self._add(node, current_klass) + " ) "
+            return self._add(node, current_klass)
         elif isinstance(node, self.ast.Sub):
-            return " ( " + self._sub(node, current_klass) + " ) "
+            return self._sub(node, current_klass)
         elif isinstance(node, self.ast.Div):
-            return " ( " + self._div(node, current_klass) + " ) "
+            return self._div(node, current_klass)
         elif isinstance(node, self.ast.FloorDiv):
-            return " ( " + self._floordiv(node, current_klass) + " ) "
+            return self._floordiv(node, current_klass)
         elif isinstance(node, self.ast.Mod):
             return self._mod(node, current_klass)
         elif isinstance(node, self.ast.Power):
@@ -3503,16 +3503,16 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             return self._and(node, current_klass)
         elif isinstance(node, self.ast.Invert):
             return self._invert(node, current_klass)
-        elif isinstance(node, self.ast.Bitand):
-            return "("+self._bitand(node, current_klass)+")"
         elif isinstance(node,self.ast.LeftShift):
             return self._bitshiftleft(node, current_klass)
         elif isinstance(node, self.ast.RightShift):
             return self._bitshiftright(node, current_klass)
+        elif isinstance(node, self.ast.Bitand):
+            return self._bitand(node, current_klass)
         elif isinstance(node, self.ast.Bitxor):
-            return "("+self._bitxor(node, current_klass)+")"
+            return self._bitxor(node, current_klass)
         elif isinstance(node, self.ast.Bitor):
-            return "("+self._bitor(node, current_klass)+")"
+            return self._bitor(node, current_klass)
         elif isinstance(node, self.ast.Compare):
             return self._compare(node, current_klass)
         elif isinstance(node, self.ast.CallFunc):
