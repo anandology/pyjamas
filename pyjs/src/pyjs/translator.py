@@ -3208,7 +3208,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.add_lookup('variable', v1, v1)
         self.add_lookup('variable', v2, v2)
         s = self.spacing()
-        return """(typeof (%(v1)s=%(e1)s)==typeof (%(v2)s=%(e2)s) && typeof %(v1)s=='number'?
+        return """(typeof (%(v1)s=%(e1)s)==typeof (%(v2)s=%(e2)s) && typeof %(v1)s=='number' && %(v2)s != 0?
 %(s)s\tMath.floor(%(v1)s/%(v2)s):
 %(s)s\tpyjslib['op_floordiv'](%(v1)s,%(v2)s))""" % locals()
 
@@ -3222,7 +3222,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.add_lookup('variable', v1, v1)
         self.add_lookup('variable', v2, v2)
         s = self.spacing()
-        return """(typeof (%(v1)s=%(e1)s)==typeof (%(v2)s=%(e2)s) && typeof %(v1)s=='number'?
+        return """(typeof (%(v1)s=%(e1)s)==typeof (%(v2)s=%(e2)s) && typeof %(v1)s=='number' && %(v2)s != 0?
 %(s)s\t%(v1)s/%(v2)s:
 %(s)s\tpyjslib['op_div'](%(v1)s,%(v2)s))""" % locals()
 
