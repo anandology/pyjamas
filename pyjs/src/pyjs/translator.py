@@ -1100,7 +1100,7 @@ class Translator:
 %(s)s\t\t((typeof %(v1)s=='object'||typeof %(v1)s=='function')&&typeof %(v1)s.__cmp__=='function'?%(v1)s.__cmp__(%(v2)s) == 0:
 %(s)s\t\t\t((typeof %(v2)s=='object'||typeof %(v2)s=='function')&&typeof %(v2)s.__cmp__=='function'?%(v2)s.__cmp__(%(v1)s) == 0:
 %(s)s\t\t\t\t%(v1)s==%(v2)s)))))""" % locals()
-        return "pyjslib['eq'](%(e1)s, %(e2)s)" % locals()
+        return "pyjslib['op_eq'](%(e1)s, %(e2)s)" % locals()
 
     def md5(self, node):
         return hashlib.md5(self.raw_module_name + str(node.lineno) + repr(node)).hexdigest()

@@ -543,7 +543,7 @@ def op_is(a,b):
 """)
 
 @compiler.noSourceTracking
-def eq(a,b):
+def op_eq(a,b):
     # All 'python' classes and types are implemented as objects/functions.
     # So, for speed, do a typeof X / X.__cmp__  on a/b.
     # Checking for the existance of .__cmp__ is expensive when it doesn't exist
