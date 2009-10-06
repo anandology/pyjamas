@@ -43,11 +43,11 @@ class Set:
         """)
 
     def __len__(self):
+        size=0
         JS("""
-        var size=0;
         for (var i in self.d) size++;
-        return size;
         """)
+        return int(size)
 
     def pop(self):
         JS("""
