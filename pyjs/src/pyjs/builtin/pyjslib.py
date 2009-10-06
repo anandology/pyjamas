@@ -31,10 +31,13 @@ def op_is(a,b):
     JS("""
     if (a === b) return true;
     if (a !== null && b !== null) {
-        if (a.__number__ !== null) {
-            if (a.__number__ == b.__number__) {
-                return a.__eq__(b);
-            }
+        switch ((a.__number__ << 8) | b.__number__) {
+            case 0x0101:
+                return a == b;
+            case 0x0202:
+                return a.__v == b.__v;
+            case 0x0404:
+                return a.__v == b.__v;
         }
     }
     return false;
@@ -55,6 +58,24 @@ def op_eq(a,b):
     if (b === null) {
         return false;
     }
+    switch ((a.__number__ << 8) | b.__number__) {
+        case 0x0101:
+        case 0x0401:
+            return a == b;
+        case 0x0102:
+            return a == b.__v;
+        case 0x0201:
+            return a.__v == b;
+        case 0x0202:
+            return a.__v == b.__v;
+        case 0x0104:
+        case 0x0204:
+            a = pyjslib['long'](a.valueOf());
+        case 0x0404:
+            return a.__cmp__(b) == 0;
+        case 0x0402:
+            return a.__cmp__(pyjslib['long'](b.valueOf())) == 0;
+    }
     if ((typeof a == 'object' || typeof a == 'function') && typeof a.__cmp__ == 'function') {
         return a.__cmp__(b) == 0;
     } else if ((typeof b == 'object' || typeof b == 'function') && typeof b.__cmp__ == 'function') {
@@ -71,21 +92,50 @@ def op_usub(v):
 
 def op_add(x, y):
     JS("""
-    if (typeof x == typeof y && (typeof x == 'number' || typeof x == 'string')) {
-        return x + y;
+    switch ((x.__number__ << 8) | y.__number__) {
+        case 0x0101:
+        case 0x0104:
+        case 0x0401:
+            return x + y;
+        case 0x0102:
+            return x + y.__v;
+        case 0x0201:
+            return x.__v + y;
+        case 0x0202:
+            return pyjslib['int'](x.__v + y.__v);
+        case 0x0204:
+            return y.__radd__(pyjslib['long'](x.__v))
+        case 0x0402:
+            return x.__add__(pyjslib['long'](y.__v))
+        case 0x0404:
+            return x.__add__(y);
     }
     if (x !== null && y !== null) {
-        if (typeof x['__add__'] != 'undefined') return x.__add__(y);
-        if (typeof y['__radd__'] != 'undefined') return y.__radd__(x);
-        if (typeof y['__add__'] != 'undefined') return y.__add__(x);
+        if (!x.__number__ && typeof x['__add__'] != 'undefined') return x.__add__(y);
+        if (!y.__number__ && typeof y['__radd__'] != 'undefined') return y.__radd__(x);
     }
     throw pyjslib['TypeError']("unsupported operand type(s) for +: '%r', '%r'" % (x, y))
 """)
 
 def op_sub(x, y):
     JS("""
-    if (typeof x == typeof y && (typeof x == 'number' || typeof x == 'string')) {
-        return x - y;
+    switch ((x.__number__ << 8) | y.__number__) {
+        case 0x0101:
+        case 0x0104:
+        case 0x0401:
+            return x - y;
+        case 0x0102:
+            return x - y.__v;
+        case 0x0201:
+            return x.__v - y;
+        case 0x0202:
+            return pyjslib['int'](x.__v - y.__v);
+        case 0x0204:
+            return y.__rsub__(pyjslib['long'](x.__v))
+        case 0x0402:
+            return x.__sub__(pyjslib['long'](y.__v))
+        case 0x0404:
+            return x.__sub__(y);
     }
     if (x !== null && y !== null) {
         if (typeof x['__sub__'] != 'undefined') return x.__sub__(y);
@@ -96,11 +146,27 @@ def op_sub(x, y):
 
 def op_floordiv(x, y):
     JS("""
-    if (typeof x == 'number' && typeof y == 'number') {
-        if (y == 0) {
-            throw pyjslib['ZeroDivisionError']('float divmod()');
-        }
-        return Math.floor(x / y);
+    switch ((x.__number__ << 8) | y.__number__) {
+        case 0x0101:
+        case 0x0104:
+        case 0x0401:
+            if (y == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+            return Math.floor(x / y);
+        case 0x0102:
+            if (y.__v == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+            return Math.floor(x / y.__v);
+        case 0x0201:
+            if (y == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+            return Math.floor(x.__v / y);
+        case 0x0202:
+            if (y.__v == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
+            return pyjslib['int'](Math.floor(x.__v / y.__v));
+        case 0x0204:
+            return y.__rfloordiv__(pyjslib['long'](x.__v))
+        case 0x0402:
+            return x.__floordiv__(pyjslib['long'](y.__v))
+        case 0x0404:
+            return x.__floordiv__(y);
     }
     if (x !== null && y !== null) {
         if (typeof x['__floordiv__'] != 'undefined') return x.__floordiv__(y);
@@ -111,11 +177,27 @@ def op_floordiv(x, y):
 
 def op_div(x, y):
     JS("""
-    if (typeof x == 'number' && typeof y == 'number') {
-        if (y == 0) {
-            throw pyjslib['ZeroDivisionError']('float division');
-        }
-        return x / y;
+    switch ((x.__number__ << 8) | y.__number__) {
+        case 0x0101:
+        case 0x0104:
+        case 0x0401:
+            if (y == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+            return x / y;
+        case 0x0102:
+            if (y.__v == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+            return x / y.__v;
+        case 0x0201:
+            if (y == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+            return x.__v / y;
+        case 0x0202:
+            if (y.__v == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
+            return pyjslib['int'](x.__v / y.__v);
+        case 0x0204:
+            return y.__rdiv__(pyjslib['long'](x.__v))
+        case 0x0402:
+            return x.__div__(pyjslib['long'](y.__v))
+        case 0x0404:
+            return x.__div__(y);
     }
     if (x !== null && y !== null) {
         if (typeof x['__div__'] != 'undefined') return x.__div__(y);
@@ -126,21 +208,54 @@ def op_div(x, y):
 
 def op_mul(x, y):
     JS("""
-    if (typeof x == 'number' && typeof y == 'number') {
-        return x * y;
+    switch ((x.__number__ << 8) | y.__number__) {
+        case 0x0101:
+        case 0x0104:
+        case 0x0401:
+            return x * y;
+        case 0x0102:
+            return x * y.__v;
+        case 0x0201:
+            return x.__v * y;
+        case 0x0202:
+            return pyjslib['int'](x.__v * y.__v);
+        case 0x0204:
+            return y.__rmul__(pyjslib['long'](x.__v))
+        case 0x0402:
+            return x.__mul__(pyjslib['long'](y.__v))
+        case 0x0404:
+            return x.__mul__(y);
     }
     if (x !== null && y !== null) {
         if (typeof x['__mul__'] != 'undefined') return x.__mul__(y);
         if (typeof y['__rmul__'] != 'undefined') return y.__rmul__(x);
-        if (typeof y['__mul__'] != 'undefined') return y.__mul__(x);
     }
     throw pyjslib['TypeError']("unsupported operand type(s) for *: '%r', '%r'" % (x, y))
 """)
 
 def op_mod(x, y):
     JS("""
-    if (typeof x == typeof y && typeof x == 'number') {
-        return x % y;
+    switch ((x.__number__ << 8) | y.__number__) {
+        case 0x0101:
+        case 0x0104:
+        case 0x0401:
+            if (y == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+            return x % y;
+        case 0x0102:
+            if (y.__v == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+            return x % y.__v;
+        case 0x0201:
+            if (y == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+            return x.__v % y;
+        case 0x0202:
+            if (y.__v == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
+            return pyjslib['int'](x.__v % y.__v);
+        case 0x0204:
+            return y.__rmod__(pyjslib['long'](x.__v))
+        case 0x0402:
+            return x.__mod__(pyjslib['long'](y.__v))
+        case 0x0404:
+            return x.__mod__(y);
     }
     if (typeof x == 'string') {
         return pyjslib.sprintf(x, y);
@@ -154,8 +269,25 @@ def op_mod(x, y):
 
 def op_pow(x, y):
     JS("""
-    if (typeof x == typeof y && typeof x == 'number') {
-        return Math.pow(x, y);
+    switch ((x.__number__ << 8) | y.__number__) {
+        case 0x0101:
+        case 0x0104:
+        case 0x0401:
+            if (y == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+            return Math.pow(x, y);
+        case 0x0102:
+            if (y.__v == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+            return Math.pow(x,y.__v);
+        case 0x0201:
+            if (y == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+            return Math.pow(x.__v,y);
+        case 0x0204:
+            return y.__rpow__(pyjslib['long'](x.__v))
+        case 0x0402:
+            return x.__pow__(pyjslib['long'](y.__v))
+        case 0x0202:
+        case 0x0404:
+            return x.__pow__(y);
     }
     if (x !== null && y !== null) {
         if (typeof x['__pow__'] != 'undefined') return x.__pow__(y);
