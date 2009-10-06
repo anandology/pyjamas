@@ -83,9 +83,11 @@ def onError(msg, url, linenumber):
     # XXX: we should not have a sys dependency here!
     tracestr = sys.trackstackstr(JS("$pyjs.trackstack.slice(0,-1)"))
     tracestr = tracestr.replace("\n", "<br />\n&nbsp;&nbsp;&nbsp;")
-    dialog.innerHTML='&nbsp;<b style="color:red">JavaScript Error: </b>' + \
-        msg +' at line number ' + linenumber +'. Please inform webmaster.' + \
-        '<br />&nbsp;&nbsp;&nbsp;' + tracestr
+    dialog.innerHTML="""\
+&nbsp;<b style="color:red">JavaScript Error: </b>
+%s at line number %d. Please inform webmaster.
+<br />&nbsp;&nbsp;&nbsp;%s
+""" % (msg, linenumber, tracestr)
     doc().body.appendChild(dialog)
     return True
 
