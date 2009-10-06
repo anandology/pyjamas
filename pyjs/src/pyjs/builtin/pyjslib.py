@@ -20,13 +20,150 @@ from __pyjamas__ import JS, setCompilerOptions, debugger
 
 setCompilerOptions("noBoundMethods", "noDescriptors", "noAttributeChecking", "noSourceTracking", "noLineTracking", "noStoreSource")
 
+platform = JS("$pyjs.platform")
 sys = None
 dynamic = None
 
 class object:
     pass
 
-platform = JS("$pyjs.platform")
+def op_is(a,b):
+    JS("""
+    if (a === b) return true;
+    if (a !== null && b !== null) {
+        if (a.__number__ !== null) {
+            if (a.__number__ == b.__number__) {
+                return a.__eq__(b);
+            }
+        }
+    }
+    return false;
+""")
+
+@compiler.noSourceTracking
+def op_eq(a,b):
+    # All 'python' classes and types are implemented as objects/functions.
+    # So, for speed, do a typeof X / X.__cmp__  on a/b.
+    # Checking for the existance of .__cmp__ is expensive when it doesn't exist
+    #setCompilerOptions("InlineEq")
+    #return a == b
+    JS("""
+    if (a === null) {
+        if (b === null) return true;
+        return false;
+    }
+    if (b === null) {
+        return false;
+    }
+    if ((typeof a == 'object' || typeof a == 'function') && typeof a.__cmp__ == 'function') {
+        return a.__cmp__(b) == 0;
+    } else if ((typeof b == 'object' || typeof b == 'function') && typeof b.__cmp__ == 'function') {
+        return b.__cmp__(a) == 0;
+    }
+    return a == b;
+    """)
+
+def op_uadd(v):
+    raise TypeError("bad operand type for unary +: '%r'" % v)
+
+def op_usub(v):
+    raise TypeError("bad operand type for unary -: '%r'" % v)
+
+def op_add(x, y):
+    JS("""
+    if (typeof x == typeof y && (typeof x == 'number' || typeof x == 'string')) {
+        return x + y;
+    }
+    if (x !== null && y !== null) {
+        if (typeof x['__add__'] != 'undefined') return x.__add__(y);
+        if (typeof y['__radd__'] != 'undefined') return y.__radd__(x);
+        if (typeof y['__add__'] != 'undefined') return y.__add__(x);
+    }
+    throw pyjslib['TypeError']("unsupported operand type(s) for +: '%r', '%r'" % (x, y))
+""")
+
+def op_sub(x, y):
+    JS("""
+    if (typeof x == typeof y && (typeof x == 'number' || typeof x == 'string')) {
+        return x - y;
+    }
+    if (x !== null && y !== null) {
+        if (typeof x['__sub__'] != 'undefined') return x.__sub__(y);
+        if (typeof y['__rsub__'] != 'undefined') return y.__rsub__(x);
+    }
+    throw pyjslib['TypeError']("unsupported operand type(s) for -: '%r', '%r'" % (x, y))
+""")
+
+def op_floordiv(x, y):
+    JS("""
+    if (typeof x == 'number' && typeof y == 'number') {
+        if (y == 0) {
+            throw pyjslib['ZeroDivisionError']('float divmod()');
+        }
+        return Math.floor(x / y);
+    }
+    if (x !== null && y !== null) {
+        if (typeof x['__floordiv__'] != 'undefined') return x.__floordiv__(y);
+        if (typeof y['__rfloordiv__'] != 'undefined') return y.__rfloordiv__(x);
+    }
+    throw pyjslib['TypeError']("unsupported operand type(s) for //: '%r', '%r'" % (x, y))
+""")
+
+def op_div(x, y):
+    JS("""
+    if (typeof x == 'number' && typeof y == 'number') {
+        if (y == 0) {
+            throw pyjslib['ZeroDivisionError']('float division');
+        }
+        return x / y;
+    }
+    if (x !== null && y !== null) {
+        if (typeof x['__div__'] != 'undefined') return x.__div__(y);
+        if (typeof y['__rdiv__'] != 'undefined') return y.__rdiv__(x);
+    }
+    throw pyjslib['TypeError']("unsupported operand type(s) for /: '%r', '%r'" % (x, y))
+""")
+
+def op_mul(x, y):
+    JS("""
+    if (typeof x == 'number' && typeof y == 'number') {
+        return x * y;
+    }
+    if (x !== null && y !== null) {
+        if (typeof x['__mul__'] != 'undefined') return x.__mul__(y);
+        if (typeof y['__rmul__'] != 'undefined') return y.__rmul__(x);
+        if (typeof y['__mul__'] != 'undefined') return y.__mul__(x);
+    }
+    throw pyjslib['TypeError']("unsupported operand type(s) for *: '%r', '%r'" % (x, y))
+""")
+
+def op_mod(x, y):
+    JS("""
+    if (typeof x == typeof y && typeof x == 'number') {
+        return x % y;
+    }
+    if (typeof x == 'string') {
+        return pyjslib.sprintf(x, y);
+    }
+    if (x !== null && y !== null) {
+        if (typeof x['__mod__'] != 'undefined') return x.__mod__(y);
+        if (typeof y['__rmod__'] != 'undefined') return y.__rmod__(x);
+    }
+    throw pyjslib['TypeError']("unsupported operand type(s) for %: '%r', '%r'" % (x, y))
+""")
+
+def op_pow(x, y):
+    JS("""
+    if (typeof x == typeof y && typeof x == 'number') {
+        return Math.pow(x, y);
+    }
+    if (x !== null && y !== null) {
+        if (typeof x['__pow__'] != 'undefined') return x.__pow__(y);
+        if (typeof y['__rpow__'] != 'undefined') return y.__rpow__(x);
+    }
+    throw pyjslib['TypeError']("unsupported operand type(s) for %: '%r', '%r'" % (x, y))
+""")
+
 
 @compiler.noSourceTracking
 def ___import___(path, context, module_name=None, get_base=True):
@@ -528,42 +665,6 @@ class Class:
 @compiler.noSourceTracking
 def open(fname, mode='r'):
     raise NotImplementedError("open is not implemented in browsers")
-
-def op_is(a,b):
-    JS("""
-    if (a === b) return true;
-    if (a !== null && b !== null) {
-        if (a.__number__ !== null) {
-            if (a.__number__ == b.__number__) {
-                return a.__eq__(b);
-            }
-        }
-    }
-    return false;
-""")
-
-@compiler.noSourceTracking
-def op_eq(a,b):
-    # All 'python' classes and types are implemented as objects/functions.
-    # So, for speed, do a typeof X / X.__cmp__  on a/b.
-    # Checking for the existance of .__cmp__ is expensive when it doesn't exist
-    #setCompilerOptions("InlineEq")
-    #return a == b
-    JS("""
-    if (a === null) {
-        if (b === null) return true;
-        return false;
-    }
-    if (b === null) {
-        return false;
-    }
-    if ((typeof a == 'object' || typeof a == 'function') && typeof a.__cmp__ == 'function') {
-        return a.__cmp__(b) == 0;
-    } else if ((typeof b == 'object' || typeof b == 'function') && typeof b.__cmp__ == 'function') {
-        return b.__cmp__(a) == 0;
-    }
-    return a == b;
-    """)
 
 @compiler.noSourceTracking
 def cmp(a,b):
@@ -1853,107 +1954,6 @@ def hash(obj):
     }
     """)
 
-
-def op_uadd(v):
-    raise TypeError("bad operand type for unary +: '%r'" % v)
-
-def op_usub(v):
-    raise TypeError("bad operand type for unary -: '%r'" % v)
-
-def op_add(x, y):
-    JS("""
-    if (typeof x == typeof y && (typeof x == 'number' || typeof x == 'string')) {
-        return x + y;
-    }
-    if (x !== null && y !== null) {
-        if (typeof x['__add__'] != 'undefined') return x.__add__(y);
-        if (typeof y['__radd__'] != 'undefined') return y.__radd__(x);
-        if (typeof y['__add__'] != 'undefined') return y.__add__(x);
-    }
-    throw pyjslib['TypeError']("unsupported operand type(s) for +: '%r', '%r'" % (x, y))
-""")
-
-def op_sub(x, y):
-    JS("""
-    if (typeof x == typeof y && (typeof x == 'number' || typeof x == 'string')) {
-        return x - y;
-    }
-    if (x !== null && y !== null) {
-        if (typeof x['__sub__'] != 'undefined') return x.__sub__(y);
-        if (typeof y['__rsub__'] != 'undefined') return y.__rsub__(x);
-    }
-    throw pyjslib['TypeError']("unsupported operand type(s) for -: '%r', '%r'" % (x, y))
-""")
-
-def op_floordiv(x, y):
-    JS("""
-    if (typeof x == 'number' && typeof y == 'number') {
-        if (y == 0) {
-            throw pyjslib['ZeroDivisionError']('float divmod()');
-        }
-        return Math.floor(x / y);
-    }
-    if (x !== null && y !== null) {
-        if (typeof x['__floordiv__'] != 'undefined') return x.__floordiv__(y);
-        if (typeof y['__rfloordiv__'] != 'undefined') return y.__rfloordiv__(x);
-    }
-    throw pyjslib['TypeError']("unsupported operand type(s) for //: '%r', '%r'" % (x, y))
-""")
-
-def op_div(x, y):
-    JS("""
-    if (typeof x == 'number' && typeof y == 'number') {
-        if (y == 0) {
-            throw pyjslib['ZeroDivisionError']('float division');
-        }
-        return x / y;
-    }
-    if (x !== null && y !== null) {
-        if (typeof x['__div__'] != 'undefined') return x.__div__(y);
-        if (typeof y['__rdiv__'] != 'undefined') return y.__rdiv__(x);
-    }
-    throw pyjslib['TypeError']("unsupported operand type(s) for /: '%r', '%r'" % (x, y))
-""")
-
-def op_mul(x, y):
-    JS("""
-    if (typeof x == 'number' && typeof y == 'number') {
-        return x * y;
-    }
-    if (x !== null && y !== null) {
-        if (typeof x['__mul__'] != 'undefined') return x.__mul__(y);
-        if (typeof y['__rmul__'] != 'undefined') return y.__rmul__(x);
-        if (typeof y['__mul__'] != 'undefined') return y.__mul__(x);
-    }
-    throw pyjslib['TypeError']("unsupported operand type(s) for *: '%r', '%r'" % (x, y))
-""")
-
-def op_mod(x, y):
-    JS("""
-    if (typeof x == typeof y && typeof x == 'number') {
-        return x % y;
-    }
-    if (typeof x == 'string') {
-        return pyjslib.sprintf(x, y);
-    }
-    if (x !== null && y !== null) {
-        if (typeof x['__mod__'] != 'undefined') return x.__mod__(y);
-        if (typeof y['__rmod__'] != 'undefined') return y.__rmod__(x);
-    }
-    throw pyjslib['TypeError']("unsupported operand type(s) for %: '%r', '%r'" % (x, y))
-""")
-
-def op_pow(x, y):
-    JS("""
-    if (typeof x == typeof y && typeof x == 'number') {
-        return Math.pow(x, y);
-    }
-    if (x !== null && y !== null) {
-        if (typeof x['__pow__'] != 'undefined') return x.__pow__(y);
-        if (typeof y['__rpow__'] != 'undefined') return y.__rpow__(x);
-    }
-    throw pyjslib['TypeError']("unsupported operand type(s) for %: '%r', '%r'" % (x, y))
-""")
 
 # type functions from Douglas Crockford's Remedial Javascript: http://www.crockford.com/javascript/remedial.html
 @compiler.noSourceTracking
