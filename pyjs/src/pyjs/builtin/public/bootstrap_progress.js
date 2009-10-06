@@ -10,8 +10,18 @@ var __pygwt_moduleNames = [];
 var __pygwt_isHostPageLoaded = false;
 var __pygwt_isInitialized = false;
 var __pygwt_onLoadError = function (exception, name) {
+   var exc_name = exception.__name__;
+   var msg = exception.message;
 
-   alert( name + " " + exception.name + ' '  + exception.message );
+   if (typeof exc_name == 'undefined') {
+     exc_name = exception.name;
+   }
+   if (msg == '' || msg == exc_name) {
+     if (exception.args.l.length > 0) {
+        msg = exception.args.l.join(", ");
+     }
+   }
+   alert( name + " " + exc_name + ': '  + msg );
 
 };
 
