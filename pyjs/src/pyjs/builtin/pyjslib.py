@@ -714,7 +714,7 @@ class List:
 
     @compiler.noSourceTracking
     def append(self, item):
-        JS("""    self.l[self.l.length] = item;""")
+        JS("""self.l[self.l.length] = item;""")
 
     @compiler.noSourceTracking
     def extend(self, data):
@@ -755,6 +755,7 @@ class List:
     @compiler.noSourceTracking
     def index(self, value, start=0):
         JS("""
+        start = start.valueOf();
         if (typeof value == 'number' || typeof value == 'string') {
             start = self.l.indexOf(value, start);
             if (start >= 0)
@@ -784,6 +785,7 @@ class List:
     @compiler.noSourceTracking
     def pop(self, index = -1):
         JS("""
+        index = index.valueOf();
         if (index<0) index += self.l.length;
         if (index < 0 || index >= self.l.length) {
             if (self.l.length == 0) {
@@ -838,6 +840,7 @@ class List:
     @compiler.noSourceTracking
     def __getitem__(self, index):
         JS("""
+        index = index.valueOf();
         if (index < 0) index += self.l.length;
         if (index < 0 || index >= self.l.length) {
             throw(pyjslib.IndexError("list index out of range"));
@@ -848,6 +851,7 @@ class List:
     @compiler.noSourceTracking
     def __setitem__(self, index, value):
         JS("""
+        index = index.valueOf();
         if (index < 0) index += self.l.length;
         if (index < 0 || index >= self.l.length) {
             throw(pyjslib.IndexError("list assignment index out of range"));
@@ -858,6 +862,7 @@ class List:
     @compiler.noSourceTracking
     def __delitem__(self, index):
         JS("""
+        index = index.valueOf();
         if (index < 0) index += self.l.length;
         if (index < 0 || index >= self.l.length) {
             throw(pyjslib.IndexError("list assignment index out of range"));
@@ -1016,6 +1021,7 @@ class Tuple:
     @compiler.noSourceTracking
     def __getitem__(self, index):
         JS("""
+        index = index.valueOf();
         if (index < 0) index += self.l.length;
         if (index < 0 || index >= self.l.length) {
             throw(pyjslib.IndexError("tuple index out of range"));
