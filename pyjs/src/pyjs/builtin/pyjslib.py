@@ -138,8 +138,8 @@ def op_sub(x, y):
             case 0x0404:
                 return x.__sub__(y);
         }
-        if (typeof x['__sub__'] != 'undefined') return x.__sub__(y);
-        if (typeof y['__rsub__'] != 'undefined') return y.__rsub__(x);
+        if (!x.__number__ && typeof x['__sub__'] != 'undefined') return x.__sub__(y);
+        if (!y.__number__ && typeof y['__rsub__'] != 'undefined') return y.__rsub__(x);
     }
     throw pyjslib['TypeError']("unsupported operand type(s) for -: '%r', '%r'" % (x, y))
 """)
@@ -169,8 +169,8 @@ def op_floordiv(x, y):
             case 0x0404:
                 return x.__floordiv__(y);
         }
-        if (typeof x['__floordiv__'] != 'undefined') return x.__floordiv__(y);
-        if (typeof y['__rfloordiv__'] != 'undefined') return y.__rfloordiv__(x);
+        if (!x.__number__ && typeof x['__floordiv__'] != 'undefined') return x.__floordiv__(y);
+        if (!y.__number__ && typeof y['__rfloordiv__'] != 'undefined') return y.__rfloordiv__(x);
     }
     throw pyjslib['TypeError']("unsupported operand type(s) for //: '%r', '%r'" % (x, y))
 """)
@@ -200,8 +200,8 @@ def op_div(x, y):
             case 0x0404:
                 return x.__div__(y);
         }
-        if (typeof x['__div__'] != 'undefined') return x.__div__(y);
-        if (typeof y['__rdiv__'] != 'undefined') return y.__rdiv__(x);
+        if (!x.__number__ && typeof x['__div__'] != 'undefined') return x.__div__(y);
+        if (!y.__number__ && typeof y['__rdiv__'] != 'undefined') return y.__rdiv__(x);
     }
     throw pyjslib['TypeError']("unsupported operand type(s) for /: '%r', '%r'" % (x, y))
 """)
@@ -227,8 +227,8 @@ def op_mul(x, y):
             case 0x0404:
                 return x.__mul__(y);
         }
-        if (typeof x['__mul__'] != 'undefined') return x.__mul__(y);
-        if (typeof y['__rmul__'] != 'undefined') return y.__rmul__(x);
+        if (!x.__number__ && typeof x['__mul__'] != 'undefined') return x.__mul__(y);
+        if (!y.__number__ && typeof y['__rmul__'] != 'undefined') return y.__rmul__(x);
     }
     throw pyjslib['TypeError']("unsupported operand type(s) for *: '%r', '%r'" % (x, y))
 """)
@@ -261,8 +261,8 @@ def op_mod(x, y):
         if (typeof x == 'string') {
             return pyjslib.sprintf(x, y);
         }
-        if (typeof x['__mod__'] != 'undefined') return x.__mod__(y);
-        if (typeof y['__rmod__'] != 'undefined') return y.__rmod__(x);
+        if (!x.__number__ && typeof x['__mod__'] != 'undefined') return x.__mod__(y);
+        if (!y.__number__ && typeof y['__rmod__'] != 'undefined') return y.__rmod__(x);
     }
     throw pyjslib['TypeError']("unsupported operand type(s) for %: '%r', '%r'" % (x, y))
 """)
@@ -290,8 +290,8 @@ def op_pow(x, y):
             case 0x0404:
                 return x.__pow__(y);
         }
-        if (typeof x['__pow__'] != 'undefined') return x.__pow__(y);
-        if (typeof y['__rpow__'] != 'undefined') return y.__rpow__(x);
+        if (!x.__number__ && typeof x['__pow__'] != 'undefined') return x.__pow__(y);
+        if (!y.__number__ && typeof y['__rpow__'] != 'undefined') return y.__rpow__(x);
     }
     throw pyjslib['TypeError']("unsupported operand type(s) for %: '%r', '%r'" % (x, y))
 """)
