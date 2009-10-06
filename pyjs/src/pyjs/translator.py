@@ -250,7 +250,6 @@ PYJSLIB_BUILTIN_FUNCTIONS=frozenset((
     "hasattr",
     "hash",
     "hex",
-    "int",
     "isinstance",
     "len",
     "map",
@@ -290,7 +289,9 @@ PYJSLIB_BUILTIN_CLASSES=[
     "ZeroDivisionError",
 
     "dict",
+    "int",
     "list",
+    "long",
     "object",
     "property",
     "tuple",
@@ -634,6 +635,8 @@ class Translator:
         'InlineCode': [('inline_bool', True),('inline_len', True),('inline_eq', True)],
         'noOperatorFuncs': [('operator_funcs', False)],
         'OperatorFuncs': [('operator_funcs', True)],
+        'noNumberClasses': [('number_classes', False)],
+        'NumberClasses': [('number_classes', True)],
     }
 
     def __init__(self, compiler,
@@ -650,6 +653,7 @@ class Translator:
                  store_source=True,
                  inline_code=True,
                  operator_funcs=True,
+                 number_classes=True,
                 ):
 
         monkey_patch_broken_transformer(compiler)
@@ -686,6 +690,9 @@ class Translator:
         self.inline_len = inline_code
         self.inline_eq = inline_code
         self.operator_funcs = operator_funcs
+        self.number_classes = number_classes
+        if self.number_classes:
+            self.operator_funcs = True
 
         self.imported_modules = []
         self.imported_js = []
@@ -701,6 +708,8 @@ class Translator:
         self.is_generator = False
         self.generator_states = []
         self.state_max_depth = len(self.generator_states)
+        self.constant_int = {}
+        self.constant_long = {}
 
         print >>self.output, self.spacing() + "/* start module: %s */" % module_name
         if not '.' in module_name:
@@ -798,6 +807,10 @@ class Translator:
             for l in self.track_lines.keys():
                 print >> self.output, self.spacing() + '''%s.__track_lines__[%d] = "%s";''' % (self.js_module_name, l, self.track_lines[l].replace('"', '\"'))
         print >> self.output, self.local_js_vars_decl([])
+        if captured_output.find("@CONSTANT_DECLARATION@") >= 0:
+            captured_output = captured_output.replace("@CONSTANT_DECLARATION@", self.constant_decl())
+        else:
+            print >> self.output, self.constant_decl()
         print >> self.output, captured_output,
 
         if attribute_checking:
@@ -841,7 +854,7 @@ class Translator:
             self.attribute_checking, self.bound_methods, self.descriptors,
             self.source_tracking, self.line_tracking, self.store_source,
             self.inline_bool, self.inline_eq, self.inline_len,
-            self.operator_funcs,
+            self.operator_funcs, self.number_classes,
         ))
     def pop_options(self):
         (\
@@ -849,7 +862,7 @@ class Translator:
             self.attribute_checking, self.bound_methods, self.descriptors,
             self.source_tracking, self.line_tracking, self.store_source,
             self.inline_bool, self.inline_eq, self.inline_len,
-            self.operator_funcs,
+            self.operator_funcs, self.number_classes,
         ) = self.option_stack.pop()
 
     def parse_decorators(self, node, funcname, current_class = None, top_level = False):
@@ -963,7 +976,8 @@ class Translator:
                 jsname = self.jsname(name_type, "%s.%s" % (self.local_prefix, jsname))
         if self.lookup_stack[depth].has_key(pyname):
             name_type = self.lookup_stack[depth][pyname][0]
-        self.lookup_stack[depth][pyname] = (name_type, pyname, jsname)
+        if self.module_name != 'pyjslib' or pyname != 'int':
+            self.lookup_stack[depth][pyname] = (name_type, pyname, jsname)
         return jsname
 
     def lookup(self, name):
@@ -989,6 +1003,9 @@ class Translator:
             elif name in PYJSLIB_BUILTIN_CLASSES:
                 name_type = 'builtin'
                 pyname = name
+                if not self.number_classes:
+                    if pyname in ['int', 'long']:
+                        name = 'float_int'
                 jsname = self.jsname("variable", "pyjslib['%s']" % self.attrib_remap(name))
             elif PYJSLIB_BUILTIN_MAPPING.has_key(name):
                 name_type = 'builtin'
@@ -1005,6 +1022,15 @@ class Translator:
                 return scopeName + name
             depth -= 1
         return self.modpfx() + name
+
+    def constant_decl(self):
+        s = self.spacing()
+        lines = []
+        for name in self.constant_int:
+            lines.append("%(s)sconst $constant_int_%(name)s = pyjslib['int'](%(name)s);" % locals())
+        for name in self.constant_long:
+            lines.append("%(s)sconst $constant_long_%(name)s = pyjslib['long'](%(name)s);" % locals())
+        return "\n".join(lines)
 
     def local_js_vars_decl(self, ignore_py_vars):
         names = []
@@ -2254,6 +2280,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             return [self._subscript(v.expr, self.modpfx()), attr_name]
         elif isinstance(v.expr, self.ast.CallFunc):
             return [self._callfunc(v.expr, self.modpfx()), attr_name]
+        elif isinstance(v.expr, self.ast.Const):
+            return [self._const(v.expr), attr_name]
         else:
             raise TranslationError(
                 "unsupported type (in _getattr)", v.expr, self.module_name)
@@ -2654,16 +2682,22 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         def astOP(op):
             if op == "+=":
                 return self.ast.Add
-            elif op == "-=":
+            if op == "-=":
                 return self.ast.Sub
-            elif op == "*=":
+            if op == "*=":
                 return self.ast.Mul
-            elif op == "/=":
+            if op == "/=":
                 return self.ast.Div
-            elif op == "%=":
+            if op == "%=":
                 return self.ast.Mod
-            else:
-                raise TranslationError(
+            if self.number_classes:
+                if op == "&=":
+                    return self.ast.Bitand
+                if op == "^=":
+                    return self.ast.Bitxor
+                if op == "|=":
+                    return self.ast.Bitor
+            raise TranslationError(
                  "unsupported OP (in _augassign)", node, self.module_name)
         v = node.node
         if isinstance(v, self.ast.Getattr):
@@ -2862,6 +2896,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             # we can safely remove all constants that are discarded,
             # e.g None fo empty expressions after a unneeded ";" or
             # mostly important to remove doc strings
+            if node.expr.value in ["@CONSTANT_DECLARATION@"]:
+                print >>self.output, node.expr.value
             return
         elif isinstance(node.expr, self.ast.Yield):
             self._yield(node.expr, current_klass)
@@ -2952,24 +2988,28 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         rhs = self.expr(rhs_node, current_klass)
 
         if op == "==":
-            return self.track_call(self.inline_eq_code(lhs, rhs), node.lineno)
+            return self.inline_eq_code(lhs, rhs)
         if op == "!=":
-            return self.track_call("!"+self.inline_eq_code(lhs, rhs), node.lineno)
+            return "!"+self.inline_eq_code(lhs, rhs)
         if op == "<":
-            return self.track_call("(pyjslib['cmp'](%s, %s) == -1)" % (lhs, rhs), node.lineno)
+            return "(pyjslib['cmp'](%s, %s) == -1)" % (lhs, rhs)
         if op == "<=":
-            return self.track_call("(pyjslib['cmp'](%s, %s) != 1)" % (lhs, rhs), node.lineno)
+            return "(pyjslib['cmp'](%s, %s) != 1)" % (lhs, rhs)
         if op == ">":
-            return self.track_call("(pyjslib['cmp'](%s, %s) == 1)" % (lhs, rhs), node.lineno)
+            return "(pyjslib['cmp'](%s, %s) == 1)" % (lhs, rhs)
         if op == ">=":
-            return self.track_call("(pyjslib['cmp'](%s, %s) != -1)" % (lhs, rhs), node.lineno)
+            return "(pyjslib['cmp'](%s, %s) != -1)" % (lhs, rhs)
         if op == "in":
-            return self.track_call(rhs + ".__contains__(" + lhs + ")", node.lineno)
+            return rhs + ".__contains__(" + lhs + ")"
         elif op == "not in":
-            return "!" + self.track_call(rhs + ".__contains__(" + lhs + ")", node.lineno)
+            return "!" + rhs + ".__contains__(" + lhs + ")"
         if op == "is":
+            if self.number_classes:
+                return "pyjslib['op_is'](%s, %s)" % (lhs, rhs)
             op = "==="
         if op == "is not":
+            if self.number_classes:
+                return "!pyjslib['op_is'](%s, %s)" % (lhs, rhs)
             op = "!=="
 
         return "(" + lhs + " " + op + " " + rhs + ")"
@@ -3131,12 +3171,18 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
     def _const(self, node):
         if isinstance(node.value, int):
-            return str(node.value)
+            if not self.number_classes:
+                return str(node.value)
+            self.constant_int[node.value] = 1
+            return "$constant_int_%s" % str(node.value)
         elif isinstance(node.value, long):
             v = str(node.value)
             if v[-1] == 'L':
                 v = v[:-1]
-            return v
+            if not self.number_classes:
+                return v
+            self.constant_long[node.value] = 1
+            return "$constant_long_%s" % v
         elif isinstance(node.value, float):
             return str(node.value)
         elif isinstance(node.value, basestring):
@@ -3271,22 +3317,34 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 %(s)s\tpyjslib['op_pow'](%(v1)s,%(v2)s))""" % locals()
 
     def _invert(self, node, current_klass):
-        return "~(%s)" % self.expr(node.expr, current_klass)
+        if not self.operator_funcs or not self.number_classes:
+            return "~(%s)" % self.expr(node.expr, current_klass)
+        return "pyjslib['op_invert'](%s)" % self.expr(node.expr, current_klass)
 
     def _bitshiftleft(self, node, current_klass):
-        return "(%s)<<(%s)"% (self.expr(node.left, current_klass), self.expr(node.right, current_klass))
+        if not self.operator_funcs or not self.number_classes:
+            return "(%s)<<(%s)"% (self.expr(node.left, current_klass), self.expr(node.right, current_klass))
+        return "pyjslib['op_bitshiftleft'](%s,%s)" % (self.expr(node.left, current_klass), self.expr(node.right, current_klass))
 
     def _bitshiftright(self, node, current_klass):
-        return "(%s)>>>(%s)" % (self.expr(node.left, current_klass), self.expr(node.right, current_klass))
+        if not self.operator_funcs or not self.number_classes:
+            return "(%s)>>>(%s)" % (self.expr(node.left, current_klass), self.expr(node.right, current_klass))
+        return "pyjslib['op_bitshiftright'](%s,%s)" % (self.expr(node.left, current_klass), self.expr(node.right, current_klass))
 
     def _bitand(self, node, current_klass):
-        return "(%s)" % ")&(".join([self.expr(child, current_klass) for child in node.nodes])
+        if not self.operator_funcs or not self.number_classes:
+            return "(%s)" % ")&(".join([self.expr(child, current_klass) for child in node.nodes])
+        return "pyjslib['op_bitand'](%s)" % ", ".join([self.expr(child, current_klass) for child in node.nodes])
 
     def _bitxor(self,node, current_klass):
-        return "(%s)" % ")^(".join([self.expr(child, current_klass) for child in node.nodes])
+        if not self.operator_funcs or not self.number_classes:
+            return "(%s)" % ")^(".join([self.expr(child, current_klass) for child in node.nodes])
+        return "pyjslib['op_bitxor'](%s)" % ", ".join([self.expr(child, current_klass) for child in node.nodes])
 
     def _bitor(self, node, current_klass):
-        return "(%s)" % ")|(".join([self.expr(child, current_klass) for child in node.nodes])
+        if not self.operator_funcs or not self.number_classes:
+            return "(%s)" % ")|(".join([self.expr(child, current_klass) for child in node.nodes])
+        return "pyjslib['op_bitor'](%s)" % ", ".join([self.expr(child, current_klass) for child in node.nodes])
 
     def _subscript(self, node, current_klass):
         if node.flags == "OP_APPLY":
@@ -3622,6 +3680,7 @@ def translate(compiler, sources, output_file, module_name=None,
               store_source=True,
               inline_code=False,
               operator_funcs=True,
+              number_classes=True,
              ):
 
     sources = map(os.path.abspath, sources)
@@ -3662,6 +3721,7 @@ def translate(compiler, sources, output_file, module_name=None,
                    store_source = store_source,
                    inline_code = inline_code,
                    operator_funcs = operator_funcs,
+                   number_classes = number_classes,
                   )
     output.close()
     return t.imported_modules, t.imported_js
@@ -3882,6 +3942,7 @@ class AppTranslator:
                  store_source=True,
                  inline_code=False,
                  operator_funcs=True,
+                 number_classes=True,
                 ):
         self.compiler = compiler
         self.extension = ".py"
@@ -3902,6 +3963,7 @@ class AppTranslator:
         self.store_source = store_source
         self.inline_code = inline_code
         self.operator_funcs = operator_funcs
+        self.number_classes = number_classes
 
         if not parser:
             self.parser = PlatformParser(self.compiler)
@@ -3960,6 +4022,7 @@ class AppTranslator:
                        store_source = self.store_source,
                        inline_code = self.inline_code,
                        operator_funcs = self.operator_funcs,
+                       number_classes = self.number_classes,
                       )
 
         module_str = output.getvalue()
@@ -4158,6 +4221,19 @@ def add_compile_options(parser):
     speed_options['operator_funcs'] = False
     pythonic_options['operator_funcs'] = True
 
+    parser.add_option("--no-number-classes",
+                      dest = "number_classes",
+                      action="store_false",
+                      help = "Do not use number classes",
+                     )
+    parser.add_option("--number-classes",
+                      dest = "number_classes",
+                      action="store_true",
+                      help = "In development: Use classes for numbers (float, int, long)",
+                     )
+    speed_options['number_classes'] = False
+    #pythonic_options['number_classes'] = True
+
 
     def set_multiple(option, opt_str, value, parser, **kwargs):
         for k in kwargs.keys():
@@ -4192,6 +4268,7 @@ def add_compile_options(parser):
                         store_source = False,
                         inline_code = False,
                         operator_funcs = False,
+                        number_classes = False,
                        )
 
 
@@ -4237,6 +4314,7 @@ def main():
               store_source = options.store_source,
               inline_code = options.inline_code,
               operator_funcs = options.operator_funcs,
+              number_classes = options.number_classes,
     ),
 
 if __name__ == "__main__":

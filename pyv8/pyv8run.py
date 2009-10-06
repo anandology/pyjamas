@@ -266,6 +266,9 @@ def build_script():
         source_tracking=options.source_tracking,
         line_tracking=options.line_tracking,
         store_source=options.store_source,
+        inline_code = options.inline_code,
+        operator_funcs = options.operator_funcs,
+        number_classes = options.number_classes,
         )
 
     l = PyV8Linker(args, #[top_module],

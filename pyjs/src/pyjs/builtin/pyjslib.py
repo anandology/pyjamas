@@ -509,15 +509,6 @@ if (!Array.prototype.indexOf) {
 }
 """)
 
-    # Patching of the standard javascript Number
-    # which is in principle the python 'float'
-    JS("""
-Number.prototype.__is_int__ = false;
-Number.prototype.__init__ = function (value, radix) {
-    return null;
-};
-""")
-
     # Patching of the standard javascript RegExp
     JS("""
 RegExp.prototype.Exec = RegExp.prototype.exec;
@@ -537,6 +528,19 @@ class Class:
 @compiler.noSourceTracking
 def open(fname, mode='r'):
     raise NotImplementedError("open is not implemented in browsers")
+
+def op_is(a,b):
+    JS("""
+    if (a === b) return true;
+    if (a !== null && b !== null) {
+        if (a.__number__ !== null) {
+            if (a.__number__ == b.__number__) {
+                return a.__eq__(b);
+            }
+        }
+    }
+    return false;
+""")
 
 @compiler.noSourceTracking
 def eq(a,b):
@@ -610,7 +614,7 @@ def bool(v):
     """)
 
 class float:
-    __is_int__ = False
+    __number__ = JS("0x01")
     def __new__(self, args):
         JS("""
         var v = Number(args[0]);
@@ -619,14 +623,58 @@ class float:
         }
         return v;
 """)
+# Patching of the standard javascript Number
+# which is in principle the python 'float'
+JS("""
+Number.prototype.__number__ = 0x01;
+Number.prototype.__init__ = function (value, radix) {
+    return null;
+};
+""")
+
+def float_int(value, radix=None):
+    JS("""
+    var v;
+    if (value.__number__) {
+        if (radix !== null) {
+            throw pyjslib.TypeError("int() can't convert non-string with explicit base");
+        }
+        v = value.valueOf()
+        if (v > 0) {
+            v = Math.floor(v);
+        } else {
+            v = Math.ceil(v);
+        }
+    } else if (typeof value == 'string') {
+        if (radix === null) {
+            radix = 10;
+        }
+        switch (value[value.length-1]) {
+            case 'l':
+            case 'L':
+                v = value.slice(0, value.length-2)
+                break;
+            default:
+                v = value;
+        }
+        v = parseInt(v, radix);
+    } else {
+        throw pyjslib.TypeError("TypeError: int() argument must be a string or a number");
+    }
+    if (isNaN(v) || !isFinite(v)) {
+        throw pyjslib.ValueError("invalid literal for int() with base " + radix + ": '" + value + "'")
+    }
+    return v;
+""")
+
 
 class int:
-    __is_int__ = True
+    __number__ = JS("0x02")
     def __new__(self, args):
         v = JS("new Number(args[0])")
         radix = JS("typeof args[1] == 'undefined' ? null : args[1]")
         JS("""
-        if (typeof args[0] == 'number' || typeof args[0].__is_int__ != 'undefined') {
+        if (args[0].__number__) {
             if (radix !== null) {
                 throw pyjslib.TypeError("int() can't convert non-string with explicit base");
             }
@@ -646,13 +694,15 @@ class int:
         if (isNaN(v)) {
             throw pyjslib.ValueError("invalid literal for int() with base " + radix + ": '" + args[0] + "'")
         }
-        v.__is_int__ = true;
+        v.__number__ = 0x02;
         v.__init__ = self.__init__;
 """)
         return v
 
     def __init__(self, v, radix=None):
         pass
+
+"""@CONSTANT_DECLARATION@"""
 
 class List:
     @compiler.noSourceTracking
@@ -817,7 +867,7 @@ class List:
 
     @compiler.noSourceTracking
     def __len__(self):
-        JS("""    return self.l.length;""")
+        return int(JS("""self.l.length"""))
 
     @compiler.noSourceTracking
     @compiler.noDebug
@@ -975,7 +1025,7 @@ class Tuple:
 
     @compiler.noSourceTracking
     def __len__(self):
-        JS("""    return self.l.length;""")
+        return int(JS("""self.l.length"""))
 
     @compiler.noSourceTracking
     def __contains__(self, value):
@@ -1141,11 +1191,11 @@ class Dict:
 
     @compiler.noSourceTracking
     def __len__(self):
+        size = 0
         JS("""
-        var size=0;
         for (var i in self.d) size++;
-        return size;
         """)
+        return int(size);
 
     @compiler.noSourceTracking
     def has_key(self, key):
@@ -1563,14 +1613,23 @@ def len(object):
 def isinstance(object_, classinfo):
     if isUndefined(object_):
         return False
-    JS("""if (classinfo.__name__ == 'int') {
+    JS("""
+    if (object_ == null) {
+        if (classinfo == null) {
+            return true;
+        }
+        return false;
+    }
+    switch (classinfo.__name__) {
+        case 'int':
+        case 'float_int':
             return pyjslib.isNumber(object_); /* XXX TODO: check rounded? */
-            }
-        """)
-    JS("""if (classinfo.__name__ == 'str') {
+        case 'str':
             return pyjslib.isString(object_);
-            }
-        """)
+        case 'bool':
+            return pyjslib.isBool(object_);
+    }
+""")
     if not isObject(object_):
         return False
     if _isinstance(classinfo, Tuple):
