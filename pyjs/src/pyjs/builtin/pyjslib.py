@@ -20,6 +20,9 @@ from __pyjamas__ import JS, setCompilerOptions, debugger
 
 setCompilerOptions("noBoundMethods", "noDescriptors", "noAttributeChecking", "noSourceTracking", "noLineTracking", "noStoreSource")
 
+sys = None
+dynamic = None
+
 class object:
     pass
 
@@ -91,6 +94,8 @@ def ___import___(path, context, module_name=None, get_base=True):
 def __dynamic_load__(importName):
     setCompilerOptions("noDebug")
     module = JS("""$pyjs.loaded_modules[importName]""")
+    if sys is None or dynamic is None:
+        return module
     if JS("""typeof module == 'undefined'"""):
         try:
             dynamic.ajax_import("lib/" + importName + ".__" + platform + "__.js")
