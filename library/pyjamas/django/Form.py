@@ -26,6 +26,9 @@ class CharField(TextBox):
             val = ''
         self.setText(val)
 
+    def getValue(self):
+        return self.getText()
+
 class FloatField(TextBox):
     def __init__(self, **kwargs):
         TextBox.__init__(self)
@@ -40,10 +43,27 @@ class FloatField(TextBox):
             val = ''
         self.setText(val)
 
+    def getValue(self):
+        return self.getText()
 
 widget_factory = {'CharField': CharField,
                   'FloatField': FloatField
                  }
+
+class FormSaveGrid:
+
+    def __init__(self, sink):
+        self.sink = sink
+
+    def onRemoteResponse(self,  response, request_info):
+
+        method = request_info.method
+
+        writebr(repr(response))
+        writebr("%d" % len(response))
+        writebr("%s" % repr(response.keys()))
+
+        self.sink.save_respond(response)
 
 class FormDescribeGrid:
 
@@ -54,6 +74,7 @@ class FormDescribeGrid:
 
         method = request_info.method
 
+        writebr(method)
         writebr(repr(response))
         writebr("%d" % len(response))
         writebr("%s" % repr(response.keys()))
@@ -80,7 +101,8 @@ class Form(FormPanel):
         self.grid = Grid()
         self.grid.resize(0, 2)
         self.add(self.grid)
-        self.form = FormDescribeGrid(self)
+        self.describer = FormDescribeGrid(self)
+        self.saver = FormSaveGrid(self)
         self.formsetup(data)
 
     def addDescribeListener(self, l):
@@ -93,13 +115,24 @@ class Form(FormPanel):
         self.grid.setHTML(num_rows, 0, description)
         self.grid.setWidget(num_rows, 1, widget)
 
+    def save(self, data=None):
+        if data is None:
+            data = self.getValue()
+        self.data = data
+        writebr(repr(self.data))
+        self.svc({}, {'save': None}, self.saver)
+
+    def save_respond(self, response):
+        for l in self.describe_listeners:
+            l.onSaveDone(self, response)
+        
     def formsetup(self, data=None):
 
         if data is None:
             data = {}
         self.data = data
         writebr(repr(self.data))
-        self.svc({}, {'describe': None}, self.form)
+        self.svc({}, {'describe': None}, self.describer)
 
     def update_values(self, data = None):
         if data is not None:
@@ -108,15 +141,14 @@ class Form(FormPanel):
         for idx, fname in enumerate(self.fields):
             val = None
             if self.data.has_key(fname):
-                val = self.sink.data[fname]
-            w = self.sink.grid.getWidget(idx, 1)
+                val = self.data[fname]
+            w = self.grid.getWidget(idx, 1)
             w.setValue(val)
 
     def do_describe(self, fields):
 
-        keys = fields.keys()
-        self.fields = keys
-        for idx, fname in enumerate(fields.keys()):
+        self.fields = fields.keys()
+        for idx, fname in enumerate(self.fields):
             field = fields[fname]
             if self.data and self.data.has_key(fname):
                 field['initial'] = self.data[fname]
@@ -132,3 +164,13 @@ class Form(FormPanel):
         for l in self.describe_listeners:
             l.onDescribeDone(self)
 
+    def getValue(self):
+
+        res = {}
+        for idx, fname in enumerate(self.fields):
+            w = self.grid.getWidget(idx, 1)
+            val = w.getValue()
+            res[fname] = val
+            self.data[fname] = val
+
+        return res

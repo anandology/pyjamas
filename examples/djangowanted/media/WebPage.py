@@ -30,8 +30,13 @@ class WebApp:
 
     def onClick(self, sender):
         if sender == self.submit:
-            log.writebr("onClick")
-            
+            v = self.form.getValue()
+            log.writebr("onClick %s" % repr(v))
+            self.form.save(v)
+ 
+    def onSaveDone(self, form, response):
+        log.writebr("onSave %s" % repr(response))
+        
     def onModuleLoad(self):
 
         self.remote = DataService()
