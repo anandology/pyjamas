@@ -6,7 +6,8 @@
 
 from pyjamas.ui.TextBox import TextBox
 from pyjamas.ui.Grid import Grid
-from pyjamas.ui.Composite import Composite
+from pyjamas.ui.FormPanel import FormPanel
+#from pyjamas.ui.Composite import Composite
 from pyjamas.log import writebr
 
 from pyjamas.ui.TextBox import TextBox
@@ -40,7 +41,9 @@ class FloatField(TextBox):
         self.setText(val)
 
 
-widget_factory = {'CharField': CharField}
+widget_factory = {'CharField': CharField,
+                  'FloatField': FloatField
+                 }
 
 class FormDescribeGrid:
 
@@ -61,7 +64,6 @@ class FormDescribeGrid:
 
         keys = fields.keys()
         self.sink.fields = keys
-        self.sink.grid.resize(len(keys), 2)
         for idx, fname in enumerate(fields.keys()):
             field = fields[fname]
             if self.sink.data and self.sink.data.has_key(fname):
@@ -73,10 +75,9 @@ class FormDescribeGrid:
             for (k, v) in field.items():
                 fv[str(k)] = v
             w = widget_kls(**fv)
-            self.sink.grid.setHTML(idx, 0, field['label'])
-            self.sink.grid.setWidget(idx, 1, w)
+            self.sink.add_widget(field['label'], w)
 
-class Form(Composite):
+class Form(FormPanel):
 
     def __init__(self, svc, **kwargs):
 
@@ -86,12 +87,20 @@ class Form(Composite):
             data = None
         writebr(repr(data))
 
-        Composite.__init__(self, **kwargs)
+        FormPanel.__init__(self, **kwargs)
         self.svc = svc
         self.grid = Grid()
-        self.initWidget(self.grid)
+        self.grid.resize(0, 2)
+        self.add(self.grid)
         self.form = FormDescribeGrid(self)
         self.formsetup(data)
+
+    def add_widget(self, description, widget):
+
+        num_rows = self.grid.getRowCount()
+        self.grid.resize(num_rows+1, 2)
+        self.grid.setHTML(num_rows, 0, description)
+        self.grid.setWidget(num_rows, 1, widget)
 
     def formsetup(self, data=None):
 
