@@ -322,6 +322,10 @@ function $pyjs__class_function(cls_fn, prop, bases) {
     for (var i = 0; i < bases.length; i++) {
         if (bases[i].__mro__ != null) {
             base_mro_list.push(new Array().concat(bases[i].__mro__));
+        } else if (typeof bases[i].__class__ == 'function') {
+            base_mro_list.push(new Array().concat([bases[i].__class__]));
+        } else if (typeof bases[i].prototype == 'function') {
+            base_mro_list.push(new Array().concat([bases[i].prototype]));
         }
     }
     var __mro__ = $pyjs__mro_merge(base_mro_list);
@@ -371,7 +375,12 @@ function $pyjs__class_function(cls_fn, prop, bases) {
     cls_fn.__super_classes__ = bases;
     cls_fn.__sub_classes__ = new Array();
     for (var i = 0; i < bases.length; i++) {
-        (bases[i]).__sub_classes__.push(cls_fn);
+        if (typeof bases[i].__sub_classes__ == 'array') {
+            bases[i].__sub_classes__.push(cls_fn);
+        } else {
+            bases[i].__sub_classes__ = new Array();
+            bases[i].__sub_classes__.push(cls_fn);
+        }
     }
     cls_fn.__args__ = cls_fn.__init__.__args__;
     return cls_fn;
