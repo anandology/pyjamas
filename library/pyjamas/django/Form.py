@@ -58,28 +58,16 @@ class FormDescribeGrid:
         writebr("%d" % len(response))
         writebr("%s" % repr(response.keys()))
 
-        self.do_describe(response)
-
-    def do_describe(self, fields):
-
-        keys = fields.keys()
-        self.sink.fields = keys
-        for idx, fname in enumerate(fields.keys()):
-            field = fields[fname]
-            if self.sink.data and self.sink.data.has_key(fname):
-                field['initial'] = self.sink.data[fname]
-            writebr("%s %s %d" % (fname, field['label'], idx))
-            field_type = field['type']
-            widget_kls = widget_factory.get(field_type, CharField)
-            fv = {}
-            for (k, v) in field.items():
-                fv[str(k)] = v
-            w = widget_kls(**fv)
-            self.sink.add_widget(field['label'], w)
+        self.sink.do_describe(response)
 
 class Form(FormPanel):
 
     def __init__(self, svc, **kwargs):
+
+        self.describe_listeners = []
+        if kwargs.has_key('listener'):
+            listener = kwargs.pop('listener')
+            self.addDescribeListener(listener)
 
         if kwargs.has_key('data'):
             data = kwargs.pop('data')
@@ -94,6 +82,9 @@ class Form(FormPanel):
         self.add(self.grid)
         self.form = FormDescribeGrid(self)
         self.formsetup(data)
+
+    def addDescribeListener(self, l):
+        self.describe_listeners.append(l)
 
     def add_widget(self, description, widget):
 
@@ -120,4 +111,24 @@ class Form(FormPanel):
                 val = self.sink.data[fname]
             w = self.sink.grid.getWidget(idx, 1)
             w.setValue(val)
+
+    def do_describe(self, fields):
+
+        keys = fields.keys()
+        self.fields = keys
+        for idx, fname in enumerate(fields.keys()):
+            field = fields[fname]
+            if self.data and self.data.has_key(fname):
+                field['initial'] = self.data[fname]
+            writebr("%s %s %d" % (fname, field['label'], idx))
+            field_type = field['type']
+            widget_kls = widget_factory.get(field_type, CharField)
+            fv = {}
+            for (k, v) in field.items():
+                fv[str(k)] = v
+            w = widget_kls(**fv)
+            self.add_widget(field['label'], w)
+
+        for l in self.describe_listeners:
+            l.onDescribeDone(self)
 

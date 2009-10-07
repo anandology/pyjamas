@@ -2,6 +2,7 @@ import pyjd
 
 from pyjamas.ui.RootPanel import RootPanel
 from pyjamas.ui.DockPanel import DockPanel
+from pyjamas.ui.Button import Button
 from pyjamas.ui.HTML import HTML
 
 from pyjamas.JSONService import JSONProxy
@@ -16,12 +17,21 @@ from HTMLLinkPanel import HTMLLinkPanel
 
 class WebApp:
     def onFormLoad(self):
+        self.submit = Button("Submit", self)
         self.formsvc = FormService()
         d = {'price': 20, 'name': 'a good car'}
-        self.form = Form(getattr(self.formsvc, "itemform"), data=d)
+        self.form = Form(getattr(self.formsvc, "itemform"), data=d,
+                         listener=self)
         #self.describe(['name', 'description'])
         RootPanel().add(self.form)
 
+    def onDescribeDone(self, form):
+        form.add_widget("Submit", self.submit)
+
+    def onClick(self, sender):
+        if sender == self.submit:
+            log.writebr("onClick")
+            
     def onModuleLoad(self):
 
         self.remote = DataService()
