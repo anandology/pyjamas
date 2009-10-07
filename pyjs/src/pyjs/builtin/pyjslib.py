@@ -814,6 +814,61 @@ def open(fname, mode='r'):
 @compiler.noSourceTracking
 def cmp(a,b):
     JS("""
+    if (typeof a == typeof b) {
+        switch (typeof a) {
+            case 'number':
+            case 'string':
+            case 'boolean':
+                return a == b ? 0 : (a < b ? -1 : 1);
+        }
+        if (a === b) return 0;
+    }
+
+    switch ((a.__number__ << 8)|b.__number__) {
+        case 0x0202:
+            a = a.__v;
+            v = b.__v;
+        case 0x0101:
+            return a == b ? 0 : (a < b ? -1 : 1);
+        case 0x0100:
+        case 0x0200:
+        case 0x0400:
+            if (typeof b.__cmp__ == 'function') {
+                return -b.__cmp__(a);
+            }
+            return -1;
+        case 0x0001:
+        case 0x0002:
+        case 0x0004:
+            if (typeof a.__cmp__ == 'function') {
+                return a.__cmp__(b);
+            }
+            return 1;
+        case 0x0102:
+            return -b.__cmp__(pyjslib['int'](a));
+        case 0x0104:
+            return -b.__cmp__(pyjslib['long'](a));
+        case 0x0201:
+            return a.__cmp__(pyjslib['int'](b));
+        case 0x0401:
+            return a.__cmp__(pyjslib['long'](b));
+        case 0x0204:
+            return -b.__cmp__(pyjslib['long'](a));
+        case 0x0402:
+            return a.__cmp__(pyjslib['long'](b));
+        case 0x0404:
+            return a.__cmp__(b);
+    }
+
+    if (typeof a.__class__ == typeof b.__class__ && typeof a.__class__ == 'function') {
+        if (a.__class__.__name__ < b.__class__.__name__) {
+            return -1;
+        }
+        if (a.__class__.__name__ > b.__class__.__name__) {
+            return 1;
+        }
+    }
+
     if (a === null) {
         if (b === null) return 0;
         return -1;
