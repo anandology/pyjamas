@@ -827,7 +827,7 @@ def cmp(a,b):
     switch ((a.__number__ << 8)|b.__number__) {
         case 0x0202:
             a = a.__v;
-            v = b.__v;
+            b = b.__v;
         case 0x0101:
             return a == b ? 0 : (a < b ? -1 : 1);
         case 0x0100:
