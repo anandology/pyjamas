@@ -53,13 +53,13 @@ class BuiltinTest(UnitTest):
 
         try:
             int('not int')
-            self.fail("No int() argument error raised")
+            self.fail("No int() argument error raised: int('not-int')")
         except ValueError, e:
             self.assertEqual(e[0], "invalid literal for int() with base 10: 'not int'")
 
         try:
             int(1, 10)
-            self.fail("No int() argument error raised")
+            self.fail("No int() argument error raised: int(1, 10)")
         except TypeError, e:
             self.assertEqual(e[0], "int() can't convert non-string with explicit base")
 
