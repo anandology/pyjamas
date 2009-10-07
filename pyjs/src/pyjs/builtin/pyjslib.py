@@ -755,6 +755,14 @@ String.prototype.__number__ = null;
 String.prototype.__name__ = 'str';
 String.prototype.__class__ = String.prototype;
 String.prototype.__is_instance__ = null;
+String.prototype.__str__ = function () {
+    if (typeof this == 'string') return this.toString();
+    return "<type 'str'>";
+}
+String.prototype.__repr__ = function () {
+    if (typeof this == 'string') return "'" + this.toString() + "'";
+    return "<type 'str'>";
+}
 
 """)
 
@@ -764,6 +772,14 @@ Boolean.prototype.__number__ = 0x01;
 Boolean.prototype.__name__ = 'bool';
 Boolean.prototype.__class__ = Boolean.prototype;
 Boolean.prototype.__is_instance__ = null;
+Boolean.prototype.__str__= function () {
+    if (typeof this == 'string') {
+     	if (this === true) return "True";
+    	return "False";
+    }
+    return "<type 'bool'>";
+}
+Boolean.prototype.__repr__ = Boolean.prototype.__str__;
 
 """)
 
