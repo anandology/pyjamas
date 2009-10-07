@@ -34,6 +34,9 @@ class WebApp:
             log.writebr("onClick %s" % repr(v))
             self.form.save(v)
  
+    def onErrors(self, form, response):
+        log.writebr("onErrors %s" % repr(response))
+        
     def onSaveDone(self, form, response):
         log.writebr("onSave %s" % repr(response))
         

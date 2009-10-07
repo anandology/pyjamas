@@ -99,7 +99,7 @@ class Form(FormPanel):
         FormPanel.__init__(self, **kwargs)
         self.svc = svc
         self.grid = Grid()
-        self.grid.resize(0, 2)
+        self.grid.resize(0, 3)
         self.add(self.grid)
         self.describer = FormDescribeGrid(self)
         self.saver = FormSaveGrid(self)
@@ -109,13 +109,16 @@ class Form(FormPanel):
         self.describe_listeners.append(l)
 
     def add_widget(self, description, widget):
+        """ adds a widget, with error rows interspersed
+        """
 
         num_rows = self.grid.getRowCount()
-        self.grid.resize(num_rows+1, 2)
+        self.grid.resize((num_rows+1), 3)
         self.grid.setHTML(num_rows, 0, description)
         self.grid.setWidget(num_rows, 1, widget)
 
     def save(self, data=None):
+        self.clear_errors()
         if data is None:
             data = self.getValue()
         self.data = data
@@ -123,6 +126,14 @@ class Form(FormPanel):
         self.svc({}, {'save': None}, self.saver)
 
     def save_respond(self, response):
+
+        if not response['success']:
+            errors = response['errors']
+            self.set_errors(errors)
+            for l in self.describe_listeners:
+                l.onErrors(self, errors)
+            return
+
         for l in self.describe_listeners:
             l.onSaveDone(self, response)
         
@@ -134,6 +145,21 @@ class Form(FormPanel):
         writebr(repr(self.data))
         self.svc({}, {'describe': None}, self.describer)
 
+    def clear_errors(self):
+
+        for idx, fname in enumerate(self.fields):
+            self.grid.setHTML(idx, 2, None)
+            
+    def set_errors(self, errors):
+
+        offsets = {}
+        for idx, fname in enumerate(self.fields):
+            offsets[fname] = idx
+        for k, err in errors.items():
+            err = "<br />".join(err)
+            idx = offsets[k]
+            self.grid.setHTML(idx, 2, err)
+            
     def update_values(self, data = None):
         if data is not None:
             self.data = data
