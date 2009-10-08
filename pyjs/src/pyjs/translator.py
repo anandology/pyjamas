@@ -1893,6 +1893,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         print >>self.output, self.dedent() + "};"
         print >>self.output, self.spacing() + "%s.__name__ = '%s';\n" % (function_name, node.name)
 
+        self.pop_lookup()
         self.func_args(node, current_klass, function_name, 'static', declared_arg_names, varargname, kwargname)
 
         if decorator_code:
@@ -1905,7 +1906,6 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         self.has_yield = save_has_yield
         self.has_js_return = save_has_js_return
         self.pop_options()
-        self.pop_lookup()
 
     def _assert(self, node, current_klass):
         expr = self.expr(node.test, current_klass)
@@ -2548,12 +2548,9 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             bind_type = 'static'
         elif classmethod:
             bind_type = 'class'
-        self.func_args(node, current_klass, None, bind_type, declared_arg_names, varargname, kwargname)
 
-        #if staticmethod:
-        #    self._kwargs_parser(node, method_name, normal_arg_names, current_klass, True)
-        #else:
-        #    self._kwargs_parser(node, method_name, normal_arg_names[1:], current_klass, True)
+        self.pop_lookup()
+        self.func_args(node, current_klass, None, bind_type, declared_arg_names, varargname, kwargname)
 
         self.generator_states = save_generator_states
         self.state_max_depth = len(self.generator_states)
@@ -2561,7 +2558,6 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.has_yield = save_has_yield
         self.has_js_return = save_has_js_return
         self.pop_options()
-        self.pop_lookup()
 
         self.push_lookup(current_klass.name_scope)
         staticmethod, classmethod, decorator_code = self.parse_decorators(node, node.name, current_klass, False)

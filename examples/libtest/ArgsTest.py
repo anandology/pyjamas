@@ -710,6 +710,15 @@ class ArgsTest(UnitTest):
             self.assertEquals(kwa.get('y'), 6)
             self.assertEquals(kwa.get('z'), 8)
 
+    def testLookupOrder(self):
+        def fn(int = int):
+            return int(1.2);
+        class A:
+            def fn(self, int = int):
+                return int(1.2);
+        self.assertEqual(fn(), 1)
+        self.assertEqual(A().fn(), 1)
+
 
 def foo(a, b, c):
     return [a, b, c]
