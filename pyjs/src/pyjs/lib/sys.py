@@ -69,3 +69,4 @@ def trackstackstr(stack=None):
 
 platform = JS('$pyjs.platform')
 byteorder = 'little' # Needed in struct.py, assume all systems are little endian and not big endian
+maxint = 2147483647  # javascript bit operations are on 32 bit signed numbers
