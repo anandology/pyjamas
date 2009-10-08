@@ -71,7 +71,7 @@ class UnitTest:
     def getNameFmt(self, msg=""):
         if self.getName():
             if msg:
-                msg=" " + msg
+                msg=" " + str(msg)
             if self.current_test_name:
                 msg += " (%s) " % self.current_test_name
             return self.getName() + msg + ": "
@@ -95,6 +95,8 @@ class UnitTest:
 
         if not msg:
             msg="assertion failed"
+        else:
+            msg = str(msg)
 
         title="<b>" + self.getNameFmt("Test failed") + "</b>"
         writebr(title + msg)
