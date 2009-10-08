@@ -457,6 +457,9 @@ class NotImplementedError(RuntimeError):
 class ZeroDivisionError(ArithmeticError):
     pass
 
+class OverflowError(ArithmeticError):
+    pass
+
 def init():
 
     # There seems to be an bug in Chrome with accessing the message
