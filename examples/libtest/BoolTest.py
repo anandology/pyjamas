@@ -105,6 +105,25 @@ class BoolTest(UnitTest):
             self.fail("'[] and not {}' shoul evaluate to False")
         else:
             self.assertTrue(True)
+        if 0 < 1 < 2:
+            self.assertTrue(True)
+        else:
+            self.fail("if 0 < 1 < 2")
+        i = [0, 2, 4]
+        i = i.__iter__();
+        if 0 < i.next() < 4:
+            self.fail("iter (0)")
+        else:
+            self.assertTrue(True)
+        if 0 < i.next() < 4:
+            self.assertTrue(True)
+        else:
+            self.fail("iter (2)")
+        if 0 < i.next() < 4:
+            self.fail("iter (4)")
+        else:
+            self.assertTrue(True)
+
 
     def testWhileStatement(self):
         while([]):

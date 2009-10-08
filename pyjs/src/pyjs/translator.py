@@ -2980,13 +2980,23 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         lhs = self.expr(node.expr, current_klass)
 
         if len(node.ops) != 1:
+            cmp = []
+            for op, rhs_node in node.ops:
+                rhsname = self.uniqid("$compare")
+                rhs = self.expr(rhs_node, current_klass)
+                rhs = "(%s = %s)" % (rhsname, rhs)
+                cmp.append(self.compare_code(op, lhs, rhs))
+                lhs = rhsname
+            return "(%s)" % "&&".join(cmp)
             raise TranslationError(
                 "only one ops supported (in _compare)", node,  self.module_name)
 
         op = node.ops[0][0]
         rhs_node = node.ops[0][1]
         rhs = self.expr(rhs_node, current_klass)
+        return self.compare_code(op, lhs, rhs)
 
+    def compare_code(self, op, lhs, rhs):
         if op == "==":
             return self.inline_eq_code(lhs, rhs)
         if op == "!=":
