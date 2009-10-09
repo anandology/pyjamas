@@ -87,3 +87,10 @@ def test_item_form():
 
         print it, it.id, it.price, it.vehicletype.id, it.vehicletype.value, it.numdoors.value
 
+def test_add_flagtypes():
+    f = FlagType(name="num_doors", description="Number of Doors")
+    f.save()
+    f = FlagType(name="max_climb_rate", description="Maximum Flying Climb Rate")
+    f.save()
+    f = FlagType(name="num_ballerinas", description="Maximum Ballerina Storage Capacity")
+    f.save()
