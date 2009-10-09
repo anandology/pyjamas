@@ -1997,6 +1997,8 @@ def isinstance(object_, classinfo):
             return pyjslib.isString(object_);
         case 'bool':
             return pyjslib.isBool(object_);
+        case 'long':
+            return object_.__number__ == 0x04;
     }
 """)
     if not isObject(object_):
@@ -2265,7 +2267,7 @@ def isIteratable(a):
 @compiler.noSourceTracking
 def isNumber(a):
     JS("""
-    return typeof a == 'number' && isFinite(a);
+    return a.__number__ && (a.__number__ != 0x01 || isFinite(a));
     """)
 
 @compiler.noSourceTracking
