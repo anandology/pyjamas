@@ -29,7 +29,7 @@ clean:
 	dh_testroot
 	rm -f build-stamp 
 
-	rm -fr tmp # remove examples
+	rm -fr pyjamas-examples # remove examples
 
 	python run_bootstrap_first_then_setup.py clean
 
@@ -63,9 +63,9 @@ install: build
 	rm -fr debian/pyjamas-build/usr/share/pyjamas/library/pyjamas/chart
 
 	# move examples out way.
-	mkdir -p tmp
+	mkdir -p pyjamas-examples
 	mv  debian/pyjamas-build/usr/share/pyjamas/examples/ \
-	    tmp
+	    pyjamas-examples
 	#rm -fr debian/pyjamas-build/usr/share/pyjamas/examples
 	#mkdir -p debian/pyjamas-doc/examples
 	#mv  debian/pyjamas-build/usr/share/pyjamas/examples/* \
@@ -80,7 +80,7 @@ install: build
 
 	# replace ../../bin/pyjsbuild with pyjsbuild
 	#sed -i -e's/..\/..\/bin\///' debian/pyjamas-doc/examples/*/build.sh
-	sed -i -e's/..\/..\/bin\///' tmp/examples/*/build.sh
+	sed -i -e's/..\/..\/bin\///' pyjamas-examples/examples/*/build.sh
 
 binary-indep: build install
 
