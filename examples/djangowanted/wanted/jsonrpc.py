@@ -186,7 +186,11 @@ class FormProcessor(JSONRPCService):
 
     def __process(self, request, params, command=None):
 
-        f = self.formcls(params)
+        data = {}
+        for (k, v) in params.items():
+            data[str(k)] = v
+
+        f = self.formcls(data)
 
         if command is None: # just validate
             if not f.is_valid():
@@ -202,7 +206,7 @@ class FormProcessor(JSONRPCService):
             return describe_fields(f.fields, field_names)
 
         elif command.has_key('delete'):
-            instance = f.delete(params) 
+            instance = f.delete(data) 
             return {'success': True}
 
         elif command.has_key('save'):

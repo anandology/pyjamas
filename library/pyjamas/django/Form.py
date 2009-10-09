@@ -123,7 +123,7 @@ class Form(FormPanel):
             data = self.getValue()
         self.data = data
         writebr(repr(self.data))
-        self.svc({}, {'save': None}, self.saver)
+        self.svc(data, {'save': None}, self.saver)
 
     def save_respond(self, response):
 
@@ -143,7 +143,7 @@ class Form(FormPanel):
             data = {}
         self.data = data
         writebr(repr(self.data))
-        self.svc({}, {'describe': None}, self.describer)
+        self.svc(data, {'describe': None}, self.describer)
 
     def clear_errors(self):
 
