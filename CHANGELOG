@@ -3,6 +3,8 @@
 
  * Add support for multiple compare (0 < n < 4)
 
+ * Add DoubleClickListener mixin
+
  * Add PUT and DELETE into XMLHttpRequest (thanks to Nick <thretwon@gmail.com>)
 
  * Added for in tuple
