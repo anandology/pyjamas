@@ -15,6 +15,7 @@ from NameTest import NameTest
 from DictTest import DictTest
 from BuiltinTest import BuiltinTest
 from GeneratorTest import GeneratorTest
+from LongTest import LongTest
 
 if IN_JS:
     from JSOTest import JSOTest
@@ -84,6 +85,7 @@ def main():
     t.add(UrllibModuleTest)
     t.add(Base64ModuleTest)
     t.add(ReModuleTest)
+    t.add(LongTest)
 
     if IN_BROWSER:
         t.add(JSOTest)
