@@ -2568,18 +2568,38 @@ def pow(x, y, z = None):
     return float(p % z)
 
 def hex(x):
-    if int(x) != x:
-        raise TypeError("hex() argument can't be converted to hex")
-    r = None
-    JS("r = '0x'+x.toString(16);")
-    return str(r)
+    JS("""
+    if (typeof x == 'number') {
+        if (Math.floor(x) == x) {
+            return '0x' + x.toString(16);
+        }
+    } else {
+        switch (x.__number__) {
+            case 0x02:
+                return '0x' + x.__v.toString(16);
+            case 0x04:
+                return x.__hex__();
+        }
+    }
+""")
+    raise TypeError("hex() argument can't be converted to hex")
 
 def oct(x):
-    if int(x) != x:
-        raise TypeError("oct() argument can't be converted to oct")
-    r = None
-    JS("r = '0'+x.toString(8);")
-    return str(r)
+    JS("""
+    if (typeof x == 'number') {
+        if (Math.floor(x) == x) {
+            return x == 0 ? '0': '0' + x.toString(8);
+        }
+    } else {
+        switch (x.__number__) {
+            case 0x02:
+                return x.__v == 0 ? '0': '0' + x.__v.toString(8);
+            case 0x04:
+                return x.__oct__();
+        }
+    }
+""")
+    raise TypeError("oct() argument can't be converted to oct")
 
 def round(x, n = 0):
     n = pow(10, n)
