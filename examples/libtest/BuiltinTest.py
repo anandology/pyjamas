@@ -228,3 +228,28 @@ class BuiltinTest(UnitTest):
         self.assertEqual(var, 0)
         var = 1 if not [] else 0
         self.assertEqual(var, 1)
+
+    def testRange(self):
+        r = range(3)
+        self.assertEqual(r, [0, 1, 2])
+        r = range(2, 5)
+        self.assertEqual(r, [2, 3, 4])
+        r = range(2, 15, 3)
+        self.assertEqual(r, [2, 5, 8, 11, 14])
+        r = range(15, 2, -3)
+        self.assertEqual(r, [15, 12, 9, 6, 3])
+
+    def testXRange(self):
+        r = [i for i in xrange(3)]
+        self.assertEqual(r, [0, 1, 2])
+        r = [i for i in xrange(2, 5)]
+        self.assertEqual(r, [2, 3, 4])
+        r = [i for i in xrange(2, 15, 3)]
+        self.assertEqual(r, [2, 5, 8, 11, 14])
+        r = [i for i in xrange(15, 2, -3)]
+        self.assertEqual(r, [15, 12, 9, 6, 3])
+        self.assertEqual(str(xrange(3)), "xrange(3)")
+        self.assertEqual(str(xrange(3,4)), "xrange(3, 4)")
+        self.assertEqual(str(xrange(3,4,5)), "xrange(3, 8, 5)")
+        self.assertEqual(str(xrange(14,3,-5)), "xrange(14, -1, -5)")
+

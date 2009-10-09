@@ -1760,25 +1760,68 @@ def super(type_, object_or_type = None):
 
 # taken from mochikit: range( [start,] stop[, step] )
 @compiler.noSourceTracking
+def xrange(start, stop = None, step = 1):
+    if stop is None:
+        stop = start
+        start = 0
+    rval = nval = start
+    JS("""
+    var nstep = (stop-start)/step;
+    nstep = nstep < 0 ? Math.ceil(nstep) : Math.floor(nstep);
+    if ((stop-start) % step) {
+        nstep++;
+    }
+    stop = start + nstep * step;
+    var x = {
+        'next': function() {
+            if (nval == stop) {
+                throw pyjslib.StopIteration;
+            }
+            rval = nval;
+            nval += step;
+""")
+    return int(rval);
+    JS("""
+        },
+        '__iter__': function() {
+            return this;
+        },
+        'toString': function() {
+            var s = "xrange("
+            if (start != 0) {
+                s += start + ", ";
+            }
+            s += stop;
+            if (step != 1) {
+                s += ", " + step;
+            }
+            return s + ")"
+        },
+        '__repr__': function() {
+            return "'" + this.toString() + "'";
+        },
+    };
+    x['__str__'] = x.toString;
+    return x;
+    """)
+
 def range(start, stop = None, step = 1):
     if stop is None:
         stop = start
         start = 0
+    i = start
+    items = JS("new Array()")
     JS("""
-    return {
-        'next': function() {
-            if ((step > 0 && start >= stop) || (step < 0 && start <= stop)) {
-                throw pyjslib.StopIteration;
-            }
-            var rval = start;
-            start += step;
-            return rval;
-            },
-        '__iter__': function() {
-            return this;
-            }
-        };
-    """)
+    var nstep = (stop-start)/step;
+    nstep = nstep < 0 ? Math.ceil(nstep) : Math.floor(nstep);
+    if ((stop-start) % step) {
+        nstep++;
+    }
+    stop = start + nstep * step;
+    for (; i != stop; i += step)
+""")
+    items.push(int(i))
+    return list(items)
 
 @compiler.noSourceTracking
 def slice(object, lower, upper):

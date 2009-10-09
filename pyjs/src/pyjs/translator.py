@@ -267,6 +267,7 @@ PYJSLIB_BUILTIN_FUNCTIONS=frozenset((
     "str",
     "super",
     "type",
+    "xrange",
     ))
 
 PYJSLIB_BUILTIN_CLASSES=[
