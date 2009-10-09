@@ -2545,12 +2545,39 @@ def round(x, n = 0):
     return float(r)
 
 def divmod(x, y):
-    if int(x) == x and int(y) == y:
-        return (int(x / y), int(x % y))
-    f = None
-    JS("f = Math.floor(x / y);")
-    f = float(f)
-    return (f, x - f * y)
+    JS("""
+    if (x !== null && y !== null) {
+        switch ((x.__number__ << 8) | y.__number__) {
+            case 0x0101:
+            case 0x0104:
+            case 0x0401:
+                if (y == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+                var f = Math.floor(x / y);
+                return pyjslib['tuple']([f, x - f * y]);
+            case 0x0102:
+                if (y.__v == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+                var f = Math.floor(x / y.__v);
+                return pyjslib['tuple']([f, x - f * y.__v]);
+            case 0x0201:
+                if (y == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+                var f = Math.floor(x.__v / y);
+                return pyjslib['tuple']([f, x.__v - f * y]);
+            case 0x0202:
+                if (y.__v == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
+                var f = Math.floor(x.__v / y.__v);
+                return pyjslib['tuple']([new pyjslib['int'](f), new pyjslib['int'](x.__v - f * y.__v)]);
+            case 0x0204:
+                return y.__rdivmod__(pyjslib['long'](x.__v))
+            case 0x0402:
+                return x.__divmod__(pyjslib['long'](y.__v))
+            case 0x0404:
+                return x.__divmod__(y);
+        }
+        if (!x.__number__ && typeof x['__divmod__'] != 'undefined') return x.__divmod__(y);
+        if (!y.__number__ && typeof y['__rdivmod__'] != 'undefined') return y.__rdivmod__(x);
+    }
+    throw pyjslib['TypeError']("unsupported operand type(s) for divmod(): '%r', '%r'" % (x, y))
+""")
 
 def all(iterable):
     for element in iterable:
