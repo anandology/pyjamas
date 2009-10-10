@@ -9,6 +9,13 @@ class LongTest(UnitTest):
         self.assertTrue(x == 1L)
 
     def testType(self):
+
+        # int shifted up ends up as a long
+        x = 1<<64
+        self.assertTrue(x == 18446744073709551616L, "#302 - %s != 18446744073709551616L" % repr(x))
+        self.assertTrue(isinstance(x, long))
+
+        # long shifted up is still a long
         x = 1L<<64
         self.assertTrue(x == 18446744073709551616L, "%s != 18446744073709551616L" % repr(x))
         self.assertTrue(isinstance(x, long))
