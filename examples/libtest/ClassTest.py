@@ -284,6 +284,33 @@ class ClassTest(UnitTest):
         self.assertEqual(instance.method(), 1)
         self.assertEqual(instance.x, 5)
 
+    def testMetaClassInheritFromType(self):
+        class Metaklass(type):
+            def metamethod(cls):
+                return 2
+        class Klass(object):
+            __metaclass__ = Metaklass
+            def method(cls):
+                return 1
+            x = 5
+        self.assertEqual(Klass.metamethod(), 2)
+        instance = Klass()
+        self.assertEqual(instance.method(), 1)
+        self.assertEqual(instance.x, 5)
+
+    def testMetaClassDct(self):
+        class MetaklassDctSaver(type):
+            def __init__(cls, name, bases, dct):
+                super(MetaklassDctSaver, cls).__init__(name, bases, dct)
+                cls.saved_dct = dct
+        class MyClass(object):
+            __metaclass__ = MetaklassDctSaver
+            a = 1
+            b = 2
+        self.assertTrue(isinstance(MyClass.saved_dct, dict))
+        self.assertTrue("a" in MyClass.saved_dct)
+        self.assertTrue("b" in MyClass.saved_dct)
+
     def testMultiSuperclass(self):
         new_value = 'New value'
         c = ExampleMultiSuperclassNoConstructor(new_value)
