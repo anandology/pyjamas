@@ -9,7 +9,7 @@ class LongTest(UnitTest):
         self.assertTrue(x == 1L)
 
     def testType(self):
-        x = 1<<64
+        x = 1L<<64
         self.assertTrue(x == 18446744073709551616L, "%s != 18446744073709551616L" % repr(x))
         self.assertTrue(isinstance(x, long))
 
@@ -21,3 +21,6 @@ class LongTest(UnitTest):
         self.assertTrue(x == 1048576L, "%s != 1048576L" % repr(x))
         self.assertTrue(isinstance(x, long))
 
+        if 1L<<64 == 18446744073709551616L:
+            x = 1<<64
+            self.assertTrue(x == 18446744073709551616L, "No automatic int to long conversion on <<")
