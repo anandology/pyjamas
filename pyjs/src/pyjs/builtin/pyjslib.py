@@ -37,7 +37,7 @@ def op_is(a,b):
             case 0x0202:
                 return a.__v == b.__v;
             case 0x0404:
-                return a.__v == b.__v;
+                return a.__cmp__(b) == 0;
         }
     }
     return false;
@@ -85,9 +85,31 @@ def op_eq(a,b):
     """)
 
 def op_uadd(v):
+    JS("""
+    switch (v.__number__) {
+        case 0x01:
+        case 0x02:
+        case 0x04:
+            return v;
+    }
+    if (v !== null) {
+        if (typeof v['__pos__'] == 'function') return v.__pos__();
+    }
+""")
     raise TypeError("bad operand type for unary +: '%r'" % v)
 
 def op_usub(v):
+    JS("""
+    switch (v.__number__) {
+        case 0x01:
+            return -v;
+        case 0x02:
+            return new pyjslib['int'](-v);
+    }
+    if (v !== null) {
+        if (typeof v['__neg__'] == 'function') return v.__neg__();
+    }
+""")
     raise TypeError("bad operand type for unary -: '%r'" % v)
 
 def op_add(x, y):
@@ -103,7 +125,7 @@ def op_add(x, y):
             case 0x0201:
                 return x.__v + y;
             case 0x0202:
-                return pyjslib['int'](x.__v + y.__v);
+                return new pyjslib['int'](x.__v + y.__v);
             case 0x0204:
                 return y.__radd__(pyjslib['long'](x.__v))
             case 0x0402:
@@ -130,7 +152,7 @@ def op_sub(x, y):
             case 0x0201:
                 return x.__v - y;
             case 0x0202:
-                return pyjslib['int'](x.__v - y.__v);
+                return new pyjslib['int'](x.__v - y.__v);
             case 0x0204:
                 return y.__rsub__(pyjslib['long'](x.__v))
             case 0x0402:
@@ -161,7 +183,7 @@ def op_floordiv(x, y):
                 return Math.floor(x.__v / y);
             case 0x0202:
                 if (y.__v == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
-                return pyjslib['int'](Math.floor(x.__v / y.__v));
+                return new pyjslib['int'](Math.floor(x.__v / y.__v));
             case 0x0204:
                 return y.__rfloordiv__(pyjslib['long'](x.__v))
             case 0x0402:
@@ -192,7 +214,7 @@ def op_div(x, y):
                 return x.__v / y;
             case 0x0202:
                 if (y.__v == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
-                return pyjslib['int'](x.__v / y.__v);
+                return new pyjslib['int'](x.__v / y.__v);
             case 0x0204:
                 return y.__rdiv__(pyjslib['long'](x.__v))
             case 0x0402:
@@ -219,7 +241,7 @@ def op_mul(x, y):
             case 0x0201:
                 return x.__v * y;
             case 0x0202:
-                return pyjslib['int'](x.__v * y.__v);
+                return new pyjslib['int'](x.__v * y.__v);
             case 0x0204:
                 return y.__rmul__(pyjslib['long'](x.__v))
             case 0x0402:
@@ -250,7 +272,7 @@ def op_mod(x, y):
                 return x.__v % y;
             case 0x0202:
                 if (y.__v == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
-                return pyjslib['int'](x.__v % y.__v);
+                return new pyjslib['int'](x.__v % y.__v);
             case 0x0204:
                 return y.__rmod__(pyjslib['long'](x.__v))
             case 0x0402:
@@ -295,6 +317,98 @@ def op_pow(x, y):
     }
     throw pyjslib['TypeError']("unsupported operand type(s) for %: '%r', '%r'" % (x, y))
 """)
+
+def op_invert(v):
+    JS("""
+    if (v !== null) {
+        if (typeof v['__invert__'] == 'function') return v.__invert__();
+    }
+""")
+    raise TypeError("bad operand type for unary -: '%r'" % v)
+
+def op_bitshiftleft(x, y):
+    JS("""
+    if (x !== null && y !== null) {
+        if (typeof x['__lshift__'] != 'undefined') return x.__lshift__(y);
+        if (typeof y['__rlshift__'] != 'undefined') return y.__rlshift__(x);
+    }
+    throw pyjslib['TypeError']("unsupported operand type(s) for <<: '%r', '%r'" % (x, y))
+""")
+
+def op_bitshiftright(x, y):
+    JS("""
+    if (x !== null && y !== null) {
+        if (typeof x['__rshift__'] != 'undefined') return x.__rshift__(y);
+        if (typeof y['__rrshift__'] != 'undefined') return y.__rrshift__(x);
+    }
+    throw pyjslib['TypeError']("unsupported operand type(s) for >>: '%r', '%r'" % (x, y))
+""")
+
+def op_bitand(*args):
+    JS("""
+    if (args.l[0] !== null && args.l[1] !== null && args.l.length > 1) {
+        var res;
+        res = args.l[0];
+        for (i = 1; i < args.l.length; i++) {
+            if (typeof res['__and__'] == 'function') {
+                res = res.__and__(args.l[i]);
+            } else if (typeof args.l[i]['__rand__'] == 'function') {
+                res = args.l[i].__rand__(res);
+            } else {
+                res = null;
+                break;
+            }
+        }
+        if (res !== null) {
+            return res;
+        }
+    }
+""")
+    raise TypeError("unsupported operand type(s) for &: " + ', '.join([repr(a) for a in args]))
+
+def op_bitxor(*args):
+    JS("""
+    if (args.l[0] !== null && args.l[1] !== null && args.l.length > 1) {
+        var res;
+        res = args.l[0];
+        for (i = 1; i < args.l.length; i++) {
+            if (typeof res['__xor__'] == 'function') {
+                res = res.__xor__(args.l[i]);
+            } else if (typeof args.l[i]['__rxor__'] == 'function') {
+                res = args.l[i].__rxor__(res);
+            } else {
+                res = null;
+                break;
+            }
+        }
+        if (res !== null) {
+            return res;
+        }
+    }
+""")
+    raise TypeError("unsupported operand type(s) for ^: " + ', '.join([repr(a) for a in args]))
+
+def op_bitor(*args):
+    JS("""
+    if (args.l[0] !== null && args.l[1] !== null && args.l.length > 1) {
+        var res;
+        res = args.l[0];
+        for (i = 1; i < args.l.length; i++) {
+            if (typeof res['__or__'] == 'function') {
+                res = res.__or__(args.l[i]);
+            } else if (typeof args.l[i]['__ror__'] == 'function') {
+                res = args.l[i].__ror__(res);
+            } else {
+                res = null;
+                break;
+            }
+        }
+        if (res !== null) {
+            return res;
+        }
+    }
+""")
+    raise TypeError("unsupported operand type(s) for |: " + ', '.join([repr(a) for a in args]))
 
 
 @compiler.noSourceTracking
@@ -666,9 +780,15 @@ String.prototype.endswith = function(suffix, start, end) {
 };
 
 String.prototype.ljust = function(width, fillchar) {
-    if (typeof(width) != 'number' ||
-        parseInt(width) != width) {
-        throw (pyjslib.TypeError("an integer is required"));
+    switch (width.__number__) {
+        case 0x02:
+        case 0x04:
+            width = width.valueOf();
+            break;
+        case 0x01:
+            if (Math.floor(width) == width) break;
+        default:
+            throw (pyjslib.TypeError("an integer is required"));
     }
     if (pyjslib.isUndefined(fillchar)) fillchar = ' ';
     if (typeof(fillchar) != 'string' ||
@@ -680,9 +800,15 @@ String.prototype.ljust = function(width, fillchar) {
 };
 
 String.prototype.rjust = function(width, fillchar) {
-    if (typeof(width) != 'number' ||
-        parseInt(width) != width) {
-        throw (pyjslib.TypeError("an integer is required"));
+    switch (width.__number__) {
+        case 0x02:
+        case 0x04:
+            width = width.valueOf();
+            break;
+        case 0x01:
+            if (Math.floor(width) == width) break;
+        default:
+            throw (pyjslib.TypeError("an integer is required"));
     }
     if (pyjslib.isUndefined(fillchar)) fillchar = ' ';
     if (typeof(fillchar) != 'string' ||
@@ -694,9 +820,15 @@ String.prototype.rjust = function(width, fillchar) {
 };
 
 String.prototype.center = function(width, fillchar) {
-    if (typeof(width) != 'number' ||
-        parseInt(width) != width) {
-        throw (pyjslib.TypeError("an integer is required"));
+    switch (width.__number__) {
+        case 0x02:
+        case 0x04:
+            width = width.valueOf();
+            break;
+        case 0x01:
+            if (Math.floor(width) == width) break;
+        default:
+            throw (pyjslib.TypeError("an integer is required"));
     }
     if (pyjslib.isUndefined(fillchar)) fillchar = ' ';
     if (typeof(fillchar) != 'string' ||
@@ -743,12 +875,19 @@ String.prototype.__add__ = function(y) {
     return this + y;
 }
 
-String.prototype.__mul__ = function(n) {
-    if (typeof n != "number") {
-        throw pyjslib.TypeError("can't multiply sequence by non-int of type 'str'");
+String.prototype.__mul__ = function(y) {
+    switch (y.__number__) {
+        case 0x02:
+        case 0x04:
+            y = y.valueOf();
+            break;
+        case 0x01:
+            if (Math.floor(y) == y) break;
+        default:
+            throw pyjslib.TypeError("can't multiply sequence by non-int of type 'str'");
     }
     var s = '';
-    while (n--) {
+    while (y-- > 0) {
         s += this;
     }
     return s;
@@ -864,11 +1003,11 @@ def cmp(a,b):
             }
             return 1;
         case 0x0102:
-            return -b.__cmp__(pyjslib['int'](a));
+            return -b.__cmp__(new pyjslib['int'](a));
         case 0x0104:
             return -b.__cmp__(pyjslib['long'](a));
         case 0x0201:
-            return a.__cmp__(pyjslib['int'](b));
+            return a.__cmp__(new pyjslib['int'](b));
         case 0x0401:
             return a.__cmp__(pyjslib['long'](b));
         case 0x0204:
@@ -987,42 +1126,1713 @@ def float_int(value, radix=None):
     return v;
 """)
 
-
-class int:
-    __number__ = JS("0x02")
-    def __new__(self, args):
-        v = JS("new Number(args[0])")
-        radix = JS("typeof args[1] == 'undefined' ? null : args[1]")
-        JS("""
-        if (args[0].__number__) {
-            if (radix !== null) {
-                throw pyjslib.TypeError("int() can't convert non-string with explicit base");
+JS("""
+(function(){
+    var $int = pyjslib['int'] = function (value, radix) {
+        var v, i;
+        if (typeof radix == 'undefined' || radix === null) {
+            if (typeof value == 'undefined') {
+                throw pyjslib.TypeError("int() takes at least 1 argument");
             }
-            if (v > 0) {
-                v = Math.floor(v);
-            } else {
-                v = Math.ceil(v);
+            switch (value.__number__) {
+                case 0x01:
+                    value = value > 0 ? Math.floor(value) : Math.ceil(value);
+                    break;
+                case 0x02:
+                    return value;
+                case 0x04:
+                    return value;
             }
-        } else if (typeof args[0] == 'string') {
+            radix = null;
+        }
+        if (typeof this != 'object' || this.__number__ != 0x02) return new $int(value, radix);
+        if (value.__number__) {
+            if (radix !== null) throw pyjslib.TypeError("int() can't convert non-string with explicit base");
+            v = value;
+        } else if (typeof value == 'string') {
             if (radix === null) {
                 radix = 10;
             }
-            v = parseInt(v, radix);
+            v = parseInt(value, radix);
         } else {
             throw pyjslib.TypeError("TypeError: int() argument must be a string or a number");
         }
-        if (isNaN(v)) {
-            throw pyjslib.ValueError("invalid literal for int() with base " + radix + ": '" + args[0] + "'")
+        if (isNaN(v) || !isFinite(v)) {
+            throw pyjslib.ValueError("invalid literal for int() with base " + radix + ": '" + value + "'")
         }
-        v.__number__ = 0x02;
-        v.__init__ = self.__init__;
-""")
-        return v
+        this.__v = v;
+        return this;
+    }
+    $int.__init__ = function () {};
+    $int.__number__ = 0x02;
+    $int.__v = 0;
+    $int.__name__ = 'int';
+    $int.prototype = $int;
+    $int.__class__ = $int;
 
-    def __init__(self, v, radix=None):
-        pass
+    $int.toExponential = function (fractionDigits) {
+        return (typeof fractionDigits == 'undefined' || fractionDigits === null) ? this.__v.toExponential() : this.__v.toExponential(fractionDigits);
+    }
+
+    $int.toFixed = function (digits) {
+        return (typeof digits == 'undefined' || digits === null) ? this.__v.toFixed() : this.__v.toFixed(digits);
+    }
+
+    $int.toLocaleString = function () {
+        return this.__v.toLocaleString();
+    }
+
+    $int.toPrecision = function (precision) {
+        return (typeof precision == 'undefined' || precision === null) ? this.__v.toPrecision() : this.__v.toPrecision(precision);
+    }
+
+    $int.toString = function (radix) {
+        return (typeof radix == 'undefined' || radix === null) ? this.__v.toString() : this.__v.toString(radix);
+    }
+
+    $int.valueOf = function () {
+        return this.__v.valueOf();
+    }
+
+    $int.__str__ = function () {
+        if (typeof this == 'object' && this.__number__ == 0x02) return this.__v.toString();
+        return "<type 'int'>";
+    }
+
+    $int.__repr__ = function () {
+        if (typeof this == 'object' && this.__number__ == 0x02) return this.__v.toString();
+        return "<type 'int'>";
+    }
+
+    $int.__nonzero__ = function () {
+        return this.__v != 0;
+    }
+
+    $int.__cmp__ = function (y) {
+        return this.__v < y? -1 : (this.__v == y ? 0 : 1);
+    }
+
+    $int.__hash__ = function () {
+        return this.__v;
+    }
+
+    $int.__invert__ = function () {
+        return new $int(~this.__v);
+    }
+
+    $int.__lshift__ = function (y) {
+        return new $int(this.__v << y);
+    }
+
+    $int.__rlshift__ = function (y) {
+        return new $int(y << this.__v);
+    }
+
+    $int.__rshift__ = function (y) {
+        return new $int(this.__v >>> y);
+    }
+
+    $int.__rrshift__ = function (y) {
+        return new $int(y >>> this.__v);
+    }
+
+    $int.__and__ = function (y) {
+        return new $int(this.__v & y);
+    }
+
+    $int.__rand__ = function (y) {
+        return new $int(y & this.__v);
+    }
+
+    $int.__xor__ = function (y) {
+        return new $int(this.__v ^ y);
+    }
+
+    $int.__rxor__ = function (y) {
+        return new $int(y ^ this.__v);
+    }
+
+    $int.__or__ = function (y) {
+        return new $int(this.__v | y);
+    }
+
+    $int.__ror__ = function (y) {
+        return new $int(y | this.__v);
+    }
+
+    $int.__oct__ = function () {
+        return '0x'+this.__v.toString(8);
+    }
+
+    $int.__hex__ = function () {
+        return '0x'+this.__v.toString(16);
+    }
+
+    $int.__pos__ = function () {
+        return this;
+    }
+
+    $int.__neg__ = function () {
+        return new $int(-this.__v);
+    }
+
+    $int.__abs__ = function () {
+        if (this.__v >= 0) return this;
+        return new $int(-this.__v);
+    }
+
+    $int.__add__ = function (y) {
+        return new $int(this.__v + y);
+    }
+
+    $int.__radd__ = function (y) {
+        return new $int(y + this.__v);
+    }
+
+    $int.__sub__ = function (y) {
+        return new $int(this.__v - y);
+    }
+
+    $int.__rsub__ = function (y) {
+        return new $int(y - this.__v);
+    }
+
+    $int.__floordiv__ = function (y) {
+        if (y == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero')
+        return new $int(Math.floor(this.__v / y));
+    }
+
+    $int.__rfloordiv__ = function (y) {
+        if (this.__v == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero')
+        return new $int(Math.floor(y + this.__v));
+    }
+
+    $int.__div__ = function (y) {
+        if (y == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero')
+        return new $int(this.__v / y);
+    }
+
+    $int.__rdiv__ = function (y) {
+        if (this.__v == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero')
+        return new $int(y / this.__v);
+    }
+
+    $int.__mul__ = function (y) {
+        return new $int(this.__v * y);
+    }
+
+    $int.__rmul__ = function (y) {
+        return new $int(y * this.__v);
+    }
+
+    $int.__mod__ = function (y) {
+        if (y == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
+        return new $int(this.__v % y);
+    }
+
+    $int.__rmod__ = function (y) {
+        if (this.__v == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
+        return new $int(y % this.__v);
+    }
+
+    $int.__pow__ = function (y) {
+        return new $int(Math.pow(this.__v, y));
+    }
+})();
+""")
+
+# This is the python long implementation. See:
+#  - Include/longintrepr.h
+#  - Include/longobject.h
+#  - Objects/longobject.c
+JS("""
+(function(){
+    var $max_float_int = 1;
+    for (var i = 0; i < 1000; i++) {
+        $max_float_int *= 2;
+        if ($max_float_int + 1 == $max_float_int) {
+            break;
+        }
+    }
+
+    var $log2 = Math.log(2);
+    var $DigitValue = [
+            37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37,
+            37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37,
+            37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37,
+            0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  37, 37, 37, 37, 37, 37,
+            37, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+            25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 37, 37, 37, 37, 37,
+            37, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+            25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 37, 37, 37, 37, 37,
+            37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37,
+            37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37,
+            37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37,
+            37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37,
+            37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37,
+            37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37,
+            37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37,
+            37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37,
+    ];
+    var $log_base_PyLong_BASE = new Array();
+    var $convwidth_base = new Array();
+    var $convmultmax_base = new Array();
+    for (var i = 0; i < 37; i++) {
+        $log_base_PyLong_BASE[i] = $convwidth_base[i] = $convmultmax_base[i] = 0;
+    }
+    var $cdigit = '0123456789abcdefghijklmnopqrstuvwxyz';
+
+
+    const PyLong_SHIFT = 15;
+    const PyLong_MASK = 0x7fff;
+    const PyLong_BASE = 0x8000;
+
+    const KARATSUBA_CUTOFF = 70
+    const KARATSUBA_SQUARE_CUTOFF = (2 * KARATSUBA_CUTOFF)
+
+    const FIVEARY_CUTOFF = 8
+
+    function array_eq(a, b, n) {
+        for (var i = 0 ; i < n; i++) {
+            if (a[i] != b[i])
+                return false;
+        }
+        return true;
+    }
+
+    function long_normalize(v) {
+        var j = v.ob_size < 0 ? -v.ob_size:v.ob_size;
+        var i = j;
+        while (i > 0 && v.ob_digit[i-1] == 0) {
+            i--;
+        }
+        if (i != j) {
+            v.ob_size = v.ob_size < 0 ? -i:i;
+        }
+        return v;
+    }
+
+    function AsScaledDouble(vv) {
+        var multiplier = PyLong_BASE; // 1L << PyLong_SHIFT == 1 << 15
+        var neg, i, x, nbitsneeded;
+
+        if (vv.ob_size < 0) {
+            i = -vv.ob_size;
+            neg = true;
+        } else if (vv.ob_size > 0) {
+            i = vv.ob_size;
+            neg = false;
+        } else {
+            return [0.0, 0];
+        }
+        --i;
+        x = vv.ob_digit[i];
+        nbitsneeded = 56;
+        while (i > 0 && nbitsneeded > 0) {
+            --i;
+            x = x * multiplier + vv.ob_digit[i];
+            nbitsneeded -= PyLong_SHIFT;
+        }
+        if (neg) {
+            return [-x, i];
+        }
+        return [x, i];
+    }
+
+    function v_iadd(x, m, y, n) {
+        var i, carry = 0;
+        for (i = 0; i < n; ++i) {
+                carry += x[i] + y[i];
+                x[i] = carry & PyLong_MASK;
+                carry >>= PyLong_SHIFT;
+        }
+        for (; carry && i < m; ++i) {
+                carry += x[i];
+                x[i] = carry & PyLong_MASK;
+                carry >>= PyLong_SHIFT;
+        }
+        return carry;
+    }
+
+    function v_isub(x, m, y, n) {
+        var i, borrow = 0;
+        for (i = 0; i < n; ++i) {
+                borrow = x[i] - y[i] - borrow;
+                x[i] = borrow & PyLong_MASK;
+                borrow >>= PyLong_SHIFT;
+                borrow &= 1;
+        }
+        for (; borrow && i < m; ++i) {
+                borrow = x[i] - borrow;
+                x[i] = borrow & PyLong_MASK;
+                borrow >>= PyLong_SHIFT;
+                borrow &= 1;
+        }
+        return borrow;
+    }
+
+    function mul1(a, n) {
+        return muladd1(a, n, 0);
+    }
+
+    function muladd1(a, n, extra) {
+        var size_a = a.ob_size < 0 ? -a.ob_size : a.ob_size;
+        var carry = extra, i;
+        var z = new $long(0);
+
+        for (i = 0; i < size_a; ++i) {
+                carry += a.ob_digit[i] * n;
+                z.ob_digit[i] = carry & PyLong_MASK;
+                carry >>= PyLong_SHIFT;
+        }
+        z.ob_digit[i] = carry;
+        z.ob_size = i + 1
+        return long_normalize(z);
+    }
+
+    function inplace_divrem1(pout, pin, pout_idx, pin_idx, size, n) {
+        var rem = 0, hi = 0;
+        pin_idx += size;
+        pout_idx += size;
+        while (pin_idx > pin.length) {
+            --size;
+            --pin_idx;
+            pout[--pout_idx] = 0;
+        }
+        while (--size >= 0) {
+            rem = (rem << PyLong_SHIFT) + pin[--pin_idx];
+            pout[--pout_idx] = hi = Math.floor(rem / n);
+            rem -= hi * n;
+        }
+        return [rem, pout_idx, pin_idx];
+    }
+
+    function divrem1(a, n, prem) {
+        const size = a.ob_size < 0 ? -a.ob_size : a.ob_size;
+        var z = new $long(0);
+
+        prem[0] = inplace_divrem1(z.ob_digit, a.ob_digit, 0, 0, size, n)[0];
+        z.ob_size = size;
+        return long_normalize(z);
+    }
+
+    function Format(aa, base, addL, newstyle) {
+        var text, str, p, i, bits, sz, sign = '';
+        var c_0 = "0".charCodeAt(0);
+        var c_a = "a".charCodeAt(0);
+        base = base.valueOf()
+
+        if (aa.ob_size == 0) {
+            if (addL) {
+                text = "0L";
+            } else {
+                text = "0";
+            }
+        } else {
+            if (aa.ob_size < 0) {
+                sign = '-';
+                size_a = -aa.ob_size;
+            } else {
+                size_a = aa.ob_size;
+            }
+            i = base;
+            bits = 0;
+            while (i > 1) {
+                ++bits;
+                i >>>= 1;
+            }
+            i = addL ? 6 : 5;
+            j = size_a * PyLong_SHIFT + bits - 1;
+            sz = Math.floor(i + j / bits);
+            if (j / PyLong_SHIFT < size_a || sz < i) {
+                throw pyjslib['OverflowError']("long is too large to format");
+            }
+            str = new Array();
+            p = sz;
+            if (addL) str[--p] = 'L';
+            if ((base & (base - 1)) == 0) {
+                var accum = 0, accumbits = 0, basebits = 1;
+                i = base;
+                while ((i >>>= 1) > 1) ++basebits;
+                for (i = 0; i < size_a; ++i) {
+                    accum |= aa.ob_digit[i] << accumbits;
+                    accumbits += PyLong_SHIFT;
+                    for (;;) {
+                        var cdigit = accum & (base - 1);
+                        str[--p] = $cdigit[cdigit];
+                        accumbits -= basebits;
+                        accum >>>= basebits;
+                        if (i < size_a-1) {
+                            if (accumbits < basebits) break;
+                        } else if (accum <= 0) break;
+                    }
+                }
+                text = str.join("");
+            } else {
+                // Not 0, and base not a power of 2.
+                var scratch, pin, scratch_idx, pin_idx;
+                var powbase = base, power = 1, size = size_a;
+               
+                for (;;) {
+                    var newpow = powbase * base;
+                    if (newpow >>> PyLong_SHIFT)  /* doesn't fit in a digit */
+                        break;
+                    powbase = newpow;
+                    ++power;
+                }
+                scratch = aa.ob_digit.slice(0);
+                pin = aa.ob_digit;
+                scratch_idx = pin_idx = 0;
+                do {
+                        var ntostore = power;
+                        rem = inplace_divrem1(scratch, pin, scratch_idx, pin_idx, size, powbase);
+                        scratch_idx = rem[1];
+                        rem = rem[0];
+                        pin = scratch;
+                        pin_idx = 0;
+                        if (pin[size - 1] == 0) {
+                            --size;
+                        }
+                        do {
+                            var nextrem = Math.floor(rem / base);
+                            str[--p] = $cdigit[rem - nextrem * base];
+                            rem = nextrem;
+                            --ntostore;
+                        } while (ntostore && (size || rem));
+                } while (size !=0);
+                text = str.slice(p).join("");
+            }
+            text = text.lstrip('0');
+            if (text == "" || text == "L") text = "0" + text;
+        }
+        switch (base) {
+            case 10:
+                break;
+            case 2:
+                text = '0b' + text;
+                break;
+            case 8:
+                text = (newstyle ? '0o':(aa.ob_size ? '0': '')) + text;
+                break;
+            case 16:
+                text = '0x' + text;
+                break;
+            default:
+                text = base + '#' + text
+                break;
+        }
+        return sign + text;
+    }
+
+    function long_divrem(a, b, pdiv, prem) {
+        var size_a = a.ob_size < 0 ? -a.ob_size : a.ob_size;
+        var size_b = b.ob_size < 0 ? -b.ob_size : b.ob_size;
+        var z = null;
+
+        if (size_b == 0) {
+            throw pyjslib['ZeroDivisionError']("long division or modulo by zero");
+        }
+        if (size_a < size_b ||
+            (size_a == size_b &&
+             a.ob_digit[size_a-1] < b.ob_digit[size_b-1])) {
+                // |a| < |b|
+                pdiv.ob_size = 0;
+                prem.ob_digit = a.ob_digit.slice(0);
+                prem.ob_size = a.ob_size;
+                return 0;
+        }
+        if (size_b == 1) {
+                rem = [0];
+                prem.ob_digit = [0];
+                prem.ob_size = 1;
+                z = divrem1(a, b.ob_digit[0], prem.ob_digit);
+                prem = long_normalize(prem);
+        }
+        else {
+                z = x_divrem(a, b, prem);
+        }
+        if (z === null) {
+            pdiv.ob_size = 0;
+        } else {
+            pdiv.ob_digit = z.ob_digit.slice(0);
+            pdiv.ob_size = z.ob_size;
+        }
+        if ((a.ob_size < 0) != (b.ob_size < 0))
+                pdiv.ob_size = -(pdiv.ob_size);
+        if (a.ob_size < 0 && prem.ob_size != 0)
+                prem.ob_size = -prem.ob_size;
+        return 0;
+    }
+
+    function x_divrem(v1, w1, prem) {
+        var size_w = w1.ob_size < 0 ? -w1.ob_size : w1.ob_size;
+        var d = Math.floor(PyLong_BASE / (w1.ob_digit[size_w-1] + 1));
+        var v = mul1(v1, d);
+        var w = mul1(w1, d);
+        var a, j, k;
+        var size_v = v.ob_size < 0 ? -v.ob_size : v.ob_size;
+        k = size_v - size_w;
+        a = new $long(0);
+        a.ob_size = k + 1;
+
+        for (j = size_v; k >= 0; --j, --k) {
+            var vj = (j >= size_v) ? 0 : v.ob_digit[j];
+            var carry = 0;
+            var q, i;
+
+            if (vj == w.ob_digit[size_w-1])
+                q = PyLong_MASK;
+            else
+                q = Math.floor(((vj << PyLong_SHIFT) + v.ob_digit[j-1]) /
+                        w.ob_digit[size_w-1]);
+
+            while (w.ob_digit[size_w-2]*q >
+                    ((
+                        (vj << PyLong_SHIFT)
+                        + v.ob_digit[j-1]
+                        - q*w.ob_digit[size_w-1]
+                                                ) << PyLong_SHIFT)
+                    + v.ob_digit[j-2])
+                --q;
+
+            for (i = 0; i < size_w && i+k < size_v; ++i) {
+                var z = w.ob_digit[i] * q;
+                var zz = z >>> PyLong_SHIFT;
+                carry += v.ob_digit[i+k] - z
+                        + (zz << PyLong_SHIFT);
+                v.ob_digit[i+k] = carry & PyLong_MASK;
+                // carry = Py_ARITHMETIC_RIGHT_SHIFT(BASE_TWODIGITS_TYPE, carry, PyLong_SHIFT);
+                carry >>= PyLong_SHIFT;
+                carry -= zz;
+            }
+
+            if (i+k < size_v) {
+                carry += v.ob_digit[i+k];
+                v.ob_digit[i+k] = 0;
+            }
+
+            if (carry == 0)
+                a.ob_digit[k] = q;
+            else {
+                a.ob_digit[k] = q-1;
+                carry = 0;
+                for (i = 0; i < size_w && i+k < size_v; ++i) {
+                    carry += v.ob_digit[i+k] + w.ob_digit[i];
+                    v.ob_digit[i+k] = carry & PyLong_MASK;
+                    // carry = Py_ARITHMETIC_RIGHT_SHIFT( BASE_TWODIGITS_TYPE, carry, PyLong_SHIFT);
+                    carry >>= PyLong_SHIFT;
+                }
+            }
+        } /* for j, k */
+
+        i = divrem1(v, d, prem);
+        prem.ob_digit = i.ob_digit.slice(0);
+        prem.ob_size = i.ob_size;
+        return long_normalize(a);
+    }
+
+    function x_add(a, b) {
+        var size_a = a.ob_size < 0 ? -a.ob_size : a.ob_size;
+        var size_b = b.ob_size < 0 ? -b.ob_size : b.ob_size;
+        var z = new $long(0);
+        var i;
+        var carry = 0;
+
+        if (size_a < size_b) {
+            var temp = a;
+            a = b;
+            b = temp;
+            temp = size_a;
+            size_a = size_b;
+            size_b = temp;
+        }
+        for (i = 0; i < size_b; ++i) {
+                carry += a.ob_digit[i] + b.ob_digit[i];
+                z.ob_digit[i] = carry & PyLong_MASK;
+                carry >>>= PyLong_SHIFT;
+        }
+        for (; i < size_a; ++i) {
+                carry += a.ob_digit[i];
+                z.ob_digit[i] = carry & PyLong_MASK;
+                carry >>>= PyLong_SHIFT;
+        }
+        z.ob_digit[i] = carry;
+        z.ob_size = i+1;
+        return long_normalize(z);
+    }
+
+    function x_sub(a, b) {
+        var size_a = a.ob_size < 0 ? -a.ob_size : a.ob_size;
+        var size_b = b.ob_size < 0 ? -b.ob_size : b.ob_size;
+        var z = new $long(0);
+        var i;
+        var borrow = 0;
+        var sign = 1;
+
+        if (size_a < size_b) {
+            var temp = a;
+            a = b;
+            b = temp;
+            temp = size_a;
+            size_a = size_b;
+            size_b = temp;
+            sign = -1;
+        } else if (size_a == size_b) {
+            i = size_a;
+            while (--i >= 0 && a.ob_digit[i] == b.ob_digit[i])
+                ;
+            if (i < 0)
+                return z;
+            if (a.ob_digit[i] < b.ob_digit[i]) {
+                var temp = a;
+                a = b;
+                b = temp;
+                temp = size_a;
+                size_a = size_b;
+                size_b = temp;
+                sign = -1;
+            }
+            size_a = size_b = i+1;
+        }
+        for (i = 0; i < size_b; ++i) {
+                borrow = a.ob_digit[i] - b.ob_digit[i] - borrow;
+                z.ob_digit[i] = borrow & PyLong_MASK;
+                borrow >>>= PyLong_SHIFT;
+                borrow &= 1;
+        }
+        for (; i < size_a; ++i) {
+                borrow = a.ob_digit[i] - borrow;
+                z.ob_digit[i] = borrow & PyLong_MASK;
+                borrow >>>= PyLong_SHIFT;
+                borrow &= 1;
+        }
+        z.ob_size = i;
+        if (sign < 0)
+            z.ob_size = -(z.ob_size);
+        return long_normalize(z);
+    }
+
+    function x_mul(a, b) {
+        var size_a = a.ob_size < 0 ? -a.ob_size : a.ob_size;
+        var size_b = b.ob_size < 0 ? -b.ob_size : b.ob_size;
+        var z = new $long(0);
+        var i, s;
+
+        z.ob_size = size_a + size_b;
+        for (i = 0; i < z.ob_size; i++) {
+            z.ob_digit[i] = 0;
+        }
+        if (size_a == size_b && array_eq(a.ob_digit, b.ob_digit, size_a)) {
+            // Efficient squaring per HAC, Algorithm 14.16:
+            for (i = 0; i < size_a; ++i) {
+                var carry;
+                var f = a.ob_digit[i];
+                var pz = (i << 1);
+                var pa = i + 1;
+                var paend = size_a;
+
+                carry = z.ob_digit[pz] + f * f;
+                z.ob_digit[pz++] = carry & PyLong_MASK;
+                carry >>>= PyLong_SHIFT;
+
+                f <<= 1;
+                while (pa < paend) {
+                    carry += z.ob_digit[pz] + a.ob_digit[pa++] * f;
+                    z.ob_digit[pz++] = carry & PyLong_MASK;
+                    carry >>>= PyLong_SHIFT;
+                }
+                if (carry) {
+                    carry += z.ob_digit[pz];
+                    z.ob_digit[pz++] = carry & PyLong_MASK;
+                    carry >>>= PyLong_SHIFT;
+                }
+                if (carry) {
+                    z.ob_digit[pz] += carry & PyLong_MASK;
+                }
+            }
+        }
+        else {  // a is not the same as b -- gradeschool long mult
+            for (i = 0; i < size_a; ++i) {
+                var carry = 0;
+                var f = a.ob_digit[i];
+                var pz = i;
+                var pb = 0;
+                var pbend = size_b;
+
+                while (pb < pbend) {
+                    carry += z.ob_digit[pz] + b.ob_digit[pb++] * f;
+                    z.ob_digit[pz++] = carry & PyLong_MASK;
+                    carry >>>= PyLong_SHIFT;
+                }
+                if (carry) {
+                    z.ob_digit[pz] += carry & PyLong_MASK;
+                }
+            }
+        }
+        z.ob_size = z.ob_digit.length;
+        return long_normalize(z);
+    }
+
+    function long_mul(a, b) {
+        //var z = k_mul(a, b);
+        var z = x_mul(a, b);
+        /* Negate if exactly one of the inputs is negative. */
+        if ((a.ob_size ^ b.ob_size) < 0)
+            z.ob_size = -(z.ob_size);
+        return z;
+    }
+
+    function l_divmod(v, w, pdiv, pmod) {
+        var div = $l_divmod_div, 
+            mod = $l_divmod_mod; 
+
+        if (long_divrem(v, w, div, mod) < 0)
+                return -1;
+        if (pdiv == null && pmod == null) return 0;
+
+        if ((mod.ob_size < 0 && w.ob_size > 0) ||
+            (mod.ob_size > 0 && w.ob_size < 0)) {
+                mod = mod.__add__(w);
+                div = div.__sub__($const_long_1);
+        }
+        if (pdiv !== null) {
+            pdiv.ob_digit = div.ob_digit.slice(0);
+            pdiv.ob_size = div.ob_size;
+        }
+        if (pmod !== null) {
+            pmod.ob_digit = mod.ob_digit.slice(0);
+            pmod.ob_size = mod.ob_size;
+        }
+        return 0;
+    }
+
+
+
+
+    var $long = pyjslib['long'] = function(value, radix) {
+        var v, i;
+        if (!radix || radix.valueOf() == 0) {
+            if (typeof value == 'undefined') {
+                throw pyjslib.TypeError("long() takes at least 1 argument");
+            }
+            switch (value.__number__) {
+                case 0x01:
+                    value = value > 0 ? Math.floor(value) : Math.ceil(value);
+                    break;
+                case 0x02:
+                    break;
+                case 0x04:
+                    return value;
+            }
+            radix = null;
+        }
+        if (typeof this != 'object' || this.__number__ != 0x04) return new $long(value, radix);
+
+        v = value;
+        this.ob_digit = new Array();
+        this.ob_size = 0;
+        if (v.__number__) {
+            if (radix) {
+                throw pyjslib.TypeError("long() can't convert non-string with explicit base");
+            }
+            if (v.__number__ == 0x04) {
+                var size = v.ob_size < 0 ? -v.ob_size:v.ob_size;
+                for (var i = 0; i < size; i++) {
+                    this.ob_digit[i] = v.ob_digit[i];
+                }
+                this.ob_size = v.ob_size;
+                return this;
+            }
+            if (v.__number__ == 0x02) {
+                var neg = false;
+                var ndig = 0;
+                v = v.valueOf();
+
+                if (v < 0) {
+                    v = -v;
+                    neg = true;
+                }
+                // Count the number of Python digits.
+                t = v;
+                while (t) {
+                    this.ob_digit[ndig] = t & PyLong_MASK;
+                    t >>>= PyLong_SHIFT;
+                    ++ndig;
+                }
+                this.ob_size = neg ? -ndig : ndig;
+                return this;
+            }
+            if (v.__number__ == 0x01) {
+                var ndig, frac, expo, bits;
+                var neg = false;
+
+                if (isNaN(v)) {
+                    throw pyjslib['ValueError']('cannot convert float NaN to integer');
+                }
+                if (!isFinite(v)) {
+                    throw pyjslib['OverflowError']('cannot convert float infinity to integer');
+                }
+                if (v == 0) {
+                    this.ob_digit[0] = 0;
+                    this.ob_size = 0;
+                    return this;
+                }
+                if (v < 0) {
+                    v = -v;
+                    neg = true;
+                }
+                // frac = frexp(dval, &expo); // dval = frac*2**expo; 0.0 <= frac < 1.0
+                if (v == 0) {
+                    frac = 0;
+                    expo = 0;
+                } else {
+                    expo = Math.log(v)/$log2;
+                    expo = (expo < 0 ? Math.ceil(expo):Math.floor(expo)) + 1;
+                    frac = v / Math.pow(2.0, expo);
+                }
+                if (expo <= 0) {
+                    return this;
+                }
+                ndig = Math.floor((expo-1) / PyLong_SHIFT) + 1;
+                // ldexp(a,b) == a * (2**b)
+                frac = frac * Math.pow(2.0, ((expo-1) % PyLong_SHIFT) + 1);
+                for (var i = ndig; --i >= 0;) {
+                    bits = Math.floor(frac);
+                    this.ob_digit[i] = bits;
+                    frac -= bits;
+                    frac = frac * Math.pow(2.0, PyLong_SHIFT);
+                }
+                this.ob_size = neg ? -ndig : ndig;
+                return this;
+            }
+            throw pyjslib['ValueError']('cannot convert ' + pyjslib['repr'](value) + 'to integer');
+        } else if (typeof v == 'string') {
+            var nchars;
+            var text = value.lstrip();
+            var i = 0;
+            var neg = false;
+
+            switch (text[0]) {
+                case '-':
+                    neg = true;
+                case '+':
+                    text = text.slice(1).lstrip();
+            }
+
+            if (!radix) {
+                if (text == '0' || text[0] != '0') {
+                    radix = 10;
+                } else {
+                    switch (text[1]) {
+                        case 'x':
+                        case 'X':
+                            radix = 16;
+                            break;
+                        case 'o':
+                        case 'O':
+                            radix = 8;
+                            break;
+                        case 'b':
+                        case 'B':
+                            radix = 2;
+                            break;
+                        default:
+                            radix = 8;
+                            break;
+                    }
+                }
+            } else if (radix < 1 || radix > 36) {
+                throw pyjslib['ValueError']("long() arg 2 must be >= 2 and <= 36");
+            }
+            if (text[0] == '0' && text.length > 1) {
+                switch (text[1]) {
+                    case 'x':
+                    case 'X':
+                        if (radix == 16) text = text.slice(2);
+                        break;
+                    case 'o':
+                    case 'O':
+                        if (radix == 8) text = text.slice(2);
+                        break;
+                    case 'b':
+                    case 'B':
+                        if (radix == 2) text = text.slice(2);
+                        break;
+
+                }
+            }
+            if ((radix & (radix - 1)) == 0) {
+                // binary base: 2, 4, 8, ...
+                var n, bits_per_char, accum, bits_in_accum, k, pdigit;
+                var p = 0;
+
+                n = radix;
+                for (bits_per_char = -1; n; ++bits_per_char) {
+                    n >>>= 1;
+                }
+                n = 0;
+                while ($DigitValue[text.charCodeAt(p)] < radix) {
+                    p++;
+                }
+                nchars = p;
+                n = p * bits_per_char + PyLong_SHIFT-1; //14 = PyLong_SHIFT - 1
+                if (n / bits_per_char < p) {
+                    throw pyjslib['ValueError']("long string too large to convert");
+                }
+                this.ob_size = n = Math.floor(n/PyLong_SHIFT);
+                for (var i = 0; i < n; i++) {
+                    this.ob_digit[i] = 0;
+                }
+                // Read string from right, and fill in long from left
+                accum = 0;
+                bits_in_accum = 0;
+                pdigit = 0;
+                while (--p >= 0) {
+                    k = $DigitValue[text.charCodeAt(p)];
+                    accum |= k << bits_in_accum;
+                    bits_in_accum += bits_per_char;
+                    if (bits_in_accum >= PyLong_SHIFT) {
+                        this.ob_digit[pdigit] = accum & PyLong_MASK;
+                        pdigit++;
+                        accum >>>= PyLong_SHIFT;
+                        bits_in_accum -= PyLong_SHIFT;
+                    }
+                }
+                if (bits_in_accum) {
+                    this.ob_digit[pdigit++] = accum;
+                }
+                while (pdigit < n) {
+                    this.ob_digit[pdigit++] = 0;
+                }
+                long_normalize(this);
+            } else {
+                // Non-binary bases (such as radix == 10)
+                var c, i, convwidth, convmultmax, convmult, pz, pzstop, scan, size_z;
+
+                if ($log_base_PyLong_BASE[radix] == 0.0) {
+                    var i = 1;
+                    convmax = radix;
+                    $log_base_PyLong_BASE[radix] = Math.log(radix) / Math.log(PyLong_BASE);
+                    for (;;) {
+                        var next = convmax * radix;
+                        if (next > PyLong_BASE) break;
+                        convmax = next;
+                        ++i;
+                    }
+                    $convmultmax_base[radix] = convmax;
+                    $convwidth_base[radix] = i;
+                }
+                scan = 0;
+                while ($DigitValue[text.charCodeAt(scan)] < radix)
+                    ++scan;
+                nchars = scan;
+                size_z = scan * $log_base_PyLong_BASE[radix] + 1;
+                for (var i = 0; i < size_z; i ++) {
+                    this.ob_digit[i] = 0;
+                }
+                this.ob_size = 0;
+                convwidth = $convwidth_base[radix];
+                convmultmax = $convmultmax_base[radix];
+                for (var str = 0; str < scan;) {
+                    c = $DigitValue[text.charCodeAt(str++)];
+                    for (i = 1; i < convwidth && str != scan; ++i, ++str) {
+                        c = c * radix + $DigitValue[text.charCodeAt(str)];
+                    }
+                    convmult = convmultmax;
+                    if (i != convwidth) {
+                        convmult = radix;
+                        for ( ; i > 1; --i) convmult *= radix;
+                    }
+                    pz = 0;
+                    pzstop = this.ob_size;
+                    for (; pz < pzstop; ++pz) {
+                        c += this.ob_digit[pz] * convmult;
+                        this.ob_digit[pz] = c & PyLong_MASK;
+                        c >>>= PyLong_SHIFT;
+                    }
+                    if (c) {
+                        if (this.ob_size < size_z) {
+                            this.ob_digit[pz] = c;
+                            this.ob_size++;
+                        } else {
+                            this.ob_digit[this.ob_size] = c;
+                        }
+                    }
+                }
+            }
+            text = text.slice(nchars);
+            if (neg) this.ob_size = -this.ob_size;
+            if (text[0] == 'l' || text[0] == 'L') text = text.slice(1);
+            text = text.lstrip();
+            if (text.length === 0) {
+                return this;
+            }
+            throw pyjslib.ValueError("invalid literal for long() with base " +
+                                     radix + ": " + value);
+        } else {
+            throw pyjslib.TypeError("TypeError: long() argument must be a string or a number");
+        }
+        if (isNaN(v) || !isFinite(v)) {
+            throw pyjslib.ValueError("invalid literal for long() with base " + radix + ": '" + v + "'")
+        }
+        return this;
+    }
+    $long.__init__ = function () {};
+    $long.__number__ = 0x04;
+    $long.__name__ = 'long';
+    $long.prototype = $long;
+    $long.__class__ = $long;
+
+    $long.toExponential = function (fractionDigits) {
+        return (typeof fractionDigits == 'undefined' || fractionDigits === null) ? this.__v.toExponential() : this.__v.toExponential(fractionDigits);
+    }
+
+    $long.toFixed = function (digits) {
+        return (typeof digits == 'undefined' || digits === null) ? this.__v.toFixed() : this.__v.toFixed(digits);
+    }
+
+    $long.toLocaleString = function () {
+        return this.__v.toLocaleString();
+    }
+
+    $long.toPrecision = function (precision) {
+        return (typeof precision == 'undefined' || precision === null) ? this.__v.toPrecision() : this.__v.toPrecision(precision);
+    }
+
+    $long.toString = function (radix) {
+        return (typeof radix == 'undefined' || radix === null) ? Format(this, 10, false, false) : Format(this, radix, false, false);
+    }
+
+    $long.valueOf = function() {
+        var x, v;
+        x = AsScaledDouble(this);
+        // ldexp(a,b) == a * (2**b)
+        v = x[0] * Math.pow(2.0, x[1] * PyLong_SHIFT);
+        if (!isFinite(v)) {
+            throw pyjslib['OverflowError']('long int too large to convert to float');
+        }
+        return v;
+    }
+
+    $long.__str__ = function () {
+        return Format(this, 10, false, false);
+    }
+
+    $long.__repr__ = function () {
+        return Format(this, 10, true, false);
+    }
+
+    $long.__nonzero__ = function () {
+        return this.ob_size != 0;
+    }
+
+    $long.__cmp__ = function (b) {
+        var sign;
+ 
+        if (this.ob_size != b.ob_size) {
+            if (this.ob_size < b.ob_size) return -1;
+            return 1;
+        }
+        var i = this.ob_size < 0 ? - this.ob_size : this.ob_size;
+        while (--i >= 0 && this.ob_digit[i] == b.ob_digit[i])
+            ;
+        if (i < 0) return 0;
+        if (this.ob_digit[i] < b.ob_digit[i]) {
+            if (this.ob_size < 0) return 1;
+            return -1;
+        }
+        if (this.ob_size < 0) return -1;
+        return 1;
+    }
+
+    $long.__hash__ = function () {
+        var s = this.__str__();
+        var v = this.valueOf();
+        if (v.toString() == s) {
+            return v;
+        }
+        return s;
+    }
+
+    $long.__invert__ = function () {
+        var x = this.__add__($const_long_1);
+        x.ob_size = -x.ob_size;
+        return x;
+    }
+
+    $long.__neg__ = function () {
+        var x = new $long(0);
+        x.ob_digit = this.ob_digit.slice(0);
+        x.ob_size = -this.ob_size;
+        return x;
+    }
+
+    $long.__abs__ = function () {
+        if (this.ob_size >= 0) return this;
+        var x = new $long(0);
+        x.ob_digit = this.ob_digit.slice(0);
+        x.ob_size = -x.ob_size;
+        return x;
+    }
+
+    $long.__lshift__ = function (y) {
+        var a, z, wordshift, remshift, oldsize, newsize, 
+            accum, i, j;
+        if (y.__number__ != 0x01) {
+            y = y.valueOf();
+        } else {
+            if (y != Math.floor(y)) {
+                pyjslib['TypeError']("unsupported operand type(s) for <<: 'long' and 'float'");
+            }
+        }
+        if (y < 0) {
+            throw pyjslib['ValueError']('negative shift count');
+        }
+        if (y >= $max_float_int) {
+            throw pyjslib['ValueError']('outrageous left shift count');
+        }
+        a = this;
+
+        wordshift = Math.floor(y / PyLong_SHIFT);
+        remshift  = y - wordshift * PyLong_SHIFT;
+
+        oldsize = a.ob_size < 0 ? -a.ob_size : a.ob_size;
+        newsize = oldsize + wordshift;
+        if (remshift) ++newsize;
+        z = new $long(0);
+        z.ob_size = a.ob_size < 0 ? -newsize : newsize;
+        for (i = 0; i < wordshift; i++) {
+            z.ob_digit[i] = 0;
+        }
+        accum = 0;
+        for (i = wordshift, j = 0; j < oldsize; i++, j++) {
+            accum |= a.ob_digit[j] << remshift;
+            z.ob_digit[i] = accum & PyLong_MASK;
+            accum >>>= PyLong_SHIFT;
+        }
+        if (remshift) {
+            z.ob_digit[newsize-1] = accum;
+        }
+        z = long_normalize(z);
+        return z;
+    }
+
+    $long.__rlshift__ = function (y) {
+        if (y.__number__ != 0x04) y = new $long(y);
+        return y.__lshift__(this);
+    }
+
+    $long.__rshift__ = function (y) {
+        var a, z, size, wordshift, newsize, loshift, hishift,
+            lomask, himask, i, j;
+        if (y.__number__ != 0x01) {
+            y = y.valueOf();
+        } else {
+            if (y != Math.floor(y)) {
+                pyjslib['TypeError']("unsupported operand type(s) for >>: 'long' and 'float'");
+            }
+        }
+        if (y < 0) {
+            throw pyjslib['ValueError']('negative shift count');
+        }
+        if (y >= $max_float_int) {
+            throw pyjslib['ValueError']('shift count too big');
+        }
+        a = this;
+        size = this.ob_size;
+        if (this.ob_size < 0) {
+            size = -size;
+            a = this.__add__($const_long_1);
+            a.ob_size = -a.ob_size;
+        }
+
+        wordshift = Math.floor(y / PyLong_SHIFT);
+        newsize = size - wordshift;
+        if (newsize <= 0) {
+            z = $const_long_0;
+        } else {
+            loshift = y % PyLong_SHIFT;
+            hishift = PyLong_SHIFT - loshift;
+            lomask = (1 << hishift) - 1;
+            himask = PyLong_MASK ^ lomask;
+            z = new $long(0);
+            z.ob_size = a.ob_size < 0 ? -newsize : newsize;
+            for (i = 0, j = wordshift; i < newsize; i++, j++) {
+                z.ob_digit[i] = (a.ob_digit[j] >>> loshift) & lomask;
+                if (i+1 < newsize) {
+                    z.ob_digit[i] |=
+                      (a.ob_digit[j+1] << hishift) & himask;
+                }
+            }
+            z = long_normalize(z);
+        }
+
+        if (this.ob_size < 0) {
+            z = z.__add__($const_long_1);
+            z.ob_size = -z.ob_size;
+        }
+        return z;
+    }
+
+    $long.__rrshift__ = function (y) {
+        if (y.__number__ != 0x04) y = new $long(y);
+        return y.__rshift__(this);
+    }
+
+    $long.__and__ = function (b) {
+        var a, maska, maskb, negz, size_a, size_b, size_z,
+            i, z, diga, digb, v, op;
+
+        if (b.__number__ != 0x04) b = new $long(b);
+        a = this;
+
+        if (a.ob_size < 0) {
+            a = a.__invert__();
+            maska = PyLong_MASK;
+        } else {
+            maska = 0;
+        }
+        if (b.ob_size < 0) {
+            b = b.__invert__();
+            maskb = PyLong_MASK;
+        } else {
+            maskb = 0;
+        }
+        negz = 0;
+
+
+            op = '&'
+            if (maska && maskb) {
+                op = '|';
+                maska ^= PyLong_MASK;
+                maskb ^= PyLong_MASK;
+                negz = -1;
+            }
+
+
+        size_a = a.ob_size;
+        size_b = b.ob_size;
+        size_z = op == '&'
+                    ? (maska
+                        ? size_b
+                        : (maskb ? size_a : (size_a < size_b ? size_a : size_b)))
+                    : (size_a > size_b ? size_a : size_b);
+        z = new $long(0);
+        z.ob_size = size_z;
+
+        switch (op) {
+            case '&':
+                for (i = 0; i < size_z; ++i) {
+                    diga = (i < size_a ? a.ob_digit[i] : 0) ^ maska;
+                    digb = (i < size_b ? b.ob_digit[i] : 0) ^ maskb;
+                    z.ob_digit[i] = diga & digb;
+                }
+                break;
+            case '|':
+                for (i = 0; i < size_z; ++i) {
+                    diga = (i < size_a ? a.ob_digit[i] : 0) ^ maska;
+                    digb = (i < size_b ? b.ob_digit[i] : 0) ^ maskb;
+                    z.ob_digit[i] = diga | digb;
+                }
+                break;
+            case '^':
+                for (i = 0; i < size_z; ++i) {
+                    diga = (i < size_a ? a.ob_digit[i] : 0) ^ maska;
+                    digb = (i < size_b ? b.ob_digit[i] : 0) ^ maskb;
+                    z.ob_digit[i] = diga ^ digb;
+                }
+                break;
+        }
+        z = long_normalize(z);
+        if (negz == 0) {
+            return z;
+        }
+        return z.__invert__();
+    }
+
+    $long.__rand__ = function (y) {
+        if (y.__number__ != 0x04) y = new $long(y);
+        return y.__and__(this);
+    }
+
+    $long.__xor__ = function (b) {
+        var a,maska, maskb, negz, size_a, size_b, size_z,
+            i, z, diga, digb, v, op;
+
+        if (b.__number__ != 0x04) b = new $long(b);
+        a = this;
+
+        if (a.ob_size < 0) {
+            a = a.__invert__();
+            maska = PyLong_MASK;
+        } else {
+            maska = 0;
+        }
+        if (b.ob_size < 0) {
+            b = b.__invert__();
+            maskb = PyLong_MASK;
+        } else {
+            maskb = 0;
+        }
+        negz = 0;
+
+
+            op = '^'
+            if (maska != maskb) {
+                maska ^= PyLong_MASK;
+                negz = -1;
+            }
+
+
+        size_a = a.ob_size;
+        size_b = b.ob_size;
+        size_z = op == '&'
+                    ? (maska
+                        ? size_b
+                        : (maskb ? size_a : (size_a < size_b ? size_a : size_b)))
+                    : (size_a > size_b ? size_a : size_b);
+        z = new $long(0);
+        z.ob_size = size_z;
+
+        switch (op) {
+            case '&':
+                for (i = 0; i < size_z; ++i) {
+                    diga = (i < size_a ? a.ob_digit[i] : 0) ^ maska;
+                    digb = (i < size_b ? b.ob_digit[i] : 0) ^ maskb;
+                    z.ob_digit[i] = diga & digb;
+                }
+                break;
+            case '|':
+                for (i = 0; i < size_z; ++i) {
+                    diga = (i < size_a ? a.ob_digit[i] : 0) ^ maska;
+                    digb = (i < size_b ? b.ob_digit[i] : 0) ^ maskb;
+                    z.ob_digit[i] = diga | digb;
+                }
+                break;
+            case '^':
+                for (i = 0; i < size_z; ++i) {
+                    diga = (i < size_a ? a.ob_digit[i] : 0) ^ maska;
+                    digb = (i < size_b ? b.ob_digit[i] : 0) ^ maskb;
+                    z.ob_digit[i] = diga ^ digb;
+                }
+                break;
+        }
+        z = long_normalize(z);
+        if (negz == 0) {
+            return z;
+        }
+        return z.__invert__();
+    }
+
+    $long.__rxor__ = function (y) {
+        if (y.__number__ != 0x04) y = new $long(y);
+        return y.__xor__(this);
+    }
+
+    $long.__or__ = function (b) {
+        var a, maska, maskb, negz, size_a, size_b, size_z,
+            i, z, diga, digb, v, op;
+
+        if (b.__number__ != 0x04) b = new $long(b);
+        a = this;
+
+        if (a.ob_size < 0) {
+            a = a.__invert__();
+            maska = PyLong_MASK;
+        } else {
+            maska = 0;
+        }
+        if (b.ob_size < 0) {
+            b = b.__invert__();
+            maskb = PyLong_MASK;
+        } else {
+            maskb = 0;
+        }
+        negz = 0;
+
+
+            op = '|';
+            if (maska || maskb) {
+                op = '&';
+                maska ^= PyLong_MASK;
+                maskb ^= PyLong_MASK;
+                negz = -1;
+            }
+
+
+        size_a = a.ob_size;
+        size_b = b.ob_size;
+        size_z = op == '&'
+                    ? (maska
+                        ? size_b
+                        : (maskb ? size_a : (size_a < size_b ? size_a : size_b)))
+                    : (size_a > size_b ? size_a : size_b);
+        z = new $long(0);
+        z.ob_size = size_z;
+
+        switch (op) {
+            case '&':
+                for (i = 0; i < size_z; ++i) {
+                    diga = (i < size_a ? a.ob_digit[i] : 0) ^ maska;
+                    digb = (i < size_b ? b.ob_digit[i] : 0) ^ maskb;
+                    z.ob_digit[i] = diga & digb;
+                }
+                break;
+            case '|':
+                for (i = 0; i < size_z; ++i) {
+                    diga = (i < size_a ? a.ob_digit[i] : 0) ^ maska;
+                    digb = (i < size_b ? b.ob_digit[i] : 0) ^ maskb;
+                    z.ob_digit[i] = diga | digb;
+                }
+                break;
+            case '^':
+                for (i = 0; i < size_z; ++i) {
+                    diga = (i < size_a ? a.ob_digit[i] : 0) ^ maska;
+                    digb = (i < size_b ? b.ob_digit[i] : 0) ^ maskb;
+                    z.ob_digit[i] = diga ^ digb;
+                }
+                break;
+        }
+        z = long_normalize(z);
+        if (negz == 0) {
+            return z;
+        }
+        return z.__invert__();
+    }
+
+    $long.__ror__ = function (y) {
+        if (y.__number__ != 0x04) y = new $long(y);
+        return y.__or__(this);
+    }
+
+    $long.__oct__ = function () {
+        return Format(this, 8, true, false);
+    }
+
+    $long.__hex__ = function () {
+        return Format(this, 16, true, false);
+    }
+
+    $long.__add__ = function (b) {
+        var a = this, z;
+        if (b.__number__ != 0x04) b = new $long(b);
+        if (a.ob_size < 0) {
+            if (b.ob_size < 0) {
+                z = x_add(a, b);
+                z.ob_size = -(z.ob_size);
+            }
+            else {
+                z = x_sub(b, a);
+            }
+        }
+        else {
+            z = b.ob_size < 0 ? x_sub(a, b) : x_add(a, b);
+        }
+        return z;
+    }
+
+    $long.__radd__ = function (y) {
+        if (y.__number__ != 0x04) y = new $long(y);
+        return y.__add__(this);
+    }
+
+    $long.__sub__ = function (b) {
+        var a = this, z;
+        if (b.__number__ != 0x04) b = new $long(b);
+        if (a.ob_size < 0) {
+            z = b.ob_size < 0 ? x_sub(a, b) : x_add(a, b);
+            z.ob_size = -(z.ob_size);
+        }
+        else {
+            z = b.ob_size < 0 ?  x_add(a, b) : x_sub(a, b);
+        }
+        return z;
+    }
+
+    $long.__rsub__ = function (y) {
+        if (y.__number__ != 0x04) y = new $long(y);
+        return y.__sub__(this);
+    }
+
+    $long.__mul__ = function (b) {
+        if (b.__number__ != 0x04) b = new $long(b);
+        return long_mul(this, b);
+    }
+
+    $long.__rmul__ = function (y) {
+        if (y.__number__ != 0x04) y = new $long(y);
+        return y.__mul__(this);
+    }
+
+    $long.__div__ = function (b) {
+        if (b.__number__ != 0x04) b = new $long(b);
+        var div = new $long(0);
+        l_divmod(this, b, div, null);
+        return div;
+    }
+
+    $long.__rdiv__ = function (y) {
+        if (y.__number__ != 0x04) y = new $long(y);
+        return y.__div__(this);
+    }
+
+    $long.__mod__ = function (b) {
+        if (b.__number__ != 0x04) b = new $long(b);
+        var mod = new $long(0);
+        l_divmod(this, b, null, mod);
+        return mod;
+    }
+
+    $long.__rmod__ = function (y) {
+        if (y.__number__ != 0x04) y = new $long(y);
+        return y.__mod__(this);
+    }
+
+    $long.__divmod__ = function (b) {
+        if (b.__number__ != 0x04) b = new $long(b);
+        var div = new $long(0);
+        var mod = new $long(0);
+        l_divmod(this, b, div, mod);
+        return pyjslib['tuple']([div, mod]);
+    }
+
+    $long.__rdivmod__ = function (y) {
+        if (y.__number__ != 0x04) y = new $long(y);
+        return y.__divmod__(this);
+    }
+
+    $long.__floordiv__ = function (b) {
+        if (b.__number__ != 0x04) b = new $long(b);
+        var div = new $long(0);
+        l_divmod(this, b, div, null);
+        return div;
+    }
+
+    $long.__rfloordiv__ = function (y) {
+        if (y.__number__ != 0x04) y = new $long(y);
+        return y.__floordiv__(this);
+    }
+
+    $long.__pow__ = function (w, x) {
+        var v = this;
+        var a, b, c, negativeOutput = 0, z, i, j, k, temp, bi;
+        var table = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+
+        a = this;
+        b = w.__number__ == 0x04 ? w : new $long(w);
+        if (x === null || typeof x == 'undefined') {
+            c = null;
+        } else {
+            c = x.__number__ == 0x04 ? x : new $long(x);
+        }
+
+        if (b.ob_size < 0) {
+            if (c != null) {
+                throw pyjslib['TypeError']("pow() 2nd argument cannot be negative when 3rd argument specified");
+            }
+            return Math.pow(v.valueOf(), w.valueOf());
+        }
+
+        if (c !== null) {
+            if (c.ob_size == 0) {
+                throw pyjslib['ValueError']("pow() 3rd argument cannot be 0");
+            }
+            if (c.ob_size < 0) {
+                negativeOutput = 1;
+                temp = $pow_temp_c;
+                temp.ob_digit = c.ob_digit.slice(0);
+                temp.ob_size = -c.ob_size;
+                c = temp;
+            }
+            if (c.ob_size == 1 && c.ob_digit[0] == 1) {
+                return $const_long_0;
+            }
+            if (a.ob_size < 0) {
+                temp = $pow_temp_a;
+                l_divmod(a, c, null, temp);
+                a = temp;
+            }
+        }
+        z = new $long(1);
+        temp = $pow_temp_z;
+        if (b.ob_size <= FIVEARY_CUTOFF) {
+            for (i = b.ob_size - 1; i >= 0; --i) {
+                bi = b.ob_digit[i];
+                for (j = 1 << (PyLong_SHIFT-1); j != 0; j >>>= 1) {
+                    z = z.__mul__(z);
+                    if (c !== null) {
+                        l_divmod(z, c, null, temp)
+                        z.ob_digit = temp.ob_digit.slice(0);
+                        z.ob_size = temp.ob_size;
+                    }
+                    if (bi & j) {
+                        z = z.__mul__(a);
+                        if (c !== null) {
+                            l_divmod(z, c, null, temp)
+                            z.ob_digit = temp.ob_digit.slice(0);
+                            z.ob_size = temp.ob_size;
+                        }
+                    }
+                }
+            }
+        } else {
+            table[0] = z;
+            for (i = 1; i < 32; ++i) {
+                table[i] = table[i-1].__mul__(a);
+                if (c !== null) {
+                    l_divmod(table[i], c, null, temp)
+                    table[i].ob_digit = temp.ob_digit.slice(0);
+                    table[i].ob_size = temp.ob_size;
+                }
+            }
+            for (i = b.ob_size - 1; i >= 0; --i) {
+                bi = b.ob_digit[i];
+                for (j = PyLong_SHIFT - 5; j >= 0; j -= 5) {
+                    var index = (bi >>> j) & 0x1f;
+                    for (k = 0; k < 5; ++k) {
+                        z = z.__mul__(z);
+                        if (c !== null) {
+                            l_divmod(z, c, null, temp)
+                            z.ob_digit = temp.ob_digit.slice(0);
+                            z.ob_size = temp.ob_size;
+                        }
+                    }
+                    if (index) {
+                        z = z.__mul__(table[index]);
+                        if (c !== null) {
+                            l_divmod(z, c, null, temp)
+                            z.ob_digit = temp.ob_digit.slice(0);
+                            z.ob_size = temp.ob_size;
+                        }
+                    }
+                }
+            }
+        }
+
+        if ((c !== null) && negativeOutput && 
+            (z.ob_size != 0) && (c.ob_size != 0)) {
+            z = z.__sub__(c);
+        }
+        return z;
+    }
+
+
+    const $const_long_0 = new $long(0),
+          $const_long_1 = new $long(1);
+    // Since javascript is single threaded:
+    var $l_divmod_div = new $long(0),
+        $l_divmod_mod = new $long(0),
+        $pow_temp_a = new $long(0),
+        $pow_temp_c = new $long(0),
+        $pow_temp_z = new $long(0);
+})();
+
+""")
+
 
 """@CONSTANT_DECLARATION@"""
+
 
 class List:
     @compiler.noSourceTracking
@@ -1971,12 +3781,15 @@ def repr(x):
 
 @compiler.noSourceTracking
 def len(object):
+    v = 0
     JS("""
-    if (object === null) return 0;
-    if (typeof object.__len__ == 'function') return object.__len__();
-    if (typeof object.length != 'undefined') return object.length;
-    throw pyjslib.TypeError("object has no len()")
+    if (object === null) return v;
+    else if (typeof object.__len__ == 'function') v = object.__len__();
+    else if (typeof object.length != 'undefined') v = object.length;
+    else throw pyjslib.TypeError("object has no len()")
+    if (v.__number__ == 0x02) return v;
     """)
+    return int(v)
 
 @compiler.noSourceTracking
 def isinstance(object_, classinfo):
@@ -2270,6 +4083,18 @@ def isNumber(a):
     return a.__number__ && (a.__number__ != 0x01 || isFinite(a));
     """)
 
+def isInteger(a):
+    JS("""
+    switch (a.__number__) {
+        case 0x01:
+            if (a != Math.floor(a)) break;
+        case 0x02:
+        case 0x04:
+            return true;
+    }
+    return false;
+""")
+
 @compiler.noSourceTracking
 def toJSObjects(x):
     """
@@ -2287,7 +4112,9 @@ def toJSObjects(x):
         return result;
         """)
     if isObject(x):
-        if isinstance(x, Dict):
+        if x.__number__:
+            return x.valueOf()
+        elif isinstance(x, Dict):
             JS("""
             var o = x.getObject();
             var result = {};
@@ -2474,8 +4301,7 @@ def sprintf(strng, args):
             if minlen == '*':
                 minlen = next_arg()
                 JS("minlen_type = typeof(minlen);")
-                if minlen_type != 'number' or \
-                   int(minlen) != minlen:
+                if not isInteger(minlen):
                     raise TypeError('* wants int')
             if conversion != '%':
                 param = next_arg()

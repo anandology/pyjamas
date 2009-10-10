@@ -16,6 +16,11 @@ from DictTest import DictTest
 from BuiltinTest import BuiltinTest
 from GeneratorTest import GeneratorTest
 from LongTest import LongTest
+if 1L << 31 > 0:
+    has_long_type = True
+    from LongTypeTest import LongTypeTest
+else:
+    has_long_type = True
 
 if IN_JS:
     from JSOTest import JSOTest
@@ -79,13 +84,15 @@ def main():
     t.add(DictTest)
     t.add(BuiltinTest)
     t.add(GeneratorTest)
+    t.add(LongTest)
+    if has_long_type:
+        t.add(LongTypeTest)
     t.add(TypeCompatibilityTest)
     t.add(MD5Test)
     t.add(TimeModuleTest)
     t.add(UrllibModuleTest)
     t.add(Base64ModuleTest)
     t.add(ReModuleTest)
-    t.add(LongTest)
 
     if IN_BROWSER:
         t.add(JSOTest)

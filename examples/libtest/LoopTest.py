@@ -27,6 +27,11 @@ def fibc(n):
         return int1
     return fibc(n-int2)+fibc(n-int1)
 
+def long_fib(n):
+    if n<3L:
+        return 1L
+    return fibc(n-2L)+fibc(n-1L)
+
 class LoopTest(UnitTest):
 
     def testLoop1(self):
@@ -65,6 +70,18 @@ class LoopTest(UnitTest):
             t1 = time.time()
         dt = t1 - t0
         writebr("Loop3: %.2f/sec" % (n*m/dt))
+
+    def testLoop4(self):
+        t1 = t0 = time.time()
+        n = 100
+        m = 0
+        while t1 - t0 == 0:
+            m += 1
+            for i in range(n):
+                long_fib(10L)
+            t1 = time.time()
+        dt = t1 - t0
+        writebr("Loop4: %.2f/sec" % (n*m/dt))
 
 if __name__ == '__main__':
     l = LoopTest()
