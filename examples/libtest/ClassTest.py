@@ -295,11 +295,11 @@ class ClassTest(UnitTest):
             x = 5
         try:
             self.assertEqual(Klass.metamethod(), 2)
+            instance = Klass()
+            self.assertEqual(instance.method(), 1)
+            self.assertEqual(instance.x, 5)
         except:
-            self.fail("Exeption on Klass.metamethod()")
-        instance = Klass()
-        self.assertEqual(instance.method(), 1)
-        self.assertEqual(instance.x, 5)
+            self.fail('bug #298 - missing metaclass features')
 
     def testMetaClassDct(self):
         class MetaklassDctSaver(type):
@@ -312,11 +312,10 @@ class ClassTest(UnitTest):
             b = 2
         try:
             self.assertTrue(isinstance(MyClass.saved_dct, dict))
+            self.assertTrue("a" in MyClass.saved_dct)
+            self.assertTrue("b" in MyClass.saved_dct)
         except:
-            self.fail("Exeption on isinstance(MyClass.saved_dct, dict)")
-            return
-        self.assertTrue("a" in MyClass.saved_dct)
-        self.assertTrue("b" in MyClass.saved_dct)
+            self.fail('bug #298 - missing metaclass features')
 
     def testMultiSuperclass(self):
         new_value = 'New value'
