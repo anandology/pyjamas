@@ -1298,22 +1298,22 @@ JS("""
     }
 
     $int.__floordiv__ = function (y) {
-        if (y == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero')
+        if (y == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
         return new $int(Math.floor(this.__v / y));
     }
 
     $int.__rfloordiv__ = function (y) {
-        if (this.__v == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero')
-        return new $int(Math.floor(y + this.__v));
+        if (this.__v == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
+        return new $int(Math.floor(y / this.__v));
     }
 
     $int.__div__ = function (y) {
-        if (y == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero')
+        if (y == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
         return new $int(this.__v / y);
     }
 
     $int.__rdiv__ = function (y) {
-        if (this.__v == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero')
+        if (this.__v == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
         return new $int(y / this.__v);
     }
 
