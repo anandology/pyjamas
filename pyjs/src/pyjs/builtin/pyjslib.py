@@ -3685,6 +3685,7 @@ def xrange(start, stop = None, step = 1):
         nstep++;
     }
     stop = start + nstep * step;
+    if (nstep <= 0) nval = stop;
     var x = {
         'next': function() {
             if (nval == stop) {
@@ -3731,6 +3732,7 @@ def range(start, stop = None, step = 1):
         nstep++;
     }
     stop = start + nstep * step;
+    if (nstep <= 0) i = stop;
     for (; i != stop; i += step)
 """)
     items.push(int(i))
