@@ -23,6 +23,17 @@ setCompilerOptions("noBoundMethods", "noDescriptors", "noAttributeChecking", "no
 platform = JS("$pyjs.platform")
 sys = None
 dynamic = None
+JS("""
+var $max_float_int = 1;
+for (var i = 0; i < 1000; i++) {
+    $max_float_int *= 2;
+    if ($max_float_int + 1 == $max_float_int) {
+        break;
+    }
+}
+$max_int = 2147483647;
+$min_int = -2147483648;
+""")
 
 class object:
     pass
@@ -1324,11 +1335,23 @@ JS("""
     }
 
     $int.__lshift__ = function (y) {
-        return new $int(this.__v << y);
+        if (y < 32) {
+            var v = this.__v << y;
+            if (v > this.__v) {
+                return new $int(v);
+            }
+        }
+        return new pyjslib['long'](this.__v).__lshift__(y);
     }
 
     $int.__rlshift__ = function (y) {
-        return new $int(y << this.__v);
+        if (this.__v < 32) {
+            var v = y << this.__v;
+            if (v > this.__v) {
+                return new $int(v);
+            }
+        }
+        return new pyjslib['long'](y).__lshift__(this.__v);
     }
 
     $int.__rshift__ = function (y) {
@@ -1385,19 +1408,38 @@ JS("""
     }
 
     $int.__add__ = function (y) {
-        return new $int(this.__v + y);
+        var v = this.__v + y;
+        if ($min_int < v <  $max_int) {
+            return new $int(v);
+        }
+        if (-$max_float_int < v < $max_float_int) {
+            return new pyjslib['long'](v);
+        }
+        return new pyjslib['long'](this.__v).__add__(new pyjslib['long'](y));
     }
 
-    $int.__radd__ = function (y) {
-        return new $int(y + this.__v);
-    }
+    $int.__radd__ = $int.__add__;
 
     $int.__sub__ = function (y) {
-        return new $int(this.__v - y);
+        var v = this.__v - y;
+        if ($min_int < v <  $max_int) {
+            return new $int(v);
+        }
+        if (-$max_float_int < v < $max_float_int) {
+            return new pyjslib['long'](v);
+        }
+        return new pyjslib['long'](this.__v).__sub__(new pyjslib['long'](y));
     }
 
     $int.__rsub__ = function (y) {
-        return new $int(y - this.__v);
+        var v = y -this.__v;
+        if ($min_int < v <  $max_int) {
+            return new $int(v);
+        }
+        if (-$max_float_int < v < $max_float_int) {
+            return new pyjslib['long'](v);
+        }
+        return new pyjslib['long'](y).__sub__(new pyjslib['long'](this.__v));
     }
 
     $int.__floordiv__ = function (y) {
@@ -1421,12 +1463,17 @@ JS("""
     }
 
     $int.__mul__ = function (y) {
-        return new $int(this.__v * y);
+        var v = this.__v * y;
+        if ($min_int < v <  $max_int) {
+            return new $int(v);
+        }
+        if (-$max_float_int < v < $max_float_int) {
+            return new pyjslib['long'](v);
+        }
+        return new pyjslib['long'](this.__v).__mul__(new pyjslib['long'](y));
     }
 
-    $int.__rmul__ = function (y) {
-        return new $int(y * this.__v);
-    }
+    $int.__rmul__ = $int.__mul__;
 
     $int.__mod__ = function (y) {
         if (y == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
@@ -1439,7 +1486,14 @@ JS("""
     }
 
     $int.__pow__ = function (y) {
-        return new $int(Math.pow(this.__v, y));
+        var v = Math.pow(this.__v, y);
+        if ($min_int < v <  $max_int) {
+            return new $int(v);
+        }
+        if (-$max_float_int < v < $max_float_int) {
+            return new pyjslib['long'](v);
+        }
+        return new pyjslib['long'](this.__v).__pow__(new pyjslib['long'](y));
     }
 })();
 """)
@@ -1450,13 +1504,6 @@ JS("""
 #  - Objects/longobject.c
 JS("""
 (function(){
-    var $max_float_int = 1;
-    for (var i = 0; i < 1000; i++) {
-        $max_float_int *= 2;
-        if ($max_float_int + 1 == $max_float_int) {
-            break;
-        }
-    }
 
     var $log2 = Math.log(2);
     var $DigitValue = [
