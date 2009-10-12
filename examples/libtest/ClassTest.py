@@ -293,7 +293,10 @@ class ClassTest(UnitTest):
             def method(cls):
                 return 1
             x = 5
-        self.assertEqual(Klass.metamethod(), 2)
+        try:
+            self.assertEqual(Klass.metamethod(), 2)
+        except:
+            self.fail("Exeption on Klass.metamethod()")
         instance = Klass()
         self.assertEqual(instance.method(), 1)
         self.assertEqual(instance.x, 5)
@@ -307,7 +310,11 @@ class ClassTest(UnitTest):
             __metaclass__ = MetaklassDctSaver
             a = 1
             b = 2
-        self.assertTrue(isinstance(MyClass.saved_dct, dict))
+        try:
+            self.assertTrue(isinstance(MyClass.saved_dct, dict))
+        except:
+            self.fail("Exeption on isinstance(MyClass.saved_dct, dict)")
+            return
         self.assertTrue("a" in MyClass.saved_dct)
         self.assertTrue("b" in MyClass.saved_dct)
 
