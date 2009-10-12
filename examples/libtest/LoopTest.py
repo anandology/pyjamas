@@ -11,26 +11,19 @@ class A(object):
         return self.x
 
 def fib(n):
+    if n<3.0:
+        return 1.0
+    return fib(n-2.0)+fib(n-1.0)
+
+def int_fib(n):
     if n<3:
         return 1
-    return fib(n-2)+fib(n-1)
-
-int0 = 0
-int1 = 1
-int2 = 2
-int3 = 3
-int10 = 10
-int100 = 100
-
-def fibc(n):
-    if n<int3:
-        return int1
-    return fibc(n-int2)+fibc(n-int1)
+    return int_fib(n-2)+int_fib(n-1)
 
 def long_fib(n):
     if n<3L:
         return 1L
-    return fibc(n-2L)+fibc(n-1L)
+    return long_fib(n-2L)+long_fib(n-1L)
 
 class LoopTest(UnitTest):
 
@@ -50,38 +43,38 @@ class LoopTest(UnitTest):
     def testLoop2(self):
         t1 = t0 = time.time()
         n = 100
-        m = 0
+        m = 0.0
         while t1 - t0 == 0:
-            m += 1
+            m += 1.0
             for i in range(n):
-                fib(10)
+                fib(10.0)
             t1 = time.time()
         dt = t1 - t0
-        writebr("Loop2: %.2f/sec" % (n*m/dt))
+        writebr("Loop2 (float): %.2f/sec" % (n*m/dt))
 
     def testLoop3(self):
         t1 = t0 = time.time()
         n = 100
-        m = 0
+        m = 0.0
         while t1 - t0 == 0:
-            m += 1
+            m += 1.0
             for i in range(n):
-                fibc(int10)
+                int_fib(10)
             t1 = time.time()
         dt = t1 - t0
-        writebr("Loop3: %.2f/sec" % (n*m/dt))
+        writebr("Loop3 (int): %.2f/sec" % (n*m/dt))
 
     def testLoop4(self):
         t1 = t0 = time.time()
         n = 100
-        m = 0
+        m = 0.0
         while t1 - t0 == 0:
-            m += 1
+            m += 1.0
             for i in range(n):
                 long_fib(10L)
             t1 = time.time()
         dt = t1 - t0
-        writebr("Loop4: %.2f/sec" % (n*m/dt))
+        writebr("Loop4 (long): %.2f/sec" % (n*m/dt))
 
 if __name__ == '__main__':
     l = LoopTest()
