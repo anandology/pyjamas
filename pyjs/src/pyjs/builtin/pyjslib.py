@@ -1383,14 +1383,14 @@ JS("""
     var $cdigit = '0123456789abcdefghijklmnopqrstuvwxyz';
 
 
-    const PyLong_SHIFT = 15;
-    const PyLong_MASK = 0x7fff;
-    const PyLong_BASE = 0x8000;
+    var PyLong_SHIFT = 15;
+    var PyLong_MASK = 0x7fff;
+    var PyLong_BASE = 0x8000;
 
-    const KARATSUBA_CUTOFF = 70
-    const KARATSUBA_SQUARE_CUTOFF = (2 * KARATSUBA_CUTOFF)
+    var KARATSUBA_CUTOFF = 70
+    var KARATSUBA_SQUARE_CUTOFF = (2 * KARATSUBA_CUTOFF)
 
-    const FIVEARY_CUTOFF = 8
+    var FIVEARY_CUTOFF = 8
 
     function array_eq(a, b, n) {
         for (var i = 0 ; i < n; i++) {
@@ -1508,7 +1508,7 @@ JS("""
     }
 
     function divrem1(a, n, prem) {
-        const size = a.ob_size < 0 ? -a.ob_size : a.ob_size;
+        var size = a.ob_size < 0 ? -a.ob_size : a.ob_size;
         var z = new $long(0);
 
         prem[0] = inplace_divrem1(z.ob_digit, a.ob_digit, 0, 0, size, n)[0];
@@ -2818,8 +2818,8 @@ JS("""
     }
 
 
-    const $const_long_0 = new $long(0),
-          $const_long_1 = new $long(1);
+    var $const_long_0 = new $long(0),
+        $const_long_1 = new $long(1);
     // Since javascript is single threaded:
     var $l_divmod_div = new $long(0),
         $l_divmod_mod = new $long(0),
@@ -3609,7 +3609,7 @@ def xrange(start, stop = None, step = 1):
         },
         '__repr__': function() {
             return "'" + this.toString() + "'";
-        },
+        }
     };
     x['__str__'] = x.toString;
     return x;

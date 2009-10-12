@@ -1028,9 +1028,9 @@ class Translator:
         s = self.spacing()
         lines = []
         for name in self.constant_int:
-            lines.append("%(s)sconst $constant_int_%(name)s = pyjslib['int'](%(name)s);" % locals())
+            lines.append("%(s)svar $constant_int_%(name)s = pyjslib['int'](%(name)s);" % locals())
         for name in self.constant_long:
-            lines.append("%(s)sconst $constant_long_%(name)s = pyjslib['long'](%(name)s);" % locals())
+            lines.append("%(s)svar $constant_long_%(name)s = pyjslib['long'](%(name)s);" % locals())
         return "\n".join(lines)
 
     def local_js_vars_decl(self, ignore_py_vars):
