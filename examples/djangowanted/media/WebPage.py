@@ -4,6 +4,7 @@ from pyjamas.ui.RootPanel import RootPanel
 from pyjamas.ui.DockPanel import DockPanel
 from pyjamas.ui.Button import Button
 from pyjamas.ui.HTML import HTML
+from pyjamas.ui.TextBox import TextBox
 
 from pyjamas.JSONService import JSONProxy
 
@@ -17,22 +18,43 @@ from HTMLLinkPanel import HTMLLinkPanel
 
 class WebApp:
     def onFormLoad(self):
+        self.fetch = Button("Retrieve", self)
+        self.search = TextBox()
         self.submit = Button("Submit", self)
         self.formsvc = FormService()
+        self.wanted = WantedService()
         d = {'price': 20, 'name': 'a good car'}
         self.form = Form(getattr(self.formsvc, "itemform"), data=d,
                          listener=self)
         #self.describe(['name', 'description'])
         RootPanel().add(self.form)
+        RootPanel().add(self.search)
+        RootPanel().add(self.fetch)
+
+    def onRetrieveDone(self, form):
+        log.writebr("onRetrieveDone: %s" % repr(form))
 
     def onDescribeDone(self, form):
         form.add_widget("Submit", self.submit)
 
     def onClick(self, sender):
+        if sender == self.fetch:
+            key = self.search.getText()
+            if not key:
+                log.writebr("Please enter id")
+                return
+            key = int(key)
+            log.writebr("id %d" % key)
+            #self.wanted.getItem(key, self)
+            self.form.get(id=key)
+
         if sender == self.submit:
             v = self.form.getValue()
             log.writebr("onClick %s" % repr(v))
-            self.form.save(v)
+            if v.get('id', None):
+                self.form.update(v)
+            else:
+                self.form.save(v)
  
     def onErrors(self, form, response):
         log.writebr("onErrors %s" % repr(response))
@@ -42,7 +64,7 @@ class WebApp:
         
     def onModuleLoad(self):
 
-        self.remote = DataService()
+        self.pages = DataService()
 
         #Show the initial screen.
         initToken = History().getToken()
@@ -73,7 +95,7 @@ class WebApp:
         if self.pages.has_key(token):
             self.setPage(token)
             return
-        self.remote.getPageByName(token, self)
+        self.pages.getPageByName(token, self)
 
     def setPage(self, ref):
         
@@ -87,6 +109,11 @@ class WebApp:
         self.current_page = htp
 
     def onRemoteResponse(self, response, request_info):
+        #if (request_info.method == 'getItem'):
+        #    data = {'id': response['pk']}
+        #    log.writebr(repr(response))
+        #    self.form.update_values(response)
+
         if (request_info.method == 'getPageByName' or
            request_info.method == 'getPage'):
             item = response[0]
@@ -104,6 +131,12 @@ class FormService(JSONProxy):
         JSONProxy.__init__(self, "/services/forms/",
                  ["itemform",
                  ])
+
+class WantedService(JSONProxy):
+    def __init__(self):
+        JSONProxy.__init__(self, "/services/wanted/",
+                 ["getItem", 
+                  "getItems"])
 
 class DataService(JSONProxy):
     def __init__(self):

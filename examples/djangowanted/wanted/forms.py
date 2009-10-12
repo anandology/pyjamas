@@ -10,6 +10,7 @@ class FlagForm(ModelForm):
 class ItemForm(ModelForm):
     class Meta:
         model = Item
+    id = forms.IntegerField(required=False)
     name = forms.CharField(max_length=50, label="Name")
     short_description = forms.CharField(max_length=100, label="Description")
     description = forms.CharField(max_length=1000, label="Details")
@@ -32,11 +33,24 @@ class ItemForm(ModelForm):
                 self.errors[f.name] = ff.errors
         return res
 
-    def delete(self, idx=None):
-        if idx is None:
+    def get(self, id):
+        res = {}
+        instance = Item.objects.get(id=id)
+        for k in instance._meta.fields:
+            res[k.name] = getattr(instance, k.name)
+        for f in FlagType.objects.all():
+            try:
+                fg = Flag.objects.get(item=instance.id, type=f.id)
+                res[f.name] = fg.value
+            except Flag.DoesNotExist:
+                continue
+        return res
+
+    def delete(self, id=None):
+        if id is None:
             instance = self.instance
         else:
-            instance = Item.objects.get(id=idx)
+            instance = Item.objects.get(id=id)
         for f in FlagType.objects.all():
             try:
                 fg = Flag.objects.get(item=instance.id, type=f.id)
@@ -45,8 +59,8 @@ class ItemForm(ModelForm):
             fg.delete()
         instance.delete()
 
-    def save(self):
-        res = ModelForm.save(self)
+    def save(self, **args):
+        res = ModelForm.save(self, **args)
         for f in FlagType.objects.all():
             fv = self.data[f.name]
             d = {'item': self.instance.id, 'type': f.id, 'value': fv}

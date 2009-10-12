@@ -105,9 +105,6 @@ def addItem (request, item):
         fg.value = fv
         fg.save()
         setattr(t, f.name, fg)
-    f = open("/tmp/additem.txt", "w")
-    f.write("%s %s\n" % (repr(fields), repr(dir(t))))
-    f.close()
     return json_convert([t], fields=fields)[0]
 
 @jsonremote(service)

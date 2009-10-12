@@ -55,7 +55,7 @@ class TestJsolait(unittest.TestCase):
         
     def test_itemform(self):
         reply = self.f.itemform({}, {"describe": 
-                                       ['name', 'description',
+                                       ['id', 'name', 'description',
                                         'short_description',
                                         'price', 'numdoors',
                                         'vehicletype']})
@@ -72,7 +72,11 @@ class TestJsolait(unittest.TestCase):
         item = reply["result"]['instance']
         to_delete = item['pk']
 
-        reply = self.f.itemform(to_delete, {"delete": None})
+        print "get"
+        reply = self.f.itemform({}, {"get": {'id': to_delete}})
+        pprint(reply)
+
+        reply = self.f.itemform({'id': to_delete}, {"delete": None})
         pprint(reply)
 
 

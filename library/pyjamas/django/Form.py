@@ -65,6 +65,25 @@ class FormSaveGrid:
 
         self.sink.save_respond(response)
 
+class FormGetGrid:
+
+    def __init__(self, sink):
+        self.sink = sink
+
+    def onRemoteResponse(self,  response, request_info):
+
+        method = request_info.method
+
+        writebr(method)
+        writebr(repr(response))
+        writebr("%d" % len(response))
+        writebr("%s" % repr(response.keys()))
+
+        self.sink.do_get(response)
+
+    def onRemoteError(self, code, message, request_info):
+        writebr("Server Error or Invalid Response: ERROR %d" % code + " - " + message + ' - Remote method : ' + request_info.method)
+
 class FormDescribeGrid:
 
     def __init__(self, sink):
@@ -80,6 +99,9 @@ class FormDescribeGrid:
         writebr("%s" % repr(response.keys()))
 
         self.sink.do_describe(response)
+
+    def onRemoteError(self, code, message, request_info):
+        writebr("Server Error or Invalid Response: ERROR %d" % code + " - " + message + ' - Remote method : ' + request_info.method)
 
 class Form(FormPanel):
 
@@ -103,6 +125,7 @@ class Form(FormPanel):
         self.add(self.grid)
         self.describer = FormDescribeGrid(self)
         self.saver = FormSaveGrid(self)
+        self.getter = FormGetGrid(self)
         self.formsetup(data)
 
     def addDescribeListener(self, l):
@@ -116,6 +139,10 @@ class Form(FormPanel):
         self.grid.resize((num_rows+1), 3)
         self.grid.setHTML(num_rows, 0, description)
         self.grid.setWidget(num_rows, 1, widget)
+
+    def get(self, **kwargs):
+        writebr(repr(kwargs))
+        self.svc({}, {'get': kwargs}, self.getter)
 
     def save(self, data=None):
         self.clear_errors()
@@ -170,6 +197,13 @@ class Form(FormPanel):
                 val = self.data[fname]
             w = self.grid.getWidget(idx, 1)
             w.setValue(val)
+
+    def do_get(self, response):
+        fields = response.get('instance', None)
+        if fields:
+            self.update_values(fields)
+        for l in self.describe_listeners:
+            l.onRetrieveDone(self, fields)
 
     def do_describe(self, fields):
 

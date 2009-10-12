@@ -206,8 +206,22 @@ class FormProcessor(JSONRPCService):
             return describe_fields(f.fields, field_names)
 
         elif command.has_key('delete'):
-            instance = f.delete(data) 
+            instance = f.delete(**data) 
             return {'success': True}
+
+        elif command.has_key('get'):
+            fields = command['get'] 
+            instance = f.get(**fields) 
+            jc = dict_datetimeflatten(instance)
+            return {'success': True, 'instance': jc}
+
+        elif command.has_key('update'):
+            if not f.is_valid():
+                return {'success':False, 'errors': builderrors(f)}
+            instance = f.save(force_update=True) 
+            fields = command['update'] 
+            jc = json_convert([instance], fields=fields)[0]
+            return {'success': True, 'instance': jc}
 
         elif command.has_key('save'):
             if not f.is_valid():
