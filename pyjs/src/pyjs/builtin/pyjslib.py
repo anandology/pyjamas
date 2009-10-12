@@ -1086,9 +1086,112 @@ class float:
 # which is in principle the python 'float'
 JS("""
 Number.prototype.__number__ = 0x01;
+Number.prototype.__name__ = 'float';
 Number.prototype.__init__ = function (value, radix) {
     return null;
-};
+}
+
+Number.prototype.__str__ = function () {
+    if (typeof this == 'number') return this.toString();
+    return "<type 'float'>";
+}
+
+Number.prototype.__repr__ = function () {
+    if (typeof this == 'number') return this.toString();
+    return "<type 'float'>";
+}
+
+Number.prototype.__nonzero__ = function () {
+    return this != 0;
+}
+
+Number.prototype.__cmp__ = function (y) {
+    return this < y? -1 : (this == y ? 0 : 1);
+}
+
+Number.prototype.__hash__ = function () {
+    return this;
+}
+
+Number.prototype.__oct__ = function () {
+    return '0x'+this.toString(8);
+}
+
+Number.prototype.__hex__ = function () {
+    return '0x'+this.toString(16);
+}
+
+Number.prototype.__pos__ = function () {
+    return this;
+}
+
+Number.prototype.__neg__ = function () {
+    return -this;
+}
+
+Number.prototype.__abs__ = function () {
+    if (this >= 0) return this;
+    return -this;
+}
+
+Number.prototype.__add__ = function (y) {
+    return this + y;
+}
+
+Number.prototype.__radd__ = function (y) {
+    return y + this;
+}
+
+Number.prototype.__sub__ = function (y) {
+    return this - y;
+}
+
+Number.prototype.__rsub__ = function (y) {
+    return y - this;
+}
+
+Number.prototype.__floordiv__ = function (y) {
+    if (y == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+    return Math.floor(this / y);
+}
+
+Number.prototype.__rfloordiv__ = function (y) {
+    if (this == 0) throw pyjslib['ZeroDivisionError']('float divmod');
+    return Math.floor(y / this);
+}
+
+Number.prototype.__div__ = function (y) {
+    if (y == 0) throw pyjslib['ZeroDivisionError']('float division');
+    return this / y;
+}
+
+Number.prototype.__rdiv__ = function (y) {
+    if (this == 0) throw pyjslib['ZeroDivisionError']('float division');
+    return y / this;
+}
+
+Number.prototype.__mul__ = function (y) {
+    return this * y;
+}
+
+Number.prototype.__rmul__ = function (y) {
+    return y * this;
+}
+
+Number.prototype.__mod__ = function (y) {
+    if (y == 0) throw pyjslib['ZeroDivisionError']('float modulo');
+    return this % y;
+}
+
+Number.prototype.__rmod__ = function (y) {
+    if (this == 0) throw pyjslib['ZeroDivisionError']('float modulo');
+    return y % this;
+}
+
+Number.prototype.__pow__ = function (y) {
+    return Math.pow(this, y);
+}
+
 """)
 
 def float_int(value, radix=None):
