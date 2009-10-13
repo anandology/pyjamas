@@ -2989,7 +2989,7 @@ class NotImplementedType(object):
         self.__repr__()
     def toString(self):
         self.__repr__()
-NotImplemened = NotImplementedType()
+NotImplemented = NotImplementedType()
 
 class List:
     @compiler.noSourceTracking
