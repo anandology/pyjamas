@@ -49,6 +49,22 @@ For Pyjamas Desktop, you will need:
 Developer Sandbox Setup
 =======================
 
+"Sandbox" setup simply refers to an installation that can be used
+where it is placed, on the filesystem, without affecting any other
+installations.  The consequences of performing a "sandbox" install
+are that you can have as many "sandbox" installs as you like, each
+completely unrelated and having absolutely nothing to do with each
+other.
+
+Zope, Django and many other python systems make prevalent use of
+"sandbox" installs.  Every django app is its own "sandbox".  The
+creation of a "sandbox" in python is actually incredibly simple:
+all that is required is that a hard-coded path is inserted into
+sys.path.  This job is covered by bootstrap.py.
+
+Pyjamas
+-------
+
 In this directory run:
 
  python bootstrap.py
@@ -65,6 +81,26 @@ to recreate the commands, with suitable hard-coded paths.
 
 To build pyjamas apps see ``./bin/pyjsbuild --help``
 
+Pyjamas Desktop
+---------------
+
+Sandbox installs of Pyjamas Desktop are tricky.  For pyjd applications
+to work, you will need to be able to import pyjd (built using
+python bootstrap.py: see above).
+
+There are two options for doing this:
+
+1) export PYTHONPATH={path to pyjamas}
+
+2) break the sandbox rules (specifically for pyjd) and run:
+
+    python run_bootstrap_first_then_pyjd_setup.py install
+
+If you decide to break the sandbox rules for pyjd, then, just as above,
+with pyjd/__init__.py containing hard-coded paths pointing to wherever
+you happened to create the sandbox, you MUST not "move around" the
+sandbox subdirectory, without also re-running bootstrap.py and re-running
+"python run_bootstrap_first_then_pyjd_setup.py install".
 
 System Installation
 ===================
