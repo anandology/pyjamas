@@ -1334,6 +1334,8 @@ JS("""
     }
 
     $int.__lshift__ = function (y) {
+        if (y.__number__ != 0x02) return pyjslib['NotImplemented'];
+        y = y.__v;
         if (y < 32) {
             var v = this.__v << y;
             if (v > this.__v) {
@@ -1344,6 +1346,8 @@ JS("""
     }
 
     $int.__rlshift__ = function (y) {
+        if (y.__number__ != 0x02) return pyjslib['NotImplemented'];
+        y = y.__v;
         if (this.__v < 32) {
             var v = y << this.__v;
             if (v > this.__v) {
@@ -1354,34 +1358,50 @@ JS("""
     }
 
     $int.__rshift__ = function (y) {
+        if (y.__number__ != 0x02) return pyjslib['NotImplemented'];
+        y = y.__v;
         return new $int(this.__v >>> y);
     }
 
     $int.__rrshift__ = function (y) {
+        if (y.__number__ != 0x02) return pyjslib['NotImplemented'];
+        y = y.__v;
         return new $int(y >>> this.__v);
     }
 
     $int.__and__ = function (y) {
+        if (y.__number__ != 0x02) return pyjslib['NotImplemented'];
+        y = y.__v;
         return new $int(this.__v & y);
     }
 
     $int.__rand__ = function (y) {
+        if (y.__number__ != 0x02) return pyjslib['NotImplemented'];
+        y = y.__v;
         return new $int(y & this.__v);
     }
 
     $int.__xor__ = function (y) {
+        if (y.__number__ != 0x02) return pyjslib['NotImplemented'];
+        y = y.__v;
         return new $int(this.__v ^ y);
     }
 
     $int.__rxor__ = function (y) {
+        if (y.__number__ != 0x02) return pyjslib['NotImplemented'];
+        y = y.__v;
         return new $int(y ^ this.__v);
     }
 
     $int.__or__ = function (y) {
+        if (y.__number__ != 0x02) return pyjslib['NotImplemented'];
+        y = y.__v;
         return new $int(this.__v | y);
     }
 
     $int.__ror__ = function (y) {
+        if (y.__number__ != 0x02) return pyjslib['NotImplemented'];
+        y = y.__v;
         return new $int(y | this.__v);
     }
 
@@ -1407,6 +1427,8 @@ JS("""
     }
 
     $int.__add__ = function (y) {
+        if (y.__number__ != 0x02) return pyjslib['NotImplemented'];
+        y = y.__v;
         var v = this.__v + y;
         if ($min_int < v <  $max_int) {
             return new $int(v);
@@ -1420,6 +1442,8 @@ JS("""
     $int.__radd__ = $int.__add__;
 
     $int.__sub__ = function (y) {
+        if (y.__number__ != 0x02) return pyjslib['NotImplemented'];
+        y = y.__v;
         var v = this.__v - y;
         if ($min_int < v <  $max_int) {
             return new $int(v);
@@ -1431,6 +1455,8 @@ JS("""
     }
 
     $int.__rsub__ = function (y) {
+        if (y.__number__ != 0x02) return pyjslib['NotImplemented'];
+        y = y.__v;
         var v = y -this.__v;
         if ($min_int < v <  $max_int) {
             return new $int(v);
@@ -1442,26 +1468,36 @@ JS("""
     }
 
     $int.__floordiv__ = function (y) {
+        if (y.__number__ != 0x02) return pyjslib['NotImplemented'];
+        y = y.__v;
         if (y == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
         return new $int(Math.floor(this.__v / y));
     }
 
     $int.__rfloordiv__ = function (y) {
+        if (y.__number__ != 0x02) return pyjslib['NotImplemented'];
+        y = y.__v;
         if (this.__v == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
         return new $int(Math.floor(y / this.__v));
     }
 
     $int.__div__ = function (y) {
+        if (y.__number__ != 0x02) return pyjslib['NotImplemented'];
+        y = y.__v;
         if (y == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
         return new $int(this.__v / y);
     }
 
     $int.__rdiv__ = function (y) {
+        if (y.__number__ != 0x02) return pyjslib['NotImplemented'];
+        y = y.__v;
         if (this.__v == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
         return new $int(y / this.__v);
     }
 
     $int.__mul__ = function (y) {
+        if (y.__number__ != 0x02) return pyjslib['NotImplemented'];
+        y = y.__v;
         var v = this.__v * y;
         if ($min_int < v <  $max_int) {
             return new $int(v);
@@ -1475,16 +1511,22 @@ JS("""
     $int.__rmul__ = $int.__mul__;
 
     $int.__mod__ = function (y) {
+        if (y.__number__ != 0x02) return pyjslib['NotImplemented'];
+        y = y.__v;
         if (y == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
         return new $int(this.__v % y);
     }
 
     $int.__rmod__ = function (y) {
+        if (y.__number__ != 0x02) return pyjslib['NotImplemented'];
+        y = y.__v;
         if (this.__v == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
         return new $int(y % this.__v);
     }
 
     $int.__pow__ = function (y) {
+        if (y.__number__ != 0x02) return pyjslib['NotImplemented'];
+        y = y.__v;
         var v = Math.pow(this.__v, y);
         if ($min_int < v <  $max_int) {
             return new $int(v);
