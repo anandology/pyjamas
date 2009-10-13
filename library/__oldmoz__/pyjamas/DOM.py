@@ -83,19 +83,26 @@ def getChildIndex(parent, child):
 def isOrHasChild(parent, child):
     JS("""
     while (child) {
-		if ((!parent.isSameNode)) {
-			if (parent == child) {
-			   return true;
-			}
-		}
-		else if (parent.isSameNode(child)) {
+        if ((!parent.isSameNode)) {
+            if (parent == child) {
+                return true;
+            }
+        }
+        else if (parent.isSameNode(child)) {
             return true;
         }
-        child = child.parentNode;
-        if (child && child.nodeType != 1) {
-            child = null;
+        try {
+            child = child.parentNode;
+        } catch(e) {
+          // Give up on 'Permission denied to get property
+          // HTMLDivElement.parentNode'
+          // See https://bugzilla.mozilla.org/show_bug.cgi?id=208427
+          return false;
         }
-    }
+        if (child && (child.nodeType != 1)) {
+          child = null;
+        }
+      }
     return false;
     """)
 
