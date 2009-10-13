@@ -28,11 +28,13 @@ class LongTest(UnitTest):
         self.assertTrue(x == 1048576L, "%s != 1048576L" % repr(x))
         self.assertTrue(isinstance(x, long))
 
-        if 1L<<64 == 18446744073709551616L:
+        self.assertTrue(int(18446744073709551616) is 18446744073709551616L, "No automatic int to long conversion")
+
+        if int(18446744073709551616) == 18446744073709551616L:
             # We do have long type
 
             x = 1<<64
-            self.assertTrue(x == 18446744073709551616L, "No automatic int to long conversion on <<")
+            self.assertEqual(x, 18446744073709551616L)
 
             x = 0x7fffffff + 1
             self.assertEqual(x, 2147483648L)

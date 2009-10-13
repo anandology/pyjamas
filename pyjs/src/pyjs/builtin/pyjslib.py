@@ -1267,14 +1267,16 @@ JS("""
                 case 0x02:
                     return value;
                 case 0x04:
-                    return value;
+                    v = value.valueOf();
+                    if (!($min_int <= v && v <= $max_int))
+                        return value;
             }
             radix = null;
         }
         if (typeof this != 'object' || this.__number__ != 0x02) return new $int(value, radix);
         if (value.__number__) {
             if (radix !== null) throw pyjslib.TypeError("int() can't convert non-string with explicit base");
-            v = value;
+            v = value.valueOf();
         } else if (typeof value == 'string') {
             if (radix === null) {
                 radix = 10;
@@ -1286,8 +1288,11 @@ JS("""
         if (isNaN(v) || !isFinite(v)) {
             throw pyjslib.ValueError("invalid literal for int() with base " + radix + ": '" + value + "'")
         }
-        this.__v = v;
-        return this;
+        if ($min_int <= v && v <= $max_int) {
+            this.__v = v;
+            return this;
+        }
+        return new pyjslib['long'](v);
     }
     $int.__init__ = function () {};
     $int.__number__ = 0x02;
@@ -1443,10 +1448,10 @@ JS("""
         if (y.__number__ != 0x02) return pyjslib['NotImplemented'];
         y = y.__v;
         var v = this.__v + y;
-        if ($min_int < v <  $max_int) {
+        if ($min_int <= v && v <= $max_int) {
             return new $int(v);
         }
-        if (-$max_float_int < v < $max_float_int) {
+        if (-$max_float_int < v && v < $max_float_int) {
             return new pyjslib['long'](v);
         }
         return new pyjslib['long'](this.__v).__add__(new pyjslib['long'](y));
@@ -1458,10 +1463,10 @@ JS("""
         if (y.__number__ != 0x02) return pyjslib['NotImplemented'];
         y = y.__v;
         var v = this.__v - y;
-        if ($min_int < v <  $max_int) {
+        if ($min_int <= v && v <= $max_int) {
             return new $int(v);
         }
-        if (-$max_float_int < v < $max_float_int) {
+        if (-$max_float_int < v && v < $max_float_int) {
             return new pyjslib['long'](v);
         }
         return new pyjslib['long'](this.__v).__sub__(new pyjslib['long'](y));
@@ -1471,10 +1476,10 @@ JS("""
         if (y.__number__ != 0x02) return pyjslib['NotImplemented'];
         y = y.__v;
         var v = y -this.__v;
-        if ($min_int < v <  $max_int) {
+        if ($min_int <= v && v <= $max_int) {
             return new $int(v);
         }
-        if (-$max_float_int < v < $max_float_int) {
+        if (-$max_float_int < v && v < $max_float_int) {
             return new pyjslib['long'](v);
         }
         return new pyjslib['long'](y).__sub__(new pyjslib['long'](this.__v));
@@ -1512,10 +1517,10 @@ JS("""
         if (y.__number__ != 0x02) return pyjslib['NotImplemented'];
         y = y.__v;
         var v = this.__v * y;
-        if ($min_int < v <  $max_int) {
+        if ($min_int <= v && v <= $max_int) {
             return new $int(v);
         }
-        if (-$max_float_int < v < $max_float_int) {
+        if (-$max_float_int < v && v < $max_float_int) {
             return new pyjslib['long'](v);
         }
         return new pyjslib['long'](this.__v).__mul__(new pyjslib['long'](y));
@@ -1541,10 +1546,10 @@ JS("""
         if (y.__number__ != 0x02) return pyjslib['NotImplemented'];
         y = y.__v;
         var v = Math.pow(this.__v, y);
-        if ($min_int < v <  $max_int) {
+        if ($min_int <= v && v <= $max_int) {
             return new $int(v);
         }
-        if (-$max_float_int < v < $max_float_int) {
+        if (-$max_float_int < v && v < $max_float_int) {
             return new pyjslib['long'](v);
         }
         return new pyjslib['long'](this.__v).__pow__(new pyjslib['long'](y));
@@ -1720,7 +1725,7 @@ JS("""
         return long_normalize(z);
     }
 
-    function Format(aa, base, addL, newstyle) {
+    function Format(aa, base, addL, newstyle, noBase) {
         var text, str, p, i, bits, sz, sign = '';
         var c_0 = "0".charCodeAt(0);
         var c_a = "a".charCodeAt(0);
@@ -1809,21 +1814,23 @@ JS("""
             text = text.lstrip('0');
             if (text == "" || text == "L") text = "0" + text;
         }
-        switch (base) {
-            case 10:
-                break;
-            case 2:
-                text = '0b' + text;
-                break;
-            case 8:
-                text = (newstyle ? '0o':(aa.ob_size ? '0': '')) + text;
-                break;
-            case 16:
-                text = '0x' + text;
-                break;
-            default:
-                text = base + '#' + text
-                break;
+        if (noBase !== false) {
+            switch (base) {
+                case 10:
+                    break;
+                case 2:
+                    text = '0b' + text;
+                    break;
+                case 8:
+                    text = (newstyle ? '0o':(aa.ob_size ? '0': '')) + text;
+                    break;
+                case 16:
+                    text = '0x' + text;
+                    break;
+                default:
+                    text = base + '#' + text
+                    break;
+            }
         }
         return sign + text;
     }
@@ -2396,7 +2403,7 @@ JS("""
     }
 
     $long.toString = function (radix) {
-        return (typeof radix == 'undefined' || radix === null) ? Format(this, 10, false, false) : Format(this, radix, false, false);
+        return (typeof radix == 'undefined' || radix === null) ? Format(this, 10, false, false) : Format(this, radix, false, false, false);
     }
 
     $long.valueOf = function() {
