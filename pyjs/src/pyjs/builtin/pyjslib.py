@@ -3843,13 +3843,9 @@ def str(text):
 @compiler.noSourceTracking
 def ord(x):
     if(isString(x) and len(x) is 1):
-        JS("""
-            return x.charCodeAt(0);
-        """)
+        return int(x.charCodeAt(0));
     else:
-        JS("""
-            throw pyjslib.TypeError();
-        """)
+        JS("""throw pyjslib.TypeError("ord() expected string of length 1")""")
     return None
 
 @compiler.noSourceTracking
