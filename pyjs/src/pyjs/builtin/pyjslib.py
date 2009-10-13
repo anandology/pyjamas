@@ -81,11 +81,11 @@ def op_eq(a,b):
             return a.__v == b.__v;
         case 0x0104:
         case 0x0204:
-            a = pyjslib['long'](a.valueOf());
+            a = new pyjslib['long'](a.valueOf());
         case 0x0404:
             return a.__cmp__(b) == 0;
         case 0x0402:
-            return a.__cmp__(pyjslib['long'](b.valueOf())) == 0;
+            return a.__cmp__(new pyjslib['long'](b.valueOf())) == 0;
     }
     if ((typeof a == 'object' || typeof a == 'function') && typeof a.__cmp__ == 'function') {
         return a.__cmp__(b) == 0;
@@ -138,9 +138,9 @@ def op_add(x, y):
             case 0x0202:
                 return new pyjslib['int'](x.__v + y.__v);
             case 0x0204:
-                return y.__radd__(pyjslib['long'](x.__v))
+                return y.__radd__(new pyjslib['long'](x.__v))
             case 0x0402:
-                return x.__add__(pyjslib['long'](y.__v))
+                return x.__add__(new pyjslib['long'](y.__v))
             case 0x0404:
                 return x.__add__(y);
         }
@@ -165,9 +165,9 @@ def op_sub(x, y):
             case 0x0202:
                 return new pyjslib['int'](x.__v - y.__v);
             case 0x0204:
-                return y.__rsub__(pyjslib['long'](x.__v))
+                return y.__rsub__(new pyjslib['long'](x.__v))
             case 0x0402:
-                return x.__sub__(pyjslib['long'](y.__v))
+                return x.__sub__(new pyjslib['long'](y.__v))
             case 0x0404:
                 return x.__sub__(y);
         }
@@ -196,9 +196,9 @@ def op_floordiv(x, y):
                 if (y.__v == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
                 return new pyjslib['int'](Math.floor(x.__v / y.__v));
             case 0x0204:
-                return y.__rfloordiv__(pyjslib['long'](x.__v))
+                return y.__rfloordiv__(new pyjslib['long'](x.__v))
             case 0x0402:
-                return x.__floordiv__(pyjslib['long'](y.__v))
+                return x.__floordiv__(new pyjslib['long'](y.__v))
             case 0x0404:
                 return x.__floordiv__(y);
         }
@@ -227,9 +227,9 @@ def op_div(x, y):
                 if (y.__v == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
                 return new pyjslib['int'](x.__v / y.__v);
             case 0x0204:
-                return y.__rdiv__(pyjslib['long'](x.__v))
+                return y.__rdiv__(new pyjslib['long'](x.__v))
             case 0x0402:
-                return x.__div__(pyjslib['long'](y.__v))
+                return x.__div__(new pyjslib['long'](y.__v))
             case 0x0404:
                 return x.__div__(y);
         }
@@ -254,9 +254,9 @@ def op_mul(x, y):
             case 0x0202:
                 return new pyjslib['int'](x.__v * y.__v);
             case 0x0204:
-                return y.__rmul__(pyjslib['long'](x.__v))
+                return y.__rmul__(new pyjslib['long'](x.__v))
             case 0x0402:
-                return x.__mul__(pyjslib['long'](y.__v))
+                return x.__mul__(new pyjslib['long'](y.__v))
             case 0x0404:
                 return x.__mul__(y);
         }
@@ -285,9 +285,9 @@ def op_mod(x, y):
                 if (y.__v == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
                 return new pyjslib['int'](x.__v % y.__v);
             case 0x0204:
-                return y.__rmod__(pyjslib['long'](x.__v))
+                return y.__rmod__(new pyjslib['long'](x.__v))
             case 0x0402:
-                return x.__mod__(pyjslib['long'](y.__v))
+                return x.__mod__(new pyjslib['long'](y.__v))
             case 0x0404:
                 return x.__mod__(y);
         }
@@ -316,9 +316,9 @@ def op_pow(x, y):
                 if (y == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
                 return Math.pow(x.__v,y);
             case 0x0204:
-                return y.__rpow__(pyjslib['long'](x.__v))
+                return y.__rpow__(new pyjslib['long'](x.__v))
             case 0x0402:
-                return x.__pow__(pyjslib['long'](y.__v))
+                return x.__pow__(new pyjslib['long'](y.__v))
             case 0x0202:
             case 0x0404:
                 return x.__pow__(y);
@@ -1015,15 +1015,15 @@ def cmp(a,b):
         case 0x0102:
             return -b.__cmp__(new pyjslib['int'](a));
         case 0x0104:
-            return -b.__cmp__(pyjslib['long'](a));
+            return -b.__cmp__(new pyjslib['long'](a));
         case 0x0201:
             return a.__cmp__(new pyjslib['int'](b));
         case 0x0401:
-            return a.__cmp__(pyjslib['long'](b));
+            return a.__cmp__(new pyjslib['long'](b));
         case 0x0204:
-            return -b.__cmp__(pyjslib['long'](a));
+            return -b.__cmp__(new pyjslib['long'](a));
         case 0x0402:
-            return a.__cmp__(pyjslib['long'](b));
+            return a.__cmp__(new pyjslib['long'](b));
         case 0x0404:
             return a.__cmp__(b);
     }
@@ -4617,9 +4617,9 @@ def divmod(x, y):
                 var f = Math.floor(x.__v / y.__v);
                 return pyjslib['tuple']([new pyjslib['int'](f), new pyjslib['int'](x.__v - f * y.__v)]);
             case 0x0204:
-                return y.__rdivmod__(pyjslib['long'](x.__v))
+                return y.__rdivmod__(new pyjslib['long'](x.__v))
             case 0x0402:
-                return x.__divmod__(pyjslib['long'](y.__v))
+                return x.__divmod__(new pyjslib['long'](y.__v))
             case 0x0404:
                 return x.__divmod__(y);
         }
