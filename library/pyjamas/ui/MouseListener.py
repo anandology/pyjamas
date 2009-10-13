@@ -41,16 +41,19 @@ def fireMouseEvent(listeners, sender, event):
 
 MOUSE_EVENTS = [ "mousedown", "mouseup", "mousemove", "mouseover", "mouseout"]
 
-class MouseHandler:
+class MouseHandler(object):
 
-    def __init__(self):
+    def __init__(self, preventDefault=False):
 
         self._mouseListeners = []
+        self._mousePreventDefault = preventDefault
         self.sinkEvents( Event.MOUSEEVENTS )
 
     def onBrowserEvent(self, event):
         type = DOM.eventGetType(event)
         if type in MOUSE_EVENTS:
+            if self._mousePreventDefault:
+                DOM.eventPreventDefault(event)
             fireMouseEvent(self._mouseListeners, self, event)
 
     def addMouseListener(self, listener):

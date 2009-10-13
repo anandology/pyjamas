@@ -5,61 +5,48 @@ from pyjamas.ui import Event
 from pyjamas.ui import MouseListener
 from pyjamas.ui.HorizontalPanel import HorizontalPanel
 from pyjamas.ui.ScrollPanel import ScrollPanel
+from pyjamas.ui.ComplexPanel import ComplexPanel
 from pyjamas.ui.MenuBar import MenuBar
 from pyjamas.ui.Image import Image
 from pyjamas.ui.ContextMenuPopupPanel import ContextMenuPopupPanel 
+from pyjamas.ui.MouseListener import MouseHandler
+from pyjamas.ui.ClickListener import ClickHandler
 
 from pyjamas import log
 
 # TODO: these need to go into pyjamas.ui
 
-class ImageMap(Widget):
-	""" An imagemap
-	"""
-	def __init__(self, name):
-		self.setElement(DOM.createElement("map"))
-		Widget.__init__(self)
-		self.setName(name)
+class ImageMap(ComplexPanel):
+    """ An imagemap
+    """
+    def __init__(self, name):
+        self.setElement(DOM.createElement("map"))
+        ComplexPanel.__init__(self)
+        self.setName(name)
 
-	def add(self, widget):
-		DOM.appendChild(self.getElement(), widget.getElement())
-		widget.setParent(self)
-	
-	def setName(self, name):
-		DOM.setAttribute(self.getElement(), "name", name)
+    def add(self, widget):
+        self.insert(widget, self.getWidgetCount())
 
-class MapArea(Widget):
+    def insert(self, widget, beforeIndex):
+        widget.removeFromParent()
+        ComplexPanel.insert(self, widget, self.getElement(), beforeIndex)
+    
+    def setName(self, name):
+        DOM.setAttribute(self.getElement(), "name", name)
+
+class MapArea(Widget, MouseHandler, ClickHandler):
     """ An area inside an imagemap
     """
     def __init__(self, shape, coords, href=""):
 
         self.setElement(DOM.createElement("area"))
         Widget.__init__(self)
-        self.clickListeners = []
-        self.mouseListeners = []
+        MouseHandler.__init__(self, preventDefault=True)
+        ClickHandler.__init__(self, preventDefault=True)
 
-        self.sinkEvents(Event.ONCLICK | Event.MOUSEEVENTS)
         self.setShape(shape)
         self.setCoords(coords)
         self.setHref(href)
-
-    def addClickListener(self, listener):
-        self.clickListeners.append(listener)
-
-    def addMouseListener(self, listener):
-        self.mouseListeners.append(listener)
-
-    def onBrowserEvent(self, event):
-        type = DOM.eventGetType(event)
-        pyjamas.log.writebr(type)
-        if type == "click":
-            for listener in self.clickListeners:
-                if(hasattr(listener, "onClick")):
-                    listener.onClick(self)
-                else:
-                    listener(self)
-        elif(type == "mousedown" or type == "mouseup" or type == "mousemove" or type == "mouseover" or type == "mouseout"):
-            MouseListener.fireMouseEvent(self.mouseListeners, self, event)
 
     def setShape(self, shape):
         DOM.setAttribute(self.getElement(), "shape", shape) 
@@ -68,16 +55,13 @@ class MapArea(Widget):
         DOM.setAttribute(self.getElement(), "coords", coords)
 
     def setHref(self, href):
-        if(href == ""):
-            DOM.setAttribute(self.getElement(), "href", None)
-        else:
-            DOM.setAttribute(self.getElement(), "href", href)
+        DOM.setAttribute(self.getElement(), "href", href)
 
 ############################################
 ####### MY ATTEMPT AT USING THIS ###########
 ############################################
 
-class ClickHandler:
+class MapClickHandler:
 
     def __init__(self):
         pass
@@ -91,17 +75,18 @@ class ClickHandler:
     def onMouseUp(self, sender, x, y):
         log.writebr("up %d %d" % (x, y))
 
-    def onMouseEnter(self, sender, x, y):
-        log.writebr("enter %d %d" % (x, y))
-        pass
+    def onMouseEnter(self, sender):
+        log.writebr("enter")
 
-    def onMouseLeave(self, sender, x, y):
-        log.writebr("leave %d %d" % (x, y))
-        pass
+    def onMouseLeave(self, sender):
+        log.writebr("leave")
 
+    def onClick(self, sender):
+        log.writebr("click")
+        
 def dosomething():
 
-    imageClickHandle = ClickHandler()
+    imageClickHandle = MapClickHandler()
 
     img = Image("babykatie_small.jpg")
 
@@ -118,12 +103,14 @@ def dosomething():
     a1 = MapArea("rect", "0, 0, 100, 100")
     a2 = MapArea("rect", "100, 0, 200, 100")
     a1.addMouseListener(imageClickHandle)
+    a1.addClickListener(imageClickHandle)
     a1.setHref("http://lkcl.net")
     a1.menu = MenuBar(True)
     a1.menu.addItem("Option 1")
     a1.menu.addItem("Option 2")
     a1.pop = ContextMenuPopupPanel(a1.menu)
     a2.addMouseListener(imageClickHandle)
+    a2.addClickListener(imageClickHandle)
     a2.menu = MenuBar(True)
     a2.menu.addItem("Option 3")
     a2.menu.addItem("Option 4")

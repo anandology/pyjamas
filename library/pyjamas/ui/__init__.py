@@ -31,7 +31,7 @@ class HasAlignment:
     ALIGN_LEFT = "left"
     ALIGN_RIGHT = "right"
 
-class Applier:
+class Applier(object):
              
     def __init__(self, **kwargs):
         """ use this to apply properties as a dictionary, e.g.

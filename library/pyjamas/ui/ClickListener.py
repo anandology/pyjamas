@@ -7,8 +7,9 @@ from pyjamas.ui import Event
 
 class ClickHandler(object):
 
-    def __init__(self):
+    def __init__(self, preventDefault=False):
         self._clickListeners = []
+        self._clickPreventDefault = preventDefault
         
         self.sinkEvents( Event.ONCLICK )
 
@@ -24,6 +25,8 @@ class ClickHandler(object):
         """
         type = DOM.eventGetType(event)
         if type == "click":
+            if self._clickPreventDefault:
+                DOM.eventPreventDefault(event)
             for listener in self._clickListeners:
                 if hasattr(listener, "onClick"):
                     listener.onClick(self)
