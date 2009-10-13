@@ -991,6 +991,13 @@ def cmp(a,b):
         }
         if (a === b) return 0;
     }
+    if (a === null) {
+        if (b === null) return 0;
+        return -1;
+    }
+    if (b === null) {
+        return 1;
+    }
 
     switch ((a.__number__ << 8)|b.__number__) {
         case 0x0202:
@@ -1037,13 +1044,6 @@ def cmp(a,b):
         }
     }
 
-    if (a === null) {
-        if (b === null) return 0;
-        return -1;
-    }
-    if (b === null) {
-        return 1;
-    }
     if ((typeof a == 'object' || typeof a == 'function') && typeof a.__cmp__ == 'function') {
         return a.__cmp__(b);
     } else if ((typeof b == 'object' || typeof b == 'function') && typeof b.__cmp__ == 'function') {
