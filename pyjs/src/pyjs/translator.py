@@ -281,7 +281,9 @@ PYJSLIB_BUILTIN_CLASSES=[
     "KeyError",
     "LookupError",
     "NameError",
+    "NotImplemented",   # is in fact an instance
     "NotImplementedError",
+    "NotImplementedType",
     "RuntimeError",
     "StandardError",
     "StopIteration",

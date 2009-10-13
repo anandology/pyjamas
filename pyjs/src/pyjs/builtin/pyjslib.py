@@ -31,8 +31,8 @@ for (var i = 0; i < 1000; i++) {
         break;
     }
 }
-$max_int = 2147483647;
-$min_int = -2147483648;
+$max_int = 0x7fffffff;
+$min_int = -0x80000000;
 """)
 
 class object:
@@ -967,7 +967,6 @@ RegExp.prototype.Exec = RegExp.prototype.exec;
     JS("""
 pyjslib.abs = Math.abs;
 """)
-# end of function init()
 
 class Class:
     def __init__(self, name):
@@ -2983,6 +2982,14 @@ JS("""
 
 """@CONSTANT_DECLARATION@"""
 
+class NotImplementedType(object):
+    def __repr__(self):
+        return "<type 'NotImplementedType'>"
+    def __str__(self):
+        self.__repr__()
+    def toString(self):
+        self.__repr__()
+NotImplemened = NotImplementedType()
 
 class List:
     @compiler.noSourceTracking

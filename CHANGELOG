@@ -1,6 +1,8 @@
                     Changes made to Pyjamas since 0.6
                     ---------------------------------
 
+ * Implemented NotImplementedType and NotImplemented
+
  * Implemented an int type and a long type
 
  * Add support for xrange and propper range (range was in fact an xrange)
