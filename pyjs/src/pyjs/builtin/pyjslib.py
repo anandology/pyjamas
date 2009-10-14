@@ -1143,7 +1143,7 @@ Number.prototype.__hash__ = function () {
 }
 
 Number.prototype.__oct__ = function () {
-    return '0x'+this.toString(8);
+    return '0'+this.toString(8);
 }
 
 Number.prototype.__hex__ = function () {
@@ -1164,61 +1164,78 @@ Number.prototype.__abs__ = function () {
 }
 
 Number.prototype.__add__ = function (y) {
+    if (!y.__number__ || isNaN(y = y.valueOf())) return pyjslib['NotImplemented'];
     return this + y;
 }
 
 Number.prototype.__radd__ = function (y) {
+    if (!y.__number__ || isNaN(y = y.valueOf())) return pyjslib['NotImplemented'];
     return y + this;
 }
 
 Number.prototype.__sub__ = function (y) {
+    if (!y.__number__ || isNaN(y = y.valueOf())) return pyjslib['NotImplemented'];
     return this - y;
 }
 
 Number.prototype.__rsub__ = function (y) {
+    if (!y.__number__ || isNaN(y = y.valueOf())) return pyjslib['NotImplemented'];
     return y - this;
 }
 
 Number.prototype.__floordiv__ = function (y) {
+    if (!y.__number__ || isNaN(y = y.valueOf())) return pyjslib['NotImplemented'];
     if (y == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
     return Math.floor(this / y);
 }
 
 Number.prototype.__rfloordiv__ = function (y) {
+    if (!y.__number__ || isNaN(y = y.valueOf())) return pyjslib['NotImplemented'];
     if (this == 0) throw pyjslib['ZeroDivisionError']('float divmod');
     return Math.floor(y / this);
 }
 
 Number.prototype.__div__ = function (y) {
+    if (!y.__number__ || isNaN(y = y.valueOf())) return pyjslib['NotImplemented'];
     if (y == 0) throw pyjslib['ZeroDivisionError']('float division');
     return this / y;
 }
 
 Number.prototype.__rdiv__ = function (y) {
+    if (!y.__number__ || isNaN(y = y.valueOf())) return pyjslib['NotImplemented'];
     if (this == 0) throw pyjslib['ZeroDivisionError']('float division');
     return y / this;
 }
 
 Number.prototype.__mul__ = function (y) {
+    if (!y.__number__ || isNaN(y = y.valueOf())) return pyjslib['NotImplemented'];
     return this * y;
 }
 
 Number.prototype.__rmul__ = function (y) {
+    if (!y.__number__ || isNaN(y = y.valueOf())) return pyjslib['NotImplemented'];
     return y * this;
 }
 
 Number.prototype.__mod__ = function (y) {
+    if (!y.__number__ || isNaN(y = y.valueOf())) return pyjslib['NotImplemented'];
     if (y == 0) throw pyjslib['ZeroDivisionError']('float modulo');
     return this % y;
 }
 
 Number.prototype.__rmod__ = function (y) {
+    if (!y.__number__ || isNaN(y = y.valueOf())) return pyjslib['NotImplemented'];
     if (this == 0) throw pyjslib['ZeroDivisionError']('float modulo');
     return y % this;
 }
 
-Number.prototype.__pow__ = function (y) {
-    return Math.pow(this, y);
+Number.prototype.__pow__ = function (y, z) {
+    if (!y.__number__ || isNaN(y = y.valueOf())) return pyjslib['NotImplemented'];
+    if (typeof z == 'undefined' || z == null) {
+        return Math.pow(this, y);
+    }
+    if (!z.__number__ || isNaN(z = z.valueOf())) return pyjslib['NotImplemented'];
+    return Math.pow(this, y) % z;
 }
 
 """)
