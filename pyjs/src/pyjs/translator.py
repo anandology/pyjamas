@@ -4238,10 +4238,10 @@ def add_compile_options(parser):
     parser.add_option("--number-classes",
                       dest = "number_classes",
                       action="store_true",
-                      help = "In development: Use classes for numbers (float, int, long)",
+                      help = "Use classes for numbers (float, int, long)",
                      )
     speed_options['number_classes'] = False
-    #pythonic_options['number_classes'] = True
+    pythonic_options['number_classes'] = True
 
 
     def set_multiple(option, opt_str, value, parser, **kwargs):
