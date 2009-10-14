@@ -1791,7 +1791,7 @@ JS("""
                     accumbits += PyLong_SHIFT;
                     for (;;) {
                         var cdigit = accum & (base - 1);
-                        str[--p] = $cdigit[cdigit];
+                        str[--p] = $cdigit.charAt(cdigit);
                         accumbits -= basebits;
                         accum >>>= basebits;
                         if (i < size_a-1) {
@@ -1827,7 +1827,7 @@ JS("""
                         }
                         do {
                             var nextrem = Math.floor(rem / base);
-                            str[--p] = $cdigit[rem - nextrem * base];
+                            str[--p] = $cdigit.charAt(rem - nextrem * base);
                             rem = nextrem;
                             --ntostore;
                         } while (ntostore && (size || rem));
@@ -2237,7 +2237,7 @@ JS("""
             var i = 0;
             var neg = false;
 
-            switch (text[0]) {
+            switch (text.charAt(0)) {
                 case '-':
                     neg = true;
                 case '+':
@@ -2245,10 +2245,10 @@ JS("""
             }
 
             if (!radix) {
-                if (text == '0' || text[0] != '0') {
+                if (text == '0' || text.charAt(0) != '0') {
                     radix = 10;
                 } else {
-                    switch (text[1]) {
+                    switch (text.charAt(1)) {
                         case 'x':
                         case 'X':
                             radix = 16;
@@ -2269,8 +2269,8 @@ JS("""
             } else if (radix < 1 || radix > 36) {
                 throw pyjslib['ValueError']("long() arg 2 must be >= 2 and <= 36");
             }
-            if (text[0] == '0' && text.length > 1) {
-                switch (text[1]) {
+            if (text.charAt(0) == '0' && text.length > 1) {
+                switch (text.charAt(1)) {
                     case 'x':
                     case 'X':
                         if (radix == 16) text = text.slice(2);
@@ -2387,7 +2387,7 @@ JS("""
             }
             text = text.slice(nchars);
             if (neg) this.ob_size = -this.ob_size;
-            if (text[0] == 'l' || text[0] == 'L') text = text.slice(1);
+            if (text.charAt(0) == 'l' || text.charAt(0) == 'L') text = text.slice(1);
             text = text.lstrip();
             if (text.length === 0) {
                 return this;
