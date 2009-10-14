@@ -356,16 +356,15 @@ def op_bitshiftright(x, y):
     throw pyjslib['TypeError']("unsupported operand type(s) for >>: '%r', '%r'" % (x, y))
 """)
 
-def op_bitand(*args):
-    JS("""
-    if (args.l[0] !== null && args.l[1] !== null && args.l.length > 1) {
+op_bitand = JS("""function (args) {
+    if (args[0] !== null && args[1] !== null && args.length > 1) {
         var res;
-        res = args.l[0];
-        for (i = 1; i < args.l.length; i++) {
+        res = args[0];
+        for (i = 1; i < args.length; i++) {
             if (typeof res['__and__'] == 'function') {
-                res = res.__and__(args.l[i]);
-            } else if (typeof args.l[i]['__rand__'] == 'function') {
-                res = args.l[i].__rand__(res);
+                res = res.__and__(args[i]);
+            } else if (typeof args[i]['__rand__'] == 'function') {
+                res = args[i].__rand__(res);
             } else {
                 res = null;
                 break;
@@ -380,18 +379,20 @@ def op_bitand(*args):
         }
     }
 """)
-    raise TypeError("unsupported operand type(s) for &: " + ', '.join([repr(a) for a in args]))
+raise TypeError("unsupported operand type(s) for &: " + ', '.join([repr(a) for a in list(args)]))
+JS("""
+}
+""")
 
-def op_bitxor(*args):
-    JS("""
-    if (args.l[0] !== null && args.l[1] !== null && args.l.length > 1) {
+op_bitxor = JS("""function (args) {
+    if (args[0] !== null && args[1] !== null && args.length > 1) {
         var res;
-        res = args.l[0];
-        for (i = 1; i < args.l.length; i++) {
+        res = args[0];
+        for (i = 1; i < args.length; i++) {
             if (typeof res['__xor__'] == 'function') {
-                res = res.__xor__(args.l[i]);
-            } else if (typeof args.l[i]['__rxor__'] == 'function') {
-                res = args.l[i].__rxor__(res);
+                res = res.__xor__(args[i]);
+            } else if (typeof args[i]['__rxor__'] == 'function') {
+                res = args[i].__rxor__(res);
             } else {
                 res = null;
                 break;
@@ -406,18 +407,20 @@ def op_bitxor(*args):
         }
     }
 """)
-    raise TypeError("unsupported operand type(s) for ^: " + ', '.join([repr(a) for a in args]))
+raise TypeError("unsupported operand type(s) for ^: " + ', '.join([repr(a) for a in args]))
+JS("""
+}
+""")
 
-def op_bitor(*args):
-    JS("""
-    if (args.l[0] !== null && args.l[1] !== null && args.l.length > 1) {
+op_bitor = JS("""function (args) {
+    if (args[0] !== null && args[1] !== null && args.length > 1) {
         var res, b;
-        res = args.l[0];
-        for (i = 1; i < args.l.length; i++) {
+        res = args[0];
+        for (i = 1; i < args.length; i++) {
             if (typeof res['__or__'] == 'function') {
-                res = res.__or__(args.l[i]);
-            } else if (typeof args.l[i]['__ror__'] == 'function') {
-                res = args.l[i].__ror__(res);
+                res = res.__or__(args[i]);
+            } else if (typeof args[i]['__ror__'] == 'function') {
+                res = args[i].__ror__(res);
             } else {
                 res = null;
                 break;
@@ -432,7 +435,10 @@ def op_bitor(*args):
         }
     }
 """)
-    raise TypeError("unsupported operand type(s) for |: " + ', '.join([repr(a) for a in args]))
+raise TypeError("unsupported operand type(s) for |: " + ', '.join([repr(a) for a in args]))
+JS("""
+}
+""")
 
 
 @compiler.noSourceTracking
