@@ -2696,6 +2696,10 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                     return self.ast.Bitxor
                 if op == "|=":
                     return self.ast.Bitor
+                if op == ">>=":
+                    return self.ast.RightShift
+                if op == "<<=":
+                    return self.ast.LeftShift
             raise TranslationError(
                  "unsupported OP (in _augassign)", node, self.module_name)
         v = node.node
