@@ -3298,8 +3298,6 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
     def _mod(self, node, current_klass):
         if isinstance(node.left, self.ast.Const) and isinstance(node.left.value, StringType):
             return self.track_call("pyjslib['sprintf']("+self.expr(node.left, current_klass) + ", " + self.expr(node.right, current_klass)+")", node.lineno)
-        if not self.operator_funcs:
-            return "(%s)%%(%s)" % (self.expr(node.left, current_klass), self.expr(node.right, current_klass))
         e1 = self.expr(node.left, current_klass)
         e2 = self.expr(node.right, current_klass)
         v1 = self.uniqid('$mod')
@@ -3307,6 +3305,10 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.add_lookup('variable', v1, v1)
         self.add_lookup('variable', v2, v2)
         s = self.spacing()
+        if not self.operator_funcs:
+            return """((%(v1)s=%(e1)s)!=null && (%(v2)s=%(e2)s)!=null && typeof %(v1)s=='string'?
+%(s)s\tpyjslib['sprintf'](%(v1)s,%(v2)s):
+%(s)s\t%(v1)s%%%(v2)s)""" % locals()
         return """(typeof (%(v1)s=%(e1)s)==typeof (%(v2)s=%(e2)s) && typeof %(v1)s=='number'?
 %(s)s\t%(v1)s%%%(v2)s:
 %(s)s\tpyjslib['op_mod'](%(v1)s,%(v2)s))""" % locals()
