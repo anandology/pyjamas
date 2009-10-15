@@ -3349,16 +3349,22 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
     def _bitand(self, node, current_klass):
         if not self.operator_funcs or not self.number_classes:
             return "(%s)" % ")&(".join([self.expr(child, current_klass) for child in node.nodes])
+        if len(node.nodes) == 2:
+            return "pyjslib['op_bitand2'](%s, %s)" % (self.expr(node.nodes[0], current_klass), self.expr(node.nodes[1], current_klass))
         return "pyjslib['op_bitand']([%s])" % ", ".join([self.expr(child, current_klass) for child in node.nodes])
 
     def _bitxor(self,node, current_klass):
         if not self.operator_funcs or not self.number_classes:
             return "(%s)" % ")^(".join([self.expr(child, current_klass) for child in node.nodes])
+        if len(node.nodes) == 2:
+            return "pyjslib['op_bitxor2'](%s, %s)" % (self.expr(node.nodes[0], current_klass), self.expr(node.nodes[1], current_klass))
         return "pyjslib['op_bitxor']([%s])" % ", ".join([self.expr(child, current_klass) for child in node.nodes])
 
     def _bitor(self, node, current_klass):
         if not self.operator_funcs or not self.number_classes:
             return "(%s)" % ")|(".join([self.expr(child, current_klass) for child in node.nodes])
+        if len(node.nodes) == 2:
+            return "pyjslib['op_bitor2'](%s, %s)" % (self.expr(node.nodes[0], current_klass), self.expr(node.nodes[1], current_klass))
         return "pyjslib['op_bitor']([%s])" % ", ".join([self.expr(child, current_klass) for child in node.nodes])
 
     def _subscript(self, node, current_klass):
