@@ -391,7 +391,20 @@ def op_invert(v):
 def op_bitshiftleft(x, y):
     JS("""
     if (x !== null && y !== null) {
-        if (typeof x['__lshift__'] != 'undefined') return x.__lshift__(y);
+        switch ((x.__number__ << 8) | y.__number__) {
+            case 0x0202:
+                return x.__lshift__(y);
+            case 0x0204:
+                return y.__rlshift__(x);
+            case 0x0402:
+                return x.__lshift(y.__v);
+            case 0x0404:
+                return x.__lshift(y.valueOf());
+        }
+        if (typeof x['__lshift__'] == 'function') {
+            var v = x.__lshift__(y);
+            if (v !== pyjslib['NotImplemented']) return v;
+        }
         if (typeof y['__rlshift__'] != 'undefined') return y.__rlshift__(x);
     }
     throw pyjslib['TypeError']("unsupported operand type(s) for <<: '%r', '%r'" % (x, y))
@@ -400,7 +413,20 @@ def op_bitshiftleft(x, y):
 def op_bitshiftright(x, y):
     JS("""
     if (x !== null && y !== null) {
-        if (typeof x['__rshift__'] != 'undefined') return x.__rshift__(y);
+        switch ((x.__number__ << 8) | y.__number__) {
+            case 0x0202:
+                return x.__rshift__(y);
+            case 0x0204:
+                return y.__rrshift__(x);
+            case 0x0402:
+                return x.__rshift(y.__v);
+            case 0x0404:
+                return x.__rshift(y.valueOf());
+        }
+        if (typeof x['__rshift__'] == 'function') {
+            var v = x.__rshift__(y);
+            if (v !== pyjslib['NotImplemented']) return v;
+        }
         if (typeof y['__rrshift__'] != 'undefined') return y.__rrshift__(x);
     }
     throw pyjslib['TypeError']("unsupported operand type(s) for >>: '%r', '%r'" % (x, y))
@@ -408,11 +434,15 @@ def op_bitshiftright(x, y):
 
 op_bitand = JS("""function (args) {
     if (args[0] !== null && args[1] !== null && args.length > 1) {
-        var res;
+        var res, r;
         res = args[0];
         for (i = 1; i < args.length; i++) {
             if (typeof res['__and__'] == 'function') {
+                r = res;
                 res = res.__and__(args[i]);
+                if (res === pyjslib['NotImplemented'] && typeof args[i]['__rand__'] == 'function') {
+                    res = args[i].__rand__(r);
+                }
             } else if (typeof args[i]['__rand__'] == 'function') {
                 res = args[i].__rand__(res);
             } else {
@@ -436,11 +466,15 @@ JS("""
 
 op_bitxor = JS("""function (args) {
     if (args[0] !== null && args[1] !== null && args.length > 1) {
-        var res;
+        var res, r;
         res = args[0];
         for (i = 1; i < args.length; i++) {
             if (typeof res['__xor__'] == 'function') {
+                r = res;
                 res = res.__xor__(args[i]);
+                if (res === pyjslib['NotImplemented'] && typeof args[i]['__rand__'] == 'function') {
+                    res = args[i].__rand__(r);
+                }
             } else if (typeof args[i]['__rxor__'] == 'function') {
                 res = args[i].__rxor__(res);
             } else {
@@ -464,11 +498,15 @@ JS("""
 
 op_bitor = JS("""function (args) {
     if (args[0] !== null && args[1] !== null && args.length > 1) {
-        var res, b;
+        var res, r;
         res = args[0];
         for (i = 1; i < args.length; i++) {
             if (typeof res['__or__'] == 'function') {
+                r = res;
                 res = res.__or__(args[i]);
+                if (res === pyjslib['NotImplemented'] && typeof args[i]['__rand__'] == 'function') {
+                    res = args[i].__rand__(r);
+                }
             } else if (typeof args[i]['__ror__'] == 'function') {
                 res = args[i].__ror__(res);
             } else {

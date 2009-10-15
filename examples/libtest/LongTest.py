@@ -57,3 +57,13 @@ class LongTest(UnitTest):
             x = 0x7ffff ** 2
             self.assertEqual(x, 274876858369)
 
+            self.assertEqual(1 << 2L, 4L)
+            self.assertEqual(6 >> 2L, 1L)
+
+            x = 1
+            x <<= 3L
+            self.assertEqual(x, 8L)
+            x = 8
+            x >>= 1L
+            self.assertEqual(x, 4L)
+
