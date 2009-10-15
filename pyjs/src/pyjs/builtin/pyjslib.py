@@ -4295,8 +4295,8 @@ def getattr(obj, name, default_value=None):
         return method.apply(obj,args);
     };
     fnwrap.__name__ = name;
-    fnwrap.__args__ = obj.__args__;
-    fnwrap.__bind_type__ = obj.__bind_type__;
+    fnwrap.__args__ = obj[name].__args__;
+    fnwrap.__bind_type__ = obj[name].__bind_type__;
     return fnwrap;
     """)
 
