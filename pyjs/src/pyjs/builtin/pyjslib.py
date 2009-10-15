@@ -3978,6 +3978,12 @@ def xrange(start, stop = None, step = 1):
     if stop is None:
         stop = start
         start = 0
+    if not isNumber(start):
+        raise TypeError("xrange() integer start argument expected, got %s" % stop.__class__.__name__)
+    if not isNumber(stop):
+        raise TypeError("xrange() integer end argument expected, got %s" % stop.__class__.__name__)
+    if not isNumber(step):
+        raise TypeError("xrange() integer step argument expected, got %s" % stop.__class__.__name__)
     rval = nval = start
     JS("""
     var nstep = (stop-start)/step;
@@ -4025,6 +4031,12 @@ def range(start, stop = None, step = 1):
         stop = start
         start = 0
     i = start
+    if not isNumber(start):
+        raise TypeError("range() integer start argument expected, got %s" % stop.__class__.__name__)
+    if not isNumber(stop):
+        raise TypeError("range() integer end argument expected, got %s" % stop.__class__.__name__)
+    if not isNumber(step):
+        raise TypeError("range() integer step argument expected, got %s" % stop.__class__.__name__)
     items = JS("new Array()")
     JS("""
     var nstep = (stop-start)/step;
