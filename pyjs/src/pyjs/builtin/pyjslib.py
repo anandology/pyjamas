@@ -1881,14 +1881,13 @@ JS("""
         return borrow;
     }
 
-    function mul1(a, n) {
-        return muladd1(a, n, 0);
-    }
+    //function mul1(a, n) {
+    //    return muladd1(a, n, 0);
+    //}
 
-    function muladd1(a, n, extra) {
+    function muladd1(z, a, n, extra) {
         var size_a = a.ob_size < 0 ? -a.ob_size : a.ob_size;
         var carry = extra, i;
-        var z = new $long(0);
 
         for (i = 0; i < size_a; ++i) {
                 carry += a.ob_digit[i] * n;
@@ -2079,8 +2078,8 @@ JS("""
     function x_divrem(v1, w1, prem) {
         var size_w = w1.ob_size < 0 ? -w1.ob_size : w1.ob_size;
         var d = Math.floor(PyLong_BASE / (w1.ob_digit[size_w-1] + 1));
-        var v = mul1(v1, d);
-        var w = mul1(w1, d);
+        var v = muladd1($x_divrem_v, v1, d, 0);
+        var w = muladd1($x_divrem_w, w1, d, 0);
         var a, j, k;
         var size_v = v.ob_size < 0 ? -v.ob_size : v.ob_size;
         k = size_v - size_w;
@@ -3397,6 +3396,8 @@ JS("""
     // Since javascript is single threaded:
     var $l_divmod_div = new $long(0),
         $l_divmod_mod = new $long(0),
+        $x_divrem_v = new $long(0),
+        $x_divrem_w = new $long(0),
         $pow_temp_a = new $long(0),
         $pow_temp_c = new $long(0),
         $pow_temp_z = new $long(0);
