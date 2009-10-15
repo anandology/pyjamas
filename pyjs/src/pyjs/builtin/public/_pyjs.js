@@ -96,7 +96,13 @@ function $pyjs_kwargs_call(obj, func, star_args, dstar_args, args)
 
     // Append the left-over args
     for (;idx < args.length;idx++) {
+        if (typeof args[idx] != 'undefined') {
             _args.push(args[idx]);
+        }
+    }
+    // Remove trailing undefineds
+    while (_args.length > 0 && typeof _args[_args.length-1] == 'undefined') {
+        _args.pop();
     }
 
     if (__args__[1] === null) {
