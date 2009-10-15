@@ -42,6 +42,7 @@ from TypeCompatibilityTest import TypeCompatibilityTest
 from UrllibModuleTest import UrllibModuleTest
 from Base64ModuleTest import Base64ModuleTest
 from RandomModuleTest import RandomModuleTest
+from ReModuleTest import ReModuleTest
 
 from write import writebr
 

@@ -1,9 +1,19 @@
 from UnitTest import UnitTest
 
 import random
-from math import log, exp, sqrt, pi, fsum as msum
-
-
+from math import log, exp, sqrt, pi
+try:
+    from math import fsum as msum
+except:
+    # fsum is new in 2.6
+    from math import fabs
+    def msum(x):
+        xx = [(fabs(v), i) for i, v in enumerate(x)]
+        xx.sort()
+        sum = 0
+        for i in xx:
+            sum += x[i[1]]
+        return sum
 
 
 _gammacoeff = (0.9999999999995183, 676.5203681218835, -1259.139216722289,
@@ -65,9 +75,10 @@ class RandomModuleTest(UnitTest):
         x = xx[:]
         g.random = getattr(x, 'pop')
         g.betavariate(3.0, 3.0)
-        x = xx[:]
-        g.random = getattr(x, 'pop')
-        g.triangular(0.0, 1.0, 1.0/3.0)
+        if hasattr(g, 'triangular'):
+            x = xx[:]
+            g.random = getattr(x, 'pop')
+            g.triangular(0.0, 1.0, 1.0/3.0)
 
     def test_avg_std(self):
         # Use integration to test distribution average and standard deviation.
@@ -75,14 +86,16 @@ class RandomModuleTest(UnitTest):
         g = random.Random()
         N = 5000
         xx = [i/float(N) for i in xrange(1,N)]
-        for variate, args, mu, sigmasqrd in [
+        dists = [
                 (g.uniform, (1.0,10.0), (10.0+1.0)/2, (10.0-1.0)**2/12),
-                (g.triangular, (0.0, 1.0, 1.0/3.0), 4.0/9.0, 7.0/9.0/18.0),
                 (g.expovariate, (1.5,), 1/1.5, 1/1.5**2),
                 (g.paretovariate, (5.0,), 5.0/(5.0-1),
                                   5.0/((5.0-1)**2*(5.0-2))),
                 (g.weibullvariate, (1.0, 3.0), gamma(1+1/3.0),
-                                  gamma(1+2/3.0)-gamma(1+1/3.0)**2) ]:
+                                  gamma(1+2/3.0)-gamma(1+1/3.0)**2) ]
+        if hasattr(g, 'triangular'):
+            dists.append((g.triangular, (0.0, 1.0, 1.0/3.0), 4.0/9.0, 7.0/9.0/18.0))
+        for variate, args, mu, sigmasqrd in dists:
             x = xx[:]
             g.random = getattr(x, 'pop')
             y = []
