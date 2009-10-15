@@ -879,6 +879,8 @@ String.prototype.__contains__ = function(s){
     return this.indexOf(s)>=0;
 };
 
+String.prototype.__split = String.prototype.split;
+
 String.prototype.split = function(sep, maxsplit) {
     var items=new pyjslib.List();
     var do_max=false;
