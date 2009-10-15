@@ -17,13 +17,14 @@ class UnitTest:
         self.test_methods=[]
         self.test_idx = None
 
-        # define alternate names for methods
-        self.assertEqual = self.failUnlessEqual
-        self.assertEquals = self.failUnlessEqual
-
-        self.assertNotEqual = self.failIfEqual
+        # Synonyms for assertion methods
+        self.assertEqual = self.assertEquals = self.failUnlessEqual
+        self.assertNotEqual = self.assertNotEquals = self.failIfEqual
+        self.assertAlmostEqual = self.assertAlmostEquals = self.failUnlessAlmostEqual
+        self.assertNotAlmostEqual = self.assertNotAlmostEquals = self.failIfAlmostEqual
+        self.assertRaises = self.failUnlessRaises
+        self.assert_ = self.assertTrue = self.failUnless
         self.assertFalse = self.failIf
-        self.assertTrue = self.failUnless
 
     def _run_test(self, test_method_name):
         self.getTestMethods()
@@ -120,6 +121,16 @@ class UnitTest:
         self.startTest()
         if not expr:
             return self.fail(msg)
+
+    def failUnlessRaises(self, excClass, callableObj, *args, **kwargs):
+        try:
+            callableObj(*args, **kwargs)
+        except excClass:
+            return
+        else:
+            if hasattr(excClass,'__name__'): excName = excClass.__name__
+            else: excName = str(excClass)
+            raise self.failureException, "%s not raised" % excName
 
     def failUnlessEqual(self, first, second, msg=None):
         self.startTest()
