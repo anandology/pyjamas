@@ -18,10 +18,17 @@ math.pi = Math.PI;
 math.e = Math.E;
 """)
 
-def ldexp(x, i):
-    return x * (2**i)
-
 __log2__ = log(2)
+
+# This is not the real thing, but i helps to start with the small numbers
+def fsum(x):
+    xx = [(fabs(v), i) for i, v in enumerate(x)]
+    xx.sort()
+    sum = 0
+    for i in xx:
+        sum += x[i[1]]
+    return sum
+
 def frexp(x):
     global __log2__
     if x == 0:
@@ -30,3 +37,7 @@ def frexp(x):
     e = int(log(abs(x))/__log2__) + 1
     m = x / (2.**e)
     return (m,e)
+
+def ldexp(x, i):
+    return x * (2**i)
+
