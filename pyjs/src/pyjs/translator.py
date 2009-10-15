@@ -4278,7 +4278,7 @@ def add_compile_options(parser):
                         line_tracking = False,
                         store_source = False,
                         inline_code = False,
-                        operator_funcs = False,
+                        operator_funcs = True,
                         number_classes = False,
                        )
 
