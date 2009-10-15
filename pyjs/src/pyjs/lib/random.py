@@ -1,3 +1,4 @@
+from __pyjamas__ import JS
 #from __future__ import division
 #from warnings import warn as _warn
 #from types import MethodType as _MethodType, BuiltinMethodType as _BuiltinMethodType
@@ -248,7 +249,7 @@ class Random(_random.Random):
         n = len(population)
         if not 0 <= k <= n:
             raise ValueError, "sample larger than population"
-        random = self.random
+        __random = self.random
         _int = int
         result = [None] * k
         setsize = 21        # size of a small set minus size of an empty list
@@ -259,7 +260,7 @@ class Random(_random.Random):
             # mapping type so the other algorithm wouldn't work.
             pool = list(population)
             for i in xrange(k):         # invariant:  non-selected at [0,n-i)
-                j = _int(random() * (n-i))
+                j = _int(__random() * (n-i))
                 result[i] = pool[j]
                 pool[j] = pool[n-i-1]   # move non-selected item into vacancy
         else:
@@ -267,9 +268,9 @@ class Random(_random.Random):
                 selected = set()
                 selected_add = selected.add
                 for i in xrange(k):
-                    j = _int(random() * n)
+                    j = _int(__random() * n)
                     while j in selected:
-                        j = _int(random() * n)
+                        j = _int(__random() * n)
                     selected_add(j)
                     result[i] = population[j]
             except (TypeError, KeyError):   # handle (at least) sets
@@ -317,10 +318,10 @@ class Random(_random.Random):
         # variables using the ratio of uniform deviates", ACM Trans
         # Math Software, 3, (1977), pp257-260.
 
-        random = self.random
+        __random = self.random
         while 1:
-            u1 = random()
-            u2 = 1.0 - random()
+            u1 = __random()
+            u2 = 1.0 - __random()
             z = NV_MAGICCONST*(u1-0.5)/u2
             zz = z*z/4.0
             if zz <= -_log(u2):
@@ -350,10 +351,10 @@ class Random(_random.Random):
         # lambd: rate lambd = 1/mean
         # ('lambda' is a Python reserved word)
 
-        random = self.random
-        u = random()
+        __random = self.random
+        u = __random()
         while u <= 1e-7:
-            u = random()
+            u = __random()
         return -_log(u)/lambd
 
 ## -------------------- von Mises distribution --------------------
@@ -376,27 +377,27 @@ class Random(_random.Random):
         # Thanks to Magnus Kessler for a correction to the
         # implementation of step 4.
 
-        random = self.random
+        __random = self.random
         if kappa <= 1e-6:
-            return TWOPI * random()
+            return TWOPI * __random()
 
         a = 1.0 + _sqrt(1.0 + 4.0 * kappa * kappa)
         b = (a - _sqrt(2.0 * a))/(2.0 * kappa)
         r = (1.0 + b * b)/(2.0 * b)
 
         while 1:
-            u1 = random()
+            u1 = __random()
 
             z = _cos(_pi * u1)
             f = (1.0 + r * z)/(r + z)
             c = kappa * (r - f)
 
-            u2 = random()
+            u2 = __random()
 
             if u2 < c * (2.0 - c) or u2 <= c * _exp(1.0 - c):
                 break
 
-        u3 = random()
+        u3 = __random()
         if u3 > 0.5:
             theta = (mu % TWOPI) + _acos(f)
         else:
@@ -418,7 +419,7 @@ class Random(_random.Random):
         if alpha <= 0.0 or beta <= 0.0:
             raise ValueError, 'gammavariate: alpha and beta must be > 0.0'
 
-        random = self.random
+        __random = self.random
         if alpha > 1.0:
 
             # Uses R.C.H. Cheng, "The generation of Gamma
@@ -430,10 +431,10 @@ class Random(_random.Random):
             ccc = alpha + ainv
 
             while 1:
-                u1 = random()
+                u1 = __random()
                 if not 1e-7 < u1 < .9999999:
                     continue
-                u2 = 1.0 - random()
+                u2 = 1.0 - __random()
                 v = _log(u1/(1.0-u1))/ainv
                 x = alpha*_exp(v)
                 z = u1*u1*u2
@@ -443,9 +444,9 @@ class Random(_random.Random):
 
         elif alpha == 1.0:
             # expovariate(1)
-            u = random()
+            u = __random()
             while u <= 1e-7:
-                u = random()
+                u = __random()
             return -_log(u) * beta
 
         else:   # alpha is between 0 and 1 (exclusive)
@@ -453,14 +454,14 @@ class Random(_random.Random):
             # Uses ALGORITHM GS of Statistical Computing - Kennedy & Gentle
 
             while 1:
-                u = random()
+                u = __random()
                 b = (_e + alpha)/_e
                 p = b*u
                 if p <= 1.0:
                     x = p ** (1.0/alpha)
                 else:
                     x = -_log((b-p)/alpha)
-                u1 = random()
+                u1 = __random()
                 if p > 1.0:
                     if u1 <= x ** (alpha - 1.0):
                         break
@@ -495,12 +496,12 @@ class Random(_random.Random):
         # didn't want to slow this down in the serial case by using a
         # lock here.)
 
-        random = self.random
+        __random = self.random
         z = self.gauss_next
         self.gauss_next = None
         if z is None:
-            x2pi = random() * TWOPI
-            g2rad = _sqrt(-2.0 * _log(1.0 - random()))
+            x2pi = __random() * TWOPI
+            g2rad = _sqrt(-2.0 * _log(1.0 - __random()))
             z = _cos(x2pi) * g2rad
             self.gauss_next = _sin(x2pi) * g2rad
 
@@ -786,28 +787,28 @@ def _test(N=2000):
 # instantiate their own Random() instance.
 
 _inst = Random()
-seed = _inst.seed
-random = _inst.random
-uniform = _inst.uniform
-triangular = _inst.triangular
-randint = _inst.randint
-choice = _inst.choice
-randrange = _inst.randrange
-sample = _inst.sample
-shuffle = _inst.shuffle
-normalvariate = _inst.normalvariate
-lognormvariate = _inst.lognormvariate
-expovariate = _inst.expovariate
-vonmisesvariate = _inst.vonmisesvariate
-gammavariate = _inst.gammavariate
-gauss = _inst.gauss
-betavariate = _inst.betavariate
-paretovariate = _inst.paretovariate
-weibullvariate = _inst.weibullvariate
-getstate = _inst.getstate
-setstate = _inst.setstate
-jumpahead = _inst.jumpahead
-getrandbits = _inst.getrandbits
+seed = getattr(_inst, 'seed')
+random = getattr(_inst, 'random')
+uniform = getattr(_inst, 'uniform')
+triangular = getattr(_inst, 'triangular')
+randint = getattr(_inst, 'randint')
+choice = getattr(_inst, 'choice')
+randrange = getattr(_inst, 'randrange')
+sample = getattr(_inst, 'sample')
+shuffle = getattr(_inst, 'shuffle')
+normalvariate = getattr(_inst, 'normalvariate')
+lognormvariate = getattr(_inst, 'lognormvariate')
+expovariate = getattr(_inst, 'expovariate')
+vonmisesvariate = getattr(_inst, 'vonmisesvariate')
+gammavariate = getattr(_inst, 'gammavariate')
+gauss = getattr(_inst, 'gauss')
+betavariate = getattr(_inst, 'betavariate')
+paretovariate = getattr(_inst, 'paretovariate')
+weibullvariate = getattr(_inst, 'weibullvariate')
+getstate = getattr(_inst, 'getstate')
+setstate = getattr(_inst, 'setstate')
+jumpahead = getattr(_inst, 'jumpahead')
+getrandbits = getattr(_inst, 'getrandbits')
 
 if __name__ == '__main__':
     _test()

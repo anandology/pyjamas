@@ -41,7 +41,7 @@ from TimeModuleTest import TimeModuleTest
 from TypeCompatibilityTest import TypeCompatibilityTest
 from UrllibModuleTest import UrllibModuleTest
 from Base64ModuleTest import Base64ModuleTest
-from ReModuleTest import ReModuleTest
+from RandomModuleTest import RandomModuleTest
 
 from write import writebr
 
@@ -93,6 +93,7 @@ def main():
     t.add(UrllibModuleTest)
     t.add(Base64ModuleTest)
     t.add(ReModuleTest)
+    t.add(RandomModuleTest)
 
     if IN_BROWSER:
         t.add(JSOTest)
