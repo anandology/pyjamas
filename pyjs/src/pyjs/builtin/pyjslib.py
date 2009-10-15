@@ -436,14 +436,6 @@ def op_bitand2(x, y):
     JS("""
     if (x !== null && y !== null) {
         switch ((x.__number__ << 8) | y.__number__) {
-            case 0x01:
-                if (y == Math.floor(y)) return this.__and(new $long(y));
-                break;
-            case 0x02:
-                return this.__and(new $long(y.__v));
-            case 0x04:
-                return this.__and(y);
-
             case 0x0202:
                 return x.__and__(y);
             case 0x0204:
@@ -498,14 +490,6 @@ def op_bitxor2(x, y):
     JS("""
     if (x !== null && y !== null) {
         switch ((x.__number__ << 8) | y.__number__) {
-            case 0x01:
-                if (y == Math.floor(y)) return this.__xor(new $long(y));
-                break;
-            case 0x02:
-                return this.__xor(new $long(y.__v));
-            case 0x04:
-                return this.__xor(y);
-
             case 0x0202:
                 return x.__xor__(y);
             case 0x0204:
@@ -560,14 +544,6 @@ def op_bitor2(x, y):
     JS("""
     if (x !== null && y !== null) {
         switch ((x.__number__ << 8) | y.__number__) {
-            case 0x01:
-                if (y == Math.floor(y)) return this.__or(new $long(y));
-                break;
-            case 0x02:
-                return this.__or(new $long(y.__v));
-            case 0x04:
-                return this.__or(y);
-
             case 0x0202:
                 return x.__or__(y);
             case 0x0204:
