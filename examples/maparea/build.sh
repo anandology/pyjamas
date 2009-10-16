@@ -4,4 +4,4 @@
 
 options="$*"
 #if [ -z $options ] ; then options="-O";fi
-../../bin/pyjsbuild --print-statements $options Hello
+../../bin/pyjsbuild --print-statements $options MapAreaDemo
