@@ -1098,15 +1098,27 @@ class Translator:
         if self.inline_len:
             v = self.uniqid('$len')
             self.add_lookup('variable', v, v)
+            zero = '0'
             s = self.spacing()
-            return """((%(v)s=%(e)s) === null?0:
+            if not self.number_classes:
+                return """((%(v)s=%(e)s) === null?%(zero)s:
 %(s)s\t(typeof %(v)s.__len__ == 'function'?%(v)s.__len__():
 %(s)s\t\t(typeof %(v)s.length != 'undefined'?%(v)s.length:
 %(s)s\t\t\tpyjslib['len'](%(v)s))))""" % locals()
+            v1 = self.uniqid('$len')
+            self.add_lookup('variable', v1, v1)
+            self.constant_int['0'] = 1
+            zero = "$constant_int_0"
+            return """((%(v1)s = ((%(v)s=%(e)s) === null?%(zero)s:
+%(s)s\t(typeof %(v)s.__len__ == 'function'?%(v)s.__len__():
+%(s)s\t\t(typeof %(v)s.length != 'undefined'?%(v)s.length:
+%(s)s\t\t\tpyjslib['len'](%(v)s))))).__number__ & 0x06?
+%(s)s\t%(v1)s:
+%(s)s\tpyjslib['int'](%(v1)s))""" % locals()
         return "pyjslib['len'](%(e)s)" % locals()
 
     def inline_eq_code(self, e1, e2):
-        if self.inline_eq:
+        if self.inline_eq and not self.number_classes:
             v1 = self.uniqid('$eq')
             v2 = self.uniqid('$eq')
             self.add_lookup('variable', v1, v1)
