@@ -106,9 +106,15 @@ System Installation
 ===================
 
 If you are installing pyjamas system-wide, for use by MORE THAN ONE
-developer of the same multi-user system, run the following command.
-Otherwise DO NOT run setup.py, see bootstrap.py.  If you are using Windows,
-you are out of luck and should entirely avoid using setup.py.
+developer of the same multi-user system, follow the instructions in
+this section.  If you are the only person using pyjamas, or you
+intend to have several versions of pyjamas, DO NOT attempt a system-wide
+install.  In order to keep the pyjs-specific versions of libraries
+such as the reimplementations of time.py, sys.py etc. there are some
+tricky hoops that have to be jumped through.  System-wide installs
+should either be done by installing pre-built packages, or done WITH
+EXTREME CARE.  So - if you do not know what you are doing, and break your
+system, tough luck: you should have listened.
 
 First, you must use bootstrap.py to create suitable ./bin/pyjsbuild
 and ./bin/pyjscompile commands.  For example:
