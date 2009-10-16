@@ -4,7 +4,6 @@ def printFunc(objs, newline):
     print.apply(this, objs);
     """)
 
-@compiler.noSourceTracking
 def debugReport(msg):
     JS("""
     print(msg);

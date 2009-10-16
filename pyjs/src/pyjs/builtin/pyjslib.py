@@ -18,7 +18,7 @@
 
 from __pyjamas__ import JS, setCompilerOptions, debugger
 
-setCompilerOptions("noBoundMethods", "noDescriptors", "noAttributeChecking", "noSourceTracking", "noLineTracking", "noStoreSource")
+setCompilerOptions("noDebug", "noBoundMethods", "noDescriptors", "noAttributeChecking", "noSourceTracking", "noLineTracking", "noStoreSource")
 
 platform = JS("$pyjs.platform")
 sys = None
@@ -54,7 +54,6 @@ def op_is(a,b):
     return false;
 """)
 
-@compiler.noSourceTracking
 def op_eq(a,b):
     # All 'python' classes and types are implemented as objects/functions.
     # So, for speed, do a typeof X / X.__cmp__  on a/b.
@@ -595,7 +594,6 @@ JS("""
 """)
 
 
-@compiler.noSourceTracking
 def ___import___(path, context, module_name=None, get_base=True):
     save_track_module = JS("$pyjs.track.module")
     module = JS("$pyjs.loaded_modules[path]")
@@ -689,7 +687,6 @@ class BaseException:
     def __getitem__(self, index):
         return self.args.__getitem__(index)
 
-    @compiler.noDescriptors
     def __str__(self):
         if len(self.args) is 0:
             return ''
@@ -697,7 +694,6 @@ class BaseException:
             return str(self.message)
         return repr(self.args)
 
-    @compiler.noDescriptors
     def __repr__(self):
         return self.__name__ + repr(self.args)
 
@@ -1150,11 +1146,9 @@ class Class:
     def __str___(self):
         return self.name
 
-@compiler.noSourceTracking
 def open(fname, mode='r'):
     raise NotImplementedError("open is not implemented in browsers")
 
-@compiler.noSourceTracking
 def cmp(a,b):
     JS("""
     if (typeof a == typeof b) {
@@ -1232,7 +1226,6 @@ def cmp(a,b):
 # for List.sort()
 __cmp = cmp
 
-@compiler.noSourceTracking
 def bool(v):
     # this needs to stay in native code without any dependencies here,
     # because this is used by if and while, we need to prevent
@@ -3396,18 +3389,15 @@ class NotImplementedType(object):
 NotImplemented = NotImplementedType()
 
 class List:
-    @compiler.noSourceTracking
     def __init__(self, data=None):
         JS("""
         self.l = [];
         self.extend(data);
         """)
 
-    @compiler.noSourceTracking
     def append(self, item):
         JS("""self.l[self.l.length] = item;""")
 
-    @compiler.noSourceTracking
     def extend(self, data):
         JS("""
         if (pyjslib.isArray(data)) {
@@ -3432,7 +3422,6 @@ class List:
         }
         """)
 
-    @compiler.noSourceTracking
     def remove(self, value):
         JS("""
         var index=self.index(value);
@@ -3443,7 +3432,6 @@ class List:
         return true;
         """)
 
-    @compiler.noSourceTracking
     def index(self, value, start=0):
         JS("""
         start = start.valueOf();
@@ -3469,11 +3457,9 @@ class List:
         """)
         raise ValueError("list.index(x): x not in list")
 
-    @compiler.noSourceTracking
     def insert(self, index, value):
         JS("""    var a = self.l; self.l=a.slice(0, index).concat(value, a.slice(index));""")
 
-    @compiler.noSourceTracking
     def pop(self, index = -1):
         JS("""
         index = index.valueOf();
@@ -3489,7 +3475,6 @@ class List:
         return a;
         """)
 
-    @compiler.noSourceTracking
     def __cmp__(self, l):
         if not isinstance(l, List):
             return -1
@@ -3502,7 +3487,6 @@ class List:
                 return ll
         return 0
 
-    @compiler.noSourceTracking
     def __getslice__(self, lower, upper):
         JS("""
         if (upper==null) return pyjslib.List(self.l.slice(lower));
@@ -3528,7 +3512,6 @@ class List:
         self.extend(tail)
         return None
 
-    @compiler.noSourceTracking
     def __getitem__(self, index):
         JS("""
         index = index.valueOf();
@@ -3539,7 +3522,6 @@ class List:
         return self.l[index];
         """)
 
-    @compiler.noSourceTracking
     def __setitem__(self, index, value):
         JS("""
         index = index.valueOf();
@@ -3550,7 +3532,6 @@ class List:
         self.l[index]=value;
         """)
 
-    @compiler.noSourceTracking
     def __delitem__(self, index):
         JS("""
         index = index.valueOf();
@@ -3561,12 +3542,9 @@ class List:
         self.l.splice(index, 1);
         """)
 
-    @compiler.noSourceTracking
     def __len__(self):
         return int(JS("""self.l.length"""))
 
-    @compiler.noSourceTracking
-    @compiler.noDebug
     def __contains__(self, value):
         try:
             self.index(value)
@@ -3574,7 +3552,6 @@ class List:
             return False
         return True
 
-    @compiler.noSourceTracking
     def __iter__(self):
         JS("""
         var i = 0;
@@ -3592,7 +3569,6 @@ class List:
         };
         """)
 
-    @compiler.noSourceTracking
     def reverse(self):
         JS("""    self.l.reverse();""")
 
@@ -3614,14 +3590,12 @@ class List:
         else:
             self.l.sort(cmp)
 
-    @compiler.noSourceTracking
     def getArray(self):
         """
         Access the javascript Array that is used internally by this list
         """
         return self.l
 
-    @compiler.noSourceTracking
     def __str__(self):
         return self.__repr__()
 
@@ -3661,7 +3635,6 @@ class List:
 list = List
 
 class Tuple:
-    @compiler.noSourceTracking
     def __init__(self, data=None):
         JS("""
         self.l = [];
@@ -3689,7 +3662,6 @@ class Tuple:
     def __hash__(self):
         return '$tuple$' + str(self.l)
 
-    @compiler.noSourceTracking
     def __cmp__(self, l):
         if not isinstance(l, Tuple):
             return 1
@@ -3702,14 +3674,12 @@ class Tuple:
                 return ll
         return 0
 
-    @compiler.noSourceTracking
     def __getslice__(self, lower, upper):
         JS("""
         if (upper==null) return pyjslib.Tuple(self.l.slice(lower));
         return pyjslib.Tuple(self.l.slice(lower, upper));
         """)
 
-    @compiler.noSourceTracking
     def __getitem__(self, index):
         JS("""
         index = index.valueOf();
@@ -3720,15 +3690,12 @@ class Tuple:
         return self.l[index];
         """)
 
-    @compiler.noSourceTracking
     def __len__(self):
         return int(JS("""self.l.length"""))
 
-    @compiler.noSourceTracking
     def __contains__(self, value):
         return JS('self.l.indexOf(value)>=0')
 
-    @compiler.noSourceTracking
     def __iter__(self):
         JS("""
         var i = 0;
@@ -3746,14 +3713,12 @@ class Tuple:
         };
         """)
 
-    @compiler.noSourceTracking
     def getArray(self):
         """
         Access the javascript Array that is used internally by this list
         """
         return self.l
 
-    @compiler.noSourceTracking
     def __str__(self):
         return self.__repr__()
 
@@ -3797,7 +3762,6 @@ class Tuple:
 tuple = Tuple
 
 class Dict:
-    @compiler.noSourceTracking
     def __init__(self, data=None):
         JS("""
         self.d = {};
@@ -3828,7 +3792,6 @@ class Dict:
         }
         """)
 
-    @compiler.noSourceTracking
     def __setitem__(self, key, value):
         JS("""
         if (typeof value != 'undefined') {
@@ -3837,7 +3800,6 @@ class Dict:
         }
         """)
 
-    @compiler.noSourceTracking
     def __getitem__(self, key):
         JS("""
         var sKey = pyjslib.hash(key);
@@ -3848,7 +3810,6 @@ class Dict:
         return value[1];
         """)
 
-    @compiler.noSourceTracking
     def __nonzero__(self):
         JS("""
         for (var i in self.d){
@@ -3857,7 +3818,6 @@ class Dict:
         return false;
         """)
 
-    @compiler.noSourceTracking
     def __cmp__(self, d):
         if not isinstance(d, Dict):
             raise TypeError("dict.__cmp__(x,y) requires y to be a 'dict'")
@@ -3886,7 +3846,6 @@ class Dict:
         }
         return 0;""")
 
-    @compiler.noSourceTracking
     def __len__(self):
         size = 0
         JS("""
@@ -3894,25 +3853,21 @@ class Dict:
         """)
         return int(size);
 
-    @compiler.noSourceTracking
     def has_key(self, key):
         return self.__contains__(key)
 
-    @compiler.noSourceTracking
     def __delitem__(self, key):
         JS("""
         var sKey = pyjslib.hash(key);
         delete self.d[sKey];
         """)
 
-    @compiler.noSourceTracking
     def __contains__(self, key):
         JS("""
         var sKey = pyjslib.hash(key);
         return (pyjslib.isUndefined(self.d[sKey])) ? false : true;
         """)
 
-    @compiler.noSourceTracking
     def keys(self):
         JS("""
         var keys=new pyjslib.List();
@@ -3922,7 +3877,6 @@ class Dict:
         return keys;
         """)
 
-    @compiler.noSourceTracking
     def values(self):
         JS("""
         var values=new pyjslib.List();
@@ -3930,7 +3884,6 @@ class Dict:
         return values;
         """)
 
-    @compiler.noSourceTracking
     def items(self):
         JS("""
         var items = new pyjslib.List();
@@ -3941,40 +3894,32 @@ class Dict:
           return items;
         """)
 
-    @compiler.noSourceTracking
     def __iter__(self):
         return self.keys().__iter__()
 
-    @compiler.noSourceTracking
     def iterkeys(self):
         return self.__iter__()
 
-    @compiler.noSourceTracking
     def itervalues(self):
         return self.values().__iter__();
 
-    @compiler.noSourceTracking
     def iteritems(self):
         return self.items().__iter__();
 
-    @compiler.noSourceTracking
     def setdefault(self, key, default_value):
         if not self.has_key(key):
             self[key] = default_value
         return self[key]
 
-    @compiler.noSourceTracking
     def get(self, key, default_value=None):
         if not self.has_key(key):
             return default_value
         return self[key]
 
-    @compiler.noSourceTracking
     def update(self, d):
         for k,v in d.iteritems():
             self[k] = v
 
-    @compiler.noSourceTracking
     def pop(self, k, *d):
         if len(d) > 1:
             raise TypeError("pop expected at most 2 arguments, got %s" %
@@ -3989,7 +3934,6 @@ class Dict:
             else:
                 raise
 
-    @compiler.noSourceTracking
     def popitem(self):
         for (k, v) in self.iteritems():
             break
@@ -3998,7 +3942,6 @@ class Dict:
         del self[k]
         return (k, v)
 
-    @compiler.noSourceTracking
     def getObject(self):
         """
         Return the javascript Object which this class uses to store
@@ -4006,15 +3949,12 @@ class Dict:
         """
         return self.d
 
-    @compiler.noSourceTracking
     def copy(self):
         return Dict(self.items())
 
-    @compiler.noSourceTracking
     def clear(self):
         self.d = JS("{}")
 
-    @compiler.noSourceTracking
     def __str__(self):
         return self.__repr__()
 
@@ -4094,7 +4034,6 @@ def staticmethod(func):
     return fnwrap;
     """)
 
-@compiler.noSourceTracking
 def super(type_, object_or_type = None):
     # This is a partially implementation: only super(type, object)
     if not _issubtype(object_or_type, type_):
@@ -4130,7 +4069,6 @@ def super(type_, object_or_type = None):
     """)
 
 # taken from mochikit: range( [start,] stop[, step] )
-@compiler.noSourceTracking
 def xrange(start, stop = None, step = 1):
     if stop is None:
         stop = start
@@ -4208,7 +4146,6 @@ def range(start, stop = None, step = 1):
     items.push(int(i))
     return list(items)
 
-@compiler.noSourceTracking
 def slice(object, lower, upper):
     JS("""
     if (typeof object.__getslice__ == 'function') {
@@ -4247,7 +4184,6 @@ def __setslice(object, lower, upper, value):
     return null;
     """)
 
-@compiler.noSourceTracking
 def str(text):
     JS("""
     if (pyjslib.hasattr(text,"__str__")) {
@@ -4256,7 +4192,6 @@ def str(text):
     return String(text);
     """)
 
-@compiler.noSourceTracking
 def ord(x):
     if(isString(x) and len(x) is 1):
         return int(x.charCodeAt(0));
@@ -4264,13 +4199,11 @@ def ord(x):
         JS("""throw pyjslib.TypeError("ord() expected string of length 1")""")
     return None
 
-@compiler.noSourceTracking
 def chr(x):
     JS("""
         return String.fromCharCode(x);
     """)
 
-@compiler.noSourceTracking
 def is_basetype(x):
     JS("""
        var t = typeof(x);
@@ -4281,7 +4214,6 @@ def is_basetype(x):
        t == 'undefined';
     """)
 
-@compiler.noSourceTracking
 def get_pyjs_classtype(x):
     JS("""
         if (pyjslib.hasattr(x, "__is_instance__")) {
@@ -4291,7 +4223,6 @@ def get_pyjs_classtype(x):
         return null;
     """)
 
-@compiler.noSourceTracking
 def repr(x):
     """ Return the string representation of 'x'.
     """
@@ -4350,7 +4281,6 @@ def repr(x):
        return "<" + constructor + " object>";
     """)
 
-@compiler.noSourceTracking
 def len(object):
     v = 0
     JS("""
@@ -4362,7 +4292,6 @@ def len(object):
     """)
     return int(v)
 
-@compiler.noSourceTracking
 def isinstance(object_, classinfo):
     if isUndefined(object_):
         return False
@@ -4397,7 +4326,6 @@ def isinstance(object_, classinfo):
     else:
         return _isinstance(object_, classinfo)
 
-@compiler.noSourceTracking
 def _isinstance(object_, classinfo):
     JS("""
     if (object_.__is_instance__ !== true) {
@@ -4409,7 +4337,6 @@ def _isinstance(object_, classinfo):
     return false;
     """)
 
-@compiler.noSourceTracking
 def _issubtype(object_, classinfo):
     JS("""
     if (object_.__is_instance__ == null || classinfo.__is_instance__ == null) {
@@ -4421,7 +4348,6 @@ def _issubtype(object_, classinfo):
     return false;
     """)
 
-@compiler.noSourceTracking
 def getattr(obj, name, default_value=None):
     JS("""
     if ((!pyjslib.isObject(obj))||(pyjslib.isUndefined(obj[name]))){
@@ -4457,7 +4383,6 @@ def getattr(obj, name, default_value=None):
     return fnwrap;
     """)
 
-@compiler.noSourceTracking
 def _del(obj):
     JS("""
     if (typeof obj.__delete__ == 'function') {
@@ -4467,7 +4392,6 @@ def _del(obj):
     }
     """)
 
-@compiler.noSourceTracking
 def delattr(obj, name):
     JS("""
     if (!pyjslib.isObject(obj)) {
@@ -4483,7 +4407,6 @@ def delattr(obj, name):
     }
     """)
 
-@compiler.noSourceTracking
 def setattr(obj, name, value):
     JS("""
     if (!pyjslib.isObject(obj)) return null;
@@ -4497,7 +4420,6 @@ def setattr(obj, name, value):
     }
     """)
 
-@compiler.noSourceTracking
 def hasattr(obj, name):
     JS("""
     if (!pyjslib.isObject(obj)) return false;
@@ -4506,7 +4428,6 @@ def hasattr(obj, name):
     return true;
     """)
 
-@compiler.noSourceTracking
 def dir(obj):
     JS("""
     var properties=new pyjslib.List();
@@ -4514,7 +4435,6 @@ def dir(obj):
     return properties;
     """)
 
-@compiler.noSourceTracking
 def filter(obj, method, sequence=None):
     # object context is LOST when a method is passed, hence object must be passed separately
     # to emulate python behaviour, should generate this code inline rather than as a function call
@@ -4534,7 +4454,6 @@ def filter(obj, method, sequence=None):
     return items
 
 
-@compiler.noSourceTracking
 def map(obj, method, sequence=None):
     items = []
 
@@ -4585,7 +4504,6 @@ def max(*sequence):
 
 next_hash_id = 0
 
-@compiler.noSourceTracking
 def hash(obj):
     JS("""
     if (obj == null) return null;
@@ -4604,13 +4522,11 @@ def hash(obj):
 
 
 # type functions from Douglas Crockford's Remedial Javascript: http://www.crockford.com/javascript/remedial.html
-@compiler.noSourceTracking
 def isObject(a):
     JS("""
     return (a != null && (typeof a == 'object')) || pyjslib.isFunction(a);
     """)
 
-@compiler.noSourceTracking
 def isFunction(a):
     JS("""
     return typeof a == 'function';
@@ -4618,37 +4534,31 @@ def isFunction(a):
 
 callable = isFunction
 
-@compiler.noSourceTracking
 def isString(a):
     JS("""
     return typeof a == 'string';
     """)
 
-@compiler.noSourceTracking
 def isNull(a):
     JS("""
     return typeof a == 'object' && !a;
     """)
 
-@compiler.noSourceTracking
 def isArray(a):
     JS("""
     return pyjslib.isObject(a) && a.constructor == Array;
     """)
 
-@compiler.noSourceTracking
 def isUndefined(a):
     JS("""
     return typeof a == 'undefined';
     """)
 
-@compiler.noSourceTracking
 def isIteratable(a):
     JS("""
     return pyjslib.isString(a) || (pyjslib.isObject(a) && a.__iter__);
     """)
 
-@compiler.noSourceTracking
 def isNumber(a):
     JS("""
     return a.__number__ && (a.__number__ != 0x01 || isFinite(a));
@@ -4666,7 +4576,6 @@ def isInteger(a):
     return false;
 """)
 
-@compiler.noSourceTracking
 def toJSObjects(x):
     """
        Convert the pyjs pythonic List and Dict objects into javascript Object and Array
@@ -4712,7 +4621,6 @@ def toJSObjects(x):
          """)
     return x
 
-@compiler.noSourceTracking
 def sprintf(strng, args):
     # See http://docs.python.org/library/stdtypes.html
     constructor = get_pyjs_classtype(args)
@@ -4926,13 +4834,11 @@ def sprintf(strng, args):
         sprintf_dict(strng, args)
     return ''.join(result)
 
-@compiler.noSourceTracking
 def debugReport(msg):
     JS("""
     alert(msg);
     """)
 
-@compiler.noSourceTracking
 def printFunc(objs, newline):
     JS("""
     if ($wnd.console==undefined)  return;
@@ -4944,7 +4850,6 @@ def printFunc(objs, newline):
     console.debug(s)
     """)
 
-@compiler.noSourceTracking
 def type(clsname, bases=None, methods=None):
     """ creates a class, derived from bases, with methods and variables
     """

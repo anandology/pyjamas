@@ -881,6 +881,8 @@ class Translator:
             if isinstance(d, self.ast.Getattr):
                 if isinstance(d.expr, self.ast.Name):
                     if d.expr.name == 'compiler':
+                        raise TranslationError(
+                            "The @compiler decorator is deprecated. Use from __pyjamas__ import setCompilerOptions", node, self.module_name)
                         # Special case: compiler option
                         if self.decorator_compiler_options.has_key(d.attrname):
                             for var, val in self.decorator_compiler_options[d.attrname]:
