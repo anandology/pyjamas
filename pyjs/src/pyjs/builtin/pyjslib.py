@@ -605,7 +605,9 @@ def ___import___(path, context, module_name=None, get_base=True):
     else:
         importName = ''
     l = len(parts)
-    for i, name in enumerate(parts):
+    i = -1
+    for name in parts:
+        i += 1
         importName += name
         if in_context:
             module = JS("$pyjs.loaded_modules[importName]")
@@ -4471,11 +4473,10 @@ def map(obj, method, sequence=None):
 
 
 def enumerate(sequence):
-    enumeration = []
     nextIndex = 0
     for item in sequence:
-        yield [nextIndex, item]
-        nextIndex = nextIndex + 1
+        yield (nextIndex, item)
+        nextIndex += 1
 
 def min(*sequence):
     if len(sequence) == 1:
