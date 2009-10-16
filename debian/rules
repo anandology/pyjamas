@@ -92,7 +92,7 @@ binary-indep: build install
 	dh_installchangelogs
 	dh_installchangelogs -ppyjamas CHANGELOG
 	dh_install -ppyjamas-pyjs bin/pyjsbuild /usr/bin
-	dh_installman -ppyjamas-pyjs debian/pyjsbuild.1
+	#dh_installman -ppyjamas-pyjs debian/pyjsbuild.1
 
 	dh_pysupport -ppyjamas-gchart
 	dh_pysupport -ppyjamas-canvas
