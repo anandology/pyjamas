@@ -4474,10 +4474,8 @@ def enumerate(sequence):
     enumeration = []
     nextIndex = 0
     for item in sequence:
-        enumeration.append([nextIndex, item])
+        yield [nextIndex, item]
         nextIndex = nextIndex + 1
-    return enumeration
-
 
 def min(*sequence):
     if len(sequence) == 1:
