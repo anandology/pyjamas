@@ -1102,7 +1102,7 @@ class Translator:
             return """((%(v)s=%(e)s) === null?0:
 %(s)s\t(typeof %(v)s.__len__ == 'function'?%(v)s.__len__():
 %(s)s\t\t(typeof %(v)s.length != 'undefined'?%(v)s.length:
-%(s)s\t\t\tthrow pyjslib.TypeError("object has no len()"))))""" % locals()
+%(s)s\t\t\tpyjslib['len'](%(v)s))))""" % locals()
         return "pyjslib['len'](%(e)s)" % locals()
 
     def inline_eq_code(self, e1, e2):
@@ -2009,6 +2009,9 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                     raise TranslationError(e.msg, v, self.module_name)
             elif v.node.name == 'locals':
                 return """pyjslib.dict({%s})""" % (",".join(["'%s': %s" % (pyname, self.lookup_stack[-1][pyname][2]) for pyname in self.lookup_stack[-1] if self.lookup_stack[-1][pyname][0] not in ['__pyjamas__', 'global']]))
+            elif v.node.name == 'len' and depth == -1 and len(v.args) == 1:
+                expr = self.expr(v.args[0], current_klass)
+                return self.inline_len_code(expr)
             else:
                 if name_type is None:
                     # What to do with a (yet) unknown name?
