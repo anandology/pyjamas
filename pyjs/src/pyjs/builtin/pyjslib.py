@@ -16,7 +16,7 @@
 
 # must declare import _before_ importing sys
 
-from __pyjamas__ import JS, setCompilerOptions, debugger
+from __pyjamas__ import INT, JS, setCompilerOptions, debugger
 
 setCompilerOptions("noDebug", "noBoundMethods", "noDescriptors", "noAttributeChecking", "noSourceTracking", "noLineTracking", "noStoreSource")
 
@@ -3543,7 +3543,7 @@ class List:
         """)
 
     def __len__(self):
-        return int(JS("""self.l.length"""))
+        return INT(JS("""self.l.length"""))
 
     def __contains__(self, value):
         try:
@@ -3691,7 +3691,7 @@ class Tuple:
         """)
 
     def __len__(self):
-        return int(JS("""self.l.length"""))
+        return INT(JS("""self.l.length"""))
 
     def __contains__(self, value):
         return JS('self.l.indexOf(value)>=0')
@@ -3851,7 +3851,7 @@ class Dict:
         JS("""
         for (var i in self.d) size++;
         """)
-        return int(size);
+        return INT(size);
 
     def has_key(self, key):
         return self.__contains__(key)
@@ -4096,7 +4096,7 @@ def xrange(start, stop = None, step = 1):
             rval = nval;
             nval += step;
 """)
-    return int(rval);
+    return INT(rval);
     JS("""
         },
         '__iter__': function() {
@@ -4143,7 +4143,7 @@ def range(start, stop = None, step = 1):
     if (nstep <= 0) i = stop;
     for (; i != stop; i += step)
 """)
-    items.push(int(i))
+    items.push(INT(i))
     return list(items)
 
 def slice(object, lower, upper):
@@ -4194,7 +4194,7 @@ def str(text):
 
 def ord(x):
     if(isString(x) and len(x) is 1):
-        return int(x.charCodeAt(0));
+        return INT(x.charCodeAt(0));
     else:
         JS("""throw pyjslib.TypeError("ord() expected string of length 1")""")
     return None
@@ -4290,7 +4290,7 @@ def len(object):
     else throw pyjslib.TypeError("object has no len()")
     if (v.__number__ == 0x02) return v;
     """)
-    return int(v)
+    return INT(v)
 
 def isinstance(object_, classinfo):
     if isUndefined(object_):

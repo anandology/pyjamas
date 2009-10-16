@@ -1,4 +1,4 @@
-from __pyjamas__ import JS
+from __pyjamas__ import JS, INT
 JS("""
 /*
  *  md5.jvs 1.0b 27/06/96
@@ -385,7 +385,7 @@ def hexstr(s):
     r = ''
     i = None
     for x in range(16):
-        i = int(JS("s[x]"))
+        i = INT(JS("s[x]"))
         r = r + h[(i >> 4) & 0xF] + h[i & 0xF]
     return r
 

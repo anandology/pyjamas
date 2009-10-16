@@ -524,6 +524,18 @@ class __Pyjamas__(object):
         translator.ignore_debug = True
         return '', False
 
+    def INT(self, translator, node):
+        if len(node.args) != 1:
+            raise TranslationError(
+                "INT function requires one argument",
+                node.node)
+        expr = translator.expr(node.args[0], None)
+        opt_var = translator.decorator_compiler_options['NumberClasses'][0][0]
+        if  getattr(translator, opt_var):
+            return "new pyjslib['int'](%s)" % expr, False
+        return expr, False
+
+
 __pyjamas__ = __Pyjamas__()
 
 # This is taken from the django project.

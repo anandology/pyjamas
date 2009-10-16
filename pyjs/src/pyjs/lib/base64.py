@@ -139,7 +139,7 @@ _b32alphabet = {
 _b32tab = _b32alphabet.items()
 _b32tab.sort()
 _b32tab = [v for k, v in _b32tab]
-_b32rev = dict([(v, int(k)) for k, v in _b32alphabet.items()])
+_b32rev = dict([(v, k) for k, v in _b32alphabet.items()])
 
 def b32encode(s):
     """Encode a string using Base32.

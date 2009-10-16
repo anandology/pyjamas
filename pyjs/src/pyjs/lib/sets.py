@@ -1,4 +1,4 @@
-from __pyjamas__ import JS
+from __pyjamas__ import JS, INT
 
 class Set:
     def __init__(self, data=None):
@@ -47,7 +47,7 @@ class Set:
         JS("""
         for (var i in self.d) size++;
         """)
-        return int(size)
+        return INT(size)
 
     def pop(self):
         JS("""
