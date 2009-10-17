@@ -17,6 +17,6 @@ system-install:
 	python bootstrap.py /usr/share/pyjamas /usr
 	python run_bootstrap_first_then_setup.py install
 
-clean:
+distclean:
 	rm -rf bin build
 	rm -f pyjd/__init__.py
