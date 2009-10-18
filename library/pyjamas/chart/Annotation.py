@@ -89,7 +89,7 @@ class Annotation:
             self.numberOfLinesHigh = 0
             self.numberOfCharsWide = 0
         
-        elif not s.startswith("<html>"):
+        elif hasattr(s, "startswith") and not s.startswith("<html>"):
             # no html==>plain text
             self._isHTML = False
             self.numberOfLinesHigh = 1
