@@ -3407,9 +3407,15 @@ class List:
     def extend(self, data):
         JS("""
         if (pyjslib.isArray(data)) {
-            n = self.l.length;
+            var n = self.l.length;
             for (var i=0; i < data.length; i++) {
                 self.l[n+i]=data[i];
+            }
+        } else if (pyjslib.isinstance(data, pyjslib.List) ||
+                   pyjslib.isinstance(data, pyjslib.Tuple)) {
+            var n = self.l.length;
+            for (var i=0; i < data.l.length; i++) {
+                self.l[n++]=data.l[i];
             }
         } else if (pyjslib.isIteratable(data)) {
             var iter=data.__iter__();
@@ -3564,23 +3570,6 @@ class List:
         var l = self.l;
         return {
             'next': function() {
-/*
-        if (typeof $counter == 'undefined') {
-            $counter = 0;
-            var el = $doc.createElement("div");
-            el.innerHTML = "test " + $counter;
-            $doc.body.appendChild(el);
-        }
-        $counter++;
-        var stack = $pyjs.trackstack;
-        if (($counter < 100) && (stack !== null) && (stack.length >= 1)) {
-            var s = stack[stack.length-1];
-            s = s.module + " " + s.lineno + " " + "<br />";
-            var el = $doc.createElement("div");
-            el.innerHTML = s;
-            $doc.body.appendChild(el);
-        }
-*/
                 if (i >= l.length) {
                     throw pyjslib.StopIteration;
                 }
@@ -3665,6 +3654,12 @@ class Tuple:
             n = self.l.length;
             for (var i=0; i < data.length; i++) {
                 self.l[n+i]=data[i];
+            }
+        } else if (pyjslib.isinstance(data, pyjslib.List) ||
+                   pyjslib.isinstance(data, pyjslib.Tuple)) {
+            var n = self.l.length;
+            for (var i=0; i < data.l.length; i++) {
+                self.l[n++]=data.l[i];
             }
         } else if (pyjslib.isIteratable(data)) {
             var iter=data.__iter__();
