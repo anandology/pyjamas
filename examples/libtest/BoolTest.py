@@ -54,7 +54,7 @@ class BoolTest(UnitTest):
         self.assertTrue(bool(Stupid()))
         self.assertTrue(Stupid())
 
-        # __nonzero__ has precidence
+        # __nonzero__ has precedence
         self.assertFalse(bool(Foo(0)))
         self.assertTrue(bool(Foo(1)))
         self.assertFalse(Foo(0))
