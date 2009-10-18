@@ -1247,11 +1247,17 @@ def bool(v):
         return v;
     case 'object':
         if (v.__nonzero__){
-            return v.__nonzero__();
+            if (v.__nonzero__()) {
+                return v;
+            }
+            return false;
         }else if (v.__len__){
-            return v.__len__()>0;
+            if (v.__len__()>0) {
+                return v;
+            }
+            return false;
         }
-        return true;
+        return v;
     }
     return Boolean(v);
     """)
