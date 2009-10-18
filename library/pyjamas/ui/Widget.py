@@ -14,12 +14,12 @@
 from pyjamas import DOM
 from pyjamas import log
 
-from pyjamas.ui.UIObject import UIObject
+from UIObject import UIObject
 from pyjamas.ui import Event
-from pyjamas.ui.ClickListener import ClickHandler
-from pyjamas.ui.FocusListener import FocusHandler
-from pyjamas.ui.KeyboardListener import KeyboardHandler
-from pyjamas.ui.MouseListener import MouseHandler
+from ClickListener import ClickHandler
+from FocusListener import FocusHandler
+from KeyboardListener import KeyboardHandler
+from MouseListener import MouseHandler
 
 class Widget(UIObject):
     """

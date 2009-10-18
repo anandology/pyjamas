@@ -606,8 +606,12 @@ def ___import___(path, context, module_name=None, get_base=True):
         importName = ''
     l = len(parts)
     i = -1
-    for name in parts:
+    # 'for i, name in enumerate(parts)' is incredibly expensive
+    # as is 'for i in range(l)'.  use while loop.  saves horrendous
+    # amount of start-up time
+    while i < l-1:
         i += 1
+        name = parts[i]
         importName += name
         if in_context:
             module = JS("$pyjs.loaded_modules[importName]")
@@ -3560,6 +3564,23 @@ class List:
         var l = self.l;
         return {
             'next': function() {
+/*
+        if (typeof $counter == 'undefined') {
+            $counter = 0;
+            var el = $doc.createElement("div");
+            el.innerHTML = "test " + $counter;
+            $doc.body.appendChild(el);
+        }
+        $counter++;
+        var stack = $pyjs.trackstack;
+        if (($counter < 100) && (stack !== null) && (stack.length >= 1)) {
+            var s = stack[stack.length-1];
+            s = s.module + " " + s.lineno + " " + "<br />";
+            var el = $doc.createElement("div");
+            el.innerHTML = s;
+            $doc.body.appendChild(el);
+        }
+*/
                 if (i >= l.length) {
                     throw pyjslib.StopIteration;
                 }

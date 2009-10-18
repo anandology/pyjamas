@@ -3,8 +3,8 @@
 
 import pyjd # dummy in pyjs
 
-from pyjamas.ui.Hyperlink import Hyperlink
-from pyjamas.ui.Image import Image
+from Hyperlink import Hyperlink
+from Image import Image
 from pyjamas import DOM
 from pyjamas.ui import Event
 from pyjamas.ui import MouseListener

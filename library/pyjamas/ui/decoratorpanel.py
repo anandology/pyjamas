@@ -1,7 +1,7 @@
 from pyjamas import DOM
-from pyjamas.ui.SimplePanel import SimplePanel
-from pyjamas.ui.TabPanel import TabPanel
-from pyjamas.ui.TabBar import TabBar
+from SimplePanel import SimplePanel
+from TabPanel import TabPanel
+from TabBar import TabBar
 
 """
   

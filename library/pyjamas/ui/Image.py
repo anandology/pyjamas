@@ -13,10 +13,10 @@
 # limitations under the License.
 from pyjamas import DOM
 
-from pyjamas.ui.Widget import Widget
+from Widget import Widget
 from pyjamas.ui import Event
-from pyjamas.ui.MouseListener import MouseHandler
-from pyjamas.ui.ClickListener import ClickHandler
+from MouseListener import MouseHandler
+from ClickListener import ClickHandler
 
 prefetchImages = {}
 

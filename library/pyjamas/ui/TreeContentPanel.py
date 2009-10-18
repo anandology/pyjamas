@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from pyjamas import DOM
-from pyjamas.ui.SimplePanel import SimplePanel
+from SimplePanel import SimplePanel
 from __pyjamas__ import console
 
 class TreeContentPanel(SimplePanel):

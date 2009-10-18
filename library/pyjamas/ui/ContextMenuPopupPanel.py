@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from pyjamas import DOM
-from pyjamas.ui.PopupPanel import PopupPanel
+from PopupPanel import PopupPanel
 
 class ContextMenuPopupPanel(PopupPanel):
     def __init__(self, item, **kwargs):

@@ -14,9 +14,9 @@
 from pyjamas import DOM
 
 from pyjamas import DeferredCommand
-from pyjamas.ui.Widget import Widget
-from pyjamas.ui.MenuItem import MenuItem
-from pyjamas.ui.MenuBarPopupPanel import MenuBarPopupPanel
+from Widget import Widget
+from MenuItem import MenuItem
+from MenuBarPopupPanel import MenuBarPopupPanel
 from pyjamas.ui import Event
 
 class MenuBar(Widget):

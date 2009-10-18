@@ -1,19 +1,19 @@
 ﻿# Date Time Example
 # Copyright (C) 2009 Yit Choong (http://code.google.com/u/yitchoong/)
 
-from pyjamas.ui.SimplePanel import SimplePanel
-from pyjamas.ui.VerticalPanel import  VerticalPanel
-from pyjamas.ui.HorizontalPanel import HorizontalPanel
-from pyjamas.ui.PopupPanel import  PopupPanel
-from pyjamas.ui.Grid import Grid
-from pyjamas.ui.Composite import Composite
-from pyjamas.ui.Label import Label
-from pyjamas.ui.Hyperlink import Hyperlink
-from pyjamas.ui.HyperlinkImage import HyperlinkImage
-from pyjamas.ui.HTML import HTML
-from pyjamas.ui.FocusPanel import FocusPanel
-from pyjamas.ui.TextBox import TextBox
-from pyjamas.ui.Image import Image
+from SimplePanel import SimplePanel
+from VerticalPanel import  VerticalPanel
+from HorizontalPanel import HorizontalPanel
+from PopupPanel import  PopupPanel
+from Grid import Grid
+from Composite import Composite
+from Label import Label
+from Hyperlink import Hyperlink
+from HyperlinkImage import HyperlinkImage
+from HTML import HTML
+from FocusPanel import FocusPanel
+from TextBox import TextBox
+from Image import Image
 from pyjamas.ui import HasAlignment
 from pyjamas import DOM
 

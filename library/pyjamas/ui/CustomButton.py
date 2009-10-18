@@ -16,9 +16,9 @@ import sys
 
 from pyjamas    import DOM
 from pyjamas.ui import Event
-from pyjamas.ui.ButtonBase import ButtonBase
+from ButtonBase import ButtonBase
 from pyjamas.ui import Focus
-from pyjamas.ui.UIObject import UIObject
+from UIObject import UIObject
 
 """
 Custom Button is a base button class with built in support for a set number

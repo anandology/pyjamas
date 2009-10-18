@@ -13,7 +13,7 @@
 # limitations under the License.
 from pyjamas import DOM
 
-from pyjamas.ui.Frame import Frame
+from Frame import Frame
 
 class NamedFrame(Frame):
     def __init__(self, name, **kwargs):

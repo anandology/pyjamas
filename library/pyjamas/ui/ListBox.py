@@ -13,7 +13,7 @@
 # limitations under the License.
 from pyjamas import DOM
 
-from pyjamas.ui.FocusWidget import FocusWidget
+from FocusWidget import FocusWidget
 from pyjamas.ui import Event
 from __pyjamas__ import console
 

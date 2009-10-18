@@ -13,7 +13,7 @@
 # limitations under the License.
 from pyjamas import DOM
 
-from pyjamas.ui.UIObject import UIObject
+from UIObject import UIObject
 from pyjamas.ui import Event
 
 class MenuItem(UIObject):

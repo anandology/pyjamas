@@ -13,8 +13,8 @@
 # limitations under the License.
 from pyjamas import DOM
 from __pyjamas__ import JS
-from pyjamas.ui.SimplePanel import SimplePanel
-from pyjamas.ui.RootPanel import RootPanel
+from SimplePanel import SimplePanel
+from RootPanel import RootPanel
 from pyjamas.ui import MouseListener
 from pyjamas.ui import KeyboardListener
 

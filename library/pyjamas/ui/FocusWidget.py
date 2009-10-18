@@ -13,12 +13,12 @@
 # limitations under the License.
 from pyjamas import DOM
 
-from pyjamas.ui.Widget import Widget
-from pyjamas.ui.Focus import FocusMixin
-from pyjamas.ui.ClickListener import ClickHandler
-from pyjamas.ui.KeyboardListener import KeyboardHandler
-from pyjamas.ui.FocusListener import FocusHandler
-from pyjamas.ui.MouseListener import MouseHandler
+from Widget import Widget
+from Focus import FocusMixin
+from ClickListener import ClickHandler
+from KeyboardListener import KeyboardHandler
+from FocusListener import FocusHandler
+from MouseListener import MouseHandler
 
 class FocusWidget(Widget, FocusHandler, KeyboardHandler,
                           MouseHandler, ClickHandler,

@@ -14,7 +14,7 @@
 
 from pyjamas import DOM
 
-from pyjamas.ui.ButtonBase import ButtonBase
+from ButtonBase import ButtonBase
 
 class Button(ButtonBase):
 

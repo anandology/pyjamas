@@ -13,7 +13,7 @@
 # limitations under the License.
 from pyjamas import DOM
 
-from pyjamas.ui.TextBoxBase import TextBoxBase
+from TextBoxBase import TextBoxBase
 
 class PasswordTextBox(TextBoxBase):
     def __init__(self, **kwargs):

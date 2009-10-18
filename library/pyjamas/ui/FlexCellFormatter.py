@@ -13,7 +13,7 @@
 # limitations under the License.
 from pyjamas import DOM
 
-from pyjamas.ui.CellFormatter import CellFormatter
+from CellFormatter import CellFormatter
 
 class FlexCellFormatter(CellFormatter):
     def __init__(self, outer, **kwargs):

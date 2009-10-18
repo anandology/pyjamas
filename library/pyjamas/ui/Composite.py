@@ -13,7 +13,7 @@
 # limitations under the License.
 from pyjamas import DOM
 
-from pyjamas.ui.Widget import Widget
+from Widget import Widget
 
 class Composite(Widget):
     def __init__(self, widget=None, **kwargs):

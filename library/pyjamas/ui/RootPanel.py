@@ -17,7 +17,7 @@ from __pyjamas__ import doc
 from pyjamas import DOM
 from pyjamas import Window
 
-from pyjamas.ui.AbsolutePanel import AbsolutePanel
+from AbsolutePanel import AbsolutePanel
 
 rootPanels = {}
 

@@ -13,9 +13,9 @@
 # limitations under the License.
 from pyjamas import DOM
 
-from pyjamas.ui.Widget import Widget
-from pyjamas.ui.MouseListener import MouseHandler
-from pyjamas.ui.ClickListener import ClickHandler
+from Widget import Widget
+from MouseListener import MouseHandler
+from ClickListener import ClickHandler
 
 class Label(Widget, MouseHandler, ClickHandler):
 

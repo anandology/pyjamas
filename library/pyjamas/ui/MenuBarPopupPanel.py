@@ -13,7 +13,7 @@
 # limitations under the License.
 from pyjamas import DOM
 
-from pyjamas.ui.PopupPanel import PopupPanel
+from PopupPanel import PopupPanel
 
 class MenuBarPopupPanel(PopupPanel):
     def __init__(self, item, **kwargs):

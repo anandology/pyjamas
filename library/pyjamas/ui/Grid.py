@@ -13,9 +13,9 @@
 # limitations under the License.
 from pyjamas import DOM
 
-from pyjamas.ui.HTMLTable import HTMLTable
-from pyjamas.ui.CellFormatter import CellFormatter
-from pyjamas.ui.RowFormatter import RowFormatter
+from HTMLTable import HTMLTable
+from CellFormatter import CellFormatter
+from RowFormatter import RowFormatter
 
 class Grid(HTMLTable):
 

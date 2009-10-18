@@ -13,10 +13,10 @@
 # limitations under the License.
 from pyjamas import DOM
 
-from pyjamas.ui.Panel import Panel
+from Panel import Panel
 from pyjamas.ui import Event
-from pyjamas.ui.CellFormatter import CellFormatter
-from pyjamas.ui.RowFormatter import RowFormatter
+from CellFormatter import CellFormatter
+from RowFormatter import RowFormatter
 
 widgethash = {}
 

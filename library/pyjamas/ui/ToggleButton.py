@@ -11,7 +11,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-from pyjamas.ui.CustomButton import CustomButton
+from CustomButton import CustomButton
 
 class ToggleButton (CustomButton):
     """

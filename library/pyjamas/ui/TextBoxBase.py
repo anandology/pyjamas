@@ -13,7 +13,7 @@
 # limitations under the License.
 from pyjamas import DOM
 from __pyjamas__ import console, JS
-from pyjamas.ui.FocusWidget import FocusWidget
+from FocusWidget import FocusWidget
 from pyjamas.ui import Event
 
 class TextBoxBase(FocusWidget):

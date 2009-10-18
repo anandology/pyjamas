@@ -13,8 +13,8 @@
 # limitations under the License.
 from pyjamas import DOM
 
-from pyjamas.ui.UIObject import UIObject
-from pyjamas.ui.TreeContentPanel import TreeContentPanel
+from UIObject import UIObject
+from TreeContentPanel import TreeContentPanel
 
 class TreeItem(UIObject):
 

@@ -13,7 +13,7 @@
 # limitations under the License.
 from pyjamas import DOM
 
-from pyjamas.ui.CheckBox import CheckBox
+from CheckBox import CheckBox
 
 class RadioButton(CheckBox):
     def __init__(self, group, label=None, asHTML=False, **kwargs):

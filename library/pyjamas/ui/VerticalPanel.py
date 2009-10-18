@@ -13,7 +13,7 @@
 # limitations under the License.
 from pyjamas import DOM
 
-from pyjamas.ui.CellPanel import CellPanel
+from CellPanel import CellPanel
 from pyjamas.ui import HasHorizontalAlignment
 from pyjamas.ui import HasVerticalAlignment
 

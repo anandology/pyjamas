@@ -13,7 +13,7 @@
 # limitations under the License.
 from pyjamas import DOM
 
-from pyjamas.ui.SimplePanel import SimplePanel
+from SimplePanel import SimplePanel
 
 class CaptionPanel(SimplePanel):
     """

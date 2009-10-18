@@ -48,7 +48,12 @@ class Applier(object):
                 x.setVisible(False)
         """
         if kwargs:
-            for prop in kwargs.keys():
+            k = kwargs.keys()
+            l = len(k)
+            i = -1
+            while i < l-1:
+                i += 1
+                prop = k[i]
                 fn = getattr(self, "set%s" % prop, None)
                 if fn:
                     args = kwargs[prop]

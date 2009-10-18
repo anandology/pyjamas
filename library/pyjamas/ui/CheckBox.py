@@ -13,7 +13,7 @@
 # limitations under the License.
 from pyjamas import DOM
 
-from pyjamas.ui.ButtonBase import ButtonBase
+from ButtonBase import ButtonBase
 from pyjamas.ui import Event
 
 _CheckBox_unique_id=0;

@@ -14,10 +14,10 @@
 from pyjamas import DOM
 from __pyjamas__ import console
 
-from pyjamas.ui.Composite import Composite
-from pyjamas.ui.DeckPanel import DeckPanel
-from pyjamas.ui.VerticalPanel import VerticalPanel
-from pyjamas.ui.TabBar import TabBar
+from Composite import Composite
+from DeckPanel import DeckPanel
+from VerticalPanel import VerticalPanel
+from TabBar import TabBar
 
 class TabPanel(Composite):
     def __init__(self, tabBar=None, **kwargs):

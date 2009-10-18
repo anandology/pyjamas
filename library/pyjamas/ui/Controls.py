@@ -6,13 +6,13 @@
 
 import math
 from pyjamas import DOM
-from pyjamas.ui.FocusWidget import FocusWidget
-from pyjamas.ui.MouseListener import MouseHandler
+from FocusWidget import FocusWidget
+from MouseListener import MouseHandler
 from pyjamas.ui import Event
 from pyjamas.ui import Focus
 from pyjamas.ui import KeyboardListener
 
-from pyjamas.ui.TextBox import TextBox
+from TextBox import TextBox
 
 class Control(FocusWidget, MouseHandler):
 

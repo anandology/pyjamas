@@ -16,10 +16,10 @@ from __pyjamas__ import console
 from sets import Set
 import pygwt
 
-from pyjamas.ui.Widget import Widget
+from Widget import Widget
 from pyjamas.ui import Event
 from pyjamas.ui import Focus
-from pyjamas.ui.TreeItem import RootTreeItem, TreeItem
+from TreeItem import RootTreeItem, TreeItem
 from pyjamas.ui import MouseListener
 from pyjamas.ui import KeyboardListener
 from pyjamas.ui import FocusListener

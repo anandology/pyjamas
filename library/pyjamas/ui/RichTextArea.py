@@ -17,8 +17,8 @@
 
 
 
-from pyjamas.ui.FocusWidget import FocusWidget
-from pyjamas.ui.RichTextAreaImplStandard import RichTextAreaImplStandard
+from FocusWidget import FocusWidget
+from RichTextAreaImplStandard import RichTextAreaImplStandard
 
 
 """*

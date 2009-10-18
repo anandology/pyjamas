@@ -14,7 +14,7 @@
 from __pyjamas__ import console
 from pyjamas import DOM
 
-from pyjamas.ui.Widget import Widget
+from Widget import Widget
 
 class Hidden(Widget):
     def __init__(self, name=None, value=None, **kwargs):

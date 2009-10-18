@@ -19,9 +19,9 @@ if sys.platform not in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
 from pyjamas import DOM
 from __pyjamas__ import JS
 
-from pyjamas.ui.SimplePanel import SimplePanel
+from SimplePanel import SimplePanel
 from pyjamas.ui import Event
-from pyjamas.ui.EventObject import EventObject
+from EventObject import EventObject
 
 class FormSubmitEvent(EventObject):
     def __init__(self, source):
