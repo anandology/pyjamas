@@ -10,19 +10,19 @@ function $pyjs_kwargs_call(obj, func, star_args, dstar_args, args)
         if (pyjslib.get_pyjs_classtype(dstar_args) != 'Dict') {
             throw (pyjslib.TypeError(func.__name__ + "() arguments after ** must be a dictionary " + pyjslib.repr(dstar_args)));
         }
-        var __i = dstar_args.__iter__();
-        try {
-            while (true) {
-                var i = __i.next();
-                if ($pyjs.options.arg_kwarg_multiple_values && typeof args[0][i] != 'undefined') {
-                    $pyjs__exception_func_multiple_values(func.__name__, i);
-                }
-                args[0][i] = dstar_args.__getitem__(i)
-            }
-        } catch (e) {
-            if (e.__name__ != 'StopIteration') {
-                throw e;
-            }
+        var i;
+        /* use of __iter__ and next is horrendously expensive,
+           use direct access to dictionary instead
+         */
+        for (keys in dstar_args.d) {
+            var k = dstar_args.d[keys][0];
+            var v = dstar_args.d[keys][1];
+
+            if ($pyjs.options.arg_kwarg_multiple_values && typeof args[0][k] !=
+ 'undefined') {
+                $pyjs__exception_func_multiple_values(func.__name__, k);
+             }
+            args[0][k] = v; 
         }
 
     }
@@ -35,17 +35,30 @@ function $pyjs_kwargs_call(obj, func, star_args, dstar_args, args)
         if (star_args.l != null && star_args.l.constructor == Array) {
             args = args.concat(star_args.l);
         } else {
+
+            /* use of __iter__ and next is horrendously expensive,
+               use __len__ and __getitem__ instead, if they exist.
+             */
             var call_args = Array();
-            var __i = star_args.__iter__();
-            var i = 0;
-            try {
-                while (true) {
-                    call_args[i]=__i.next();
-                    i++;
+
+            if (typeof star_args.__len__     != 'undefined' && 
+                typeof star_args.__getitem__ != 'undefined' ) {
+                var l = star_args.__len__();
+                for (var i = 0; i < l; i++) {
+                    call_args[i]= star_args.__getitem__(i)
                 }
-            } catch (e) {
-                if (e.__name__ != 'StopIteration') {
-                    throw e;
+            } else {
+                var __i = star_args.__iter__();
+                var i = 0;
+                try {
+                    while (true) {
+                        call_args[i]=__i.next();
+                        i++;
+                    }
+                } catch (e) {
+                    if (e.__name__ != 'StopIteration') {
+                        throw e;
+                    }
                 }
             }
             args = args.concat(call_args);
