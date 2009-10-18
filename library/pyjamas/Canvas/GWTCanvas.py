@@ -14,6 +14,8 @@
 * the License.
 """
 
+from pyjamas import DOM
+
 from pyjamas.ui.Widget import Widget
 from pyjamas.Canvas.Color import Color
 

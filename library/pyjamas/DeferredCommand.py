@@ -1,4 +1,4 @@
-from Timer import Timer
+from pyjamas.Timer import Timer
 
 deferredCommands = []
 timerIsActive = False

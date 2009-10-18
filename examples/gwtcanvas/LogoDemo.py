@@ -102,7 +102,7 @@ class LogoDemo(SimpleCanvasDemo):
 
 
     def isImageLoaded(self, imgElem):
-        return imgElem.__isLoaded
+        return hasattr(imgElem, "__isLoaded") and imgElem.__isLoaded
 
     def renderingLoop(self):
         self.canvas.saveContext()
