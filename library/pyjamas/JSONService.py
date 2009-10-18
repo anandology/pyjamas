@@ -7,7 +7,7 @@
 
 import sys
 from __pyjamas__ import JS
-from pyjamas.HTTPRequest import HTTPRequest
+from HTTPRequest import HTTPRequest
 import pygwt
 
 # no stream support
