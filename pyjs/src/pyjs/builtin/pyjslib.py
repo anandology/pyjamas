@@ -593,6 +593,61 @@ JS("""
 }
 """)
 
+op_and = JS("""function (args) {
+    var b;
+    for (i = 0; i < args.length; i++) {
+        b = args[i];
+        switch (b) {
+            case null:
+            case false:
+            case 0:
+            case '':
+                return b;
+        }
+        if (typeof b == 'object') {
+            if (typeof b.__nonzero__ == 'function'){
+                if (!b.__nonzero__()) {
+                    return b;
+                }
+            } else if (typeof b.__len__ == 'function'){
+                if (b.__len__() <= 0) {
+                    return b;
+                }
+            }
+        }
+    }
+    return args[args.length-1];
+}
+""")
+
+op_or = JS("""function (args) {
+    var b;
+    for (i = 0; i < args.length; i++) {
+        b = args[i];
+        switch (b) {
+            case null:
+            case false:
+            case 0:
+            case '':
+                continue;
+        }
+        if (typeof b == 'object') {
+            if (typeof b.__nonzero__ == 'function'){
+                if (!b.__nonzero__()) {
+                    continue;
+                }
+            } else if (typeof b.__len__ == 'function'){
+                if (b.__len__() <= 0) {
+                    continue;
+                }
+            }
+        }
+        return b;
+    }
+    return args[args.length-1];
+}
+""")
+
 
 def ___import___(path, context, module_name=None, get_base=True):
     save_track_module = JS("$pyjs.track.module")
@@ -1241,25 +1296,21 @@ def bool(v):
     #    return True
     #return False
     JS("""
-    if (!v) return false;
-    switch(typeof v){
-    case 'boolean':
-        return v;
-    case 'object':
-        if (typeof v.__nonzero__ == 'function'){
-            if (v.__nonzero__()) {
-                return v;
-            }
+    switch (v) {
+        case null:
+        case false:
+        case 0:
+        case '':
             return false;
-        }else if (typeof v.__len__ == 'function'){
-            if (v.__len__()>0) {
-                return v;
-            }
-            return false;
-        }
-        return v;
     }
-    return Boolean(v);
+    if (typeof v == 'object') {
+        if (typeof v.__nonzero__ == 'function'){
+            return v.__nonzero__();
+        } else if (typeof v.__len__ == 'function'){
+            return v.__len__() > 0;
+        }
+    }
+    return true;
     """)
 
 class float:

@@ -1082,21 +1082,17 @@ class Translator:
             _importName += '.'
 
     __inline_bool_code_str = """\
-(!(%(v)s=%(e)s)?
+((%(v)s=%(e)s) === null || %(v)s === false || %(v)s === 0 || %(v)s === '' ?
     false :
-    (%(v)s===true?
-        true :
-        (typeof %(v)s=='object'?
-            (typeof %(v)s.__nonzero__=='function'?
-                (%(v)s.__nonzero__() ?
-                    %(v)s :
+    (typeof %(v)s=='object'?
+        (typeof %(v)s.__nonzero__=='function'?
+            %(v)s.__nonzero__() :
+            (typeof %(v)s.__len__=='function'?
+                (%(v)s.__len__()>0 ?
+                    true :
                     false) :
-                (typeof %(v)s.__len__=='function'?
-                    (%(v)s.__len__()>0 ?
-                        %(v)s :
-                        false) :
-                    %(v)s) ) :
-            Boolean(%(v)s) )))"""
+                true ) ) :
+         true ) )"""
     __inline_bool_code_str = __inline_bool_code_str.replace("    ", "\t").replace("\n", "\n%(s)s")
 
     def inline_bool_code(self, e):
@@ -3072,16 +3068,15 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
     def _not(self, node, current_klass):
         expr = self.expr(node.expr, current_klass)
-
         return "!" + self.inline_bool_code(expr)
 
     def _or(self, node, current_klass):
-        expr = "("+("||".join([self.inline_bool_code(self.expr(child, current_klass)) for child in node.nodes]))+')'
-        return expr
+        expr = ",".join([self.expr(child, current_klass) for child in node.nodes])
+        return "pyjslib['op_or']([%s])" % expr
 
     def _and(self, node, current_klass):
-        expr = "("+("&&".join([self.inline_bool_code(self.expr(child, current_klass)) for child in node.nodes]))+")"
-        return expr
+        expr = ",".join([self.expr(child, current_klass) for child in node.nodes])
+        return "pyjslib['op_and']([%s])" % expr
 
     def _for(self, node, current_klass):
         save_is_generator = self.is_generator

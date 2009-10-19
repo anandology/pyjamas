@@ -25,8 +25,8 @@ def __dynamic_load__(importName):
             module = JS("""$pyjs.loaded_modules[importName]""")
         except:
             pass
-    if JS("""typeof module == 'undefined'"""):
-        module = pyv8_import_module(None, importName)
+    #if JS("""typeof module == 'undefined'"""):
+    #    module = pyv8_import_module(None, importName)
     return module
 
 def debugReport(msg):
