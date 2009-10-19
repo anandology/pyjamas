@@ -362,10 +362,6 @@ class SRE_Pattern:
             span = m.span()
             splitted.append(string[pos:span[0]])
             pos = span[1]
-            if count:
-                if count == 1:
-                    break
-                count -= 1
         if pos < len(string):
             splitted.append(string[pos:])
         return splitted
