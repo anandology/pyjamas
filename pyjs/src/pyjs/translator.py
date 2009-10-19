@@ -1105,6 +1105,7 @@ class Translator:
             self.add_lookup('variable', v, v)
             s = self.spacing()
             return self.__inline_bool_code_str % locals()
+        return "pyjslib['bool'](%(e)s)" % locals()
 
     def inline_len_code(self, e):
         if self.inline_len:
