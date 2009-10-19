@@ -3071,10 +3071,28 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         return "!" + self.inline_bool_code(expr)
 
     def _or(self, node, current_klass):
+        s = self.spacing()
+        expr = "@EXPR@"
+        for e in [self.expr(child, current_klass) for child in node.nodes[:-1]]:
+            v = self.uniqid('$or')
+            self.add_lookup('variable', v, v)
+            expr = expr.replace('@EXPR@', "(pyjslib['bool'](%(v)s=%(e)s)?%(v)s:@EXPR@)" % locals())
+        v = self.uniqid('$or')
+        self.add_lookup('variable', v, v)
+        return  expr.replace('@EXPR@', self.expr(node.nodes[-1], current_klass))
         expr = ",".join([self.expr(child, current_klass) for child in node.nodes])
         return "pyjslib['op_or']([%s])" % expr
 
     def _and(self, node, current_klass):
+        s = self.spacing()
+        expr = "@EXPR@"
+        for e in [self.expr(child, current_klass) for child in node.nodes[:-1]]:
+            v = self.uniqid('$and')
+            self.add_lookup('variable', v, v)
+            expr = expr.replace('@EXPR@', "(pyjslib['bool'](%(v)s=%(e)s)?@EXPR@:%(v)s)" % locals())
+        v = self.uniqid('$and')
+        self.add_lookup('variable', v, v)
+        return  expr.replace('@EXPR@', self.expr(node.nodes[-1], current_klass))
         expr = ",".join([self.expr(child, current_klass) for child in node.nodes])
         return "pyjslib['op_and']([%s])" % expr
 

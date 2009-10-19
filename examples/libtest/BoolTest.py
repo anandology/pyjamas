@@ -151,6 +151,11 @@ class BoolTest(UnitTest):
             self.assertTrue((0 or False or {} or []) == [], "((0 or False or {} or []) == []")
         except:
             self.fail("Unexpected error on '(0 or False or {} or []) == []'")
+        f = None
+        try:
+            self.assertTrue((f and f.test()) == None, "(f and f.test()) == None")
+        except:
+            self.fail("Unexpected error on '(f and f.test()) == None'")
 
         d = {'hello': 5}
         d2 = d or {}
