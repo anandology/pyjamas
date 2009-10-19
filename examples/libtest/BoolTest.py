@@ -81,14 +81,23 @@ class BoolTest(UnitTest):
 
 
     def testIfStatement(self):
+
+        if({}):
+            self.fail("Empty dict should not evaluate to True in If")
+        else:
+            self.assertTrue(True)
+        if({1: 5}):
+            self.assertTrue(True)
+        else:
+            self.fail("Non-empty dict should evaluate to True in If")
         if([]):
-            self.fail("Empty lists should not evaluate to True in If")
+            self.fail("Empty dict should not evaluate to True in If")
         else:
             self.assertTrue(True)
         if([1]):
             self.assertTrue(True)
-	else:
-            self.fail("None-empty lists should evaluate to True in If")
+        else:
+            self.fail("Non-empty lists should evaluate to True in If")
         if not []:
             self.assertTrue(True)
         else:
@@ -135,6 +144,15 @@ class BoolTest(UnitTest):
 
     def testLogic(self):
     
+        x = 0 or None
+        self.assertEqual(x, None, "0 or None should be None not %s" % repr(x) )
+
+        x = None and None
+        self.assertEqual(x, None, "0 or None should be None not %s" % repr(x) )
+
+        x = False or None
+        self.assertEqual(x, None, "0 or None should be None not %s" % repr(x) )
+
         self.assertTrue((1 or 2) is 1, "(1 or 2) is 1")
         self.assertTrue((0 or 2) is 2, "(0 or 2) is 2")
         self.assertTrue((False or 0) is 0, "(False or 0) is 0")
