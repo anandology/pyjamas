@@ -4620,9 +4620,9 @@ def toJSObjects(x):
             var o = x.getObject();
             var result = {};
             for (var i in o) {
-               result[o[i][0].toString()] = o[i][1];
+               result[o[i][0].toString()] = pyjslib.toJSObjects(o[i][1]);
             }
-            return pyjslib.toJSObjects(result)
+            return result;
             """)
         elif isinstance(x, List):
             return toJSObjects(x.l)
