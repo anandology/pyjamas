@@ -1081,18 +1081,30 @@ class Translator:
                 self.imported_modules.append(_importName)
             _importName += '.'
 
+    __inline_bool_code_str = """\
+(!(%(v)s=%(e)s)?
+    false :
+    (%(v)s===true?
+        true :
+        (typeof %(v)s=='object'?
+            (typeof %(v)s.__nonzero__=='function'?
+                (%(v)s.__nonzero__() ?
+                    %(v)s :
+                    false) :
+                (typeof %(v)s.__len__=='function'?
+                    (%(v)s.__len__()>0 ?
+                        %(v)s :
+                        false) :
+                    %(v)s) ) :
+            Boolean(%(v)s) )))"""
+    __inline_bool_code_str = __inline_bool_code_str.replace("    ", "\t").replace("\n", "\n%(s)s")
+
     def inline_bool_code(self, e):
         if self.inline_bool:
             v = self.uniqid('$bool')
             self.add_lookup('variable', v, v)
             s = self.spacing()
-            return """(!(%(v)s=%(e)s)?false:
-%(s)s\t(%(v)s===true?true:
-%(s)s\t\t(typeof %(v)s!='object'?Boolean(%(v)s):
-%(s)s\t\t\t(typeof %(v)s.__nonzero__=='function'?%(v)s.__nonzero__():
-%(s)s\t\t\t\t(typeof %(v)s.__len__=='function'?%(v)s.__len__()>0:
-%(s)s\t\t\t\ttrue)))))""" % locals()
-        return "pyjslib['bool'](%(e)s)" % locals()
+            return self.__inline_bool_code_str % locals()
 
     def inline_len_code(self, e):
         if self.inline_len:

@@ -1246,12 +1246,12 @@ def bool(v):
     case 'boolean':
         return v;
     case 'object':
-        if (v.__nonzero__){
+        if (typeof v.__nonzero__ == 'function'){
             if (v.__nonzero__()) {
                 return v;
             }
             return false;
-        }else if (v.__len__){
+        }else if (typeof v.__len__ == 'function'){
             if (v.__len__()>0) {
                 return v;
             }
