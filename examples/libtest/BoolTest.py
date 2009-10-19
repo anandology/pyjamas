@@ -135,6 +135,23 @@ class BoolTest(UnitTest):
 
     def testLogic(self):
     
+        self.assertTrue((1 or 2) is 1, "(1 or 2) is 1")
+        self.assertTrue((0 or 2) is 2, "(0 or 2) is 2")
+        self.assertTrue((False or 0) is 0, "(False or 0) is 0")
+        self.assertTrue((0 or False) is False, "(0 or False) is False")
+        self.assertTrue((0 and 2) is 0, "(0 and 2) is 0")
+        self.assertTrue((1 and 2) is 2, "(1 and 2) is 2")
+        self.assertTrue((2 and 1) is 1, "(2 and 1) is 1")
+        self.assertTrue(([] and 2) == [], "([] and 2) == []")
+        try:
+            self.assertTrue(({} and 2) == {}, "({} and 2) == {}")
+        except:
+            self.fail("Unexpected error on '({} and 2) == {}'")
+        try:
+            self.assertTrue((0 or False or {} or []) == [], "((0 or False or {} or []) == []")
+        except:
+            self.fail("Unexpected error on '(0 or False or {} or []) == []'")
+
         d = {'hello': 5}
         d2 = d or {}
         try:
