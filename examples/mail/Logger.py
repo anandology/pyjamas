@@ -2,23 +2,9 @@ from pyjamas.ui.Grid import Grid
 
 _logger = None
 
-class Logger(Grid):
-    def __new__(cls):
-        global _logger
-        # make sure there is only one instance of this class
-        if _logger:
-            return _logger
-        _logger = Grid.__new__(cls)
-        return _logger
+class LoggerCls(Grid):
 
-    def __init__(self, target="", message=""):
-        #global _logger
-        if message:
-            return Logger().write(target, message)
-            
-        # make sure there is only one instance of this class
-        if hasattr(self, target): return None
-        self.setSingleton()
+    def __init__(self):
 
         Grid.__init__(self)
 
@@ -35,10 +21,6 @@ class Logger(Grid):
             target=self.targets[i]
             self.setText(i+1, 0, target)
 
-    def setSingleton(self):
-        global _logger
-        _logger = self
-    
     def addTarget(self, target):
         self.targets.append(target)
         self.resize(len(self.targets)+1, 2)
@@ -69,3 +51,12 @@ class Logger(Grid):
             new_text=old_text + "<br>" + log_line
         self.setHTML(target_row, 1, new_text) 
 
+def Logger(target="", message=""):
+    global _logger
+    # make sure there is only one instance of this class
+    if not _logger:
+        _logger = LoggerCls()
+
+    _logger.write(target, message)
+    
+    return _logger
