@@ -3402,6 +3402,46 @@ class NotImplementedType(object):
         self.__repr__()
 NotImplemented = NotImplementedType()
 
+JS("""
+var $iter_array = function (l) {
+    this.l = l;
+    this.i = -1;
+}
+$iter_array.prototype.next = function ( ) {
+    if (++this.i == this.l.length) {
+        throw pyjslib.StopIteration;
+    }
+    return this.l[this.i];
+}
+$iter_array.prototype.__iter__ = function ( ) {
+    return this;
+}
+var $enumerate_array = function (l) {
+    this.l = l;
+    this.i = -1;
+    this.tuple = """)
+tuple([0, ""])
+JS("""
+    this.tl = this.tuple.l;
+}
+$enumerate_array.prototype.next = function ( ) {
+    if (++this.i == this.l.length) {
+        throw pyjslib.StopIteration;
+    }
+    this.tl[1] = this.l[this.i];
+    if (this.tl[0].__number__ == 0x01) {
+        this.tl[0] = this.i;
+    } else {
+        this.tl[0] = new pyjslib['int'](this.i);
+    }
+    return this.tuple;
+}
+$enumerate_array.prototype.__iter__ = function ( ) {
+    return this;
+}
+
+""")
+
 class List:
     def __init__(self, data=None):
         JS("""
@@ -3573,6 +3613,7 @@ class List:
         return True
 
     def __iter__(self):
+        return JS("new $iter_array(self.l)")
         JS("""
         var i = 0;
         var l = self.l;
@@ -3588,6 +3629,9 @@ class List:
             }
         };
         """)
+
+    def __enumerate__(self):
+        return JS("new $enumerate_array(self.l)")
 
     def reverse(self):
         JS("""    self.l.reverse();""")
@@ -3723,6 +3767,7 @@ class Tuple:
         return JS('self.l.indexOf(value)>=0')
 
     def __iter__(self):
+        return JS("new $iter_array(self.l)")
         JS("""
         var i = 0;
         var l = self.l;
@@ -3738,6 +3783,9 @@ class Tuple:
             }
         };
         """)
+
+    def __enumerate__(self):
+        return JS("new $enumerate_array(self.l)")
 
     def getArray(self):
         """
@@ -3921,7 +3969,23 @@ class Dict:
         """)
 
     def __iter__(self):
+        JS("""
+        var keys = new Array();
+        for (var key in self.d) {
+            keys.push(self.d[key][0]);
+        }
+        return new $iter_array(keys);
+""")
         return self.keys().__iter__()
+
+    def __enumerate__(self):
+        JS("""
+        var keys = new Array();
+        for (var key in self.d) {
+            keys.push(self.d[key][0]);
+        }
+        return new $enumerate_array(keys);
+""")
 
     def iterkeys(self):
         return self.__iter__()
@@ -4497,6 +4561,14 @@ def map(obj, method, sequence=None):
 
 
 def enumerate(sequence):
+    JS("""
+    if (typeof sequence.__enumerate__ == 'function') {
+        return sequence.__enumerate__();
+    }
+""")
+    return _enumerate(sequence)
+
+def _enumerate(sequence):
     nextIndex = 0
     for item in sequence:
         yield (nextIndex, item)

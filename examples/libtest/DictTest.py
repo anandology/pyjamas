@@ -113,6 +113,14 @@ class DictTest(UnitTest):
             a += d[2][k]
         self.assertEqual(a, 6)
 
+    def testEnumerate(self):
+        d = {1: [1,2,3], 2: {'a': 1, 'b': 2, 'c': 3}}
+        a = 0
+        for i, k in enumerate(d):
+            self.assertEqual(i+1, k)
+            a += k
+        self.assertEqual(a, 3)
+
     def testPop(self):
         d = {'a': 1, 'b': 2, 'c': 3}
         item = d.pop('d', 4)

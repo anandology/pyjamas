@@ -76,6 +76,40 @@ class LoopTest(UnitTest):
         dt = t1 - t0
         writebr("Loop4 (long): %.2f/sec" % (n*m/dt))
 
+'''
+    def testIterList(self):
+        lst = []
+        for i in xrange(1000):
+            lst.append(i)
+        t1 = t0 = time.time()
+        n = 100
+        m = 0.0
+        while t1 - t0 == 0:
+            m += 1.0
+            for x in xrange(20):
+                for i in lst:
+                    pass
+            t1 = time.time()
+        dt = t1 - t0
+        writebr("IterList: %.2f/sec" % (n*m/dt))
+
+    def testEnumerateList(self):
+        lst = []
+        for i in xrange(1000):
+            lst.append(i)
+        t1 = t0 = time.time()
+        n = 100
+        m = 0.0
+        while t1 - t0 == 0:
+            m += 1.0
+            for x in xrange(2):
+                for i, j in enumerate(lst):
+                    pass
+            t1 = time.time()
+        dt = t1 - t0
+        writebr("EnumerateList: %.2f/sec" % (n*m/dt))
+'''
+
 if __name__ == '__main__':
     l = LoopTest()
     l.run()
