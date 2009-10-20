@@ -1,4 +1,5 @@
 # Copyright 2006 James Tauber and contributors
+# Copyright (C) 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from Composite import Composite
+import Factory
 from Widget import Widget
 from SimplePanel import SimplePanel
 from VerticalPanel import VerticalPanel 
@@ -35,6 +37,8 @@ class ClickableHeader(SimplePanel):
             DOM.eventPreventDefault(event)
             newstate = not self.disclosurePanel.getOpen()
             self.disclosurePanel.setOpen(newstate)
+
+Factory.registerClass('pyjamas.ui.ClickableHeader', ClickableHeader)
 
 class DefaultHeader(Widget):
     def __init__(self, text, disclosurePanel):
@@ -83,6 +87,8 @@ class DefaultHeader(Widget):
             DOM.setAttribute(self.imgElem, "src",
                              self.imageBase + "disclosurePanelClosed.png")
         
+
+Factory.registerClass('pyjamas.ui.DefaultHeader', DefaultHeader)
 
 class DisclosurePanel(Composite):
 
@@ -177,4 +183,5 @@ class DisclosurePanel(Composite):
             self.removeStyleName("open")
         self.contentWrapper.setVisible(self.isOpen)
 
+Factory.registerClass('pyjamas.ui.DisclosurePanel', DisclosurePanel)
 

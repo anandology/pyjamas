@@ -1,4 +1,5 @@
 # Copyright Pyjamas Team
+# Copyright (C) 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
 # use this file except in compliance with the License. You may obtain a copy of
 # the License at
@@ -12,6 +13,7 @@
 # the License.
 
 from CustomButton import CustomButton
+import Factory
 
 class ToggleButton (CustomButton):
     """
@@ -39,4 +41,5 @@ class ToggleButton (CustomButton):
         self.toggleDown()
         CustomButton.onClick(self)
     
+Factory.registerClass('pyjamas.ui.ToggleButton', ToggleButton)
 

@@ -1,7 +1,9 @@
 ﻿# Date Time Example
 # Copyright (C) 2009 Yit Choong (http://code.google.com/u/yitchoong/)
+# Copyright (C) 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
 
 from SimplePanel import SimplePanel
+import Factory
 from VerticalPanel import  VerticalPanel
 from HorizontalPanel import HorizontalPanel
 from PopupPanel import  PopupPanel
@@ -427,6 +429,7 @@ class DateField(Composite):
         p.setPopupPosition(x,y)
         p.show()
 
+Factory.registerClass('pyjamas.ui.Calendar', Calendar)
 
 class CalendarPopup(PopupPanel):
     def __init__(self, c):
@@ -437,3 +440,4 @@ class CalendarPopup(PopupPanel):
         p.setWidth("100%")
         self.setWidget(p)
 
+Factory.registerClass('pyjamas.ui.CalendarPopup', CalendarPopup)

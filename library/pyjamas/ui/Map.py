@@ -14,6 +14,7 @@
 # limitations under the License.
 
 from pyjamas import DOM
+import Factory
 
 from ComplexPanel import ComplexPanel
 from Widget import Widget
@@ -38,6 +39,8 @@ class ImageMap(ComplexPanel):
     def setName(self, name):
         DOM.setAttribute(self.getElement(), "name", name)
 
+Factory.registerClass('pyjamas.ui.ImageMap', ImageMap)
+
 class MapArea(Widget, MouseHandler, ClickHandler):
     """ An area inside an imagemap
     """
@@ -59,4 +62,6 @@ class MapArea(Widget, MouseHandler, ClickHandler):
 
     def setHref(self, href):
         DOM.setAttribute(self.getElement(), "href", href)
+
+Factory.registerClass('pyjamas.ui.MapArea', MapArea)
 

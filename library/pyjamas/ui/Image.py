@@ -1,4 +1,5 @@
 # Copyright 2006 James Tauber and contributors
+# Copyright (C) 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from pyjamas import DOM
+import Factory
 
 from Widget import Widget
 from pyjamas.ui import Event
@@ -59,4 +61,5 @@ class Image(Widget, MouseHandler, ClickHandler):
     def setUrl(self, url):
         DOM.setElemAttribute(self.getElement(), "src", url)
 
+Factory.registerClass('pyjamas.ui.Image', Image)
 

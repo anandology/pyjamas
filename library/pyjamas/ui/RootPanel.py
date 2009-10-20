@@ -1,4 +1,5 @@
 # Copyright 2006 James Tauber and contributors
+# Copyright (C) 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +14,7 @@
 # limitations under the License.
 import sys
 from __pyjamas__ import doc
+import Factory
 
 from pyjamas import DOM
 from pyjamas import Window
@@ -66,6 +68,8 @@ class RootPanelCls(AbsolutePanel):
     @classmethod
     def onWindowClosing(cls):
         return None
+
+Factory.registerClass('pyjamas.ui.RootPanelCls', RootPanelCls)
 
 def RootPanel(element=None):
     if isinstance(element, str):

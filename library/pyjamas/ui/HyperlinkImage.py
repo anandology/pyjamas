@@ -1,9 +1,9 @@
 ﻿# Date Time Example
 # Copyright (C) 2009 Yit Choong (http://code.google.com/u/yitchoong/)
-
-import pyjd # dummy in pyjs
+# Copyright (C) 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
 
 from Hyperlink import Hyperlink
+import Factory
 from Image import Image
 from pyjamas import DOM
 from pyjamas.ui import Event
@@ -35,4 +35,6 @@ class HyperlinkImage(Hyperlink):
 
         else:
             Hyperlink.onBrowserEvent(self, event)
+
+Factory.registerClass('pyjamas.ui.HyperlinkImage', HyperlinkImage)
 

@@ -1,7 +1,9 @@
 # Tooltip component for Pyjamas
 # Ported by Willie Gollino from Tooltip component for GWT - Originally by Alexei Sokolov http://gwt.components.googlepages.com/
+# Copyright (C) 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
 
 from PopupPanel import PopupPanel
+import Factory
 from HTML import HTML
 from RootPanel import RootPanel
 from pyjamas.Timer import Timer
@@ -108,4 +110,6 @@ class TooltipListener:
 
     def setOffsetY(self, offsetY):
         self.offsetY = offsetY
+
+Factory.registerClass('pyjamas.ui.Tooltip', Tooltip)
 

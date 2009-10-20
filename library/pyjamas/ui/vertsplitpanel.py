@@ -3,7 +3,7 @@
 
 /*
  * Copyright 2008 Google Inc.
- * Copyright (C) 2008 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
+ * Copyright (C) 2008, 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
  * 
  * Licensed under the Apache License, Version 2.0 (the "License") you may not
  * use self file except in compliance with the License. You may obtain a copy of
@@ -20,6 +20,7 @@
 """
 
 from splitpanel import SplitPanel
+import Factory
 from pyjamas import DOM
 from pyjamas import DeferredCommand
 from pyjamas.Timer import Timer
@@ -292,3 +293,6 @@ class VerticalSplitPanel(SplitPanel):
 
         self.addScrolling(topDiv)
         self.addScrolling(bottomDiv)
+
+Factory.registerClass('pyjamas.ui.VerticalSplitPanel', VerticalSplitPanel)
+

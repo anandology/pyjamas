@@ -1,4 +1,5 @@
 # Copyright 2006 James Tauber and contributors
+# Copyright (C) 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from __pyjamas__ import console
+import Factory
 from pyjamas import DOM
 
 from CellPanel import CellPanel
@@ -192,4 +194,5 @@ class DockPanel(CellPanel):
                 return
         DOM.appendChild(parent, child)
 
+Factory.registerClass('pyjamas.ui.DockPanel', DockPanel)
 

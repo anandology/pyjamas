@@ -1,6 +1,7 @@
 """
 /*
  * Copyright 2008 Google Inc.
+ * Copyright (C) 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
  * 
  * Licensed under the Apache License, Version 2.0 (the "License") you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -16,6 +17,7 @@
  */
 """
 from Panel import Panel
+import Factory
 from pyjamas.ui import Event
 
 from pyjamas import DOM
@@ -265,3 +267,6 @@ class SplitPanel(Panel):
 
     def stopResizing(self):
         self.isResizing = False
+
+Factory.registerClass('pyjamas.ui.SplitPanel', SplitPanel)
+

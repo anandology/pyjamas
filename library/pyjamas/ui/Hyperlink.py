@@ -1,4 +1,5 @@
 # Copyright 2006 James Tauber and contributors
+# Copyright (C) 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from pyjamas import DOM
+import Factory
 from pyjamas import History
 
 from Widget import Widget
@@ -68,4 +70,5 @@ class Hyperlink(Widget, ClickHandler):
     def setText(self, text):
         DOM.setInnerText(self.anchorElem, text)
 
+Factory.registerClass('pyjamas.ui.Hyperlink', Hyperlink)
 

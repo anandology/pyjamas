@@ -1,5 +1,9 @@
+# Copyright (C) 2006-2008 Google Inc.
+# Copyright (C) 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
+
 from pyjamas import DOM
 from SimplePanel import SimplePanel
+import Factory
 from TabPanel import TabPanel
 from TabBar import TabBar
 
@@ -126,6 +130,8 @@ class DecoratorPanel(SimplePanel):
     def getContainerElement(self):
         return self.containerElem
 
+Factory.registerClass('pyjamas.ui.DecoratorPanel', DecoratorPanel)
+
 class DecoratedTabBar(TabBar):
 
     TAB_ROW_STYLES = ["tabTop", "tabMiddle"]
@@ -140,6 +146,8 @@ class DecoratedTabBar(TabBar):
     def createTabTextWrapper(self):
         return DecoratorPanel(self.TAB_ROW_STYLES, 1)
 
+Factory.registerClass('pyjamas.ui.DecoratedTabBar', DecoratedTabBar)
+
 class DecoratedTabPanel(TabPanel):
     DEFAULT_STYLENAME = "gwt-DecoratedTabPanel"
 
@@ -151,6 +159,8 @@ class DecoratedTabPanel(TabPanel):
 
     def createTabTextWrapper(self):
         return DecoratorPanel(DecoratedTabBar.TAB_ROW_STYLES, 1)
+
+Factory.registerClass('pyjamas.ui.DecoratedTabPanel', DecoratedTabPanel)
 
 class DecoratorTitledPanel(DecoratorPanel):
 
@@ -174,4 +184,6 @@ class DecoratorTitledPanel(DecoratorPanel):
         DOM.setAttribute(tdiv, "className", titleStyle)
         DOM.setInnerText(tdiv, title)
         DOM.appendChild(inner, tdiv)
+
+Factory.registerClass('pyjamas.ui.DecoratedTitledPanel', DecoratedTitledPanel)
 

@@ -1,4 +1,5 @@
 # Copyright 2006 James Tauber and contributors
+# Copyright (C) 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from pyjamas import DOM
+import Factory
 
 from Widget import Widget
 from Focus import FocusMixin
@@ -31,4 +33,6 @@ class FocusWidget(Widget, FocusHandler, KeyboardHandler,
         KeyboardHandler.__init__(self)
         ClickHandler.__init__(self)
         MouseHandler.__init__(self)
+
+Factory.registerClass('pyjamas.ui.FocusWidget', FocusWidget)
 

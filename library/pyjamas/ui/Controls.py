@@ -4,6 +4,7 @@
 
 """
 
+import Factory
 import math
 from pyjamas import DOM
 from FocusWidget import FocusWidget
@@ -130,6 +131,8 @@ class Control(FocusWidget, MouseHandler):
     def onKeyPress(self, sender, keycode, modifiers):
         pass
 
+Factory.registerClass('pyjamas.ui.Control', Control)
+
 class VerticalDemoSlider(Control):
 
     def __init__(self, min_value, max_value, start_value=None, step=None,
@@ -201,6 +204,8 @@ class VerticalDemoSlider(Control):
         DOM.setStyleAttribute(self.handle, "top", "%dpx" % relative_y)
         DOM.setStyleAttribute(self.handle, "position", "absolute")
 
+Factory.registerClass('pyjamas.ui.VerticalDemoSlider', VerticalDemoSlider)
+
 class VerticalDemoSlider2(VerticalDemoSlider):
 
     def __init__(self, min_value, max_value, start_value=None, **kwargs):
@@ -209,6 +214,8 @@ class VerticalDemoSlider2(VerticalDemoSlider):
                                     **kwargs)
         self.addKeyboardListener(self)
         self.drag_enabled = True
+
+Factory.registerClass('pyjamas.ui.VerticalDemoSlider2', VerticalDemoSlider2)
 
 class InputControl(Control):
 
@@ -250,4 +257,6 @@ class InputControl(Control):
         else:
             Control.onKeyPress(self, sender, keycode, modifiers)
 
+
+Factory.registerClass('pyjamas.ui.InputControl', InputControl)
 

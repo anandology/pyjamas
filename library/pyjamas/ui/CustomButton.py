@@ -1,4 +1,5 @@
 # Copyright Pyjamas Team
+# Copyright (C) 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
 # use this file except in compliance with the License. You may obtain a copy of
@@ -15,6 +16,7 @@
 import sys
 
 from pyjamas    import DOM
+import Factory
 from pyjamas.ui import Event
 from ButtonBase import ButtonBase
 from pyjamas.ui import Focus
@@ -680,4 +682,6 @@ class CustomButton (ButtonBase):
         # Remove disabled.
         newFaceID &= ~self.DISABLED_ATTRIBUTE
         self.setCurrentFaceFromID(newFaceID)
-    
+
+Factory.registerClass('pyjamas.ui.CustomButton', CustomButton)
+

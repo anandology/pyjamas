@@ -20,6 +20,7 @@
 """
 
 from __pyjamas__ import JS
+import Factory
 from splitpanel import SplitPanel
 from pyjamas import DOM
 from pyjamas import DeferredCommand
@@ -344,4 +345,6 @@ class HorizontalSplitPanel(SplitPanel):
     def getStartOfLinePos(self):
         return 1
         # TODO: return (LocaleInfo.getCurrentLocale().isRTL() ? 1 : 0)
+
+Factory.registerClass('pyjamas.ui.HorizontalSplitPanel', HorizontalSplitPanel)
 

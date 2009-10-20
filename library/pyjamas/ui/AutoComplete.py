@@ -1,6 +1,7 @@
 # Autocomplete component for Pyjamas
 # Ported by Willie Gollino from Autocomplete component for GWT -
 # Originally by Oliver Albers http://gwt.components.googlepages.com/
+# Copyright (C) 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
 #
 # Licensed under the LGPL 2.1
 #
@@ -8,6 +9,7 @@
 # http://gwt.components.googlepages.com/auto-completiontextbox
 
 from TextBox import TextBox
+import Factory
 from PopupPanel import PopupPanel
 from ListBox import ListBox
 from pyjamas.ui import KeyboardListener
@@ -120,6 +122,8 @@ class AutoCompleteTextBox(TextBox):
         self.choices.clear()
         self.choicesPopup.hide()
         self.setFocus(True)
+
+Factory.registerClass('pyjamas.ui.AutoCompleteTextBox', AutoCompleteTextBox)
 
 
 class SimpleAutoCompletionItems:
