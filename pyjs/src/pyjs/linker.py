@@ -128,11 +128,23 @@ class BaseLinker(object):
                         all_names.append(pn)
             all_names.append(mn)
         paths = self.path
+        parent_base = None
+        abs_name = None
         if not parent_file is None:
-            paths.insert(0, os.path.split(parent_file)[0])
+            for p in paths:
+                if parent_file.find(p) == 0 and p != parent_file:
+                    parent_base = p
+                    abs_name = os.path.split(parent_file)[0]
+                    abs_name = '.'.join(abs_name[len(parent_base)+1:].split(os.sep))
 
         for mn in all_names:
-            p = module_path(mn, paths)
+            p = None
+            if abs_name:
+                p = module_path(abs_name + '.' + mn, [parent_base])
+                if p:
+                    mn = abs_name + '.' + mn
+            if not p:
+                p = module_path(mn, paths)
             if not p:
                 continue
                 raise RuntimeError, "Module %r not found. Dep of %r" % (

@@ -598,6 +598,7 @@ def ___import___(path, context, module_name=None, get_base=True):
     save_track_module = JS("$pyjs.track.module")
     module = JS("$pyjs.loaded_modules[path]")
     in_context = (not context is None)
+    is_module_object = False
     parts = path.split('.')
     parent_module = None
     if in_context:
@@ -639,6 +640,8 @@ def ___import___(path, context, module_name=None, get_base=True):
                 module = __dynamic_load__(importName)
             if JS("typeof module == 'undefined'"):
                 if not parent_module is None and hasattr(parent_module, name):
+                    is_module_object = True
+                    return JS("parent_module[name]")
                     break
                 JS("$pyjs.track.module = save_track_module;")
                 raise ImportError(
@@ -654,7 +657,10 @@ def ___import___(path, context, module_name=None, get_base=True):
         parent_module = module
     JS("$pyjs.track.module = save_track_module;")
     if in_context:
-        importName = context + '.' + parts[0]
+        if get_base == True:
+            importName = context + '.' + parts[0]
+        else:
+            importName = context + '.' + path
     else:
         if get_base == True:
             importName = parts[0]

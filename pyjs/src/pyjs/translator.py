@@ -602,7 +602,7 @@ class TranslationError(Exception):
 def strip_py(name):
     return name
 
-def mod_var_name_decl(raw_module_name):
+def mod_var_name_decl(module_name):
     """ function to get the last component of the module e.g.
         pyjamas.ui.DOM into the "namespace".  i.e. doing
         "import pyjamas.ui.DOM" actually ends up with _two_
@@ -613,11 +613,11 @@ def mod_var_name_decl(raw_module_name):
         to see: gen_mod_import and mod_var_name_decl might have
         to end up in a library-specific module, somewhere.
     """
-    name = raw_module_name.split(".")
+    name = module_name.split(".")
     if len(name) == 1:
         return ''
     child_name = name[-1]
-    return "var %s = %s;\n" % (child_name, raw_module_name)
+    return "var %s = %s;\n" % (child_name, module_name)
 
 class Translator:
 
@@ -655,7 +655,7 @@ class Translator:
     }
 
     def __init__(self, compiler,
-                 mn, module_name, raw_module_name, src, mod, output,
+                 module_name, module_file_name, src, mod, output,
                  dynamic=0, findFile=None,
                  debug = False,
                  print_statements=True,
@@ -681,7 +681,6 @@ class Translator:
         else:
             self.module_prefix = ""
         self.module_name = module_name
-        self.raw_module_name = raw_module_name
         src = src.replace("\r\n", "\n")
         src = src.replace("\n\r", "\n")
         src = src.replace("\r",   "\n")
@@ -732,8 +731,15 @@ class Translator:
             #    raise TranslationError(
             #        "reserved word used for top-level module %r" % module_name,
             #        mod, self.module_name)
-
             print >>self.output, self.spacing() + 'var %s;' % self.js_module_name
+            self.parent_module_name = None
+        else:
+            self.parent_module_name = '.'.join(module_name.split('.')[:-1])
+        if module_file_name.endswith('__init__.py'):
+            self.import_context = module_name
+        else:
+            self.import_context = self.parent_module_name
+
         print >>self.output, self.indent() + "$pyjs.loaded_modules['%s'] = function (__mod_name__) {" % module_name
         print >>self.output, self.spacing() + "if($pyjs.loaded_modules['%s'].__was_initialized__) return $pyjs.loaded_modules['%s'];"% (module_name, module_name)
         parts = self.js_module_name.split('.')
@@ -742,18 +748,21 @@ class Translator:
         print >>self.output, self.spacing() + '%s = $pyjs.loaded_modules["%s"];' % (self.js_module_name, module_name)
 
         print >>self.output, self.spacing() + self.js_module_name+".__was_initialized__ = true;"
-        print >>self.output, self.spacing() + "if (__mod_name__ == null) __mod_name__ = '%s';" % (mn)
+        #if self.parent_module_name:
+        #    print >>self.output, self.spacing() + "if(typeof $pyjs.loaded_modules['%s'] == 'undefined') pyjslib['___import___']('%s', null);"% (self.parent_module_name, self.parent_module_name)
+        #    print >>self.output, self.spacing() + "if(!$pyjs.loaded_modules['%s'].__was_initialized__) $pyjs.loaded_modules['%s'](null);"% (self.parent_module_name, self.parent_module_name)
+        print >>self.output, self.spacing() + "if (__mod_name__ == null) __mod_name__ = '%s';" % (module_name)
         lhs = "%s.__name__" % self.js_module_name
         self.add_lookup('builtin', '__name__', lhs)
         print >>self.output, self.spacing() + "var __name__ = %s = __mod_name__;" % (lhs)
         if self.source_tracking:
             print >> self.output, self.spacing() + "%s.__track_lines__ = new Array();" % self.js_module_name
-        name = raw_module_name.split(".")
+        name = module_name.split(".")
         if len(name) > 1:
             jsname = self.jsname("variable", name[-1])
             print >>self.output, self.spacing() + "var %s = %s;" % (jsname, self.js_module_name)
 
-        if self.attribute_checking and not raw_module_name in ['sys', 'pyjslib']:
+        if self.attribute_checking and not module_name in ['sys', 'pyjslib']:
             attribute_checking = True
             print >>self.output, self.indent() + 'try {'
         else:
@@ -1141,22 +1150,22 @@ class Translator:
         return "pyjslib['op_eq'](%(e1)s, %(e2)s)" % locals()
 
     def md5(self, node):
-        return hashlib.md5(self.raw_module_name + str(node.lineno) + repr(node)).hexdigest()
+        return hashlib.md5(self.module_name + str(node.lineno) + repr(node)).hexdigest()
 
     def track_lineno(self, node, module=False):
         if self.source_tracking and node.lineno:
             if module:
-                print >> self.output, self.spacing() + "$pyjs.track.module='%s';" % self.raw_module_name
+                print >> self.output, self.spacing() + "$pyjs.track.module='%s';" % self.module_name
             if self.line_tracking:
                 print >> self.output, self.spacing() + "$pyjs.track.lineno=%d;" % node.lineno
-                #print >> self.output, self.spacing() + "if ($pyjs.track.module!='%s') debugger;" % self.raw_module_name
+                #print >> self.output, self.spacing() + "if ($pyjs.track.module!='%s') debugger;" % self.module_name
             if self.store_source:
                 self.track_lines[node.lineno] = self.get_line_trace(node)
 
     def track_call(self, call_code, lineno=None):
         if not self.ignore_debug and self.debug and len(call_code.strip()) > 0:
             dbg = self.uniqid("$pyjs_dbg_")
-            mod = self.raw_module_name
+            mod = self.module_name
             call_code = """\
 (function(){\
 var %(dbg)s_retry = 0;
@@ -1200,7 +1209,7 @@ try{var %(dbg)s_res=%(call_code)s;}catch(%(dbg)s_err){
 %(s)s\t$pyjs.trackstack = $pyjs.trackstack.slice(0,$pyjs__trackstack_size_%(d)d);
 %(s)s\t$pyjs.track = $pyjs.trackstack.slice(-1)[0];
 %(s)s}
-%(s)s$pyjs.track.module='%(m)s';""" % {'s': self.spacing(), 'd': self.stacksize_depth, 'm': self.raw_module_name}
+%(s)s$pyjs.track.module='%(m)s';""" % {'s': self.spacing(), 'd': self.stacksize_depth, 'm': self.module_name}
             else:
                 src1 = src2 = ""
 
@@ -1734,7 +1743,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             # "searchList" contains a list of possible module names :
             #   We create the list at compile time to save runtime.
             searchList = []
-            context = self.raw_module_name
+            context = self.module_name
             if '.' in context:
                 # our context lives in a package so it is possible to have a
                 # relative import
@@ -1758,10 +1767,10 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                 # the import statement
                 import_stmt = "pyjslib['___import___']('%s', '%s'" % (
                                     importName,
-                                    self.raw_module_name,
+                                    self.import_context,
                                     )
                 if not assignBase:
-                    print >> self.output, self.spacing() + import_stmt + ');'
+                    print >> self.output, self.spacing() + import_stmt + 'null, false);'
                 self._lhsFromName(importName, top_level, current_klass, modtype)
                 self.add_imported_module(importName)
             if assignBase:
@@ -1770,7 +1779,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                 if importAs:
                     ass_name = importAs
                     if not import_stmt is None:
-                        import_stmt += ',null , false'
+                        import_stmt += ', null, false'
                 else:
                     ass_name = package_name
                 lhs = self._lhsFromName(ass_name, top_level, current_klass, modtype)
@@ -1779,7 +1788,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                 else:
                     mod_name = ass_name
                 if import_stmt is None:
-                    stmt = "%s = $pyjs.__modules__['%s'];"% (lhs, mod_name)
+                    stmt = "%s = $pyjs.__modules__['%s'];"% (lhs, "']['".join(mod_name.split('.')))
                 else:
                     stmt = "%s = %s);"% (lhs, import_stmt)
                 print >> self.output, self.spacing() + stmt
@@ -1809,12 +1818,13 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         # object to check our scope
         for name in node.names:
             sub = node.modname + '.' + name[0]
-            self._doImport(((sub, None),), current_klass, top_level, root_level, False)
             ass_name = name[1] or name[0]
-            lhs = self._lhsFromName(ass_name, top_level, current_klass)
-            modnames = ["'%s'" % name for name in ('%s.%s' % (node.modname, name[0])).split('.')]
-            rhs = "$pyjs.__modules__[%s]" % (']['.join(modnames))
-            print >> self.output, self.spacing() + "%s = %s;" % (lhs, rhs)
+            self._doImport(((sub, ass_name),), current_klass, top_level, root_level, True)
+            #self._doImport(((sub, None),), current_klass, top_level, root_level, False)
+            #lhs = self._lhsFromName(ass_name, top_level, current_klass)
+            #modnames = ["'%s'" % name for name in ('%s.%s' % (node.modname, name[0])).split('.')]
+            #rhs = "$pyjs.__modules__[%s]" % (']['.join(modnames))
+            #print >> self.output, self.spacing() + "%s = %s;//2" % (lhs, rhs)
 
     def _function(self, node, current_klass, top_level, local):
         if self.is_class_definition:
@@ -1881,7 +1891,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         save_output = self.output
         self.output = StringIO()
         if self.source_tracking:
-            print >>self.output, self.spacing() + "$pyjs.track={module:'%s',lineno:%d};$pyjs.trackstack.push($pyjs.track);" % (self.raw_module_name, node.lineno)
+            print >>self.output, self.spacing() + "$pyjs.track={module:'%s',lineno:%d};$pyjs.trackstack.push($pyjs.track);" % (self.module_name, node.lineno)
         self.track_lineno(node, True)
         for child in node.code:
             self._stmt(child, None)
@@ -1898,7 +1908,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             self.output = StringIO()
             self.indent()
             if self.source_tracking:
-                print >>self.output, self.spacing() + "$pyjs.track={module:'%s',lineno:%d};$pyjs.trackstack.push($pyjs.track);" % (self.raw_module_name, node.lineno)
+                print >>self.output, self.spacing() + "$pyjs.track={module:'%s',lineno:%d};$pyjs.trackstack.push($pyjs.track);" % (self.module_name, node.lineno)
             self.track_lineno(node, True)
             self.generator_switch_open()
             self.generator_switch_case(increment=False)
@@ -2209,7 +2219,7 @@ if (%(e)s.__name__ == 'TryElse') {""" % {'e': pyjs_try_err}
         print >> self.output, self.spacing() + """\
 var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__name__ );\
 """ % {'e': pyjs_try_err}
-        print >> self.output, self.spacing() + "$pyjs.__last_exception__ = {error: %s, module: %s, try_lineno: %s};" % (pyjs_try_err, self.raw_module_name, node.lineno)
+        print >> self.output, self.spacing() + "$pyjs.__last_exception__ = {error: %s, module: %s, try_lineno: %s};" % (pyjs_try_err, self.module_name, node.lineno)
         if self.source_tracking:
             print >>self.output, """\
 %(s)ssys.save_exception_stack();
@@ -2217,7 +2227,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 %(s)s\t$pyjs.trackstack = $pyjs.trackstack.slice(0,$pyjs__trackstack_size_%(d)d);
 %(s)s\t$pyjs.track = $pyjs.trackstack.slice(-1)[0];
 %(s)s}
-%(s)s$pyjs.track.module='%(m)s';""" % {'s': self.spacing(), 'd': self.stacksize_depth, 'm': self.raw_module_name}
+%(s)s$pyjs.track.module='%(m)s';""" % {'s': self.spacing(), 'd': self.stacksize_depth, 'm': self.module_name}
 
         pyjs_try_err = self.add_lookup('variable', pyjs_try_err, pyjs_try_err)
         if hasattr(node, 'handlers'):
@@ -2536,7 +2546,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         save_output = self.output
         self.output = StringIO()
         if self.source_tracking:
-            print >>self.output, self.spacing() + "$pyjs.track={module:%s, lineno:%d};$pyjs.trackstack.push($pyjs.track);" % (self.raw_module_name, node.lineno)
+            print >>self.output, self.spacing() + "$pyjs.track={module:%s, lineno:%d};$pyjs.trackstack.push($pyjs.track);" % (self.module_name, node.lineno)
         self.track_lineno(node, True)
         for child in node.code:
             self._stmt(child, current_klass)
@@ -2553,7 +2563,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             self.output = StringIO()
             self.indent()
             if self.source_tracking:
-                print >>self.output, self.spacing() + "$pyjs.track={module:'%s',lineno:%d};$pyjs.trackstack.push($pyjs.track);" % (self.raw_module_name, node.lineno)
+                print >>self.output, self.spacing() + "$pyjs.track={module:'%s',lineno:%d};$pyjs.trackstack.push($pyjs.track);" % (self.module_name, node.lineno)
             self.track_lineno(node, True)
             self.generator_switch_open()
             self.generator_switch_case(increment=False)
@@ -2710,7 +2720,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 srcLine = srcLine.replace('"', '\\"')
                 srcLine = srcLine.replace("'", "\\'")
 
-        return self.raw_module_name + ".py, line " \
+        return self.module_name + ".py, line " \
                + str(lineNum1) + ":"\
                + "\\n" \
                + "    " + srcLine
@@ -3196,7 +3206,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 %(s)s\t$pyjs.trackstack = $pyjs.trackstack.slice(0,$pyjs__trackstack_size_%(d)d);
 %(s)s\t$pyjs.track = $pyjs.trackstack.slice(-1)[0];
 %(s)s}
-%(s)s$pyjs.track.module='%(m)s';""" % {'s': self.spacing(), 'd': self.stacksize_depth, 'm': self.raw_module_name}
+%(s)s$pyjs.track.module='%(m)s';""" % {'s': self.spacing(), 'd': self.stacksize_depth, 'm': self.module_name}
             self.stacksize_depth -= 1
         self.generator_switch_case(increment=True)
         self.is_generator = save_is_generator
@@ -3785,7 +3795,7 @@ def translate(compiler, sources, output_file, module_name=None,
     output = file(output_file, 'w')
 
     t = Translator(compiler,
-                   module_name, module_name, module_name, src, tree, output,
+                   module_name, sources[0], src, tree, output,
                    debug = debug,
                    print_statements = print_statements,
                    function_argument_checking = function_argument_checking,
@@ -4085,7 +4095,7 @@ class AppTranslator:
                                            module_name)
             self.overrides[override_name] = override_name
         t = Translator(self.compiler,
-                       mn, module_name, module_name, src, mod, output, 
+                       module_name, file_name, src, mod, output, 
                        self.dynamic, self.findFile, 
                        debug = self.debug,
                        print_statements = self.print_statements,
