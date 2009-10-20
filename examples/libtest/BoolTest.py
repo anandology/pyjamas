@@ -148,10 +148,10 @@ class BoolTest(UnitTest):
         self.assertEqual(x, None, "0 or None should be None not %s" % repr(x) )
 
         x = None and None
-        self.assertEqual(x, None, "0 or None should be None not %s" % repr(x) )
+        self.assertEqual(x, None, "None or None should be None not %s" % repr(x) )
 
         x = False or None
-        self.assertEqual(x, None, "0 or None should be None not %s" % repr(x) )
+        self.assertEqual(x, None, "False or None should be None not %s" % repr(x) )
 
         self.assertTrue((1 or 2) is 1, "(1 or 2) is 1")
         self.assertTrue((0 or 2) is 2, "(0 or 2) is 2")
@@ -174,6 +174,23 @@ class BoolTest(UnitTest):
             self.assertTrue((f and f.test()) == None, "(f and f.test()) == None")
         except:
             self.fail("Unexpected error on '(f and f.test()) == None'")
+
+        self.assertTrue(bool(None) is False, "bool(None) is False")
+        self.assertTrue(bool(False) is False, "bool(False) is False")
+        self.assertTrue(bool(0) is False, "bool(0) is False")
+        self.assertTrue(bool(0.0) is False, "bool(0.0) is False")
+        self.assertTrue(bool('') is False, "bool('') is False")
+        self.assertTrue(bool([]) is False, "bool('') is False")
+        self.assertTrue(bool({}) is False, "bool('') is False")
+
+        self.assertTrue(not None is True, "not None is True")
+        self.assertTrue(not False is True, "not False is True")
+        self.assertTrue(not 0 is True, "not 0 is True")
+        self.assertTrue(not 0.0 is True, "not 0.0 is True")
+        self.assertTrue(not '' is True, "not '' is True")
+        self.assertTrue(not [] is True, "not '' is True")
+        self.assertTrue(not {} is True, "not '' is True")
+
 
         d = {'hello': 5}
         d2 = d or {}
