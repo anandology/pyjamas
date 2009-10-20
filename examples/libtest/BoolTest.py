@@ -191,6 +191,18 @@ class BoolTest(UnitTest):
         self.assertTrue(not [] is True, "not '' is True")
         self.assertTrue(not {} is True, "not '' is True")
 
+        self.assertTrue(bool(1) is True, "bool('') is True")
+        self.assertTrue(bool(1.0) is True, "bool('') is True")
+        self.assertTrue(bool('a') is True, "bool('') is True")
+        self.assertTrue(bool([1]) is True, "bool('') is True")
+        self.assertTrue(bool({'a':1}) is True, "bool('') is True")
+
+        self.assertTrue(not 1 is False, "not '' is False")
+        self.assertTrue(not 1.0 is False, "not '' is False")
+        self.assertTrue(not 'a' is False, "not '' is False")
+        self.assertTrue(not [1] is False, "not '' is False")
+        self.assertTrue(not {'a':1} is False, "not '' is False")
+
 
         d = {'hello': 5}
         d2 = d or {}
