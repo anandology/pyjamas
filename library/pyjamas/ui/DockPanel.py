@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from __pyjamas__ import console
-import Factory
+from pyjamas import Factory
 from pyjamas import DOM
 
 from CellPanel import CellPanel

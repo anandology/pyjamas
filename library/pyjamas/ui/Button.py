@@ -14,7 +14,7 @@
 # limitations under the License.
 
 from pyjamas import DOM
-import Factory
+from pyjamas import Factory
 
 from ButtonBase import ButtonBase
 
@@ -49,5 +49,5 @@ class Button(ButtonBase):
         """
         self.getElement().click()
 
-ButtonBasesterClass('pyjamas.ui.Button', Button)
+Factory.registerClass('pyjamas.ui.Button', Button)
 

@@ -16,6 +16,8 @@ from pyjamas import log
 from WebPageEdit import WebPageEdit
 from HTMLLinkPanel import HTMLLinkPanel
 
+from pyjamas import Factory
+
 class WebApp:
     def onFormLoad(self):
         self.fetch = Button("Retrieve", self)
@@ -149,6 +151,7 @@ class DataService(JSONProxy):
 if __name__ == "__main__":
     pyjd.setup("http://127.0.0.9/pyjdblank.html")
 
+    Factory.addPyjamasNameSpace()
     app = WebApp()
     #app.onModuleLoad()
     app.onFormLoad()

@@ -14,7 +14,7 @@
 # limitations under the License.
 
 from pyjamas import DOM
-import Factory
+from pyjamas import Factory
 
 from ComplexPanel import ComplexPanel
 from pyjamas.ui import Event

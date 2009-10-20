@@ -9,7 +9,7 @@
 # http://gwt.components.googlepages.com/auto-completiontextbox
 
 from TextBox import TextBox
-import Factory
+from pyjamas import Factory
 from PopupPanel import PopupPanel
 from ListBox import ListBox
 from pyjamas.ui import KeyboardListener

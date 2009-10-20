@@ -3,7 +3,7 @@
 # Copyright (C) 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
 
 from SimplePanel import SimplePanel
-import Factory
+from pyjamas import Factory
 from VerticalPanel import  VerticalPanel
 from HorizontalPanel import HorizontalPanel
 from PopupPanel import  PopupPanel

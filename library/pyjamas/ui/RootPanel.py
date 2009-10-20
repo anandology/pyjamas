@@ -14,7 +14,7 @@
 # limitations under the License.
 import sys
 from __pyjamas__ import doc
-import Factory
+from pyjamas import Factory
 
 from pyjamas import DOM
 from pyjamas import Window

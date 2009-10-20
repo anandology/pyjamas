@@ -20,7 +20,7 @@
 """
 
 from splitpanel import SplitPanel
-import Factory
+from pyjamas import Factory
 from pyjamas import DOM
 from pyjamas import DeferredCommand
 from pyjamas.Timer import Timer

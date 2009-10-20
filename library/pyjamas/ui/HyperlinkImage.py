@@ -3,7 +3,7 @@
 # Copyright (C) 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
 
 from Hyperlink import Hyperlink
-import Factory
+from pyjamas import Factory
 from Image import Image
 from pyjamas import DOM
 from pyjamas.ui import Event

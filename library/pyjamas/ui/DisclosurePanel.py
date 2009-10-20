@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from Composite import Composite
-import Factory
+from pyjamas import Factory
 from Widget import Widget
 from SimplePanel import SimplePanel
 from VerticalPanel import VerticalPanel 

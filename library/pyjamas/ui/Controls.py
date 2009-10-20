@@ -4,7 +4,7 @@
 
 """
 
-import Factory
+from pyjamas import Factory
 import math
 from pyjamas import DOM
 from FocusWidget import FocusWidget

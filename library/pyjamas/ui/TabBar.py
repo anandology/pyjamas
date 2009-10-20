@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from pyjamas import DOM
-import Factory
+from pyjamas import Factory
 from Composite import Composite
 from pyjamas.ui import Event
 from HTML import HTML

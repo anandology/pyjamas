@@ -3,7 +3,7 @@
 # Copyright (C) 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
 
 from PopupPanel import PopupPanel
-import Factory
+from pyjamas import Factory
 from HTML import HTML
 from RootPanel import RootPanel
 from pyjamas.Timer import Timer

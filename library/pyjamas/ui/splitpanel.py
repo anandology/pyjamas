@@ -17,7 +17,7 @@
  */
 """
 from Panel import Panel
-import Factory
+from pyjamas import Factory
 from pyjamas.ui import Event
 
 from pyjamas import DOM

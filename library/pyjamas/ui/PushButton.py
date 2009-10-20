@@ -15,7 +15,7 @@
 # the License.
 
 from CustomButton import CustomButton
-import Factory
+from pyjamas import Factory
 
 class PushButton (CustomButton):
     """

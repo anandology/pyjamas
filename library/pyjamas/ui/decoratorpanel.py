@@ -3,7 +3,7 @@
 
 from pyjamas import DOM
 from SimplePanel import SimplePanel
-import Factory
+from pyjamas import Factory
 from TabPanel import TabPanel
 from TabBar import TabBar
 

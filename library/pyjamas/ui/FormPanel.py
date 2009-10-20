@@ -14,7 +14,7 @@
 # limitations under the License.
 import sys
 from __pyjamas__ import JS
-import Factory
+from pyjamas import Factory
 if sys.platform not in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
     from __pyjamas__ import get_main_frame
 

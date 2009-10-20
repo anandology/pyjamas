@@ -14,3 +14,11 @@ def registerClass(name, kls):
 def lookupClass(name):
     return factory[name]
 
+def addPyjamasNameSpace():
+    try:
+        ns = doc().namespaces.item("pyjs")
+    except:
+        doc().namespaces.add("pyjs", "urn:schemas-pyjs-org:pyjs")
+        #doc().createStyleSheet().cssText = "v\\:*{behavior:url(#default#VML);}"
+
+

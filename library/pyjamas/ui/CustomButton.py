@@ -16,7 +16,7 @@
 import sys
 
 from pyjamas    import DOM
-import Factory
+from pyjamas import Factory
 from pyjamas.ui import Event
 from ButtonBase import ButtonBase
 from pyjamas.ui import Focus
