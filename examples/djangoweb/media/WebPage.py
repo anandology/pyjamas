@@ -9,6 +9,10 @@ from pyjamas.JSONService import JSONProxy
 from pyjamas import Window
 from pyjamas import History
 from pyjamas import log
+from pyjamas import DOM
+from pyjamas import Factory
+from __pyjamas__ import doc
+
 
 from WebPageEdit import WebPageEdit
 from HTMLLinkPanel import HTMLLinkPanel
@@ -19,7 +23,7 @@ class WebApp:
         self.remote = DataService()
 
         #Show the initial screen.
-        initToken = History().getToken()
+        initToken = History.getToken()
         if initToken and len(initToken):
             if initToken == 'admin':
                 RootPanel().add(WebPageEdit(self))
@@ -82,7 +86,13 @@ class DataService(JSONProxy):
                   "deletePage"])
 
 if __name__ == "__main__":
-    pyjd.setup("http://127.0.0.1:8000/site_media/WebPage.html")
+    pyjd.setup("http://127.0.0.8/site_media/public/index.html")
+
+    el = DOM.createElement("div")
+    el.innerHTML = "test"
+    DOM.setAttribute(el, "id", "pyjamas.ui.Label(Text='hello')")
+    label = Factory.createWidgetOnElement(el)
+    RootPanel().add(label)
 
     app = WebApp()
     app.onModuleLoad()

@@ -151,7 +151,7 @@ class DataService(JSONProxy):
 if __name__ == "__main__":
     pyjd.setup("http://127.0.0.9/pyjdblank.html")
 
-    Factory.addPyjamasNameSpace()
+    #Factory.addPyjamasNameSpace()
     app = WebApp()
     #app.onModuleLoad()
     app.onFormLoad()

@@ -25,7 +25,13 @@ class Label(Widget, MouseHandler, ClickHandler):
         if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-Label"
         if text: kwargs['Text'] = text
         kwargs['WordWrap'] = wordWrap
-        self.setElement(DOM.createDiv())
+
+        if kwargs.has_key('Element'):
+            element = kwargs.pop('Element')
+        else:
+            element = DOM.createDiv()
+
+        self.setElement(element)
         self.horzAlign = ""
 
         Widget.__init__(self, **kwargs)
