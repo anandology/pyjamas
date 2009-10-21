@@ -34,7 +34,7 @@ class RichTextEditor(Widget):
     def __init__(self, initialValue="", target="", method="POST", 
                         basePath=None, **kwargs):
 
-        self.id = "rte" + hash(self)
+        self.id = "rte" + str(hash(self))
 
         self.setElement(DOM.createForm())
         DOM.setAttribute(self.element, "method", method)
