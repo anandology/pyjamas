@@ -5,6 +5,8 @@
 #
 # * pyjamas.ui namespace is used for widgets in library/pyjamas/ui
 
+#from __pyjamas__ import doc
+
 factory = {}
 
 def registerClass(name, kls):
@@ -15,10 +17,11 @@ def lookupClass(name):
     return factory[name]
 
 def addPyjamasNameSpace():
-    try:
-        ns = doc().namespaces.item("pyjs")
-    except:
-        doc().namespaces.add("pyjsinit", "urn:schemas-pyjs-org:pyjs")
+    doc().createElementNS("urn:schemas-pyjs-org:pyjs")
+    #try:
+    #    ns = doc().namespaces.item("pyjs")
+    #except:
+    #    doc().namespaces.add("pyjsinit", "urn:schemas-pyjs-org:pyjs")
         #doc().createStyleSheet().cssText = "v\\:*{behavior:url(#default#VML);}"
 
 
