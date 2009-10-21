@@ -277,9 +277,8 @@ def getEventsSunk(element):
     Return which events are currently "sunk" for a given DOM node.  See
     sinkEvents() for more information.
     """
-    JS("""
-    return element.__eventBits ? element.__eventBits : 0;
-    """)
+    from __pyjamas__ import INT
+    return INT(JS("""element.__eventBits ? element.__eventBits : 0"""))
 
 def getFirstChild(elem):
     JS("""
