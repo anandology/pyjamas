@@ -1,8 +1,8 @@
 class Person:
 
-    def __init__(self):
-        self.description = "DESC"
-        self.name = ""
+    def __init__(self, description = "DESC", name= ""):
+        self.description = description
+        self.name = name
     
     def getDescription(self):
         return self.description

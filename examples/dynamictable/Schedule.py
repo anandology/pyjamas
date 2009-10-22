@@ -2,8 +2,10 @@ from TimeSlot import TimeSlot
 
 class Schedule:
 
-    def __init__(self):
+    def __init__(self, timeSlots = None):
         self.timeSlots = []
+        if timeSlots:
+            self.timeSlots = timeSlots
 
     def addTimeSlot(self, timeSlot):
         self.timeSlots.append(timeSlot)

@@ -1,6 +1,8 @@
                     Changes made to Pyjamas since 0.6
                     ---------------------------------
 
+ * Added arguments for instance initialization in jsObjectToPyObject
+
  * Implemented NotImplementedType and NotImplemented
 
  * Implemented an int type and a long type
