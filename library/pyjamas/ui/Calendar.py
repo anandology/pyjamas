@@ -418,7 +418,7 @@ class DateField(Composite):
     def onFocus(self, sender):
         pass
 
-    def onTodayClicked(self):
+    def onTodayClicked(self, event):
         today = time.strftime(self.format)
         self.tbox.setText( today )
 
