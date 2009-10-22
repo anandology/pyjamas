@@ -140,7 +140,11 @@ class VerticalDemoSlider(Control):
 
         if not kwargs.has_key("StyleName"): kwargs['StyleName'] = "gwt-VerticalSlider"
 
-        element = Focus.createFocusable()
+        if kwargs.has_key('Element'):
+            # XXX FIXME: Focus.createFocusable is here for a reason...
+            element = kwargs.pop('Element')
+        else:
+            element = Focus.createFocusable()
         DOM.setStyleAttribute(element, "position", "relative")
         DOM.setStyleAttribute(element, "overflow", "hidden")
 
@@ -226,7 +230,11 @@ class InputControl(Control):
         self.input = TextBox()
         self.input.addKeyboardListener(self)
         #element = DOM.createDiv()
-        element = self.input.getElement() # YUK!!!
+        if kwargs.has_key('Element'):
+            # XXX FIXME: unlikely to work!
+            element = kwargs.pop('Element')
+        else:
+            element = self.input.getElement() # YUK!!!
         Control.__init__(self, element, min_value, max_value, start_value, step,
                                **kwargs)
 

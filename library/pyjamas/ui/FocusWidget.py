@@ -34,5 +34,6 @@ class FocusWidget(Widget, FocusHandler, KeyboardHandler,
         ClickHandler.__init__(self)
         MouseHandler.__init__(self)
 
-Factory.registerClass('pyjamas.ui.FocusWidget', FocusWidget)
+# TODO: sort out Element **kwargs, see Factory.createWidgetOnElement
+#Factory.registerClass('pyjamas.ui.FocusWidget', FocusWidget)
 

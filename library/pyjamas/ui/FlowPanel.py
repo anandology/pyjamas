@@ -20,7 +20,11 @@ from ComplexPanel import ComplexPanel
 
 class FlowPanel(ComplexPanel):
     def __init__(self, **kwargs):
-        self.setElement(DOM.createDiv())
+        if kwargs.has_key('Element'):
+            element = kwargs.pop('Element')
+        else:
+            element = DOM.createDiv()
+        self.setElement(element)
         ComplexPanel.__init__(self, **kwargs)
 
     def add(self, w):

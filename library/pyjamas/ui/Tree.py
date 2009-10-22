@@ -41,7 +41,11 @@ class Tree(Widget):
         self.listeners = []
         self.lastEventType = ""
 
-        self.setElement(DOM.createDiv())
+        if kwargs.has_key('Element'):
+            element = kwargs.pop('Element')
+        else:
+            element = DOM.createDiv()
+        self.setElement(element)
         DOM.setStyleAttribute(self.getElement(), "position", "relative")
         self.focusable = Focus.createFocusable()
         # Hide focus outline in Mozilla/Webkit/Opera

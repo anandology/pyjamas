@@ -21,7 +21,10 @@ from Widget import Widget
 class Hidden(Widget):
     def __init__(self, name=None, value=None, **kwargs):
 
-        element = DOM.createElement("input")
+        if kwargs.has_key('Element'):
+            element = kwargs.pop('Element')
+        else:
+            element = DOM.createElement("input")
         self.setElement(element)
         DOM.setAttribute(element, "type", "hidden")
 

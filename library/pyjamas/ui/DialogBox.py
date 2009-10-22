@@ -22,8 +22,9 @@ from pyjamas.ui import HasHorizontalAlignment
 from pyjamas.ui import HasVerticalAlignment
 
 class DialogBox(PopupPanel):
-    def __init__(self, autoHide=None, modal=True):
-        PopupPanel.__init__(self, autoHide, modal)
+    def __init__(self, autoHide=None, modal=True, **kwargs):
+
+        PopupPanel.__init__(self, autoHide, modal, **kwargs)
         self.caption = HTML()
         self.child = None
         self.dragging = False

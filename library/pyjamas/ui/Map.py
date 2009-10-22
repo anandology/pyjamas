@@ -26,7 +26,11 @@ class ImageMap(ComplexPanel):
     """
     def __init__(self, Name, **kwargs):
         kwargs['Name'] = Name
-        self.setElement(DOM.createElement("map"))
+        if kwargs.has_key('Element'):
+            element = kwargs.pop('Element')
+        else:
+            element = DOM.createElement("map")
+        self.setElement(element)
         ComplexPanel.__init__(self, **kwargs)
 
     def add(self, widget):
@@ -49,7 +53,11 @@ class MapArea(Widget, MouseHandler, ClickHandler):
             kwargs['Href'] = ""
         kwargs['Shape'] = Shape
         kwargs['Coords'] = Coords
-        self.setElement(DOM.createElement("area"))
+        if kwargs.has_key('Element'):
+            element = kwargs.pop('Element')
+        else:
+            element = DOM.createElement("area")
+        self.setElement(element)
         Widget.__init__(self, **kwargs)
         MouseHandler.__init__(self, preventDefault=True)
         ClickHandler.__init__(self, preventDefault=True)

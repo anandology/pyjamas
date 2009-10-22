@@ -18,12 +18,12 @@ from pyjamas import Factory
 from Widget import Widget
 
 class Frame(Widget):
-    def __init__(self, url="", element=None, **kwargs):
-        if element is None: 
-            element = DOM.createIFrame()
+    def __init__(self, url="", Element=None, **kwargs):
+        if Element is None: 
+            Element = DOM.createIFrame()
         if url:
             kwargs['Url'] = url
-        self.setElement(element)
+        self.setElement(Element)
         Widget.__init__(self, **kwargs)
 
     def getUrl(self):

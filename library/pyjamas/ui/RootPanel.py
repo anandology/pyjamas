@@ -24,12 +24,12 @@ from AbsolutePanel import AbsolutePanel
 rootPanels = {}
 
 class RootPanelCls(AbsolutePanel):
-    def __init__(self, element=None):
+    def __init__(self, Element=None):
         AbsolutePanel.__init__(self)
-        if element is None:
-            element = self.getBodyElement()
+        if Element is None:
+            Element = self.getBodyElement()
 
-        self.setElement(element)
+        self.setElement(Element)
         self.onAttach()
 
     def getBodyElement(self):

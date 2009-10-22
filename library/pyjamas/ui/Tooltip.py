@@ -12,10 +12,10 @@ tooltip_hide_timer = None
 
 class Tooltip(PopupPanel):
     def __init__(self, sender, offsetX, offsetY, contents,
-                       show_delay, hide_delay, styleName):
+                       show_delay, hide_delay, styleName, **kwargs):
         """ contents may be a text string or it may be a widget
         """
-        PopupPanel.__init__(self, True)
+        PopupPanel.__init__(self, True, **kwargs)
         self.show_delay = show_delay
         self.hide_delay = hide_delay
         

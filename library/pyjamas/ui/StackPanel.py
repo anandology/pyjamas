@@ -26,11 +26,20 @@ class StackPanel(ComplexPanel):
         self.visibleStack = -1
         self.indices = {}
 
-        table = DOM.createTable()
-        self.setElement(table)
+        if kwargs.has_key('Element'):
+            table = kwargs.pop('Element')
+            fc = DOM.getFirstChild(table)
+            if fc:
+                self.body = fc
+            else:
+                self.body = DOM.createTBody()
+                DOM.appendChild(table, self.body)
+        else:
+            table = DOM.createTable()
+            self.body = DOM.createTBody()
+            DOM.appendChild(table, self.body)
 
-        self.body = DOM.createTBody()
-        DOM.appendChild(table, self.body)
+        self.setElement(table)
 
         if not kwargs.has_key('Spacing'): kwargs['Spacing'] = 0
         if not kwargs.has_key('Padding'): kwargs['Padding'] = 0

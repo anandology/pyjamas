@@ -33,7 +33,10 @@ class PopupPanel(SimplePanel):
 
         self.rootpanel = rootpanel
 
-        element = self.createElement()
+        if kwargs.has_key('Element'):
+            element = kwargs.pop('Element')
+        else:
+            element = self.createElement()
         DOM.setStyleAttribute(element, "position", "absolute")
 
         SimplePanel.__init__(self, element, **kwargs)

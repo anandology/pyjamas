@@ -109,5 +109,6 @@ class TextBoxBase(FocusWidget):
     def setTextAlignment(self, align):
         DOM.setStyleAttribute(self.getElement(), "textAlign", align)
 
-Factory.registerClass('pyjamas.ui.TextBoxBase', TextBoxBase)
+# TODO: work out if TextBoxBase is appropriate to create in Factory.
+# Factory.registerClass('pyjamas.ui.TextBoxBase', TextBoxBase)
 

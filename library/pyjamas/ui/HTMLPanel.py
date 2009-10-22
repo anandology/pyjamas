@@ -61,8 +61,11 @@ class HTMLPanel(ComplexPanel):
         # HTML might expect to have one already.
         #if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-HTMLPanel"
         if html: kwargs['HTML'] = html
-
-        self.setElement(DOM.createDiv())
+        if kwargs.has_key('Element'):
+            element = kwargs.pop('Element')
+        else:
+            element = DOM.createDiv()
+        self.setElement(element)
         ComplexPanel.__init__(self, **kwargs)
 
     def setHTML(self, html):

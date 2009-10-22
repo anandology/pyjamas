@@ -20,7 +20,11 @@ from TextBoxBase import TextBoxBase
 class TextBox(TextBoxBase):
     def __init__(self, **kwargs):
         if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-TextBox"
-        TextBoxBase.__init__(self, DOM.createInputText(), **kwargs)
+        if kwargs.has_key('Element'):
+            element = kwargs.pop('Element')
+        else:
+            element = DOM.createInputText()
+        TextBoxBase.__init__(self, element, **kwargs)
 
     def getMaxLength(self):
         return DOM.getIntAttribute(self.getElement(), "maxLength")

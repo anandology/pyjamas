@@ -27,7 +27,11 @@ class Image(Widget, MouseHandler, ClickHandler):
         if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-Image"
         if url: kwargs['Url'] = url
 
-        self.setElement(DOM.createImg())
+        if kwargs.has_key('Element'):
+            element = kwargs.pop('Element')
+        else:
+            element = DOM.createImg()
+        self.setElement(element)
         Widget.__init__(self, **kwargs)
         MouseHandler.__init__(self)
         ClickHandler.__init__(self)

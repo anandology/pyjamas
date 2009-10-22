@@ -21,9 +21,6 @@ class ComplexPanel(Panel):
     """
         Superclass for widgets with multiple children.
     """
-    def __init__(self, **kwargs):
-        Panel.__init__(self, **kwargs)
-
     def add(self, widget, container):
         self.insert(widget, container, len(self.children))
 

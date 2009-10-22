@@ -22,8 +22,12 @@ from pyjamas import DOM
 import pygwt
 
 class ClickableHeader(SimplePanel):
-    def __init__(self, disclosurePanel):
-        SimplePanel.__init__(self, DOM.createAnchor())
+    def __init__(self, disclosurePanel, **kwargs):
+        if kwargs.has_key('Element'):
+            element = kwargs.pop('Element')
+        else:
+            element = DOM.createAnchor()
+        SimplePanel.__init__(self, element)
         self.disclosurePanel = disclosurePanel
         element = self.getElement()
         DOM.setAttribute(element, "href", "javascript:void(0);");
@@ -88,7 +92,9 @@ class DefaultHeader(Widget):
                              self.imageBase + "disclosurePanelClosed.png")
         
 
-Factory.registerClass('pyjamas.ui.DefaultHeader', DefaultHeader)
+# TODO: must be able to pass in DisclosurePanel argument by a means
+# *other* than an actual class instance.
+#Factory.registerClass('pyjamas.ui.DefaultHeader', DefaultHeader)
 
 class DisclosurePanel(Composite):
 
@@ -97,7 +103,15 @@ class DisclosurePanel(Composite):
         self.handlers = []
         self.content = None
 
-        self.mainPanel = VerticalPanel()
+        # this is awkward: VerticalPanel is the composite,
+        # so we either get the element here, or create the table
+        # element here and pass it in to VerticalPanel.
+        if kwargs.has_key('Element'):
+            element = kwargs.pop('Element')
+        else:
+            element = DOM.createTable()
+
+        self.mainPanel = VerticalPanel(Element=element)
 
         self.header = ClickableHeader(self)
         self.contentWrapper = SimplePanel()

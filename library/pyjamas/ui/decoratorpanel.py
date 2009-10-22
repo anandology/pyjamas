@@ -68,12 +68,24 @@ class DecoratorPanel(SimplePanel):
         if rowStyles is None:
             rowStyles = self.DEFAULT_ROW_STYLENAMES
 
-        # Add a tbody
-        self.table = DOM.createTable()
-        self.tbody = DOM.createTBody()
-        DOM.appendChild(self.table, self.tbody)
-        DOM.setAttribute(self.table, "cellSpacing", "0")
-        DOM.setAttribute(self.table, "cellPadding", "0")
+        if kwargs.has_key('Element'):
+            self.table = kwargs.pop('Element')
+            fc = DOM.getFirstChild(self.table)
+            if fc:
+                self.tbody = fc
+            else:
+                self.tbody = DOM.createTBody()
+                DOM.appendChild(self.table, self.tbody)
+        else:
+            # Add a tbody
+            self.table = DOM.createTable()
+            self.tbody = DOM.createTBody()
+            DOM.appendChild(self.table, self.tbody)
+            DOM.setAttribute(self.table, "cellSpacing", "0")
+            DOM.setAttribute(self.table, "cellPadding", "0")
+
+        if not kwargs.has_key('StyleName'): kwargs['StyleName']=self.DEFAULT_STYLENAME
+        SimplePanel.__init__(self, self.table, **kwargs)
 
         # Add each row
         for i in range(len(rowStyles)): 
@@ -81,9 +93,6 @@ class DecoratorPanel(SimplePanel):
             DOM.appendChild(self.tbody, row)
             if i == containerIndex:
                 self.containerElem = DOM.getFirstChild(DOM.getChild(row, 1))
-
-        if not kwargs.has_key('StyleName'): kwargs['StyleName']=self.DEFAULT_STYLENAME
-        SimplePanel.__init__(self, self.table, **kwargs)
 
     def createTR(self, styleName) :
         """ Create a new row with a specific style name. The row
@@ -166,14 +175,15 @@ class DecoratorTitledPanel(DecoratorPanel):
 
     def __init__(self, title, titleStyle=None, imgStyle=None,
                              rowStyles=None,
-                             containerIndex=2, titleIndex=1) :
+                             containerIndex=2, titleIndex=1,
+                             **kwargs) :
         if rowStyles is None:
             rowStyles = ["top", "top2", "middle", "bottom"]
 
         if titleStyle is None:
             titleStyle = "title"
 
-        DecoratorPanel.__init__(self, rowStyles, containerIndex)
+        DecoratorPanel.__init__(self, rowStyles, containerIndex, **kwargs)
 
         inner = self.getCellElement(titleIndex, 1)
         if imgStyle:
@@ -185,5 +195,5 @@ class DecoratorTitledPanel(DecoratorPanel):
         DOM.setInnerText(tdiv, title)
         DOM.appendChild(inner, tdiv)
 
-Factory.registerClass('pyjamas.ui.DecoratedTitledPanel', DecoratedTitledPanel)
+Factory.registerClass('pyjamas.ui.DecoratorTitledPanel', DecoratorTitledPanel)
 

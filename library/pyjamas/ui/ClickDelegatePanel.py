@@ -63,5 +63,7 @@ class ClickDelegatePanel(Composite):
                 self.keyDelegate.onKeyDown(self, DOM.eventGetKeyCode(event),
                                        modifiers)
 
-Factory.registerClass('pyjamas.ui.ClickDelegatePanel', ClickDelegatePanel)
+# TODO: sort out how to create or grab an element for
+# Factory.createWidgetOnElement to work
+#Factory.registerClass('pyjamas.ui.ClickDelegatePanel', ClickDelegatePanel)
 

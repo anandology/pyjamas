@@ -25,7 +25,10 @@ class CaptionPanel(SimplePanel):
     """
 
     def __init__(self, caption, widget=None, **kwargs):
-        element = DOM.createElement("fieldset")
+        if kwargs.has_key('Element'):
+            element = kwargs.pop('Element')
+        else:
+            element = DOM.createElement("fieldset")
         self.legend = DOM.createElement("legend")
         DOM.appendChild(element, self.legend)
         kwargs['Caption'] = caption

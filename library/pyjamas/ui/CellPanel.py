@@ -20,7 +20,11 @@ from ComplexPanel import ComplexPanel
 class CellPanel(ComplexPanel):
 
     def __init__(self, **kwargs):
-        self.table = DOM.createTable()
+        if kwargs.has_key('Element'):
+            element = kwargs.pop('Element')
+        else:
+            element = DOM.createTable()
+        self.table = element
         self.setElement(self.table)
         self.body = DOM.createTBody()
         self.spacing = None

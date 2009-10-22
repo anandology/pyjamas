@@ -25,7 +25,11 @@ class TextArea(TextBoxBase):
     """
     def __init__(self, **kwargs):
         if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-TextArea"
-        TextBoxBase.__init__(self, DOM.createTextArea(), **kwargs)
+        if kwargs.has_key('Element'):
+            element = kwargs.pop('Element')
+        else:
+            element = DOM.createTextArea()
+        TextBoxBase.__init__(self, element, **kwargs)
 
     def getCharacterWidth(self):
         return DOM.getIntAttribute(self.getElement(), "cols")

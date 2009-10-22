@@ -184,8 +184,12 @@ class CustomButton (ButtonBase):
         """Constructor for CustomButton."""
         
         if not kwargs.has_key('StyleName'): kwargs['StyleName']=self.STYLENAME_DEFAULT
-        
-        ButtonBase.__init__(self, Focus.createFocusable(), **kwargs)
+        if kwargs.has_key('Element'):
+            # XXX FIXME: createFocusable is used for a reason...
+            element = kwargs.pop('Element')
+        else:
+            element = Focus.createFocusable()
+        ButtonBase.__init__(self, element, **kwargs)
 
         self.curFace      = None # The button's current face.
         self.curFaceElement = None # No "undefined" anymore

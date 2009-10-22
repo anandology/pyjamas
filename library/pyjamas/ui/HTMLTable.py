@@ -33,9 +33,18 @@ class HTMLTable(Panel):
         self.tableListeners = []
         self.widgetMap = {}
 
-        self.tableElem = DOM.createTable()
-        self.bodyElem = DOM.createTBody()
-        DOM.appendChild(self.tableElem, self.bodyElem)
+        if kwargs.has_key('Element'):
+            self.tableElem = kwargs.pop('Element')
+            fc = DOM.getFirstChild(self.tableElem)
+            if fc:
+                self.bodyElem = fc
+            else:
+                self.bodyElem = DOM.createTBody()
+                DOM.appendChild(self.tableElem, self.bodyElem)
+        else:
+            self.tableElem = DOM.createTable()
+            self.bodyElem = DOM.createTBody()
+            DOM.appendChild(self.tableElem, self.bodyElem)
         self.setElement(self.tableElem)
 
         self.sinkEvents(Event.ONCLICK)

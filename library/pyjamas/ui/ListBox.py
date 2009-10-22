@@ -24,7 +24,11 @@ class ListBox(FocusWidget):
         if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-ListBox"
         self.changeListeners = []
         self.INSERT_AT_END = -1
-        FocusWidget.__init__(self, DOM.createSelect(), **kwargs)
+        if kwargs.has_key('Element'):
+            element = kwargs.pop('Element')
+        else:
+            element = DOM.createSelect()
+        FocusWidget.__init__(self, element, **kwargs)
         self.sinkEvents(Event.ONCHANGE)
 
     def addChangeListener(self, listener):

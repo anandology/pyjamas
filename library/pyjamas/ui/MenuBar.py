@@ -34,7 +34,16 @@ class MenuBar(Widget):
         self.vertical = False
         self.autoOpen = False
 
-        table = DOM.createTable()
+        if kwargs.has_key('Element'):
+            table = kwargs.pop('Element')
+            fc = DOM.getFirstChild(table)
+            if fc:
+                self.body = fc
+            else:
+                self.body = DOM.createTBody()
+                DOM.appendChild(table, self.body)
+        else:
+            table = DOM.createTable()
         self.body = DOM.createTBody()
         DOM.appendChild(table, self.body)
 

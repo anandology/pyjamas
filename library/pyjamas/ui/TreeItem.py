@@ -34,7 +34,11 @@ class TreeItem(UIObject):
         self.tree = None
         self.userObject = None
 
-        self.setElement(DOM.createDiv())
+        if kwargs.has_key('Element'):
+            element = kwargs.pop('Element')
+        else:
+            element = DOM.createDiv()
+        self.setElement(element)
 
         self.itemTable = DOM.createTable()
         self.contentElem = DOM.createSpan()

@@ -19,7 +19,10 @@ from Frame import Frame
 
 class NamedFrame(Frame):
     def __init__(self, name, **kwargs):
-        div = DOM.createDiv()
+        if kwargs.has_key('Element'):
+            div = kwargs.pop('Element')
+        else:
+            div = DOM.createDiv()
         DOM.setInnerHTML(div, "<iframe name='" + name + "'>")
 
         iframe = DOM.getFirstChild(div)

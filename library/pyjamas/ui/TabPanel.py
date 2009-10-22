@@ -31,7 +31,15 @@ class TabPanel(Composite):
             self.tabBar = tabBar
         self.tabListeners = []
 
-        panel = VerticalPanel()
+        # this is awkward: VerticalPanel is the composite,
+        # so we either get the element here, or create the table
+        # element here and pass it in to VerticalPanel.
+        if kwargs.has_key('Element'):
+            element = kwargs.pop('Element')
+        else:
+            element = DOM.createTable()
+
+        panel = VerticalPanel(Element=element)
         panel.add(self.tabBar)
         panel.add(self.deck)
 

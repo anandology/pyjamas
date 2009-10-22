@@ -21,7 +21,11 @@ from ComplexPanel import ComplexPanel
 class AbsolutePanel(ComplexPanel):
 
     def __init__(self, **kwargs):
-        self.setElement(DOM.createDiv())
+        if kwargs.has_key('Element'):
+            element = kwargs.pop('Element')
+        else:
+            element = DOM.createDiv()
+        self.setElement(element)
         DOM.setStyleAttribute(self.getElement(), "position", "relative")
         DOM.setStyleAttribute(self.getElement(), "overflow", "hidden")
         ComplexPanel.__init__(self, **kwargs)

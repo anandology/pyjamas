@@ -57,7 +57,10 @@ class FormPanel(SimplePanel):
         if hasattr(target, "getName"):
             target = target.getName()
 
-        element = DOM.createForm()
+        if kwargs.has_key('Element'):
+            element = kwargs.pop('Element')
+        else:
+            element = DOM.createForm()
 
         self.formHandlers = []
         self.iframe = None

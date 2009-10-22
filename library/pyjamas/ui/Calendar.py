@@ -22,8 +22,8 @@ from pyjamas import DOM
 import time
 
 class Calendar(FocusPanel):
-    def __init__(self):
-        FocusPanel.__init__(self)
+    def __init__(self, **kwargs):
+        FocusPanel.__init__(self, **kwargs)
         self.monthsOfYear = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
         self.daysOfWeek = ['S','M','T','W','T','F','S']
         yr,mth,day = time.strftime("%Y-%m-%d").split("-")

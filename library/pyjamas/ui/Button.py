@@ -30,7 +30,10 @@ class Button(ButtonBase):
         """
         if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-Button"
         if html: kwargs['HTML'] = html
-        element = DOM.createButton()
+        if kwargs.has_key('Element'):
+            element = kwargs.pop('Element')
+        else:
+            element = DOM.createButton()
         ButtonBase.__init__(self, element, **kwargs)
         self.adjustType(self.getElement())
         if listener:

@@ -29,7 +29,16 @@ class TabBar(Composite):
     def __init__(self, **kwargs):
 
         if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-TabBar"
-        self.panel = HorizontalPanel()
+
+        # this is awkward: HorizontalPanel is the composite,
+        # so we either get the element here, or create the table
+        # element here and pass it in to HorizontalPanel.
+        if kwargs.has_key('Element'):
+            element = kwargs.pop('Element')
+        else:
+            element = DOM.createTable()
+
+        self.panel = HorizontalPanel(Element=element)
         self.selectedTab = None
         self.tabListeners = []
 

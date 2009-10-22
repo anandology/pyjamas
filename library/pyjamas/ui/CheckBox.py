@@ -35,7 +35,11 @@ class CheckBox(ButtonBase):
     def initElement(self, element, **kwargs):
         self.inputElem = element
         self.labelElem = DOM.createLabel()
-        ButtonBase.__init__(self, DOM.createSpan(), **kwargs)
+        if kwargs.has_key('Element'):
+            element = kwargs.pop('Element')
+        else:
+            element = DOM.createSpan()
+        ButtonBase.__init__(self, element, **kwargs)
 
         self.unsinkEvents(Event.FOCUSEVENTS| Event.ONCLICK)
         DOM.sinkEvents(self.inputElem, Event.FOCUSEVENTS | Event.ONCLICK | DOM.getEventsSunk(self.inputElem))

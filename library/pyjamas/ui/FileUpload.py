@@ -20,7 +20,10 @@ from Widget import Widget
 class FileUpload(Widget):
     def __init__(self, **kwargs):
         if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-FileUpload"
-        element = DOM.createElement("input")
+        if kwargs.has_key('Element'):
+            element = kwargs.pop('Element')
+        else:
+            element = DOM.createElement("input")
         DOM.setAttribute(element, "type", "file")
         self.setElement(element)
         Widget.__init__(self, **kwargs)

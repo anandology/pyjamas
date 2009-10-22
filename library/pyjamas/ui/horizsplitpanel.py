@@ -153,7 +153,12 @@ class HorizontalSplitPanel(SplitPanel):
         """
 
         if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-HorizontalSplitPanel"
-        SplitPanel.__init__(self, DOM.createDiv(),
+
+        if kwargs.has_key('Element'):
+            element = kwargs.pop('Element')
+        else:
+            element = DOM.createDiv()
+        SplitPanel.__init__(self, element,
                             DOM.createDiv(),
                             self.preventBoxStyles(DOM.createDiv()),
                             self.preventBoxStyles(DOM.createDiv()),

@@ -268,5 +268,7 @@ class SplitPanel(Panel):
     def stopResizing(self):
         self.isResizing = False
 
-Factory.registerClass('pyjamas.ui.SplitPanel', SplitPanel)
+# TODO: this is really an internal base class for Horizontal and Vertical
+# SplitPanels?
+#Factory.registerClass('pyjamas.ui.SplitPanel', SplitPanel)
 

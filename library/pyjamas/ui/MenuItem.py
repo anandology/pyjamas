@@ -43,7 +43,11 @@ class MenuItem(UIObject):
         self.parentMenu = None
         self.subMenu = None
 
-        self.setElement(DOM.createTD())
+        if kwargs.has_key('Element'):
+            element = kwargs.pop('Element')
+        else:
+            element = DOM.createTD()
+        self.setElement(element)
 
         kwargs['SelectionStyle'] = False
         if asHTML:
