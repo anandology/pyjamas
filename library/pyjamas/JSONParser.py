@@ -149,6 +149,9 @@ class JSONParser:
             },
             object: function (x) {
                 if (x) {
+                    if (x.__number__) {
+                        return String(x);
+                    }
                     if (x instanceof Array) {
                         return s.array(x);
                     }

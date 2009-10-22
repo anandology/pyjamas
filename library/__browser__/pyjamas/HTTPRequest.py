@@ -57,7 +57,7 @@ class HTTPRequest:
                     var localHandler = handler;
                     var response;
                     var status = xmlHttp.status;
-                    if (returnxml)
+                    if (returnxml.valueOf())
                         response = xmlHttp.responseXML;
                     else
                         response = xmlHttp.responseText;
@@ -88,7 +88,7 @@ class HTTPRequest:
         var xmlHttp = this.doCreateXmlHTTPRequest();
         try {
             xmlHttp.open("DELETE", url, true);
-            if (returnxml)
+            if (returnxml.valueOf())
                 xmlHttp.setRequestHeader("Content-Type", "application/xml; charset=utf-8");
             else
                 xmlHttp.setRequestHeader("Content-Type", "text/plain; charset=utf-8");
@@ -98,7 +98,7 @@ class HTTPRequest:
                     var localHandler = handler;
                     var response;
                     var status = xmlHttp.status;
-                    if (returnxml)
+                    if (returnxml.valueOf())
                         response = xmlHttp.responseXML;
                     else
                         response = xmlHttp.responseText;
@@ -139,7 +139,7 @@ class HTTPRequest:
                     var localHandler = handler;
                     var response;
                     var status = xmlHttp.status;
-                    if (returnxml)
+                    if (returnxml.valueOf())
                         response = xmlHttp.responseXML;
                     else
                         response = xmlHttp.responseText;
@@ -170,7 +170,7 @@ class HTTPRequest:
         var xmlHttp = this.doCreateXmlHTTPRequest();
         try {
             xmlHttp.open("GET", url, true);
-            if (returnxml)
+            if (returnxml.valueOf())
                 xmlHttp.setRequestHeader("Content-Type", "application/xml; charset=utf-8");
             else
                 xmlHttp.setRequestHeader("Content-Type", "text/plain; charset=utf-8");
@@ -180,7 +180,7 @@ class HTTPRequest:
                     var localHandler = handler;
                     var response;
                     var status = xmlHttp.status;
-                    if (returnxml)
+                    if (returnxml.valueOf())
                         response = xmlHttp.responseXML;
                     else
                         response = xmlHttp.responseText;
