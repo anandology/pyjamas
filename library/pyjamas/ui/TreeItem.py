@@ -89,6 +89,10 @@ class TreeItem(UIObject):
 
     # also callable as addItem(widget) and addItem(itemText)
     def addItem(self, item):
+        return self.insertItem(item)
+
+    # also callable as addItem(widget) and addItem(itemText)
+    def insertItem(self, item, index=None):
         if not hasattr(item, "getTree"):
             #if not item.getTree:
             item = TreeItem(item)
@@ -98,9 +102,16 @@ class TreeItem(UIObject):
 
         item.setTree(self.tree)
         item.setParentItem(self)
-        self.children.append(item)
+        if index is None:
+            self.children.append(item)
+        else:
+            self.children.insert(index, item)
         DOM.setStyleAttribute(item.getElement(), "marginLeft", "16px")
-        DOM.appendChild(self.childSpanElem, item.getElement())
+        if index is None:
+            DOM.appendChild(self.childSpanElem, item.getElement())
+        else:
+            DOM.insertChild(self.childSpanElem, item.getElement(), index)
+
         if len(self.children) == 1:
             self.updateState()
 
@@ -299,12 +310,18 @@ class TreeItem(UIObject):
 
 class RootTreeItem(TreeItem):
     def addItem(self, item):
+        self.insertItem(item)
+
+    def insertItem(self, item, index=None):
         if (item.getParentItem() is not None) or (item.getTree() is not None):
             item.remove()
         item.setTree(self.getTree())
 
         item.setParentItem(None)
-        self.children.append(item)
+        if index is None:
+            self.children.append(item)
+        else:
+            self.children.insert(index, item)
 
         DOM.setIntStyleAttribute(item.getElement(), "marginLeft", 0)
 

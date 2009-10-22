@@ -74,11 +74,17 @@ class Tree(Widget):
         self.focusListeners.append(listener)
 
     def addItem(self, item):
+        return self.insertItem(item)
+
+    def insertItem(self, item, index=None):
         if isinstance(item, str):
             item = TreeItem(item)
 
         ret = self.root.addItem(item)
-        DOM.appendChild(self.getElement(), item.getElement())
+        if index is None:
+            DOM.appendChild(self.getElement(), item.getElement())
+        else:
+            DOM.insertChild(self.getElement(), item.getElement(), index)
 
         return ret
 

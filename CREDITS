@@ -37,20 +37,21 @@ Hackadelic - http://code.google.com/u/hackadelic/
 Catalin Patulea - <cronos586@gmail.com>
 JJ Kunce (http://code.google.com/u/jjkunce)
 Alexei Sokolov
+Carl Roach <carl.roach@gmail.com>
 
 
 Erik gets a special mention for the contribution of the "Showcase".
 
 Luis did the porting of gtk to pyjamas: I'm sorry we haven't had time
 to reincorporate it into pyjamas 0.4 or above yet, Luis!  It'll happen
-eventually.
+eventually (nearly there, luis, I promise!)
 
 Bernd's work on the core python compiler has been absolutely invaluable.
 
 G Clinch ported the DisclosurePanel from GWT
 
-Kees Boss added multiple inheritance support and has just gone mad with
-the python-esque improvements since.
+Kees Boss originally added multiple inheritance support and has just gone mad
+with the python-esque improvements ever since.
 
 Laszlo Krekacs has been adding little bits of language support, and also
 ported Toggle, Custom and Push buttons from GWT 1.6
