@@ -4372,7 +4372,7 @@ def is_basetype(x):
 
 def get_pyjs_classtype(x):
     JS("""
-        if (pyjslib.hasattr(x, "__is_instance__")) {
+        if (x !== null && typeof x.__is_instance__ == 'boolean') {
             var src = x.__name__;
             return src;
         }
@@ -4579,8 +4579,11 @@ def setattr(obj, name, value):
 
 def hasattr(obj, name):
     JS("""
-    if (!pyjslib.isObject(obj)) return false;
-    if (pyjslib.isUndefined(obj[name])) return false;
+    if (typeof name != 'string') {
+        throw pyjslib['TypeError']("attribute name must be string");
+    }
+    if (obj === null || typeof obj[name] == 'undefined') return false;
+    if (typeof obj != 'object' && typeof obj != 'function') return false;
 
     return true;
     """)
