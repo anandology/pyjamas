@@ -594,84 +594,148 @@ JS("""
 """)
 
 
+# All modules (do and should) take care of checking their parent:
+#   - If the parent is not loaded and initialized, call ___import___(parent, null)
+# All modules are placed in sys.modules dict
+# The module is first tried within the context
+# If the depth > 1 (i.e. one or more dots in the path) then:
+#     Try the parent if it has an object that resolves to [context.]path
+# If the module doesn't exist and dynamic loading is enabled, try dynamic loading
 def ___import___(path, context, module_name=None, get_base=True):
     save_track_module = JS("$pyjs.track.module")
-    module = JS("$pyjs.loaded_modules[path]")
-    in_context = (not context is None)
+    sys = JS("$pyjs.loaded_modules['sys']")
+    if JS("sys.__was_initialized__ != true"):
+        module = JS("$pyjs.loaded_modules[path]")
+        module()
+        JS("$pyjs.track.module = save_track_module;")
+        if path == 'sys':
+            module.modules = dict({'pyjslib': pyjslib, 'sys': module})
+        return module
+    importName = path
     is_module_object = False
-    parts = path.split('.')
-    parent_module = None
-    if in_context:
-        importName = context + '.'
+    path_parts = path.__split('.') # make a javascript Array
+    depth = path_parts.length
+    topName = JS("path_parts[0]")
+    objName = JS("path_parts[path_parts.length-1]")
+    parentName = path_parts.slice(0, path_parts.length-1).join('.')
+    if context is None:
+        in_context = False
     else:
-        importName = ''
-    l = len(parts)
-    i = -1
-    # 'for i, name in enumerate(parts)' is incredibly expensive
-    # as is 'for i in range(l)'.  use while loop.  saves horrendous
-    # amount of start-up time
-    while i < l-1:
-        i += 1
-        name = parts[i]
-        importName += name
-        if in_context:
-            module = JS("$pyjs.loaded_modules[importName]")
-            if i == 0:
-                if JS("typeof module != 'undefined'"):
-                    if JS("typeof $pyjs.loaded_modules[context + '.' + path] != 'undefined'"):
-                        # module is already loaded
-                        if JS("typeof $pyjs.loaded_modules[context + '.' + path].__was_initialized__ != 'undefined'"):
-                            break
-                else:
-                    if JS("$pyjs.options.dynamic_loading"):
-                        module = __dynamic_load__(importName)
-                    if JS("typeof module == 'undefined'"):
-                        in_context = False
-                        if JS("typeof $pyjs.loaded_modules[path] != 'undefined'"):
-                            # module is already loaded
-                            if JS("typeof $pyjs.loaded_modules[path].__was_initialized__ != 'undefined'"):
-                                break
-                        importName = name
-                        module = JS("$pyjs.loaded_modules[importName]")
+        in_context = True
+        inContextImportName = context + '.' + importName
+        if not parentName:
+            inContextParentName = context
         else:
-            module = JS("$pyjs.loaded_modules[importName]")
-        if JS("typeof module == 'undefined'"):
-            if JS("$pyjs.options.dynamic_loading"):
-                module = __dynamic_load__(importName)
-            if JS("typeof module == 'undefined'"):
-                if not parent_module is None and hasattr(parent_module, name):
-                    is_module_object = True
-                    return JS("parent_module[name]")
-                    break
-                JS("$pyjs.track.module = save_track_module;")
-                raise ImportError(
-                    "No module named %s, %s in context %s" % (importName, path, context))
-        if i == 0 and not in_context:
-            JS("$pyjs.__modules__[importName] = module;")
-        if l==i+1:
-            # This is the last module, we set the module name here
-            module(module_name)
-        else:
+            inContextParentName = context + '.' + parentName
+        inContextTopName = context + '.' + topName
+        contextTopName = JS("context.__split('.')[0]")
+
+        # Check if we already have imported this module in this context
+        if depth > 1 and sys.modules.has_key(inContextParentName):
+            module = sys.modules[inContextParentName]
+            if JS("typeof module[objName] != 'undefined'"):
+                if get_base:
+                    return JS("$pyjs.loaded_modules[inContextTopName]")
+                return JS("module[objName]")
+        elif sys.modules.has_key(inContextImportName):
+            if get_base:
+                return JS("$pyjs.loaded_modules[inContextTopName]")
+            return sys.modules[inContextImportName]
+        elif depth > 1 and JS("typeof (module = $pyjs.loaded_modules[inContextParentName]) != 'undefined'"):
+            sys.modules[inContextParentName] = module
+            JS("module.__was_initialized__ = false;")
             module(None)
-        importName += '.'
-        parent_module = module
-    JS("$pyjs.track.module = save_track_module;")
-    if in_context:
-        if get_base == True:
-            importName = context + '.' + parts[0]
-        else:
-            importName = context + '.' + path
-    else:
-        if get_base == True:
-            importName = parts[0]
-        else:
-            importName = path
-    return JS("$pyjs.loaded_modules[importName]")
+            JS("$pyjs.track.module = save_track_module;")
+            if JS("typeof module[objName] != 'undefined'"):
+                if get_base:
+                    return JS("$pyjs.loaded_modules[inContextTopName]")
+                return JS("module[objName]")
+        if sys.modules.has_key(inContextImportName):
+            if get_base:
+                return JS("$pyjs.loaded_modules[inContextTopName]")
+            return sys.modules[inContextImportName]
+        if JS("typeof (module = $pyjs.loaded_modules[inContextImportName]) != 'undefined'"):
+            sys.modules[inContextImportName] = module
+            JS("module.__was_initialized__ = false;")
+            module(module_name)
+            JS("$pyjs.track.module = save_track_module;")
+            if get_base:
+                return JS("$pyjs.loaded_modules[inContextTopName]")
+            return module
+        # Check if the topName is a valid module, if so, we stay in_context
+        if not sys.modules.has_key(inContextTopName):
+            if JS("typeof (module = $pyjs.loaded_modules[inContextTopName]) != 'function'"):
+                in_context = False
+                if JS("$pyjs.options.dynamic_loading"):
+                    module = __dynamic_load__(inContextTopName)
+                    if JS("""typeof module == 'function'"""):
+                        in_context = True
+                        if depth == 1:
+                            module(module_name)
+                            JS("$pyjs.track.module = save_track_module;")
+                            return module
+                        else:
+                            module(None)
+                            if depth == 2 and JS("typeof module[objName] != 'undefined'"):
+                                if get_base:
+                                    return JS("$pyjs.loaded_modules[inContextTopName]")
+                                return JS("module[objName]")
+        if in_context:
+            importName = inContextImportName
+            parentName = inContextParentName
+            topName = inContextTopName
+    if not in_context:
+        if parentName and sys.modules.has_key(parentName):
+            module = sys.modules[parentName]
+            if JS("typeof module[objName] != 'undefined'"):
+                if get_base:
+                    return JS("$pyjs.loaded_modules[topName]")
+                return JS("module[objName]")
+        elif sys.modules.has_key(importName):
+            if get_base:
+                return JS("$pyjs.loaded_modules[topName]")
+            return sys.modules[importName]
+        elif parentName and JS("typeof (module = $pyjs.loaded_modules[parentName]) != 'undefined'"):
+            sys.modules[parentName] = module
+            JS("module.__was_initialized__ = false;")
+            module(None)
+            JS("$pyjs.track.module = save_track_module;")
+            if JS("typeof module[objName] != 'undefined'"):
+                if get_base:
+                    return JS("$pyjs.loaded_modules[topName]")
+                return JS("module[objName]")
+        if sys.modules.has_key(importName):
+            if get_base:
+                return JS("$pyjs.loaded_modules[topName]")
+            return sys.modules[importName]
+        if JS("typeof (module = $pyjs.loaded_modules[importName]) != 'undefined'"):
+            sys.modules[importName] = module
+            if importName != 'pyjslib' and importName != 'sys':
+                JS("module.__was_initialized__ = false;")
+            module(module_name)
+            JS("$pyjs.track.module = save_track_module;")
+            if get_base:
+                return JS("$pyjs.loaded_modules[topName]")
+            return module
+
+    # If we are here, the module is not loaded (yet).
+    if JS("$pyjs.options.dynamic_loading"):
+        module = __dynamic_load__(importName)
+        if JS("""typeof module == 'function'"""):
+            module(module_name)
+            JS("$pyjs.track.module = save_track_module;")
+            if get_base:
+                return JS("$pyjs.loaded_modules[topName]")
+            return module
+
+    raise ImportError(
+        "No module named %s, %s in context %s" % (importName, path, context))
 
 def __dynamic_load__(importName):
+    global __nondynamic_modules__
     setCompilerOptions("noDebug")
     module = JS("""$pyjs.loaded_modules[importName]""")
-    if sys is None or dynamic is None:
+    if sys is None or dynamic is None or __nondynamic_modules__.has_key(importName):
         return module
     if JS("""typeof module == 'undefined'"""):
         try:
@@ -685,6 +749,8 @@ def __dynamic_load__(importName):
             module = JS("""$pyjs.loaded_modules[importName]""")
         except:
             pass
+        if JS("""typeof module == 'undefined'"""):
+            __nondynamic_modules__[importName] = 1.0
     return module
 
 class BaseException:
@@ -5061,6 +5127,8 @@ def any(iterable):
     return False
 
 init()
+
+__nondynamic_modules__ = {}
 
 def __import__(name, globals={}, locals={}, fromlist=[], level=-1):
     module = ___import___(name, None)

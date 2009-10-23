@@ -736,21 +736,22 @@ class Translator:
         else:
             self.parent_module_name = '.'.join(module_name.split('.')[:-1])
         if module_file_name.endswith('__init__.py'):
-            self.import_context = module_name
+            self.import_context = "'%s'" % module_name
+        elif self.parent_module_name:
+            self.import_context = "'%s'" % self.parent_module_name
         else:
-            self.import_context = self.parent_module_name
+            self.import_context = "null"
 
         print >>self.output, self.indent() + "$pyjs.loaded_modules['%s'] = function (__mod_name__) {" % module_name
         print >>self.output, self.spacing() + "if($pyjs.loaded_modules['%s'].__was_initialized__) return $pyjs.loaded_modules['%s'];"% (module_name, module_name)
+        if self.parent_module_name:
+            print >>self.output, self.spacing() + "if(typeof $pyjs.loaded_modules['%s'] == 'undefined' || !$pyjs.loaded_modules['%s'].__was_initialized__) pyjslib['___import___']('%s', null);"% (self.parent_module_name, self.parent_module_name, self.parent_module_name)
         parts = self.js_module_name.split('.')
         if len(parts) > 1:
             print >>self.output, self.spacing() + 'var %s = $pyjs.loaded_modules["%s"];' % (parts[0], module_name.split('.')[0])
         print >>self.output, self.spacing() + '%s = $pyjs.loaded_modules["%s"];' % (self.js_module_name, module_name)
 
         print >>self.output, self.spacing() + self.js_module_name+".__was_initialized__ = true;"
-        #if self.parent_module_name:
-        #    print >>self.output, self.spacing() + "if(typeof $pyjs.loaded_modules['%s'] == 'undefined') pyjslib['___import___']('%s', null);"% (self.parent_module_name, self.parent_module_name)
-        #    print >>self.output, self.spacing() + "if(!$pyjs.loaded_modules['%s'].__was_initialized__) $pyjs.loaded_modules['%s'](null);"% (self.parent_module_name, self.parent_module_name)
         print >>self.output, self.spacing() + "if (__mod_name__ == null) __mod_name__ = '%s';" % (module_name)
         lhs = "%s.__name__" % self.js_module_name
         self.add_lookup('builtin', '__name__', lhs)
@@ -1765,7 +1766,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                 or (assignBase and not package_mod[0] in ['root-module', 'module'])
                ):
                 # the import statement
-                import_stmt = "pyjslib['___import___']('%s', '%s'" % (
+                import_stmt = "pyjslib['___import___']('%s', %s" % (
                                     importName,
                                     self.import_context,
                                     )
@@ -1788,7 +1789,14 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                 else:
                     mod_name = ass_name
                 if import_stmt is None:
-                    stmt = "%s = $pyjs.__modules__['%s'];"% (lhs, "']['".join(mod_name.split('.')))
+                    #stmt = "%s = $pyjs.__modules__['%s'];"% (lhs, "']['".join(mod_name.split('.')))
+                    parent_mod_name = mod_name.split('.')
+                    if len(parent_mod_name) == 1:
+                        stmt = "%s = $pyjs.loaded_modules['%s'];"% (lhs, mod_name)
+                    else:
+                        mod_name = parent_mod_name[-1]
+                        parent_mod_name = '.'.join(parent_mod_name[:-1])
+                        stmt = "%s = $pyjs.loaded_modules['%s']['%s'];"% (lhs, parent_mod_name, mod_name)
                 else:
                     stmt = "%s = %s);"% (lhs, import_stmt)
                 print >> self.output, self.spacing() + stmt
