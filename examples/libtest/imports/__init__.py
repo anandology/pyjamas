@@ -7,3 +7,6 @@ class Imports(object):
         self.v = 1
 
 imports = Imports()
+
+overrideme = "not overridden"
+

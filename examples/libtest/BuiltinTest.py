@@ -8,6 +8,10 @@ if False:
     import builtin
 import builtin
 
+from imports.cls import CLS
+from imports.cls1 import CLS as CLS1
+
+
 def other(**kwargs):
     return kwargs
 
@@ -173,6 +177,19 @@ class BuiltinTest(UnitTest):
             self.assertEqual(builtin.value, builtin.get_value())
         except:
             self.fail("Import failed for builtin")
+
+        from imports import overrideme
+        cls1 = CLS1()
+        self.assertTrue(CLS is CLS1, "CLS is CLS1")
+        self.assertTrue(isinstance(cls1, CLS), "isinstance(cls1, CLS)")
+        self.assertEqual(overrideme, "not overridden")
+        import imports.override
+        self.assertEqual(overrideme, "not overridden")
+        from imports import overrideme
+        try:
+            self.assertTrue(overrideme.overridden is True, "overrideme.overridden is True")
+        except:
+            self.fail("Exception on 'overrideme.overridden is True'")
 
     def testBitOperations(self):
         self.assertEqual(1 << 2 - 1, 2, "shift error 1")
