@@ -4565,8 +4565,9 @@ def delattr(obj, name):
 
 def setattr(obj, name, value):
     JS("""
-    if (!pyjslib.isObject(obj)) return null;
-
+    if (typeof name != 'string') {
+        throw pyjslib['TypeError']("attribute name must be string");
+    }
     if (   typeof obj[name] != 'undefined'
         && obj[name] !== null
         && typeof obj[name].__set__ == 'function') {
