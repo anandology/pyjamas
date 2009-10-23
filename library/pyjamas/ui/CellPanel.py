@@ -22,7 +22,7 @@ class CellPanel(ComplexPanel):
     def __init__(self, **kwargs):
         if kwargs.has_key('Element'):
             element = kwargs.pop('Element')
-        else:
+        if element is None:
             element = DOM.createTable()
         self.table = element
         self.setElement(self.table)

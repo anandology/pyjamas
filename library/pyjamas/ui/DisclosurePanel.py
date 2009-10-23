@@ -104,12 +104,10 @@ class DisclosurePanel(Composite):
         self.content = None
 
         # this is awkward: VerticalPanel is the composite,
-        # so we either get the element here, or create the table
-        # element here and pass it in to VerticalPanel.
+        # so we get the element here, and pass it in to VerticalPanel.
+        element = None
         if kwargs.has_key('Element'):
             element = kwargs.pop('Element')
-        else:
-            element = DOM.createTable()
 
         self.mainPanel = VerticalPanel(Element=element)
 

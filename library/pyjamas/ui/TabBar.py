@@ -31,12 +31,10 @@ class TabBar(Composite):
         if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-TabBar"
 
         # this is awkward: HorizontalPanel is the composite,
-        # so we either get the element here, or create the table
-        # element here and pass it in to HorizontalPanel.
+        # so we either the element here, and pass it in to HorizontalPanel.
+        element = None
         if kwargs.has_key('Element'):
             element = kwargs.pop('Element')
-        else:
-            element = DOM.createTable()
 
         self.panel = HorizontalPanel(Element=element)
         self.selectedTab = None
