@@ -388,6 +388,8 @@ class ClassTest(UnitTest):
             self.fail("failed to raise error for instance.z")
         except AttributeError, e:
             self.assertTrue(True)
+        except:
+            self.fail("failed to raise Attribute error for instance.z")
 
     def testSuperArgTest(self):
         a2 = SuperArg2(a=1,b=2,c=3)
@@ -534,6 +536,8 @@ class ClassTest(UnitTest):
         except AttributeError, e:
             self.assertTrue(True)
             #self.assertEqual(e[0], "'RevealAccess' object has no attribute 'val'")
+        except:
+            self.fail("Failed to raise Attribute error for 'del decorated.x'")
 
     def testProperty(self):
         p = OldStylePropertyDecorating()
@@ -544,8 +548,11 @@ class ClassTest(UnitTest):
         del p.x
         try:
             x = p._x
+            self.fail("Failed to raise error for 'x = p._x'")
         except AttributeError, e:
             self.assertTrue(True)
+        except:
+            self.fail("Failed to raise Attribute error for 'x = p._x'")
 
         p = NewStylePropertyDecorating()
 
@@ -555,8 +562,11 @@ class ClassTest(UnitTest):
         del p.x
         try:
             x = p._x
+            self.fail("Failed to raise error for 'x = p._x'")
         except AttributeError, e:
             self.assertTrue(True)
+        except:
+            self.fail("Failed to raise Attribute error for 'x = p._x'")
 
     def testDynamicLoading(self):
         self.assertEqual(I18N.i18n.example(),
