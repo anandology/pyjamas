@@ -3680,13 +3680,10 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             attr_right = attr_[-1]
             if self.bound_methods or self.descriptors:
                 if not self.descriptors:
-                    getattr_condition = "%(attr)s !== null && %(attr_left)s.__is_instance__"
+                    getattr_condition = "%(attr)s !== null && %(attr_left)s.__is_instance__ && typeof %(attr)s == 'function'"
                 else:
-                    getattr_condition = """%(attr_left)s !== null && %(attr_left)s.__is_instance__ && 
-(typeof %(attr)s == 'function')||
-(%(attr_left)s['%(attr_right)s'] !== null && 
-typeof %(attr_left)s['%(attr_right)s'] != 'undefined' && 
-typeof %(attr_left)s['%(attr_right)s']['__get__'] == 'function')"""
+                    getattr_condition = """%(attr)s !== null && (%(attr_left)s.__is_instance__ && typeof %(attr)s == 'function') ||
+(%(attr_left)s['%(attr_right)s'] !== null && typeof %(attr_left)s['%(attr_right)s']['__get__'] == 'function')"""
                 attr_code = """\
 (""" + getattr_condition + """?
 \tpyjslib['getattr'](%(attr_left)s, '%(attr_right)s'):

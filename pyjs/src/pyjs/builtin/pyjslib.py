@@ -4506,26 +4506,26 @@ def _issubtype(object_, classinfo):
 
 def getattr(obj, name, default_value=None):
     JS("""
-    if ((!pyjslib.isObject(obj))||(pyjslib.isUndefined(obj[name]))){
-        if (arguments.length != 3){
-            throw pyjslib.AttributeError(obj, name);
-        }else{
-        return default_value;
+    if (obj === null || typeof obj == 'undefined' || typeof obj[name] == 'undefined') {
+        if (arguments.length != 3 || typeof obj == 'undefined'){
+            throw pyjslib.AttributeError("'" + pyjslib.repr(obj) + "' has no attribute '" + name + "'");
         }
+        return default_value;
     }
     var method = obj[name];
-    if (method !== null && typeof method.__get__ == 'function') {
+    if (method === null) return method;
+
+    if (typeof method.__get__ == 'function') {
         if (obj.__is_instance__) {
             return method.__get__(obj, obj.__class__);
-        } else {
-            return method.__get__(null, obj.__class__);
         }
+        return method.__get__(null, obj.__class__);
     }
-    if (    (!pyjslib.isFunction(obj[name]))
-        || (typeof obj.__is_instance__ == 'undefined'
-            && typeof obj[name].__is_instance__ == 'undefined')) {
+    if (   typeof method != 'function'
+        || obj.__is_instance__ !== true) {
         return obj[name];
     }
+
     var fnwrap = function() {
         var args = [];
         for (var i = 0; i < arguments.length; i++) {
