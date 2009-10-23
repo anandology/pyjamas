@@ -1103,13 +1103,16 @@ String.prototype.center = function(width, fillchar) {
 };
 
 String.prototype.__getslice__ = function(lower, upper) {
-    if (lower < 0) {
-       lower = this.length + lower;
+    if (lower === null) {
+        lower = 0;
+    } else if (lower < 0) {
+        lower = this.length + lower;
     }
-    if (upper < 0) {
+    if (upper === null) {
+        upper=this.length;
+    } else if (upper < 0) {
        upper = this.length + upper;
     }
-    if (pyjslib.isNull(upper)) upper=this.length;
     return this.substring(lower, upper);
 }
 
