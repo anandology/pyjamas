@@ -17,6 +17,8 @@ from __pyjamas__ import doc
 from WebPageEdit import WebPageEdit
 from HTMLLinkPanel import HTMLLinkPanel
 
+import Email # don't do anything with it - just import it and use factory
+
 class WebApp:
     def onModuleLoad(self):
 
@@ -90,7 +92,7 @@ if __name__ == "__main__":
 
     el = DOM.createElement("div")
     el.innerHTML = "test"
-    DOM.setAttribute(el, "id", "pyjamas.ui.Label(Text='hello')")
+    DOM.setAttribute(el, "id", "pyjamas.apps.Email(Text='hello')")
     label = Factory.createWidgetOnElement(el)
     RootPanel().add(label)
 

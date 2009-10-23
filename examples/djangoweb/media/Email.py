@@ -15,6 +15,13 @@ from pyjamas import Factory
 class Email(Composite):
     def __init__(self, **kwargs):
 
+        element = None
+        if kwargs.has_key('Element'):
+            element = kwargs.pop('Element')
+
+        panel = VerticalPanel(Element=element)
+        Composite.__init__(self, panel, **kwargs)
+
         self.TEXT_WAITING = "Please wait..."
         self.TEXT_ERROR = "Server Error"
 
@@ -44,16 +51,6 @@ class Email(Composite):
         panel.add(buttons)
         panel.add(self.status)
         
-        # this is awkward: VerticalPanel is the composite,
-        # so we either get the element here, or create the table
-        # element here and pass it in to VerticalPanel.
-        element = None
-        if kwargs.has_key('Element'):
-            element = kwargs.pop('Element')
-
-        panel = VerticalPanel(Element=element)
-        Composite.__init__(self, panel, **kwargs)
-
     def onClick(self, sender):
         self.status.setText(self.TEXT_WAITING)
         text = self.message.getText()
@@ -70,9 +67,10 @@ class Email(Composite):
         self.status.setText(response)
 
     def onRemoteError(self, code, message, request_info):
-        self.status.setText("Server Error or Invalid Response: ERROR " + code + " - " + message)
+        self.status.setText("Server Error or Invalid Response: ERROR " + \
+                str(code) + " - " + str(message))
 
-Factory.registerClass('pyjamas.apps.Mail', Mail)
+Factory.registerClass('pyjamas.apps.Email', Email)
 
 class EchoServicePython(JSONProxy):
     def __init__(self):
