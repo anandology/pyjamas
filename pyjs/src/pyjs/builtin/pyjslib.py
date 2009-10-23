@@ -4689,7 +4689,7 @@ def hash(obj):
 # type functions from Douglas Crockford's Remedial Javascript: http://www.crockford.com/javascript/remedial.html
 def isObject(a):
     JS("""
-    return (a != null && (typeof a == 'object')) || pyjslib.isFunction(a);
+    return (a !== null && (typeof a == 'object')) || typeof a == 'function';
     """)
 
 def isFunction(a):
