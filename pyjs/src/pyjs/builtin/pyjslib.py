@@ -962,12 +962,12 @@ String.prototype.split = function(sep, maxsplit) {
     var start=0;
     var pos=0;
 
-    if (pyjslib.isUndefined(sep) || pyjslib.isNull(sep)) {
+    if (sep === null || typeof sep == 'undefined') {
         sep=" ";
         subject=subject.strip();
         subject=subject.replace(/\s+/g, sep);
     }
-    else if (!pyjslib.isUndefined(maxsplit)) do_max=true;
+    else if (typeof maxsplit != 'undefined') do_max=true;
 
     if (subject.length == 0) {
         return items;
@@ -979,10 +979,10 @@ String.prototype.split = function(sep, maxsplit) {
         pos=subject.indexOf(sep, start);
         if (pos<0) break;
 
-        items.append(subject.substring(start, pos));
+        items.l.push(subject.substring(start, pos));
         start=pos+sep.length;
     }
-    if (start<=subject.length) items.append(subject.substring(start));
+    if (start<=subject.length) items.l.push(subject.substring(start));
 
     return items;
 };
