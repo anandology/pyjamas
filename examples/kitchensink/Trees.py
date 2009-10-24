@@ -92,8 +92,24 @@ class Trees(Sink):
             proto = item.getUserObject()
             for i in range(len(proto.children)):
                 self.createItem(proto.children[i])
-                item.addItem(proto.children[i].item)
+                index = self.getSortIndex(item, proto.children[i].text)
+                # demonstrate insertItem.  addItem is easy.
+                item.insertItem(proto.children[i].item, index)
 
+    def getSortIndex(self, parent, text):
+        nodes = parent.getChildCount()
+        node = 0
+        text = text.lower()
+
+        while node < nodes:
+            item = parent.getChild(node)
+            if cmp(text, item.getText().lower()) < 0:
+                break;
+            else:
+                node += 1
+        
+        return node
+    
     def createItem(self, proto):
         proto.item = TreeItem(proto.text)
         proto.item.setUserObject(proto)
