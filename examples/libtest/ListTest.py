@@ -46,10 +46,11 @@ class ListTest(UnitTest):
 
         added = l1 + l2
 
-        self.assertTrue( added == [1,2,3,4], "l1 + l2")
+        self.assertTrue( added == [1,2,3,4],
+                         "l1 + l2: actual result %s" % repr(added))
 
         l1 += l2
-        self.assertTrue(l1 == [1,2,3,4], "l1 += l2")
+        self.assertTrue(l1 == [1,2,3,4], "l1 += l2: result %s" % repr(l1))
 
     def testSliceSet(self):
         value = [1,2,3]
@@ -271,6 +272,11 @@ class ListTest(UnitTest):
         l6 = list(l4)
         self.assertEqual(len(l6),1)
         self.assertEqual(l6[0],10)
+
+    def testRangeList(self):
+        list1 = [0, 1, 2, 3]
+        list2 = range(0, 4)
+        self.assertTrue(list1 == list2)
 
     def testExtend(self):
         l = [10,20]
