@@ -332,3 +332,17 @@ html>body .gwt-DecoratedStackPanel .gwt-StackPanelItem-below-selected .stackItem
 .mail-Contacts {
   border-bottom: none;
 }
+.gwt-StackPanel {
+  width: 15em;
+  border: 1px solid #666;
+
+}
+
+.gwt-StackPanel .gwt-StackPanelItem {
+  background: #d3def6 url(gradient.gif) repeat-x 0px -1px;
+  border: 1px solid #666;
+  cursor: pointer;
+  cursor: hand;
+
+}
+
