@@ -36,12 +36,12 @@ class MailList(Composite):
 
         # Create the 'navigation' bar at the upper-right.
         innerNavBar = HorizontalPanel()
-        innerNavBar.setStyleName("mail-ListNavBar")
         innerNavBar.setSpacing(8)
         innerNavBar.add(self.newerButton)
         innerNavBar.add(self.countLabel)
         innerNavBar.add(self.olderButton)
 
+        self.navBar.setStyleName("mail-ListNavBar")
         self.navBar.setHorizontalAlignment(HasAlignment.ALIGN_RIGHT)
         self.navBar.add(innerNavBar)
         self.navBar.setWidth("100%")
