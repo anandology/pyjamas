@@ -191,6 +191,10 @@ class BuiltinTest(UnitTest):
         except:
             self.fail("Exception on 'overrideme.overridden is True'")
 
+        import imports
+        self.assertTrue(CLS is imports.loccls.CLS, "CLS is imports.loccls.CLS")
+        self.assertTrue(CLS is imports.upcls.CLS, "CLS is imports.upcls.CLS")
+	
     def testBitOperations(self):
         self.assertEqual(1 << 2 - 1, 2, "shift error 1")
         self.assertEqual((1 << 2) - 1, 3, "shift error 2")

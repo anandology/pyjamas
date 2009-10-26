@@ -1,6 +1,8 @@
                     Changes made to Pyjamas since 0.6
                     ---------------------------------
 
+ * Added support for relative imports
+
  * Added insertItem to Tree, TreeItem and RootTreeItem and demo in
    KitchenSink Trees.py (thanks to Carl Roach)
 

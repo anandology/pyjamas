@@ -10,3 +10,5 @@ imports = Imports()
 
 overrideme = "not overridden"
 
+from . import cls as loccls
+from .imports import cls as upcls

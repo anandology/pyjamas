@@ -1730,7 +1730,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         # object to check our scope
         self._doImport(node.names, current_klass, top_level, root_level, True)
 
-    def _doImport(self, names, current_klass, top_level, root_level, assignBase):
+    def _doImport(self, names, current_klass, top_level, root_level, assignBase, absPath=False):
         if root_level:
             modtype = 'root-module'
         else:
@@ -1766,9 +1766,13 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                 or (assignBase and not package_mod[0] in ['root-module', 'module'])
                ):
                 # the import statement
+                if absPath:
+                    context = 'null'
+                else:
+                    context = self.import_context
                 import_stmt = "pyjslib['___import___']('%s', %s" % (
                                     importName,
-                                    self.import_context,
+                                    context,
                                     )
                 if not assignBase:
                     print >> self.output, self.spacing() + import_stmt + 'null, false);'
@@ -1824,15 +1828,30 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             return
         # XXX: hack for in-function checking, we should have another
         # object to check our scope
+        absPath = False
+        modname = node.modname
+        if node.level > 0:
+            absPath = True
+            modname = self.module_name.split('.')
+            level = node.level
+            if len(modname) < level:
+                raise TranslationError(
+                    "Attempted relative import beyond toplevel package",
+                    node, self.module_name)
+            if node.modname != '':
+                level += 1
+            if level > 1:
+                modname = '.'.join(modname[:-(node.level-1)])
+            else:
+                modname = self.module_name
+            if node.modname != '':
+                modname += '.' + node.modname
+                if modname[0] == '.':
+                    modname = modname[1:]
         for name in node.names:
-            sub = node.modname + '.' + name[0]
+            sub = modname + '.' + name[0]
             ass_name = name[1] or name[0]
-            self._doImport(((sub, ass_name),), current_klass, top_level, root_level, True)
-            #self._doImport(((sub, None),), current_klass, top_level, root_level, False)
-            #lhs = self._lhsFromName(ass_name, top_level, current_klass)
-            #modnames = ["'%s'" % name for name in ('%s.%s' % (node.modname, name[0])).split('.')]
-            #rhs = "$pyjs.__modules__[%s]" % (']['.join(modnames))
-            #print >> self.output, self.spacing() + "%s = %s;//2" % (lhs, rhs)
+            self._doImport(((sub, ass_name),), current_klass, top_level, root_level, True, absPath)
 
     def _function(self, node, current_klass, top_level, local):
         if self.is_class_definition:
