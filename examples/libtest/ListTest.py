@@ -384,6 +384,9 @@ class ListTest(UnitTest):
         l = [i for i in [j for j in [1,2,3]]]
         self.assertTrue(l == [1,2,3])
 
+        self.assertTrue([1] > [0,1], "[1] > [0,1] bug #311")
+        self.assertTrue([0,1] > [1], "[0,1] > [1]")
+
     def testListContains(self):
         l = [['monkey'], ['patch'], ['fish'], ['chips']]
         self.assertTrue(['fish'] in l, "['fish'] in l")
