@@ -3535,11 +3535,10 @@ class List:
             if (typeof data.l != 'undefined') {
                 data = data.l;
             } else {
-                var i=self.l.length;
                 try {
                     while (true) {
                         var item=data.next();
-                        self.l[i++]=item;
+                        l[j++]=item;
                         }
                     }
                 catch (e) {
@@ -3775,33 +3774,36 @@ class List:
 list = List
 
 class Tuple:
-    def __init__(self, data=None):
+    def __init__(self, data=JS("[]")):
         JS("""
-        self.l = [];
         if (pyjslib.isArray(data)) {
-            n = self.l.length;
-            for (var i=0; i < data.length; i++) {
-                self.l[n+i]=data[i];
-            }
+            self.l = data.slice();
         } else if (pyjslib.isinstance(data, pyjslib.List) ||
                    pyjslib.isinstance(data, pyjslib.Tuple)) {
-            var n = self.l.length;
-            for (var i=0; i < data.l.length; i++) {
-                self.l[n++]=data.l[i];
-            }
+            self.l = data.l.slice();
         } else if (pyjslib.isIteratable(data)) {
-            var iter=data.__iter__();
-            var i=self.l.length;
-            try {
-                while (true) {
-                    var item=iter.next();
-                    self.l[i++]=item;
+            data = data.__iter__()
+            if (typeof data.l != 'undefined') {
+                self.l = data.l.slice();
+            } else {
+                self.l = [];
+                var l = self.l;
+                var j = self.l.length;
+                try {
+                    while (true) {
+                        var item=data.next();
+                        l[j++]=item;
+                        }
+                    }
+                catch (e) {
+                    if (e.__name__ != 'StopIteration') {
+                        throw e;
+                    }
                 }
-            } catch (e) {
-                if (e.__name__ != 'StopIteration') {
-                    throw e;
-                }
+                return null;
             }
+        } else {
+            throw pyjslib['TypeError']("'" + pyjslib['repr'](data) + "' is not iterable");
         }
         """)
 
