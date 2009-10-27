@@ -3512,7 +3512,7 @@ $enumerate_array.prototype.__iter__ = function ( ) {
 """)
 
 class List:
-    def __init__(self, data=None):
+    def __init__(self, data=JS("[]")):
         JS("""
         self.l = [];
         self.extend(data);
@@ -3521,33 +3521,40 @@ class List:
     def append(self, item):
         JS("""self.l[self.l.length] = item;""")
 
+    # extend in place, just in case there's somewhere a shortcut to self.l
     def extend(self, data):
         JS("""
+        var l = self.l;
+        var j = self.l.length;
         if (pyjslib.isArray(data)) {
-            var n = self.l.length;
-            for (var i=0; i < data.length; i++) {
-                self.l[n+i]=data[i];
-            }
         } else if (pyjslib.isinstance(data, pyjslib.List) ||
                    pyjslib.isinstance(data, pyjslib.Tuple)) {
-            var n = self.l.length;
-            for (var i=0; i < data.l.length; i++) {
-                self.l[n++]=data.l[i];
-            }
+            data = data.l;
         } else if (pyjslib.isIteratable(data)) {
-            var iter=data.__iter__();
-            var i=self.l.length;
-            try {
-                while (true) {
-                    var item=iter.next();
-                    self.l[i++]=item;
+            data = data.__iter__()
+            if (typeof data.l != 'undefined') {
+                data = data.l;
+            } else {
+                var i=self.l.length;
+                try {
+                    while (true) {
+                        var item=data.next();
+                        self.l[i++]=item;
+                        }
+                    }
+                catch (e) {
+                    if (e.__name__ != 'StopIteration') {
+                        throw e;
                     }
                 }
-            catch (e) {
-                if (e.__name__ != 'StopIteration') {
-                    throw e;
-                }
+                return null;
             }
+        } else {
+            throw pyjslib['TypeError']("'" + pyjslib['repr'](data) + "' is not iterable");
+        }
+        var n = data.length, i = 0;
+        while (i < n) {
+            l[j++] = data[i++];
         }
         """)
 
