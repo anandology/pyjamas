@@ -524,11 +524,9 @@ def setEventListener(element, listener):
 
 def setInnerHTML(element, html):
     JS("""
-    if (!html) {
-        html = "";
-    }
-    element.innerHTML = html;
-    """)
+    if (typeof element.setInnerHTML == 'function') debugger;
+""")
+    JS("""element.innerHTML = html || "";""")
 
 def setInnerText(elem, text):
     JS("""
