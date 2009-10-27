@@ -62,7 +62,11 @@ class PopupPanel(SimplePanel):
 
         self.rootpanel.remove(self)
         self.onHideImpl(self.getElement())
-        for listener in self.popupListeners:
+        n = len(self.popupListeners)
+        i = 0
+        while i < n:
+            listener = self.popupListeners[i]
+            i += 1
             if hasattr(listener, 'onPopupClosed'): listener.onPopupClosed(self, autoClosed)
             else: listener(self, autoClosed)
 

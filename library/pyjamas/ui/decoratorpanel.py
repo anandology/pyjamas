@@ -88,11 +88,14 @@ class DecoratorPanel(SimplePanel):
         SimplePanel.__init__(self, self.table, **kwargs)
 
         # Add each row
-        for i in range(len(rowStyles)): 
+        n = len(rowStyles)
+        i = 0
+        while i < n:
             row = self.createTR(rowStyles[i])
             DOM.appendChild(self.tbody, row)
             if i == containerIndex:
                 self.containerElem = DOM.getFirstChild(DOM.getChild(row, 1))
+            i += 1
 
     def createTR(self, styleName) :
         """ Create a new row with a specific style name. The row

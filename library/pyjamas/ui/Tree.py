@@ -99,8 +99,10 @@ class Tree(Widget):
 
     def clear(self):
         size = self.root.getChildCount()
-        for i in range(size, 0, -1):
+        i = size
+        while i > 0:
             self.root.getChild(i-1).remove()
+            size -= 1
 
     def ensureSelectedItemVisible(self):
         if self.curSelection is None:
@@ -265,13 +267,16 @@ class Tree(Widget):
             return root
 
         hCurElem = chain[idx]
-        for i in range(root.getChildCount()):
+        n = root.getChildCount()
+        i = 0
+        while i < n:
             child = root.getChild(i)
             if DOM.compare(child.getElement(), hCurElem):
                 retItem = self.findItemByChain(chain, idx + 1, root.getChild(i))
                 if retItem is None:
                     return child
                 return retItem
+            i += 1
 
         return self.findItemByChain(chain, idx + 1, root)
 
@@ -340,8 +345,11 @@ class Tree(Widget):
             self.moveFocus(self.curSelection)
             self.curSelection.setSelected(True)
             if fireEvents and len(self.listeners):
-                for listener in self.listeners:
-                    listener.onTreeItemSelected(item)
+                n = len(self.listeners)
+                i = 0
+                while i < n:
+                    self.listeners[i].onTreeItemSelected(item)
+                    i += 1
 
     def doAttachChildren(self):
         for child in self:
@@ -365,9 +373,13 @@ class Tree(Widget):
         item.treeSetParent(None)
 
     def fireStateChanged(self, item):
-        for listener in self.listeners:
+        n = len(self.listeners)
+        i = 0
+        while i < n:
+            listener = self.listeners[i]
             if hasattr(listener, "onTreeItemStateChanged"):
                 listener.onTreeItemStateChanged(item)
+            i += 1
 
     def getChildWidgets(self):
         return self.childWidgets

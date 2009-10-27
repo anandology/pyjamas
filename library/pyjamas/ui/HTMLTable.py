@@ -55,11 +55,17 @@ class HTMLTable(Panel):
         self.tableListeners.append(listener)
 
     def clear(self):
-        for row in range(self.getRowCount()):
-            for col in range(self.getCellCount(row)):
+        nRows = self.getRowCount()
+        row = 0
+        while row < nRows:
+            nCols = self.getCellCount(row)
+            col = 0
+            while col < nCols:
                 child = self.getWidget(row, col)
                 if child is not None:
                     self.removeWidget(child)
+                col += 1
+            row += 1
         # assert len(self.widgetMap) == 0
 
     def clearCell(self, row, column):
@@ -129,7 +135,11 @@ class HTMLTable(Panel):
             row = DOM.getChildIndex(body, tr)
             column = DOM.getChildIndex(tr, td)
 
-            for listener in self.tableListeners:
+            n = len(self.tableListeners)
+            i = 0
+            while i < n:
+                listener = self.tableListeners[i]
+                i += 1
                 if hasattr(listener, 'onCellClicked'):
                     listener.onCellClicked(self, row, column)
                 else:
@@ -258,9 +268,12 @@ class HTMLTable(Panel):
 
     def insertCells(self, row, column, count):
         tr = self.rowFormatter.getRow(self.bodyElem, row)
-        for i in range(column, column + count):
+        n = column + count
+        i = column
+        while i < n:
             td = self.createCell()
             DOM.insertChild(tr, td, i)
+            i += 1
 
     def insertRow(self, beforeRow):
         if beforeRow != self.getRowCount():
@@ -296,8 +309,11 @@ class HTMLTable(Panel):
         DOM.removeChild(tr, td)
 
     def removeRow(self, row):
-        for column in range(self.getCellCount(row)):
+        n = self.getCellCount(row)
+        column = 0
+        while column < n:
             self.cleanCell(row, column)
+            column += 1
         DOM.removeChild(self.bodyElem, self.rowFormatter.getRow(self.bodyElem, row))
 
     def setCellFormatter(self, cellFormatter):

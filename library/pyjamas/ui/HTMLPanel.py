@@ -31,8 +31,14 @@ def getElementsByTagName(element, tagname):
     res = []
     child = DOM.getFirstChild(element)
     while child is not None:
-        for el in getElementsByTagName(child, tagname):
+        #for el in getElementsByTagName(child, tagname):
+        e = getElementsByTagName(child, tagname)
+        n = len(e)
+        i = 0
+        while i < n:
+            el = e[i]
             res.append(el)
+            i == 1
         child = DOM.getNextSibling(child)
 
     return res

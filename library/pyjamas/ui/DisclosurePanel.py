@@ -180,11 +180,15 @@ class DisclosurePanel(Composite):
         self.fireEvent()
 
     def fireEvent(self):
-        for handler in self.handlers:
+        n = len(self.handlers)
+        i = 0
+        while i < n:
+            handler = self.handlers[i]
             if self.isOpen:
                 handler.onOpen(self)
             else:
                 handler.onClose(self)
+            i += 1
 
     def setContentDisplay(self):
         if self.isOpen:

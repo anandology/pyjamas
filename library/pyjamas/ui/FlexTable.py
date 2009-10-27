@@ -43,8 +43,10 @@ class FlexTable(HTMLTable):
         return self.getDOMRowCount()
 
     def removeCells(self, row, column, num):
-        for i in range(num):
+        i = 0
+        while i < num:
             self.removeCell(row, column)
+            i += 1
 
     def prepareCell(self, row, column):
         self.prepareRow(row)
@@ -59,14 +61,19 @@ class FlexTable(HTMLTable):
         #if row < 0: throw new IndexOutOfBoundsException("Cannot create a row with a negative index: " + row);
 
         rowCount = self.getRowCount()
-        for i in range(rowCount, row + 1):
+        #for i in range(rowCount, row + 1):
+        i = rowCount
+        while i <= row:
             self.insertRow(i)
+            i += 1
 
     def addCells(self, table, row, num):
         rowElem = table.rows.item(row)
-        for i in range(num):
+        i = 0
+        while i < num:
             cell = doc().createElement("td")
             rowElem.appendChild(cell)
+            i += 1
 
 Factory.registerClass('pyjamas.ui.FlexTable', FlexTable)
 

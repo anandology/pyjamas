@@ -17,12 +17,16 @@ from pyjamas.ui import Event
 
 def fireFocusEvent(listeners, sender, event):
     type = DOM.eventGetType(event)
+    n = len(listeners)
+    i = 0
     if type == "focus":
-        for listener in listeners:
-            listener.onFocus(sender)
+        while i < n:
+            listeners[i].onFocus(sender)
+            i += 1
     elif type == "blur":
-        for listener in listeners:
-            listener.onLostFocus(sender)
+        while i < n:
+            listeners[i].onLostFocus(sender)
+            i += 1
 
 class FocusHandler:
 

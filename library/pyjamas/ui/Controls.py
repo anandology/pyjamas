@@ -63,8 +63,12 @@ class Control(FocusWidget, MouseHandler):
         if not notify:
             return
 
-        for listener in self.valuechange_listeners:
+        n = len(self.valuechange_listeners)
+        i = 0
+        while i < n:
+            listener = self.valuechange_listeners[i]:
             listener.onControlValueChanged(self, old_value, new_value)
+            i += 1
 
     def addControlValueListener(self, listener):
         self.valuechange_listeners.append(listener)

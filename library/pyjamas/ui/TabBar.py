@@ -127,10 +127,13 @@ class TabBar(Composite):
 
 
     def onClick(self, sender=None):
-        for i in range(1, self.panel.getWidgetCount() - 1):
+        n = self.panel.getWidgetCount() - 1
+        i = 1
+        while i < n:
             if DOM.isOrHasChild(self.panel.getWidget(i).getElement(),
                                 sender.getElement()):
                 return self.selectTab(i - 1)
+            i += 1
         return False
 
     def removeTab(self, index):
@@ -147,7 +150,11 @@ class TabBar(Composite):
     def selectTab(self, index):
         self.checkTabIndex(index)
 
-        for listener in self.tabListeners:
+        n = len(self.tabListeners)
+        i = 0
+        while i < n:
+            listener = self.tabListeners[i]
+            i += 1
             if not listener.onBeforeTabSelected(self, index):
                 return False
 
@@ -159,8 +166,10 @@ class TabBar(Composite):
         self.selectedTab = self.panel.getWidget(index + 1)
         self.setSelectionStyle(self.selectedTab, True)
 
-        for listener in self.tabListeners:
-            listener.onTabSelected(self, index)
+        n = len(self.tabListeners)
+        i = 0
+        while i < n:
+            self.tabListeners[i].onTabSelected(self, index)
 
         return True
 

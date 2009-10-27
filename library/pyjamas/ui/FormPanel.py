@@ -149,15 +149,21 @@ class FormPanel(SimplePanel):
 
     def onFormSubmit(self):
         event = FormSubmitEvent(self)
-        for handler in self.formHandlers:
-            handler.onSubmit(event)
+        n = len(self.formHandlers)
+        i = 0
+        while i < n:
+            self.formHandlers[i].onSubmit(event)
+            i += 1
 
         return not event.isCancelled()
 
     def onFrameLoad(self):
         event = FormSubmitCompleteEvent(self, self.getTextContents(self.iframe))
-        for handler in self.formHandlers:
-            handler.onSubmitComplete(event)
+        n = len(self.formHandlers)
+        i = 0
+        while i < n:
+            self.formHandlers[i].onSubmitComplete(event)
+            i += 1
 
     def removeFormHandler(self, handler):
         self.formHandlers.remove(handler)
@@ -177,8 +183,11 @@ class FormPanel(SimplePanel):
 
     def submit(self):
         event = FormSubmitEvent(self)
-        for handler in self.formHandlers:
-            handler.onSubmit(event)
+        n = len(self.formHandlers)
+        i = 0
+        while i < n:
+            self.formHandlers[i].onSubmit(event)
+            i += 1
 
         if event.isCancelled():
             return

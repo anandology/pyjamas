@@ -89,15 +89,22 @@ class TabPanel(Composite):
         return self.tab_children.__iter__()
 
     def onBeforeTabSelected(self, sender, tabIndex):
-        for listener in self.tabListeners:
+        n = len(self.tabListeners)
+        i = 0
+        while i < n:
+            listener = self.tabListeners[i]
+            i += 1
             if not listener.onBeforeTabSelected(sender, tabIndex):
                 return False
         return True
 
     def onTabSelected(self, sender, tabIndex):
         self.deck.showWidget(tabIndex)
-        for listener in self.tabListeners:
-            listener.onTabSelected(sender, tabIndex)
+        n = len(self.tabListeners)
+        i = 0
+        while i < n:
+            self.TabListeners[i].onTabSelected(sender, tabIndex)
+            i += 1
 
     def remove(self, widget):
         if isinstance(widget, int):

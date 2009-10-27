@@ -229,7 +229,11 @@ class TreeItem(UIObject):
                 self.tree.adopt(self.contentPanel)
 
     def addTreeItems(self, accum):
-        for item in self.children:
+        n = len(self.children)
+        i = 0
+        while i < n:
+            item = self.children[i]
+            i += 1
             accum.append(item)
             item.addTreeItems(accum)
 
@@ -282,8 +286,11 @@ class TreeItem(UIObject):
                 self.tree.disown(self.contentPanel)
 
         self.tree = tree
-        for child in self.children:
-            child.setTree(tree)
+        n = len(self.children)
+        i = 0
+        while i < n:
+            self.children[i].setTree(tree)
+            i += 1
         self.updateState()
         if tree is not None and self.contentPanel is not None:
                 tree.adopt(self.contentPanel)
@@ -303,9 +310,11 @@ class TreeItem(UIObject):
 
     def updateStateRecursive(self):
         self.updateState()
-        for i in range(len(self.children)):
-            child = self.children[i]
-            child.updateStateRecursive()
+        n = len(self.children)
+        i = 0
+        while i < n:
+            self.children[i].updateStateRecursive()
+            i += 1
 
 
 class RootTreeItem(TreeItem):

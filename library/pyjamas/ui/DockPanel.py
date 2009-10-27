@@ -127,18 +127,24 @@ class DockPanel(CellPanel):
 
         rowCount = 1
         colCount = 1
-        for child in self.dock_children:
+        n = len(self.dock_children)
+        i = 0
+        while i < n:
+            child = self.dock_children[i]
             dir = child.getLayoutData().direction
             if dir == self.NORTH or dir == self.SOUTH:
                 rowCount += 1
             elif dir == self.EAST or dir == self.WEST:
                 colCount += 1
+            i += 1
 
         rows = []
-        for i in range(rowCount):
+        i = 0
+        while i < rowCount:
             rows.append(DockPanelTmpRow())
             rows[i].tr = DOM.createTR()
             DOM.appendChild(bodyElement, rows[i].tr)
+            i += 1
 
         westCol = 0
         eastCol = colCount - 1
@@ -146,7 +152,11 @@ class DockPanel(CellPanel):
         southRow = rowCount - 1
         centerTd = None
 
-        for child in self.dock_children:
+        n = len(self.dock_children)
+        i = 0
+        while i < n:
+            child = self.dock_children[i]
+            i += 1
             layout = child.getLayoutData()
 
             td = DOM.createTD()

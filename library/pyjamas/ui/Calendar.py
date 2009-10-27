@@ -213,9 +213,11 @@ class Calendar(FocusPanel):
         #
         # put some content into the grid cells
         #
-        for i in range(7):
+        i = 0
+        while i < 7:
             grid.setText(0, i, self.daysOfWeek[i] )
             grid.cellFormatter.addStyleName(0,i,"calendar-header")
+            i += 1
         #
         # draw cells which are empty first
         #
@@ -261,12 +263,16 @@ class Calendar(FocusPanel):
             return
         selectedDay = int(text)
         # well if anyone is listening to the listener, fire that event
-        for listener in self.selectedDateListeners:
+        n = len(self.selectedDateListeners)
+        i = 0
+        while i < n:
+            listener = self.selectedDateListeners[i]
             if hasattr(listener, "onDateSelected"):
                 listener.onDateSelected(self.currentYear, self.currentMonth,
                                         selectedDay)
             else:
                 listener(self.currentYear, self.currentMonth, selectedDay)
+            i += 1
         self.setVisible(False)
 
 
@@ -283,11 +289,15 @@ class Calendar(FocusPanel):
         self.drawNextYear()
 
     def onDate(self, event, yy, mm, dd):
-        for listener in self.selectedDateListeners:
+        n = len(self.selectedDateListeners)
+        i = 0
+        while i < n:
+            listener = self.selectedDateListeners[i]
             if hasattr(listener, "onDateSelected"):
                 listener.onDateSelected(yy,mm,dd)
             else:
                 listener(yy,mm,dd)
+            i += 1
         self.setVisible(False)
 
     def onYesterday(self,event):

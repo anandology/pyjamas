@@ -85,7 +85,11 @@ class ListBox(FocusWidget):
 
     def onBrowserEvent(self, event):
         if DOM.eventGetType(event) == "change":
-            for listener in self.changeListeners:
+            n = len(self.changeListeners)
+            i = 0
+            while i < n:
+                listener = self.changeListeners[i]
+                i += 1
                 if hasattr(listener, 'onChange'):
                     listener.onChange(self)
                 else:
@@ -119,10 +123,13 @@ class ListBox(FocusWidget):
             to select by item, see selectItem.
             # http://code.google.com/p/pyjamas/issues/detail?id=63
         """
-        for n in range(self.getItemCount()):
+        nItems = self.getItemCount()
+        n = 0
+        while n < nItems:
             if self.getValue(n) == value:
                 self.setSelectedIndex(n)
                 return n
+            n += 1
         return None
 
     def selectItem(self, item):
@@ -130,10 +137,13 @@ class ListBox(FocusWidget):
             to select by value, see selectValue.
             # http://code.google.com/p/pyjamas/issues/detail?id=63
         """
-        for n in range(self.getItemCount()):
+        nItems = self.getItemCount()
+        n = 0
+        while n < nItems:
             if self.getItemText(n) == item:
                 self.setSelectedIndex(n)
                 return n
+            n += 1
         return None
 
     def setItemText(self, index, text):
@@ -164,9 +174,12 @@ class ListBox(FocusWidget):
             start_idx = 1
         else:
             start_idx = 0
-        for i in range(start_idx,self.getItemCount()):
+        n = self.getItemCount()
+        i = start_idx
+        while i < n:
             if self.isItemSelected(i):
                 selected.append(self.getItemText(i))
+            i += 1
         return selected
 
     def getSelectedValues(self, ignore_first_value = False):
@@ -175,30 +188,39 @@ class ListBox(FocusWidget):
             start_idx = 1
         else:
             start_idx = 0
-        for i in range(start_idx,self.getItemCount()):
+        n = self.getItemCount()
+        i = start_idx
+        while i < n:
             if self.isItemSelected(i):
                 selected.append(self.getValue(i))
+            i += 1
         return selected
 
     def setItemTextSelection(self, values):
         if not values:
             values = []
             self.setSelectedIndex(0)
-        for i in range(0,self.getItemCount()):
+        n = self.getItemCount()
+        i = 0
+        while i < n:
             if self.getItemText(i) in values:
                 self.setItemSelected(i, "selected")
             else:
                 self.setItemSelected(i, "")
+            i += 1
 
     def setValueSelection(self, values):
         if not values:
             values = []
             self.setSelectedIndex(0)
-        for i in range(0,self.getItemCount()):
+        n = self.getItemCount()
+        i = 0
+        while i < n:
             if self.getValue(i) in values:
                 self.setItemSelected(i, "selected")
             else:
                 self.setItemSelected(i, "")
+            i += 1
 
 Factory.registerClass('pyjamas.ui.ListBox', ListBox)
 

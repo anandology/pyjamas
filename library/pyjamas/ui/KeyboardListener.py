@@ -59,15 +59,20 @@ def fireKeyboardEvent(listeners, sender, event):
     keycode = DOM.eventGetKeyCode(event)
 
     type = DOM.eventGetType(event)
+    n = len(listeners)
+    i = 0
     if type == "keydown":
-        for listener in listeners:
-            listener.onKeyDown(sender, keycode, modifiers)
+        while i < n:
+            listeners[i].onKeyDown(sender, keycode, modifiers)
+            i += 1
     elif type == "keyup":
-        for listener in listeners:
-            listener.onKeyUp(sender, keycode, modifiers)
+        while i < n:
+            listeners[i].onKeyUp(sender, keycode, modifiers)
+            i += 1
     elif type == "keypress":
-        for listener in listeners:
-            listener.onKeyPress(sender, keycode, modifiers)
+        while i < n:
+            listeners[i].onKeyPress(sender, keycode, modifiers)
+            i += 1
 
 
 class KeyboardHandler:
