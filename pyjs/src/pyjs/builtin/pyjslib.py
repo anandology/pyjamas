@@ -4482,8 +4482,11 @@ def _isinstance(object_, classinfo):
     if (object_.__is_instance__ !== true) {
         return false;
     }
-    for (var c in object_.__mro__) {
-        if (object_.__mro__[c].__md5__ == classinfo.prototype.__md5__) return true;
+    var __mro__ = object_.__mro__;
+    var n = __mro__.length;
+    var __md5__ = classinfo.prototype.__md5__;
+    for (var i = 0; i < n; i++) {
+        if (__mro__[i].__md5__ == __md5__) return true;
     }
     return false;
     """)
