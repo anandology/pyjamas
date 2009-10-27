@@ -594,7 +594,7 @@ class TranslationError(Exception):
         self.node = node
         self.module_name = module_name
         self.lineno = lineno
-        self.message = "%s line %s:\n%s\n%s" % (module_name, lineno, msg, node)
+        Exception.__init__(self, "%s line %s:\n%s\n%s" % (module_name, lineno, msg, node))
 
     def __str__(self):
         return self.message
