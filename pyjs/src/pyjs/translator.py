@@ -3453,7 +3453,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
     def _subscript_stmt(self, node, current_klass):
         if node.flags == "OP_DELETE":
-            print >>self.output, "    " + self.track_call(self.expr(node.expr, current_klass) + ".__delitem__(" + self.expr(node.subs[0], current_klass) + ")", node.lineno) + ';'
+            print >>self.output, self.spacing() + self.track_call(self.expr(node.expr, current_klass) + ".__delitem__(" + self.expr(node.subs[0], current_klass) + ")", node.lineno) + ';'
         else:
             raise TranslationError(
                 "unsupported flag (in _subscript)", node, self.module_name)
@@ -3678,15 +3678,19 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             attr = self.attrib_join(attr_)
             attr_left = self.attrib_join(attr_[:-1])
             attr_right = attr_[-1]
+            v = self.uniqid('$attr')
+            vl = self.uniqid('$attr')
+            self.add_lookup('variable', v, v)
+            self.add_lookup('variable', vl, vl)
             if self.bound_methods or self.descriptors:
                 if not self.descriptors:
-                    getattr_condition = "%(attr)s !== null && %(attr_left)s.__is_instance__ && typeof %(attr)s == 'function'"
+                    getattr_condition = "((%(v)s=%(attr)s) !== null & (%(vl)s=%(attr_left)s).__is_instance__) && typeof %(v)s == 'function'"
                 else:
-                    getattr_condition = """%(attr)s !== null && (%(attr_left)s.__is_instance__ && typeof %(attr)s == 'function') ||
-(%(attr_left)s['%(attr_right)s'] !== null && typeof %(attr_left)s['%(attr_right)s']['__get__'] == 'function')"""
+                    getattr_condition = """((%(v)s=%(attr)s) !== null & ((%(vl)s=%(attr_left)s).__is_instance__) && typeof %(v)s == 'function') ||
+(%(vl)s['%(attr_right)s'] !== null && typeof %(vl)s['%(attr_right)s']['__get__'] == 'function')"""
                 attr_code = """\
 (""" + getattr_condition + """?
-\tpyjslib['getattr'](%(attr_left)s, '%(attr_right)s'):
+\tpyjslib['getattr'](%(vl)s, '%(attr_right)s'):
 \t%(attr)s)\
 """
                 attr_code = ('\n'+self.spacing()+"\t\t").join(attr_code.split('\n'))
