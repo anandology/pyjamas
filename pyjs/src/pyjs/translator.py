@@ -1641,27 +1641,8 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         else:
             end = "arguments.length"
         print >> self.output, """\
-%(s)svar %(v)s = new Array();
-%(s)sfor (var $pyjs__va_arg = %(b)d; $pyjs__va_arg < %(e)s; $pyjs__va_arg++) {
-%(s)s\tvar $pyjs__arg = arguments[$pyjs__va_arg];
-%(s)s\t%(v)s.push($pyjs__arg);
-%(s)s}
-%(s)s%(v)s = pyjslib['Tuple'](%(v)s);
-\
+%(s)svar %(v)s = pyjslib['Tuple']($pyjs_array_slice.call(arguments,%(b)d,%(e)s));
 """ % {'s': self.spacing(), 'v': varargname, 'b': start, 'e': end}
-
-    def __varargs_handler(self, node, varargname, arg_names, current_klass, loop_var = None):
-        print >>self.output, self.spacing() + "var", varargname, "= new pyjslib['Tuple']();"
-        print >>self.output, self.spacing() + "for(",
-        if loop_var is None:
-            loop_var = "$pyjs__va_arg"
-            print >>self.output, "var "+loop_var+"="+str(len(arg_names)),
-        print >>self.output, """\
-; %(loop_var)s < arguments.length; %(loop_var)s++) {
-%(s)s\tvar $pyjs__arg = arguments[%(loop_var)s];
-%(s)s\t%(varargname)s.append($pyjs__arg);
-%(s)s}\
-""" % {'s': self.spacing(), 'varargname': varargname, 'loop_var': loop_var}
 
     def _kwargs_parser(self, node, function_name, arg_names, current_klass, method_ = False):
         default_pos = len(arg_names) - len(node.defaults)

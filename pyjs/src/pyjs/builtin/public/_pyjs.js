@@ -1,4 +1,6 @@
 
+var $pyjs_array_slice = Array.prototype.slice;
+
 function $pyjs_kwargs_call(obj, func, star_args, dstar_args, args)
 {
     if (obj !== null) {
@@ -216,8 +218,7 @@ function $pyjs__instancemethod(klass, func_name, func, bind_type, args) {
             _this = arguments[0];
             argstart = 1;
         }
-        var args = new Array(_this);
-        for (var a=argstart;a < arguments.length; a++) args.push(arguments[a]);
+        var args = [_this].concat($pyjs_array_slice.call(arguments, argstart));
         if ($pyjs.options.arg_is_instance) {
             if (_this.__is_instance__ === true) {
                 if ($pyjs.options.arg_instance_type) return func.apply(this, args);
@@ -250,8 +251,7 @@ function $pyjs__staticmethod(klass, func_name, func, bind_type, args) {
 function $pyjs__classmethod(klass, func_name, func, bind_type, args) {
     var fn = function () {
         if ($pyjs.options.arg_is_instance && this.__is_instance__ !== true && this.__is_instance__ !== false) $pyjs__exception_func_instance_expected(func_name, klass.__name__);
-        var args = new Array(this.prototype);
-        for (var a=0;a < arguments.length; a++) args.push(arguments[a]);
+        var args = [_this.prototype].concat($pyjs_array_slice.call(arguments));
         return func.apply(this, args);
     };
     func.__name__ = func.func_name = func_name;

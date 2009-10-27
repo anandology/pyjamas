@@ -1191,7 +1191,7 @@ Boolean.prototype.__repr__ = Boolean.prototype.__str__;
     # Patching of the standard javascript Array object
     # This makes it imposible to use for (k in Array())
     JS("""
-if (!Array.prototype.indexOf) {
+if (typeof Array.prototype.indexOf != 'function') {
     Array.prototype.indexOf = function(elt /*, from*/) {
         var len = this.length >>> 0;
 
@@ -1209,7 +1209,7 @@ if (!Array.prototype.indexOf) {
         }
         return -1;
     };
-}
+};
 """)
 
     # Patching of the standard javascript RegExp
@@ -4181,11 +4181,7 @@ class property(object):
 def staticmethod(func):
     JS("""
     var fnwrap = function() {
-        var args = [];
-        for (var i = 0; i < arguments.length; i++) {
-          args.push(arguments[i]);
-        }
-        return func.apply(null,args);
+        return func.apply(null,$pyjs_array_slice.call(arguments));
     };
     fnwrap.__name__ = func.__name__;
     fnwrap.__args__ = func.__args__;
@@ -4207,11 +4203,7 @@ def super(type_, object_or_type = None):
     var obj = new Object();
     function wrapper(obj, name) {
         var fnwrap = function() {
-            var args = [];
-            for (var i = 0; i < arguments.length; i++) {
-              args.push(arguments[i]);
-            }
-            return obj[name].apply(object_or_type,args);
+            return obj[name].apply(object_or_type,$pyjs_array_slice.call(arguments));
         };
         fnwrap.__name__ = name;
         fnwrap.__args__ = obj[name].__args__;
@@ -4530,11 +4522,7 @@ def getattr(obj, name, default_value=None):
     }
 
     var fnwrap = function() {
-        var args = [];
-        for (var i = 0; i < arguments.length; i++) {
-          args.push(arguments[i]);
-        }
-        return method.apply(obj,args);
+        return method.apply(obj,$pyjs_array_slice.call(arguments));
     };
     fnwrap.__name__ = name;
     fnwrap.__args__ = obj[name].__args__;
