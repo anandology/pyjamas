@@ -310,10 +310,14 @@ class BuiltinTest(UnitTest):
 
 
         res = []
-        for j in i():
-            res.append(j)
-            if len(res) > 5:
-                self.fail("too many items in user-defined iterator")
-                break
+        try:
+            for j in i():
+                res.append(j)
+                if len(res) > 5:
+                    self.fail("too many items in user-defined iterator")
+                    break
+        except:
+            self.fail("error in user-defined iterator (caught here so tests can proceed)")
+            
         self.assertEqual(res, range(1,5))
 
