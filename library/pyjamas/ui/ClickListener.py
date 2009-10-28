@@ -27,15 +27,11 @@ class ClickHandler(object):
         if type == "click":
             if self._clickPreventDefault:
                 DOM.eventPreventDefault(event)
-            n = len(self._clickListeners)
-            i = 0
-            while i < n:
-                listener = self._clickListeners[i]
+            for listener in self._clickListeners:
                 if hasattr(listener, "onClick"):
                     listener.onClick(self)
                 else:
                     listener(self)
-                i += 1
 
     def removeClickListener(self, listener):
         self._clickListeners.remove(listener)
@@ -59,15 +55,11 @@ class DoubleClickHandler(object):
         """
         type = DOM.eventGetType(event)
         if type == "dblclick":
-            n = len(self._doubleclickListeners)
-            i = 0
-            while i < n:
-                listener = self._doubleclickListeners[i]
+            for listener in self._doubleclickListeners:
                 if hasattr(listener, "onDblClick"):
                     listener.onDblClick(self)
                 else:
                     listener(self)
-                i += 1
 
     def removeDoubleClickListener(self, listener):
         self._doubleclickListeners.remove(listener)

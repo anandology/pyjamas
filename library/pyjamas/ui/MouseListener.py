@@ -20,32 +20,25 @@ def fireMouseEvent(listeners, sender, event):
     y = DOM.eventGetClientY(event) - DOM.getAbsoluteTop(sender.getElement())
 
     type = DOM.eventGetType(event)
-    n = len(listeners)
-    i = 0
     if type == "mousedown":
-        while i < n:
-            listeners[i].onMouseDown(sender, x, y)
-            i += 1
+        for listener in listeners:
+            listener.onMouseDown(sender, x, y)
     elif type == "mouseup":
-        while i < n:
-            listeners[i].onMouseUp(sender, x, y)
-            i += 1
+        for listener in listeners:
+            listener.onMouseUp(sender, x, y)
     elif type == "mousemove":
-        while i < n:
+        for listener in listeners:
             listener.onMouseMove(sender, x, y)
-            i += 1
     elif type == "mouseover":
         from_element = DOM.eventGetFromElement(event)
         if not DOM.isOrHasChild(sender.getElement(), from_element):
-            while i < n:
-                listeners[i].onMouseEnter(sender)
-                i += 1
+            for listener in listeners:
+                listener.onMouseEnter(sender)
     elif type == "mouseout":
         to_element = DOM.eventGetToElement(event)
         if not DOM.isOrHasChild(sender.getElement(), to_element):
-            while i < n:
-                listeners[i].onMouseLeave(sender)
-                i += 1
+            for listener in listeners:
+                listener.onMouseLeave(sender)
 
 MOUSE_EVENTS = [ "mousedown", "mouseup", "mousemove", "mouseover", "mouseout"]
 

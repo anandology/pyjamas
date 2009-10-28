@@ -50,16 +50,12 @@ class Image(Widget, MouseHandler, ClickHandler):
     def onBrowserEvent(self, event):
         Widget.onBrowserEvent(self, event)
         type = DOM.eventGetType(event)
-        n = len(self.loadListeners)
-        i = 0
         if type == "load":
-            while i < n:
-                self.loadListeners[i].onLoad(self)
-                i += 1
+            for listener in self.loadListeners:
+                listener.onLoad(self)
         elif type == "error":
-            while i < n:
-                self.loadListeners[i].onError(self)
-                i += 1
+            for listener in self.loadListeners:
+                listener.onError(self)
 
     def prefetch(self, url):
         img = DOM.createImg()

@@ -118,14 +118,12 @@ class StackPanel(ComplexPanel):
         rows = self.getWidgetCount() * 2
 
         #for (int i = rowIndex; i < rows; i = i + 2) {
-        i = rowIndex
-        while i < rows:
+        for i in range(rowIndex, rows, 2):
             childTR = DOM.getChild(self.body, i)
             td = DOM.getFirstChild(childTR)
             curIndex = self._getIndex(td)
             self._setIndex(td, index)
             index += 1
-            i += 2
 
         return True
 

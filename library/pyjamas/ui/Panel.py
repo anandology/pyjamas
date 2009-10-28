@@ -29,17 +29,10 @@ class Panel(Widget):
     def clear(self):
         # use this method, due to list changing as it's being iterated.
         children = []
-        n = len(self.children)
-        i = 0
-        while i < n:
-            child = self.children[i]
-            i += 1
+        for child in self.children:
             children.append(child)
 
-        i = 0
-        while i < n:
-            child = self.children[i]
-            i += 1
+        for child in children:
             self.remove(child)
 
     def disown(self, widget):

@@ -196,10 +196,7 @@ class MenuBar(Widget):
             self.parentMenu.popup.hide()
 
     def findItem(self, hItem):
-        n = len(self.items)
-        i = 0
-        while i < n:
-            item = self.items[i]
+        for item in self.items:
             if DOM.isOrHasChild(item.getElement(), hItem):
                 return item
 

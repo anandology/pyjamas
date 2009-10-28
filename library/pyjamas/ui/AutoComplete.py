@@ -85,16 +85,13 @@ class AutoCompleteTextBox(TextBox):
         if len(text) > 0:
             matches = self.items.getCompletionItems(text)
 
-        nMatches = len(matches)
-        if nMatches > 0:
+        if len(matches) > 0:
             self.choices.clear()
 
-            i = 0
-            while i < nMatches:
+            for i in range(len(matches)):
                 self.choices.addItem(matches[i])
-                i += 1
                 
-            if nMatches == 1 and matches[0] == text:
+            if len(matches) == 1 and matches[0] == text:
                 self.choicesPopup.hide()
             else:
                 self.choices.setSelectedIndex(0)
@@ -139,12 +136,9 @@ class SimpleAutoCompletionItems:
         matches = []
         match = match.lower()
         
-        nCompletions = len(self.completions)
-        i = 0
-        while i < nCompletions:
+        for i in range(len(self.completions)):
             lower = self.completions[i].lower()
             if lower.startswith(match):
                 matches.append(self.completions[i])
-            i += 1
         
         return matches

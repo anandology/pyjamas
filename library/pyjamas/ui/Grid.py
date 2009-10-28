@@ -37,23 +37,13 @@ class Grid(HTMLTable):
             return
 
         if self.numColumns > columns:
-            i = 0
-            while i < self.numRows:
-                #for j in range(self.numColumns - 1, columns - 1, -1):
-                j = self.numColumns - 1
-                n = columns - 1
-                while j > n:
+            for i in range(0, self.numRows):
+                for j in range(self.numColumns - 1, columns - 1, -1):
                     self.removeCell(i, j)
-                    j -= 1
-                i += 1
         else:
-            i = 0
-            while i < self.numRows:
-                j = self.numColumns
-                while j < columns:
+            for i in range(self.numRows):
+                for j in range(self.numColumns, columns):
                     self.insertCell(i, j)
-                    j += 1
-                i += 1
         self.numColumns = columns
 
     def resizeRows(self, rows):
@@ -98,15 +88,11 @@ class Grid(HTMLTable):
         td = DOM.createElement("td")
         DOM.setInnerHTML(td, "&nbsp;")
         row = DOM.createElement("tr")
-        cellNum = 0
-        while cellNum < columns:
+        for cellNum in range(columns):
             cell = td.cloneNode(True)
             row.appendChild(cell)
-            cellNum += 1
-        rowNum = 0
-        while rowNum < numRows:
+        for rowNum in range(numRows):
             table.appendChild(row.cloneNode(True))
-            rowNum += 1
 
 Factory.registerClass('pyjamas.ui.Grid', Grid)
 
