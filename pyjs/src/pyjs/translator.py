@@ -1203,6 +1203,88 @@ try{var %(dbg)s_res=%(call_code)s;}catch(%(dbg)s_err){
 }return %(dbg)s_res})()""" % locals()
         return call_code
 
+    __generator_code_str = """\
+var $generator_state = [0], $generator_exc = [null], $yield_value = null, $exc = null, $is_executing=false;
+var $generator = function () {};
+$generator['next'] = function (noStop) {
+%(src1)s
+    var $res;
+    $yield_value = $exc = null;
+    if (noStop === true) {
+        $res = $generator['__next']();
+        if (typeof $res == 'undefined') {
+            $is_executing=false;
+            $generator_state[0] = -1;
+        }
+    } else {
+        try {
+            $res = $generator['__next']();
+            if (typeof $res == 'undefined') throw pyjslib.StopIteration;
+        } catch (e) {
+    %(src2)s
+            $is_executing=false;
+            $generator_state[0] = -1;
+            throw e;
+        }
+    }
+    $is_executing=false;
+    return $res;
+};
+$generator['__iter__'] = function () {return $generator;};
+$generator['send'] = function ($val) {
+%(src1)s
+    $yield_value = $val;
+    $exc = null;
+    try {
+        var $res = $generator['__next']();
+        if (typeof $res == 'undefined') throw pyjslib.StopIteration;
+    } catch (e) {
+%(src2)s
+        $generator_state[0] = -1;
+        $is_executing=false;
+        throw e;
+    }
+    $is_executing=false;
+    return $res;
+};
+$generator['throw'] = function ($exc_type, $exc_value) {
+%(src1)s
+    $yield_value = null;
+    $exc=(typeof $exc_value == 'undefined'?$exc_type():$exc_type($exc_value));
+    try {
+        var $res = $generator['__next']();
+    } catch (e) {
+%(src2)s
+        $generator_state[0] = -1;
+        $is_executing=false;
+        throw (e);
+    }
+    $is_executing=false;
+    return $res;
+};
+$generator['close'] = function () {
+%(src1)s
+    $yield_value = null;
+    $exc=pyjslib['GeneratorExit'];
+    try {
+        var $res = $generator['__next']();
+        $is_executing=false;
+        if (typeof $res != 'undefined') throw pyjslib.RuntimeError('generator ignored GeneratorExit');
+    } catch (e) {
+%(src2)s
+        $generator_state[0] = -1;
+        $is_executing=false;
+        if (e.__name__ == 'StopIteration' || e.__name__ == 'GeneratorExit') return null;
+        throw (e);
+    }
+    return null;
+};
+$generator['__next'] = function () {
+    var $yielding = false;
+    if ($is_executing) throw pyjslib.ValueError('generator already executing');
+    $is_executing = true;
+"""
+    __generator_code_str = __generator_code_str.replace("    ", "\t").replace("\n", "\n%(s)s")
 
     def generator(self, code):
         if self.is_generator:
@@ -1219,81 +1301,10 @@ try{var %(dbg)s_res=%(call_code)s;}catch(%(dbg)s_err){
             else:
                 src1 = src2 = ""
 
-            print >>self.output, """\
-%(s)svar $generator_state = [0], $generator_exc = [null], $yield_value = null, $exc = null, $is_executing=false;
-%(s)svar $generator = function () {};
-%(s)s$generator['next'] = function () {
-%(src1)s
-%(s)s\t$yield_value = $exc = null;
-%(s)s\ttry {
-%(s)s\t\tvar $res = $generator['__next']();
-%(s)s\t\tif (typeof $res == 'undefined') throw pyjslib.StopIteration;
-%(s)s\t} catch (e) {
-%(src2)s
-%(s)s\t\t$is_executing=false;
-%(s)s\t\t$generator_state[0] = -1;
-%(s)s\t\tthrow e;
-%(s)s\t}
-%(s)s\t$is_executing=false;
-%(s)s\treturn $res;
-%(s)s};
-%(s)s$generator['__iter__'] = function () {return $generator;};
-%(s)s$generator['send'] = function ($val) {
-%(src1)s
-%(s)s\t$yield_value = $val;
-%(s)s\t$exc = null;
-%(s)s\ttry {
-%(s)s\t\tvar $res = $generator['__next']();
-%(s)s\t\tif (typeof $res == 'undefined') throw pyjslib.StopIteration;
-%(s)s\t} catch (e) {
-%(src2)s
-%(s)s\t\t$generator_state[0] = -1;
-%(s)s\t\t$is_executing=false;
-%(s)s\t\tthrow e;
-%(s)s\t}
-%(s)s\t$is_executing=false;
-%(s)s\treturn $res;
-%(s)s};
-%(s)s$generator['throw'] = function ($exc_type, $exc_value) {
-%(src1)s
-%(s)s\t$yield_value = null;
-%(s)s\t$exc=(typeof $exc_value == 'undefined'?$exc_type():$exc_type($exc_value));
-%(s)s\ttry {
-%(s)s\t\tvar $res = $generator['__next']();
-%(s)s\t} catch (e) {
-%(src2)s
-%(s)s\t\t$generator_state[0] = -1;
-%(s)s\t\t$is_executing=false;
-%(s)s\t\tthrow (e);
-%(s)s\t}
-%(s)s\t$is_executing=false;
-%(s)s\treturn $res;
-%(s)s};
-%(s)s$generator['close'] = function () {
-%(src1)s
-%(s)s\t$yield_value = null;
-%(s)s\t$exc=pyjslib['GeneratorExit'];
-%(s)s\ttry {
-%(s)s\t\tvar $res = $generator['__next']();
-%(s)s\t\t$is_executing=false;
-%(s)s\t\tif (typeof $res != 'undefined') throw pyjslib.RuntimeError('generator ignored GeneratorExit');
-%(s)s\t} catch (e) {
-%(src2)s
-%(s)s\t\t$generator_state[0] = -1;
-%(s)s\t\t$is_executing=false;
-%(s)s\t\tif (e.__name__ == 'StopIteration' || e.__name__ == 'GeneratorExit') return null;
-%(s)s\t\tthrow (e);
-%(s)s\t}
-%(s)s\treturn $res;
-%(s)s};
-%(s)s$generator['__next'] = function () {
-%(s)s\tvar $yielding = false;
-%(s)s\tif ($is_executing) throw pyjslib.ValueError('generator already executing');
-%(s)s\t$is_executing = true;
-""" % locals()
+            print >>self.output, self.__generator_code_str % locals()
             self.indent()
             print >>self.output, code
-            print >>self.output, self.spacing(), "throw pyjslib.StopIteration;"
+            print >>self.output, self.spacing(), "return;"
             print >>self.output, self.dedent(), "};"
             print >>self.output, self.spacing(), "return $generator;"
         else:
@@ -2016,8 +2027,8 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         print >>self.output, self.spacing() + "$yielding = true;"
         print >>self.output, self.spacing() + "$generator_state[%d] = %d;" % (len(self.generator_states)-1, self.generator_states[-1]+1)
         print >>self.output, self.spacing() + "return $yield_value;"
-        #self.generator_switch_case(increment=True)
-        #self.generator_throw()
+        self.generator_switch_case(increment=True)
+        self.generator_throw()
 
     def _yield_expr(self, node, current_klass):
         self._yield(node, current_klass)
@@ -3126,9 +3137,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         if self.is_generator:
             self.is_generator = self.compiler.walk(node, GeneratorExitVisitor(), walker=GeneratorExitVisitor()).has_yield
         assign_name = ""
-        assign_tuple = ""
+        assign_tuple = []
 
-        # based on Bob Ippolito's Iteration in Javascript code
         if isinstance(node.assign, self.ast.AssName):
             assign_name = self.add_lookup('variable', node.assign.name, node.assign.name)
             if node.assign.flags == "OP_ASSIGN":
@@ -3139,12 +3149,11 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             for child in node.assign:
                 child_name = child.name
                 if assign_name == "":
-                    assign_name = "temp_" + child_name
+                    assign_name = self.uniqid('$iter')
                 self.add_lookup('variable', child_name, child_name)
                 s = self.spacing()
                 child_name = self.add_lookup('variable', child_name, child_name)
-                assign_tuple += """%(s)s%(child_name)s %(op)s """ % locals()
-                assign_tuple += self.track_call("%(assign_name)s.__getitem__(%(i)i)" % locals(), node.lineno) + ';'
+                assign_tuple.append("""%(child_name)s %(op)s %(assign_name)s.__array[%(i)i];""" % locals())
                 i += 1
         else:
             raise TranslationError(
@@ -3178,6 +3187,14 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         lhs = assign_name
         iterator_name = self.uniqid('$iter')
         self.add_lookup('variable', iterator_name, iterator_name)
+        is_gen = self.uniqid('$iter')
+        self.add_lookup('variable', is_gen, is_gen)
+        array = self.uniqid('$iter')
+        self.add_lookup('variable', array, array)
+        loopvar = self.uniqid('$iter')
+        self.add_lookup('variable', loopvar, loopvar)
+        nextval = self.uniqid('$iter')
+        self.add_lookup('variable', nextval, nextval)
 
         if self.source_tracking:
             self.stacksize_depth += 1
@@ -3187,20 +3204,28 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         s = self.spacing()
         print >>self.output, """\
 %(s)s%(iterator_name)s = """ % locals() + self.track_call("%(list_expr)s.__iter__()" % locals(), node.lineno) + ';'
+        print >>self.output, """\
+%(s)s%(is_gen)s = (typeof %(iterator_name)s.__next == 'function');
+%(s)s%(array)s = %(iterator_name)s.__array;
+%(s)s%(loopvar)s = 0;""" % locals()
+        condition = "typeof (%(nextval)s=(%(is_gen)s?%(iterator_name)s.next(true):%(array)s[%(loopvar)s++])) != 'undefined'" % locals()
+
         self.generator_switch_case(increment=True)
 
-        print >>self.output, self.indent() + """try {"""
         if self.is_generator:
-            print >>self.output, self.indent() + "for (;true;$generator_state[%d] = 0) {" % (len(self.generator_states), )
+            print >>self.output, self.spacing() + "$generator_state[%d] = 0;" % (len(self.generator_states), )
+            self.generator_switch_case(increment=True)
+            print >>self.output, self.indent() + "for (;$generator_state[%d] > 0 || %s;$generator_state[%d] = 0) {" % (len(self.generator_states), condition, len(self.generator_states), )
         else:
-            print >>self.output, self.indent() + """while (true) {"""
+            print >>self.output, self.indent() + """while (%s) {""" % condition
         self.generator_add_state()
         self.generator_switch_open()
         self.generator_switch_case(increment=False)
 
-        print >>self.output, self.spacing() + """%(lhs)s %(op)s""" % locals(),
-        print >>self.output, self.track_call("%(iterator_name)s.next()"% locals(), node.lineno) + ";"
-        print >>self.output, self.spacing() + """%(assign_tuple)s""" % locals()
+        print >>self.output, self.spacing() + """%(lhs)s %(op)s %(nextval)s;""" % locals()
+        if assign_tuple:
+            for line in assign_tuple:
+                print >>self.output, self.spacing() + line
         for node in node.body.nodes:
             self._stmt(node, current_klass)
 
@@ -3208,12 +3233,6 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.generator_switch_close()
         self.generator_del_state()
 
-        print >>self.output, self.dedent() + "}"
-        print >>self.output, self.dedent() + "} catch (e) {"
-        self.indent()
-        print >>self.output, self.indent() + "if (e.__name__ != 'StopIteration') {"
-        print >>self.output, self.spacing() + "throw e;"
-        print >>self.output, self.dedent() + "}"
         print >>self.output, self.dedent() + "}"
         if self.source_tracking:
             print >>self.output, """\

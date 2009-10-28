@@ -991,6 +991,7 @@ String.prototype.__iter__ = function() {
     var i = 0;
     var s = this;
     return {
+        '__array': this,
         'next': function() {
             if (i >= s.length) {
                 throw pyjslib.StopIteration;
@@ -3493,8 +3494,11 @@ tuple([0, ""])
 JS("""
     this.tl = this.tuple.__array;
 };
-$enumerate_array.prototype.next = function ( ) {
+$enumerate_array.prototype.next = function (noStop) {
     if (++this.i == this.__array.length) {
+        if (noStop === true) {
+            return [][1];
+        }
         throw pyjslib.StopIteration;
     }
     this.tl[1] = this.__array[this.i];
@@ -3505,6 +3509,7 @@ $enumerate_array.prototype.next = function ( ) {
     }
     return this.tuple;
 };
+$enumerate_array.prototype.__next = $enumerate_array.prototype.next;
 $enumerate_array.prototype.__iter__ = function ( ) {
     return this;
 };
@@ -4249,8 +4254,11 @@ def xrange(start, stop = None, step = 1):
     stop = start + nstep * step;
     if (nstep <= 0) nval = stop;
     var x = {
-        'next': function() {
+        'next': function(noStop) {
             if (nval == stop) {
+                if (noStop === true) {
+                    return [][1];
+                }
                 throw pyjslib.StopIteration;
             }
             rval = nval;
@@ -4258,6 +4266,9 @@ def xrange(start, stop = None, step = 1):
 """)
     return INT(rval);
     JS("""
+        },
+        '__next': function() {
+            return this.next(true);
         },
         '__iter__': function() {
             return this;
