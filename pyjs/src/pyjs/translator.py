@@ -1113,6 +1113,20 @@ class Translator:
             return self.__inline_bool_code_str % locals()
         return "pyjslib['bool'](%(e)s)" % locals()
 
+    __inline_len_code_str1 = """((%(v)s=%(e)s) === null?%(zero)s:
+    (typeof %(v)s.__array != 'undefined' ? %(v)s.__array.length:
+        (typeof %(v)s.__len__ == 'function'?%(v)s.__len__():
+            (typeof %(v)s.length != 'undefined'?%(v)s.length:
+                pyjslib['len'](%(v)s)))))"""
+    __inline_len_code_str1 = __inline_len_code_str1.replace("    ", "\t").replace("\n", "\n%(s)s")
+
+    __inline_len_code_str2 = """((%(v)s=%(e)s) === null?%(zero)s:
+    (typeof %(v)s.__array != 'undefined' ? new pyjslib['int'](%(v)s.__array.length):
+        (typeof %(v)s.__len__ == 'function'?%(v)s.__len__():
+            (typeof %(v)s.length != 'undefined'? new pyjslib['int'](%(v)s.length):
+                pyjslib['len'](%(v)s)))))"""
+    __inline_len_code_str2 = __inline_len_code_str2.replace("    ", "\t").replace("\n", "\n%(s)s")
+
     def inline_len_code(self, e):
         if self.inline_len:
             v = self.uniqid('$len')
@@ -1120,20 +1134,10 @@ class Translator:
             zero = '0'
             s = self.spacing()
             if not self.number_classes:
-                return """((%(v)s=%(e)s) === null?%(zero)s:
-%(s)s\t(typeof %(v)s.__len__ == 'function'?%(v)s.__len__():
-%(s)s\t\t(typeof %(v)s.length != 'undefined'?%(v)s.length:
-%(s)s\t\t\tpyjslib['len'](%(v)s))))""" % locals()
-            v1 = self.uniqid('$len')
-            self.add_lookup('variable', v1, v1)
+                return self.__inline_len_code_str1 % locals()
             self.constant_int['0'] = 1
             zero = "$constant_int_0"
-            return """((%(v1)s = ((%(v)s=%(e)s) === null?%(zero)s:
-%(s)s\t(typeof %(v)s.__len__ == 'function'?%(v)s.__len__():
-%(s)s\t\t(typeof %(v)s.length != 'undefined'?%(v)s.length:
-%(s)s\t\t\tpyjslib['len'](%(v)s))))).__number__ & 0x06?
-%(s)s\t%(v1)s:
-%(s)s\tpyjslib['int'](%(v1)s))""" % locals()
+            return self.__inline_len_code_str2 % locals()
         return "pyjslib['len'](%(e)s)" % locals()
 
     def inline_eq_code(self, e1, e2):

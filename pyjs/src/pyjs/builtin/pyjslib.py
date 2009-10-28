@@ -4445,6 +4445,7 @@ def len(object):
     v = 0
     JS("""
     if (object === null) return v;
+    else if (typeof object.__array != 'undefined') v = object.__array.length;
     else if (typeof object.__len__ == 'function') v = object.__len__();
     else if (typeof object.length != 'undefined') v = object.length;
     else throw pyjslib.TypeError("object has no len()")
