@@ -6,6 +6,10 @@ from cStringIO import StringIO
 from optparse import OptionParser
 import pyjs
 import re
+try:
+    from hashlib import md5
+except:
+    from md5 import md5
 
 AVAILABLE_PLATFORMS = ('IE6', 'Opera', 'OldMoz', 'Safari', 'Mozilla')
 
@@ -63,7 +67,6 @@ class BrowserLinker(linker.BaseLinker):
         if not platform:
             return
         if self.cache_buster:
-            import hashlib
             # rename the files to their hashed equivalents
             renamed = []
             for p in self.done[platform]:
@@ -71,10 +74,10 @@ class BrowserLinker(linker.BaseLinker):
                     new_p = self.renamed_libs[p]
                 else:
                     f = open(p)
-                    md5 = hashlib.md5(f.read()).hexdigest()
+                    md5sum = md5(f.read()).hexdigest()
                     f.close()
                     name, ext = os.path.splitext(p)
-                    new_p = name + '.' + md5 + ext
+                    new_p = name + '.' + md5sum + ext
                     os.rename(p, new_p)
                     self.renamed_libs[p] = new_p
                 renamed.append(new_p)
@@ -189,7 +192,7 @@ class BrowserLinker(linker.BaseLinker):
             return "\n".join(code)
 
         def js_modname(path):
-            return 'js@'+os.path.basename(path)+'.'+hashlib.md5(path).hexdigest()
+            return 'js@'+os.path.basename(path)+'.'+md5(path).hexdigest()
 
         def skip_unlinked(lst):
             new_lst = []
@@ -227,7 +230,6 @@ class BrowserLinker(linker.BaseLinker):
         static_js_libs = skip_unlinked(static_js_libs)
         static_app_libs = skip_unlinked(static_app_libs)
         
-        import hashlib
         dynamic_modules = self.unique_list_values(available_modules + [js_modname(lib) for lib in dynamic_js_libs])
         available_modules = self.unique_list_values(available_modules + early_static_app_libs + dynamic_modules)
         if len(dynamic_modules) > 0:
@@ -248,9 +250,8 @@ class BrowserLinker(linker.BaseLinker):
 
         file_contents = template % locals()
         if self.cache_buster:
-            import hashlib
-            md5 = hashlib.md5(file_contents).hexdigest()
-            name_parts.insert(2, md5)
+            md5sum = md5(file_contents).hexdigest()
+            name_parts.insert(2, md5sum)
         out_path = os.path.join(self.output, '.'.join((name_parts)))
 
         out_file = file(out_path, 'w')

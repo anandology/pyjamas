@@ -19,7 +19,10 @@ import os
 import copy
 from cStringIO import StringIO
 import re
-import hashlib
+try:
+    from hashlib import md5
+except:
+    from md5 import md5
 import logging
 import compiler
 from compiler.visitor import ASTVisitor
@@ -918,7 +921,10 @@ class Translator:
                         #                   self.ast.CallFunc(d, [self.ast.Name(funcname)], lineno=lineno),
                         #                   lineno=lineno)
                         #self._assign(tnode, current_class, top_level)
-                        tnode = self.ast.CallFunc(d, [self.ast.Name('%s')], lineno=lineno)
+                        tnode = self.ast.CallFunc(d, [self.ast.Name('%s')], 
+                                              star_args=None,
+                                              dstar_args=None,
+                                              lineno=lineno)
                         code = code % self._callfunc_code(tnode, None)
                 else:
                     raise TranslationError(
@@ -933,7 +939,10 @@ class Translator:
                     #                   self.ast.CallFunc(self.ast.Name(d.name), [self.ast.Name(funcname)], lineno=lineno),
                     #                   lineno=lineno)
                     #self._assign(tnode, current_class, top_level)
-                    tnode = self.ast.CallFunc(d, [self.ast.Name('%s')], lineno=lineno)
+                    tnode = self.ast.CallFunc(d, [self.ast.Name('%s')],
+                                              star_args=None,
+                                              dstar_args=None,
+                                              lineno=lineno)
                     code = code % self._callfunc_code(tnode, None)
             else:
                 raise TranslationError(
@@ -1156,7 +1165,7 @@ class Translator:
         return "pyjslib['op_eq'](%(e1)s, %(e2)s)" % locals()
 
     def md5(self, node):
-        return hashlib.md5(self.module_name + str(node.lineno) + repr(node)).hexdigest()
+        return md5(self.module_name + str(node.lineno) + repr(node)).hexdigest()
 
     def track_lineno(self, node, module=False):
         if self.source_tracking and node.lineno:
@@ -2179,7 +2188,10 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         body = node.body
         if not isinstance(node.body, self.ast.TryExcept):
             body = node
-        node.body.final = node.final
+        try: # lib2to3
+            node.body.final_ = node.final_
+        except: # python2.N
+            node.body.final = node.final
         self._tryExcept(body, current_klass, top_level=top_level)
 
     def _tryExcept(self, node, current_klass, top_level=False):
@@ -2807,7 +2819,10 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 lhs = self.ast.Subscript(self.ast.Name(augexpr), "OP_ASSIGN", [self.ast.Name(augsub)])
                 v = self.ast.Subscript(self.ast.Name(augexpr), v.flags, [self.ast.Name(augsub)])
             op = astOP(node.op)
-            tnode = self.ast.Assign([lhs], op((v, node.expr)))
+            try: # lib2to3
+                tnode = self.ast.Assign([lhs], op(v, node.expr))
+            except: # python2.N 
+                tnode = self.ast.Assign([lhs], op((v, node.expr)))
             return self._assign(tnode, current_klass, top_level)
         else:
             raise TranslationError(
@@ -2824,7 +2839,10 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         if isinstance(v, self.ast.Name):
             self.add_lookup('global', v.name, lhs)
         op = astOP(node.op)
-        tnode = self.ast.Assign([lhs_ass], op((v, node.expr)))
+        try: # lib2to3
+            tnode = self.ast.Assign([lhs_ass], op(v, node.expr))
+        except: # python2.N 
+            tnode = self.ast.Assign([lhs_ass], op((v, node.expr)))
         return self._assign(tnode, current_klass, top_level)
 
     def _lhsFromName(self, name, top_level, current_klass, set_name_type = 'variable'):
