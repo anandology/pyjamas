@@ -292,3 +292,28 @@ class BuiltinTest(UnitTest):
 	self.assertEqual(n1, 45)
 	self.assertEqual(n2, 60)
 	self.assertEqual(i, 3)
+
+    def testIter(self):
+
+        class i:
+            def __init__(self):
+                self.idx = 0
+
+            def __iter__(self):
+                return self
+
+            def next(self):
+                self.idx += 1
+                if self.idx == 5:
+                    raise StopIteration
+                return self.idx
+
+
+        res = []
+        for j in i():
+            res.append(j)
+            if len(res) > 5:
+                self.fail("too many items in user-defined iterator")
+                break
+        self.assertEqual(res, range(1,5))
+
