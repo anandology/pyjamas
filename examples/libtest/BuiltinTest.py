@@ -282,3 +282,13 @@ class BuiltinTest(UnitTest):
         self.assertEqual(str(xrange(3,4,5)), "xrange(3, 8, 5)")
         self.assertEqual(str(xrange(14,3,-5)), "xrange(14, -1, -5)")
 
+    def testForLoop(self):
+        n1 = 0
+        n2 = 0
+        for i in range(10):
+            n1 += i
+            for i in xrange(4):
+                n2 += i
+	self.assertEqual(n1, 45)
+	self.assertEqual(n2, 60)
+	self.assertEqual(i, 3)
