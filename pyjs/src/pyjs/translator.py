@@ -1431,7 +1431,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
 """ % locals()
             if node.varargs:
                 print >> output, """\
-%(s)s\tif (typeof %(kwargname)s != 'undefined') %(varargname)s.l.push(%(kwargname)s);\
+%(s)s\tif (typeof %(kwargname)s != 'undefined') %(varargname)s.__array.push(%(kwargname)s);\
 """ % locals()
             print >> output, """\
 %(s)s\t%(kwargname)s = arguments[arguments.length+1];
@@ -1474,7 +1474,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
 """ % locals()
             if node.varargs:
                 print >> output, """\
-%(s)s\tif (typeof %(kwargname)s != 'undefined') %(varargname)s.l.push(%(kwargname)s);\
+%(s)s\tif (typeof %(kwargname)s != 'undefined') %(varargname)s.__array.push(%(kwargname)s);\
 """ % locals()
             print >> output, """\
 %(s)s\t%(kwargname)s = arguments[arguments.length+1];
@@ -1535,7 +1535,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
 """ % locals()
             if node.varargs:
                 print >> output, """\
-%(s)s\tif (typeof %(kwargname)s != 'undefined') %(varargname)s.l.push(%(kwargname)s);\
+%(s)s\tif (typeof %(kwargname)s != 'undefined') %(varargname)s.__array.push(%(kwargname)s);\
 """ % locals()
             print >> output, """\
 %(s)s\t%(kwargname)s = arguments[arguments.length+1];
@@ -1584,7 +1584,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
 """ % locals()
             if node.varargs:
                 print >> output, """\
-%(s)s\tif (typeof %(kwargname)s != 'undefined') %(varargname)s.l.push(%(kwargname)s);\
+%(s)s\tif (typeof %(kwargname)s != 'undefined') %(varargname)s.__array.push(%(kwargname)s);\
 """ % locals()
             print >> output, """\
 %(s)s\t%(kwargname)s = arguments[arguments.length+1];

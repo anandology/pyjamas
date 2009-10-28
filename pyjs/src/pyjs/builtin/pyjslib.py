@@ -902,7 +902,7 @@ String.prototype.join = function(data) {
         return data.join(this);
     }
     else if (data.prototype.__md5__ == pyjslib.List.prototype.__md5__) {
-        return data.l.join(this);
+        return data.__array.join(this);
     }
     else if (pyjslib.isIteratable(data)) {
         var iter=data.__iter__();
@@ -979,10 +979,10 @@ String.prototype.split = function(sep, maxsplit) {
         pos=subject.indexOf(sep, start);
         if (pos<0) break;
 
-        items.l.push(subject.substring(start, pos));
+        items.__array.push(subject.substring(start, pos));
         start=pos+sep.length;
     }
-    if (start<=subject.length) items.l.push(subject.substring(start));
+    if (start<=subject.length) items.__array.push(subject.substring(start));
 
     return items;
 };
@@ -3473,31 +3473,31 @@ NotImplemented = NotImplementedType()
 
 JS("""
 var $iter_array = function (l) {
-    this.l = l;
+    this.__array = l;
     this.i = -1;
 }
 $iter_array.prototype.next = function ( ) {
-    if (++this.i == this.l.length) {
+    if (++this.i == this.__array.length) {
         throw pyjslib.StopIteration;
     }
-    return this.l[this.i];
+    return this.__array[this.i];
 }
 $iter_array.prototype.__iter__ = function ( ) {
     return this;
 }
 var $enumerate_array = function (l) {
-    this.l = l;
+    this.__array = l;
     this.i = -1;
     this.tuple = """)
 tuple([0, ""])
 JS("""
-    this.tl = this.tuple.l;
+    this.tl = this.tuple.__array;
 }
 $enumerate_array.prototype.next = function ( ) {
-    if (++this.i == this.l.length) {
+    if (++this.i == this.__array.length) {
         throw pyjslib.StopIteration;
     }
-    this.tl[1] = this.l[this.i];
+    this.tl[1] = this.__array[this.i];
     if (this.tl[0].__number__ == 0x01) {
         this.tl[0] = this.i;
     } else {
@@ -3514,26 +3514,26 @@ $enumerate_array.prototype.__iter__ = function ( ) {
 class List:
     def __init__(self, data=JS("[]")):
         JS("""
-        self.l = [];
+        self.__array = [];
         self.extend(data);
         """)
 
     def append(self, item):
-        JS("""self.l[self.l.length] = item;""")
+        JS("""self.__array[self.__array.length] = item;""")
 
-    # extend in place, just in case there's somewhere a shortcut to self.l
+    # extend in place, just in case there's somewhere a shortcut to self.__array
     def extend(self, data):
         JS("""
-        var l = self.l;
-        var j = self.l.length;
+        var l = self.__array;
+        var j = self.__array.length;
         if (pyjslib.isArray(data)) {
         } else if (pyjslib.isinstance(data, pyjslib.List) ||
                    pyjslib.isinstance(data, pyjslib.Tuple)) {
-            data = data.l;
+            data = data.__array;
         } else if (pyjslib.isIteratable(data)) {
             data = data.__iter__()
-            if (typeof data.l != 'undefined') {
-                data = data.l;
+            if (typeof data.__array != 'undefined') {
+                data = data.__array;
             } else {
                 try {
                     while (true) {
@@ -3563,7 +3563,7 @@ class List:
         if (index<0) {
             throw(pyjslib.ValueError("list.remove(x): x not in list"));
         }
-        self.l.splice(index, 1);
+        self.__array.splice(index, 1);
         return true;
         """)
 
@@ -3571,11 +3571,11 @@ class List:
         JS("""
         start = start.valueOf();
         if (typeof value == 'number' || typeof value == 'string') {
-            start = self.l.indexOf(value, start);
+            start = self.__array.indexOf(value, start);
             if (start >= 0)
                 return start;
         } else {
-            var len = self.l.length >>> 0;
+            var len = self.__array.length >>> 0;
 
             start = (start < 0)
                     ? Math.ceil(start)
@@ -3584,8 +3584,8 @@ class List:
                 start += len;
 
             for (; start < len; start++) {
-                if (start in self.l &&
-                    pyjslib.cmp(self.l[start], value) == 0)
+                if (start in self.__array &&
+                    pyjslib.cmp(self.__array[start], value) == 0)
                     return start;
             }
         }
@@ -3593,20 +3593,20 @@ class List:
         raise ValueError("list.index(x): x not in list")
 
     def insert(self, index, value):
-        JS("""    var a = self.l; self.l=a.slice(0, index).concat(value, a.slice(index));""")
+        JS("""    var a = self.__array; self.__array=a.slice(0, index).concat(value, a.slice(index));""")
 
     def pop(self, index = -1):
         JS("""
         index = index.valueOf();
-        if (index<0) index += self.l.length;
-        if (index < 0 || index >= self.l.length) {
-            if (self.l.length == 0) {
+        if (index<0) index += self.__array.length;
+        if (index < 0 || index >= self.__array.length) {
+            if (self.__array.length == 0) {
                 throw(pyjslib.IndexError("pop from empty list"));
             }
             throw(pyjslib.IndexError("pop index out of range"));
         }
-        var a = self.l[index];
-        self.l.splice(index, 1);
+        var a = self.__array[index];
+        self.__array.splice(index, 1);
         return a;
         """)
 
@@ -3624,18 +3624,18 @@ class List:
 
     def __getslice__(self, lower, upper):
         JS("""
-        if (upper==null) return pyjslib.List(self.l.slice(lower));
-        return pyjslib.List(self.l.slice(lower, upper));
+        if (upper==null) return pyjslib.List(self.__array.slice(lower));
+        return pyjslib.List(self.__array.slice(lower, upper));
         """)
 
     def __delslice__(self, lower, upper):
         JS("""
         var n = upper - lower;
         if (upper==null) {
-            n =  self.l.length;
+            n =  self.__array.length;
         }
         if (!lower) lower = 0;
-        if (n > 0) self.l.splice(lower, n);
+        if (n > 0) self.__array.splice(lower, n);
         """)
         return None
 
@@ -3650,35 +3650,35 @@ class List:
     def __getitem__(self, index):
         JS("""
         index = index.valueOf();
-        if (index < 0) index += self.l.length;
-        if (index < 0 || index >= self.l.length) {
+        if (index < 0) index += self.__array.length;
+        if (index < 0 || index >= self.__array.length) {
             throw(pyjslib.IndexError("list index out of range"));
         }
-        return self.l[index];
+        return self.__array[index];
         """)
 
     def __setitem__(self, index, value):
         JS("""
         index = index.valueOf();
-        if (index < 0) index += self.l.length;
-        if (index < 0 || index >= self.l.length) {
+        if (index < 0) index += self.__array.length;
+        if (index < 0 || index >= self.__array.length) {
             throw(pyjslib.IndexError("list assignment index out of range"));
         }
-        self.l[index]=value;
+        self.__array[index]=value;
         """)
 
     def __delitem__(self, index):
         JS("""
         index = index.valueOf();
-        if (index < 0) index += self.l.length;
-        if (index < 0 || index >= self.l.length) {
+        if (index < 0) index += self.__array.length;
+        if (index < 0 || index >= self.__array.length) {
             throw(pyjslib.IndexError("list assignment index out of range"));
         }
-        self.l.splice(index, 1);
+        self.__array.splice(index, 1);
         """)
 
     def __len__(self):
-        return INT(JS("""self.l.length"""))
+        return INT(JS("""self.__array.length"""))
 
     def __contains__(self, value):
         try:
@@ -3688,10 +3688,10 @@ class List:
         return True
 
     def __iter__(self):
-        return JS("new $iter_array(self.l)")
+        return JS("new $iter_array(self.__array)")
         JS("""
         var i = 0;
-        var l = self.l;
+        var l = self.__array;
         return {
             'next': function() {
                 if (i >= l.length) {
@@ -3706,10 +3706,10 @@ class List:
         """)
 
     def __enumerate__(self):
-        return JS("new $enumerate_array(self.l)")
+        return JS("new $enumerate_array(self.__array)")
 
     def reverse(self):
-        JS("""    self.l.reverse();""")
+        JS("""    self.__array.reverse();""")
 
     def sort(self, cmp=None, key=None, reverse=False):
         if cmp is None:
@@ -3717,23 +3717,23 @@ class List:
         if key and reverse:
             def thisSort1(a,b):
                 return -cmp(key(a), key(b))
-            self.l.sort(thisSort1)
+            self.__array.sort(thisSort1)
         elif key:
             def thisSort2(a,b):
                 return cmp(key(a), key(b))
-            self.l.sort(thisSort2)
+            self.__array.sort(thisSort2)
         elif reverse:
             def thisSort3(a,b):
                 return -cmp(a, b)
-            self.l.sort(thisSort3)
+            self.__array.sort(thisSort3)
         else:
-            self.l.sort(cmp)
+            self.__array.sort(cmp)
 
     def getArray(self):
         """
         Access the javascript Array that is used internally by this list
         """
-        return self.l
+        return self.__array
 
     def __str__(self):
         return self.__repr__()
@@ -3745,9 +3745,9 @@ class List:
         #return '[' + ', '.join(r) + ']'
         JS("""
         var s = "[";
-        for (var i=0; i < self.l.length; i++) {
-            s += pyjslib.repr(self.l[i]);
-            if (i < self.l.length - 1)
+        for (var i=0; i < self.__array.length; i++) {
+            s += pyjslib.repr(self.__array[i]);
+            if (i < self.__array.length - 1)
                 s += ", ";
         }
         s += "]";
@@ -3757,7 +3757,7 @@ class List:
     def __add__(self, y):
         if not isinstance(y, self):
             raise TypeError("can only concatenate list to list")
-        return list(self.l.concat(y.l))
+        return list(self.__array.concat(y.__array))
 
     def __mul__(self, n):
         if not isNumber(n):
@@ -3765,7 +3765,7 @@ class List:
         a = []
         while n:
             n -= 1
-            a.extend(self.l)
+            a.extend(self.__array)
         return a
 
     def __rmul__(self, n):
@@ -3777,18 +3777,18 @@ class Tuple:
     def __init__(self, data=JS("[]")):
         JS("""
         if (pyjslib.isArray(data)) {
-            self.l = data.slice();
+            self.__array = data.slice();
         } else if (pyjslib.isinstance(data, pyjslib.List) ||
                    pyjslib.isinstance(data, pyjslib.Tuple)) {
-            self.l = data.l.slice();
+            self.__array = data.__array.slice();
         } else if (pyjslib.isIteratable(data)) {
             data = data.__iter__()
-            if (typeof data.l != 'undefined') {
-                self.l = data.l.slice();
+            if (typeof data.__array != 'undefined') {
+                self.__array = data.__array.slice();
             } else {
-                self.l = [];
-                var l = self.l;
-                var j = self.l.length;
+                self.__array = [];
+                var l = self.__array;
+                var j = self.__array.length;
                 try {
                     while (true) {
                         var item=data.next();
@@ -3808,7 +3808,7 @@ class Tuple:
         """)
 
     def __hash__(self):
-        return '$tuple$' + str(self.l)
+        return '$tuple$' + str(self.__array)
 
     def __cmp__(self, l):
         if not isinstance(l, Tuple):
@@ -3824,31 +3824,31 @@ class Tuple:
 
     def __getslice__(self, lower, upper):
         JS("""
-        if (upper==null) return pyjslib.Tuple(self.l.slice(lower));
-        return pyjslib.Tuple(self.l.slice(lower, upper));
+        if (upper==null) return pyjslib.Tuple(self.__array.slice(lower));
+        return pyjslib.Tuple(self.__array.slice(lower, upper));
         """)
 
     def __getitem__(self, index):
         JS("""
         index = index.valueOf();
-        if (index < 0) index += self.l.length;
-        if (index < 0 || index >= self.l.length) {
+        if (index < 0) index += self.__array.length;
+        if (index < 0 || index >= self.__array.length) {
             throw(pyjslib.IndexError("tuple index out of range"));
         }
-        return self.l[index];
+        return self.__array[index];
         """)
 
     def __len__(self):
-        return INT(JS("""self.l.length"""))
+        return INT(JS("""self.__array.length"""))
 
     def __contains__(self, value):
-        return JS('self.l.indexOf(value)>=0')
+        return JS('self.__array.indexOf(value)>=0')
 
     def __iter__(self):
-        return JS("new $iter_array(self.l)")
+        return JS("new $iter_array(self.__array)")
         JS("""
         var i = 0;
-        var l = self.l;
+        var l = self.__array;
         return {
             'next': function() {
                 if (i >= l.length) {
@@ -3863,13 +3863,13 @@ class Tuple:
         """)
 
     def __enumerate__(self):
-        return JS("new $enumerate_array(self.l)")
+        return JS("new $enumerate_array(self.__array)")
 
     def getArray(self):
         """
         Access the javascript Array that is used internally by this list
         """
-        return self.l
+        return self.__array
 
     def __str__(self):
         return self.__repr__()
@@ -3883,12 +3883,12 @@ class Tuple:
         #return '(' + ', '.join(r) + ')'
         JS("""
         var s = "(";
-        for (var i=0; i < self.l.length; i++) {
-            s += pyjslib.repr(self.l[i]);
-            if (i < self.l.length - 1)
+        for (var i=0; i < self.__array.length; i++) {
+            s += pyjslib.repr(self.__array[i]);
+            if (i < self.__array.length - 1)
                 s += ", ";
         }
-        if (self.l.length == 1)
+        if (self.__array.length == 1)
             s += ",";
         s += ")";
         return s;
@@ -3897,7 +3897,7 @@ class Tuple:
     def __add__(self, y):
         if not isinstance(y, self):
             raise TypeError("can only concatenate tuple to tuple")
-        return tuple(self.l.concat(y.l))
+        return tuple(self.__array.concat(y.__array))
 
     def __mul__(self, n):
         if not isNumber(n):
@@ -3905,7 +3905,7 @@ class Tuple:
         a = []
         while n:
             n -= 1
-            a.extend(self.l)
+            a.extend(self.__array)
         return a
 
     def __rmul__(self, n):
@@ -3976,21 +3976,21 @@ class Dict:
         self_keys = self.keys()
         d_keys = d.keys()
         JS("""
-        if (self_keys.l.length < d_keys.l.length) {
+        if (self_keys.__array.length < d_keys.__array.length) {
             return -1;
         }
-        if (self_keys.l.length > d_keys.l.length) {
+        if (self_keys.__array.length > d_keys.__array.length) {
             return 1;
         }
         self_keys.sort();
         d_keys.sort();
         var c, sKey;
-        for (var idx = 0; idx < self_keys.l.length; idx++) {
-            c = pyjslib.cmp(self_keys.l[idx], d_keys.l[idx]);
+        for (var idx = 0; idx < self_keys.__array.length; idx++) {
+            c = pyjslib.cmp(self_keys.__array[idx], d_keys.__array[idx]);
             if (c != 0) {
                 return c;
             }
-            sKey = pyjslib.hash(self_keys.l[idx]);
+            sKey = pyjslib.hash(self_keys.__array[idx]);
             c = pyjslib.cmp(self.d[sKey][1], d.d[sKey][1]);
             if (c != 0) {
                 return c;
@@ -4772,7 +4772,7 @@ def toJSObjects(x):
             return result;
             """)
         elif isinstance(x, List):
-            return toJSObjects(x.l)
+            return toJSObjects(x.__array)
         elif hasattr(x, '__class__'):
             # we do not have a special implementation for custom
             # classes, just pass it on
@@ -5029,7 +5029,7 @@ def type(clsname, bases=None, methods=None):
 
     JS(" var bss = null; ")
     if bases:
-        JS("bss = bases.l;")
+        JS("bss = bases.__array;")
     JS(" return $pyjs_type(clsname, bss, mths); ")
 
 def pow(x, y, z = None):

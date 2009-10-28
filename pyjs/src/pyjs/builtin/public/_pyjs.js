@@ -34,8 +34,8 @@ function $pyjs_kwargs_call(obj, func, star_args, dstar_args, args)
         if (!pyjslib.isIteratable(star_args)) {
             throw (pyjslib.TypeError(func.__name__ + "() arguments after * must be a sequence" + pyjslib.repr(star_args)));
         }
-        if (star_args.l != null && star_args.l.constructor == Array) {
-            args = args.concat(star_args.l);
+        if (star_args.__array != null && star_args.__array.constructor == Array) {
+            args = args.concat(star_args.__array);
         } else {
 
             /* use of __iter__ and next is horrendously expensive,
