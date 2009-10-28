@@ -1,6 +1,12 @@
                     Changes made to Pyjamas since 0.6
                     ---------------------------------
 
+ * Output is packable with http://dean.edwards.name/packer/
+
+ * JavaScriptLint checks
+
+ * Python 2.6 TranslationError deprecation message fix
+
  * Added support for relative imports
 
  * Added insertItem to Tree, TreeItem and RootTreeItem and demo in

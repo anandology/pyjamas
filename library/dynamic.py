@@ -50,7 +50,7 @@ def load(url, onreadystatechange=None, on_load_fn=None, async=False):
                     on_load_fn(evnt, req)
 
     # next line is in JS() for IE6
-    JS("req.onreadystatechange = onreadystatechange")
+    JS("req.onreadystatechange = onreadystatechange;")
     req.open("GET", url , async)
     try:
         req.send(None)

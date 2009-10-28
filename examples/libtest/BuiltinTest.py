@@ -15,8 +15,8 @@ from imports.cls1 import CLS as CLS1
 def other(**kwargs):
     return kwargs
 
-def foo(some, long, list, of, arguments):
-     additional = 5
+def foo(_some, _long, _list, _of, _arguments):
+     _additional = 5
      return other(**locals())
 
 class ColourThing(object):
@@ -236,9 +236,9 @@ class BuiltinTest(UnitTest):
         self.assertEqual(t.rgb, 1)
 
         args = foo(0, 1, 2, 3, 4)
-        self.assertEqual(args, {'some': 0, 'additional': 5,
-                                'of': 3, 'list': 2,
-                                'long': 1, 'arguments': 4})
+        self.assertEqual(args, {'_some': 0, '_additional': 5,
+                                '_of': 3, '_list': 2,
+                                '_long': 1, '_arguments': 4})
 
     def testIfExp(self):
         var = 1 if True else 0

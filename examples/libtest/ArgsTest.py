@@ -711,11 +711,11 @@ class ArgsTest(UnitTest):
             self.assertEquals(kwa.get('z'), 8)
 
     def testLookupOrder(self):
-        def fn(int = int):
-            return int(1.2);
+        def fn(fint = int):
+            return fint(1.2);
         class A:
-            def fn(self, int = int):
-                return int(1.2);
+            def fn(self, fint = int):
+                return fint(1.2);
         self.assertEqual(fn(), 1)
         self.assertEqual(A().fn(), 1)
 

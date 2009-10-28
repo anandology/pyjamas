@@ -50,7 +50,7 @@ JS("""sys.save_exception_stack = function () {
         $pyjs.__last_exception_stack__ = save_stack;
     }
 return null;
-}""")
+};""")
 
 def trackstackstr(stack=None):
     if stack is None:

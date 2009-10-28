@@ -14,7 +14,7 @@ class Random(object):
         for (var i = 0 ; i < k/32; i++) {
             table[i] = (Math.random() * 4294967296).toString(32);
         }
-        s = table.join("")
+        s = table.join("");
 """)
         rand = pyjslib.long(s, 32)
         mask = one.__lshift__(k).__sub__(one)

@@ -179,7 +179,7 @@ def strftime(fmt, t = None):
             fmtChar = a[2];
             remainder = a[3];
             if (typeof fmtChar != 'undefined') {
-                result += format(fmtChar)
+                result += format(fmtChar);
             }
         }
         """)

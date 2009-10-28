@@ -5,19 +5,19 @@ class Datetime:
         if tzinfo != None:
             raise NontImplementedError("tzinfo")
         JS("""	
-    if (microseconds != null)
+    if (microseconds !== null)
         self.date = new Date(year, month, day, hours, minutes, seconds, 0.5+microseconds/1000.0);
-	else if (seconds != null)
+	else if (seconds !== null)
 	    self.date = new Date(year, month, day, hours, minutes, seconds);
-	else if (minutes != null)
+	else if (minutes !== null)
 	    self.date = new Date(year, month, day, hours, minutes);
-	else if (hours != null)
+	else if (hours !== null)
 	    self.date = new Date(year, month, day, hours);
-	else if (day != null)
+	else if (day !== null)
 	    self.date = new Date(year, month, day);
-	else if (month != null)
+	else if (month !== null)
 	    self.date = new Date(year, month);
-	else if (year != null)
+	else if (year !== null)
     {
         if (pyjslib.isNumber(year))
         {

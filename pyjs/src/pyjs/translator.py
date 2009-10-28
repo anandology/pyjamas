@@ -314,7 +314,8 @@ SCOPE_KEY = 0
 # etc.
 # arguments is one of Other_JavaScript_Keywords, but is used 
 # in function/method initialization and therefore forbidden
-pyjs_vars_remap_names = ['arguments',]
+pyjs_vars_remap_names = ['arguments', 
+                        'final', 'char'] # to pass lint
 pyjs_vars_remap = {}
 for a in pyjs_vars_remap_names:
     pyjs_vars_remap[a] = '$$' + a
@@ -752,7 +753,7 @@ class Translator:
         print >>self.output, self.spacing() + '%s = $pyjs.loaded_modules["%s"];' % (self.js_module_name, module_name)
 
         print >>self.output, self.spacing() + self.js_module_name+".__was_initialized__ = true;"
-        print >>self.output, self.spacing() + "if (__mod_name__ == null) __mod_name__ = '%s';" % (module_name)
+        print >>self.output, self.spacing() + "if ((__mod_name__ === null) || (typeof __mod_name__ == 'undefined')) __mod_name__ = '%s';" % (module_name)
         lhs = "%s.__name__" % self.js_module_name
         self.add_lookup('builtin', '__name__', lhs)
         print >>self.output, self.spacing() + "var __name__ = %s = __mod_name__;" % (lhs)
@@ -839,7 +840,7 @@ class Translator:
         print >> self.output, captured_output,
 
         if attribute_checking:
-            print >> self.output, self.dedent() + "} catch ($pyjs_attr_err) {throw pyjslib['_errorMapping']($pyjs_attr_err)};"
+            print >> self.output, self.dedent() + "} catch ($pyjs_attr_err) {throw pyjslib['_errorMapping']($pyjs_attr_err);};"
 
         print >> self.output, self.spacing() + "return this;"
         print >> self.output, self.dedent() + "}; /* end %s */"  % module_name
@@ -1149,8 +1150,8 @@ class Translator:
             s = self.spacing()
             return """((%(v1)s=%(e1)s)===(%(v2)s=%(e2)s)&&%(v1)s===null?true:
 %(s)s\t(%(v1)s===null?false:(%(v2)s===null?false:
-%(s)s\t\t((typeof %(v1)s=='object'||typeof %(v1)s=='function')&&typeof %(v1)s.__cmp__=='function'?%(v1)s.__cmp__(%(v2)s) == 0:
-%(s)s\t\t\t((typeof %(v2)s=='object'||typeof %(v2)s=='function')&&typeof %(v2)s.__cmp__=='function'?%(v2)s.__cmp__(%(v1)s) == 0:
+%(s)s\t\t((typeof %(v1)s=='object'||typeof %(v1)s=='function')&&typeof %(v1)s.__cmp__=='function'?%(v1)s.__cmp__(%(v2)s) === 0:
+%(s)s\t\t\t((typeof %(v2)s=='object'||typeof %(v2)s=='function')&&typeof %(v2)s.__cmp__=='function'?%(v2)s.__cmp__(%(v1)s) === 0:
 %(s)s\t\t\t\t%(v1)s==%(v2)s)))))""" % locals()
         return "pyjslib['op_eq'](%(e1)s, %(e2)s)" % locals()
 
@@ -1293,7 +1294,7 @@ try{var %(dbg)s_res=%(call_code)s;}catch(%(dbg)s_err){
             self.indent()
             print >>self.output, code
             print >>self.output, self.spacing(), "throw pyjslib.StopIteration;"
-            print >>self.output, self.dedent(), "}"
+            print >>self.output, self.dedent(), "};"
             print >>self.output, self.spacing(), "return $generator;"
         else:
             print >>self.output, captured_output,
@@ -1310,7 +1311,7 @@ try{var %(dbg)s_res=%(call_code)s;}catch(%(dbg)s_err){
             state = self.generator_states[-1]
             if self.generator_states[-1] == 0:
                 self.dedent()
-                print >>self.output, self.indent() + """if (typeof $generator_state[%d] == 'undefined' || $generator_state[%d] == 0) {""" % (n_states-1, n_states-1)
+                print >>self.output, self.indent() + """if (typeof $generator_state[%d] == 'undefined' || $generator_state[%d] === 0) {""" % (n_states-1, n_states-1)
                 self.generator_clear_state()
                 if n_states == 1:
                     self.generator_throw()
@@ -1341,12 +1342,12 @@ try{var %(dbg)s_res=%(call_code)s;}catch(%(dbg)s_err){
     def generator_reset_state(self):
         if self.is_generator:
             n_states = len(self.generator_states)
-            print >>self.output, self.spacing() + """$generator_state.splice(%d, $generator_state.length-%d)""" % (n_states, n_states)
+            print >>self.output, self.spacing() + """$generator_state.splice(%d, $generator_state.length-%d);""" % (n_states, n_states)
 
     def generator_throw(self):
-        print >>self.output, self.indent() + "if (typeof $exc != 'undefined' && $exc != null) {"
+        print >>self.output, self.indent() + "if (typeof $exc != 'undefined' && $exc !== null) {"
         print >>self.output, self.spacing() + "$yielding = null;"
-        print >>self.output, self.spacing() + "$generator_state[%d] = -1" % (len(self.generator_states)-1,)
+        print >>self.output, self.spacing() + "$generator_state[%d] = -1;" % (len(self.generator_states)-1,)
         print >>self.output, self.spacing() + "throw $exc;"
         print >>self.output, self.dedent() + "}"
 
@@ -1618,7 +1619,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             for v in revargs:
                 print >> output, """\
 %(s)s\tif (typeof %(v)s != 'undefined') {
-%(s)s\t\tif (%(v)s != null && typeof %(v)s['$pyjs_is_kwarg'] != 'undefined') {
+%(s)s\t\tif (%(v)s !== null && typeof %(v)s['$pyjs_is_kwarg'] != 'undefined') {
 %(s)s\t\t\t%(k)s = %(v)s;
 %(s)s\t\t\t%(v)s = arguments[%(a)d];
 %(s)s\t\t}
@@ -1629,6 +1630,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
 %(s)s\t}
 %(s)s}\
 """ % {'s': self.spacing()}
+
         if len(node.defaults):
             default_pos = len(arg_names) - len(node.defaults)
             for default_node in node.defaults:
@@ -1958,7 +1960,8 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
 
         if decorator_code:
             decorator_code = decorator_code % function_name
-            print >>self.output, self.spacing() + "%s = %s;" % (function_name, decorator_code)
+            if function_name != decorator_code:
+                print >>self.output, self.spacing() + "%s = %s;" % (function_name, decorator_code)
 
         self.generator_states = save_generator_states
         self.state_max_depth = len(self.generator_states)
@@ -2013,8 +2016,8 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         print >>self.output, self.spacing() + "$yielding = true;"
         print >>self.output, self.spacing() + "$generator_state[%d] = %d;" % (len(self.generator_states)-1, self.generator_states[-1]+1)
         print >>self.output, self.spacing() + "return $yield_value;"
-        self.generator_switch_case(increment=True)
-        self.generator_throw()
+        #self.generator_switch_case(increment=True)
+        #self.generator_throw()
 
     def _yield_expr(self, node, current_klass):
         self._yield(node, current_klass)
@@ -2450,7 +2453,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
     %(s)svar $pyjs__raise_expr2 = %(expr2)s;
     %(s)svar $pyjs__raise_expr3 = %(expr3)s;
     %(s)sif ($pyjs__raise_expr2 !== null && $pyjs__raise_expr1.__is_instance__ === true) {
-    %(s)s\tthrow (pyjslib['TypeError']('instance exception may not have a separate value'))
+    %(s)s\tthrow (pyjslib['TypeError']('instance exception may not have a separate value'));
     %(s)s}
     %(s)s\tthrow ($pyjs__raise_expr1.apply($pyjs__raise_expr1, $pyjs__raise_expr2, $pyjs__raise_expr3));
     """ % { 's': self.spacing(),
@@ -2463,7 +2466,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 %(s)svar $pyjs__raise_expr1 = %(expr1)s;
 %(s)svar $pyjs__raise_expr2 = %(expr2)s;
 %(s)sif ($pyjs__raise_expr2 !== null && $pyjs__raise_expr1.__is_instance__ === true) {
-%(s)s\tthrow (pyjslib['TypeError']('instance exception may not have a separate value'))
+%(s)s\tthrow (pyjslib['TypeError']('instance exception may not have a separate value'));
 %(s)s}
 %(s)sif (pyjslib['isinstance']($pyjs__raise_expr2, pyjslib['Tuple'])) {
 %(s)s\tthrow ($pyjs__raise_expr1.apply($pyjs__raise_expr1, $pyjs__raise_expr2.getArray()));
@@ -3344,7 +3347,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.add_lookup('variable', v1, v1)
         self.add_lookup('variable', v2, v2)
         s = self.spacing()
-        return """(typeof (%(v1)s=%(e1)s)==typeof (%(v2)s=%(e2)s) && typeof %(v1)s=='number' && %(v2)s != 0?
+        return """(typeof (%(v1)s=%(e1)s)==typeof (%(v2)s=%(e2)s) && typeof %(v1)s=='number' && %(v2)s !== 0?
 %(s)s\tMath.floor(%(v1)s/%(v2)s):
 %(s)s\tpyjslib['op_floordiv'](%(v1)s,%(v2)s))""" % locals()
 
@@ -3358,7 +3361,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.add_lookup('variable', v1, v1)
         self.add_lookup('variable', v2, v2)
         s = self.spacing()
-        return """(typeof (%(v1)s=%(e1)s)==typeof (%(v2)s=%(e2)s) && typeof %(v1)s=='number' && %(v2)s != 0?
+        return """(typeof (%(v1)s=%(e1)s)==typeof (%(v2)s=%(e2)s) && typeof %(v1)s=='number' && %(v2)s !== 0?
 %(s)s\t%(v1)s/%(v2)s:
 %(s)s\tpyjslib['op_div'](%(v1)s,%(v2)s))""" % locals()
 
@@ -3603,7 +3606,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         if node.flags == "OP_APPLY":
             return  "pyjslib['slice'](" + self.expr(node.expr, current_klass) + ", " + lower + ", " + upper + ")"
         elif node.flags == "OP_DELETE":
-            return  "pyjslib['__delslice'](" + self.expr(node.expr, current_klass) + ", " + lower + ", " + upper + ")"
+            return  "pyjslib['__delslice'](" + self.expr(node.expr, current_klass) + ", " + lower + ", " + upper + ");"
         else:
             raise TranslationError(
                 "unsupported flag (in _slice)", node, self.module_name)

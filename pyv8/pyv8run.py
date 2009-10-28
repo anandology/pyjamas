@@ -114,7 +114,7 @@ $pyjs.options.set_all = function (v) {
     $pyjs.options.arg_kwarg_dup = v;
     $pyjs.options.arg_kwarg_unexpected_keyword = v;
     $pyjs.options.arg_kwarg_multiple_values = v;
-}
+};
 $pyjs.options.set_all(true);
 $pyjs.trackstack = [];
 $pyjs.track = {module:'__main__', lineno: 1};

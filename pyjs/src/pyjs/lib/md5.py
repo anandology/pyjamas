@@ -321,7 +321,7 @@ this.init = function() {
     for (i = 0; i < digestBits.length; i++) {
         digestBits[i] = 0;
     }
-}
+};
 
 this.update = function(b) { 
     var index, i;
@@ -338,7 +338,7 @@ this.update = function(b) {
     if (index  >= 63) {
         transform(buffer, 0);
     }
-}
+};
 
 this.finish = function() {
     var bits = new array(8);
@@ -368,13 +368,13 @@ this.finish = function() {
         }
     } 
     return digestBits;
-}
+};
 
 this.getdigestBits = function() {
     return digestBits;
-}
+};
 
-}
+};
 
 /* End of the MD5 algorithm */
 
