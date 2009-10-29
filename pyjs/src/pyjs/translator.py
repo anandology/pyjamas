@@ -1219,24 +1219,25 @@ $generator['next'] = function (noStop) {
 %(src1)s
     var $res;
     $yield_value = $exc = null;
-    if (noStop === true) {
-        $res = $generator['__next']();
+    try {
+        $res = $generator['$genfunc']();
+        $is_executing=false;
         if (typeof $res == 'undefined') {
-            $is_executing=false;
-            $generator_state[0] = -1;
+            if (noStop === true) {
+                $generator_state[0] = -1;
+                return [][1];
+            }
+            throw pyjslib.StopIteration;
         }
-    } else {
-        try {
-            $res = $generator['__next']();
-            if (typeof $res == 'undefined') throw pyjslib.StopIteration;
-        } catch (e) {
-    %(src2)s
-            $is_executing=false;
-            $generator_state[0] = -1;
-            throw e;
+    } catch (e) {
+%(src2)s
+        $is_executing=false;
+        $generator_state[0] = -1;
+        if (noStop === true && e === pyjslib['StopIteration']) {
+            return [][1];
         }
+        throw e;
     }
-    $is_executing=false;
     return $res;
 };
 $generator['__iter__'] = function () {return $generator;};
@@ -1245,7 +1246,7 @@ $generator['send'] = function ($val) {
     $yield_value = $val;
     $exc = null;
     try {
-        var $res = $generator['__next']();
+        var $res = $generator['$genfunc']();
         if (typeof $res == 'undefined') throw pyjslib.StopIteration;
     } catch (e) {
 %(src2)s
@@ -1261,7 +1262,7 @@ $generator['throw'] = function ($exc_type, $exc_value) {
     $yield_value = null;
     $exc=(typeof $exc_value == 'undefined'?$exc_type():$exc_type($exc_value));
     try {
-        var $res = $generator['__next']();
+        var $res = $generator['$genfunc']();
     } catch (e) {
 %(src2)s
         $generator_state[0] = -1;
@@ -1276,7 +1277,7 @@ $generator['close'] = function () {
     $yield_value = null;
     $exc=pyjslib['GeneratorExit'];
     try {
-        var $res = $generator['__next']();
+        var $res = $generator['$genfunc']();
         $is_executing=false;
         if (typeof $res != 'undefined') throw pyjslib.RuntimeError('generator ignored GeneratorExit');
     } catch (e) {
@@ -1288,7 +1289,7 @@ $generator['close'] = function () {
     }
     return null;
 };
-$generator['__next'] = function () {
+$generator['$genfunc'] = function () {
     var $yielding = false;
     if ($is_executing) throw pyjslib.ValueError('generator already executing');
     $is_executing = true;
@@ -3156,6 +3157,17 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             self.is_generator = self.compiler.walk(node, GeneratorExitVisitor(), walker=GeneratorExitVisitor()).has_yield
         assign_name = ""
         assign_tuple = []
+        iterid = self.uniqid('$iter')
+        iterator_name = "%s_iter" % iterid
+        self.add_lookup('variable', iterator_name, iterator_name)
+        nextval = "%s_nextval" % iterid
+        self.add_lookup('variable', nextval, nextval)
+        gentype = "%s_type" % iterid
+        self.add_lookup('variable', gentype, gentype)
+        array = "%s_array" % iterid
+        self.add_lookup('variable', array, array)
+        loopvar = "%s_idx" % iterid
+        self.add_lookup('variable', loopvar, loopvar)
 
         if isinstance(node.assign, self.ast.AssName):
             assign_name = self.add_lookup('variable', node.assign.name, node.assign.name)
@@ -3166,12 +3178,9 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             i = 0
             for child in node.assign:
                 child_name = child.name
-                if assign_name == "":
-                    assign_name = self.uniqid('$iter')
                 self.add_lookup('variable', child_name, child_name)
-                s = self.spacing()
                 child_name = self.add_lookup('variable', child_name, child_name)
-                assign_tuple.append("""%(child_name)s %(op)s %(assign_name)s.__array[%(i)i];""" % locals())
+                assign_tuple.append("""%(child_name)s %(op)s %(nextval)s.__array[%(i)i];""" % locals())
                 i += 1
         else:
             raise TranslationError(
@@ -3201,18 +3210,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             raise TranslationError(
                 "unsupported type (in _for)", node.list, self.module_name)
 
-        assign_name = self.add_lookup('variable', assign_name, assign_name)
-        lhs = assign_name
-        iterator_name = self.uniqid('$iter')
-        self.add_lookup('variable', iterator_name, iterator_name)
-        is_gen = self.uniqid('$iter')
-        self.add_lookup('variable', is_gen, is_gen)
-        array = self.uniqid('$iter')
-        self.add_lookup('variable', array, array)
-        loopvar = self.uniqid('$iter')
-        self.add_lookup('variable', loopvar, loopvar)
-        nextval = self.uniqid('$iter')
-        self.add_lookup('variable', nextval, nextval)
+        if not assign_tuple:
+            assign_name = self.add_lookup('variable', assign_name, assign_name)
 
         if self.source_tracking:
             self.stacksize_depth += 1
@@ -3223,10 +3222,9 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         print >>self.output, """\
 %(s)s%(iterator_name)s = """ % locals() + self.track_call("%(list_expr)s.__iter__()" % locals(), node.lineno) + ';'
         print >>self.output, """\
-%(s)s%(is_gen)s = (typeof %(iterator_name)s.__next == 'function');
-%(s)s%(array)s = %(iterator_name)s.__array;
+%(s)s%(gentype)s = typeof (%(array)s = %(iterator_name)s.__array) != 'undefined'? 0 : (typeof %(iterator_name)s.$genfunc == 'function'? 1 : -1);
 %(s)s%(loopvar)s = 0;""" % locals()
-        condition = "typeof (%(nextval)s=(%(is_gen)s?%(iterator_name)s.next(true):%(array)s[%(loopvar)s++])) != 'undefined'" % locals()
+        condition = "typeof (%(nextval)s=(%(gentype)s?(%(gentype)s > 0?%(iterator_name)s.next(true):pyjslib['wrapped_next'](%(iterator_name)s)):%(array)s[%(loopvar)s++])) != 'undefined'" % locals()
 
         self.generator_switch_case(increment=True)
 
@@ -3240,10 +3238,12 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.generator_switch_open()
         self.generator_switch_case(increment=False)
 
-        print >>self.output, self.spacing() + """%(lhs)s %(op)s %(nextval)s;""" % locals()
-        if assign_tuple:
+        if not assign_tuple:
+            print >>self.output, self.spacing() + """%(assign_name)s %(op)s %(nextval)s;""" % locals()
+        else:
             for line in assign_tuple:
                 print >>self.output, self.spacing() + line
+
         for node in node.body.nodes:
             self._stmt(node, current_klass)
 

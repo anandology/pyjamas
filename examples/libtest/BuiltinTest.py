@@ -289,9 +289,17 @@ class BuiltinTest(UnitTest):
             n1 += i
             for i in xrange(4):
                 n2 += i
-	self.assertEqual(n1, 45)
-	self.assertEqual(n2, 60)
-	self.assertEqual(i, 3)
+        self.assertEqual(n1, 45)
+        self.assertEqual(n2, 60)
+        self.assertEqual(i, 3)
+
+        try:
+            for i in xrange(4):
+                raise StopIteration
+            self.fail("Failed to raise StopIteration")
+        except StopIteration:
+            self.assertTrue(True)
+        self.assertEqual(i, 0)
 
     def testIter(self):
 

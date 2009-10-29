@@ -3487,7 +3487,7 @@ $iter_array.prototype.__iter__ = function ( ) {
     return this;
 };
 var $enumerate_array = function (l) {
-    this.__array = l;
+    this.array = l;
     this.i = -1;
     this.tuple = """)
 tuple([0, ""])
@@ -3495,13 +3495,13 @@ JS("""
     this.tl = this.tuple.__array;
 };
 $enumerate_array.prototype.next = function (noStop) {
-    if (++this.i == this.__array.length) {
+    if (++this.i == this.array.length) {
         if (noStop === true) {
             return [][1];
         }
         throw pyjslib.StopIteration;
     }
-    this.tl[1] = this.__array[this.i];
+    this.tl[1] = this.array[this.i];
     if (this.tl[0].__number__ == 0x01) {
         this.tl[0] = this.i;
     } else {
@@ -3509,12 +3509,12 @@ $enumerate_array.prototype.next = function (noStop) {
     }
     return this.tuple;
 };
-$enumerate_array.prototype.__next = $enumerate_array.prototype.next;
 $enumerate_array.prototype.__iter__ = function ( ) {
     return this;
 };
-
+$enumerate_array.prototype.$genfunc = $enumerate_array.prototype.next;
 """)
+# NOTE: $genfunc is defined to enable faster loop code
 
 class List:
     def __init__(self, data=JS("[]")):
@@ -4267,7 +4267,7 @@ def xrange(start, stop = None, step = 1):
     return INT(rval);
     JS("""
         },
-        '__next': function() {
+        '$genfunc': function() {
             return this.next(true);
         },
         '__iter__': function() {
@@ -5144,6 +5144,19 @@ def any(iterable):
         if element:
             return True
     return False
+
+# For optimized for loops: fall back for userdef iterators
+wrapped_next = JS("""function (iter) {
+    try {
+        var res = iter.next();
+    } catch (e) {
+        if (e === pyjslib['StopIteration']) {
+            return [][1];
+        }
+        throw e;
+    }
+    return res;
+}""")
 
 init()
 

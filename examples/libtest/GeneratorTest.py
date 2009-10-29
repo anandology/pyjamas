@@ -327,6 +327,18 @@ class GeneratorTest(UnitTest):
         except StopIteration:
             self.assertTrue(True)
 
+        def fn():
+            yield 1
+            raise StopIteration
+            yield 2
+        try:
+            for i in fn():
+                pass
+        except StopIteration:
+            pass
+        self.assertEqual(i, 1)
+
+
     def testClose(self):
         def fn():
             yield 1
