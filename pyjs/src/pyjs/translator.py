@@ -601,7 +601,7 @@ class TranslationError(Exception):
         Exception.__init__(self, "%s line %s:\n%s\n%s" % (module_name, lineno, msg, node))
 
     def __str__(self):
-        return self.message
+        return self.args[0]
 
 def strip_py(name):
     return name
