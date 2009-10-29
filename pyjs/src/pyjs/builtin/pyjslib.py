@@ -3618,14 +3618,20 @@ class List:
     def __cmp__(self, l):
         if not isinstance(l, List):
             return -1
-        ll = len(self) - len(l)
-        if ll != 0:
-            return ll
-        for x in range(len(l)):
-            ll = cmp(self.__getitem__(x), l[x])
-            if ll != 0:
-                return ll
-        return 0
+        JS("""
+        var n1 = self.__array.length,
+            n2 = l.__array.length,
+            a1 = self.__array,
+            a2 = l.__array,
+            n, c;
+        n = (n1 < n2 ? n1 : n2);
+        for (var i = 0; i < n; i++) {
+            c = pyjslib.cmp(a1[i], a2[i]);
+            if (c) return c;
+        }
+        if (n1 < n2) return -1;
+        if (n1 > n2) return 1;
+        return 0;""")
 
     def __getslice__(self, lower, upper):
         JS("""
@@ -3818,14 +3824,20 @@ class Tuple:
     def __cmp__(self, l):
         if not isinstance(l, Tuple):
             return 1
-        ll = len(self) - len(l)
-        if ll != 0:
-            return ll
-        for x in range(len(l)):
-            ll = cmp(self.__getitem__(x), l[x])
-            if ll != 0:
-                return ll
-        return 0
+        JS("""
+        var n1 = self.__array.length,
+            n2 = l.__array.length,
+            a1 = self.__array,
+            a2 = l.__array,
+            n, c;
+        n = (n1 < n2 ? n1 : n2);
+        for (var i = 0; i < n; i++) {
+            c = pyjslib.cmp(a1[i], a2[i]);
+            if (c) return c;
+        }
+        if (n1 < n2) return -1;
+        if (n1 > n2) return 1;
+        return 0;""")
 
     def __getslice__(self, lower, upper):
         JS("""
