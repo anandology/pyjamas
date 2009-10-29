@@ -4700,16 +4700,17 @@ def hash(obj):
     JS("""
     if (obj == null) return null;
 
-    if (obj.$H) return obj.$H;
-    if (obj.__hash__) return obj.__hash__();
-    if (obj.constructor == String || obj.constructor == Number || obj.constructor == Date) return '$'+obj;
-
-    try {
-        obj.$H = ++pyjslib.next_hash_id;
-        return obj.$H;
-    } catch (e) {
-        return obj;
+    if (typeof obj.$H != 'undefined') return obj.$H;
+    if (typeof obj == 'string' || obj.__number__) return '$'+obj;
+    switch (obj.constructor) {
+        case String:
+        case Number:
+        case Date:
+            return '$'+obj;
     }
+    if (typeof obj.__hash__ == 'function') return obj.__hash__();
+    obj.$H = ++pyjslib.next_hash_id;
+    return obj.$H;
     """)
 
 
