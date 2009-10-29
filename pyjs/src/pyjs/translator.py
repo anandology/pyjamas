@@ -861,7 +861,7 @@ class Translator:
         if not self.__unique_ids__.has_key(prefix):
             self.__unique_ids__[prefix] = 0
         self.__unique_ids__[prefix] += 1
-        return "%s%06d" % (prefix, self.__unique_ids__[prefix])
+        return "%s%d" % (prefix, self.__unique_ids__[prefix])
 
     def spacing(self):
         return "\t" * self.indent_level
