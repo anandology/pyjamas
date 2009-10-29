@@ -650,8 +650,12 @@ class Translator:
         'InlineLen': [('inline_len', True)],
         'noInlineEq': [('inline_eq', False)],
         'InlineEq': [('inline_eq', True)],
-        'noInlineCode': [('inline_bool', False),('inline_len', False),('inline_eq', False)],
-        'InlineCode': [('inline_bool', True),('inline_len', True),('inline_eq', True)],
+        'noInlineCmp': [('inline_cmp', False)],
+        'InlineCmp': [('inline_cmp', True)],
+        'noInlineGetItem': [('inline_getitem', False)],
+        'InlineGetItem': [('inline_getitem', True)],
+        'noInlineCode': [('inline_bool', False),('inline_len', False),('inline_eq', False), ('inline_cmp', False), ('inline_getitem', False)],
+        'InlineCode': [('inline_bool', True),('inline_len', True),('inline_eq', True), ('inline_cmp', True), ('inline_getitem', True)],
         'noOperatorFuncs': [('operator_funcs', False)],
         'OperatorFuncs': [('operator_funcs', True)],
         'noNumberClasses': [('number_classes', False)],
@@ -707,6 +711,8 @@ class Translator:
         self.inline_bool = inline_code
         self.inline_len = inline_code
         self.inline_eq = inline_code
+        self.inline_cmp = inline_code
+        self.inline_getitem = inline_code
         self.operator_funcs = operator_funcs
         self.number_classes = number_classes
         if self.number_classes:
@@ -882,7 +888,7 @@ class Translator:
             self.debug, self.print_statements, self.function_argument_checking,
             self.attribute_checking, self.bound_methods, self.descriptors,
             self.source_tracking, self.line_tracking, self.store_source,
-            self.inline_bool, self.inline_eq, self.inline_len,
+            self.inline_bool, self.inline_eq, self.inline_len, self.inline_cmp, self.inline_getitem,
             self.operator_funcs, self.number_classes,
         ))
     def pop_options(self):
@@ -890,7 +896,7 @@ class Translator:
             self.debug, self.print_statements, self.function_argument_checking,
             self.attribute_checking, self.bound_methods, self.descriptors,
             self.source_tracking, self.line_tracking, self.store_source,
-            self.inline_bool, self.inline_eq, self.inline_len,
+            self.inline_bool, self.inline_eq, self.inline_len, self.inline_cmp, self.inline_getitem,
             self.operator_funcs, self.number_classes,
         ) = self.option_stack.pop()
 
@@ -1150,6 +1156,13 @@ class Translator:
             return self.__inline_len_code_str2 % locals()
         return "pyjslib['len'](%(e)s)" % locals()
 
+    __inline_eq_code_str = """((%(v1)s=%(e1)s)===(%(v2)s=%(e2)s)&&%(v1)s===null?true:
+    (%(v1)s===null?false:(%(v2)s===null?false:
+        ((typeof %(v1)s=='object'||typeof %(v1)s=='function')&&typeof %(v1)s.__cmp__=='function'?%(v1)s.__cmp__(%(v2)s) === 0:
+            ((typeof %(v2)s=='object'||typeof %(v2)s=='function')&&typeof %(v2)s.__cmp__=='function'?%(v2)s.__cmp__(%(v1)s) === 0:
+                %(v1)s==%(v2)s)))))"""
+    __inline_eq_code_str = __inline_eq_code_str.replace("    ", "\t").replace("\n", "\n%(s)s")
+
     def inline_eq_code(self, e1, e2):
         if self.inline_eq and not self.number_classes:
             v1 = self.uniqid('$eq')
@@ -1157,12 +1170,40 @@ class Translator:
             self.add_lookup('variable', v1, v1)
             self.add_lookup('variable', v2, v2)
             s = self.spacing()
-            return """((%(v1)s=%(e1)s)===(%(v2)s=%(e2)s)&&%(v1)s===null?true:
-%(s)s\t(%(v1)s===null?false:(%(v2)s===null?false:
-%(s)s\t\t((typeof %(v1)s=='object'||typeof %(v1)s=='function')&&typeof %(v1)s.__cmp__=='function'?%(v1)s.__cmp__(%(v2)s) === 0:
-%(s)s\t\t\t((typeof %(v2)s=='object'||typeof %(v2)s=='function')&&typeof %(v2)s.__cmp__=='function'?%(v2)s.__cmp__(%(v1)s) === 0:
-%(s)s\t\t\t\t%(v1)s==%(v2)s)))))""" % locals()
+            return self.__inline_eq_code_str % locals()
         return "pyjslib['op_eq'](%(e1)s, %(e2)s)" % locals()
+
+    __inline_cmp_code_str = """((%(v1)s=%(e1)s)===(%(v2)s=%(e2)s)?0:
+    (typeof %(v1)s==typeof %(v2)s && ((typeof %(v1)s == 'number')||(typeof %(v1)s == 'string')||(typeof %(v1)s == 'boolean'))?
+        (%(v1)s == %(v2)s ? 0 : (%(v1)s < %(v2)s ? -1 : 1)):
+        pyjslib['cmp'](%(v1)s, %(v2)s)))"""
+    __inline_cmp_code_str = __inline_cmp_code_str.replace("    ", "\t").replace("\n", "\n%(s)s")
+
+    def inline_cmp_code(self, e1, e2):
+        if self.inline_cmp:
+            v1 = self.uniqid('$cmp')
+            v2 = self.uniqid('$cmp')
+            self.add_lookup('variable', v1, v1)
+            self.add_lookup('variable', v2, v2)
+            s = self.spacing()
+            return self.__inline_cmp_code_str % locals()
+        return "pyjslib['cmp'](%(e1)s, %(e2)s)" % locals()
+
+    __inline_getitem_code_str = """(typeof (%(v1)s=%(e)s).__array != 'undefined'?
+    ((typeof %(v1)s.__array[%(v2)s=%(i)s]) != 'undefined'?%(v1)s.__array[%(v2)s]:
+        %(v1)s.__getitem__(%(v2)s)): 
+        %(v1)s.__getitem__(%(i)s))"""
+    __inline_getitem_code_str = __inline_getitem_code_str.replace("    ", "\t").replace("\n", "\n%(s)s")
+
+    def inline_getitem_code(self, e, i):
+        if self.inline_getitem:
+            v1 = self.uniqid('$')
+            self.add_lookup('variable', v1, v1)
+            v2 = self.uniqid('$')
+            self.add_lookup('variable', v2, v2)
+            s = self.spacing()
+            return self.__inline_getitem_code_str % locals()
+        return "%(e)s.__getitem__(%(i)s)" % locals()
 
     def md5(self, node):
         return md5(self.module_name + str(node.lineno) + repr(node)).hexdigest()
@@ -3098,13 +3139,13 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         if op == "!=":
             return "!"+self.inline_eq_code(lhs, rhs)
         if op == "<":
-            return "(pyjslib['cmp'](%s, %s) == -1)" % (lhs, rhs)
+            return "(%s == -1)" % self.inline_cmp_code(lhs, rhs)
         if op == "<=":
-            return "(pyjslib['cmp'](%s, %s) != 1)" % (lhs, rhs)
+            return "(%s != 1)" % self.inline_cmp_code(lhs, rhs)
         if op == ">":
-            return "(pyjslib['cmp'](%s, %s) == 1)" % (lhs, rhs)
+            return "(%s == 1)" % self.inline_cmp_code(lhs, rhs)
         if op == ">=":
-            return "(pyjslib['cmp'](%s, %s) != -1)" % (lhs, rhs)
+            return "(%s != -1)" % self.inline_cmp_code(lhs, rhs)
         if op == "in":
             return rhs + ".__contains__(" + lhs + ")"
         elif op == "not in":
@@ -3492,7 +3533,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
     def _subscript(self, node, current_klass):
         if node.flags == "OP_APPLY":
             if len(node.subs) == 1:
-                return self.track_call(self.expr(node.expr, current_klass) + ".__getitem__(" + self.expr(node.subs[0], current_klass) + ")", node.lineno)
+                return self.inline_getitem_code(self.expr(node.expr, current_klass), self.expr(node.subs[0], current_klass))
             else:
                 raise TranslationError(
                     "must have one sub (in _subscript)", node, self.module_name)
