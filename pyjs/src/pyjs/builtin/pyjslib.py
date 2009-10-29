@@ -4031,8 +4031,9 @@ class Dict:
         """)
         return INT(size);
 
-    def has_key(self, key):
-        return self.__contains__(key)
+    #def has_key(self, key):
+    #    return self.__contains__(key)
+    #See monkey patch at the end of the Dict class definition
 
     def __delitem__(self, key):
         JS("""
@@ -4172,6 +4173,7 @@ class Dict:
         s += "}";
         return s;
         """)
+JS("pyjslib.Dict.has_key = pyjslib.Dict.__contains__;")
 
 dict = Dict
 
