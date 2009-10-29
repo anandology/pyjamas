@@ -932,7 +932,7 @@ String.prototype.replace = function(old, replace, count) {
     var new_str="";
     var pos=0;
 
-    if (!pyjslib.isString(old)) return this.__replace(old, replace);
+    if (typeof old != 'string') return this.__replace(old, replace);
     if (typeof count != 'undefined') do_max=true;
 
     while (start<this.length) {
@@ -4390,7 +4390,7 @@ def str(text):
     """)
 
 def ord(x):
-    if(isString(x) and len(x) is 1):
+    if(JS("typeof x == 'string'") and len(x) is 1):
         return INT(x.charCodeAt(0));
     else:
         JS("""throw pyjslib.TypeError("ord() expected string of length 1");""")
@@ -4506,7 +4506,7 @@ def isinstance(object_, classinfo):
         case 'float_int':
             return object_ !== null && object_.__number__ && (object_.__number__ != 0x01 || isFinite(object_));/* XXX TODO: check rounded? */
         case 'str':
-            return pyjslib.isString(object_);
+            return typeof object_ == 'string';
         case 'bool':
             return pyjslib.isBool(object_);
         case 'long':
