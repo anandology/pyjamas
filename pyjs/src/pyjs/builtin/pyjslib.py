@@ -3774,7 +3774,7 @@ class List:
         return list(self.__array.concat(y.__array))
 
     def __mul__(self, n):
-        if not isNumber(n):
+        if not JS("n !== null && n.__number__ && (n.__number__ != 0x01 || isFinite(n))"):
             raise TypeError("can't multiply sequence by non-int")
         a = []
         while n:
@@ -3923,7 +3923,7 @@ class Tuple:
         return tuple(self.__array.concat(y.__array))
 
     def __mul__(self, n):
-        if not isNumber(n):
+        if not JS("n !== null && n.__number__ && (n.__number__ != 0x01 || isFinite(n))"):
             raise TypeError("can't multiply sequence by non-int")
         a = []
         while n:
@@ -4261,12 +4261,12 @@ def xrange(start, stop = None, step = 1):
     if stop is None:
         stop = start
         start = 0
-    if not isNumber(start):
-        raise TypeError("xrange() integer start argument expected, got %s" % stop.__class__.__name__)
-    if not isNumber(stop):
+    if not JS("start !== null && start.__number__ && (start.__number__ != 0x01 || isFinite(start))"):
+        raise TypeError("xrange() integer start argument expected, got %s" % start.__class__.__name__)
+    if not JS("stop !== null && stop.__number__ && (stop.__number__ != 0x01 || isFinite(stop))"):
         raise TypeError("xrange() integer end argument expected, got %s" % stop.__class__.__name__)
-    if not isNumber(step):
-        raise TypeError("xrange() integer step argument expected, got %s" % stop.__class__.__name__)
+    if not JS("step !== null && step.__number__ && (step.__number__ != 0x01 || isFinite(step))"):
+        raise TypeError("xrange() integer step argument expected, got %s" % step.__class__.__name__)
     rval = nval = start
     JS("""
     var nstep = (stop-start)/step;
@@ -4320,12 +4320,12 @@ def range(start, stop = None, step = 1):
         stop = start
         start = 0
     i = start
-    if not isNumber(start):
-        raise TypeError("range() integer start argument expected, got %s" % stop.__class__.__name__)
-    if not isNumber(stop):
-        raise TypeError("range() integer end argument expected, got %s" % stop.__class__.__name__)
-    if not isNumber(step):
-        raise TypeError("range() integer step argument expected, got %s" % stop.__class__.__name__)
+    if not JS("start !== null && start.__number__ && (start.__number__ != 0x01 || isFinite(start))"):
+        raise TypeError("xrange() integer start argument expected, got %s" % start.__class__.__name__)
+    if not JS("stop !== null && stop.__number__ && (stop.__number__ != 0x01 || isFinite(stop))"):
+        raise TypeError("xrange() integer end argument expected, got %s" % stop.__class__.__name__)
+    if not JS("step !== null && step.__number__ && (step.__number__ != 0x01 || isFinite(step))"):
+        raise TypeError("xrange() integer step argument expected, got %s" % step.__class__.__name__)
     items = JS("new Array()")
     JS("""
     var nstep = (stop-start)/step;
@@ -4504,7 +4504,7 @@ def isinstance(object_, classinfo):
     switch (classinfo.__name__) {
         case 'int':
         case 'float_int':
-            return pyjslib.isNumber(object_); /* XXX TODO: check rounded? */
+            return object_ !== null && object_.__number__ && (object_.__number__ != 0x01 || isFinite(object_));/* XXX TODO: check rounded? */
         case 'str':
             return pyjslib.isString(object_);
         case 'bool':
@@ -4777,7 +4777,7 @@ def isIteratable(a):
 
 def isNumber(a):
     JS("""
-    return a.__number__ && (a.__number__ != 0x01 || isFinite(a));
+    return a !== null && a.__number__ && (a.__number__ != 0x01 || isFinite(a));
     """)
 
 def isInteger(a):
