@@ -31,7 +31,7 @@ function $pyjs_kwargs_call(obj, func, star_args, dstar_args, args)
 
     // Append star_args to args
     if (star_args) {
-        if (!pyjslib.isIteratable(star_args)) {
+        if (star_args === null || typeof star_args.__iter__ != 'function') {
             throw (pyjslib.TypeError(func.__name__ + "() arguments after * must be a sequence" + pyjslib.repr(star_args)));
         }
         if (star_args.__array != null && star_args.__array.constructor == Array) {
@@ -43,23 +43,35 @@ function $pyjs_kwargs_call(obj, func, star_args, dstar_args, args)
              */
             var call_args = Array();
 
-            if (typeof star_args.__len__     != 'undefined' && 
-                typeof star_args.__getitem__ != 'undefined' ) {
-                var l = star_args.__len__();
-                for (var i = 0; i < l; i++) {
-                    call_args[i]= star_args.__getitem__(i)
+            if (typeof star_args.__array != 'undefined') {
+                var a = star_args.__array;
+                var n = a.length;
+                for (var i = 0; i < n; i++) {
+                    call_args[i] = a[i];
                 }
             } else {
-                var __i = star_args.__iter__();
-                var i = 0;
-                try {
-                    while (true) {
-                        call_args[i]=__i.next();
-                        i++;
+                $iter = star_args.__iter__();
+                if (typeof $iter.__array != 'undefined') {
+                    var a = $iter.__array;
+                    var n = a.length;
+                    for (var i = 0; i < n; i++) {
+                        call_args[i] = a[i];
                     }
-                } catch (e) {
-                    if (e.__name__ != 'StopIteration') {
-                        throw e;
+                } else if (typeof $iter.$genfun == 'function') {
+                    var v, i = 0;
+                    while (typeof (v = $iter.next(true)) != 'undefined') {
+                        call_args[i++] = v;
+                    }
+                } else {
+                    var i = 0;
+                    try {
+                        while (true) {
+                            call_args[i++]=$iter.next();
+                        }
+                    } catch (e) {
+                        if (e.__name__ != 'StopIteration') {
+                            throw e;
+                        }
                     }
                 }
             }
