@@ -1838,7 +1838,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         # object to check our scope
         absPath = False
         modname = node.modname
-        if node.level > 0:
+        if hasattr(node, 'level') and node.level > 0:
             absPath = True
             modname = self.module_name.split('.')
             level = node.level
