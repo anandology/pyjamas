@@ -3220,9 +3220,14 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             print >>self.output, self.spacing() + "%s=$pyjs.trackstack.length;" % var_trackstack_size
         s = self.spacing()
         print >>self.output, """\
-%(s)s%(iterator_name)s = """ % locals() + self.track_call("%(list_expr)s.__iter__()" % locals(), node.lineno) + ';'
+%(s)s%(iterator_name)s = """ % locals() + self.track_call("%(list_expr)s" % locals(), node.lineno) + ';'
         print >>self.output, """\
-%(s)s%(gentype)s = typeof (%(array)s = %(iterator_name)s.__array) != 'undefined'? 0 : (typeof %(iterator_name)s.$genfunc == 'function'? 1 : -1);
+%(s)sif (typeof (%(array)s = %(iterator_name)s.__array) != 'undefined') {
+%(s)s\t%(gentype)s = 0;
+%(s)s} else {
+%(s)s\t%(iterator_name)s = %(iterator_name)s.__iter__();
+%(s)s\t%(gentype)s = typeof (%(array)s = %(iterator_name)s.__array) != 'undefined'? 0 : (typeof %(iterator_name)s.$genfunc == 'function'? 1 : -1);
+%(s)s}
 %(s)s%(loopvar)s = 0;""" % locals()
         condition = "typeof (%(nextval)s=(%(gentype)s?(%(gentype)s > 0?%(iterator_name)s.next(true):pyjslib['wrapped_next'](%(iterator_name)s)):%(array)s[%(loopvar)s++])) != 'undefined'" % locals()
 
