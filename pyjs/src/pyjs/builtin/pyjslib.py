@@ -898,7 +898,7 @@ String.prototype.find = function(sub, start, end) {
 String.prototype.join = function(data) {
     var text="";
 
-    if (data.constructor == Array) {
+    if (data.constructor === Array) {
         return data.join(this);
     }
     else if (data.prototype.__md5__ == pyjslib.List.prototype.__md5__) {
@@ -3531,7 +3531,10 @@ class List:
         JS("""
         var l = self.__array;
         var j = self.__array.length;
-        if (pyjslib.isArray(data)) {
+        if (data === null) {
+            throw pyjslib['TypeError']("'NoneType' is not iterable");
+        }
+        if (data.constructor === Array) {
         } else if (pyjslib.isinstance(data, pyjslib.List) ||
                    pyjslib.isinstance(data, pyjslib.Tuple)) {
             data = data.__array;
@@ -3787,7 +3790,10 @@ list = List
 class Tuple:
     def __init__(self, data=JS("[]")):
         JS("""
-        if (pyjslib.isArray(data)) {
+        if (data === null) {
+            throw pyjslib['TypeError']("'NoneType' is not iterable");
+        }
+        if (data.constructor === Array) {
             self.__array = data.slice();
         } else if (pyjslib.isinstance(data, pyjslib.List) ||
                    pyjslib.isinstance(data, pyjslib.Tuple)) {
@@ -3931,11 +3937,14 @@ class Tuple:
 tuple = Tuple
 
 class Dict:
-    def __init__(self, data=None):
+    def __init__(self, data=JS("[]")):
         JS("""
         self.d = {};
 
-        if (pyjslib.isArray(data)) {
+        if (data === null) {
+            throw pyjslib['TypeError']("'NoneType' is not iterable");
+        }
+        if (data.constructor === Array) {
             for (var i = 0; i < data.length; i++) {
                 var item=data[i];
                 self.__setitem__(item[0], item[1]);
@@ -4740,7 +4749,7 @@ def isNull(a):
 
 def isArray(a):
     JS("""
-    return pyjslib.isObject(a) && a.constructor == Array;
+    return pyjslib.isObject(a) && a.constructor === Array;
     """)
 
 def isUndefined(a):
