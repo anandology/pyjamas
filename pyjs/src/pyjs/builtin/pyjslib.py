@@ -3963,7 +3963,7 @@ class Dict:
                     throw e;
                 }
             }
-        } else if (pyjslib.isObject(data)) {
+        } else if (typeof data == 'object' || typeof data == 'function') {
             for (var key in data) {
                 self.__setitem__(key, data[key]);
             }
@@ -4342,10 +4342,13 @@ def range(start, stop = None, step = 1):
 
 def slice(object, lower, upper):
     JS("""
+    if (object === null) {
+        return null;
+    }
     if (typeof object.__getslice__ == 'function') {
         return object.__getslice__(lower, upper);
     }
-    if (pyjslib.isObject(object) && object.slice)
+    if (object.slice == 'function')
         return object.slice(lower, upper);
 
     return null;
@@ -4509,9 +4512,10 @@ def isinstance(object_, classinfo):
         case 'long':
             return object_.__number__ == 0x04;
     }
+    if (typeof object_ != 'object' && typeof object_ != 'function') {
+        return false;
+    }
 """)
-    if not isObject(object_):
-        return False
     if _isinstance(classinfo, Tuple):
         if _isinstance(object_, Tuple):
             return True
@@ -4589,17 +4593,23 @@ def _del(obj):
 
 def delattr(obj, name):
     JS("""
-    if (!pyjslib.isObject(obj)) {
+    if (   obj !== null
+        && (typeof obj == 'object' || typeof obj == 'function')
+        && (typeof(obj[name]) != "undefined")&&(typeof(obj[name]) != "function") ){
+        if (typeof obj[name].__delete__ == 'function') {
+            obj[name].__delete__(obj);
+        } else {
+            delete obj[name];
+        }
+        return;
+    }
+    if (obj === null) {
+        throw pyjslib.AttributeError("'NoneType' object has no attribute '"+name+"'");
+    }
+    if (typeof obj != 'object' && typeof obj == 'function') {
        throw pyjslib.AttributeError("'"+typeof(obj)+"' object has no attribute '"+name+"'");
     }
-    if ((typeof(obj[name]) == "undefined")||(typeof(obj[name]) == "function") ){
-        throw pyjslib.AttributeError(obj.__name__+" instance has no attribute '"+ name+"'");
-    }
-    if (typeof obj[name].__delete__ == 'function') {
-        obj[name].__delete__(obj);
-    } else {
-        delete obj[name];
-    }
+    throw pyjslib.AttributeError(obj.__name__+" instance has no attribute '"+ name+"'");
     """)
 
 def setattr(obj, name, value):
@@ -4761,7 +4771,8 @@ def isUndefined(a):
 
 def isIteratable(a):
     JS("""
-    return pyjslib.isString(a) || (pyjslib.isObject(a) && a.__iter__);
+    if (a === null) return false;
+    return typeof a.__iter__ == 'function';
     """)
 
 def isNumber(a):
