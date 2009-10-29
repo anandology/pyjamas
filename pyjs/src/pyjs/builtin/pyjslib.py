@@ -870,7 +870,7 @@ pyjslib.StopIteration.__name__ = 'StopIteration';
     JS("""
 String.prototype.rfind = function(sub, start, end) {
     var pos;
-    if (!pyjslib.isUndefined(start)) {
+    if (typeof start != 'undefined') {
         /* *sigh* - python rfind goes *RIGHT*, NOT left */
         pos = this.substring(start).lastIndexOf(sub);
         if (pos == -1) {
@@ -881,7 +881,7 @@ String.prototype.rfind = function(sub, start, end) {
     else {
         pos=this.lastIndexOf(sub, start);
     }
-    if (pyjslib.isUndefined(end)) return pos;
+    if (typeof end == 'undefined') return pos;
 
     if (pos + sub.length>end) return -1;
     return pos;
@@ -889,7 +889,7 @@ String.prototype.rfind = function(sub, start, end) {
 
 String.prototype.find = function(sub, start, end) {
     var pos=this.indexOf(sub, start);
-    if (pyjslib.isUndefined(end)) return pos;
+    if (typeof end == 'undefined') return pos;
 
     if (pos + sub.length>end) return -1;
     return pos;
@@ -933,7 +933,7 @@ String.prototype.replace = function(old, replace, count) {
     var pos=0;
 
     if (!pyjslib.isString(old)) return this.__replace(old, replace);
-    if (!pyjslib.isUndefined(count)) do_max=true;
+    if (typeof count != 'undefined') do_max=true;
 
     while (start<this.length) {
         if (do_max && !count--) break;
@@ -1009,21 +1009,21 @@ String.prototype.strip = function(chars) {
 };
 
 String.prototype.lstrip = function(chars) {
-    if (pyjslib.isUndefined(chars)) return this.replace(/^\s+/, "");
+    if (typeof chars == 'undefined') return this.replace(/^\s+/, "");
     if (chars.length == 0) return this;
     return this.replace(new RegExp("^[" + chars + "]+"), "");
 };
 
 String.prototype.rstrip = function(chars) {
-    if (pyjslib.isUndefined(chars)) return this.replace(/\s+$/, "");
+    if (typeof chars == 'undefined') return this.replace(/\s+$/, "");
     if (chars.length == 0) return this;
     return this.replace(new RegExp("[" + chars + "]+$"), "");
 };
 
 String.prototype.startswith = function(prefix, start, end) {
     // FIXME: accept tuples as suffix (since 2.5)
-    if (pyjslib.isUndefined(start)) start = 0;
-    if (pyjslib.isUndefined(end)) end = this.length;
+    if (typeof start == 'undefined') start = 0;
+    if (typeof end == 'undefined') end = this.length;
 
     if ((end - start) < prefix.length) return false;
     if (this.substr(start, prefix.length) == prefix) return true;
@@ -1032,8 +1032,8 @@ String.prototype.startswith = function(prefix, start, end) {
 
 String.prototype.endswith = function(suffix, start, end) {
     // FIXME: accept tuples as suffix (since 2.5)
-    if (pyjslib.isUndefined(start)) start = 0;
-    if (pyjslib.isUndefined(end)) end = this.length;
+    if (typeof start == 'undefined') start = 0;
+    if (typeof end == 'undefined') end = this.length;
 
     if ((end - start) < suffix.length) return false;
     if (this.substr(end - suffix.length, suffix.length) == suffix) return true;
@@ -1051,7 +1051,7 @@ String.prototype.ljust = function(width, fillchar) {
         default:
             throw (pyjslib.TypeError("an integer is required"));
     }
-    if (pyjslib.isUndefined(fillchar)) fillchar = ' ';
+    if (typeof fillchar == 'undefined') fillchar = ' ';
     if (typeof(fillchar) != 'string' ||
         fillchar.length != 1) {
         throw (pyjslib.TypeError("ljust() argument 2 must be char, not " + typeof(fillchar)));
@@ -1071,7 +1071,7 @@ String.prototype.rjust = function(width, fillchar) {
         default:
             throw (pyjslib.TypeError("an integer is required"));
     }
-    if (pyjslib.isUndefined(fillchar)) fillchar = ' ';
+    if (typeof fillchar == 'undefined') fillchar = ' ';
     if (typeof(fillchar) != 'string' ||
         fillchar.length != 1) {
         throw (pyjslib.TypeError("rjust() argument 2 must be char, not " + typeof(fillchar)));
@@ -1091,7 +1091,7 @@ String.prototype.center = function(width, fillchar) {
         default:
             throw (pyjslib.TypeError("an integer is required"));
     }
-    if (pyjslib.isUndefined(fillchar)) fillchar = ' ';
+    if (typeof fillchar == 'undefined') fillchar = ' ';
     if (typeof(fillchar) != 'string' ||
         fillchar.length != 1) {
         throw (pyjslib.TypeError("center() argument 2 must be char, not " + typeof(fillchar)));
@@ -3973,7 +3973,7 @@ class Dict:
         JS("""
         var sKey = pyjslib.hash(key);
         var value=self.d[sKey];
-        if (pyjslib.isUndefined(value)){
+        if (typeof value == 'undefined'){
             throw pyjslib.KeyError(key);
         }
         return value[1];
@@ -4034,7 +4034,7 @@ class Dict:
     def __contains__(self, key):
         JS("""
         var sKey = pyjslib.hash(key);
-        return (pyjslib.isUndefined(self.d[sKey])) ? false : true;
+        return typeof self.d[sKey] == 'undefined' ? false : true;
         """)
 
     def keys(self):
@@ -4477,9 +4477,10 @@ def len(object):
     return INT(v)
 
 def isinstance(object_, classinfo):
-    if isUndefined(object_):
-        return False
     JS("""
+    if (typeof object_ == 'undefined') {
+        return false;
+    }
     if (object_ == null) {
         if (classinfo == null) {
             return true;
@@ -4580,7 +4581,7 @@ def delattr(obj, name):
     if (!pyjslib.isObject(obj)) {
        throw pyjslib.AttributeError("'"+typeof(obj)+"' object has no attribute '"+name+"'");
     }
-    if ((pyjslib.isUndefined(obj[name])) ||(typeof(obj[name]) == "function") ){
+    if ((typeof(obj[name]) == "undefined")||(typeof(obj[name]) == "function") ){
         throw pyjslib.AttributeError(obj.__name__+" instance has no attribute '"+ name+"'");
     }
     if (typeof obj[name].__delete__ == 'function') {
