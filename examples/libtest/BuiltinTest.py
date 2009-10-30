@@ -301,6 +301,15 @@ class BuiltinTest(UnitTest):
             self.assertTrue(True)
         self.assertEqual(i, 0)
 
+        e = 0
+        i = -1
+        for i in range(0):
+            pass
+        else:
+            e = 1
+        self.assertEqual(i, -1)
+        self.assertEqual(e, 1, "bug #315 for X in Y:... else ...")
+
     def testIter(self):
 
         class i:
