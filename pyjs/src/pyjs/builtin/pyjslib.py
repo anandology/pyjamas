@@ -3996,9 +3996,8 @@ class Dict:
         # Transfor data into an array with [key,value] and add set self.__object
         # Input data can be Array(key, val), iteratable (key,val) or Object/Function
         JS("""
-        var item, i, n;
+        var item, i, n, sKey;
         self.__object = {};
-        var orgdata = data;
 
         if (data === null) {
             throw new pyjslib['TypeError']("'NoneType' is not iterable");
@@ -4006,8 +4005,8 @@ class Dict:
         if (data.constructor === Array) {
         } else if (typeof data.__object == 'object') {
             data = data.__object;
-            for (var key in data) {
-                self.__object[pyjslib.hash(key)] = [key, data[key]];
+            for (sKey in data) {
+                self.__object[sKey] = data[sKey].slice();
             }
             return null;
         } else if (typeof data.__iter__ == 'function') {
@@ -4037,7 +4036,7 @@ class Dict:
             }
         } else if (typeof data == 'object' || typeof data == 'function') {
             for (var key in data) {
-                self.__object[pyjslib.hash(key)] = [key, data[key]];
+                self.__object['$'+key] = [key, data[key]];
             }
             return null;
         } else {
@@ -4051,14 +4050,18 @@ class Dict:
         if (data[0].constructor === Array) {
             while (i < n) {
                 item = data[i++];
-                self.__object[pyjslib.hash(item[0])] = [item[0], item[1]];
+                key = item[0]
+                sKey = (key===null?null:(typeof key.$H != 'undefined'?key.$H:((typeof key=='string'||key.__number__)?'$'+key:pyjslib.__hash(key))));
+                self.__object[sKey] = [key, item[1]];
             }
             return null;
         }
         if (typeof data[0].__array != 'undefined') {
             while (i < n) {
                 item = data[i++].__array;
-                self.__object[pyjslib.hash(item[0])] = [item[0], item[1]];
+                key = item[0]
+                sKey = (key===null?null:(typeof key.$H != 'undefined'?key.$H:((typeof key=='string'||key.__number__)?'$'+key:pyjslib.__hash(key))));
+                self.__object[sKey] = [key, item[1]];
             }
             return null;
         }
@@ -4066,7 +4069,8 @@ class Dict:
         var key;
         while (++i < n) {
             key = data[i].__getitem__(0);
-            self.__object[pyjslib.hash(key)] = [key, data[i].__getitem__(1)];
+            sKey = (key===null?null:(typeof key.$H != 'undefined'?key.$H:((typeof key=='string'||key.__number__)?'$'+key:pyjslib.__hash(key))));
+            self.__object[sKey] = [key, data[i].__getitem__(1)];
         }
         return null;
         """)
@@ -4076,12 +4080,13 @@ class Dict:
         if (typeof value == 'undefined') {
             throw new pyjslib['ValueError']("Value for key '" + key + "' is undefined");
         }
-        self.__object[pyjslib.hash(key)] = [key, value];
+        var sKey = (key===null?null:(typeof key.$H != 'undefined'?key.$H:((typeof key=='string'||key.__number__)?'$'+key:pyjslib.__hash(key))));
+        self.__object[sKey] = [key, value];
         """)
 
     def __getitem__(self, key):
         JS("""
-        var sKey = pyjslib.hash(key);
+        var sKey = (key===null?null:(typeof key.$H != 'undefined'?key.$H:((typeof key=='string'||key.__number__)?'$'+key:pyjslib.__hash(key))));
         var value=self.__object[sKey];
         if (typeof value == 'undefined'){
             throw new pyjslib.KeyError(key);
@@ -4138,13 +4143,13 @@ class Dict:
 
     def __delitem__(self, key):
         JS("""
-        var sKey = pyjslib.hash(key);
+        var sKey = (key===null?null:(typeof key.$H != 'undefined'?key.$H:((typeof key=='string'||key.__number__)?'$'+key:pyjslib.__hash(key))));
         delete self.__object[sKey];
         """)
 
     def __contains__(self, key):
         JS("""
-        var sKey = pyjslib.hash(key);
+        var sKey = (key===null?null:(typeof key.$H != 'undefined'?key.$H:((typeof key=='string'||key.__number__)?'$'+key:pyjslib.__hash(key))));
         return typeof self.__object[sKey] == 'undefined' ? false : true;
         """)
 
@@ -4211,13 +4216,13 @@ class Dict:
 
     def setdefault(self, key, default_value):
         JS("""
-        var sKey = pyjslib.hash(key);
+        var sKey = (key===null?null:(typeof key.$H != 'undefined'?key.$H:((typeof key=='string'||key.__number__)?'$'+key:pyjslib.__hash(key))));
         return typeof self.__object[sKey] == 'undefined' ? (self.__object[sKey]=[key, value]) : self.__object[sKey][1];
 """)
 
     def get(self, key, default_value=None):
         JS("""
-        var sKey = pyjslib.hash(key);
+        var sKey = (key===null?null:(typeof key.$H != 'undefined'?key.$H:((typeof key=='string'||key.__number__)?'$'+key:pyjslib.__hash(key))));
         return typeof self.__object[sKey] == 'undefined' ? default_value : self.__object[sKey][1];
 """)
 
@@ -4240,12 +4245,9 @@ class Dict:
                 raise
 
     def popitem(self):
-        for (k, v) in self.iteritems():
-            break
-        else:
-            raise KeyError('popitem(): dictionary is empty')
-        del self[k]
-        return (k, v)
+        for k, v in self.iteritems():
+            return (k, v)
+        raise KeyError('popitem(): dictionary is empty')
 
     def getObject(self):
         """
@@ -4987,9 +4989,23 @@ def max(*sequence):
 
 next_hash_id = 0
 
+# hash(obj) == (obj === null? null : (typeof obj.$H != 'undefined' ? obj.$H : ((typeof obj == 'string' || obj.__number__) ? '$'+obj : pyjslib.__hash(obj))))
+def __hash(obj):
+    JS("""
+    switch (obj.constructor) {
+        case String:
+        case Number:
+        case Date:
+            return '$'+obj;
+    }
+    if (typeof obj.__hash__ == 'function') return obj.__hash__();
+    obj.$H = ++pyjslib.next_hash_id;
+    return obj.$H;
+    """)
+
 def hash(obj):
     JS("""
-    if (obj == null) return null;
+    if (obj === null) return null;
 
     if (typeof obj.$H != 'undefined') return obj.$H;
     if (typeof obj == 'string' || obj.__number__) return '$'+obj;
