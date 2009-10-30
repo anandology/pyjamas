@@ -94,7 +94,7 @@ class JSONProxy(JSONService):
 
     def __registerMethods(self, methods):
         JS("""
-        methods=methods.l;
+        methods=methods.__array;
         for (var i in methods) {
             var method = methods[i];
             this[method]=this.__createMethod(method);
