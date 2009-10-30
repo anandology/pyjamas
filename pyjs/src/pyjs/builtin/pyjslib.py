@@ -4288,6 +4288,164 @@ JS("pyjslib.Dict.iterkeys = pyjslib.Dict.__iter__;")
 
 dict = Dict
 
+class set:
+    def __init__(self, data=JS("[]")):
+        # Transfor data into an array with [key,value] and add set self.__object
+        # Input data can be Array(key, val), iteratable (key,val) or Object/Function
+        JS("""
+        var item, i, n;
+        self.__object = {};
+        var orgdata = data;
+
+        if (data === null) {
+            throw new pyjslib['TypeError']("'NoneType' is not iterable");
+        }
+        if (data.constructor === Array) {
+        } else if (typeof data.__object == 'object') {
+            data = data.__object;
+            for (var key in data) {
+                self.__object[pyjslib.hash(key)] = [key, data[key]];
+            }
+            return null;
+        } else if (typeof data.__iter__ == 'function') {
+            if (typeof data.__array == 'object') {
+                data = data.__array;
+            } else {
+                var iter = data.__iter__();
+                if (typeof iter.__array == 'object') {
+                    data = iter.__array;
+                }
+                data = [];
+                var item, i = 0;
+                if (typeof iter.$genfunc == 'function') {
+                    while (typeof (item=iter.next(true)) != 'undefined') {
+                        data[i++] = item;
+                    }
+                } else {
+                    try {
+                        while (true) {
+                            data[i++] = iter.next();
+                        }
+                    }
+                    catch (e) {
+                        if (e.__name__ != 'StopIteration') throw e;
+                    }
+                }
+            }
+        } else if (typeof data == 'object' || typeof data == 'function') {
+            for (var key in data) {
+                self.__object[pyjslib.hash(key)] = [key, data[key]];
+            }
+            return null;
+        } else {
+            throw new pyjslib['TypeError']("'" + pyjslib['repr'](data) + "' is not iterable");
+        }
+        // Assume uniform array content...
+        if ((n = data.length) == 0) {
+            return null;
+        }
+        i = 0;
+        if (data[0].constructor === Array) {
+            while (i < n) {
+                item = data[i++];
+                self.__object[pyjslib.hash(item[0])] = [item[0], item[1]];
+            }
+            return null;
+        }
+        if (typeof data[0].__array != 'undefined') {
+            while (i < n) {
+                item = data[i++].__array;
+                self.__object[pyjslib.hash(item[0])] = [item[0], item[1]];
+            }
+            return null;
+        }
+        i = -1;
+        var key;
+        while (++i < n) {
+            key = data[i].__getitem__(0);
+            self.__object[pyjslib.hash(key)] = [key, data[i].__getitem__(1)];
+        }
+        return null;
+        """)
+
+    def add(self, value):
+        JS("""    self.__object[pyjslib.hash(value)] = value;""")
+
+    def clear(self):
+        JS("""    self.__object = {};""")
+
+    def __contains__(self, value):
+        JS("""    return (self.__object[pyjslib.hash(value)]) ? true : false;""")
+
+    def discard(self, value):
+        JS("""    delete self.__object[pyjslib.hash(value)];""")
+
+    def issubset(self, items):
+        JS("""
+        for (var i in self.__object) {
+            if (!items.__contains__(i)) return false;
+            }
+        return true;
+        """)
+
+    def issuperset(self, items):
+        JS("""
+        for (var i in items) {
+            if (!self.__contains__(i)) return false;
+            }
+        return true;
+        """)
+
+    def __iter__(self):
+        JS("""
+        var items=new pyjslib.List();
+        for (var key in self.__object) items.append(self.__object[key]);
+        return items.__iter__();
+        """)
+
+    def __len__(self):
+        size=0
+        JS("""
+        for (var i in self.__object) size++;
+        """)
+        return INT(size)
+
+    def pop(self):
+        JS("""
+        for (var key in self.__object) {
+            var value = self.__object[key];
+            delete self.__object[key];
+            return value;
+            }
+        """)
+
+    def remove(self, value):
+        self.discard(value)
+
+    def update(self, data):
+        JS("""
+        if (pyjslib.isArray(data)) {
+            for (var i in data) {
+                self.__object[pyjslib.hash(data[i])]=data[i];
+            }
+        }
+        else if (pyjslib.isIteratable(data)) {
+            var iter=data.__iter__();
+            var i=0;
+            try {
+                while (true) {
+                    var item=iter.next();
+                    self.__object[pyjslib.hash(item)]=item;
+                }
+            }
+            catch (e) {
+                if (e != pyjslib.StopIteration) throw e;
+            }
+        }
+        """)
+
+
+
 class property(object):
     # From: http://users.rcn.com/python/download/Descriptor.htm
     # Extended with setter(), deleter() and fget.__doc_ copy
