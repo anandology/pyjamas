@@ -347,10 +347,17 @@ function $pyjs__mro_merge(seqs) {
 function $pyjs__class_instance(class_name, module_name) {
     if (typeof module_name == 'undefined') module_name = typeof __mod_name__ == 'undefined' ? '__main__' : __mod_name__;
     var cls_fn = function(){
+        var instance;
         if (cls_fn.__number__ === null) {
-            var instance = cls_fn.__new__.apply(null, [cls_fn]);
+            if (typeof this != 'object' || this.__md5__ == cls_fn.__md5) {
+                instance = cls_fn.__new__.apply(null, [cls_fn]);
+            } else {
+                instance = this;
+                instance.__dict__ = instance.__class__ = instance;
+                instance.__is_instance__ = true;
+            }
         } else {
-            var instance = cls_fn.__new__.apply(null, [cls_fn, arguments]);
+            instance = cls_fn.__new__.apply(null, [cls_fn, arguments]);
         }
         if (typeof instance.__init__ == 'function') {
             if (instance.__init__.apply(instance, arguments) != null) {
