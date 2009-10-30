@@ -154,7 +154,7 @@ def op_add(x, y):
         }
         if (!y.__number__ && typeof y['__radd__'] == 'function') return y.__radd__(x);
     }
-    throw pyjslib['TypeError']("unsupported operand type(s) for +: '%r', '%r'" % (x, y));
+    throw new pyjslib['TypeError']("unsupported operand type(s) for +: '%r', '%r'" % (x, y));
 """)
 
 def op_sub(x, y):
@@ -188,7 +188,7 @@ def op_sub(x, y):
         }
         if (!y.__number__ && typeof y['__rsub__'] == 'function') return y.__rsub__(x);
     }
-    throw pyjslib['TypeError']("unsupported operand type(s) for -: '%r', '%r'" % (x, y));
+    throw new pyjslib['TypeError']("unsupported operand type(s) for -: '%r', '%r'" % (x, y));
 """)
 
 def op_floordiv(x, y):
@@ -198,16 +198,16 @@ def op_floordiv(x, y):
             case 0x0101:
             case 0x0104:
             case 0x0401:
-                if (y == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+                if (y == 0) throw new pyjslib['ZeroDivisionError']('float divmod()');
                 return Math.floor(x / y);
             case 0x0102:
-                if (y.__v == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+                if (y.__v == 0) throw new pyjslib['ZeroDivisionError']('float divmod()');
                 return Math.floor(x / y.__v);
             case 0x0201:
-                if (y == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+                if (y == 0) throw new pyjslib['ZeroDivisionError']('float divmod()');
                 return Math.floor(x.__v / y);
             case 0x0202:
-                if (y.__v == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
+                if (y.__v == 0) throw new pyjslib['ZeroDivisionError']('integer division or modulo by zero');
                 return new pyjslib['int'](Math.floor(x.__v / y.__v));
             case 0x0204:
                 return (new pyjslib['long'](x.__v)).__floordiv(y);
@@ -226,7 +226,7 @@ def op_floordiv(x, y):
         }
         if (!y.__number__ && typeof y['__rfloordiv__'] == 'function') return y.__rfloordiv__(x);
     }
-    throw pyjslib['TypeError']("unsupported operand type(s) for //: '%r', '%r'" % (x, y));
+    throw new pyjslib['TypeError']("unsupported operand type(s) for //: '%r', '%r'" % (x, y));
 """)
 
 def op_div(x, y):
@@ -236,16 +236,16 @@ def op_div(x, y):
             case 0x0101:
             case 0x0104:
             case 0x0401:
-                if (y == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+                if (y == 0) throw new pyjslib['ZeroDivisionError']('float divmod()');
                 return x / y;
             case 0x0102:
-                if (y.__v == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+                if (y.__v == 0) throw new pyjslib['ZeroDivisionError']('float divmod()');
                 return x / y.__v;
             case 0x0201:
-                if (y == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+                if (y == 0) throw new pyjslib['ZeroDivisionError']('float divmod()');
                 return x.__v / y;
             case 0x0202:
-                if (y.__v == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+                if (y.__v == 0) throw new pyjslib['ZeroDivisionError']('float divmod()');
                 return new pyjslib['int'](x.__v / y.__v);
             case 0x0204:
                 return (new pyjslib['long'](x.__v)).__div(y);
@@ -264,7 +264,7 @@ def op_div(x, y):
         }
         if (!y.__number__ && typeof y['__rdiv__'] == 'function') return y.__rdiv__(x);
     }
-    throw pyjslib['TypeError']("unsupported operand type(s) for /: '%r', '%r'" % (x, y));
+    throw new pyjslib['TypeError']("unsupported operand type(s) for /: '%r', '%r'" % (x, y));
 """)
 
 def op_mul(x, y):
@@ -298,7 +298,7 @@ def op_mul(x, y):
         }
         if (!y.__number__ && typeof y['__rmul__'] == 'function') return y.__rmul__(x);
     }
-    throw pyjslib['TypeError']("unsupported operand type(s) for *: '%r', '%r'" % (x, y));
+    throw new pyjslib['TypeError']("unsupported operand type(s) for *: '%r', '%r'" % (x, y));
 """)
 
 def op_mod(x, y):
@@ -308,16 +308,16 @@ def op_mod(x, y):
             case 0x0101:
             case 0x0104:
             case 0x0401:
-                if (y == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+                if (y == 0) throw new pyjslib['ZeroDivisionError']('float divmod()');
                 return x % y;
             case 0x0102:
-                if (y.__v == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+                if (y.__v == 0) throw new pyjslib['ZeroDivisionError']('float divmod()');
                 return x % y.__v;
             case 0x0201:
-                if (y == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+                if (y == 0) throw new pyjslib['ZeroDivisionError']('float divmod()');
                 return x.__v % y;
             case 0x0202:
-                if (y.__v == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
+                if (y.__v == 0) throw new pyjslib['ZeroDivisionError']('integer division or modulo by zero');
                 return new pyjslib['int'](x.__v % y.__v);
             case 0x0204:
                 return (new pyjslib['long'](x.__v)).__mod(y);
@@ -339,7 +339,7 @@ def op_mod(x, y):
         }
         if (!y.__number__ && typeof y['__rmod__'] == 'function') return y.__rmod__(x);
     }
-    throw pyjslib['TypeError']("unsupported operand type(s) for %: '%r', '%r'" % (x, y));
+    throw new pyjslib['TypeError']("unsupported operand type(s) for %: '%r', '%r'" % (x, y));
 """)
 
 def op_pow(x, y):
@@ -349,13 +349,13 @@ def op_pow(x, y):
             case 0x0101:
             case 0x0104:
             case 0x0401:
-                if (y == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+                if (y == 0) throw new pyjslib['ZeroDivisionError']('float divmod()');
                 return Math.pow(x, y);
             case 0x0102:
-                if (y.__v == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+                if (y.__v == 0) throw new pyjslib['ZeroDivisionError']('float divmod()');
                 return Math.pow(x,y.__v);
             case 0x0201:
-                if (y == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+                if (y == 0) throw new pyjslib['ZeroDivisionError']('float divmod()');
                 return Math.pow(x.__v,y);
             case 0x0202:
                 return x.__pow__(y);
@@ -376,7 +376,7 @@ def op_pow(x, y):
         }
         if (!y.__number__ && typeof y['__rpow__'] == 'function') return y.__rpow__(x);
     }
-    throw pyjslib['TypeError']("unsupported operand type(s) for %: '%r', '%r'" % (x, y));
+    throw new pyjslib['TypeError']("unsupported operand type(s) for %: '%r', '%r'" % (x, y));
 """)
 
 def op_invert(v):
@@ -406,7 +406,7 @@ def op_bitshiftleft(x, y):
         }
         if (typeof y['__rlshift__'] != 'undefined') return y.__rlshift__(x);
     }
-    throw pyjslib['TypeError']("unsupported operand type(s) for <<: '%r', '%r'" % (x, y));
+    throw new pyjslib['TypeError']("unsupported operand type(s) for <<: '%r', '%r'" % (x, y));
 """)
 
 def op_bitshiftright(x, y):
@@ -428,7 +428,7 @@ def op_bitshiftright(x, y):
         }
         if (typeof y['__rrshift__'] != 'undefined') return y.__rrshift__(x);
     }
-    throw pyjslib['TypeError']("unsupported operand type(s) for >>: '%r', '%r'" % (x, y));
+    throw new pyjslib['TypeError']("unsupported operand type(s) for >>: '%r', '%r'" % (x, y));
 """)
 
 def op_bitand2(x, y):
@@ -450,7 +450,7 @@ def op_bitand2(x, y):
         }
         if (typeof y['__rrshift__'] != 'undefined') return y.__rrshift__(x);
     }
-    throw pyjslib['TypeError']("unsupported operand type(s) for &: '%r', '%r'" % (x, y));
+    throw new pyjslib['TypeError']("unsupported operand type(s) for &: '%r', '%r'" % (x, y));
 """)
 
 op_bitand = JS("""function (args) {
@@ -504,7 +504,7 @@ def op_bitxor2(x, y):
         }
         if (typeof y['__rrshift__'] != 'undefined') return y.__rrshift__(x);
     }
-    throw pyjslib['TypeError']("unsupported operand type(s) for &: '%r', '%r'" % (x, y));
+    throw new pyjslib['TypeError']("unsupported operand type(s) for &: '%r', '%r'" % (x, y));
 """)
 
 op_bitxor = JS("""function (args) {
@@ -558,7 +558,7 @@ def op_bitor2(x, y):
         }
         if (typeof y['__rrshift__'] != 'undefined') return y.__rrshift__(x);
     }
-    throw pyjslib['TypeError']("unsupported operand type(s) for &: '%r', '%r'" % (x, y));
+    throw new pyjslib['TypeError']("unsupported operand type(s) for &: '%r', '%r'" % (x, y));
 """)
 
 op_bitor = JS("""function (args) {
@@ -845,7 +845,7 @@ pyjslib._errorMapping = function(err) {
             message = err.message;
         } catch ( e) {
         }
-        return pyjslib.AttributeError(message);
+        return new pyjslib.AttributeError(message);
     }
     return err;
 };
@@ -1058,12 +1058,12 @@ String.prototype.ljust = function(width, fillchar) {
         case 0x01:
             if (Math.floor(width) == width) break;
         default:
-            throw (pyjslib.TypeError("an integer is required"));
+            throw new pyjslib.TypeError("an integer is required");
     }
     if (typeof fillchar == 'undefined') fillchar = ' ';
     if (typeof(fillchar) != 'string' ||
         fillchar.length != 1) {
-        throw (pyjslib.TypeError("ljust() argument 2 must be char, not " + typeof(fillchar)));
+        throw new pyjslib.TypeError("ljust() argument 2 must be char, not " + typeof(fillchar));
     }
     if (this.length >= width) return this;
     return this + new Array(width+1 - this.length).join(fillchar);
@@ -1078,12 +1078,12 @@ String.prototype.rjust = function(width, fillchar) {
         case 0x01:
             if (Math.floor(width) == width) break;
         default:
-            throw (pyjslib.TypeError("an integer is required"));
+            throw new pyjslib.TypeError("an integer is required");
     }
     if (typeof fillchar == 'undefined') fillchar = ' ';
     if (typeof(fillchar) != 'string' ||
         fillchar.length != 1) {
-        throw (pyjslib.TypeError("rjust() argument 2 must be char, not " + typeof(fillchar)));
+        throw new pyjslib.TypeError("rjust() argument 2 must be char, not " + typeof(fillchar));
     }
     if (this.length >= width) return this;
     return new Array(width + 1 - this.length).join(fillchar) + this;
@@ -1098,12 +1098,12 @@ String.prototype.center = function(width, fillchar) {
         case 0x01:
             if (Math.floor(width) == width) break;
         default:
-            throw (pyjslib.TypeError("an integer is required"));
+            throw new pyjslib.TypeError("an integer is required");
     }
     if (typeof fillchar == 'undefined') fillchar = ' ';
     if (typeof(fillchar) != 'string' ||
         fillchar.length != 1) {
-        throw (pyjslib.TypeError("center() argument 2 must be char, not " + typeof(fillchar)));
+        throw new pyjslib.TypeError("center() argument 2 must be char, not " + typeof(fillchar));
     }
     if (this.length >= width) return this;
     padlen = width - this.length;
@@ -1129,13 +1129,13 @@ String.prototype.__getslice__ = function(lower, upper) {
 String.prototype.__getitem__ = function(idx) {
     if (idx < 0) idx += this.length;
     if (idx < 0 || idx > this.length) {
-        throw(pyjslib.IndexError("string index out of range"));
+        throw new pyjslib.IndexError("string index out of range");
     }
     return this.charAt(idx);
 };
 
 String.prototype.__setitem__ = function(idx, val) {
-    throw(pyjslib.TypeError("'str' object does not support item assignment"));
+    throw new pyjslib.TypeError("'str' object does not support item assignment");
 };
 
 String.prototype.upper = String.prototype.toUpperCase;
@@ -1143,7 +1143,7 @@ String.prototype.lower = String.prototype.toLowerCase;
 
 String.prototype.__add__ = function(y) {
     if (typeof y != "string") {
-        throw pyjslib.TypeError("cannot concatenate 'str' and non-str objects");
+        throw new pyjslib.TypeError("cannot concatenate 'str' and non-str objects");
     }
     return this + y;
 };
@@ -1157,7 +1157,7 @@ String.prototype.__mul__ = function(y) {
         case 0x01:
             if (Math.floor(y) == y) break;
         default:
-            throw pyjslib.TypeError("can't multiply sequence by non-int of type 'str'");
+            throw new pyjslib.TypeError("can't multiply sequence by non-int of type 'str'");
     }
     var s = '';
     while (y-- > 0) {
@@ -1349,7 +1349,7 @@ class float:
         JS("""
         var v = Number(args[0]);
         if (isNaN(v)) {
-            throw pyjslib.ValueError("invalid literal for float(): " + args[0]);
+            throw new pyjslib.ValueError("invalid literal for float(): " + args[0]);
         }
         return v;
 """)
@@ -1427,25 +1427,25 @@ Number.prototype.__rsub__ = function (y) {
 
 Number.prototype.__floordiv__ = function (y) {
     if (!y.__number__ || isNaN(y = y.valueOf())) return pyjslib['NotImplemented'];
-    if (y == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+    if (y == 0) throw new pyjslib['ZeroDivisionError']('float divmod()');
     return Math.floor(this / y);
 };
 
 Number.prototype.__rfloordiv__ = function (y) {
     if (!y.__number__ || isNaN(y = y.valueOf())) return pyjslib['NotImplemented'];
-    if (this == 0) throw pyjslib['ZeroDivisionError']('float divmod');
+    if (this == 0) throw new pyjslib['ZeroDivisionError']('float divmod');
     return Math.floor(y / this);
 };
 
 Number.prototype.__div__ = function (y) {
     if (!y.__number__ || isNaN(y = y.valueOf())) return pyjslib['NotImplemented'];
-    if (y == 0) throw pyjslib['ZeroDivisionError']('float division');
+    if (y == 0) throw new pyjslib['ZeroDivisionError']('float division');
     return this / y;
 };
 
 Number.prototype.__rdiv__ = function (y) {
     if (!y.__number__ || isNaN(y = y.valueOf())) return pyjslib['NotImplemented'];
-    if (this == 0) throw pyjslib['ZeroDivisionError']('float division');
+    if (this == 0) throw new pyjslib['ZeroDivisionError']('float division');
     return y / this;
 };
 
@@ -1461,13 +1461,13 @@ Number.prototype.__rmul__ = function (y) {
 
 Number.prototype.__mod__ = function (y) {
     if (!y.__number__ || isNaN(y = y.valueOf())) return pyjslib['NotImplemented'];
-    if (y == 0) throw pyjslib['ZeroDivisionError']('float modulo');
+    if (y == 0) throw new pyjslib['ZeroDivisionError']('float modulo');
     return this % y;
 };
 
 Number.prototype.__rmod__ = function (y) {
     if (!y.__number__ || isNaN(y = y.valueOf())) return pyjslib['NotImplemented'];
-    if (this == 0) throw pyjslib['ZeroDivisionError']('float modulo');
+    if (this == 0) throw new pyjslib['ZeroDivisionError']('float modulo');
     return y % this;
 };
 
@@ -1487,7 +1487,7 @@ def float_int(value, radix=None):
     var v;
     if (value.__number__) {
         if (radix !== null) {
-            throw pyjslib.TypeError("int() can't convert non-string with explicit base");
+            throw new pyjslib.TypeError("int() can't convert non-string with explicit base");
         }
         v = value.valueOf();
         if (v > 0) {
@@ -1509,10 +1509,10 @@ def float_int(value, radix=None):
         }
         v = parseInt(v, radix);
     } else {
-        throw pyjslib.TypeError("TypeError: int() argument must be a string or a number");
+        throw new pyjslib.TypeError("TypeError: int() argument must be a string or a number");
     }
     if (isNaN(v) || !isFinite(v)) {
-        throw pyjslib.ValueError("invalid literal for int() with base " + radix + ": '" + value + "'");
+        throw new pyjslib.ValueError("invalid literal for int() with base " + radix + ": '" + value + "'");
     }
     return v;
 """)
@@ -1523,7 +1523,7 @@ JS("""
         var v, i;
         if (typeof radix == 'undefined' || radix === null) {
             if (typeof value == 'undefined') {
-                throw pyjslib.TypeError("int() takes at least 1 argument");
+                throw new pyjslib.TypeError("int() takes at least 1 argument");
             }
             switch (value.__number__) {
                 case 0x01:
@@ -1540,7 +1540,7 @@ JS("""
         }
         if (typeof this != 'object' || this.__number__ != 0x02) return new $int(value, radix);
         if (value.__number__) {
-            if (radix !== null) throw pyjslib.TypeError("int() can't convert non-string with explicit base");
+            if (radix !== null) throw new pyjslib.TypeError("int() can't convert non-string with explicit base");
             v = value.valueOf();
         } else if (typeof value == 'string') {
             if (radix === null) {
@@ -1548,10 +1548,10 @@ JS("""
             }
             v = parseInt(value, radix);
         } else {
-            throw pyjslib.TypeError("TypeError: int() argument must be a string or a number");
+            throw new pyjslib.TypeError("TypeError: int() argument must be a string or a number");
         }
         if (isNaN(v) || !isFinite(v)) {
-            throw pyjslib.ValueError("invalid literal for int() with base " + radix + ": '" + value + "'");
+            throw new pyjslib.ValueError("invalid literal for int() with base " + radix + ": '" + value + "'");
         }
         if ($min_int <= v && v <= $max_int) {
             this.__v = v;
@@ -1753,28 +1753,28 @@ JS("""
     $int.__floordiv__ = function (y) {
         if (y.__number__ != 0x02) return pyjslib['NotImplemented'];
         y = y.__v;
-        if (y == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
+        if (y == 0) throw new pyjslib['ZeroDivisionError']('integer division or modulo by zero');
         return new $int(Math.floor(this.__v / y));
     };
 
     $int.__rfloordiv__ = function (y) {
         if (y.__number__ != 0x02) return pyjslib['NotImplemented'];
         y = y.__v;
-        if (this.__v == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
+        if (this.__v == 0) throw new pyjslib['ZeroDivisionError']('integer division or modulo by zero');
         return new $int(Math.floor(y / this.__v));
     };
 
     $int.__div__ = function (y) {
         if (y.__number__ != 0x02) return pyjslib['NotImplemented'];
         y = y.__v;
-        if (y == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
+        if (y == 0) throw new pyjslib['ZeroDivisionError']('integer division or modulo by zero');
         return new $int(this.__v / y);
     };
 
     $int.__rdiv__ = function (y) {
         if (y.__number__ != 0x02) return pyjslib['NotImplemented'];
         y = y.__v;
-        if (this.__v == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
+        if (this.__v == 0) throw new pyjslib['ZeroDivisionError']('integer division or modulo by zero');
         return new $int(y / this.__v);
     };
 
@@ -1796,14 +1796,14 @@ JS("""
     $int.__mod__ = function (y) {
         if (y.__number__ != 0x02) return pyjslib['NotImplemented'];
         y = y.__v;
-        if (y == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
+        if (y == 0) throw new pyjslib['ZeroDivisionError']('integer division or modulo by zero');
         return new $int(this.__v % y);
     };
 
     $int.__rmod__ = function (y) {
         if (y.__number__ != 0x02) return pyjslib['NotImplemented'];
         y = y.__v;
-        if (this.__v == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
+        if (this.__v == 0) throw new pyjslib['ZeroDivisionError']('integer division or modulo by zero');
         return new $int(y % this.__v);
     };
 
@@ -2018,7 +2018,7 @@ JS("""
             j = size_a * PyLong_SHIFT + bits - 1;
             sz = Math.floor(i + j / bits);
             if (j / PyLong_SHIFT < size_a || sz < i) {
-                throw pyjslib['OverflowError']("long is too large to format");
+                throw new pyjslib['OverflowError']("long is too large to format");
             }
             str = new Array();
             p = sz;
@@ -2105,7 +2105,7 @@ JS("""
         var z = null;
 
         if (size_b == 0) {
-            throw pyjslib['ZeroDivisionError']("long division or modulo by zero");
+            throw new pyjslib['ZeroDivisionError']("long division or modulo by zero");
         }
         if (size_a < size_b ||
             (size_a == size_b &&
@@ -2379,7 +2379,7 @@ JS("""
         var v, i;
         if (!radix || radix.valueOf() == 0) {
             if (typeof value == 'undefined') {
-                throw pyjslib.TypeError("long() takes at least 1 argument");
+                throw new pyjslib.TypeError("long() takes at least 1 argument");
             }
             switch (value.__number__) {
                 case 0x01:
@@ -2399,7 +2399,7 @@ JS("""
         this.ob_digit = new Array();
         if (v.__number__) {
             if (radix) {
-                throw pyjslib.TypeError("long() can't convert non-string with explicit base");
+                throw new pyjslib.TypeError("long() can't convert non-string with explicit base");
             }
             if (v.__number__ == 0x04) {
                 var size = v.ob_size < 0 ? -v.ob_size:v.ob_size;
@@ -2433,10 +2433,10 @@ JS("""
                 var neg = false;
 
                 if (isNaN(v)) {
-                    throw pyjslib['ValueError']('cannot convert float NaN to integer');
+                    throw new pyjslib['ValueError']('cannot convert float NaN to integer');
                 }
                 if (!isFinite(v)) {
-                    throw pyjslib['OverflowError']('cannot convert float infinity to integer');
+                    throw new pyjslib['OverflowError']('cannot convert float infinity to integer');
                 }
                 if (v == 0) {
                     this.ob_digit[0] = 0;
@@ -2471,7 +2471,7 @@ JS("""
                 this.ob_size = neg ? -ndig : ndig;
                 return this;
             }
-            throw pyjslib['ValueError']('cannot convert ' + pyjslib['repr'](value) + 'to integer');
+            throw new pyjslib['ValueError']('cannot convert ' + pyjslib['repr'](value) + 'to integer');
         } else if (typeof v == 'string') {
             var nchars;
             var text = value.lstrip();
@@ -2508,7 +2508,7 @@ JS("""
                     }
                 }
             } else if (radix < 1 || radix > 36) {
-                throw pyjslib['ValueError']("long() arg 2 must be >= 2 and <= 36");
+                throw new pyjslib['ValueError']("long() arg 2 must be >= 2 and <= 36");
             }
             if (text.charAt(0) == '0' && text.length > 1) {
                 switch (text.charAt(1)) {
@@ -2543,7 +2543,7 @@ JS("""
                 nchars = p;
                 n = p * bits_per_char + PyLong_SHIFT-1; //14 = PyLong_SHIFT - 1
                 if (n / bits_per_char < p) {
-                    throw pyjslib['ValueError']("long string too large to convert");
+                    throw new pyjslib['ValueError']("long string too large to convert");
                 }
                 this.ob_size = n = Math.floor(n/PyLong_SHIFT);
                 for (var i = 0; i < n; i++) {
@@ -2633,13 +2633,13 @@ JS("""
             if (text.length === 0) {
                 return this;
             }
-            throw pyjslib.ValueError("invalid literal for long() with base " +
+            throw new pyjslib.ValueError("invalid literal for long() with base " +
                                      radix + ": " + value);
         } else {
-            throw pyjslib.TypeError("TypeError: long() argument must be a string or a number");
+            throw new pyjslib.TypeError("TypeError: long() argument must be a string or a number");
         }
         if (isNaN(v) || !isFinite(v)) {
-            throw pyjslib.ValueError("invalid literal for long() with base " + radix + ": '" + v + "'");
+            throw new pyjslib.ValueError("invalid literal for long() with base " + radix + ": '" + v + "'");
         }
         return this;
     };
@@ -2676,7 +2676,7 @@ JS("""
         // ldexp(a,b) == a * (2**b)
         v = x[0] * Math.pow(2.0, x[1] * PyLong_SHIFT);
         if (!isFinite(v)) {
-            throw pyjslib['OverflowError']('long int too large to convert to float');
+            throw new pyjslib['OverflowError']('long int too large to convert to float');
         }
         return v;
     };
@@ -2746,10 +2746,10 @@ JS("""
         var a, z, wordshift, remshift, oldsize, newsize, 
             accum, i, j;
         if (y < 0) {
-            throw pyjslib['ValueError']('negative shift count');
+            throw new pyjslib['ValueError']('negative shift count');
         }
         if (y >= $max_float_int) {
-            throw pyjslib['ValueError']('outrageous left shift count');
+            throw new pyjslib['ValueError']('outrageous left shift count');
         }
         a = this;
 
@@ -2808,14 +2808,14 @@ JS("""
             y = y.valueOf();
         } else {
             if (y != Math.floor(y)) {
-                pyjslib['TypeError']("unsupported operand type(s) for >>: 'long' and 'float'");
+                throw new pyjslib['TypeError']("unsupported operand type(s) for >>: 'long' and 'float'");
             }
         }
         if (y < 0) {
-            throw pyjslib['ValueError']('negative shift count');
+            throw new pyjslib['ValueError']('negative shift count');
         }
         if (y >= $max_float_int) {
-            throw pyjslib['ValueError']('shift count too big');
+            throw new pyjslib['ValueError']('shift count too big');
         }
         a = this;
         size = this.ob_size;
@@ -3275,7 +3275,7 @@ JS("""
         var div = new $long(0);
         var mod = new $long(0);
         l_divmod(this, b, div, mod);
-        return pyjslib['tuple']([div, mod]);
+        return new pyjslib['tuple']([div, mod]);
     };
 
     $long.__divmod__ = function (y) {
@@ -3340,14 +3340,14 @@ JS("""
 
         if (b.ob_size < 0) {
             if (c !== null) {
-                throw pyjslib['TypeError']("pow() 2nd argument cannot be negative when 3rd argument specified");
+                throw new pyjslib['TypeError']("pow() 2nd argument cannot be negative when 3rd argument specified");
             }
             return Math.pow(v.valueOf(), w.valueOf());
         }
 
         if (c !== null) {
             if (c.ob_size == 0) {
-                throw pyjslib['ValueError']("pow() 3rd argument cannot be 0");
+                throw new pyjslib['ValueError']("pow() 3rd argument cannot be 0");
             }
             if (c.ob_size < 0) {
                 negativeOutput = 1;
@@ -3530,7 +3530,7 @@ class List:
         # Basically the same as extend, but to save expensive function calls...
         JS("""
         if (data === null) {
-            throw pyjslib['TypeError']("'NoneType' is not iterable");
+            throw new pyjslib['TypeError']("'NoneType' is not iterable");
         }
         if (data.constructor === Array) {
             self.__array = data.slice();
@@ -3565,7 +3565,7 @@ class List:
             self.__array = data;
             return null;
         }
-        throw pyjslib['TypeError']("'" + pyjslib['repr'](data) + "' is not iterable");
+        throw new pyjslib['TypeError']("'" + pyjslib['repr'](data) + "' is not iterable");
         """)
 
     def append(self, item):
@@ -3576,7 +3576,7 @@ class List:
         # Transform data into an array and append to self.__array
         JS("""
         if (data === null) {
-            throw pyjslib['TypeError']("'NoneType' is not iterable");
+            throw new pyjslib['TypeError']("'NoneType' is not iterable");
         }
         if (data.constructor === Array) {
         } else if (typeof data.__iter__ == 'function') {
@@ -3605,7 +3605,7 @@ class List:
                 }
             }
         } else {
-            throw pyjslib['TypeError']("'" + pyjslib['repr'](data) + "' is not iterable");
+            throw new pyjslib['TypeError']("'" + pyjslib['repr'](data) + "' is not iterable");
         }
         var l = self.__array;
         var j = self.__array.length;
@@ -3619,7 +3619,7 @@ class List:
         JS("""
         var index=self.index(value);
         if (index<0) {
-            throw(pyjslib.ValueError("list.remove(x): x not in list"));
+            throw new pyjslib.ValueError("list.remove(x): x not in list");
         }
         self.__array.splice(index, 1);
         return true;
@@ -3659,9 +3659,9 @@ class List:
         if (index<0) index += self.__array.length;
         if (index < 0 || index >= self.__array.length) {
             if (self.__array.length == 0) {
-                throw(pyjslib.IndexError("pop from empty list"));
+                throw new pyjslib.IndexError("pop from empty list");
             }
-            throw(pyjslib.IndexError("pop index out of range"));
+            throw new pyjslib.IndexError("pop index out of range");
         }
         var a = self.__array[index];
         self.__array.splice(index, 1);
@@ -3688,8 +3688,8 @@ class List:
 
     def __getslice__(self, lower, upper):
         JS("""
-        if (upper==null) return pyjslib.List(self.__array.slice(lower));
-        return pyjslib.List(self.__array.slice(lower, upper));
+        if (upper==null) return new pyjslib.List(self.__array.slice(lower));
+        return new pyjslib.List(self.__array.slice(lower, upper));
         """)
 
     def __delslice__(self, lower, upper):
@@ -3716,7 +3716,7 @@ class List:
         index = index.valueOf();
         if (index < 0) index += self.__array.length;
         if (index < 0 || index >= self.__array.length) {
-            throw(pyjslib.IndexError("list index out of range"));
+            throw new pyjslib.IndexError("list index out of range");
         }
         return self.__array[index];
         """)
@@ -3726,7 +3726,7 @@ class List:
         index = index.valueOf();
         if (index < 0) index += self.__array.length;
         if (index < 0 || index >= self.__array.length) {
-            throw(pyjslib.IndexError("list assignment index out of range"));
+            throw new pyjslib.IndexError("list assignment index out of range");
         }
         self.__array[index]=value;
         """)
@@ -3736,7 +3736,7 @@ class List:
         index = index.valueOf();
         if (index < 0) index += self.__array.length;
         if (index < 0 || index >= self.__array.length) {
-            throw(pyjslib.IndexError("list assignment index out of range"));
+            throw new pyjslib.IndexError("list assignment index out of range");
         }
         self.__array.splice(index, 1);
         """)
@@ -3841,7 +3841,7 @@ class Tuple:
     def __init__(self, data=JS("[]")):
         JS("""
         if (data === null) {
-            throw pyjslib['TypeError']("'NoneType' is not iterable");
+            throw new pyjslib['TypeError']("'NoneType' is not iterable");
         }
         if (data.constructor === Array) {
             self.__array = data.slice();
@@ -3876,7 +3876,7 @@ class Tuple:
             self.__array = data;
             return null;
         }
-        throw pyjslib['TypeError']("'" + pyjslib['repr'](data) + "' is not iterable");
+        throw new pyjslib['TypeError']("'" + pyjslib['repr'](data) + "' is not iterable");
         """)
 
     def __hash__(self):
@@ -3902,8 +3902,8 @@ class Tuple:
 
     def __getslice__(self, lower, upper):
         JS("""
-        if (upper==null) return pyjslib.Tuple(self.__array.slice(lower));
-        return pyjslib.Tuple(self.__array.slice(lower, upper));
+        if (upper==null) return new pyjslib.Tuple(self.__array.slice(lower));
+        return new pyjslib.Tuple(self.__array.slice(lower, upper));
         """)
 
     def __getitem__(self, index):
@@ -3911,7 +3911,7 @@ class Tuple:
         index = index.valueOf();
         if (index < 0) index += self.__array.length;
         if (index < 0 || index >= self.__array.length) {
-            throw(pyjslib.IndexError("tuple index out of range"));
+            throw new pyjslib.IndexError("tuple index out of range");
         }
         return self.__array[index];
         """)
@@ -4001,7 +4001,7 @@ class Dict:
         var orgdata = data;
 
         if (data === null) {
-            throw pyjslib['TypeError']("'NoneType' is not iterable");
+            throw new pyjslib['TypeError']("'NoneType' is not iterable");
         }
         if (data.constructor === Array) {
         } else if (typeof data.__object == 'object') {
@@ -4041,7 +4041,7 @@ class Dict:
             }
             return null;
         } else {
-            throw pyjslib['TypeError']("'" + pyjslib['repr'](data) + "' is not iterable");
+            throw new pyjslib['TypeError']("'" + pyjslib['repr'](data) + "' is not iterable");
         }
         // Assume uniform array content...
         if ((n = data.length) == 0) {
@@ -4074,7 +4074,7 @@ class Dict:
     def __setitem__(self, key, value):
         JS("""
         if (typeof value == 'undefined') {
-            throw pyjslib['ValueError']("Value for key '" + key + "' is undefined");
+            throw new pyjslib['ValueError']("Value for key '" + key + "' is undefined");
         }
         self.__object[pyjslib.hash(key)] = [key, value];
         """)
@@ -4084,7 +4084,7 @@ class Dict:
         var sKey = pyjslib.hash(key);
         var value=self.__object[sKey];
         if (typeof value == 'undefined'){
-            throw pyjslib.KeyError(key);
+            throw new pyjslib.KeyError(key);
         }
         return value[1];
         """)
@@ -4174,7 +4174,7 @@ class Dict:
         var i = 0;
         for (var key in self.__object) {
           var kv = self.__object[key];
-          items.__array[i++] = pyjslib.List(kv);
+          items.__array[i++] = new pyjslib.List(kv);
           }
           return items;
         """)
@@ -4479,7 +4479,7 @@ def __delslice(object, lower, upper):
         }
         return null;
     }
-    throw pyjslib.TypeError('object does not support item deletion');
+    throw new pyjslib.TypeError('object does not support item deletion');
     return null;
     """)
 
@@ -4488,7 +4488,7 @@ def __setslice(object, lower, upper, value):
     if (typeof object.__setslice__ == 'function') {
         return object.__setslice__(lower, upper, value);
     }
-    throw pyjslib.TypeError('object does not support __setslice__');
+    throw new pyjslib.TypeError('object does not support __setslice__');
     return null;
     """)
 
@@ -4504,7 +4504,7 @@ def ord(x):
     if(JS("typeof x == 'string'") and len(x) is 1):
         return INT(x.charCodeAt(0));
     else:
-        JS("""throw pyjslib.TypeError("ord() expected string of length 1");""")
+        JS("""throw new pyjslib.TypeError("ord() expected string of length 1");""")
     return None
 
 def chr(x):
@@ -4596,7 +4596,7 @@ def len(object):
     else if (typeof object.__array != 'undefined') v = object.__array.length;
     else if (typeof object.__len__ == 'function') v = object.__len__();
     else if (typeof object.length != 'undefined') v = object.length;
-    else throw pyjslib.TypeError("object has no len()");
+    else throw new pyjslib.TypeError("object has no len()");
     if (v.__number__ & 0x06) return v;
     """)
     return INT(v)
@@ -4666,7 +4666,7 @@ def getattr(obj, name, default_value=None):
     JS("""
     if (obj === null || typeof obj == 'undefined' || typeof obj[name] == 'undefined') {
         if (arguments.length != 3 || typeof obj == 'undefined'){
-            throw pyjslib.AttributeError("'" + pyjslib.repr(obj) + "' has no attribute '" + name + "'");
+            throw new pyjslib.AttributeError("'" + pyjslib.repr(obj) + "' has no attribute '" + name + "'");
         }
         return default_value;
     }
@@ -4715,18 +4715,18 @@ def delattr(obj, name):
         return;
     }
     if (obj === null) {
-        throw pyjslib.AttributeError("'NoneType' object has no attribute '"+name+"'");
+        throw new pyjslib.AttributeError("'NoneType' object has no attribute '"+name+"'");
     }
     if (typeof obj != 'object' && typeof obj == 'function') {
-       throw pyjslib.AttributeError("'"+typeof(obj)+"' object has no attribute '"+name+"'");
+       throw new pyjslib.AttributeError("'"+typeof(obj)+"' object has no attribute '"+name+"'");
     }
-    throw pyjslib.AttributeError(obj.__name__+" instance has no attribute '"+ name+"'");
+    throw new pyjslib.AttributeError(obj.__name__+" instance has no attribute '"+ name+"'");
     """)
 
 def setattr(obj, name, value):
     JS("""
     if (typeof name != 'string') {
-        throw pyjslib['TypeError']("attribute name must be string");
+        throw new pyjslib['TypeError']("attribute name must be string");
     }
     if (   typeof obj[name] != 'undefined'
         && obj[name] !== null
@@ -4740,7 +4740,7 @@ def setattr(obj, name, value):
 def hasattr(obj, name):
     JS("""
     if (typeof name != 'string') {
-        throw pyjslib['TypeError']("attribute name must be string");
+        throw new pyjslib['TypeError']("attribute name must be string");
     }
     if (obj === null || typeof obj[name] == 'undefined') return false;
     if (typeof obj != 'object' && typeof obj != 'function') return false;
@@ -5245,21 +5245,21 @@ def divmod(x, y):
             case 0x0101:
             case 0x0104:
             case 0x0401:
-                if (y == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+                if (y == 0) throw new pyjslib['ZeroDivisionError']('float divmod()');
                 var f = Math.floor(x / y);
-                return pyjslib['tuple']([f, x - f * y]);
+                return new pyjslib['tuple']([f, x - f * y]);
             case 0x0102:
-                if (y.__v == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+                if (y.__v == 0) throw new pyjslib['ZeroDivisionError']('float divmod()');
                 var f = Math.floor(x / y.__v);
-                return pyjslib['tuple']([f, x - f * y.__v]);
+                return new pyjslib['tuple']([f, x - f * y.__v]);
             case 0x0201:
-                if (y == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+                if (y == 0) throw new pyjslib['ZeroDivisionError']('float divmod()');
                 var f = Math.floor(x.__v / y);
-                return pyjslib['tuple']([f, x.__v - f * y]);
+                return new pyjslib['tuple']([f, x.__v - f * y]);
             case 0x0202:
-                if (y.__v == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
+                if (y.__v == 0) throw new pyjslib['ZeroDivisionError']('integer division or modulo by zero');
                 var f = Math.floor(x.__v / y.__v);
-                return pyjslib['tuple']([new pyjslib['int'](f), new pyjslib['int'](x.__v - f * y.__v)]);
+                return new pyjslib['tuple']([new pyjslib['int'](f), new pyjslib['int'](x.__v - f * y.__v)]);
             case 0x0204:
                 return y.__rdivmod__(new pyjslib['long'](x.__v));
             case 0x0402:
@@ -5277,7 +5277,7 @@ def divmod(x, y):
         }
         if (!y.__number__ && typeof y['__rdivmod__'] == 'function') return y.__rdivmod__(x);
     }
-    throw pyjslib['TypeError']("unsupported operand type(s) for divmod(): '%r', '%r'" % (x, y));
+    throw new pyjslib['TypeError']("unsupported operand type(s) for divmod(): '%r', '%r'" % (x, y));
 """)
 
 def all(iterable):
