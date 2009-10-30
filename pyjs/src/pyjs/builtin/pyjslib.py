@@ -900,22 +900,31 @@ String.prototype.join = function(data) {
 
     if (data.constructor === Array) {
         return data.join(this);
-    }
-    else if (data.prototype.__md5__ == pyjslib.List.prototype.__md5__) {
-        return data.__array.join(this);
-    }
-    else if (pyjslib.isIteratable(data)) {
+    } else if (typeof data.__iter__ == 'function') {
+        if (typeof data.__array == 'object') {
+            return data.__array.join(this);
+        }
         var iter=data.__iter__();
-        try {
-            text+=iter.next();
-            while (true) {
-                var item=iter.next();
-                text+=this + item;
+        if (typeof iter.__array == 'object') {
+            return iter.__array.join(this);
+        }
+        data = [];
+        var item, i = 0;
+        if (typeof iter.$genfunc == 'function') {
+            while (typeof (item=iter.next(true)) != 'undefined') {
+                data[i++] = item;
+            }
+        } else {
+            try {
+                while (true) {
+                    data[i++] = iter.next();
+                }
+            }
+            catch (e) {
+                if (e.__name__ != 'StopIteration') throw e;
             }
         }
-        catch (e) {
-            if (e.__name__ != 'StopIteration') throw e;
-        }
+        return data.join(this);
     }
 
     return text;
@@ -3518,9 +3527,45 @@ $enumerate_array.prototype.$genfunc = $enumerate_array.prototype.next;
 
 class List:
     def __init__(self, data=JS("[]")):
+        # Basically the same as extend, but to save expensive function calls...
         JS("""
-        self.__array = [];
-        self.extend(data);
+        if (data === null) {
+            throw pyjslib['TypeError']("'NoneType' is not iterable");
+        }
+        if (data.constructor === Array) {
+            self.__array = data.slice();
+            return null;
+        }
+        if (typeof data.__iter__ == 'function') {
+            if (typeof data.__array == 'object') {
+                self.__array = data.__array.slice();
+                return null;
+            }
+            var iter = data.__iter__();
+            if (typeof iter.__array == 'object') {
+                self.__array = iter.__array.slice();
+                return null;
+            }
+            data = [];
+            var item, i = 0;
+            if (typeof iter.$genfunc == 'function') {
+                while (typeof (item=iter.next(true)) != 'undefined') {
+                    data[i++] = item;
+                }
+            } else {
+                try {
+                    while (true) {
+                        data[i++] = iter.next();
+                    }
+                }
+                catch (e) {
+                    if (e.__name__ != 'StopIteration') throw e;
+                }
+            }
+            self.__array = data;
+            return null;
+        }
+        throw pyjslib['TypeError']("'" + pyjslib['repr'](data) + "' is not iterable");
         """)
 
     def append(self, item):
@@ -3528,37 +3573,42 @@ class List:
 
     # extend in place, just in case there's somewhere a shortcut to self.__array
     def extend(self, data):
+        # Transform data into an array and append to self.__array
         JS("""
-        var l = self.__array;
-        var j = self.__array.length;
         if (data === null) {
             throw pyjslib['TypeError']("'NoneType' is not iterable");
         }
         if (data.constructor === Array) {
-        } else if (pyjslib.isinstance(data, pyjslib.List) ||
-                   pyjslib.isinstance(data, pyjslib.Tuple)) {
-            data = data.__array;
-        } else if (pyjslib.isIteratable(data)) {
-            data = data.__iter__();
-            if (typeof data.__array != 'undefined') {
+        } else if (typeof data.__iter__ == 'function') {
+            if (typeof data.__array == 'object') {
                 data = data.__array;
             } else {
-                try {
-                    while (true) {
-                        var item=data.next();
-                        l[j++]=item;
+                var iter = data.__iter__();
+                if (typeof iter.__array == 'object') {
+                    data = iter.__array;
+                }
+                data = [];
+                var item, i = 0;
+                if (typeof iter.$genfunc == 'function') {
+                    while (typeof (item=iter.next(true)) != 'undefined') {
+                        data[i++] = item;
+                    }
+                } else {
+                    try {
+                        while (true) {
+                            data[i++] = iter.next();
                         }
                     }
-                catch (e) {
-                    if (e.__name__ != 'StopIteration') {
-                        throw e;
+                    catch (e) {
+                        if (e.__name__ != 'StopIteration') throw e;
                     }
                 }
-                return null;
             }
         } else {
             throw pyjslib['TypeError']("'" + pyjslib['repr'](data) + "' is not iterable");
         }
+        var l = self.__array;
+        var j = self.__array.length;
         var n = data.length, i = 0;
         while (i < n) {
             l[j++] = data[i++];
@@ -3795,33 +3845,38 @@ class Tuple:
         }
         if (data.constructor === Array) {
             self.__array = data.slice();
-        } else if (pyjslib.isinstance(data, pyjslib.List) ||
-                   pyjslib.isinstance(data, pyjslib.Tuple)) {
-            self.__array = data.__array.slice();
-        } else if (pyjslib.isIteratable(data)) {
-            data = data.__iter__();
-            if (typeof data.__array != 'undefined') {
+            return null;
+        }
+        if (typeof data.__iter__ == 'function') {
+            if (typeof data.__array == 'object') {
                 self.__array = data.__array.slice();
-            } else {
-                self.__array = [];
-                var l = self.__array;
-                var j = self.__array.length;
-                try {
-                    while (true) {
-                        var item=data.next();
-                        l[j++]=item;
-                        }
-                    }
-                catch (e) {
-                    if (e.__name__ != 'StopIteration') {
-                        throw e;
-                    }
-                }
                 return null;
             }
-        } else {
-            throw pyjslib['TypeError']("'" + pyjslib['repr'](data) + "' is not iterable");
+            var iter = data.__iter__();
+            if (typeof iter.__array == 'object') {
+                self.__array = iter.__array.slice();
+                return null;
+            }
+            data = [];
+            var item, i = 0;
+            if (typeof iter.$genfunc == 'function') {
+                while (typeof (item=iter.next(true)) != 'undefined') {
+                    data[i++] = item;
+                }
+            } else {
+                try {
+                    while (true) {
+                        data[i++] = iter.next();
+                    }
+                }
+                catch (e) {
+                    if (e.__name__ != 'StopIteration') throw e;
+                }
+            }
+            self.__array = data;
+            return null;
         }
+        throw pyjslib['TypeError']("'" + pyjslib['repr'](data) + "' is not iterable");
         """)
 
     def __hash__(self):
@@ -3938,46 +3993,90 @@ tuple = Tuple
 
 class Dict:
     def __init__(self, data=JS("[]")):
+        # Transfor data into an array with [key,value] and add set self.__object
+        # Input data can be Array(key, val), iteratable (key,val) or Object/Function
         JS("""
+        var item, i, n;
         self.__object = {};
+        var orgdata = data;
 
         if (data === null) {
             throw pyjslib['TypeError']("'NoneType' is not iterable");
         }
         if (data.constructor === Array) {
-            for (var i = 0; i < data.length; i++) {
-                var item=data[i];
-                self.__setitem__(item[0], item[1]);
-                //var sKey=pyjslib.hash(item[0]);
-                //self.__object[sKey]=item[1];
+        } else if (typeof data.__object == 'object') {
+            data = data.__object;
+            for (var key in data) {
+                self.__object[pyjslib.hash(key)] = [key, data[key]];
             }
-        } else if (pyjslib.isIteratable(data)) {
-            var iter=data.__iter__();
-            try {
-                while (true) {
-                    var item=iter.next();
-                    self.__setitem__(item.__getitem__(0), item.__getitem__(1));
+            return null;
+        } else if (typeof data.__iter__ == 'function') {
+            if (typeof data.__array == 'object') {
+                data = data.__array;
+            } else {
+                var iter = data.__iter__();
+                if (typeof iter.__array == 'object') {
+                    data = iter.__array;
                 }
-            } catch (e) {
-                if (e.__name__ != 'StopIteration') {
-                    throw e;
+                data = [];
+                var item, i = 0;
+                if (typeof iter.$genfunc == 'function') {
+                    while (typeof (item=iter.next(true)) != 'undefined') {
+                        data[i++] = item;
+                    }
+                } else {
+                    try {
+                        while (true) {
+                            data[i++] = iter.next();
+                        }
+                    }
+                    catch (e) {
+                        if (e.__name__ != 'StopIteration') throw e;
+                    }
                 }
             }
         } else if (typeof data == 'object' || typeof data == 'function') {
             for (var key in data) {
-                self.__setitem__(key, data[key]);
+                self.__object[pyjslib.hash(key)] = [key, data[key]];
             }
+            return null;
         } else {
             throw pyjslib['TypeError']("'" + pyjslib['repr'](data) + "' is not iterable");
         }
+        // Assume uniform array content...
+        if ((n = data.length) == 0) {
+            return null;
+        }
+        i = 0;
+        if (data[0].constructor === Array) {
+            while (i < n) {
+                item = data[i++];
+                self.__object[pyjslib.hash(item[0])] = [item[0], item[1]];
+            }
+            return null;
+        }
+        if (typeof data[0].__array != 'undefined') {
+            while (i < n) {
+                item = data[i++].__array;
+                self.__object[pyjslib.hash(item[0])] = [item[0], item[1]];
+            }
+            return null;
+        }
+        i = -1;
+        var key;
+        while (++i < n) {
+            key = data[i].__getitem__(0);
+            self.__object[pyjslib.hash(key)] = [key, data[i].__getitem__(1)];
+        }
+        return null;
         """)
 
     def __setitem__(self, key, value):
         JS("""
-        if (typeof value != 'undefined') {
-            var sKey = pyjslib.hash(key);
-            self.__object[sKey]=[key, value];
+        if (typeof value == 'undefined') {
+            throw pyjslib['ValueError']("Value for key '" + key + "' is undefined");
         }
+        self.__object[pyjslib.hash(key)] = [key, value];
         """)
 
     def __getitem__(self, key):
