@@ -1333,7 +1333,7 @@ $generator['close'] = function () {
     try {
         var $res = $generator['$genfunc']();
         $is_executing=false;
-        if (typeof $res != 'undefined') throw new pyjslib.RuntimeError('generator ignored GeneratorExit');
+        if (typeof $res != 'undefined') throw pyjslib.RuntimeError('generator ignored GeneratorExit');
     } catch (e) {
 %(src2)s
         $generator_state[0] = -1;
@@ -1345,7 +1345,7 @@ $generator['close'] = function () {
 };
 $generator['$genfunc'] = function () {
     var $yielding = false;
-    if ($is_executing) throw new pyjslib.ValueError('generator already executing');
+    if ($is_executing) throw pyjslib.ValueError('generator already executing');
     $is_executing = true;
 """
     __generator_code_str = __generator_code_str.replace("    ", "\t").replace("\n", "\n%(s)s")
@@ -1685,7 +1685,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             revargs.reverse()
             print >> output, """\
 %(s)sif (typeof %(k)s == 'undefined') {
-%(s)s\t%(k)s = new pyjslib['Dict']({});\
+%(s)s\t%(k)s = pyjslib['Dict']({});\
 """ % {'s': self.spacing(), 'k': kwargname}
             for v in revargs:
                 print >> output, """\
@@ -1718,7 +1718,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         else:
             end = "arguments.length"
         print >> self.output, """\
-%(s)svar %(v)s = new pyjslib['Tuple']($pyjs_array_slice.call(arguments,%(b)d,%(e)s));
+%(s)svar %(v)s = pyjslib['Tuple']($pyjs_array_slice.call(arguments,%(b)d,%(e)s));
 """ % {'s': self.spacing(), 'v': varargname, 'b': start, 'e': end}
 
     def _kwargs_parser(self, node, function_name, arg_names, current_klass, method_ = False):
@@ -1775,7 +1775,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
 %(s)s}
 """ % {'s': self.spacing()}
         if node.kwargs:
-            print >>self.output, self.spacing() + "__r.push(new pyjslib['Dict'](__kwargs));"
+            print >>self.output, self.spacing() + "__r.push(pyjslib['Dict'](__kwargs));"
         print >>self.output, self.spacing() + "return __r;"
         if not method_:
             print >>self.output, self.dedent() + "};"
@@ -2048,7 +2048,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         else:
             fail = ''
         print >>self.output, self.spacing() + "if (!( " + expr + " )) {"
-        print >>self.output, self.spacing() + "   throw new pyjslib['AssertionError'](%s);" % fail
+        print >>self.output, self.spacing() + "   throw pyjslib['AssertionError'](%s);" % fail
         print >>self.output, self.spacing() + " }"
 
     def _return(self, node, current_klass):
@@ -2125,7 +2125,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                 except TranslationError, e:
                     raise TranslationError(e.msg, v, self.module_name)
             elif v.node.name == 'locals':
-                return """new pyjslib.dict({%s})""" % (",".join(["'%s': %s" % (pyname, self.lookup_stack[-1][pyname][2]) for pyname in self.lookup_stack[-1] if self.lookup_stack[-1][pyname][0] not in ['__pyjamas__', 'global']]))
+                return """pyjslib.dict({%s})""" % (",".join(["'%s': %s" % (pyname, self.lookup_stack[-1][pyname][2]) for pyname in self.lookup_stack[-1] if self.lookup_stack[-1][pyname][0] not in ['__pyjamas__', 'global']]))
             elif v.node.name == 'len' and depth == -1 and len(v.args) == 1:
                 expr = self.expr(v.args[0], current_klass)
                 return self.inline_len_code(expr)
@@ -2527,7 +2527,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
     %(s)svar $pyjs__raise_expr2 = %(expr2)s;
     %(s)svar $pyjs__raise_expr3 = %(expr3)s;
     %(s)sif ($pyjs__raise_expr2 !== null && $pyjs__raise_expr1.__is_instance__ === true) {
-    %(s)s\tthrow new pyjslib['TypeError']('instance exception may not have a separate value');
+    %(s)s\tthrow pyjslib['TypeError']('instance exception may not have a separate value');
     %(s)s}
     %(s)s\tthrow ($pyjs__raise_expr1.apply($pyjs__raise_expr1, $pyjs__raise_expr2, $pyjs__raise_expr3));
     """ % { 's': self.spacing(),
@@ -2540,7 +2540,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 %(s)svar $pyjs__raise_expr1 = %(expr1)s;
 %(s)svar $pyjs__raise_expr2 = %(expr2)s;
 %(s)sif ($pyjs__raise_expr2 !== null && $pyjs__raise_expr1.__is_instance__ === true) {
-%(s)s\tthrow new pyjslib['TypeError']('instance exception may not have a separate value');
+%(s)s\tthrow pyjslib['TypeError']('instance exception may not have a separate value');
 %(s)s}
 %(s)sif (pyjslib['isinstance']($pyjs__raise_expr2, pyjslib['Tuple'])) {
 %(s)s\tthrow ($pyjs__raise_expr1.apply($pyjs__raise_expr1, $pyjs__raise_expr2.getArray()));
@@ -2559,7 +2559,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             print >> self.output, """\
 %(s)sthrow ($pyjs.__last_exception__?
 %(s)s\t$pyjs.__last_exception__.error:
-%(s)s\tnew pyjslib['TypeError']('exceptions must be classes, instances, or strings (deprecated), not NoneType'));\
+%(s)s\tpyjslib['TypeError']('exceptions must be classes, instances, or strings (deprecated), not NoneType'));\
 """ % locals()
         self.generator_switch_case(increment=True)
 
@@ -3576,7 +3576,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 "unsupported flag (in _assign)", v, self.module_name)
 
     def _list(self, node, current_klass):
-        return self.track_call("new pyjslib['List']([" + ", ".join([self.expr(x, current_klass) for x in node.nodes]) + "])", node.lineno)
+        return self.track_call("pyjslib['List']([" + ", ".join([self.expr(x, current_klass) for x in node.nodes]) + "])", node.lineno)
 
     def _dict(self, node, current_klass):
         items = []
@@ -3584,10 +3584,10 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             key = self.expr(x[0], current_klass)
             value = self.expr(x[1], current_klass)
             items.append("[" + key + ", " + value + "]")
-        return self.track_call("new pyjslib['Dict']([" + ", ".join(items) + "])")
+        return self.track_call("pyjslib['Dict']([" + ", ".join(items) + "])")
 
     def _tuple(self, node, current_klass):
-        return self.track_call("new pyjslib['Tuple']([" + ", ".join([self.expr(x, current_klass) for x in node.nodes]) + "])", node.lineno)
+        return self.track_call("pyjslib['Tuple']([" + ", ".join([self.expr(x, current_klass) for x in node.nodes]) + "])", node.lineno)
 
     def _lambda(self, node, current_klass):
         function_name = self.uniqid("$lambda")
@@ -3604,7 +3604,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         save_output = self.output
         self.output = StringIO()
         print >> self.output, "function(){"
-        print >> self.output, "var %s = new pyjslib['List']();" % resultlist
+        print >> self.output, "var %s = pyjslib['List']();" % resultlist
 
         tnode = self.ast.Discard(self.ast.CallFunc(self.ast.Getattr(self.ast.Name(resultlist), 'append'), [node.expr], None, None))
         for qual in node.quals[::-1]:
@@ -3805,7 +3805,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 if attr.find('(') < 0 and not self.debug:
                     attrstr = attr.replace("\n", "\n\\")
                     attr = """(typeof %(attr)s=='undefined'?
-%(s)s\t\t(function(){throw new TypeError("%(attrstr)s is undefined");})():
+%(s)s\t\t(function(){throw TypeError("%(attrstr)s is undefined");})():
 %(s)s\t\t%(attr_code)s)""" % locals()
                 else:
                     attr_ = attr
@@ -3822,7 +3822,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                     attr = """(function(){
 %(s)s\tvar $pyjs__testval=%(attr_code)s;
 %(s)s\treturn (typeof $pyjs__testval=='undefined'?
-%(s)s\t\t(function(){throw new TypeError(\"%(attrstr)s is undefined");})():
+%(s)s\t\t(function(){throw TypeError(\"%(attrstr)s is undefined");})():
 %(s)s\t\t$pyjs__testval);
 %(s)s})()""" % locals()
             return attr
