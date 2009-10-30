@@ -30,8 +30,35 @@ class GetAttribute():
     # This class definition fails at startup
     getIt = WithAttribute.ATTR
 
+class Sink:
+    def __init__(self):
+        self.sink = "Sink"
+    
+class SinkInfo:
+    def __init__(self, object_type):
+        self.object_type=object_type
+        self.instance=None
+
+    def createInstance(self):
+        return self.object_type()
+
+    def getInstance(self):
+        if self.instance==None:
+            self.instance=self.createInstance()
+        return self.instance
+    
+class Trees(Sink):
+    def __init__(self):
+        Sink.__init__(self)
+        self.test = "Trees"
 
 class ClassTest(UnitTest):
+
+    def testInstancePassing(self):
+        s = SinkInfo(Trees)
+        i = s.getInstance()
+        self.assertEquals(i.test, "Trees")
+        self.assertEquals(i.sink, "Sink")
 
     def testSubAssign(self):
         self.assertEquals(names['SubAssignBase'], 'SubAssignBase')
