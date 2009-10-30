@@ -16,9 +16,9 @@ function $pyjs_kwargs_call(obj, func, star_args, dstar_args, args)
         /* use of __iter__ and next is horrendously expensive,
            use direct access to dictionary instead
          */
-        for (keys in dstar_args.d) {
-            var k = dstar_args.d[keys][0];
-            var v = dstar_args.d[keys][1];
+        for (keys in dstar_args.__object) {
+            var k = dstar_args.__object[keys][0];
+            var v = dstar_args.__object[keys][1];
 
             if ($pyjs.options.arg_kwarg_multiple_values && typeof args[0][k] !=
  'undefined') {

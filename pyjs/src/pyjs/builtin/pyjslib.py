@@ -3939,7 +3939,7 @@ tuple = Tuple
 class Dict:
     def __init__(self, data=JS("[]")):
         JS("""
-        self.d = {};
+        self.__object = {};
 
         if (data === null) {
             throw pyjslib['TypeError']("'NoneType' is not iterable");
@@ -3949,7 +3949,7 @@ class Dict:
                 var item=data[i];
                 self.__setitem__(item[0], item[1]);
                 //var sKey=pyjslib.hash(item[0]);
-                //self.d[sKey]=item[1];
+                //self.__object[sKey]=item[1];
             }
         } else if (pyjslib.isIteratable(data)) {
             var iter=data.__iter__();
@@ -3967,6 +3967,8 @@ class Dict:
             for (var key in data) {
                 self.__setitem__(key, data[key]);
             }
+        } else {
+            throw pyjslib['TypeError']("'" + pyjslib['repr'](data) + "' is not iterable");
         }
         """)
 
@@ -3974,14 +3976,14 @@ class Dict:
         JS("""
         if (typeof value != 'undefined') {
             var sKey = pyjslib.hash(key);
-            self.d[sKey]=[key, value];
+            self.__object[sKey]=[key, value];
         }
         """)
 
     def __getitem__(self, key):
         JS("""
         var sKey = pyjslib.hash(key);
-        var value=self.d[sKey];
+        var value=self.__object[sKey];
         if (typeof value == 'undefined'){
             throw pyjslib.KeyError(key);
         }
@@ -3990,7 +3992,7 @@ class Dict:
 
     def __nonzero__(self):
         JS("""
-        for (var i in self.d){
+        for (var i in self.__object){
             return true;
         }
         return false;
@@ -4017,7 +4019,7 @@ class Dict:
                 return c;
             }
             sKey = pyjslib.hash(self_keys.__array[idx]);
-            c = pyjslib.cmp(self.d[sKey][1], d.d[sKey][1]);
+            c = pyjslib.cmp(self.__object[sKey][1], d.__object[sKey][1]);
             if (c != 0) {
                 return c;
             }
@@ -4027,7 +4029,7 @@ class Dict:
     def __len__(self):
         size = 0
         JS("""
-        for (var i in self.d) size++;
+        for (var i in self.__object) size++;
         """)
         return INT(size);
 
@@ -4038,20 +4040,21 @@ class Dict:
     def __delitem__(self, key):
         JS("""
         var sKey = pyjslib.hash(key);
-        delete self.d[sKey];
+        delete self.__object[sKey];
         """)
 
     def __contains__(self, key):
         JS("""
         var sKey = pyjslib.hash(key);
-        return typeof self.d[sKey] == 'undefined' ? false : true;
+        return typeof self.__object[sKey] == 'undefined' ? false : true;
         """)
 
     def keys(self):
         JS("""
         var keys=new pyjslib.List();
-        for (var key in self.d) {
-            keys.append(self.d[key][0]);
+        var i = 0;
+        for (var key in self.__object) {
+            keys.__array[i++] = self.__object[key][0];
         }
         return keys;
         """)
@@ -4059,16 +4062,20 @@ class Dict:
     def values(self):
         JS("""
         var values=new pyjslib.List();
-        for (var key in self.d) values.append(self.d[key][1]);
+        var i = 0;
+        for (var key in self.__object) {
+            values.__array[i++] = self.__object[key][1];
+        }
         return values;
         """)
 
     def items(self):
         JS("""
         var items = new pyjslib.List();
-        for (var key in self.d) {
-          var kv = self.d[key];
-          items.append(new pyjslib.List(kv));
+        var i = 0;
+        for (var key in self.__object) {
+          var kv = self.__object[key];
+          items.__array[i++] = pyjslib.List(kv);
           }
           return items;
         """)
@@ -4076,24 +4083,26 @@ class Dict:
     def __iter__(self):
         JS("""
         var keys = new Array();
-        for (var key in self.d) {
-            keys.push(self.d[key][0]);
+        var i = 0;
+        for (var key in self.__object) {
+            keys[i++] = self.__object[key][0];
         }
         return new $iter_array(keys);
 """)
-        return self.keys().__iter__()
 
     def __enumerate__(self):
         JS("""
         var keys = new Array();
-        for (var key in self.d) {
-            keys.push(self.d[key][0]);
+        var i = 0;
+        for (var key in self.__object) {
+            keys[i++] = self.__object[key][0];
         }
         return new $enumerate_array(keys);
 """)
 
-    def iterkeys(self):
-        return self.__iter__()
+    #def iterkeys(self):
+    #    return self.__iter__()
+    #See monkey patch at the end of the Dict class definition
 
     def itervalues(self):
         return self.values().__iter__();
@@ -4102,14 +4111,16 @@ class Dict:
         return self.items().__iter__();
 
     def setdefault(self, key, default_value):
-        if not self.has_key(key):
-            self[key] = default_value
-        return self[key]
+        JS("""
+        var sKey = pyjslib.hash(key);
+        return typeof self.__object[sKey] == 'undefined' ? (self.__object[sKey]=[key, value]) : self.__object[sKey][1];
+""")
 
     def get(self, key, default_value=None):
-        if not self.has_key(key):
-            return default_value
-        return self[key]
+        JS("""
+        var sKey = pyjslib.hash(key);
+        return typeof self.__object[sKey] == 'undefined' ? default_value : self.__object[sKey][1];
+""")
 
     def update(self, d):
         for k,v in d.iteritems():
@@ -4142,13 +4153,13 @@ class Dict:
         Return the javascript Object which this class uses to store
         dictionary keys and values
         """
-        return self.d
+        return self.__object
 
     def copy(self):
         return Dict(self.items())
 
     def clear(self):
-        self.d = JS("{}")
+        self.__object = JS("{}")
 
     def __str__(self):
         return self.__repr__()
@@ -4160,12 +4171,12 @@ class Dict:
         #return '{' + ', '.join(r) + '}'
         JS("""
         var keys = new Array();
-        for (var key in self.d)
+        for (var key in self.__object)
             keys.push(key);
 
         var s = "{";
         for (var i=0; i<keys.length; i++) {
-            var v = self.d[keys[i]];
+            var v = self.__object[keys[i]];
             s += pyjslib.repr(v[0]) + ": " + pyjslib.repr(v[1]);
             if (i < keys.length-1)
                 s += ", ";
@@ -4174,6 +4185,7 @@ class Dict:
         return s;
         """)
 JS("pyjslib.Dict.has_key = pyjslib.Dict.__contains__;")
+JS("pyjslib.Dict.iterkeys = pyjslib.Dict.__iter__;")
 
 dict = Dict
 
