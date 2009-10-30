@@ -3805,7 +3805,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 if attr.find('(') < 0 and not self.debug:
                     attrstr = attr.replace("\n", "\n\\")
                     attr = """(typeof %(attr)s=='undefined'?
-%(s)s\t\t(function(){throw new TypeError("%(attrstr)s is undefined")})():
+%(s)s\t\t(function(){throw new TypeError("%(attrstr)s is undefined");})():
 %(s)s\t\t%(attr_code)s)""" % locals()
                 else:
                     attr_ = attr
@@ -3822,7 +3822,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                     attr = """(function(){
 %(s)s\tvar $pyjs__testval=%(attr_code)s;
 %(s)s\treturn (typeof $pyjs__testval=='undefined'?
-%(s)s\t\t(function(){throw new TypeError(\"%(attrstr)s is undefined")})():
+%(s)s\t\t(function(){throw new TypeError(\"%(attrstr)s is undefined");})():
 %(s)s\t\t$pyjs__testval);
 %(s)s})()""" % locals()
             return attr

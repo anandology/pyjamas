@@ -177,7 +177,7 @@ function $pyjs__exception_func_param(func_name, minargs, maxargs, nargs) {
     if (typeof pyjslib.TypeError == 'function') {
         throw pyjslib.TypeError(String(msg));
     }
-    throw msg
+    throw msg;
 }
 
 function $pyjs__exception_func_multiple_values(func_name, key) {
@@ -359,10 +359,10 @@ function $pyjs__class_instance(class_name, module_name) {
             }
         }
         return instance;
-    }
+    };
     cls_fn.__name__ = class_name;
     cls_fn.__module__ = module_name;
-    cls_fn.__str__ = function() { return (this.__is_instance__ === true ? "instance of " : "class ") + (this.__module__?this.__module__ + "." : "") + this.__name__;}
+    cls_fn.__str__ = function() { return (this.__is_instance__ === true ? "instance of " : "class ") + (this.__module__?this.__module__ + "." : "") + this.__name__;};
     cls_fn.toString = function() { return this.__str__();};
     return cls_fn;
 }
@@ -372,7 +372,7 @@ function $pyjs__class_function(cls_fn, prop, bases) {
     var class_name = cls_fn.__name__;
     var class_module = cls_fn.__module__;
     cls_fn.__number__ = null;
-    var base_mro_list = new Array()
+    var base_mro_list = new Array();
     for (var i = 0; i < bases.length; i++) {
         if (bases[i].__mro__ != null) {
             base_mro_list.push(new Array().concat(bases[i].__mro__));
