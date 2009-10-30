@@ -11,6 +11,8 @@ import I18N
 
 from imports.classes import WithAttribute
 
+import imports.decors # must be in this form
+
 global names
 names = {}
 
@@ -649,6 +651,19 @@ class ClassTest(UnitTest):
         self.assertTrue(a.l1 == v, "%r == %r" % (a.l1, v))
         self.assertTrue(a.l2 == v, "%r == %r" % (a.l2, v))
 
+    def testGenericMethodDecorators(self):
+        obj = DecoratedMethods()
+        self.assertEqual(obj.mtd1("b"), "1b2")
+        self.assertEqual(obj.mtd2("b"), "31b24")
+        self.assertEqual(obj.mtd3("b"), "abc")
+        self.assertEqual(obj.mtd4("b"), "a3b4c")
+
+        exc_raised = False
+        try:
+            res = obj.mtd5("b")
+        except TypeError, t:
+            exc_raised = True
+        self.assertTrue(exc_raised, "TypeError wrong arguments count not raised")
 
 class PassMeAClass(object):
     def __init__(self):
@@ -1004,4 +1019,46 @@ class SuperArg3(SuperArg1) :
     def __init__(self,a=None,b=None,c=None) :
         self.a3_args = [('a', a),('b',b),('c',c)]
         super(SuperArg3,self).__init__(a,b,c)
+
+############################################################################
+# generic decoerators for methods
+############################################################################
+
+def mdeco1(f):
+    def fn(self, x):
+        return "1" + f(self, x) + "2"
+    return fn
+
+def mdeco2(f):
+    def fn(self, x):
+        return "3" + f(self, x) + "4"
+    return fn
+
+def mdeco_with_wrong_args(f):
+    def fn(x): # correct definition should be fn(self, x), this must raise an exc
+        return "5" + f(x) + "6"
+    return fn
+
+class DecoratedMethods(object):
+    @mdeco1
+    def mtd1(self, x):
+        return x
+
+    @mdeco2
+    @mdeco1
+    def mtd2(self, x):
+        return x
+
+    @imports.decors.othermoduledeco1
+    def mtd3(self, x):
+        return x
+
+    @imports.decors.othermoduledeco1
+    @mdeco2
+    def mtd4(self, x):
+        return x
+
+    @mdeco_with_wrong_args
+    def mtd5(self, x):
+        return x
 

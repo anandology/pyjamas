@@ -222,6 +222,29 @@ function $pyjs__bind_method(klass, func_name, func, bind_type, args) {
     func.prototype = func;
     return func;
 }
+
+function $pyjs__decorated_method(klass, func_name, func, bind_type) {
+    helper = function (){
+      if (typeof func.__methoddecorator__ == "undefined")
+      {
+        // add explicit "self" into arguments
+        args=[this];
+        for (i=0;i<arguments.length;i++)
+          { args.push(arguments[i]); } // concat is not working :-S
+      } else {
+        args = arguments;
+      }
+      return func.apply(this, args);
+    };
+
+    helper.__name__ = helper.helper_name = func_name;
+    helper.__bind_type__ = bind_type;
+    helper.__class__ = klass;
+    helper.__methoddecorator__ = true;
+    helper.prototype = helper;
+    return helper;
+}
+
 function $pyjs__instancemethod(klass, func_name, func, bind_type, args) {
     var fn = function () {
         var _this = this;

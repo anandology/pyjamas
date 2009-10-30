@@ -5,6 +5,8 @@ from ClassTest import ExampleChildClass
 from ClassTest import ExampleMultiSuperclassParent1
 import Factory2
 
+import imports.decors # must be in this form
+
 class Handler:
 
     def __init__(self, x):
@@ -201,4 +203,10 @@ class FunctionTest(UnitTest):
         self.assertEqual(log[1], "deco2 begin")
         self.assertEqual(log[2], "deco2 end")
         self.assertEqual(log[3], "deco1 end")
+
+        @imports.decors.othermoduledeco1
+        def fn3(x):
+            return "b"
+
+        self.assertEqual(fn3("b"), "abc")
 

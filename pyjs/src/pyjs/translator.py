@@ -311,6 +311,12 @@ PYJSLIB_BUILTIN_MAPPING = {\
 
 SCOPE_KEY = 0
 
+BIND_TYPES_NUMERIC = {
+    "static": 0,
+    "bound": 1,
+    "class": 2
+  }
+
 # Variable names that should be remapped in functions/methods
 # arguments -> arguments_
 # arguments_ -> arguments__
@@ -900,7 +906,8 @@ class Translator:
             self.operator_funcs, self.number_classes,
         ) = self.option_stack.pop()
 
-    def parse_decorators(self, node, funcname, current_class = None, top_level = False):
+    def parse_decorators(self, node, funcname, current_class = None, top_level = False,
+                          is_method = False, bind_type = None):
         if node.decorators is None:
             return False, False, '%s'
         self.push_lookup()
@@ -909,50 +916,56 @@ class Translator:
         staticmethod = False
         classmethod = False
         lineno=node.lineno
+
+        if is_method:
+            bind_type = bind_type or "bound"
+
+        def add_callfunc(code, d, generic=True):
+            tnode = self.ast.CallFunc(d, [self.ast.Name('%s')],
+                                      star_args=None,
+                                      dstar_args=None,
+                                      lineno=lineno)
+            code = code % self._callfunc_code(tnode, None)
+
+            if is_method and (bind_type == "bound") and generic:
+                try:
+                    bind_type_num = BIND_TYPES_NUMERIC[bind_type]
+                except KeyError:
+                    raise TranslationError("Unknown bind type: %s" % bind_type, node)
+                code = "$pyjs__decorated_method($cls_instance, '%(method_name)s', %(code)s, %(bind_type)s)" % \
+                        {
+                          "method_name": node.name,
+                          "code": code,
+                          "bind_type": bind_type_num
+                        }
+
+            return code
+
         for d in node.decorators:
             if isinstance(d, self.ast.Getattr):
                 if isinstance(d.expr, self.ast.Name):
                     if d.expr.name == 'compiler':
                         raise TranslationError(
                             "The @compiler decorator is deprecated. Use from __pyjamas__ import setCompilerOptions", node, self.module_name)
-                        # Special case: compiler option
-                        if self.decorator_compiler_options.has_key(d.attrname):
-                            for var, val in self.decorator_compiler_options[d.attrname]:
-                                setattr(self, var, val)
-                        else:
-                            raise TranslationError(
-                                "Unknown compiler option '%s'" % d.attrname, node, self.module_name)
+                    if d.attrname in ("setter", "getter", "deleter"):
+                        code = add_callfunc(code, d, generic=False)
                     else:
-                        #tnode = self.ast.Assign([self.ast.AssName(funcname, "OP_ASSIGN", lineno=lineno)],
-                        #                   self.ast.CallFunc(d, [self.ast.Name(funcname)], lineno=lineno),
-                        #                   lineno=lineno)
-                        #self._assign(tnode, current_class, top_level)
-                        tnode = self.ast.CallFunc(d, [self.ast.Name('%s')], 
-                                              star_args=None,
-                                              dstar_args=None,
-                                              lineno=lineno)
-                        code = code % self._callfunc_code(tnode, None)
+                        code = add_callfunc(code, d)
                 else:
-                    raise TranslationError(
-                        "Unsupported decorator '%s'" % d.attrname, node, self.module_name)
+                    code = add_callfunc(code, d)
             elif isinstance(d, self.ast.Name):
                 if d.name == 'staticmethod':
                     staticmethod = True
                 elif d.name == 'classmethod':
                     classmethod = True
+                elif d.name == 'property':
+                    code = add_callfunc(code, d, generic=False)
                 else:
-                    #tnode = self.ast.Assign([self.ast.AssName(funcname, "OP_ASSIGN", lineno=lineno)],
-                    #                   self.ast.CallFunc(self.ast.Name(d.name), [self.ast.Name(funcname)], lineno=lineno),
-                    #                   lineno=lineno)
-                    #self._assign(tnode, current_class, top_level)
-                    tnode = self.ast.CallFunc(d, [self.ast.Name('%s')],
-                                              star_args=None,
-                                              dstar_args=None,
-                                              lineno=lineno)
-                    code = code % self._callfunc_code(tnode, None)
+                    code = add_callfunc(code, d)
             else:
                 raise TranslationError(
                     "Unsupported decorator '%s'" % d, node, self.module_name)
+
         self.pop_lookup()
         if code != '%s':
             code = code % "pyjslib['staticmethod'](%s)"
@@ -1415,13 +1428,9 @@ $generator['$genfunc'] = function () {
 
 
     def func_args(self, node, current_klass, function_name, bind_type, args, stararg, dstararg):
-        if bind_type == 'static':
-            bind_type = 0
-        elif bind_type == 'bound':
-            bind_type = 1
-        elif bind_type == 'class':
-            bind_type = 2
-        else:
+        try:
+            bind_type = BIND_TYPES_NUMERIC[bind_type]
+        except KeyError:
             raise TranslationError("Unknown bind type: %s" % bind_type, node)
         _args = []
         default_pos = len(args) - len(node.defaults)
@@ -2691,7 +2700,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.pop_options()
 
         self.push_lookup(current_klass.name_scope)
-        staticmethod, classmethod, decorator_code = self.parse_decorators(node, node.name, current_klass, False)
+        staticmethod, classmethod, decorator_code = self.parse_decorators(node, node.name, current_klass, False,
+                                                                          True, bind_type)
         decorator_code = decorator_code % '$method'
         print >>self.output, self.spacing() + "%s = %s;" % (jsmethod_name, decorator_code)
         self.add_lookup('method', node.name, "pyjslib['staticmethod'](%s)" % jsmethod_name)
