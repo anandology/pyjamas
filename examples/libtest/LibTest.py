@@ -20,7 +20,7 @@ if 1L << 31 > 0:
     has_long_type = True
     from LongTypeTest import LongTypeTest
 else:
-    has_long_type = True
+    has_long_type = False
 
 if IN_JS:
     from JSOTest import JSOTest
