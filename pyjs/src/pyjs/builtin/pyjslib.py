@@ -5124,26 +5124,15 @@ def toJSObjects(x):
 
 def sprintf(strng, args):
     # See http://docs.python.org/library/stdtypes.html
-    constructor = JS("args === null ? 'NoneType' : (args.__md5__ == pyjslib.Tuple.__md5__ ? 'Tuple': (args.__md5__ == pyjslib.Dict.__md5__ ? 'Dict': 'Other'))")
     JS(r"""
     var re_dict = /([^%]*)%[(]([^)]+)[)]([#0\x20\x2B-]*)(\d+)?(\.\d+)?[hlL]?(.)((.|\n)*)/;
     var re_list = /([^%]*)%([#0\x20\x2B-]*)(\*|(\d+))?(\.\d+)?[hlL]?(.)((.|\n)*)/;
     var re_exp = /(.*)([+-])(.*)/;
-""")
-    strlen = len(strng)
-    argidx = 0
-    nargs = 0
-    result = []
-    remainder = strng
 
-    JS("""
-    function next_arg() {
-        if (argidx == nargs) {
-            throw pyjslib['TypeError']("not enough arguments for format string");
-        }
-        arg = args.__getitem__(argidx++);
-        return arg;
-    }
+    var argidx = 0;
+    var nargs = 0;
+    var result = [];
+    var remainder = strng;
 
     function formatarg(flags, minlen, precision, conversion, param) {
         var subst = '';
@@ -5267,7 +5256,7 @@ def sprintf(strng, args):
                 }
                 break;
             default:
-                throw pyjslib['ValueError']("unsupported format character '" + conversion + "' ("+pyjslib['hex'](conversion.charCodeAt(0))+") at index " + (strlen - remainder.length - 1));
+                throw pyjslib['ValueError']("unsupported format character '" + conversion + "' ("+pyjslib['hex'](conversion.charCodeAt(0))+") at index " + (strng.length - remainder.length - 1));
         }
         if (minlen && subst.length < minlen) {
             if (numeric && left_padding && flags.indexOf('0') >= 0) {
@@ -5277,18 +5266,10 @@ def sprintf(strng, args):
         }
         return subst;
     }
-""")
 
-    def sprintf_list(strng, args):
-        a = None
-        left = None
-        flags = None
-        precision = None
-        conversion = None
-        minlen = None
-        minlen_type = None
-        JS("""
-        var __array = result.__array;
+    function sprintf_list(strng, args) {
+        var a, left, flags, precision, conversion, minlen,
+            __array = result;
         while (remainder) {
             a = re_list.exec(remainder);
             if (a === null) {
@@ -5303,7 +5284,10 @@ def sprintf(strng, args):
             if (typeof conversion == 'undefined') conversion = null;
             __array[__array.length] = left;
             if (minlen == '*') {
-                minlen = next_arg();
+                if (argidx == nargs) {
+                    throw pyjslib['TypeError']("not enough arguments for format string");
+                }
+                minlen = args.__getitem__(argidx++);
                 switch (minlen.__number__) {
                     case 0x02:
                     case 0x04:
@@ -5317,60 +5301,66 @@ def sprintf(strng, args):
                 }
             }
             if (conversion != '%') {
-                param = next_arg();
+                if (argidx == nargs) {
+                    throw pyjslib['TypeError']("not enough arguments for format string");
+                }
+                param = args.__getitem__(argidx++);
             }
             __array[__array.length] = formatarg(flags, minlen, precision, conversion, param);
         }
-""")
+    }
 
-    def sprintf_dict(strng, args):
-        from __javascript__ import formatarg
-        arg = args
-        argidx += 1
-        a = None
-        key = None
-        left = None
-        flags = None
-        precision = None
-        conversion = None
-        minlen = None
-        while remainder:
-            JS("""
-            a = re_dict.exec(remainder);""")
-            if a is None:
-                result.append(remainder)
+    function sprintf_dict(strng, args) {
+        var a = null,
+            left = null,
+            flags = null,
+            precision = null,
+            conversion = null,
+            minlen = null,
+            minlen_type = null,
+            key = null,
+            arg = args,
+            __array = result;
+
+        argidx++;
+        while (remainder) {
+            a = re_dict.exec(remainder);
+            if (a === null) {
+                __array[__array.length] = remainder;
                 break;
-            JS("""
+            }
             left = a[1]; key = a[2]; flags = a[3];
             minlen = a[4]; precision = a[5]; conversion = a[6];
             remainder = a[7];
             if (typeof minlen == 'undefined') minlen = null;
             if (typeof precision == 'undefined') precision = null;
             if (typeof conversion == 'undefined') conversion = null;
-""")
-            result.append(left)
-            if not arg.has_key(key):
-                raise KeyError(key)
-            else:
-                param = arg[key]
-            result.append(formatarg(flags, minlen, precision, conversion, param))
+            __array[__array.length] = left;
+            param = arg.__getitem__(key);
+            __array[__array.length] = formatarg(flags, minlen, precision, conversion, param);
+        }
+    }
 
-    a = None
-    JS("""
-    a = re_dict.exec(strng);
+    var constructor = args === null ? 'NoneType' : (args.__md5__ == pyjslib.Tuple.__md5__ ? 'Tuple': (args.__md5__ == pyjslib.Dict.__md5__ ? 'Dict': 'Other'));
+    if (strng.indexOf("%(") >= 0) {
+        if (re_dict.exec(strng) !== null) {
+            if (constructor != "Dict") {
+                throw pyjslib['TypeError']("format requires a mapping");
+            }
+            sprintf_dict(strng, args);
+            return result.join("");
+        }
+    }
+    if (constructor != "Tuple") {
+        args = pyjslib['Tuple']([args]);
+    }
+    nargs = args.__array.length;
+    sprintf_list(strng, args);
+    if (argidx != nargs) {
+        throw pyjslib['TypeError']('not all arguments converted during string formatting');
+    }
+    return result.join("");
 """)
-    if a is None:
-        if constructor != "Tuple":
-            args = (args,)
-        nargs = len(args)
-        sprintf_list(strng, args)
-        if argidx != nargs:
-            raise TypeError('not all arguments converted during string formatting')
-    else:
-        if constructor != "Dict":
-            raise TypeError("format requires a mapping")
-        sprintf_dict(strng, args)
-    return ''.join(result)
 
 def debugReport(msg):
     JS("""
