@@ -2373,7 +2373,13 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         if hasattr(node, 'else_') and node.else_:
             print >> self.output, self.dedent() + "}"
 
+        final = None
         if hasattr(node, 'final'):
+            final = node.final
+        if hasattr(node, 'final_'):
+            final = node.final_
+
+        if final is not None:
             print >>self.output, self.dedent() + "} finally {"
             self.indent()
             if self.is_generator:
@@ -2387,7 +2393,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             self.generator_switch_open()
             self.generator_switch_case(increment=False)
 
-            for stmt in node.final:
+            for stmt in final:
                 self._stmt(stmt, current_klass)
 
             self.generator_switch_case(increment=True)
@@ -3593,7 +3599,10 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         function_name = self.uniqid("$lambda")
         print >> self.output, "var",
         code_node = self.ast.Stmt([self.ast.Return(node.code, node.lineno)], node.lineno)
-        func_node = self.ast.Function(None, function_name, node.argnames, node.defaults, node.flags, None, code_node, node.lineno)
+        try: # python2.N
+            func_node = self.ast.Function(None, function_name, node.argnames, node.defaults, node.flags, None, code_node, node.lineno)
+        except: # lib2to3
+            func_node = self.ast.Function(None, function_name, node.argnames, node.defaults, node.varargs, node.kwargs, None, code_node, node.lineno)
         self._function(func_node, current_klass, False, True)
         return function_name
 
