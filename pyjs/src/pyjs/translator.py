@@ -4482,7 +4482,7 @@ def main():
     if len(args)<1:
         parser.error("incorrect number of arguments")
 
-    import_compiler(options.internal_ast)
+    compiler = import_compiler(options.internal_ast)
 
     if not options.output:
         parser.error("No output file specified")
@@ -4494,7 +4494,7 @@ def main():
             print >> sys.stderr, "Input file not found %s" % fn
             sys.exit(1)
 
-    translate(file_names, options.output, options.module_name,
+    translate(compiler, file_names, options.output, options.module_name,
               debug = options.debug,
               print_statements = options.print_statements,
               function_argument_checking = options.function_argument_checking,
