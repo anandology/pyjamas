@@ -3188,7 +3188,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         for e in [self.expr(child, current_klass) for child in node.nodes[:-1]]:
             v = self.uniqid('$or')
             self.add_lookup('variable', v, v)
-            expr = expr.replace('@EXPR@', "(pyjslib['bool'](%(v)s=%(e)s)?%(v)s:@EXPR@)" % locals())
+            bool = self.inline_bool_code("%(v)s=%(e)s" % locals())
+            expr = expr.replace('@EXPR@', "(%(bool)s?%(v)s:@EXPR@)" % locals())
         v = self.uniqid('$or')
         self.add_lookup('variable', v, v)
         return  expr.replace('@EXPR@', self.expr(node.nodes[-1], current_klass))
@@ -3201,7 +3202,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         for e in [self.expr(child, current_klass) for child in node.nodes[:-1]]:
             v = self.uniqid('$and')
             self.add_lookup('variable', v, v)
-            expr = expr.replace('@EXPR@', "(pyjslib['bool'](%(v)s=%(e)s)?@EXPR@:%(v)s)" % locals())
+            bool = self.inline_bool_code("%(v)s=%(e)s" % locals())
+            expr = expr.replace('@EXPR@', "(%(bool)s?@EXPR@:%(v)s)" % locals())
         v = self.uniqid('$and')
         self.add_lookup('variable', v, v)
         return  expr.replace('@EXPR@', self.expr(node.nodes[-1], current_klass))
