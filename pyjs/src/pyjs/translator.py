@@ -339,6 +339,8 @@ pyjs_attrib_remap_names = [\
     # Specifically for Chrome, which doesn't set the name attribute of a _function_
     # http://code.google.com/p/chromium/issues/detail?id=12871
     'name',
+    # collisions between javascript/python
+    'split', 'replace',
 ]
 pyjs_attrib_remap = {}
 for a in pyjs_attrib_remap_names:
