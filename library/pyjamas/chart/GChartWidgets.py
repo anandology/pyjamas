@@ -1364,7 +1364,7 @@ class PlotPanel (AbsolutePanel):
         elif Double.MAX_VALUE == x:
             result = self.yAxisEnsembleWidth+self.xChartSize-1.0
 
-        elif not (Double.isNaN(x)):
+        elif not (Double.NaN==(x)):
             result = ((self.yAxisEnsembleWidth * (self.xMax - x) +
                         (self.yAxisEnsembleWidth+self.xChartSize-1.0) * (x - self.xMin))/
                         (self.xMax - self.xMin))
@@ -1380,7 +1380,7 @@ class PlotPanel (AbsolutePanel):
         elif Double.MAX_VALUE == x:
             result = self.xChartSize-1.0
 
-        elif not (Double.isNaN(x)):
+        elif not (Double.NaN==(x)):
             result = (self.xChartSize-1.0) * (x - self.xMin)/(self.xMax - self.xMin)
 
         return result
@@ -1425,7 +1425,7 @@ class PlotPanel (AbsolutePanel):
         elif Double.MAX_VALUE == y:
             result = self.topMargin
 
-        elif not (Double.isNaN(y)):
+        elif not (Double.NaN==(y)):
             result = (self.topMargin * (y - minY) +
             ((self.yChartSize + self.topMargin - 1.0) *
             (maxY - y)))/(maxY - minY)
@@ -1447,7 +1447,7 @@ class PlotPanel (AbsolutePanel):
         elif Double.MAX_VALUE == y:
             result = 0
 
-        elif not (Double.isNaN(y)):
+        elif not (Double.NaN==(y)):
             result = (self.yChartSize - 1.0) * (maxY - y)/(maxY - minY)
 
         return result
@@ -1661,7 +1661,7 @@ class PlotPanel (AbsolutePanel):
 
                 fillSpacing = \
                         cTouched.getSymbol().getHoverSelectionFillSpacing()
-                if not (Double.isNaN(fillSpacing)):
+                if not (Double.NaN==(fillSpacing)):
                     cCursor.getSymbol().setFillSpacing(fillSpacing)
 
                 fillThickness = \

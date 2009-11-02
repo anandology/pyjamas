@@ -260,7 +260,7 @@ class Symbol(object):
     **
     """
     def getFillSpacing(self):
-        if Double.isNaN(self.fillSpacing):
+        if Double.NaN==(self.fillSpacing):
             return self.symbolType.defaultFillSpacing()
         
         else:
@@ -734,7 +734,7 @@ class Symbol(object):
     
     def getDecodedPieSliceOrientation(self):
         result = self.pieSliceOrientation
-        if (Double.isNaN(result)):
+        if (Double.NaN==(result)):
             result = self.defaultPieSliceOrientation
         
         return result
@@ -1190,7 +1190,7 @@ class Symbol(object):
     """
     def setFillSpacing(self, fillSpacing):
         self.getParent().invalidate()
-        if (not (Double.isNaN(fillSpacing))  and  
+        if (not (Double.NaN==(fillSpacing))  and  
             fillSpacing != 0  and  fillSpacing < 1):
             raise IllegalArgumentException(
             "fillSpacing="+fillSpacing+"; "+
@@ -2327,13 +2327,13 @@ class Symbol(object):
         # Model and pixel variants of width/height actually
         # represent a single underlying property (setting one,
         # unsets the other, etc.). Logic below reflects this.
-        if not Double.isNaN(fc.getModelHeight()):
+        if not Double.NaN==(fc.getModelHeight()):
             self.setModelHeight(fc.getModelHeight())
         
         else:
             self.setHeight(fc.getHeight())
         
-        if not Double.isNaN(fc.getModelWidth()):
+        if not Double.NaN==(fc.getModelWidth()):
             self.setModelWidth(fc.getModelWidth())
         
         else:
@@ -2369,7 +2369,7 @@ class Symbol(object):
             return self.height
 
         mH = self.getModelHeight()
-        if (Double.isNaN(mH)):
+        if (Double.NaN==(mH)):
             result = self.getHeight()
         
         else:
@@ -2405,7 +2405,7 @@ class Symbol(object):
             return self.width
 
         mW = self.getModelWidth()
-        if (Double.isNaN(mW)):
+        if (Double.NaN==(mW)):
             result = self.getWidth()
         
         else:

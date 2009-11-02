@@ -483,7 +483,7 @@ class Axis:
         ** @see #getDataMax getDataMax
         *"""
 
-        if not (Double.isNaN(self.axisMax)):
+        if not (Double.NaN==(self.axisMax)):
             return self.axisMax
 
         elif NAI != self.tickCount:
@@ -509,7 +509,7 @@ class Axis:
         **
         ** @see #setAxisMin setAxisMin
         *"""
-        if not (Double.isNaN(self.axisMin)):
+        if not (Double.NaN==(self.axisMin)):
             return self.axisMin; # explicitly set
 
         elif NAI != self.tickCount:
@@ -1776,16 +1776,16 @@ class Axis:
         # Adjust min/max so that special cases, like one-point
         # charts, do not have axes that shrink down to a point,
         # which would create numerical and visual difficulties.
-        if (Double.isNaN(min))  and  (Double.isNaN(max)):
+        if (Double.NaN==(min))  and  (Double.NaN==(max)):
             # e.g. no data and no explicitly specified ticks
             min = 0
             max = min + DEFAULT_AXIS_RANGE
 
-        elif (Double.isNaN(min))  and  not (Double.isNaN(max)):
+        elif (Double.NaN==(min))  and  not (Double.NaN==(max)):
             # e.g. no data but only max explicitly set
             min = max - DEFAULT_AXIS_RANGE
 
-        elif not (Double.isNaN(min))  and  (Double.isNaN(max)):
+        elif not (Double.NaN==(min))  and  (Double.NaN==(max)):
             # e.g. no data but only min explicitly set
             max = min + DEFAULT_AXIS_RANGE
 
@@ -1842,10 +1842,10 @@ class Axis:
 
     # Same as max, except treats NaN/MAX_VALUE values as "not there"
     def maxIgnoreNaNAndMaxValue(self, x1, x2):
-        if Double.isNaN(x1)  or  Double.MAX_VALUE == x1  or  -Double.MAX_VALUE == x1:
+        if Double.NaN==(x1)  or  Double.MAX_VALUE == x1  or  -Double.MAX_VALUE == x1:
             result = x2
 
-        elif Double.isNaN(x2)  or  Double.MAX_VALUE == x2  or  -Double.MAX_VALUE == x2:
+        elif Double.NaN==(x2)  or  Double.MAX_VALUE == x2  or  -Double.MAX_VALUE == x2:
             result = x1
 
         else:
@@ -1855,10 +1855,10 @@ class Axis:
 
     # Same as min, except treats NaN/MAX_VALUE values as "not there"
     def minIgnoreNaNAndMaxValue(self, x1, x2):
-        if Double.isNaN(x1)  or  Double.MAX_VALUE == x1  or  -Double.MAX_VALUE == x1:
+        if Double.NaN==(x1)  or  Double.MAX_VALUE == x1  or  -Double.MAX_VALUE == x1:
             result = x2
 
-        elif Double.isNaN(x2)  or  Double.MAX_VALUE == x2  or  -Double.MAX_VALUE == x2:
+        elif Double.NaN==(x2)  or  Double.MAX_VALUE == x2  or  -Double.MAX_VALUE == x2:
             result = x1
 
         else:
@@ -1870,10 +1870,10 @@ class Axis:
     # limit, so, for update purposes, they are considered
     # to have changed.
     def invalidateDynamicAxisLimits(self):
-        if (Double.isNaN(axisMin)):
+        if (Double.NaN==(axisMin)):
             self.setAxisMin(axisMin)
 
-        if (Double.isNaN(axisMax)):
+        if (Double.NaN==(axisMax)):
             self.setAxisMax(axisMax)
 
 

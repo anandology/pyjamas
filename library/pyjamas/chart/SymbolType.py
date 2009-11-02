@@ -224,7 +224,7 @@ class SymbolType:
         xMin = pp.getXMin()
         xMax = pp.getXMax()
         xMid = symbol.getBaseline()
-        if (Double.isNaN(xMid)):
+        if (Double.NaN==(xMid)):
             xMid = (xMin + xMax)/2.
 
         xMinPx = pp.xToPixel(xMin)
@@ -238,7 +238,7 @@ class SymbolType:
         symWidth = self.getAdjustedWidth(width, xPx,
                                 prevXPx, nextXPx,
                                 xMinPx, xMaxPx, xMidPx)
-        if (Double.isNaN(symWidth)):
+        if (Double.NaN==(symWidth)):
             return Double.NaN
 
 
@@ -246,7 +246,7 @@ class SymbolType:
                             prevXPx, nextXPx,
                             xMinPx, xMaxPx, xMidPx,
                             pp.getXMousePlotArea())
-        if (Double.isNaN(xLeft)):
+        if (Double.NaN==(xLeft)):
             return Double.NaN
 
 
@@ -306,7 +306,7 @@ class SymbolType:
             yMin =  pp.getYMax()
             yMax =  pp.getYMin()
         yMid = symbol.getBaseline()
-        if (Double.isNaN(yMid)):
+        if (Double.NaN==(yMid)):
             yMid = (yMin + yMax)/2.
 
         yMinPx = pp.yToPixel(yMin,onY2)
@@ -319,7 +319,7 @@ class SymbolType:
 
         symHeight = self.getAdjustedHeight(height, yPx,
         prevYPx, nextYPx, yMinPx, yMaxPx, yMidPx)
-        if (Double.isNaN(symHeight)):
+        if (Double.NaN==(symHeight)):
             return Double.NaN
 
 
@@ -327,7 +327,7 @@ class SymbolType:
         prevYPx, nextYPx,
         yMinPx, yMaxPx, yMidPx,
         pp.getYMousePlotArea())
-        if (Double.isNaN(yTop)):
+        if (Double.NaN==(yTop)):
             return Double.NaN
 
 
@@ -371,7 +371,7 @@ class SymbolType:
         xMin = pp.getXMin()
         xMax = pp.getXMax()
         xMid = symbol.getBaseline()
-        if (Double.isNaN(xMid)):
+        if (Double.NaN==(xMid)):
             xMid = (xMin + xMax)/2.
 
         xMinPx = pp.xToPixel(xMin)
@@ -385,7 +385,7 @@ class SymbolType:
         symWidth = self.getAdjustedWidth(width, xPx,
         prevXPx, nextXPx,
         xMinPx, xMaxPx, xMidPx)
-        if (Double.isNaN(symWidth)):
+        if (Double.NaN==(symWidth)):
             return Double.NaN
 
 
@@ -393,7 +393,7 @@ class SymbolType:
                                 prevXPx, nextXPx,
                                 xMinPx, xMaxPx, xMidPx,
                                 pp.getXMousePlotArea())
-        if (Double.isNaN(xLeft)):
+        if (Double.NaN==(xLeft)):
             return Double.NaN
 
         result = xLeft
@@ -407,7 +407,7 @@ class SymbolType:
         xMin = pp.getXMin()
         xMax = pp.getXMax()
         xMid = symbol.getBaseline()
-        if (Double.isNaN(xMid)):
+        if (Double.NaN==(xMid)):
             xMid = (xMin + xMax)/2.
 
         xMinPx = pp.xToPixel(xMin)
@@ -421,7 +421,7 @@ class SymbolType:
         symWidth = self.getAdjustedWidth(width, xPx,
                                         prevXPx, nextXPx,
                                         xMinPx, xMaxPx, xMidPx)
-        if (Double.isNaN(symWidth)):
+        if (Double.NaN==(symWidth)):
             return Double.NaN
 
 
@@ -429,7 +429,7 @@ class SymbolType:
                                     prevXPx, nextXPx,
                                     xMinPx, xMaxPx, xMidPx,
                                     pp.getXMousePlotArea())
-        if (Double.isNaN(xLeft)):
+        if (Double.NaN==(xLeft)):
             return Double.NaN
 
 
@@ -455,7 +455,7 @@ class SymbolType:
             yMin =  pp.getYMax()
             yMax =  pp.getYMin()
         yMid = symbol.getBaseline()
-        if (Double.isNaN(yMid)):
+        if (Double.NaN==(yMid)):
             yMid = (yMin + yMax)/2.
 
         yMinPx = pp.yToPixel(yMin,onY2)
@@ -468,7 +468,7 @@ class SymbolType:
 
         symHeight = self.getAdjustedHeight(height, yPx,
                             prevYPx, nextYPx, yMinPx, yMaxPx, yMidPx)
-        if (Double.isNaN(symHeight)):
+        if (Double.NaN==(symHeight)):
             return Double.NaN
 
 
@@ -476,7 +476,7 @@ class SymbolType:
                                 prevYPx, nextYPx,
                                 yMinPx, yMaxPx, yMidPx,
                                 pp.getYMousePlotArea())
-        if (Double.isNaN(yTop)):
+        if (Double.NaN==(yTop)):
             return Double.NaN
 
 
@@ -502,7 +502,7 @@ class SymbolType:
             yMin =  pp.getYMax()
             yMax =  pp.getYMin()
         yMid = symbol.getBaseline()
-        if (Double.isNaN(yMid)):
+        if (Double.NaN==(yMid)):
             yMid = (yMin + yMax)/2.
 
         yMinPx = pp.yToPixel(yMin,onY2)
@@ -515,7 +515,7 @@ class SymbolType:
 
         symHeight = self.getAdjustedHeight(height, yPx,
                             prevYPx, nextYPx, yMinPx, yMaxPx, yMidPx)
-        if (Double.isNaN(symHeight)):
+        if (Double.NaN==(symHeight)):
             return Double.NaN
 
 
@@ -523,7 +523,7 @@ class SymbolType:
                             prevYPx, nextYPx,
                             yMinPx, yMaxPx, yMidPx,
                             pp.getYMousePlotArea())
-        if (Double.isNaN(yTop)):
+        if (Double.NaN==(yTop)):
             return Double.NaN
 
 
@@ -540,7 +540,7 @@ class SymbolType:
         xMin = pp.getXMin()
         xMax = pp.getXMax()
         xMid = symbol.getBaseline()
-        if (Double.isNaN(xMid)):
+        if (Double.NaN==(xMid)):
             xMid = (xMin + xMax)/2.
 
         xMinPx = pp.xToPixel(xMin)
@@ -554,7 +554,7 @@ class SymbolType:
         symWidth = self.getAdjustedWidth(width, xPx,
                                     prevXPx, nextXPx,
                                     xMinPx, xMaxPx, xMidPx)
-        if (Double.isNaN(symWidth)):
+        if (Double.NaN==(symWidth)):
             return Double.NaN
 
 
@@ -562,7 +562,7 @@ class SymbolType:
                                     prevXPx, nextXPx,
                                     xMinPx, xMaxPx, xMidPx,
                                     pp.getXMousePlotArea())
-        if (Double.isNaN(xLeft)):
+        if (Double.NaN==(xLeft)):
             return Double.NaN
 
 
@@ -589,7 +589,7 @@ class SymbolType:
             yMin =  pp.getYMax()
             yMax =  pp.getYMin()
         yMid = symbol.getBaseline()
-        if (Double.isNaN(yMid)):
+        if (Double.NaN==(yMid)):
             yMid = (yMin + yMax)/2.
 
         yMinPx = pp.yToPixel(yMin,onY2)
@@ -602,7 +602,7 @@ class SymbolType:
 
         symHeight = self.getAdjustedHeight(height, yPx,
                                 prevYPx, nextYPx, yMinPx, yMaxPx, yMidPx)
-        if (Double.isNaN(symHeight)):
+        if (Double.NaN==(symHeight)):
             return Double.NaN
 
 
@@ -610,7 +610,7 @@ class SymbolType:
                                 prevYPx, nextYPx,
                                 yMinPx, yMaxPx, yMidPx,
                                 pp.getYMousePlotArea())
-        if (Double.isNaN(yTop)):
+        if (Double.NaN==(yTop)):
             return Double.NaN
 
 
@@ -636,7 +636,7 @@ class SymbolType:
         xMin = pp.getXMin()
         xMax = pp.getXMax()
         xMid = symbol.getBaseline()
-        if (Double.isNaN(xMid)):
+        if (Double.NaN==(xMid)):
             xMid = (xMin + xMax)/2.
 
         xMinPx = pp.xToPixel(xMin)
@@ -650,7 +650,7 @@ class SymbolType:
         symWidth = self.getAdjustedWidth(width, xPx,
                                         prevXPx, nextXPx,
                                         xMinPx, xMaxPx, xMidPx)
-        if (Double.isNaN(symWidth)):
+        if (Double.NaN==(symWidth)):
             return False
 
 
@@ -658,7 +658,7 @@ class SymbolType:
                                     prevXPx, nextXPx,
                                     xMinPx, xMaxPx, xMidPx,
                                     pp.getXMousePlotArea())
-        if (Double.isNaN(xLeft)):
+        if (Double.NaN==(xLeft)):
             return False
 
 
@@ -680,7 +680,7 @@ class SymbolType:
             yMin =  pp.getYMax()
             yMax =  pp.getYMin()
         yMid = symbol.getBaseline()
-        if (Double.isNaN(yMid)):
+        if (Double.NaN==(yMid)):
             yMid = (yMin + yMax)/2.
 
         yMinPx = pp.yToPixel(yMin,onY2)
@@ -693,7 +693,7 @@ class SymbolType:
 
         symHeight = self.getAdjustedHeight(height, yPx,
                                 prevYPx, nextYPx, yMinPx, yMaxPx, yMidPx)
-        if (Double.isNaN(symHeight)):
+        if (Double.NaN==(symHeight)):
             return False
 
 
@@ -701,7 +701,7 @@ class SymbolType:
                             prevYPx, nextYPx,
                             yMinPx, yMaxPx, yMidPx,
                             pp.getYMousePlotArea())
-        if (Double.isNaN(yTop)):
+        if (Double.NaN==(yTop)):
             return False
 
 
@@ -930,7 +930,7 @@ class SymbolType:
         xMin = pp.getXMin()
         xMax = pp.getXMax()
         xMid = symbol.getBaseline()
-        if (Double.isNaN(xMid)):
+        if (Double.NaN==(xMid)):
             xMid = (xMin + xMax)/2.
 
         xMinPx = pp.xToPixel(xMin)
@@ -940,7 +940,7 @@ class SymbolType:
         symWidth = self.getAdjustedWidth(width, xPx,
                                         prevXPx, nextXPx,
                                         xMinPx, xMaxPx, xMidPx)
-        if (Double.isNaN(symWidth)):
+        if (Double.NaN==(symWidth)):
             return
 
 
@@ -948,7 +948,7 @@ class SymbolType:
                                     prevXPx, nextXPx,
                                     xMinPx, xMaxPx, xMidPx,
                                     pp.getXMousePlotArea())
-        if (Double.isNaN(xLeft)):
+        if (Double.NaN==(xLeft)):
             return
 
 
@@ -962,7 +962,7 @@ class SymbolType:
             yMin =  pp.getYMax()
             yMax =  pp.getYMin()
         yMid = symbol.getBaseline()
-        if (Double.isNaN(yMid)):
+        if (Double.NaN==(yMid)):
             yMid = (yMin + yMax)/2.
 
         yMinPx = pp.yToPixel(yMin,onY2)
@@ -972,7 +972,7 @@ class SymbolType:
         symHeight = self.getAdjustedHeight( height, yPx,
                                             prevYPx, nextYPx,
                                             yMinPx, yMaxPx, yMidPx)
-        if (Double.isNaN(symHeight)):
+        if (Double.NaN==(symHeight)):
             return
 
 
@@ -980,7 +980,7 @@ class SymbolType:
                             prevYPx, nextYPx,
                             yMinPx, yMaxPx, yMidPx,
                             pp.getYMousePlotArea())
-        if (Double.isNaN(yTop)):
+        if (Double.NaN==(yTop)):
             return
 
 
@@ -1104,7 +1104,7 @@ class SymbolType:
     # retains coord of an area chart's "filled to" axis/baseline
     def realizeSymbol(self, pp, grp, arp, symbol, annotation, onY2, clipPlotArea, clipDecoratedChart, drawMainSymbol, x, y, prevX, prevY, nextX, nextY):
 
-        if (Double.isNaN(x))  or  (Double.isNaN(y)):
+        if (Double.NaN==(x))  or  (Double.NaN==(y)):
             # this point undefined (isNaN)
             return
 
@@ -1150,14 +1150,14 @@ class SymbolType:
                    "transparent" != borderColor)  or
                    (GChartConsts.TRANSPARENT_BORDER_COLOR != backgroundColor  and
                    "transparent" != backgroundColor))):
-                    if Double.isNaN(prevX)  or  Double.isNaN(prevY):
+                    if Double.NaN==(prevX)  or  Double.NaN==(prevY):
                         # first defined point after an undefined point ==> path
                         # (need to draw zero-thickness lines for possible line
                         # endings user may have defined by overriding beginPath)
                         canvas.beginPath()
                         canvas.moveTo(xPx - grp.x0, yPx - grp.y0)
 
-                    if Double.isNaN(nextX)  or  Double.isNaN(nextY):
+                    if Double.NaN==(nextX)  or  Double.NaN==(nextY):
                         # last defined point before undefined point ==> draw accumulated path
                         if (GChartConsts.TRANSPARENT_BORDER_COLOR != borderColor  and
                            "transparent" != borderColor  and
@@ -1201,7 +1201,7 @@ class SymbolType:
                 """
                 closeStrokeAndFill = False
                 if False == self.horizontallyBanded:
-                    if Double.isNaN(prevX)  or  Double.isNaN(prevY):
+                    if Double.NaN==(prevX)  or  Double.NaN==(prevY):
                         # 1st point, or 1st point after a break in the line
                         self.oppositeEdge = self.getEdgeOppositeVertically(
                                                 pp, symbol, y, onY2)
@@ -1209,7 +1209,7 @@ class SymbolType:
                         canvas.moveTo(xPx - grp.x0, self.oppositeEdge - grp.y0)
                         canvas.lineTo(xPx - grp.x0, yPx - grp.y0)
 
-                    if Double.isNaN(nextX)  or  Double.isNaN(nextY):
+                    if Double.NaN==(nextX)  or  Double.NaN==(nextY):
                         # last point, or last point before a break in the line
                         canvas.lineTo(xPx - grp.x0, self.oppositeEdge - grp.y0)
                         closeStrokeAndFill = True
@@ -1220,7 +1220,7 @@ class SymbolType:
 
                 else:
 
-                    if Double.isNaN(prevX)  or  Double.isNaN(prevY):
+                    if Double.NaN==(prevX)  or  Double.NaN==(prevY):
                         # 1st point, or 1st point after a break in the line
                         self.oppositeEdge = self.getEdgeOppositeHorizontally(
                                             pp, symbol, x, onY2)
@@ -1228,7 +1228,7 @@ class SymbolType:
                         canvas.moveTo(self.oppositeEdge - grp.x0, yPx - grp.y0)
                         canvas.lineTo(xPx - grp.x0, yPx - grp.y0)
 
-                    if Double.isNaN(nextX)  or  Double.isNaN(nextY):
+                    if Double.NaN==(nextX)  or  Double.NaN==(nextY):
                         # last point, or last point before a break in the line
                         canvas.lineTo(self.oppositeEdge - grp.x0, yPx - grp.y0)
                         closeStrokeAndFill = True
@@ -1297,7 +1297,7 @@ class SymbolType:
          # if 0 == spacing  and  None != canvas  and  thickness > 0
         # next point defined
         # not a zero thickness connection
-        elif (not Double.isNaN(nextX))  and  (not Double.isNaN(nextY))  and   thickness > 0  and    (x!=nextX  or  y!=nextY):
+        elif (not Double.NaN==(nextX))  and  (not Double.NaN==(nextY))  and   thickness > 0  and    (x!=nextX  or  y!=nextY):
             # this/next point not overlayed
             if 0 == spacing:
                 # 1px is as close as HTML-element
@@ -1496,7 +1496,7 @@ class LineSymbolType (SymbolType):
 
     def realizeSymbol(self, pp, grp, arp, symbol, annotation, onY2, clipPlotArea, clipDecoratedChart, drawMainSymbol, x, y, prevX, prevY, nextX, nextY):
 
-        if (Double.isNaN(x))  or  (Double.isNaN(y)):
+        if (Double.NaN==(x))  or  (Double.NaN==(y)):
             # this point undefined (isNaN)
             return
 
@@ -1523,7 +1523,7 @@ class LineSymbolType (SymbolType):
 
         # next point defined
         # not a zero thickness connection
-        if (not Double.isNaN(nextX))  and  (not Double.isNaN(nextY))  and   thickness > 0  and    (x!=nextX  or  y!=nextY):
+        if (not Double.NaN==(nextX))  and  (not Double.NaN==(nextY))  and   thickness > 0  and    (x!=nextX  or  y!=nextY):
             # this/next point not overlayed
             # draw HTML-element rendered line segment
 
@@ -2105,7 +2105,7 @@ class PieSliceSymbolType (SymbolType):
         theta0 = symbol.getPieSliceTheta0()
         theta1 = symbol.getPieSliceTheta1()
         canvas = grp.getCanvas()
-        if (Double.isNaN(xPx))  or  (Double.isNaN(yPx)):
+        if (Double.NaN==(xPx))  or  (Double.NaN==(yPx)):
             return; # undefined slice pivot point
 
         elif clipPlotArea  and  not self.intersects(xPx-r, yPx-r, xPx+r, yPx+r, 0, 0, pp.getXChartSize(), pp.getYChartSize()):
@@ -2317,21 +2317,21 @@ class PieSliceSymbolType (SymbolType):
 
                     # intersection points sorted by increasing y within p[]
                     if e1 < e2:
-                        if not Double.isNaN(e1):
+                        if not Double.NaN==(e1):
                             p[nP] = e1
                             nP += 1
 
-                        if not Double.isNaN(e2):
+                        if not Double.NaN==(e2):
                             p[nP] = e2
                             nP += 1
 
 
                     else:
-                        if not Double.isNaN(e2):
+                        if not Double.NaN==(e2):
                             p[nP] = e2
                             nP += 1
 
-                        if not Double.isNaN(e1):
+                        if not Double.NaN==(e1):
                             p[nP] = e1
                             nP += 1
 
@@ -2417,21 +2417,21 @@ class PieSliceSymbolType (SymbolType):
 
                     # intersection points sorted by increasing x within p[]
                     if e1 < e2:
-                        if not Double.isNaN(e1):
+                        if not Double.NaN==(e1):
                             p[nP] = e1
                             nP += 1
 
-                        if not Double.isNaN(e2):
+                        if not Double.NaN==(e2):
                             p[nP] = e2
                             nP += 1
 
 
                     else:
-                        if not Double.isNaN(e2):
+                        if not Double.NaN==(e2):
                             p[nP] = e2
                             nP += 1
 
-                        if not Double.isNaN(e1):
+                        if not Double.NaN==(e1):
                             p[nP] = e1
                             nP += 1
 

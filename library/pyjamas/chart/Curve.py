@@ -173,12 +173,12 @@ class Curve:
         result = NAI
         symType = self.getSymbol().getSymbolType()
         xPx = symType.getCenterX(self.chart.plotPanel, self.getSymbol(), iPoint)
-        if Double.isNaN(xPx):
+        if Double.NaN==(xPx):
             return result; # NaN points not in any band
 
         yPx = symType.getCenterY( self.chart.plotPanel, self.getSymbol(),
                                   iPoint, self.onY2())
-        if Double.isNaN(yPx):
+        if Double.NaN==(yPx):
             return result; # NaN points not in any band
 
         # now, we've got a point with x,y values in some sort of band
@@ -885,7 +885,7 @@ class Curve:
         x = p.getX()
         y = p.getY()
         # skip points at undefined locations
-        if (Double.isNaN(x))  or  (Double.isNaN(y)):
+        if (Double.NaN==(x))  or  (Double.NaN==(y)):
             return
 
         prevX = Double.NaN

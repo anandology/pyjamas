@@ -253,7 +253,7 @@ def htmlHeight(s):
 
 # is value within given limits, inclusive?
 def withinRange(x, minLim, maxLim):
-    result = Double.isNaN(x) and True or (x >= minLim  and  x <= maxLim)
+    result = Double.NaN==(x) and True or (x >= minLim  and  x <= maxLim)
     return result
 
 
