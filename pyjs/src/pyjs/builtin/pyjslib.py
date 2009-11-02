@@ -3569,6 +3569,9 @@ class List:
         throw pyjslib['TypeError']("'" + pyjslib['repr'](data) + "' is not iterable");
         """)
 
+    def __hash__(self):
+        raise TypeError("list objects are unhashable")
+
     def append(self, item):
         JS("""self.__array[self.__array.length] = item;""")
 
@@ -4075,6 +4078,9 @@ class Dict:
         }
         return null;
         """)
+
+    def __hash__(self):
+        raise TypeError("dict objects are unhashable")
 
     def __setitem__(self, key, value):
         JS("""
