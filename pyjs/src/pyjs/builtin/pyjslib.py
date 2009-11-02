@@ -4951,6 +4951,12 @@ def map(obj, method, sequence=None):
     return items
 
 
+def sorted(iterable, cmp=None, key=None, reverse=False):
+    lst = list(iterable)
+    lst.sort(cmp, key, reverse)
+    return lst
+
+
 def enumerate(sequence):
     JS("""
     if (typeof sequence.__enumerate__ == 'function') {

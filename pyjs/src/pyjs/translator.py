@@ -266,6 +266,7 @@ PYJSLIB_BUILTIN_FUNCTIONS=frozenset((
     "repr",
     "round",
     "setattr",
+    "sorted",
     "staticmethod",
     "str",
     "super",
