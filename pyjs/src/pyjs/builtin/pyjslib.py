@@ -444,11 +444,11 @@ def op_bitand2(x, y):
             case 0x0404:
                 return x.__and(y);
         }
-        if (typeof x['__rshift__'] == 'function') {
-            var v = x.__rshift__(y);
+        if (typeof x['__and__'] == 'function') {
+            var v = x.__and__(y);
             if (v !== pyjslib['NotImplemented']) return v;
         }
-        if (typeof y['__rrshift__'] != 'undefined') return y.__rrshift__(x);
+        if (typeof y['__rand__'] != 'undefined') return y.__rand__(x);
     }
     throw pyjslib['TypeError']("unsupported operand type(s) for &: '%r', '%r'" % (x, y));
 """)
@@ -498,11 +498,11 @@ def op_bitxor2(x, y):
             case 0x0404:
                 return x.__xor(y);
         }
-        if (typeof x['__rshift__'] == 'function') {
-            var v = x.__rshift__(y);
+        if (typeof x['__xor__'] == 'function') {
+            var v = x.__xor__(y);
             if (v !== pyjslib['NotImplemented']) return v;
         }
-        if (typeof y['__rrshift__'] != 'undefined') return y.__rrshift__(x);
+        if (typeof y['__rxor__'] != 'undefined') return y.__rxor__(x);
     }
     throw pyjslib['TypeError']("unsupported operand type(s) for &: '%r', '%r'" % (x, y));
 """)
@@ -552,11 +552,11 @@ def op_bitor2(x, y):
             case 0x0404:
                 return x.__or(y);
         }
-        if (typeof x['__rshift__'] == 'function') {
-            var v = x.__rshift__(y);
+        if (typeof x['__or__'] == 'function') {
+            var v = x.__or__(y);
             if (v !== pyjslib['NotImplemented']) return v;
         }
-        if (typeof y['__rrshift__'] != 'undefined') return y.__rrshift__(x);
+        if (typeof y['__ror__'] != 'undefined') return y.__ror__(x);
     }
     throw pyjslib['TypeError']("unsupported operand type(s) for &: '%r', '%r'" % (x, y));
 """)
