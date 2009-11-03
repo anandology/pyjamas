@@ -2,7 +2,7 @@
 
 ./build.sh
 
-./pyv8test.sh | grep 'Passed.*failed'
+./pyv8test.sh --strict | grep 'failed'
 
 BULK=output/some_in_one.js
 

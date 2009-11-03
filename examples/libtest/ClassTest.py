@@ -679,6 +679,9 @@ class ClassTest(UnitTest):
         self.assertTrue(a.l2 == v, "%r == %r" % (a.l2, v))
 
     def testGenericMethodDecorators(self):
+        """
+        issues #309, #318
+        """
         obj = DecoratedMethods()
         self.assertEqual(obj.mtd1("b"), "1b2")
         self.assertEqual(obj.mtd2("b"), "31b24")
@@ -691,6 +694,18 @@ class ClassTest(UnitTest):
         except TypeError, t:
             exc_raised = True
         self.assertTrue(exc_raised, "TypeError wrong arguments count not raised")
+
+        self.assertEqual(obj.mtd_static("b"), "5b6")
+        self.assertEqual(DecoratedMethods.mtd_static("b"), "5b6")
+
+        try:
+            self.assertEqual(obj.mtd_class("b"), "7b8")
+            self.assertEqual(DecoratedMethod.mtd_class("b"), "7b8")
+        except TypeError, e:
+            msg = str(e)
+            if "fnc() takes exactly 2 arguments (1 given)" in msg:
+                msg = "bug #318 - " + msg
+            self.fail(msg)
 
 class PassMeAClass(object):
     def __init__(self):
@@ -1052,19 +1067,29 @@ class SuperArg3(SuperArg1) :
 ############################################################################
 
 def mdeco1(f):
-    def fn(self, x):
+    def fn1(self, x):
         return "1" + f(self, x) + "2"
-    return fn
+    return fn1
 
 def mdeco2(f):
-    def fn(self, x):
+    def fn2(self, x):
         return "3" + f(self, x) + "4"
-    return fn
+    return fn2
 
 def mdeco_with_wrong_args(f):
-    def fn(x): # correct definition should be fn(self, x), this must raise an exc
+    def fn_wwa(x): # correct definition should be fn(self, x), this must raise an exc
         return "5" + f(x) + "6"
-    return fn
+    return fn_wwa
+
+def mdeco_static(f):
+    def fns(x):
+        return "5" + f(x) + "6"
+    return fns
+
+def mdeco_class(f):
+    def fnc(cls, x):
+        return "7" + f(cls, x) + "8"
+    return fnc
 
 class DecoratedMethods(object):
     @mdeco1
@@ -1087,5 +1112,15 @@ class DecoratedMethods(object):
 
     @mdeco_with_wrong_args
     def mtd5(self, x):
+        return x
+
+    @mdeco_static
+    @staticmethod
+    def mtd_static(x):
+        return x
+
+    @mdeco_class
+    @classmethod
+    def mtd_class(cls, x):
         return x
 
