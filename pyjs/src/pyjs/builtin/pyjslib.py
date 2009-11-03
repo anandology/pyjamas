@@ -5401,8 +5401,10 @@ def printFunc(objs, newline):
     """)
 
 def type(clsname, bases=None, methods=None):
-    """ creates a class, derived from bases, with methods and variables
-    """
+    if bases is None and methods is None:
+        # return type of clsname
+        raise NotImplementedError("type() with single argument is not supported (use isinstance())")
+    # creates a class, derived from bases, with methods and variables
     JS(" var mths = {}; ")
     if methods:
         for k in methods.keys():

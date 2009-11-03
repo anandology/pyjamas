@@ -346,3 +346,9 @@ class BuiltinTest(UnitTest):
 
         self.assertTrue(lst1 == sorted(xrange(10)), "lst1 == sorted(xrange(1))")
         self.assertTrue(lst2 == sorted(xrange(10), reverse=True), "lst2 == sorted(xrange(10), reverse=True)")
+
+    def testType(self):
+        try:
+            self.assertTrue(type(object) is type)
+        except NotImplementedError, why:
+            self.fail(str(why))
