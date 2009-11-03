@@ -700,7 +700,7 @@ class ClassTest(UnitTest):
 
         try:
             self.assertEqual(obj.mtd_class("b"), "7b8")
-            self.assertEqual(DecoratedMethod.mtd_class("b"), "7b8")
+            self.assertEqual(DecoratedMethods.mtd_class("b"), "7b8")
         except TypeError, e:
             msg = str(e)
             if "fnc() takes exactly 2 arguments (1 given)" in msg:
@@ -1068,11 +1068,15 @@ class SuperArg3(SuperArg1) :
 
 def mdeco1(f):
     def fn1(self, x):
+        if not isinstance(self, DecoratedMethods):
+            raise TypeError("fn1 - self is not instance of DecoratedMethods")
         return "1" + f(self, x) + "2"
     return fn1
 
 def mdeco2(f):
     def fn2(self, x):
+        if not isinstance(self, DecoratedMethods):
+            raise TypeError("fn2 - self is not instance of DecoratedMethods")
         return "3" + f(self, x) + "4"
     return fn2
 
@@ -1088,6 +1092,8 @@ def mdeco_static(f):
 
 def mdeco_class(f):
     def fnc(cls, x):
+        if cls is not DecoratedMethods:
+            raise TypeError("fnc - cls is not DecoratedMethods")
         return "7" + f(cls, x) + "8"
     return fnc
 
@@ -1114,13 +1120,13 @@ class DecoratedMethods(object):
     def mtd5(self, x):
         return x
 
-    @mdeco_static
     @staticmethod
+    @mdeco_static
     def mtd_static(x):
         return x
 
-    @mdeco_class
     @classmethod
+    @mdeco_class
     def mtd_class(cls, x):
         return x
 

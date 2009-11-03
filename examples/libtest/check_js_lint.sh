@@ -3,6 +3,7 @@
 ./build.sh
 
 ./pyv8test.sh --strict | grep 'failed'
+python2.5 LibTest.py
 
 BULK=output/some_in_one.js
 
