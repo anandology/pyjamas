@@ -4,7 +4,7 @@ from StringTest import StringTest
 from ListTest import ListTest
 from TupleTest import TupleTest
 from ClassTest import ClassTest
-from SetTest import SetTest
+from SetTest import SetTest, FrozenSetTest
 from ArgsTest import ArgsTest
 from VarsTest import VarsTest
 from AttributeTest import AttributeTest
@@ -78,6 +78,7 @@ def main():
     t.add(ClassTest)
     t.add(StringTest)
     t.add(SetTest)
+    t.add(FrozenSetTest)
     t.add(ArgsTest)
     t.add(VarsTest)
     t.add(AttributeTest)

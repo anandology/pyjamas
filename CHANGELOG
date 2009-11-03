@@ -1,6 +1,8 @@
                     Changes made to Pyjamas since 0.6
                     ---------------------------------
 
+ * Added types set and frozenset
+
  * Added builtin reversed() function
 
  * Added fromkeys method to dict

@@ -297,11 +297,13 @@ PYJSLIB_BUILTIN_CLASSES=[
     "ZeroDivisionError",
 
     "dict",
+    "frozenset",
     "int",
     "list",
     "long",
     "object",
     "property",
+    "set",
     "tuple",
     ]
 
@@ -3161,11 +3163,11 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         if op == "<":
             return "(%s == -1)" % self.inline_cmp_code(lhs, rhs)
         if op == "<=":
-            return "(%s != 1)" % self.inline_cmp_code(lhs, rhs)
+            return "(%s < 1)" % self.inline_cmp_code(lhs, rhs)
         if op == ">":
             return "(%s == 1)" % self.inline_cmp_code(lhs, rhs)
         if op == ">=":
-            return "(%s != -1)" % self.inline_cmp_code(lhs, rhs)
+            return "(((%s)|1) == 1)" % self.inline_cmp_code(lhs, rhs)
         if op == "in":
             return rhs + ".__contains__(" + lhs + ")"
         elif op == "not in":

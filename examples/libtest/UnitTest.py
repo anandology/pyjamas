@@ -130,7 +130,8 @@ class UnitTest:
         else:
             if hasattr(excClass,'__name__'): excName = excClass.__name__
             else: excName = str(excClass)
-            raise self.failureException, "%s not raised" % excName
+            #raise self.failureException, "%s not raised" % excName
+            self.fail("%s not raised" % excName)
 
     def failUnlessEqual(self, first, second, msg=None):
         self.startTest()
