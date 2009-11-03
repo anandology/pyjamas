@@ -39,8 +39,9 @@ pyjspth = r'%(pyjspth)s'
 import os
 import sys
 sys.path[0:0] = [r'%(pth)s']
+sys.path.append(os.path.join(pyjspth, 'pgen'))
 
-import pyjs.translator
+import pyjs
 pyjs.pyjspth = pyjspth
 pyjs.path += [os.path.join(pyjspth, 'library')]
 
@@ -48,7 +49,7 @@ if __name__ == '__main__':
     if "--version" in sys.argv:
         print "Version:", pyjsversion
         sys.exit(0)
-    pyjs.translator.main()
+    pyjs.pyjampiler.main()
 """
 
 pyjdinitpth = os.path.join("pyjd", "__init__.py.in")
