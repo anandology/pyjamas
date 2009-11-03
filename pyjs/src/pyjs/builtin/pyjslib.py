@@ -4172,10 +4172,13 @@ class Dict:
         return keys;
         """)
 
-    def fromkeys(self, iterable, v = None):
+    @staticmethod
+    def fromkeys(iterable, v = None):
+        debugger()
         d = {}
         for i in iterable:
             d[i] = v
+        return d
 
     def values(self):
         JS("""

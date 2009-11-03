@@ -157,6 +157,9 @@ class DictTest(UnitTest):
     def testFromkeys(self):
         d1 = {'a':1, 'b':1}
         d2 = {'a':None, 'b':None}
+        self.assertEqual(dict.fromkeys(d1), d2)
+        self.assertEqual(dict.fromkeys(d1, None), d2)
+        self.assertEqual(dict.fromkeys(d1, 1), d1)
         self.assertEqual(d1.fromkeys(d1), d2)
         self.assertEqual(d1.fromkeys(d1, None), d2)
         self.assertEqual(d1.fromkeys(d1, 1), d1)
