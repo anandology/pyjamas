@@ -4162,13 +4162,20 @@ class Dict:
 
     def keys(self):
         JS("""
-        var keys=pyjslib.List();
-        var i = 0;
-        for (var key in self.__object) {
-            keys.__array[i++] = self.__object[key][0];
+        var keys=pyjslib.List(),
+            selfObj = self.__object,
+            __array = keys.__array,
+            i = 0;
+        for (var sKey in self.__object) {
+            __array[i++] = selfObj[sKey][0];
         }
         return keys;
         """)
+
+    def fromkeys(self, iterable, v = None):
+        d = {}
+        for i in iterable:
+            d[i] = v
 
     def values(self):
         JS("""

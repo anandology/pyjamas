@@ -154,3 +154,10 @@ class DictTest(UnitTest):
         self.assertEqual(cmp({'1':1, '2':2}, {'1':2}), 1)
         self.assertEqual(cmp({'1':1, '2':2}, {'2':2, '1':1}), 0)
 
+    def testFromkeys(self):
+        d1 = {'a':1, 'b':1}
+        d2 = {'a':None, 'b':None}
+        self.assertEqual(d1.fromkeys(d1), d2)
+        self.assertEqual(d1.fromkeys(d1, None), d2)
+        self.assertEqual(d1.fromkeys(d1, 1), d1)
+
