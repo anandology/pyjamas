@@ -347,6 +347,14 @@ class BuiltinTest(UnitTest):
         self.assertTrue(lst1 == sorted(xrange(10)), "lst1 == sorted(xrange(1))")
         self.assertTrue(lst2 == sorted(xrange(10), reverse=True), "lst2 == sorted(xrange(10), reverse=True)")
 
+    def testReversed(self):
+        lst1 = range(10)
+        lst2 = range(10)
+        lst2.reverse()
+        self.assertTrue(lst1 == list(reversed(lst2)), "lst1 == reversed(lst2)")
+
+        self.assertTrue(lst2 == list(reversed(xrange(10))), "lst2 == reversed(xrange(10), reverse=True)")
+
     def testType(self):
         try:
             self.assertTrue(type(object) is type)

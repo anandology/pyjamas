@@ -4984,6 +4984,11 @@ def sorted(iterable, cmp=None, key=None, reverse=False):
     return lst
 
 
+def reversed(iterable):
+    lst = list(iterable)
+    lst.reverse()
+    return lst.__iter__()
+
 def enumerate(sequence):
     JS("""
     if (typeof sequence.__enumerate__ == 'function') {
