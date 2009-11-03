@@ -765,6 +765,9 @@ class BaseException:
     def __getitem__(self, index):
         return self.args.__getitem__(index)
 
+    def toString(self):
+        return self.__str__()
+
     def __str__(self):
         if len(self.args) is 0:
             return ''
@@ -3803,8 +3806,9 @@ class List:
         """
         return self.__array
 
-    def __str__(self):
-        return self.__repr__()
+    #def __str__(self):
+    #    return self.__repr__()
+    #See monkey patch at the end of the List class definition
 
     def __repr__(self):
         #r = []
@@ -3838,6 +3842,8 @@ class List:
 
     def __rmul__(self, n):
         return self.__mul__(n)
+JS("pyjslib.List.__str__ = pyjslib.List.__repr__;")
+JS("pyjslib.List.toString = pyjslib.List.__str__;")
 
 list = List
 
@@ -3953,8 +3959,9 @@ class Tuple:
         """
         return self.__array
 
-    def __str__(self):
-        return self.__repr__()
+    #def __str__(self):
+    #    return self.__repr__()
+    #See monkey patch at the end of the Tuple class definition
 
     def __repr__(self):
         #r = []
@@ -3992,6 +3999,8 @@ class Tuple:
 
     def __rmul__(self, n):
         return self.__mul__(n)
+JS("pyjslib.Tuple.__str__ = pyjslib.Tuple.__repr__;")
+JS("pyjslib.Tuple.toString = pyjslib.Tuple.__str__;")
 
 tuple = Tuple
 
@@ -4278,8 +4287,9 @@ class Dict:
     def clear(self):
         self.__object = JS("{}")
 
-    def __str__(self):
-        return self.__repr__()
+    #def __str__(self):
+    #    return self.__repr__()
+    #See monkey patch at the end of the Dict class definition
 
     def __repr__(self):
         #r = []
@@ -4303,6 +4313,8 @@ class Dict:
         """)
 JS("pyjslib.Dict.has_key = pyjslib.Dict.__contains__;")
 JS("pyjslib.Dict.iterkeys = pyjslib.Dict.__iter__;")
+JS("pyjslib.Dict.__str__ = pyjslib.Dict.__repr__;")
+JS("pyjslib.Dict.toString = pyjslib.Dict.__str__;")
 
 dict = Dict
 
