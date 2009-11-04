@@ -5585,6 +5585,7 @@ def map(obj, method, sequence=None):
 
     return items
 
+
 def reduce(func, iterable, initializer=JS("[][1]")):
     try:
         iterable = iter(iterable)
@@ -5602,6 +5603,26 @@ def reduce(func, iterable, initializer=JS("[][1]")):
             raise TypeError, "reduce() of empty sequence with no initial value"
         return initializer
     return initializer
+
+
+def zip(*iterables):
+    n = len(iterables)
+    if n == 0:
+        return []
+    lst = []
+    iterables = [iter(i) for i in iterables]
+    try:
+        while True:
+            t = []
+            i = 0
+            while i < n:
+                t.append(iterables[i].next())
+                i += 1
+            lst.append(tuple(t))
+    except StopIteration:
+        pass
+    return lst
+
 
 def sorted(iterable, cmp=None, key=None, reverse=False):
     lst = list(iterable)

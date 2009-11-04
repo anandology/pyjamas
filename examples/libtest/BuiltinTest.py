@@ -382,3 +382,16 @@ class BuiltinTest(UnitTest):
         v = reduce(lambda x, y: x+y, [1, 2, 3, 4, 5])
         self.assertEqual(v, 15)
 
+    def testZip(self):
+        lst1 = [0,1,2,3]
+        lst2 = [10,11,12]
+        dict1 = {'a': 'A', 'b': 'B'}
+        v = zip(lst1)
+        self.assertEqual(v, [(0,), (1,), (2,), (3,)])
+        v = zip(lst1, lst2)
+        self.assertEqual(v, [(0, 10), (1, 11), (2, 12)])
+        v = zip(dict1)
+        self.assertEqual(v, [('a',), ('b',)])
+        v = zip(lst1, dict1, lst2)
+        self.assertEqual(v, [(0, 'a', 10), (1, 'b', 11)])
+

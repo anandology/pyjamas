@@ -1,6 +1,8 @@
                     Changes made to Pyjamas since 0.6
                     ---------------------------------
 
+ * Added builtin zip() function
+
  * Added builtin reduce() function
 
  * Added builtin iter() function
