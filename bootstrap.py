@@ -3,7 +3,7 @@
 """ simple creation of two commands, customised for your specific system.
     windows users get a corresponding batch file.  yippeeyaiyay.
 """
-version = '0.6'
+version = '0.7~pre1'
 
 import os
 import sys
