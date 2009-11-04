@@ -3237,6 +3237,12 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.add_lookup('variable', array, array)
         loopvar = "%s_idx" % iterid
         self.add_lookup('variable', loopvar, loopvar)
+        if node.else_:
+            testvar = "%s_test" % iterid
+            self.add_lookup('variable', testvar, testvar)
+            assTestvar = "%s_test = " % iterid
+        else:
+            assTestvar = ""
         reuse_tuple = "false"
 
         if isinstance(node.assign, self.ast.AssName):
@@ -3307,9 +3313,9 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         if self.is_generator:
             print >>self.output, self.spacing() + "$generator_state[%d] = 0;" % (len(self.generator_states), )
             self.generator_switch_case(increment=True)
-            print >>self.output, self.indent() + "for (;$generator_state[%d] > 0 || %s;$generator_state[%d] = 0) {" % (len(self.generator_states), condition, len(self.generator_states), )
+            print >>self.output, self.indent() + "for (;%s($generator_state[%d] > 0 || %s);$generator_state[%d] = 0) {" % (assTestvar, len(self.generator_states), condition, len(self.generator_states), )
         else:
-            print >>self.output, self.indent() + """while (%s) {""" % condition
+            print >>self.output, self.indent() + """while (%s%s) {""" % (assTestvar, condition)
         self.generator_add_state()
         self.generator_switch_open()
         self.generator_switch_case(increment=False)
@@ -3320,14 +3326,23 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             for line in assign_tuple:
                 print >>self.output, self.spacing() + line
 
-        for node in node.body.nodes:
-            self._stmt(node, current_klass)
+        for n in node.body.nodes:
+            self._stmt(n, current_klass)
 
         self.generator_switch_case(increment=True)
         self.generator_switch_close()
         self.generator_del_state()
 
         print >>self.output, self.dedent() + "}"
+
+        if node.else_:
+            self.generator_switch_case(increment=True)
+            print >>self.output, self.indent() + "if (!%(testvar)s) {" % locals()
+            for n in node.else_.nodes:
+                self._stmt(n, current_klass)
+            print >>self.output, self.dedent() + "}"
+
+
         if self.source_tracking:
             print >>self.output, """\
 %(s)sif ($pyjs.trackstack.length > $pyjs__trackstack_size_%(d)d) {

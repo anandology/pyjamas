@@ -301,6 +301,17 @@ class BuiltinTest(UnitTest):
             self.assertTrue(True)
         self.assertEqual(i, 0)
 
+        from __pyjamas__ import debugger
+        debugger()
+        e = 0
+        i = -1
+        for i in range(1):
+            pass
+        else:
+            e = 1
+        self.assertEqual(i, 0)
+        self.assertEqual(e, 1)
+
         e = 0
         i = -1
         for i in range(0):
@@ -308,7 +319,18 @@ class BuiltinTest(UnitTest):
         else:
             e = 1
         self.assertEqual(i, -1)
-        self.assertEqual(e, 1, "bug #315 for X in Y:... else ...")
+        self.assertEqual(e, 1, "bug #316 for X in Y:... else ...")
+
+        e = 0
+        i = -1
+        for i in range(1):
+            e = 1
+            break
+        else:
+            e = 2
+        self.assertEqual(i, 0)
+        self.assertEqual(e, 1)
+
 
     def testIter(self):
 
