@@ -86,7 +86,7 @@ class ImportManager:
 
         parts = fqname.split('.')
 
-        print "_import_hook", parts
+        #print "_import_hook", parts
         # pyjamas-gtk hack
         if parts[0] in ['gtk', 'gdk', 'pygtk', 'gobject']:
             parts = ['pygtkweb'] + parts
@@ -152,7 +152,7 @@ class ImportManager:
 
         for k in parts[1:]:
             if not hasattr(mod, k):
-                print "no mod", mod, k, parts
+                #print "no mod", mod, k, parts
                 mod = None
                 break
             mod = getattr(mod, k)

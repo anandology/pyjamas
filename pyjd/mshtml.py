@@ -187,7 +187,7 @@ class EventHandler(object):
     def __getattr__(self, name):
         if name.startswith('__') and name.endswith('__'):
             raise AttributeError(name)
-        print "EventHandler requested ", name
+        #print "EventHandler requested ", name
         if name.startswith('_') or name == 'addEventListener':
             return self.__dict__[name]
         idx = name.find('_on')
@@ -291,18 +291,18 @@ class Browser(EventSink):
 
     def _addXMLHttpRequestEventListener(self, node, event_name, event_fn):
         
-        print "_addXMLHttpRequestEventListener", event_name
+        #print "_addXMLHttpRequestEventListener", event_name
 
         rcvr = mshtmlevents._DispEventReceiver()
         rcvr.dispmap = {0: event_fn}
 
-        print rcvr
+        #print rcvr
         rcvr.sender = node
-        print rcvr.sender
+        #print rcvr.sender
         ifc = rcvr.QueryInterface(IDispatch)
-        print ifc
+        #print ifc
         v = VARIANT(ifc)
-        print v
+        #print v
         setattr(node, event_name, v)
         return ifc
 
@@ -351,9 +351,9 @@ class Browser(EventSink):
         return event_name # hmmm...
 
     def getXmlHttpRequest(self):
-        print "getXMLHttpRequest"
+        #print "getXMLHttpRequest"
         o = comtypes.client.CreateObject('MSXML2.XMLHTTP.3.0')
-        print "getXMLHttpRequest", o
+        #print "getXMLHttpRequest", o
         return Dispatch(o)
         
     def getUri(self):
