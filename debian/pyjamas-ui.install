@@ -1,0 +1,5 @@
+debian/tmp/usr/share/pyjamas/builder	usr/share/pyjamas
+debian/tmp/usr/share/pyjamas/library	usr/share/pyjamas
+debian/tmp/usr/share/pyjamas/pyjs	usr/share/pyjamas
+debian/tmp/usr/share/pyjamas/stubs	usr/share/pyjamas
+

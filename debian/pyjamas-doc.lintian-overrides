@@ -1,0 +1,10 @@
+# lkcl 01sep2009: justification for not creating pyjamas-doc.doc-base
+#
+# The Pyjamas Documentation package contains the web site and the examples,
+# rather than any "official" debian-style-conformant documentation.
+# There's no .txt files to put into doc-base; there's no html either
+# (other than the web site's index.html).  Therefore, creating a
+# pyjamas-doc.doc-base would be deceptive.
+#
+pyjamas-doc binary: possible-documentation-but-no-doc-base-registration
+

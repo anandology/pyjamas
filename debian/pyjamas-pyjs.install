@@ -1,0 +1,4 @@
+debian/tmp/usr/lib/python2.5/site-packages/pyjs/*.py usr/share/pyshared/pyjs
+debian/tmp/usr/lib/python2.5/site-packages/Pyjamas-0.6.egg-info usr/share/pyshared
+bin/pyjsbuild usr/bin
+
