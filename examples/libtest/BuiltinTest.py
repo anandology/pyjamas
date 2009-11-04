@@ -378,3 +378,7 @@ class BuiltinTest(UnitTest):
         self.assertEqual(lst, list(iter(fn().next, 5)), "iter(fn().next, 5)")
         self.assertEqual([0,1], list(iter(fn().next, 2)), "iter(fn().next, 2)")
 
+    def testReduce(self):
+        v = reduce(lambda x, y: x+y, [1, 2, 3, 4, 5])
+        self.assertEqual(v, 15)
+

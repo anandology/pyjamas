@@ -5585,6 +5585,23 @@ def map(obj, method, sequence=None):
 
     return items
 
+def reduce(func, iterable, initializer=JS("[][1]")):
+    try:
+        iterable = iter(iterable)
+    except:
+        raise TypeError, "reduce() arg 2 must support iteration"
+    emtpy = True
+    for value in iterable:
+        emtpy = False
+        if JS("typeof initializer == 'undefined'"):
+            initializer = value
+        else:
+            initializer = func(initializer, value)
+    if empty:
+        if JS("typeof initializer == 'undefined'"):
+            raise TypeError, "reduce() of empty sequence with no initial value"
+        return initializer
+    return initializer
 
 def sorted(iterable, cmp=None, key=None, reverse=False):
     lst = list(iterable)

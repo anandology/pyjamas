@@ -264,6 +264,7 @@ PYJSLIB_BUILTIN_FUNCTIONS=frozenset((
     "ord",
     "pow",
     "range",
+    "reduce",
     "repr",
     "reversed",
     "round",
