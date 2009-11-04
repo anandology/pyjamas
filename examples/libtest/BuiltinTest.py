@@ -301,8 +301,6 @@ class BuiltinTest(UnitTest):
             self.assertTrue(True)
         self.assertEqual(i, 0)
 
-        from __pyjamas__ import debugger
-        debugger()
         e = 0
         i = -1
         for i in range(1):
