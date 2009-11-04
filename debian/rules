@@ -35,9 +35,6 @@ override_dh_auto_install:
 	# includes building pyjd, which we do NOT install in pyjs)
 	python run_bootstrap_first_then_setup.py install \
 	                  $(py_setup_install_args) --root=debian/tmp
-	
-	mv debian/tmp/usr/share/pyjamas/library/pyjamas/chart	debian/pyjamas-gchart/usr/share/pyjamas/library/pyjamas
-	mv debian/tmp/usr/share/pyjamas/library/pyjamas/Canvas 	debian/pyjamas-canvas/usr/share/pyjamas/library/pyjamas
 
 override_dh_pysupport:
 	dh_pysupport
