@@ -168,6 +168,7 @@ Copyright: 2007, Martin Blais <blais@furius.ca>
 Files: debian/*
 License: Apache
 Copyright: 2009, Luke Kenneth Casson Leighton <lkcl@lkcl.net>
+Copyright: 2009, Phil Hands <phil@hands.com>
 
 License: PSF
     http://www.python.org/psf/license/
