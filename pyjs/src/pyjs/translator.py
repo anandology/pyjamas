@@ -3233,12 +3233,14 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.add_lookup('variable', array, array)
         loopvar = "%s_idx" % iterid
         self.add_lookup('variable', loopvar, loopvar)
+        reuse_tuple = "false"
 
         if isinstance(node.assign, self.ast.AssName):
             assign_name = self.add_lookup('variable', node.assign.name, node.assign.name)
             if node.assign.flags == "OP_ASSIGN":
                 op = "="
         elif isinstance(node.assign, self.ast.AssTuple):
+            reuse_tuple = "true"
             op = "="
             i = 0
             for child in node.assign:
@@ -3294,7 +3296,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 %(s)s\t%(gentype)s = typeof (%(array)s = %(iterator_name)s.__array) != 'undefined'? 0 : (typeof %(iterator_name)s.$genfunc == 'function'? 1 : -1);
 %(s)s}
 %(s)s%(loopvar)s = 0;""" % locals()
-        condition = "typeof (%(nextval)s=(%(gentype)s?(%(gentype)s > 0?%(iterator_name)s.next(true):pyjslib['wrapped_next'](%(iterator_name)s)):%(array)s[%(loopvar)s++])) != 'undefined'" % locals()
+        condition = "typeof (%(nextval)s=(%(gentype)s?(%(gentype)s > 0?%(iterator_name)s.next(true,%(reuse_tuple)s):pyjslib['wrapped_next'](%(iterator_name)s)):%(array)s[%(loopvar)s++])) != 'undefined'" % locals()
 
         self.generator_switch_case(increment=True)
 

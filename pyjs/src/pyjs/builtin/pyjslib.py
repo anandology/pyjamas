@@ -3507,7 +3507,7 @@ tuple([0, ""])
 JS("""
     this.tl = this.tuple.__array;
 };
-$enumerate_array.prototype.next = function (noStop, assignTuple) {
+$enumerate_array.prototype.next = function (noStop, reuseTuple) {
     if (++this.i == this.array.length) {
         if (noStop === true) {
             return [][1];
@@ -3520,7 +3520,7 @@ $enumerate_array.prototype.next = function (noStop, assignTuple) {
     } else {
         this.tl[0] = new pyjslib['int'](this.i);
     }
-    return assignTuple === true ? this.tuple : pyjslib.Tuple(this.tl);
+    return reuseTuple === true ? this.tuple : pyjslib.Tuple(this.tl);
 };
 $enumerate_array.prototype.__iter__ = function ( ) {
     return this;
