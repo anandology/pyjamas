@@ -1000,22 +1000,47 @@ String.prototype.$$split = function(sep, maxsplit) {
     return items;
 };
 
-String.prototype.__iter__ = function() {
-    var i = 0;
-    var s = this;
-    return {
-        '__array': this,
-        'next': function() {
-            if (i >= s.length) {
-                throw pyjslib.StopIteration;
+if (typeof "a"[0] == 'undefined' ) {
+    // IE: cannot do "abc"[idx]
+    String.prototype.__iter__ = function() {
+        var i = 0;
+        var s = this;
+        return {
+            'next': function(noStop) {
+                if (i >= s.length) {
+                    if (noStop === true) {
+                        return [][1];
+                    }
+                    throw pyjslib.StopIteration;
+                }
+                return s.charAt(i++);
+            },
+            '__iter__': function() {
+                return this;
             }
-            return s.substring(i++, i, 1);
-        },
-        '__iter__': function() {
-            return this;
-        }
+        };
     };
-};
+} else {
+    String.prototype.__iter__ = function() {
+        var i = 0;
+        var s = this;
+        return {
+            '__array': this,
+            'next': function(noStop) {
+                if (i >= s.length) {
+                    if (noStop === true) {
+                        return [][1];
+                    }
+                    throw pyjslib.StopIteration;
+                }
+                return s.charAt(i++);
+            },
+            '__iter__': function() {
+                return this;
+            }
+        };
+    };
+}
 
 String.prototype.strip = function(chars) {
     return this.lstrip(chars).rstrip(chars);
