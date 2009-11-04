@@ -1,5 +1,7 @@
 debian/tmp/usr/share/pyjamas/builder	usr/share/pyjamas
-debian/tmp/usr/share/pyjamas/library	usr/share/pyjamas
+debian/tmp/usr/share/pyjamas/library/[d-zD-Z]*	usr/share/pyjamas/library
+debian/tmp/usr/share/pyjamas/library/Canvas2D.py usr/share/pyjamas/library
+debian/tmp/usr/share/pyjamas/library/Cookies.py usr/share/pyjamas/library
 debian/tmp/usr/share/pyjamas/pyjs	usr/share/pyjamas
 debian/tmp/usr/share/pyjamas/stubs	usr/share/pyjamas
 
