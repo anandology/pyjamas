@@ -3515,8 +3515,11 @@ var $iter_array = function (l) {
     this.__array = l;
     this.i = -1;
 };
-$iter_array.prototype.next = function ( ) {
+$iter_array.prototype.next = function (noStop) {
     if (++this.i == this.__array.length) {
+        if (noStop === true) {
+            return [][1];
+        }
         throw pyjslib.StopIteration;
     }
     return this.__array[this.i];
@@ -3524,6 +3527,23 @@ $iter_array.prototype.next = function ( ) {
 $iter_array.prototype.__iter__ = function ( ) {
     return this;
 };
+var $reversed_iter_array = function (l) {
+    this.___array = l;
+    this.i = l.length;
+};
+$reversed_iter_array.prototype.next = function (noStop) {
+    if (--this.i == -1) {
+        if (noStop === true) {
+            return [][1];
+        }
+        throw pyjslib.StopIteration;
+    }
+    return this.___array[this.i];
+};
+$reversed_iter_array.prototype.__iter__ = function ( ) {
+    return this;
+};
+//$reversed_iter_array.prototype.$genfunc = $reversed_iter_array.prototype.next;
 var $enumerate_array = function (l) {
     this.array = l;
     this.i = -1;
@@ -3785,21 +3805,9 @@ class List:
 
     def __iter__(self):
         return JS("new $iter_array(self.__array)")
-        JS("""
-        var i = 0;
-        var l = self.__array;
-        return {
-            'next': function() {
-                if (i >= l.length) {
-                    throw pyjslib.StopIteration;
-                }
-                return l[i++];
-            },
-            '__iter__': function() {
-                return this;
-            }
-        };
-        """)
+
+    def __reversed__(self):
+        return JS("new $reversed_iter_array(self.__array)")
 
     def __enumerate__(self):
         return JS("new $enumerate_array(self.__array)")
@@ -5203,6 +5211,9 @@ def xrange(start, stop = None, step = 1):
         '__iter__': function() {
             return this;
         },
+        '__reversed__': function() {
+            return pyjslib['xrange'](stop-step, start-step, -step);
+        },
         'toString': function() {
             var s = "xrange(";
             if (start != 0) {
@@ -5631,9 +5642,24 @@ def sorted(iterable, cmp=None, key=None, reverse=False):
 
 
 def reversed(iterable):
-    lst = list(iterable)
-    lst.reverse()
-    return lst.__iter__()
+    if hasattr(iterable, '__reversed__'):
+        return iterable.__reversed__()
+    if hasattr(iterable, '__len__') and hasattr(iterable, '__getitem__'):
+        if len(iterable) == 0:
+            l = []
+            return l.__iter__()
+        try:
+            v = iterable[0]
+            return _reversed(iterable)
+        except:
+            pass
+    raise TypeError("argument to reversed() must be a sequence")
+
+def _reversed(iterable):
+    i = len(iterable)
+    while i > 0:
+        i -= 1
+        yield iterable[i]
 
 def enumerate(sequence):
     JS("""

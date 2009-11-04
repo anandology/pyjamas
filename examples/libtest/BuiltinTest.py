@@ -351,9 +351,13 @@ class BuiltinTest(UnitTest):
         lst1 = range(10)
         lst2 = range(10)
         lst2.reverse()
+        tpl1 = tuple(lst1)
         self.assertTrue(lst1 == list(reversed(lst2)), "lst1 == reversed(lst2)")
-
         self.assertTrue(lst2 == list(reversed(xrange(10))), "lst2 == reversed(xrange(10), reverse=True)")
+        self.assertTrue(lst2 == list(reversed(tpl1)), "lst1 == reversed(lst2)")
+        dict1 = {'a': 'A', 'b': 'B'}
+        self.assertRaises(TypeError, reversed, dict1)
+
 
     def testType(self):
         try:
