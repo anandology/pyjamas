@@ -395,3 +395,7 @@ class BuiltinTest(UnitTest):
         v = zip(lst1, dict1, lst2)
         self.assertEqual(v, [(0, 'a', 10), (1, 'b', 11)])
 
+    def testSum(self):
+        self.assertEqual(6, sum([0,1,2,3]))
+        self.assertEqual(5, sum([0,1,2,3], -1))
+        self.assertRaises(TypeError, sum, [0,1,2,3], "a")

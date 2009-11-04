@@ -272,6 +272,7 @@ PYJSLIB_BUILTIN_FUNCTIONS=frozenset((
     "sorted",
     "staticmethod",
     "str",
+    "sum",
     "super",
     "type",
     "xrange",

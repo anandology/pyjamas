@@ -5699,6 +5699,14 @@ def max(*sequence):
             maxValue = item
     return maxValue
 
+def sum(iterable, start=None):
+    if start is None:
+        start = 0
+    for i in iterable:
+        start += i
+    return start
+
+
 next_hash_id = 0
 
 # hash(obj) == (obj === null? null : (typeof obj.$H != 'undefined' ? obj.$H : ((typeof obj == 'string' || obj.__number__) ? '$'+obj : pyjslib.__hash(obj))))
