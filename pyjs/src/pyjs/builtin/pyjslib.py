@@ -3528,6 +3528,8 @@ $enumerate_array.prototype.__iter__ = function ( ) {
 $enumerate_array.prototype.$genfunc = $enumerate_array.prototype.next;
 """)
 # NOTE: $genfunc is defined to enable faster loop code
+# NOTE: $enumerate_array should return pyjslib.Tuple(this.tl), but 
+#       for speed it returns an _updated_ tuple
 
 class List:
     def __init__(self, data=JS("[]")):
