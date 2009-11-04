@@ -58,6 +58,13 @@ need for special browser plugins.  Pyjamas contains a stand-alone
 python-to-javascript compiler, and also a Widget Set API that looks
 very similar to Desktop Widget Set APIs (such as PyQT4 or PyGTK2).
 
+Pyjamas also contains a Desktop Widget Set version, running as pure
+python.  Using web browser technology provides an alternative to
+PyQT4 and PyGTK2 that has the advantage of having full support for
+HTML, CSS, Plugin and other web-related features already built-in.
+For the windows port, this can save users around 30mb of downloads,
+as MSHTML is preinstalled as part of IE.
+
 For more information, see:
 
     http://pyjs.org
