@@ -3507,7 +3507,7 @@ tuple([0, ""])
 JS("""
     this.tl = this.tuple.__array;
 };
-$enumerate_array.prototype.next = function (noStop) {
+$enumerate_array.prototype.next = function (noStop, assignTuple) {
     if (++this.i == this.array.length) {
         if (noStop === true) {
             return [][1];
@@ -3520,7 +3520,7 @@ $enumerate_array.prototype.next = function (noStop) {
     } else {
         this.tl[0] = new pyjslib['int'](this.i);
     }
-    return this.tuple;
+    return assignTuple === true ? this.tuple : pyjslib.Tuple(this.tl);
 };
 $enumerate_array.prototype.__iter__ = function ( ) {
     return this;
@@ -3528,8 +3528,6 @@ $enumerate_array.prototype.__iter__ = function ( ) {
 $enumerate_array.prototype.$genfunc = $enumerate_array.prototype.next;
 """)
 # NOTE: $genfunc is defined to enable faster loop code
-# NOTE: $enumerate_array should return pyjslib.Tuple(this.tl), but 
-#       for speed it returns an _updated_ tuple
 
 class List:
     def __init__(self, data=JS("[]")):

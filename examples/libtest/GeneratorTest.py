@@ -588,6 +588,14 @@ class GeneratorTest(UnitTest):
         self.assertEqual(g.next(), 1)
         self.assertEqual(g.next(), 2)
 
+    def testTupleReturn(self):
+        lst = []
+        for t in enumerate([0,1,2]):
+            lst.append(t)
+        self.assertEqual(lst, [(0,0), (1,1), (2,2)])
+
+        lst = [t for t in enumerate([0,1,2])]
+        self.assertEqual(lst, [(0,0), (1,1), (2,2)])
 
 class A(object):
     def fn(self):
