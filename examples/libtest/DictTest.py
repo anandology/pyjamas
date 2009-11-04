@@ -163,4 +163,5 @@ class DictTest(UnitTest):
         self.assertEqual(d1.fromkeys(d1), d2)
         self.assertEqual(d1.fromkeys(d1, None), d2)
         self.assertEqual(d1.fromkeys(d1, 1), d1)
-	self.assertEqual(dict.fromkeys('ab'), d2)
+        self.assertEqual(dict.fromkeys('ab'), d2)
+
