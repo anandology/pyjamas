@@ -360,3 +360,21 @@ class BuiltinTest(UnitTest):
             self.assertTrue(type(object) is type)
         except NotImplementedError, why:
             self.fail(str(why))
+
+    def testIter(self):
+        class G(object):
+            def __getitem__(self, i):
+                if 0 <= i <= 4:
+                    return i
+                raise IndexError("index out of range")
+        def fn():
+            for i in [0,1,2,3,4]:
+                yield i
+
+        lst = [0,1,2,3,4]
+        self.assertEqual(lst, list(iter(lst)), "iter(lst)")
+        g = G()
+        self.assertEqual(lst, list(iter(g)), "iter(g)")
+        self.assertEqual(lst, list(iter(fn().next, 5)), "iter(fn().next, 5)")
+        self.assertEqual([0,1], list(iter(fn().next, 2)), "iter(fn().next, 2)")
+

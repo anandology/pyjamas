@@ -254,6 +254,7 @@ PYJSLIB_BUILTIN_FUNCTIONS=frozenset((
     "hash",
     "hex",
     "isinstance",
+    "iter",
     "len",
     "map",
     "max",

@@ -5586,6 +5586,33 @@ def _enumerate(sequence):
         yield (nextIndex, item)
         nextIndex += 1
 
+def iter(iterable, sentinel=None):
+    if sentinel is None:
+        if isIteratable(iterable):
+            return iterable.__iter__()
+        if hasattr(iterable, '__getitem__'):
+            return _iter_getitem(iterable)
+        raise TypeError("object is not iterable")
+    if isFunction(iterable):
+        return _iter_callable(iterable, sentinel)
+    raise TypeError("iter(v, w): v must be callable")
+
+def _iter_getitem(object):
+    i = 0
+    try:
+        while True:
+            yield object[i]
+            i += 1
+    except IndexError:
+        pass
+
+def _iter_callable(callable, sentinel):
+    while True:
+        nextval = callable()
+        if nextval == sentinel:
+            break
+        yield nextval
+
 def min(*sequence):
     if len(sequence) == 1:
         sequence = sequence[0]
