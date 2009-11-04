@@ -696,11 +696,15 @@ class ClassTest(UnitTest):
         self.assertTrue(exc_raised, "TypeError wrong arguments count not raised")
 
         self.assertEqual(obj.mtd_static("b"), "5b6")
+        self.assertEqual(obj.mtd_static2("b"), "55b66")
         self.assertEqual(DecoratedMethods.mtd_static("b"), "5b6")
+        self.assertEqual(DecoratedMethods.mtd_static2("b"), "55b66")
 
         try:
             self.assertEqual(obj.mtd_class("b"), "7b8")
+            self.assertEqual(obj.mtd_class2("b"), "77b88")
             self.assertEqual(DecoratedMethods.mtd_class("b"), "7b8")
+            self.assertEqual(DecoratedMethods.mtd_class2("b"), "77b88")
         except TypeError, e:
             msg = str(e)
             if "fnc() takes exactly 2 arguments (1 given)" in msg:
@@ -1125,8 +1129,20 @@ class DecoratedMethods(object):
     def mtd_static(x):
         return x
 
+    @staticmethod
+    @mdeco_static
+    @mdeco_static
+    def mtd_static2(x):
+        return x
+
     @classmethod
     @mdeco_class
     def mtd_class(cls, x):
+        return x
+
+    @classmethod
+    @mdeco_class
+    @mdeco_class
+    def mtd_class2(cls, x):
         return x
 

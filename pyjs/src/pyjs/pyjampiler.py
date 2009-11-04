@@ -5,7 +5,7 @@
 Copyright (C) 2009, David Siroky (siroky@dasir.cz)
 Copyright (C) 2009, Luke Kenneth Casson Leighton <lkcl@lkcl.net>
 
-Pyjampiler: a stand-alone python-to-javascript compiler, by David Sirosky
+Pyjampiler: a stand-alone python-to-javascript compiler, by David Siroky
 
 """
 
