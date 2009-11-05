@@ -755,12 +755,8 @@ def __dynamic_load__(importName):
 
 class BaseException:
 
-    message = ''
-
     def __init__(self, *args):
         self.args = args
-        if len(args) == 1:
-            self.message = args[0]
 
     def __getitem__(self, index):
         return self.args.__getitem__(index)
@@ -772,7 +768,7 @@ class BaseException:
         if len(self.args) is 0:
             return ''
         elif len(self.args) is 1:
-            return str(self.message)
+            return str(self.args[0])
         return repr(self.args)
 
     def __repr__(self):
@@ -820,7 +816,7 @@ class KeyError(LookupError):
         if len(self.args) is 0:
             return ''
         elif len(self.args) is 1:
-            return repr(self.message)
+            return repr(self.args[0])
         return repr(self.args)
 
 class IndexError(LookupError):
@@ -859,14 +855,12 @@ pyjslib._errorMapping = function(err) {
 pyjslib.TryElse = function () { };
 pyjslib.TryElse.prototype = new Error();
 pyjslib.TryElse.__name__ = 'TryElse';
-pyjslib.TryElse.message = 'TryElse';
 """)
     # StopIteration is used to get out of an iteration loop
     JS("""
 pyjslib.StopIteration = function () { };
 pyjslib.StopIteration.prototype = new Error();
 pyjslib.StopIteration.__name__ = 'StopIteration';
-//pyjslib.StopIteration.message = 'StopIteration';
 """)
 
     # Patching of the standard javascript String object
