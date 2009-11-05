@@ -6125,15 +6125,30 @@ def debugReport(msg):
     alert(msg);
     """)
 
+JS("""
+var $printFunc = null;
+if (   typeof $wnd.console != 'undefined'
+    && typeof $wnd.console.debug == 'function') {
+    $printFunc = function(s) {
+        $wnd.console.debug(s);
+    }
+} else if (   typeof $wnd.opera != 'undefined'
+           && typeof $wnd.opera.postError == 'function') {
+    $printFunc = function(s) {
+        $wnd.opera.postError(s);
+    }
+}
+""")
+
 def printFunc(objs, newline):
     JS("""
-    if ($wnd.console==undefined)  return;
+    if ($printFunc === null) return null;
     var s = "";
     for(var i=0; i < objs.length; i++) {
         if(s != "") s += " ";
         s += objs[i];
     }
-    console.debug(s);
+    $printFunc(s);
     """)
 
 def type(clsname, bases=None, methods=None):
