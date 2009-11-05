@@ -4148,28 +4148,37 @@ class Dict:
         return false;
         """)
 
-    def __cmp__(self, d):
-        if not isinstance(d, Dict):
+    def __cmp__(self, other):
+        if not isinstance(other, Dict):
             raise TypeError("dict.__cmp__(x,y) requires y to be a 'dict'")
-        self_keys = self.keys()
-        d_keys = d.keys()
         JS("""
-        if (self_keys.__array.length < d_keys.__array.length) {
+        var self_sKeys = new Array(),
+            other_sKeys = new Array(),
+            selfLen = 0,
+            otherLen = 0,
+            selfObj = self.__object;
+            otherObj = other.__object;
+        for (sKey in selfObj) {
+           self_sKeys[selfLen++] = sKey;
+        }
+        for (sKey in otherObj) {
+           other_sKeys[otherLen++] = sKey;
+        }
+        if (selfLen < otherLen) {
             return -1;
         }
-        if (self_keys.__array.length > d_keys.__array.length) {
+        if (selfLen > otherLen) {
             return 1;
         }
-        self_keys.sort();
-        d_keys.sort();
+        self_sKeys.sort();
+        other_sKeys.sort();
         var c, sKey;
-        for (var idx = 0; idx < self_keys.__array.length; idx++) {
-            c = pyjslib.cmp(self_keys.__array[idx], d_keys.__array[idx]);
+        for (var idx = 0; idx < selfLen; idx++) {
+            c = pyjslib.cmp(selfObj[sKey = self_sKeys[idx]][0], otherObj[other_sKeys[idx]][0]);
             if (c != 0) {
                 return c;
             }
-            sKey = pyjslib.hash(self_keys.__array[idx]);
-            c = pyjslib.cmp(self.__object[sKey][1], d.__object[sKey][1]);
+            c = pyjslib.cmp(selfObj[sKey][1], otherObj[sKey][1]);
             if (c != 0) {
                 return c;
             }
