@@ -168,7 +168,7 @@ class HTTPRequest:
         """)
 
     def asyncGetImpl(self, user, pwd, url, handler, 
-                            returnxml=0, content_type):
+                            returnxml, content_type):
         JS("""
         var xmlHttp = this.doCreateXmlHTTPRequest();
         try {
