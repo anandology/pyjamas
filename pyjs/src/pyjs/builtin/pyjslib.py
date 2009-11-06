@@ -4286,6 +4286,12 @@ class Dict:
 
     def get(self, key, default_value=None):
         JS("""
+        var empty = true;
+        for (var sKey in self.__object) {
+            empty = false;
+            break;
+        }
+        if (empty) return default_value;
         var sKey = (key===null?null:(typeof key.$H != 'undefined'?key.$H:((typeof key=='string'||key.__number__)?'$'+key:pyjslib.__hash(key))));
         return typeof self.__object[sKey] == 'undefined' ? default_value : self.__object[sKey][1];
 """)
@@ -5739,35 +5745,82 @@ def sum(iterable, start=None):
 next_hash_id = 0
 
 # hash(obj) == (obj === null? null : (typeof obj.$H != 'undefined' ? obj.$H : ((typeof obj == 'string' || obj.__number__) ? '$'+obj : pyjslib.__hash(obj))))
-def __hash(obj):
-    JS("""
-    switch (obj.constructor) {
-        case String:
-        case Number:
-        case Date:
-            return '$'+obj;
+if JS("typeof 'a'[0] == 'undefined'"):
+    # IE: cannot do "abc"[idx]
+    # IE has problems with setting obj.$H on certain DOM objects
+    #def __hash(obj):
+    JS("""pyjslib.__hash = function(obj) {
+        switch (obj.constructor) {
+            case String:
+            case Number:
+            case Date:
+                return '$'+obj;
+        }
+        if (typeof obj.__hash__ == 'function') return obj.__hash__();
+        try {
+            obj.$H = ++pyjslib.next_hash_id;
+        } catch (e) {
+            pyjslib.next_hash_id--;
+            return obj;
+        }
+        return obj.$H;
     }
-    if (typeof obj.__hash__ == 'function') return obj.__hash__();
-    obj.$H = ++pyjslib.next_hash_id;
-    return obj.$H;
-    """)
+        """)
 
-def hash(obj):
-    JS("""
-    if (obj === null) return null;
+    #def hash(obj):
+    JS("""pyjslib.hash = function(obj) {
+        if (obj === null) return null;
 
-    if (typeof obj.$H != 'undefined') return obj.$H;
-    if (typeof obj == 'string' || obj.__number__) return '$'+obj;
-    switch (obj.constructor) {
-        case String:
-        case Number:
-        case Date:
-            return '$'+obj;
+        if (typeof obj.$H != 'undefined') return obj.$H;
+        if (typeof obj == 'string' || obj.__number__) return '$'+obj;
+        switch (obj.constructor) {
+            case String:
+            case Number:
+            case Date:
+                return '$'+obj;
+        }
+        if (typeof obj.__hash__ == 'function') return obj.__hash__();
+        try {
+            obj.$H = ++pyjslib.next_hash_id;
+        } catch (e) {
+            pyjslib.next_hash_id--;
+            return obj;
+        }
+        return obj.$H;
     }
-    if (typeof obj.__hash__ == 'function') return obj.__hash__();
-    obj.$H = ++pyjslib.next_hash_id;
-    return obj.$H;
-    """)
+        """)
+else:
+    #def __hash(obj):
+    JS("""pyjslib.__hash = function(obj) {
+        switch (obj.constructor) {
+            case String:
+            case Number:
+            case Date:
+                return '$'+obj;
+        }
+        if (typeof obj.__hash__ == 'function') return obj.__hash__();
+        obj.$H = ++pyjslib.next_hash_id;
+        return obj.$H;
+    }
+        """)
+
+    #def hash(obj):
+    JS("""pyjslib.hash = function(obj) {
+        if (obj === null) return null;
+
+        if (typeof obj.$H != 'undefined') return obj.$H;
+        if (typeof obj == 'string' || obj.__number__) return '$'+obj;
+        switch (obj.constructor) {
+            case String:
+            case Number:
+            case Date:
+                return '$'+obj;
+        }
+        if (typeof obj.__hash__ == 'function') return obj.__hash__();
+        obj.$H = ++pyjslib.next_hash_id;
+        return obj.$H;
+    }
+        """)
 
 
 # type functions from Douglas Crockford's Remedial Javascript: http://www.crockford.com/javascript/remedial.html
