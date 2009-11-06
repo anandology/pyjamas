@@ -50,10 +50,13 @@ class HTTPRequest:
                                  return_xml, content_type)
 
     # also callable as: asyncGet(self, url, handler)
-    def asyncGet(self, user, pwd, url=None, handler=None):
+    def asyncGet(self, user, pwd, url=None, handler=None,
+                        return_xml=0, content_type='text/plain charset=utf8'):
         if url is None:
-            return self.asyncGetImpl(None, None, user, pwd)
-        return self.asyncGetImpl(user, pwd, url, handler)
+            return self.asyncGetImpl(None, None, user, pwd,
+                                      return_xml, content_type)
+        return self.asyncGetImpl(user, pwd, url, handler,
+                                 return_xml, content_type)
 
     def createXmlHTTPRequest(self):
         return self.doCreateXmlHTTPRequest()
@@ -226,7 +229,8 @@ class HTTPRequest:
         return False
         
 
-    def asyncGetImpl(self, user, pwd, url, handler):
+    def asyncGetImpl(self, user, pwd, url, handler,
+                            return_xml, content_type):
         mf = get_main_frame()
         url = self._convertUrlToAbsolute(url)
         xmlHttp = self.doCreateXmlHTTPRequest()
@@ -238,7 +242,7 @@ class HTTPRequest:
             xmlHttp.open("GET", url, True, user, pwd)
         else:
             xmlHttp.open("GET", url)
-        xmlHttp.setRequestHeader("Content-Type", "text/plain charset=utf-8")
+        xmlHttp.setRequestHeader("Content-Type", content_type)
         # TODO: xmlHttp.onreadystatechange = self.onReadyStateChange
 
         if mf.platform == 'webkit' or mf.platform == 'mshtml':

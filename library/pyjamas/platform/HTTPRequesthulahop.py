@@ -27,9 +27,15 @@ class HTTPRequest:
                                  return_xml, content_type)
 
     # also callable as: asyncGet(self, url, handler)
-    def asyncGet(self, user, pwd, url=None, handler=None):
+    def asyncGet(self, user, pwd, url=None, handler=None,
+                        return_xml=0, content_type='text/plain charset=utf8'):
         if url is None:
             return XULrunnerHackCallback(self, 'GET', None, None, user,
-                                         handler=pwd)
+                                         handler=pwd,
+                                         return_xml=return_xml, 
+                                         content_type=content_type)
         return XULrunnerHackCallback(self, 'GET', user, pwd, url,
-                                     handler=handler)
+                                     handler=handler, 
+                                     return_xml=return_xml, 
+                                     content_type=content_type)
+

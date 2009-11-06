@@ -29,10 +29,12 @@ class HTTPRequest:
                                   content_type)
 
     # also callable as: asyncGet(self, url, handler)
-    def asyncGet(self, user, pwd, url=None, handler=None, returnxml=0):
+    def asyncGet(self, user, pwd, url=None, handler=None, 
+                                        returnxml=0,
+                                        content_type='text/plain charset=utf8'):
         if url is None:
-            return self.asyncGetImpl(None, None, user, pwd, returnxml)
-        return self.asyncGetImpl(user, pwd, url, handler, returnxml)
+            return self.asyncGetImpl(None, None, user, pwd, returnxml, content_type)
+        return self.asyncGetImpl(user, pwd, url, handler, returnxml, content_type)
 
     def createXmlHTTPRequest(self):
         return self.doCreateXmlHTTPRequest()
@@ -165,7 +167,8 @@ class HTTPRequest:
         }
         """)
 
-    def asyncGetImpl(self, user, pwd, url, handler, returnxml=0):
+    def asyncGetImpl(self, user, pwd, url, handler, 
+                            returnxml=0, content_type):
         JS("""
         var xmlHttp = this.doCreateXmlHTTPRequest();
         try {
@@ -173,7 +176,7 @@ class HTTPRequest:
             if (returnxml.valueOf())
                 xmlHttp.setRequestHeader("Content-Type", "application/xml; charset=utf-8");
             else
-                xmlHttp.setRequestHeader("Content-Type", "text/plain; charset=utf-8");
+                xmlHttp.setRequestHeader("Content-Type", content_type);
             xmlHttp.onreadystatechange = function() {
                 if (xmlHttp.readyState == 4) {
                     delete xmlHttp.onreadystatechange;
