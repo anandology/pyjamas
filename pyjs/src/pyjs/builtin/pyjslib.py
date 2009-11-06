@@ -5757,13 +5757,24 @@ if JS("typeof 'a'[0] == 'undefined'"):
                 return '$'+obj;
         }
         if (typeof obj.__hash__ == 'function') return obj.__hash__();
-        try {
+        if (typeof obj.nodeType != 'number') {
+            try {
             obj.$H = ++pyjslib.next_hash_id;
-        } catch (e) {
-            pyjslib.next_hash_id--;
+            } catch (e) {
+                return obj;
+            }
+            return pyjslib.next_hash_id;
+            return obj.$H = ++pyjslib.next_hash_id;
+        }
+        if (typeof obj.setAttribute == 'undefined') {
             return obj;
         }
-        return obj.$H;
+        var $H;
+        if ($H = obj.getAttribute('$H')) {
+            return $H;
+        }
+        obj.setAttribute('$H', ++pyjslib.next_hash_id);
+        return pyjslib.next_hash_id;
     }
         """)
 
@@ -5780,13 +5791,24 @@ if JS("typeof 'a'[0] == 'undefined'"):
                 return '$'+obj;
         }
         if (typeof obj.__hash__ == 'function') return obj.__hash__();
-        try {
+        if (typeof obj.nodeType != 'number') {
+            try {
             obj.$H = ++pyjslib.next_hash_id;
-        } catch (e) {
-            pyjslib.next_hash_id--;
+            } catch (e) {
+                return obj;
+            }
+            return pyjslib.next_hash_id;
+            return obj.$H = ++pyjslib.next_hash_id;
+        }
+        if (typeof obj.setAttribute == 'undefined') {
             return obj;
         }
-        return obj.$H;
+        var $H;
+        if ($H = obj.getAttribute('$H')) {
+            return $H;
+        }
+        obj.setAttribute('$H', ++pyjslib.next_hash_id);
+        return pyjslib.next_hash_id;
     }
         """)
 else:
