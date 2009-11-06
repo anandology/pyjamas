@@ -213,6 +213,8 @@ class ImportManager:
         for item in sys.path:
             if isinstance(item, _StringType):
                 module = self.fs_imp.import_from_dir(item, name)
+            elif isinstance(item, basestring):
+                module = self.fs_imp.import_from_dir(str(item), name)
             else:
                 module = item.import_top(name)
             if module:
