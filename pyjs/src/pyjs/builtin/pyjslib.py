@@ -406,8 +406,8 @@ def op_bitshiftleft(x, y):
         }
         if (typeof y['__rlshift__'] != 'undefined') return y.__rlshift__(x);
     }
-    throw pyjslib['TypeError']("unsupported operand type(s) for <<: '%r', '%r'" % (x, y));
 """)
+    raise TypeError("unsupported operand type(s) for <<: '%r', '%r'" % (x, y))
 
 def op_bitshiftright(x, y):
     JS("""
@@ -428,8 +428,8 @@ def op_bitshiftright(x, y):
         }
         if (typeof y['__rrshift__'] != 'undefined') return y.__rrshift__(x);
     }
-    throw pyjslib['TypeError']("unsupported operand type(s) for >>: '%r', '%r'" % (x, y));
 """)
+    raise TypeError("unsupported operand type(s) for >>: '%r', '%r'" % (x, y))
 
 def op_bitand2(x, y):
     JS("""
@@ -450,8 +450,8 @@ def op_bitand2(x, y):
         }
         if (typeof y['__rand__'] != 'undefined') return y.__rand__(x);
     }
-    throw pyjslib['TypeError']("unsupported operand type(s) for &: '%r', '%r'" % (x, y));
 """)
+    raise TypeError("unsupported operand type(s) for &: '%r', '%r'" % (x, y))
 
 op_bitand = JS("""function (args) {
     if (args[0] !== null && args[1] !== null && args.length > 1) {
@@ -504,8 +504,8 @@ def op_bitxor2(x, y):
         }
         if (typeof y['__rxor__'] != 'undefined') return y.__rxor__(x);
     }
-    throw pyjslib['TypeError']("unsupported operand type(s) for &: '%r', '%r'" % (x, y));
 """)
+    raise TypeError("unsupported operand type(s) for &: '%r', '%r'" % (x, y))
 
 op_bitxor = JS("""function (args) {
     if (args[0] !== null && args[1] !== null && args.length > 1) {
@@ -558,8 +558,8 @@ def op_bitor2(x, y):
         }
         if (typeof y['__ror__'] != 'undefined') return y.__ror__(x);
     }
-    throw pyjslib['TypeError']("unsupported operand type(s) for &: '%r', '%r'" % (x, y));
 """)
+    raise TypeError("unsupported operand type(s) for &: '%r', '%r'" % (x, y))
 
 op_bitor = JS("""function (args) {
     if (args[0] !== null && args[1] !== null && args.length > 1) {
