@@ -76,16 +76,16 @@ class TestJointOps(UnitTest):
             # Py2.6:
             #self.assertEqual(self.thetype('abcba').union(C('ef'), C('fg')), set('abcefg'))
 
-    #def test_or(self):
-    #    i = self.s.union(self.otherword)
-    #    self.assertEqual(self.s | set(self.otherword), i)
-    #    self.assertEqual(self.s | frozenset(self.otherword), i)
-    #    try:
-    #        self.s | self.otherword
-    #    except TypeError:
-    #        pass
-    #    else:
-    #        self.fail("s|t did not screen-out general iterables")
+    def test_or(self):
+        i = self.s.union(self.otherword)
+        self.assertEqual(self.s | set(self.otherword), i)
+        self.assertEqual(self.s | frozenset(self.otherword), i)
+        try:
+            v = self.s | self.otherword
+        except TypeError:
+            pass
+        else:
+            self.fail("s|t did not screen-out general iterables")
 
     def test_intersection(self):
         i = self.s.intersection(self.otherword)
@@ -129,16 +129,16 @@ class TestJointOps(UnitTest):
                     self.assertEqual(actual, expected)
                     self.assert_(actual is True or actual is False)
 
-    #def test_and(self):
-    #    i = self.s.intersection(self.otherword)
-    #    self.assertEqual(self.s & set(self.otherword), i)
-    #    self.assertEqual(self.s & frozenset(self.otherword), i)
-    #    try:
-    #        self.s & self.otherword
-    #    except TypeError:
-    #        pass
-    #    else:
-    #        self.fail("s&t did not screen-out general iterables")
+    def test_and(self):
+        i = self.s.intersection(self.otherword)
+        self.assertEqual(self.s & set(self.otherword), i)
+        self.assertEqual(self.s & frozenset(self.otherword), i)
+        try:
+            v = self.s & self.otherword
+        except TypeError:
+            pass
+        else:
+            self.fail("s&t did not screen-out general iterables")
 
     def test_difference(self):
         i = self.s.difference(self.otherword)
@@ -163,7 +163,7 @@ class TestJointOps(UnitTest):
     #    self.assertEqual(self.s - set(self.otherword), i)
     #    self.assertEqual(self.s - frozenset(self.otherword), i)
     #    try:
-    #        self.s - self.otherword
+    #        v = self.s - self.otherword
     #    except TypeError:
     #        pass
     #    else:
@@ -172,8 +172,7 @@ class TestJointOps(UnitTest):
     def test_symmetric_difference(self):
         i = self.s.symmetric_difference(self.otherword)
         for c in self.letters:
-            #self.assertEqual(c in i, (c in self.d) ^ (c in self.otherword))
-            self.assertEqual(c in i, (c in self.d) != (c in self.otherword))
+            self.assertEqual(c in i, (c in self.d) ^ (c in self.otherword))
         self.assertEqual(self.s, self.thetype(self.word))
         #self.assertEqual(type(i), self.thetype)
         self.assertRaises(PassThru, self.s.symmetric_difference, check_pass_thru())
@@ -185,16 +184,16 @@ class TestJointOps(UnitTest):
             self.assertEqual(self.thetype('abcba').symmetric_difference(C('ccb')), set('a'))
             self.assertEqual(self.thetype('abcba').symmetric_difference(C('ef')), set('abcef'))
 
-    #def test_xor(self):
-    #    i = self.s.symmetric_difference(self.otherword)
-    #    self.assertEqual(self.s ^ set(self.otherword), i)
-    #    self.assertEqual(self.s ^ frozenset(self.otherword), i)
-    #    try:
-    #        self.s ^ self.otherword
-    #    except TypeError:
-    #        pass
-    #    else:
-    #        self.fail("s^t did not screen-out general iterables")
+    def test_xor(self):
+        i = self.s.symmetric_difference(self.otherword)
+        self.assertEqual(self.s ^ set(self.otherword), i)
+        self.assertEqual(self.s ^ frozenset(self.otherword), i)
+        try:
+            v = self.s ^ self.otherword
+        except TypeError:
+            pass
+        else:
+            self.fail("s^t did not screen-out general iterables")
 
     def test_equality(self):
         self.assertEqual(self.s, set(self.word))
@@ -483,8 +482,7 @@ class SetTest(TestJointOps):
         #for c in (self.word + self.otherword):
         t = self.word + self.otherword
         for c in t:
-            #if (c in self.word) ^ (c in self.otherword):
-            if (c in self.word) != (c in self.otherword):
+            if (c in self.word) ^ (c in self.otherword):
                 self.assert_(c in self.s)
             else:
                 self.assert_(c not in self.s)
@@ -502,8 +500,7 @@ class SetTest(TestJointOps):
         #for c in (self.word + self.otherword):
         t = self.word + self.otherword
         for c in t:
-            #if (c in self.word) ^ (c in self.otherword):
-            if (c in self.word) != (c in self.otherword):
+            if (c in self.word) ^ (c in self.otherword):
                 self.assert_(c in self.s)
             else:
                 self.assert_(c not in self.s)
