@@ -1218,6 +1218,15 @@ Boolean.prototype.__str__= function () {
     return "<type 'bool'>";
 };
 Boolean.prototype.__repr__ = Boolean.prototype.__str__;
+Boolean.prototype.__and__ = function (y) {
+    return this & y.valueOf();
+}
+Boolean.prototype.__or__ = function (y) {
+    return this | y.valueOf();
+}
+Boolean.prototype.__xor__ = function (y) {
+    return this ^ y.valueOf();
+}
 
 """)
 
