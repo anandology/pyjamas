@@ -5153,8 +5153,12 @@ def staticmethod(func):
 def super(type_, object_or_type = None):
     # This is a partially implementation: only super(type, object)
     if not _issubtype(object_or_type, type_):
+        i = _issubtype(object_or_type, type_)
         raise TypeError("super(type, obj): obj must be an instance or subtype of type")
     JS("""
+    if (typeof type_.__mro__ == 'undefined') {
+        type_ = type_.__class__;
+    }
     var fn = $pyjs_type('super', type_.__mro__.slice(1), {});
     fn.__new__ = fn.__mro__[1].__new__;
     fn.__init__ = fn.__mro__[1].__init__;
@@ -5455,25 +5459,40 @@ def isinstance(object_, classinfo):
 
 def _isinstance(object_, classinfo):
     JS("""
-    if (object_.__is_instance__ !== true) {
+    if (   object_.__is_instance__ !== true 
+        || classinfo.__is_instance__ === null) {
         return false;
     }
     var __mro__ = object_.__mro__;
     var n = __mro__.length;
-    var __md5__ = classinfo.prototype.__md5__;
-    for (var i = 0; i < n; i++) {
-        if (__mro__[i].__md5__ == __md5__) return true;
+    if (classinfo.__is_instance__ === false) {
+        while (--n >= 0) {
+            if (object_.__mro__[n] === classinfo.prototype) return true;
+        }
+        return false;
+    }
+    while (--n >= 0) {
+        if (object_.__mro__[n] === classinfo.__class__) return true;
     }
     return false;
     """)
 
 def _issubtype(object_, classinfo):
     JS("""
-    if (object_.__is_instance__ == null || classinfo.__is_instance__ == null) {
+    if (   object_.__is_instance__ === null 
+        || classinfo.__is_instance__ === null) {
         return false;
     }
-    for (var c in object_.__mro__) {
-        if (object_.__mro__[c] == classinfo.prototype) return true;
+    var __mro__ = object_.__mro__;
+    var n = __mro__.length;
+    if (classinfo.__is_instance__ === false) {
+        while (--n >= 0) {
+            if (object_.__mro__[n] === classinfo.prototype) return true;
+        }
+        return false;
+    }
+    while (--n >= 0) {
+        if (object_.__mro__[n] === classinfo.__class__) return true;
     }
     return false;
     """)
@@ -5505,6 +5524,7 @@ def getattr(obj, name, default_value=None):
     };
     fnwrap.__name__ = name;
     fnwrap.__args__ = obj[name].__args__;
+    fnwrap.__class__ = obj.__class__;
     fnwrap.__bind_type__ = obj[name].__bind_type__;
     return fnwrap;
     """)

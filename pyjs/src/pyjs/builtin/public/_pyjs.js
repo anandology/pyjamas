@@ -395,7 +395,8 @@ function $pyjs__class_function(cls_fn, prop, bases) {
     var instance = function () {};
     instance.prototype = arguments[0].prototype;
     instance = new instance();
-    instance.__dict__ = instance.__class__ = instance;
+    instance.__class__ = instance.prototype;
+    instance.__dict__ = instance;
     instance.__is_instance__ = true;
     return instance;
 }, 1, ['cls']);
