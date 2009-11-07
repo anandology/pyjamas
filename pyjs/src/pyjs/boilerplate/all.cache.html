@@ -1,7 +1,7 @@
 <html>
 <head>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-<script>
+<script><!--
 var $wnd = parent;
 var $doc = $wnd.document;
 var $moduleName = "%(app_name)s";
@@ -24,35 +24,44 @@ $pyjs.platform = '%(platform_name)s';
 $pyjs.appname = '%(app_name)s';
 $pyjs.loadpath = './';
 
-</script>
+--></script>
 %(app_headers)s
 </head>
 <body onload="if (parent && parent.__pygwt_webModeFrameOnLoad) parent.__pygwt_webModeFrameOnLoad(window, '%(app_name)s');">
 <font face='arial' size='-1'>This script is part of module</font> <code>%(app_name)s</code>
 
 
-<script><!--
-
+<!--
 /* early app libs */
+-->
 
 %(early_static_app_libs)s
 
+<!--
 /* early static js libs */
+-->
 
 %(early_static_js_libs)s
 
+<!--
 /* static js libs */
+-->
 
 %(static_js_libs)s
 
+<!--
 /* app libs */
+-->
 
 %(static_app_libs)s
 
+<!--
 /* late static js libs */
+-->
 
 %(late_static_js_libs)s
 
+<script><!--
 var wait_count = 0;
 
 var onExecutionError = function (exception, name) {

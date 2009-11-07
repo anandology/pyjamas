@@ -176,12 +176,14 @@ class BrowserLinker(linker.BaseLinker):
                     name = fname[len_ouput_dir:]
                 else:
                     name = os.path.basename(lib)
+                code.append("""<script type="text/javascript"><!--""")
                 if not msg is None:
                     code.append("/* start %s: %s */" % (msg, name))
                 f = file(fname)
                 code.append(f.read())
                 if not msg is None:
                     code.append("/* end %s */" % (name,))
+                code.append("""--></script>""")
                 self.remove_files[fname] = True
                 fname = fname.split('.')
                 if fname[-2] == '__%s__' % platform_name:
