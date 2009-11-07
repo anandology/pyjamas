@@ -932,8 +932,7 @@ String.prototype.isdigit = function() {
 };
 
 String.prototype.__replace=String.prototype.replace;
-
-String.prototype.$$replace = function(old, replace, count) {
+String.prototype.replace = function(old, replace, count) {
     var do_max=false;
     var start=0;
     var new_str="";
@@ -962,7 +961,7 @@ String.prototype.__contains__ = function(s){
 
 String.prototype.__split = String.prototype.split;
 
-String.prototype.$$split = function(sep, maxsplit) {
+String.prototype.split = function(sep, maxsplit) {
     var items=pyjslib.List();
     var do_max=false;
     var subject=this;
@@ -972,7 +971,7 @@ String.prototype.$$split = function(sep, maxsplit) {
     if (sep === null || typeof sep == 'undefined') {
         sep=" ";
         subject=subject.strip();
-        subject=subject.$$replace(/\s+/g, sep);
+        subject=subject.replace(/\s+/g, sep);
     }
     else if (typeof maxsplit != 'undefined') do_max=true;
 
@@ -1041,15 +1040,15 @@ String.prototype.strip = function(chars) {
 };
 
 String.prototype.lstrip = function(chars) {
-    if (typeof chars == 'undefined') return this.$$replace(/^\s+/, "");
+    if (typeof chars == 'undefined') return this.replace(/^\s+/, "");
     if (chars.length == 0) return this;
-    return this.$$replace(new RegExp("^[" + chars + "]+"), "");
+    return this.replace(new RegExp("^[" + chars + "]+"), "");
 };
 
 String.prototype.rstrip = function(chars) {
-    if (typeof chars == 'undefined') return this.$$replace(/\s+$/, "");
+    if (typeof chars == 'undefined') return this.replace(/\s+$/, "");
     if (chars.length == 0) return this;
-    return this.$$replace(new RegExp("[" + chars + "]+$"), "");
+    return this.replace(new RegExp("[" + chars + "]+$"), "");
 };
 
 String.prototype.startswith = function(prefix, start, end) {
@@ -5390,7 +5389,7 @@ def repr(x):
                return "'" + x + "'";
            if (x.indexOf('"') == -1)
                return '"' + x + '"';
-           var s = x.$$replace(new RegExp('"', "g"), '\\\\"');
+           var s = x.replace(new RegExp('"', "g"), '\\\\"');
            return '"' + s + '"';
        }
 
@@ -5414,7 +5413,7 @@ def repr(x):
        // Note that we replace underscores with dots so that the name will
        // (hopefully!) look like the original Python name.
 
-       //var s = constructor.$$replace(new RegExp('_', "g"), '.');
+       //var s = constructor.replace(new RegExp('_', "g"), '.');
        return "<" + constructor + " object>";
     """)
 
