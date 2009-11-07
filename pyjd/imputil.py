@@ -211,10 +211,8 @@ class ImportManager:
         # scan sys.path looking for a location in the filesystem that contains
         # the module, or an Importer object that can import the module.
         for item in sys.path:
-            if isinstance(item, _StringType):
+            if isinstance(item, _StringType) or isinstance(item, basestring):
                 module = self.fs_imp.import_from_dir(item, name)
-            elif isinstance(item, basestring):
-                module = self.fs_imp.import_from_dir(str(item), name)
             else:
                 module = item.import_top(name)
             if module:
