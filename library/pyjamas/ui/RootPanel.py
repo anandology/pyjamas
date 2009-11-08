@@ -46,7 +46,7 @@ def get(id=None):
             return None
 
     if len(rootPanels) < 1:
-        panelManger = RootPanelManager()
+        panelManager = RootPanelManager()
         Window.addWindowCloseListener(panelManager)
 
     panel = RootPanelCls(element)
