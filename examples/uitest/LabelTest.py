@@ -9,12 +9,10 @@ class LabelTest(UnitTest):
 
     def testLabelAdd(self):
         self.l = Label("Hello World (label)", StyleName='teststyle')
-        RootPanel().add(self.l)
-        ht = doc().body.innerHTML
-        self.write_test_output(ht, 'addlabel')
+        RootPanel('tests').add(self.l)
+        self.write_test_output('addlabel')
 
-        if not RootPanel().remove(self.l):
+        if not RootPanel('tests').remove(self.l):
             self.fail("Label added but apparently not owned by RootPanel()")
-        ht = doc().body.innerHTML
-        self.write_test_output(ht, 'removelabel')
+        self.write_test_output('removelabel')
 

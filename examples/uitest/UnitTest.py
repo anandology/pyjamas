@@ -5,6 +5,7 @@ IN_BROWSER = sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']
 IN_JS = sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz',
                          'safari', 'spidermonkey', 'pyv8']
 
+from pyjamas import DOM
 from pyjamas.Timer import Timer
 
 from pyjamas.HTTPRequest import HTTPRequest
@@ -57,7 +58,12 @@ class UnitTest:
             fname = "%s.txt" % self.current_test_name
         HTTPRequest().asyncGet(fname, handler)
 
-    def write_test_output(self, output, name=None):
+    def write_test_output(self, name=None, div_id=None):
+        if div_id is None:
+            div_id = 'tests'
+        element = DOM.getElementById(div_id)
+        output = element.innerHTML
+
         if self.test_gen_folder is None:
             if self.tests_outstanding is None:
                 self.tests_outstanding = 0
@@ -76,6 +82,9 @@ class UnitTest:
         f.write(output)
         f.close()
 
+        if self.tests_outstanding is None:
+            self.tests_outstanding = 0
+
         return False
 
     def _run_test(self, test_method_name):
@@ -91,13 +100,6 @@ class UnitTest:
 
     def run(self):
         self.getTestMethods()
-        #if not IN_BROWSER:
-        #    for test_method_name in self.test_methods:
-        #        self._run_test(test_method_name)
-        #    self.displayStats()
-        #    if hasattr(self, "start_next_test"):
-        #        self.check_start_next_test()
-        #    return
         self.test_idx = 0
         Timer(1, self)
 

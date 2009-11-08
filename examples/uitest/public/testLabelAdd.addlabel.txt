@@ -1,3 +1,1 @@
-<pre>Unit Tests will appear and disappear.</pre>
-<script language="javascript" src="bootstrap.js"></script>
 <div style="white-space: normal;" class="teststyle">Hello World (label)</div>
