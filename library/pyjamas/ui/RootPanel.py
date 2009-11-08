@@ -22,16 +22,15 @@ from pyjamas import Window
 from AbsolutePanel import AbsolutePanel
 
 rootPanels = {}
-class RootPanelManager:
+class RootPanelManager(object):
 
     def onWindowClosed(self):
+        global rootPanels
         for panel in rootPanels.itervalues():
             panel.onDetach()
 
     def onWindowClosing(self):
         return None
-
-panelManager = None
 
 def get(id=None):
     """
@@ -47,9 +46,7 @@ def get(id=None):
             return None
 
     if len(rootPanels) < 1:
-        global panelManager
-        if panelManager is None:
-            panelManger = RootPanelManager()
+        panelManger = RootPanelManager()
         Window.addWindowCloseListener(panelManager)
 
     panel = RootPanelCls(element)

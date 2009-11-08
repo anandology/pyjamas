@@ -15,14 +15,16 @@ def display_log_output():
     global data
     element = doc().createElement("div")
     doc().body.appendChild(element)
-    element.innerHTML = escape(data)
+    element.innerHTML = data
 
-def write(text):
+def write(text, do_escape=True):
     global data
+    if do_escape:
+        text = escape(text)
     data += text
 
     print "data", data
 
-def writebr(text):
-    write(text + "<br />\n")
+def writebr(text, do_escape=True):
+    write(text + "<br />\n", do_escape)
 

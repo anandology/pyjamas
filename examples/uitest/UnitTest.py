@@ -276,5 +276,5 @@ class UnitTest:
         else:
             output+= "\n"
 
-        write(output)
+        write(output, do_escape=False)
 
