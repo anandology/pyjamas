@@ -116,7 +116,10 @@ def fireClosedAndCatch(handler):
 
 def fireClosedImpl():
     for listener in closingListeners:
-        listener.onWindowClosed()
+        if hasattr(listener, 'onWindowClosed'):
+            listener.onWindowClosed()
+        else:
+            listener()
 
 def fireClosingAndCatch(handler):
     # FIXME - need implementation
@@ -135,7 +138,10 @@ def resizeBy(width, height):
 def fireClosingImpl():
     ret = None
     for listener in closingListeners:
-        msg = listener.onWindowClosing()
+        if hasattr(listener, 'onWindowClosing'):
+            msg = listener.onWindowClosing()
+        else:
+            msg = listener()
         if ret is None:
             ret = msg
     return ret

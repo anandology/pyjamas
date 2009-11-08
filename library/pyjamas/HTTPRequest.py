@@ -17,7 +17,9 @@ class XULrunnerHackCallback:
 
     def callback(self):
         if self.mode == 'GET':
-            return self.htr.asyncGetImpl(self.user, self.pwd, self.url, self.handler)
+            return self.htr.asyncGetImpl(self.user, self.pwd, self.url,
+                                         self.handler,
+                                         self.return_xml, self.content_type)
         else:
             return self.htr.asyncPostImpl(self.user, self.pwd, self.url,
                                          self.postData, self.handler,

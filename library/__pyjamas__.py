@@ -14,7 +14,14 @@ gtk_module = None
 def noSourceTracking(*args):
     pass
 
-def unescape(str):
+def escape(s):
+    s = s.replace("&", "&amp;")
+    s = s.replace("<", "&lt;")
+    s = s.replace(">", "&gt;")
+    s = s.replace('"', "&quot;")
+    return s
+
+def unescape(s):
     s = s.replace("&amp;", "&")
     s = s.replace("&lt;", "<")
     s = s.replace("&gt;", ">")
