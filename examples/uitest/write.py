@@ -1,7 +1,14 @@
 data = ""
 global element
 
-from __pyjamas__ import doc, escape
+from __pyjamas__ import doc
+
+def escape(s):
+    s = s.replace("&", "&amp;")
+    s = s.replace("<", "&lt;")
+    s = s.replace(">", "&gt;")
+    s = s.replace('"', "&quot;")
+    return s
 
 def display_log_output():
     global element
