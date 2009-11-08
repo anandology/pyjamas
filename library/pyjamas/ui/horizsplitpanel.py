@@ -333,11 +333,10 @@ class HorizontalSplitPanel(SplitPanel):
         # centering in this case. The usually CSS hacks (display:
         # table-cell, vertical-align: middle) don't work in an
         # absolute positioned DIV.
-        thumb_html = '<img src="splitPanelThumb.png" />'
         DOM.setInnerHTML(splitDiv,
             "<table class='hsplitter' height='100%' cellpadding='0' " +
                 "cellspacing='0'><tr><td align='center' valign='middle'>" +
-                thumb_html +
+                self.getThumbImageHTML() +
                 "</td></tr></table>")
 
         self.addScrolling(leftDiv)

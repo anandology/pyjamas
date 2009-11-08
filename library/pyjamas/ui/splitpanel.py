@@ -42,9 +42,20 @@ class SplitPanel(Panel):
         self.setElement(mainElem)
         self.splitElem = splitElem
 
+        if not kwargs.has_key('ThumbImage'):
+            kwargs['ThumbImage'] = "splitPanelThumb.png"
+
         Panel.__init__(self, **kwargs)
 
         self.sinkEvents(Event.MOUSEEVENTS)
+
+    def setThumbImage(self, ti):
+        self.thumb_image = ti
+
+    def getThumbImageHTML(self):
+        if self.thumb_image:
+             return '<img src="%s" />' % self.thumb_image
+        return ""
 
     def addAbsolutePositoning(self, elem):
         """ Sets an elements positioning to absolute.

@@ -290,10 +290,9 @@ class VerticalSplitPanel(SplitPanel):
         # to allow the splitter to be styled without interfering
         # with layout.
 
-        thumb_html = '<img src="splitPanelThumb.png" />'
         DOM.setInnerHTML(splitDiv, "<div class='vsplitter' " +
                                    "style='text-align:center'>" +
-                                   thumb_html + "</div>")
+                                   self.getThumbImageHTML() + "</div>")
 
         self.addScrolling(topDiv)
         self.addScrolling(bottomDiv)
