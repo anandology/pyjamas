@@ -55,7 +55,7 @@ def newItem(historyToken):
     // at least add a '#' to the end of the url. So we get around this by
     // recreating the url, rather than just setting location.hash.
 
-    $wnd.location = $wnd.location.href.split('#').__getitem__(0) + '#' +
+    $wnd.location = $wnd.location.href.split('#')[0] + '#' +
                    encodeURIComponent(historyToken).replace("#", "%23");
 
     """)
