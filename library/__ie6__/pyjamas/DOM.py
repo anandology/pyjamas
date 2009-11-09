@@ -234,6 +234,6 @@ def toString(elem):
     return elem.outerHTML;
     """)
 
-def stopPropagation(evt):
+def eventStopPropagation(evt):
     eventCancelBubble(evt)
 
