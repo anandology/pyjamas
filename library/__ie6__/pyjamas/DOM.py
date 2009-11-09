@@ -233,3 +233,7 @@ def toString(elem):
     JS("""
     return elem.outerHTML;
     """)
+
+def stopPropagation(evt):
+    eventCancelBubble(evt)
+

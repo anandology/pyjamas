@@ -326,7 +326,7 @@ class CustomButton (ButtonBase):
             # If clicks are currently disallowed, keep it from bubbling or
             # being passed to the superclass.
             if not self.allowClick:
-                event.stopPropagation()
+                DOM.eventStopPropagation(event)
                 return
             
         elif event_type == "mousedown":

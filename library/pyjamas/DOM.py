@@ -247,6 +247,9 @@ def createTH():
 def createTR():
     return createElement("tr")
 
+def eventStopPropagation(evt):
+    evt.stopPropagation()
+
 def eventCancelBubble(evt, cancel):
     evt.cancelBubble = cancel
 
