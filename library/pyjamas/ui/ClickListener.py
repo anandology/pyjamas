@@ -9,12 +9,20 @@ class ClickHandler(object):
 
     def __init__(self, preventDefault=False):
         self._clickListeners = []
+        self._doubleclickListeners = []
         self._clickPreventDefault = preventDefault
         
-        self.sinkEvents( Event.ONCLICK )
+        self.sinkEvents(Event.ONCLICK)
+        self.sinkEvents(Event.ONDBLCLICK)
 
     def onClick(self, sender=None):
         pass
+
+    def onDoubleClick(self, sender=None):
+        pass
+
+    def addDoubleClickListener(self, listener):
+        self._doubleclickListeners.append(listener)
 
     def addClickListener(self, listener):
         self._clickListeners.append(listener)
@@ -32,34 +40,17 @@ class ClickHandler(object):
                     listener.onClick(self)
                 else:
                     listener(self)
+        elif type == "dblclick":
+            if self._clickPreventDefault:
+                DOM.eventPreventDefault(event)
+            for listener in self._clickListeners:
+                if hasattr(listener, "onDoubleClick"):
+                    listener.onDoubleClick(self)
+                else:
+                    listener(self)
 
     def removeClickListener(self, listener):
         self._clickListeners.remove(listener)
-
-class DoubleClickHandler(object):
-
-    def __init__(self):
-        self._doubleclickListeners = []
-        
-        self.sinkEvents( Event.ONDBLCLICK )
-
-    def onDoubleClick(self, sender=None):
-        pass
-
-    def addDoubleClickListener(self, listener):
-        self._doubleclickListeners.append(listener)
-
-    def onBrowserEvent(self, event):
-        """Listen to events raised by the browser and call the appropriate 
-        method of the listener (widget, ..) object. 
-        """
-        type = DOM.eventGetType(event)
-        if type == "dblclick":
-            for listener in self._doubleclickListeners:
-                if hasattr(listener, "onDblClick"):
-                    listener.onDblClick(self)
-                else:
-                    listener(self)
 
     def removeDoubleClickListener(self, listener):
         self._doubleclickListeners.remove(listener)
