@@ -1,0 +1,16 @@
+.title {
+    text-align: center;
+    font-weight: bold;
+    font-size: 120%;
+}
+.item {
+    margin: 10px;
+}
+
+table {
+    display: inline-block;
+}
+.flow-panel {
+    margin: 0 auto;
+    
+}

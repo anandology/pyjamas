@@ -1,5 +1,9 @@
                     Changes made to Pyjamas since 0.6
                     ---------------------------------
+
+ * Added FlowPanel demo from jordanwii showing how you have to use
+   a span element to Label to get round a CSS IE hack issue
+
  * added DOM.eventStopPropagation which sets cancelBubble in IE/MSHTML
    and calls stopPropagation everywhere else
 

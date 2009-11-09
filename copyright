@@ -47,6 +47,10 @@ Copyright: 2009 Sujan Shakya
 Copyright: 2009 Klavdij Voncina <voncina.klavdij@siol.net>
 Copyright: 2009 Scott Koranda <skoranda@gmail.com>
 
+Files: examples/flowpanel/*
+Copyright: 2009 jordonwii (http://code.google.com/u/jordonwii)
+License: Apache
+
 Files: examples/employeeadmin/*
 Copyright: 2007-08 Toby de Havilland
 License: Apache
