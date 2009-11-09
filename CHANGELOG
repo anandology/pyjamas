@@ -1,5 +1,7 @@
                     Changes made to Pyjamas since 0.6
                     ---------------------------------
+ * added DOM.eventStopPropagation which sets cancelBubble in IE/MSHTML
+   and calls stopPropagation everywhere else
 
  * Added builtin sum() function
 
