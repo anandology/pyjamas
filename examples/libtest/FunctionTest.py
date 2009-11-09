@@ -210,3 +210,6 @@ class FunctionTest(UnitTest):
 
         self.assertEqual(fn3("b"), "abc")
 
+    def testTopLevelContionalFunction(self):
+        self.assertEqual(imports.conditional_func(), "overridden")
+

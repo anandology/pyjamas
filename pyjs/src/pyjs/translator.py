@@ -748,6 +748,7 @@ class Translator:
         self.state_max_depth = len(self.generator_states)
         self.constant_int = {}
         self.constant_long = {}
+        self.top_level = True
 
         print >>self.output, self.spacing() + "/* start module: %s */" % module_name
         if not '.' in module_name:
@@ -803,22 +804,23 @@ class Translator:
             self.has_yield = False
             self.is_generator = False
             self.track_lineno(child)
+            assert self.top_level
             if isinstance(child, self.ast.Function):
-                self._function(child, None, True, False)
+                self._function(child, None)
             elif isinstance(child, self.ast.Class):
                 self._class(child)
             elif isinstance(child, self.ast.Import):
-                self._import(child, None, True, True)
+                self._import(child, None, True)
             elif isinstance(child, self.ast.From):
-                self._from(child, None, True, True)
+                self._from(child, None, True)
             elif isinstance(child, self.ast.Discard):
                 self._discard(child, None)
             elif isinstance(child, self.ast.Assign):
-                self._assign(child, None, True)
+                self._assign(child, None)
             elif isinstance(child, self.ast.AugAssign):
-                self._augassign(child, None, True)
+                self._augassign(child, None)
             elif isinstance(child, self.ast.If):
-                self._if(child, None, True)
+                self._if(child, None)
             elif isinstance(child, self.ast.For):
                 self._for(child, None)
             elif isinstance(child, self.ast.While):
@@ -832,9 +834,9 @@ class Translator:
             elif isinstance(child, self.ast.Print):
                self._print(child, None)
             elif isinstance(child, self.ast.TryExcept):
-                self._tryExcept(child, None, True)
+                self._tryExcept(child, None)
             elif isinstance(child, self.ast.TryFinally):
-                self._tryFinally(child, None, True)
+                self._tryFinally(child, None)
             elif isinstance(child, self.ast.Raise):
                 self._raise(child, None)
             elif isinstance(child, self.ast.Stmt):
@@ -914,7 +916,7 @@ class Translator:
             self.operator_funcs, self.number_classes,
         ) = self.option_stack.pop()
 
-    def parse_decorators(self, node, funcname, current_class = None, top_level = False,
+    def parse_decorators(self, node, funcname, current_class = None, 
                           is_method = False, bind_type = None):
         if node.decorators is None:
             return False, False, '%s'
@@ -1075,7 +1077,7 @@ class Translator:
                 name_type = 'builtin'
                 pyname = name
                 jsname = PYJSLIB_BUILTIN_MAPPING[name]
-        return (name_type, pyname, jsname, depth, max_depth == depth and not name_type is None)
+        return (name_type, pyname, jsname, depth, (name_type is not None) and (max_depth > 0) and (max_depth == depth))
 
     def scopeName(self, name, depth, local):
         if local:
@@ -1791,12 +1793,12 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             print >>self.output, self.dedent() + "});"
 
 
-    def _import(self, node, current_klass, top_level = False, root_level = False):
+    def _import(self, node, current_klass, root_level = False):
         # XXX: hack for in-function checking, we should have another
         # object to check our scope
-        self._doImport(node.names, current_klass, top_level, root_level, True)
+        self._doImport(node.names, current_klass, root_level, True)
 
-    def _doImport(self, names, current_klass, top_level, root_level, assignBase, absPath=False):
+    def _doImport(self, names, current_klass, root_level, assignBase, absPath=False):
         if root_level:
             modtype = 'root-module'
         else:
@@ -1842,7 +1844,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                                     )
                 if not assignBase:
                     print >> self.output, self.spacing() + import_stmt + 'null, false);'
-                self._lhsFromName(importName, top_level, current_klass, modtype)
+                self._lhsFromName(importName, current_klass, modtype)
                 self.add_imported_module(importName)
             if assignBase:
                 # get the name in scope
@@ -1853,7 +1855,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                         import_stmt += ', null, false'
                 else:
                     ass_name = package_name
-                lhs = self._lhsFromName(ass_name, top_level, current_klass, modtype)
+                lhs = self._lhsFromName(ass_name, current_klass, modtype)
                 if importAs:
                     mod_name = importName
                 else:
@@ -1871,7 +1873,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                     stmt = "%s = %s);"% (lhs, import_stmt)
                 print >> self.output, self.spacing() + stmt
 
-    def _from(self, node, current_klass, top_level = False, root_level = False):
+    def _from(self, node, current_klass, root_level = False):
         if node.modname == '__pyjamas__':
             # special module to help make pyjamas modules loadable in
             # the python interpreter
@@ -1917,11 +1919,12 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         for name in node.names:
             sub = modname + '.' + name[0]
             ass_name = name[1] or name[0]
-            self._doImport(((sub, ass_name),), current_klass, top_level, root_level, True, absPath)
+            self._doImport(((sub, ass_name),), current_klass, root_level, True, absPath)
 
-    def _function(self, node, current_klass, top_level, local):
+    def _function(self, node, current_klass, force_local=False):
         if self.is_class_definition:
             return self._method(node, current_klass)
+        save_top_level = self.top_level
         self.push_options()
         save_has_js_return = self.has_js_return
         self.has_js_return = False
@@ -1933,12 +1936,12 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         self.generator_states = [0]
         self.state_max_depth = len(self.generator_states)
 
-        if local:
+        if not save_top_level or force_local:
             function_name = node.name
         else:
             function_name = self.modpfx() + node.name
         function_name = self.add_lookup('function', node.name, function_name)
-        staticmethod, classmethod, decorator_code = self.parse_decorators(node, node.name, current_klass, top_level)
+        staticmethod, classmethod, decorator_code = self.parse_decorators(node, node.name, current_klass)
         if staticmethod or classmethod:
             raise TranslationError(
                 "Decorators staticmethod and classmethod not implemented for functions",
@@ -1965,12 +1968,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         #if node.kwargs: declared_arg_names.append(kwargname)
 
         function_args = "(" + ", ".join(declared_arg_names) + ")"
-        if local:
-            vdec = ''
-        else:
-            vdec = "var %s = " % node.name
-            vdec = ""
-        print >>self.output, self.indent() + "%s%s = function%s {" % (vdec, function_name, function_args)
+        print >>self.output, self.indent() + "%s = function%s {" % (function_name, function_args)
         self._static_method_init(node, declared_arg_names, varargname, kwargname, None)
         self._default_args_handler(node, declared_arg_names, None, kwargname)
 
@@ -1981,6 +1979,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         if node.varargs:
             local_arg_names.append(varargname)
 
+        self.top_level = False
         save_output = self.output
         self.output = StringIO()
         if self.source_tracking:
@@ -2048,6 +2047,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         self.has_yield = save_has_yield
         self.has_js_return = save_has_js_return
         self.pop_options()
+        self.top_level = save_top_level
 
     def _assert(self, node, current_klass):
         expr = self.expr(node.test, current_klass)
@@ -2243,7 +2243,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             call_args.append(arg)
         print >>self.output, self.spacing() + self.track_call("pyjslib['printFunc']([%s], %d)" % (', '.join(call_args), int(isinstance(node, self.ast.Printnl))), node.lineno) + ';'
 
-    def _tryFinally(self, node, current_klass, top_level=False):
+    def _tryFinally(self, node, current_klass):
         body = node.body
         if not isinstance(node.body, self.ast.TryExcept):
             body = node
@@ -2251,9 +2251,9 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             node.body.final = node.final
         except: # lib2to3
             node.body.final_ = node.final_
-        self._tryExcept(body, current_klass, top_level=top_level)
+        self._tryExcept(body, current_klass)
 
-    def _tryExcept(self, node, current_klass, top_level=False):
+    def _tryExcept(self, node, current_klass):
         save_is_generator = self.is_generator
         if self.is_generator:
             self.is_generator = self.compiler.walk(node, GeneratorExitVisitor(), walker=GeneratorExitVisitor()).has_yield
@@ -2357,7 +2357,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 self.indent()
                 print >> self.output, self.spacing() + "$pyjs.__last_exception__.except_lineno = %d;" % lineno
                 tnode = self.ast.Assign([self.ast.AssName(errName, "OP_ASSIGN", lineno)], self.ast.Name(pyjs_try_err, lineno), lineno)
-                self._assign(tnode, current_klass, top_level)
+                self._assign(tnode, current_klass)
 
                 self.generator_add_state()
                 self.generator_switch_open()
@@ -2444,7 +2444,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
     def modpfx(self):
         return strip_py(self.module_prefix)
 
-    def _name(self, v, current_klass, top_level=False,
+    def _name(self, v, current_klass, 
               return_none_for_module=False):
 
         if not hasattr(v, 'name'):
@@ -2476,10 +2476,12 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         return [self.expr(v.expr, current_klass), v.attrname, attr_name]
 
     def _class(self, node, parent_class = None):
+        save_top_level = self.top_level
         if parent_class is None:
             class_name = self.modpfx() + node.name
         else:
             class_name = node.name
+        self.top_level = False
         local_prefix = '$cls_definition'
         name_scope = {}
         current_klass = Klass(class_name, name_scope)
@@ -2525,9 +2527,10 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.pop_lookup()
         self.is_class_definition = None
         self.local_prefix = None
+        self.top_level = save_top_level
 
     def classattr(self, node, current_klass):
-        self._assign(node, current_klass, True)
+        self._assign(node, current_klass)
 
     def _raise(self, node, current_klass):
         if self.is_generator:
@@ -2578,6 +2581,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.generator_switch_case(increment=True)
 
     def _method(self, node, current_klass):
+        save_top_level = self.top_level
         self.push_options()
         save_has_js_return = self.has_js_return
         self.has_js_return = False
@@ -2596,7 +2600,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.local_prefix = None
         self.is_class_definition = None
 
-        staticmethod, classmethod, decorator_code = self.parse_decorators(node, method_name, current_klass, False)
+        staticmethod, classmethod, decorator_code = self.parse_decorators(node, method_name, current_klass)
 
         if node.name == '__new__':
             staticmethod = True
@@ -2646,6 +2650,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         if node.varargs:
             local_arg_names.append(varargname)
 
+        self.top_level = False
         save_output = self.output
         self.output = StringIO()
         if self.source_tracking:
@@ -2714,13 +2719,14 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.pop_options()
 
         self.push_lookup(current_klass.name_scope)
-        staticmethod, classmethod, decorator_code = self.parse_decorators(node, node.name, current_klass, False,
+        staticmethod, classmethod, decorator_code = self.parse_decorators(node, node.name, current_klass, 
                                                                           True, bind_type)
         decorator_code = decorator_code % '$method'
         print >>self.output, self.spacing() + "%s = %s;" % (jsmethod_name, decorator_code)
         self.add_lookup('method', node.name, "pyjslib['staticmethod'](%s)" % jsmethod_name)
         self.local_prefix = save_local_prefix
         self.is_class_definition = True
+        self.top_level = save_top_level
 
 
     def _isNativeFunc(self, node):
@@ -2732,7 +2738,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                         return True
         return False
 
-    def _stmt(self, node, current_klass, top_level = False):
+    def _stmt(self, node, current_klass):
         self.track_lineno(node)
 
         if isinstance(node, self.ast.Return):
@@ -2744,13 +2750,13 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         elif isinstance(node, self.ast.Continue):
             self._continue(node, current_klass)
         elif isinstance(node, self.ast.Assign):
-            self._assign(node, current_klass, top_level)
+            self._assign(node, current_klass)
         elif isinstance(node, self.ast.AugAssign):
-            self._augassign(node, current_klass, top_level)
+            self._augassign(node, current_klass)
         elif isinstance(node, self.ast.Discard):
             self._discard(node, current_klass)
         elif isinstance(node, self.ast.If):
-            self._if(node, current_klass, top_level)
+            self._if(node, current_klass)
         elif isinstance(node, self.ast.For):
             self._for(node, current_klass)
         elif isinstance(node, self.ast.While):
@@ -2762,21 +2768,21 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         elif isinstance(node, self.ast.Pass):
             pass
         elif isinstance(node, self.ast.Function):
-            self._function(node, current_klass, top_level, True)
+            self._function(node, current_klass)
         elif isinstance(node, self.ast.Printnl):
            self._print(node, current_klass)
         elif isinstance(node, self.ast.Print):
            self._print(node, current_klass)
         elif isinstance(node, self.ast.TryExcept):
-            self._tryExcept(node, current_klass, top_level)
+            self._tryExcept(node, current_klass)
         elif isinstance(node, self.ast.TryFinally):
-            self._tryFinally(node, current_klass, top_level)
+            self._tryFinally(node, current_klass)
         elif isinstance(node, self.ast.Raise):
             self._raise(node, current_klass)
         elif isinstance(node, self.ast.Import):
-            self._import(node, current_klass, top_level)
+            self._import(node, current_klass)
         elif isinstance(node, self.ast.From):
-            self._from(node, current_klass, top_level)
+            self._from(node, current_klass)
         elif isinstance(node, self.ast.AssAttr):
             self._assattr(node, current_klass)
         elif isinstance(node, self.ast.Assert):
@@ -2791,7 +2797,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             # TODO: support other OP_xxx types and move this to
             # a separate function
             if node.flags == "OP_DELETE":
-                name = self._lhsFromName(node.name, top_level, current_klass)
+                name = self._lhsFromName(node.name, current_klass)
                 print >>self.output, self.spacing() + "pyjslib['_del'](%s);" % name
             else:
                 raise TranslationError(
@@ -2829,7 +2835,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                + "\\n" \
                + "    " + srcLine
 
-    def _augassign(self, node, current_klass, top_level = False):
+    def _augassign(self, node, current_klass):
         def astOP(op):
             if op == "+=":
                 return self.ast.Add
@@ -2889,7 +2895,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 tnode = self.ast.Assign([lhs], op((v, node.expr)))
             except: # lib2to3
                 tnode = self.ast.Assign([lhs], op(v, node.expr))
-            return self._assign(tnode, current_klass, top_level)
+            return self._assign(tnode, current_klass)
         else:
             raise TranslationError(
                 "unsupported type (in _augassign)", v, self.module_name)
@@ -2909,14 +2915,14 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             tnode = self.ast.Assign([lhs_ass], op((v, node.expr)))
         except: # lib2to3
             tnode = self.ast.Assign([lhs_ass], op(v, node.expr))
-        return self._assign(tnode, current_klass, top_level)
+        return self._assign(tnode, current_klass)
 
-    def _lhsFromName(self, name, top_level, current_klass, set_name_type = 'variable'):
+    def _lhsFromName(self, name, current_klass, set_name_type = 'variable'):
         name_type, pyname, jsname, depth, is_local = self.lookup(name)
         if is_local:
             lhs = jsname
             self.add_lookup(set_name_type, name, jsname)
-        elif top_level:
+        elif self.top_level:
             if current_klass:
                 lhs = current_klass.name + "." + name
             else:
@@ -2926,7 +2932,6 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 lhs = vname
         else:
             vname = self.add_lookup(set_name_type, name, name)
-            lhs = "var " + vname
             lhs = vname
         return lhs
 
@@ -2944,14 +2949,14 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 "unsupported type (in _assign)", v.expr, self.module_name)
         return lhs
 
-    def _assign(self, node, current_klass, top_level = False):
+    def _assign(self, node, current_klass):
         if len(node.nodes) != 1:
             tempvar = self.uniqid("$assign")
             tnode = self.ast.Assign([self.ast.AssName(tempvar, "OP_ASSIGN", node.lineno)], node.expr, node.lineno)
-            self._assign(tnode, current_klass, False)
+            self._assign(tnode, current_klass)
             for v in node.nodes:
                tnode2 = self.ast.Assign([v], self.ast.Name(tempvar, node.lineno), node.lineno)
-               self._assign(tnode2, current_klass, top_level)
+               self._assign(tnode2, current_klass)
             return
 
         dbg = 0
@@ -2972,7 +2977,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
         elif isinstance(v, self.ast.AssName):
             rhs = self.expr(node.expr, current_klass)
-            lhs = self._lhsFromName(v.name, top_level, current_klass)
+            lhs = self._lhsFromName(v.name, current_klass)
             if v.flags == "OP_ASSIGN":
                 op = "="
             else:
@@ -3018,7 +3023,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 if isinstance(child, self.ast.AssAttr):
                     lhs = self._lhsFromAttr(child, current_klass) + '.' + self.attrib_remap(child.attrname)
                 elif isinstance(child, self.ast.AssName):
-                    lhs = self._lhsFromName(child.name, top_level, current_klass)
+                    lhs = self._lhsFromName(child.name, current_klass)
                 elif isinstance(child, self.ast.Subscript):
                     if child.flags == "OP_ASSIGN":
                         obj = self.expr(child.expr, current_klass)
@@ -3067,7 +3072,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 "unsupported type, must be call or const (in _discard)", node.expr,  self.module_name)
 
 
-    def _if(self, node, current_klass, top_level = False):
+    def _if(self, node, current_klass):
         save_is_generator = self.is_generator
         if self.is_generator:
             self.is_generator = self.compiler.walk(node, GeneratorExitVisitor(), walker=GeneratorExitVisitor()).has_yield
@@ -3083,7 +3088,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 keyword = "else if"
 
             self.lookup_stack[-1]
-            self._if_test(keyword, test, consequence, node, current_klass, top_level)
+            self._if_test(keyword, test, consequence, node, current_klass)
 
         if node.else_:
             keyword = "else"
@@ -3096,7 +3101,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.generator_del_state()
         self.is_generator = save_is_generator
 
-    def _if_test(self, keyword, test, consequence, node, current_klass, top_level = False):
+    def _if_test(self, keyword, test, consequence, node, current_klass):
         if test:
             expr = self.expr(test, current_klass)
 
@@ -3125,7 +3130,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
         if isinstance(consequence, self.ast.Stmt):
             for child in consequence.nodes:
-                self._stmt(child, current_klass, top_level)
+                self._stmt(child, current_klass)
         else:
             raise TranslationError(
                 "unsupported type (in _if_test)", consequence,  self.module_name)
@@ -3630,7 +3635,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             func_node = self.ast.Function(None, function_name, node.argnames, node.defaults, node.flags, None, code_node, node.lineno)
         except: # lib2to3
             func_node = self.ast.Function(None, function_name, node.argnames, node.defaults, node.varargs, node.kwargs, None, code_node, node.lineno)
-        self._function(func_node, current_klass, False, True)
+        self._function(func_node, current_klass, True)
         return function_name
 
     def _listcomp(self, node, current_klass):
