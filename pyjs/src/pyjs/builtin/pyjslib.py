@@ -154,8 +154,8 @@ def op_add(x, y):
         }
         if (!y.__number__ && typeof y['__radd__'] == 'function') return y.__radd__(x);
     }
-    throw pyjslib['TypeError']("unsupported operand type(s) for +: '%r', '%r'" % (x, y));
 """)
+    raise TypeError("unsupported operand type(s) for +: '%r', '%r'" % (x, y))
 
 def op_sub(x, y):
     JS("""
@@ -188,8 +188,8 @@ def op_sub(x, y):
         }
         if (!y.__number__ && typeof y['__rsub__'] == 'function') return y.__rsub__(x);
     }
-    throw pyjslib['TypeError']("unsupported operand type(s) for -: '%r', '%r'" % (x, y));
 """)
+    raise TypeError("unsupported operand type(s) for -: '%r', '%r'" % (x, y))
 
 def op_floordiv(x, y):
     JS("""
@@ -226,8 +226,8 @@ def op_floordiv(x, y):
         }
         if (!y.__number__ && typeof y['__rfloordiv__'] == 'function') return y.__rfloordiv__(x);
     }
-    throw pyjslib['TypeError']("unsupported operand type(s) for //: '%r', '%r'" % (x, y));
 """)
+    raise TypeError("unsupported operand type(s) for //: '%r', '%r'" % (x, y))
 
 def op_div(x, y):
     JS("""
@@ -264,8 +264,8 @@ def op_div(x, y):
         }
         if (!y.__number__ && typeof y['__rdiv__'] == 'function') return y.__rdiv__(x);
     }
-    throw pyjslib['TypeError']("unsupported operand type(s) for /: '%r', '%r'" % (x, y));
 """)
+    raise TypeError("unsupported operand type(s) for /: '%r', '%r'" % (x, y))
 
 def op_mul(x, y):
     JS("""
@@ -298,8 +298,8 @@ def op_mul(x, y):
         }
         if (!y.__number__ && typeof y['__rmul__'] == 'function') return y.__rmul__(x);
     }
-    throw pyjslib['TypeError']("unsupported operand type(s) for *: '%r', '%r'" % (x, y));
 """)
+    raise TypeError("unsupported operand type(s) for *: '%r', '%r'" % (x, y))
 
 def op_mod(x, y):
     JS("""
@@ -339,8 +339,8 @@ def op_mod(x, y):
         }
         if (!y.__number__ && typeof y['__rmod__'] == 'function') return y.__rmod__(x);
     }
-    throw pyjslib['TypeError']("unsupported operand type(s) for %: '%r', '%r'" % (x, y));
 """)
+    raise TypeError("unsupported operand type(s) for %: '%r', '%r'" % (x, y))
 
 def op_pow(x, y):
     JS("""
@@ -376,8 +376,8 @@ def op_pow(x, y):
         }
         if (!y.__number__ && typeof y['__rpow__'] == 'function') return y.__rpow__(x);
     }
-    throw pyjslib['TypeError']("unsupported operand type(s) for %: '%r', '%r'" % (x, y));
 """)
+    raise TypeError("unsupported operand type(s) for %: '%r', '%r'" % (x, y))
 
 def op_invert(v):
     JS("""
@@ -6360,8 +6360,8 @@ def divmod(x, y):
         }
         if (!y.__number__ && typeof y['__rdivmod__'] == 'function') return y.__rdivmod__(x);
     }
-    throw pyjslib['TypeError']("unsupported operand type(s) for divmod(): '%r', '%r'" % (x, y));
 """)
+    raise TypeError("unsupported operand type(s) for divmod(): '%r', '%r'" % (x, y))
 
 def all(iterable):
     for element in iterable:
