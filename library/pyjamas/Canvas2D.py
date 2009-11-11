@@ -11,7 +11,7 @@
 
 from pyjamas import DOM
 from pyjamas.ui.Image import Image
-from pyjamas.ui.Widget import Widget
+from pyjamas.ui.FocusWidget import FocusWidget
 from pyjamas.ui import Event
 from pyjamas.ui import MouseListener
 from pyjamas.ui import KeyboardListener
@@ -20,82 +20,32 @@ from pyjamas.ui import FocusListener
 
 from __pyjamas__ import JS
 
-class Canvas(Widget):
-    def __init__(self, width=0, height=0):
-        Widget.__init__(self)
+class Canvas(FocusWidget):
+    def __init__(self, Width=0, Height=0, **kwargs):
+        if not kwargs.has_key('StyleName'):
+            kwargs['StyleName'] = 'gwt-Canvas'
+        kwargs['Width'] = Width
+        kwargs['Height'] = Height
+
         self.context = None
-        
-        self.setElement(DOM.createDiv())
-        canvas = DOM.createElement("canvas")
-        self.setWidth(width)
-        self.setHeight(height)
-        
-        canvas.width=width
-        canvas.height=height
-        
-        DOM.appendChild(self.getElement(), canvas)
-        self.setStyleName("gwt-Canvas")
+       
+        focusable = Focus.createFocusable() 
+        self.canvas = DOM.createElement("canvas")
+        DOM.appendChild(focusable, self.canvas)
+        FocusWidget.__init__(self, focusable, **kwargs)
         
         self.init()
         
         self.context.fillStyle = "black"
         self.context.strokeStyle = "black"
 
-        self.focusable = None
-        self.focusable = Focus.createFocusable()
-        
-        self.focusListeners = []
-        self.clickListeners = []
-        self.mouseListeners = []
-        self.keyboardListeners = []
-        
-        DOM.appendChild(self.getElement(), self.focusable)
-        DOM.sinkEvents(canvas, Event.ONCLICK | Event.MOUSEEVENTS | DOM.getEventsSunk(canvas))
-        DOM.sinkEvents(self.focusable, Event.FOCUSEVENTS | Event.KEYEVENTS)
+    def setWidth(self, width):
+        FocusWidget.setWidth(self, width)
+        self.canvas.width = width
 
-    def addClickListener(self, listener):
-        self.clickListeners.append(listener)
-
-    def addMouseListener(self, listener):
-        self.mouseListeners.append(listener)
-
-    def addFocusListener(self, listener):
-        self.focusListeners.append(listener)
-
-    def addKeyboardListener(self, listener):
-        self.keyboardListeners.append(listener)
-
-    def onBrowserEvent(self, event):
-        type = DOM.eventGetType(event)
-        #print "Label onBrowserEvent", type, self.clickListeners
-        if type == "click":
-            for listener in self.clickListeners:
-                if hasattr(listener, 'onClick'): listener.onClick(self)
-                else: listener(self, event)
-        elif type in MouseListener.MOUSE_EVENTS:
-            MouseListener.fireMouseEvent(self.mouseListeners, self, event)
-        elif type in FocusListener.FOCUS_EVENTS:
-            FocusListener.fireFocusEvent(self.focusListeners, self, event)
-        elif KeyboardListener.KEYBOARD_EVENTS:
-            KeyboardListener.fireKeyboardEvent(self.keyboardListeners, self,                                                   event)
-
-    def removeClickListener(self, listener):
-        self.clickListeners.remove(listener)
-
-    def removeMouseListener(self, listener):
-        self.mouseListeners.remove(listener)
-
-    def removeFocusListener(self, listener):
-        self.focusListeners.remove(listener)
-
-    def removeKeyboardListener(self, listener):
-        self.keyboardListeners.remove(listener)
-
-    def setFocus(self, focused):
-        if (focused):
-            Focus.focus(self.focusable)
-        else:
-            Focus.blur(self.focusable)
+    def setHeight(self, height):
+        FocusWidget.setHeight(self, height)
+        self.canvas.height = height
 
     def getContext(self):
         return self.context

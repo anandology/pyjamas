@@ -63,7 +63,7 @@ class ColourGridCanvas(Canvas):
     def draw(self):
         for i in range(0, 6):
             for j in range(0, 6):
-                self.context.fillStyle = 'rgb(%d,%d,0)' % \
+                self.context.fillStyle = u'rgb(%d,%d,0)' % \
                                         ( floor(255-42.5*i), floor(255-42.5*j))
                 self.context.fillRect(j*25,i*25,25,25)
 
@@ -71,9 +71,11 @@ class ColourGridCanvas(Canvas):
         pass
 
     def onMouseEnter(self, sender):
+        RootPanel().add(HTML("mouseenter: setting focus (keyboard input accepted)"))      
         self.setFocus(True)
 
     def onMouseLeave(self, sender):
+        RootPanel().add(HTML("mouseleave: clearing focus (keyboard input not accepted)"))      
         self.setFocus(False)
 
     def onMouseMove(self, sender, x, y):
@@ -83,10 +85,13 @@ class ColourGridCanvas(Canvas):
         pass
 
     def onKeyUp(self, sender, keyCode, modifiers):
-        pass
+        RootPanel().add(HTML("keyup: %s" % keyCode))      
     
     def onKeyDown(self, sender, keyCode, modifiers):
-        pass
+        RootPanel().add(HTML("keydown: %s" % keyCode))      
+
+    def onClick(self, sender):
+        RootPanel().add(HTML("click"))      
 
     def onKeyPress(self, sender, keyCode, modifiers):
         RootPanel().add(HTML("keypressed: %s" % keyCode))      
