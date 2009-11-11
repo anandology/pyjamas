@@ -17,12 +17,12 @@ historyListeners = []
 
     This class allows your AJAX application to use a history.  Each time you
     call newItem(), a new item is added to the history and the history
-    listeners are notified.  If the user clicks the browser's forward or back 
+    listeners are notified.  If the user clicks the browser's forward or back
     buttons, the appropriate item (a string passed to newItem) is fetched
     from the history and the history listeners are notified.
 
-    The address bar of the browser contains the current token, using 
-    the "#" seperator (for implementation reasons, not because we love 
+    The address bar of the browser contains the current token, using
+    the "#" seperator (for implementation reasons, not because we love
     the # mark).
 
     You may want to check whether the hash already contains a history
@@ -33,21 +33,26 @@ historyListeners = []
     To make this work properly in all browsers, you must add a specially
     named iframe to your html page, like this:
 
-    <iframe id='__pygwt_historyFrame' style='width:0;height:0;border:0'></iframe>
+    <iframe id='__pygwt_historyFrame' style='width:0;height:0;border:0' />
 """
+
 
 def addHistoryListener(listener):
     historyListeners.append(listener)
 
+
 def back():
     wnd().history.back()
+
 
 def forward():
     wnd().history.forward()
 
+
 def getToken():
     global historyToken
     return historyToken
+
 
 def newItem(ht):
     print "History - new item", ht
@@ -61,6 +66,7 @@ def newItem(ht):
     $wnd.location.hash = encodeURIComponent(historyToken);
     """)
 
+
 # TODO - fireHistoryChangedAndCatch not implemented
 def onHistoryChanged(ht):
     #UncaughtExceptionHandler handler = GWT.getUncaughtExceptionHandler();
@@ -69,16 +75,20 @@ def onHistoryChanged(ht):
     #else
     fireHistoryChangedImpl(ht)
 
+
 # TODO
 def fireHistoryChangedAndCatch():
     pass
+
 
 def fireHistoryChangedImpl(ht):
     for listener in historyListeners:
         listener.onHistoryChanged(ht)
 
+
 def removeHistoryListener(listener):
     historyListeners.remove(listener)
+
 
 def init():
     print "history: TODO"
@@ -116,5 +126,6 @@ def init():
 
     return true;
     """)
+
 
 init()
