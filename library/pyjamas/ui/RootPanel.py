@@ -61,6 +61,12 @@ class RootPanelCls(AbsolutePanel):
         AbsolutePanel.__init__(self, **kwargs)
         self.onAttach()
 
+        # although the "normal" way to use this module is with the
+        # RootPanel() function (below), we need to (redundantly)
+        # trigger adding of RootPanelCls instance to rootPanels in case
+        # anyone bypasses use of get() by e.g. deriving from RootPanelCls
+        get(Element)
+
     def getBodyElement(self):
         return doc().body
 
