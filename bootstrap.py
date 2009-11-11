@@ -31,28 +31,7 @@ if __name__ == '__main__':
     pyjs.browser.build_script()
 """
 
-pyjscompile = """#!%(exec)s
-
-pyjsversion = r'%(ver)s'
-pyjspth = r'%(pyjspth)s'
-
-import os
-import sys
-sys.path[0:0] = [r'%(pth)s']
-sys.path.append(os.path.join(pyjspth, 'pgen'))
-
-import pyjs.translator
-pyjs.pyjspth = pyjspth
-pyjs.path += [os.path.join(pyjspth, 'library')]
-
-if __name__ == '__main__':
-    if "--version" in sys.argv:
-        print "Version:", pyjsversion
-        sys.exit(0)
-    pyjs.translator.main()
-"""
-
-pyjampiler= """#!%(exec)s
+pyjscompile= """#!%(exec)s
 
 pyjsversion = r'%(ver)s'
 pyjspth = r'%(pyjspth)s'
@@ -141,8 +120,7 @@ if __name__ == '__main__':
         prefix = "."
 
     make_cmd(prefix, pth, version, pyjspth, "pyjsbuild", pyjsbuild)
-    make_cmd(prefix, pth, version, pyjspth, "pyjscompile", pyjscompile)
-    make_cmd(prefix, pth, version, pyjspth, "pyjampiler", pyjampiler)
+    make_cmd(prefix, pth, version, pyjspth, "pyjscompile", pyjampiler)
 
     # create pyjd/__init__.py
     pyjdinitpth = os.path.join("pyjd", "__init__.py")
