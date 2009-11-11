@@ -8,6 +8,7 @@ Copyright (C) 2009, Luke Kenneth Casson Leighton <lkcl@lkcl.net>
 Pyjampiler: a stand-alone python-to-javascript compiler, by David Siroky
 
 """
+print 'pyjampiler loaded'
 
 import os
 import glob
@@ -66,7 +67,9 @@ class Builder(object):
 
     def compile(self, src, module_name, base_dir=None):
         dst = os.path.join(self.options.working_dir, TMP_DIR, module_name + ".js")
-        pyjs.translator.translate([src], dst, module_name,
+        internal_ast = False
+        compiler = pyjs.translator.import_compiler(internal_ast)
+        pyjs.translator.translate(compiler, [src], dst, module_name,
                 debug=self.options.debug,
                 source_tracking=self.options.debug,
                 line_tracking=self.options.debug,
@@ -129,10 +132,10 @@ class Builder(object):
 
         # application template
         tmpl = self.__read_file(os.path.join(PYJAMPILER_BASE, 
-                        "wrapper.js.tmpl"))
+                        "pyjampiler_wrapper.js.tmpl"))
 
         available_modules = repr(self.modules)
-        _pyjs = self.__read_file(os.path.join(PYJAMPILER_BASE, 
+        _pyjs = self.__read_file(os.path.join(BUILTIN_PATH, 
                         "public/_pyjs.js")) # core pyjs functions
         modules_source = "\n\n".join(self.modules_source)
 

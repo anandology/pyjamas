@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-""" simple creation of two commands, customised for your specific system.
+""" simple creation of three commands, customised for your specific system.
     windows users get a corresponding batch file.  yippeeyaiyay.
 """
 version = '0.7~pre1'
@@ -41,7 +41,7 @@ import sys
 sys.path[0:0] = [r'%(pth)s']
 sys.path.append(os.path.join(pyjspth, 'pgen'))
 
-import pyjs
+import pyjs.translator
 pyjs.pyjspth = pyjspth
 pyjs.path += [os.path.join(pyjspth, 'library')]
 
@@ -49,7 +49,28 @@ if __name__ == '__main__':
     if "--version" in sys.argv:
         print "Version:", pyjsversion
         sys.exit(0)
-    pyjs.pyjampiler.main()
+    pyjs.translator.main()
+"""
+
+pyjampiler= """#!%(exec)s
+
+pyjsversion = r'%(ver)s'
+pyjspth = r'%(pyjspth)s'
+
+import os
+import sys
+sys.path[0:0] = [r'%(pth)s']
+sys.path.append(os.path.join(pyjspth, 'pgen'))
+
+import pyjs.pyjampiler
+pyjs.pyjspth = pyjspth
+pyjs.path += [os.path.join(pyjspth, 'library')]
+
+if __name__ == '__main__':
+    if "--version" in sys.argv:
+        print "Version:", pyjsversion
+        sys.exit(0)
+    pyjs.pyjampiler.Builder()
 """
 
 pyjdinitpth = os.path.join("pyjd", "__init__.py.in")
@@ -121,6 +142,7 @@ if __name__ == '__main__':
 
     make_cmd(prefix, pth, version, pyjspth, "pyjsbuild", pyjsbuild)
     make_cmd(prefix, pth, version, pyjspth, "pyjscompile", pyjscompile)
+    make_cmd(prefix, pth, version, pyjspth, "pyjampiler", pyjampiler)
 
     # create pyjd/__init__.py
     pyjdinitpth = os.path.join("pyjd", "__init__.py")
