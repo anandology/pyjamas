@@ -454,6 +454,7 @@ def op_bitand2(x, y):
     raise TypeError("unsupported operand type(s) for &: '%r', '%r'" % (x, y))
 
 op_bitand = JS("""function (args) {
+    var a;
     if (args[0] !== null && args[1] !== null && args.length > 1) {
         var res, r;
         res = args[0];
@@ -508,6 +509,7 @@ def op_bitxor2(x, y):
     raise TypeError("unsupported operand type(s) for &: '%r', '%r'" % (x, y))
 
 op_bitxor = JS("""function (args) {
+    var a;
     if (args[0] !== null && args[1] !== null && args.length > 1) {
         var res, r;
         res = args[0];
@@ -562,6 +564,7 @@ def op_bitor2(x, y):
     raise TypeError("unsupported operand type(s) for &: '%r', '%r'" % (x, y))
 
 op_bitor = JS("""function (args) {
+    var a;
     if (args[0] !== null && args[1] !== null && args.length > 1) {
         var res, r;
         res = args[0];
@@ -2022,7 +2025,7 @@ JS("""
     }
 
     function Format(aa, base, addL, newstyle, noBase) {
-        var text, str, p, i, bits, sz, sign = '';
+        var text, str, p, i, bits, sz, rem, sign = '';
         var c_0 = "0".charCodeAt(0);
         var c_a = "a".charCodeAt(0);
         base = base.valueOf();
@@ -4381,7 +4384,7 @@ class set(object):
             self.__object = {};
             var selfObj = self.__object,
                 dataObj = data.__object;
-            for (sVal in dataObj) {
+            for (var sVal in dataObj) {
                 selfObj[sVal] = dataObj[sVal];
             }
             return null;""")
@@ -4567,7 +4570,7 @@ class set(object):
         JS("""
         var obj = new_set.__object,
             selfObj = self.__object;
-        for (sVal in selfObj) {
+        for (var sVal in selfObj) {
             obj[sVal] = selfObj[sVal];
         }
 """)
@@ -4583,7 +4586,7 @@ class set(object):
         var obj = new_set.__object,
             selfObj = self.__object,
             otherObj = other.__object;
-        for (sVal in selfObj) {
+        for (var sVal in selfObj) {
             if (typeof otherObj[sVal] == 'undefined') {
                 obj[sVal] = selfObj[sVal];
             }
@@ -4598,7 +4601,7 @@ class set(object):
         JS("""
         var selfObj = self.__object,
             otherObj = other.__object;
-        for (sVal in otherObj) {
+        for (var sVal in otherObj) {
             if (typeof selfObj[sVal] != 'undefined') {
                 delete selfObj[sVal];
             }
@@ -4622,7 +4625,7 @@ class set(object):
         var obj = new_set.__object,
             selfObj = self.__object,
             otherObj = other.__object;
-        for (sVal in selfObj) {
+        for (var sVal in selfObj) {
             if (typeof otherObj[sVal] != 'undefined') {
                 obj[sVal] = selfObj[sVal];
             }
@@ -4637,7 +4640,7 @@ class set(object):
         JS("""
         var selfObj = self.__object,
             otherObj = other.__object;
-        for (sVal in selfObj) {
+        for (var sVal in selfObj) {
             if (typeof otherObj[sVal] == 'undefined') {
                 delete selfObj[sVal];
             }
@@ -4652,12 +4655,12 @@ class set(object):
         JS("""
         var selfObj = self.__object,
             otherObj = other.__object;
-        for (sVal in selfObj) {
+        for (var sVal in selfObj) {
             if (typeof otherObj[sVal] != 'undefined') {
                 return false;
             }
         }
-        for (sVal in otherObj) {
+        for (var sVal in otherObj) {
             if (typeof selfObj[sVal] != 'undefined') {
                 return false;
             }
@@ -4707,12 +4710,12 @@ class set(object):
         var obj = new_set.__object,
             selfObj = self.__object,
             otherObj = other.__object;
-        for (sVal in selfObj) {
+        for (var sVal in selfObj) {
             if (typeof otherObj[sVal] == 'undefined') {
                 obj[sVal] = selfObj[sVal];
             }
         }
-        for (sVal in otherObj) {
+        for (var sVal in otherObj) {
             if (typeof selfObj[sVal] == 'undefined') {
                 obj[sVal] = otherObj[sVal];
             }
@@ -4728,12 +4731,12 @@ class set(object):
         var obj = new Object(),
             selfObj = self.__object,
             otherObj = other.__object;
-        for (sVal in selfObj) {
+        for (var sVal in selfObj) {
             if (typeof otherObj[sVal] == 'undefined') {
                 obj[sVal] = selfObj[sVal];
             }
         }
-        for (sVal in otherObj) {
+        for (var sVal in otherObj) {
             if (typeof selfObj[sVal] == 'undefined') {
                 obj[sVal] = otherObj[sVal];
             }
@@ -4752,10 +4755,10 @@ class set(object):
         var obj = new_set.__object,
             selfObj = self.__object,
             otherObj = other.__object;
-        for (sVal in selfObj) {
+        for (var sVal in selfObj) {
             obj[sVal] = selfObj[sVal];
         }
-        for (sVal in otherObj) {
+        for (var sVal in otherObj) {
             if (typeof selfObj[sVal] == 'undefined') {
                 obj[sVal] = otherObj[sVal];
             }
@@ -4769,7 +4772,7 @@ class set(object):
         JS("""
         var selfObj = self.__object,
             dataObj = data.__object;
-        for (sVal in dataObj) {
+        for (var sVal in dataObj) {
             if (typeof selfObj[sVal] == 'undefined') {
                 selfObj[sVal] = dataObj[sVal];
             }
@@ -4791,7 +4794,7 @@ class frozenset(object):
             self.__object = {};
             var selfObj = self.__object,
                 dataObj = data.__object;
-            for (sVal in dataObj) {
+            for (var sVal in dataObj) {
                 selfObj[sVal] = dataObj[sVal];
             }
             return null;""")
@@ -4980,7 +4983,7 @@ class frozenset(object):
         JS("""
         var obj = new_set.__object,
             selfObj = self.__object;
-        for (sVal in selfObj) {
+        for (var sVal in selfObj) {
             obj[sVal] = selfObj[sVal];
         }
 """)
@@ -4996,7 +4999,7 @@ class frozenset(object):
         var obj = new_set.__object,
             selfObj = self.__object,
             otherObj = other.__object;
-        for (sVal in selfObj) {
+        for (var sVal in selfObj) {
             if (typeof otherObj[sVal] == 'undefined') {
                 obj[sVal] = selfObj[sVal];
             }
@@ -5014,7 +5017,7 @@ class frozenset(object):
         var obj = new_set.__object,
             selfObj = self.__object,
             otherObj = other.__object;
-        for (sVal in selfObj) {
+        for (var sVal in selfObj) {
             if (typeof otherObj[sVal] != 'undefined') {
                 obj[sVal] = selfObj[sVal];
             }
@@ -5029,12 +5032,12 @@ class frozenset(object):
         JS("""
         var selfObj = self.__object,
             otherObj = other.__object;
-        for (sVal in selfObj) {
+        for (var sVal in selfObj) {
             if (typeof otherObj[sVal] != 'undefined') {
                 return false;
             }
         }
-        for (sVal in otherObj) {
+        for (var sVal in otherObj) {
             if (typeof selfObj[sVal] != 'undefined') {
                 return false;
             }
@@ -5072,12 +5075,12 @@ class frozenset(object):
         var obj = new_set.__object,
             selfObj = self.__object,
             otherObj = other.__object;
-        for (sVal in selfObj) {
+        for (var sVal in selfObj) {
             if (typeof otherObj[sVal] == 'undefined') {
                 obj[sVal] = selfObj[sVal];
             }
         }
-        for (sVal in otherObj) {
+        for (var sVal in otherObj) {
             if (typeof selfObj[sVal] == 'undefined') {
                 obj[sVal] = otherObj[sVal];
             }
@@ -5095,10 +5098,10 @@ class frozenset(object):
         var obj = new_set.__object,
             selfObj = self.__object,
             otherObj = other.__object;
-        for (sVal in selfObj) {
+        for (var sVal in selfObj) {
             obj[sVal] = selfObj[sVal];
         }
-        for (sVal in otherObj) {
+        for (var sVal in otherObj) {
             if (typeof selfObj[sVal] == 'undefined') {
                 obj[sVal] = otherObj[sVal];
             }
@@ -6133,7 +6136,7 @@ def sprintf(strng, args):
     }
 
     function sprintf_list(strng, args) {
-        var a, left, flags, precision, conversion, minlen,
+        var a, left, flags, precision, conversion, minlen, param,
             __array = result;
         while (remainder) {
             a = re_list.exec(remainder);
@@ -6185,6 +6188,7 @@ def sprintf(strng, args):
             minlen_type = null,
             key = null,
             arg = args,
+            param,
             __array = result;
 
         argidx++;

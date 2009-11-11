@@ -16,7 +16,7 @@ function $pyjs_kwargs_call(obj, func, star_args, dstar_args, args)
         /* use of __iter__ and next is horrendously expensive,
            use direct access to dictionary instead
          */
-        for (keys in dstar_args.__object) {
+        for (var keys in dstar_args.__object) {
             var k = dstar_args.__object[keys][0];
             var v = dstar_args.__object[keys][1];
 
@@ -50,7 +50,7 @@ function $pyjs_kwargs_call(obj, func, star_args, dstar_args, args)
                     call_args[i] = a[i];
                 }
             } else {
-                $iter = star_args.__iter__();
+                var $iter = star_args.__iter__();
                 if (typeof $iter.__array != 'undefined') {
                     var a = $iter.__array;
                     var n = a.length;
@@ -224,12 +224,13 @@ function $pyjs__bind_method(klass, func_name, func, bind_type, args) {
 }
 
 function $pyjs__decorated_method(klass, func_name, func, bind_type) {
-    helper = function (){
+    var helper = function (){
+      var args;
       if (typeof func.__methoddecorator__ == "undefined")
       {
         // add explicit "self" into arguments
         args=[this];
-        for (i=0;i<arguments.length;i++)
+        for (var i=0;i<arguments.length;i++)
           { args.push(arguments[i]); } // concat is not working :-S
       } else {
         args = arguments;
@@ -286,7 +287,7 @@ function $pyjs__staticmethod(klass, func_name, func, bind_type, args) {
 function $pyjs__classmethod(klass, func_name, func, bind_type, args) {
     var fn = function () {
         if ($pyjs.options.arg_is_instance && this.__is_instance__ !== true && this.__is_instance__ !== false) $pyjs__exception_func_instance_expected(func_name, klass.__name__);
-        var args = [_this.prototype].concat($pyjs_array_slice.call(arguments));
+        var args = [this.prototype].concat($pyjs_array_slice.call(arguments));
         return func.apply(this, args);
     };
     func.__name__ = func.func_name = func_name;
