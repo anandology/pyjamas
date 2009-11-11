@@ -1291,7 +1291,7 @@ $generator['next'] = function (noStop) {
         if (typeof $res == 'undefined') {
             if (noStop === true) {
                 $generator_state[0] = -1;
-                return [][1];
+                return;
             }
             throw pyjslib.StopIteration;
         }
@@ -1300,7 +1300,7 @@ $generator['next'] = function (noStop) {
         $is_executing=false;
         $generator_state[0] = -1;
         if (noStop === true && e === pyjslib['StopIteration']) {
-            return [][1];
+            return;
         }
         throw e;
     }

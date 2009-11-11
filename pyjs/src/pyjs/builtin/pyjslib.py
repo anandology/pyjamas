@@ -1003,7 +1003,7 @@ if (typeof "a"[0] == 'undefined' ) {
             'next': function(noStop) {
                 if (i >= s.length) {
                     if (noStop === true) {
-                        return [][1];
+                        return;
                     }
                     throw pyjslib.StopIteration;
                 }
@@ -1023,7 +1023,7 @@ if (typeof "a"[0] == 'undefined' ) {
             'next': function(noStop) {
                 if (i >= s.length) {
                     if (noStop === true) {
-                        return [][1];
+                        return;
                     }
                     throw pyjslib.StopIteration;
                 }
@@ -3521,7 +3521,7 @@ var $iter_array = function (l) {
 $iter_array.prototype.next = function (noStop) {
     if (++this.i == this.__array.length) {
         if (noStop === true) {
-            return [][1];
+            return;
         }
         throw pyjslib.StopIteration;
     }
@@ -3537,7 +3537,7 @@ var $reversed_iter_array = function (l) {
 $reversed_iter_array.prototype.next = function (noStop) {
     if (--this.i == -1) {
         if (noStop === true) {
-            return [][1];
+            return;
         }
         throw pyjslib.StopIteration;
     }
@@ -3558,7 +3558,7 @@ JS("""
 $enumerate_array.prototype.next = function (noStop, reuseTuple) {
     if (++this.i == this.array.length) {
         if (noStop === true) {
-            return [][1];
+            return;
         }
         throw pyjslib.StopIteration;
     }
@@ -5217,7 +5217,7 @@ def xrange(start, stop = None, step = 1):
         'next': function(noStop) {
             if (nval == stop) {
                 if (noStop === true) {
-                    return [][1];
+                    return;
                 }
                 throw pyjslib.StopIteration;
             }
@@ -5635,7 +5635,7 @@ def map(obj, method, sequence=None):
     return items
 
 
-def reduce(func, iterable, initializer=JS("[][1]")):
+def reduce(func, iterable, initializer=JS("(function(){return;})()")):
     try:
         iterable = iter(iterable)
     except:
@@ -6381,7 +6381,7 @@ wrapped_next = JS("""function (iter) {
         var res = iter.next();
     } catch (e) {
         if (e === pyjslib['StopIteration']) {
-            return [][1];
+            return;
         }
         throw e;
     }
