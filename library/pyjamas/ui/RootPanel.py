@@ -69,6 +69,6 @@ class RootPanelCls(AbsolutePanel):
 
 Factory.registerClass('pyjamas.ui.RootPanelCls', RootPanelCls)
 
-def RootPanel(element=None):
-    return get(element)
+def RootPanel(id=None):
+    return get(id)
 
