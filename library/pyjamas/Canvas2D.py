@@ -76,7 +76,7 @@ class Canvas(Widget):
             MouseListener.fireMouseEvent(self.mouseListeners, self, event)
         elif type in FocusListener.FOCUS_EVENTS:
             FocusListener.fireFocusEvent(self.focusListeners, self, event)
-        elif KeyboardListener.KEYBORD_EVENTS:
+        elif KeyboardListener.KEYBOARD_EVENTS:
             KeyboardListener.fireKeyboardEvent(self.keyboardListeners, self,                                                   event)
 
     def removeClickListener(self, listener):
