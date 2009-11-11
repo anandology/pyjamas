@@ -72,10 +72,12 @@ class Canvas(Widget):
             for listener in self.clickListeners:
                 if hasattr(listener, 'onClick'): listener.onClick(self)
                 else: listener(self, event)
-        elif type == "blur" or type == "focus":
-            FocusListener.fireFocusEvent(self.focusListeners, self, event)
-        elif type == "keydown" or type == "keypress" or type == "keyup":
+        elif type in MouseListener.MOUSE_EVENTS:
             MouseListener.fireMouseEvent(self.mouseListeners, self, event)
+        elif type in FocusListener.FOCUS_EVENTS:
+            FocusListener.fireFocusEvent(self.focusListeners, self, event)
+        elif KeyboardListener.KEYBORD_EVENTS:
+            KeyboardListener.fireKeyboardEvent(self.keyboardListeners, self,                                                   event)
 
     def removeClickListener(self, listener):
         self.clickListeners.remove(listener)

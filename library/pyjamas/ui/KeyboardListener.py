@@ -69,6 +69,8 @@ def fireKeyboardEvent(listeners, sender, event):
         for listener in listeners:
             listener.onKeyPress(sender, keycode, modifiers)
 
+KEYBORD_EVENTS = ["keydown", "keyup", "keypress"]
+
 
 class KeyboardHandler:
 

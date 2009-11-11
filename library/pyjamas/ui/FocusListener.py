@@ -24,6 +24,8 @@ def fireFocusEvent(listeners, sender, event):
         for listener in listeners:
             listener.onLostFocus(sender)
 
+FOCUS_EVENTS = ["focus", "blur"]
+
 class FocusHandler:
 
     def __init__(self):
