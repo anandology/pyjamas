@@ -1,4 +1,4 @@
-# Copyright 2009 Daniel Carvalho <idnael@gmail.com>
+# Copyright (C) 2009 Daniel Carvalho <idnael@gmail.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -7,11 +7,11 @@
 #     http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
+# distributed under the License is distributed on an "AS IS" BASIS
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from pyjamas.ui.RootPanel import RootPanel,RootPanelCls
+from pyjamas.ui.RootPanel import RootPanel, RootPanelCls
 from pyjamas.ui.SimplePanel import SimplePanel
 from pyjamas.ui.DockPanel import DockPanel
 from pyjamas.ui.HorizontalPanel import HorizontalPanel
@@ -22,23 +22,23 @@ from pyjamas.ui.ListBox import ListBox
 
 from pyjamas import Window
 
-from pyjamas.gmaps.Map import Map,MapTypeId,MapOptions
+from pyjamas.gmaps.Map import Map, MapTypeId, MapOptions
 from pyjamas.gmaps.Base import LatLng
 
-from pyjamas.gmaps.DirectionsService import DirectionsService,DirectionsRequest,DirectionsTravelMode,DirectionsStatus
+from pyjamas.gmaps.DirectionsService import DirectionsService, DirectionsRequest, DirectionsTravelMode, DirectionsStatus
 from pyjamas.gmaps.DirectionsRenderer import DirectionsRenderer
 
 class DirectionsSimple(DockPanel):
     def __init__(self):
         DockPanel.__init__(self)
-        self.setSize('100%','100%')
+        self.setSize('100%', '100%')
 
         # widgets
 
-        topPanel=HorizontalPanel()
-        self.add(topPanel,DockPanel.NORTH)
+        topPanel = HorizontalPanel()
+        self.add(topPanel, DockPanel.NORTH)
 
-        places={
+        places = {
             "chicago, il": "Chicago",
 
             "st louis, mo": "St Louis",
@@ -55,12 +55,12 @@ class DirectionsSimple(DockPanel):
             "los angeles, ca": "Los Angeles"
             }
             
-        self.start=ListBox()
-        self.end=ListBox()
+        self.start = ListBox()
+        self.end = ListBox()
 
         for value in places:
-            self.start.addItem(places[value],value)
-            self.end.addItem(places[value],value)
+            self.start.addItem(places[value], value)
+            self.end.addItem(places[value], value)
 
         self.start.addChangeListener(self.calcRoute)
         self.end.addChangeListener(self.calcRoute)
@@ -70,41 +70,41 @@ class DirectionsSimple(DockPanel):
 
         # now, the map
 
-        mapPanel=SimplePanel()
-        mapPanel.setSize('800','500')
-        self.add(mapPanel,DockPanel.CENTER)
+        mapPanel = SimplePanel()
+        mapPanel.setSize('800', '500')
+        self.add(mapPanel, DockPanel.CENTER)
 
-        chigado=LatLng(41.850033, -87.6500523)
-        options=MapOptions(zoom=7, center=chigado,
-                           mapTypeId=MapTypeId.ROADMAP)
+        chigado = LatLng(41.850033, -87.6500523)
+        options = MapOptions(zoom = 7, center = chigado,
+                           mapTypeId = MapTypeId.ROADMAP)
 
-        self.map = Map(mapPanel.getElement(),options)
+        self.map = Map(mapPanel.getElement(), options)
 
         # initialize the renderer
-        self.directionsDisplay=DirectionsRenderer()
+        self.directionsDisplay = DirectionsRenderer()
         self.directionsDisplay.setMap(self.map)
 
-        self.directionsService=DirectionsService()
+        self.directionsService = DirectionsService()
 
     def calcRoute(self):
-        start=self.start.getValue(self.start.getSelectedIndex())
-        end=self.end.getValue(self.end.getSelectedIndex())
+        start = self.start.getValue(self.start.getSelectedIndex())
+        end = self.end.getValue(self.end.getSelectedIndex())
 
         print "calcRoute"
-        print "start",start
-        print "end",end
+        print "start", start
+        print "end", end
 
-        request = DirectionsRequest(origin=start, destination=end, travelMode=DirectionsTravelMode.DRIVING)
+        request = DirectionsRequest(origin = start, destination = end, travelMode = DirectionsTravelMode.DRIVING)
         
         self.directionsService.route(request, self.directionsResult)
 
-    def directionsResult(self,response, status):
+    def directionsResult(self, response, status):
         print "directionsResult"
 
         if status == DirectionsStatus.OK:
 
             for trip in response.trips:
-                print "copyrights:",trip.copyrights
+                print "copyrights:", trip.copyrights
 
                 for route in trip.routes:
                     print route.start_geocode.formatted_address
@@ -119,5 +119,5 @@ class DirectionsSimple(DockPanel):
 
 if __name__ == '__main__':
     
-    root=RootPanel()
+    root = RootPanel()
     root.add(DirectionsSimple())
