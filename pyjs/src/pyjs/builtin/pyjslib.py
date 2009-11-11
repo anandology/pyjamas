@@ -934,6 +934,14 @@ String.prototype.isdigit = function() {
     return (this.match(/^\d+$/g) !== null);
 };
 
+String.prototype.isalpha = function() {
+    return (this.match(/^[a-zA-Z]+$/g) !== null);
+};
+
+String.prototype.isupper = function() {
+    return (this.match(/^[A-Z]+$/g) !== null);
+};
+
 String.prototype.__replace=String.prototype.replace;
 
 String.prototype.$$replace = function(old, replace, count) {
