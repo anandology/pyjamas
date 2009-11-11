@@ -1,6 +1,6 @@
 import pyjd # this is dummy in pyjs.
 
-from pyjamas.ui.RootPanel import RootPanelCls, RootPanel
+from pyjamas.ui.RootPanel import RootPanelCls, RootPanel, manageRootPanel
 from pyjamas.ui.Button import Button
 from pyjamas.ui.FocusPanel import FocusPanel
 from pyjamas.ui.KeyboardListener import KeyboardHandler
@@ -24,7 +24,9 @@ class RootPanelListener(RootPanelCls, KeyboardHandler, ClickHandler):
     def onClick(self, Sender):
         self.focussed = not self.focussed
         self.Parent.setFocus(self.focussed)
-        self.add(HTML('focus: %s' % (self.focussed and 'yes' or 'no')))
+
+        txt = self.focussed and 'yes. now press keys' or 'no. keys fail now'
+        self.add(HTML('focus: %s' % txt))
 
     def onKeyDown(self, sender, keyCode, modifiers = None):
         self.add(HTML('keyDOWN: %d' % keyCode))
@@ -48,6 +50,23 @@ if __name__ == '__main__':
 
     panel = FocusPanel(Widget=h)
     gp = RootPanelListener(panel, StyleName='rootstyle')
+
+    # as this is replacing the 'normal' usage of RootPanel(),
+    # it is necessary to add this in 'by hand' so that the
+    # window-close notification is 'hooked into', and so when
+    # the browser window is closed, cleanups (onDetach) will
+    # be triggered.
+    #
+    # calling manageRootPanel (with the default arg id=None)
+    # also has the advantage that RootPanel(id=None) will
+    # 'pick up' the above RootPanelListener instance, meaning
+    # that you don't need to have a silly global variable
+    # all over the place, you can just use the standard pyjamas
+    # API as normal.
+    #
+    # kinda cute.
+
+    manageRootPanel(gp)
 
     info = """Click anywhere in the Root (grey) to activate key input;
             click again to disable it.  Note the focus highlighting
@@ -78,9 +97,9 @@ if __name__ == '__main__':
     <br /> <br />
     """
 
-    gp.add(panel)
-    gp.add(b)
-    gp.add(bh)
-    gp.add(HTML(info))
+    RootPanel().add(panel)
+    RootPanel().add(b)
+    RootPanel().add(bh)
+    RootPanel().add(HTML(info))
 
     pyjd.run()
