@@ -13,8 +13,12 @@ compiler include:
 
 * the addition of generators (support for yield, by rewriting the function
   so that it can be re-called and continue from the previous state);
+  the rewriting allows all browsers (not just firefox - the only browser
+  with a javascript-native "yield" feature) to appear to have python
+  "yield" functionality;
 
-* the beginnings of decorators support, and support for properties;
+* the beginnings of decorators support, and full support for properties,
+  with the addition of property();
 
 * some dramatic performance improvements due to a rewrite of for-loops;
 
@@ -26,7 +30,14 @@ compiler include:
 * addition of int and long types, and support for operator functions,
   so that e.g list multiplication by numbers and list addition now work,
   along with coercion between int, float and long types, and support
-  for floating point exceptions.
+  for floating point exceptions including raising ZeroDivisionError;
+
+* reintroduction of pyjscompile (equivalent to gcc -c foo.c -o foo.o).
+  This is in preparation for adding a separate linker command
+  (equivalent to gcc *.o -o foo), at which point Pyjamas apps will
+  be suitable for building using make, and Makefiles:
+  .py.js:
+      pyjscompile -o $< $@
 
 Overall, this release is a significant "pythonic" upgrade: for full
 details, see the CHANGELOG.
@@ -42,6 +53,18 @@ enhancements include:
   to pure python, and consequently work under Pyjamas-Desktop as well.
   For the same speed optimisations present in GChart, GChart for Pyjamas
   can also use the python port of GWTCanvas.
+
+* A Google GMaps (v3) wrapper library.  This wrapper library uses the
+  Google GMaps javascript API, directly.  There are over ten demos and
+  examples that show how to use the API from Pyjamas.  Unfortunately,
+  the direct use of the GMaps javascript API precludes the use of
+  Pyjamas-Desktop, as it is quite tricky for PyJD ports to interact
+  (safely, if at all) with Javascript.  Javascript can be run
+  (through standard HTML methods), but initiation from Python and
+  interaction through Python is tricky.  Developers who may be
+  expecting to use Google GMaps on Pyjamas Desktop should therefore
+  assist in porting the Google GMaps Javascript API directly to
+  Python.
 
 * An internal restructure of Event handling, similar to GWT 1.7,
   providing Focus, Mouse and Click "Mixin" modules so that developers
@@ -59,11 +82,13 @@ python-to-javascript compiler, and also a Widget Set API that looks
 very similar to Desktop Widget Set APIs (such as PyQT4 or PyGTK2).
 
 Pyjamas also contains a Desktop Widget Set version, running as pure
-python.  Using web browser technology provides an alternative to
-PyQT4 and PyGTK2 that has the advantage of having full support for
-HTML, CSS, Plugin and other web-related features already built-in.
-For the windows port, this can save users around 30mb of downloads,
-as MSHTML is preinstalled as part of IE.
+python, with three Desktop ports available.  Using web browser
+technology startlingly provides an alternative to traditional
+Widget sets, such as PyQT4 and PyGTK2, with the advantage of having
+full support for HTML, CSS, Plugins and other web-related features
+already built-in.  For the windows port, this can save users and
+developers around 30mb of downloads, as MSHTML is preinstalled on
+the Windows Operating System, as part of IE.
 
 For more information, see:
 
@@ -77,9 +102,9 @@ Known bugs: http://code.google.com/p/pyjamas/issues
 Pyjamas-Desktop
 ---------------
 
-Pyjamas runs your application in a Web Browser (as javascript);
+Pyjamas runs your python application in a Web Browser (as javascript).
 Pyjamas-Desktop runs exactly the same python application on the
-Desktop (as python)
+Desktop (as pure python).
 
     http://pyjd.org
 
@@ -89,16 +114,16 @@ with more planned [MacOSX PyObjC; KDE's PyKHTML].
 
 All ports of Pyjamas-Desktop will require a JSON library to be
 installed: as there are plenty already, it is counter-productive
-to write yet another one.  Simplejson is recommended.
+to write yet another one.  simplejson is recommended.
 
 1) - XULRunner
 
-install hulahop and python-xpcom.  hulahop is distributed with
-both Debian and Ubuntu; python-xpcom is part of XULRunner and is
-also distributed with both Debian and Ubuntu.  Other users should
-investigate the installation instructions for python-xpcom and
-hulahop for the operating system of their choice on the appropriate
-web sites.
+install hulahop and python-xpcom.  hulahop, from OLPC SugarLabs,
+is distributed with both Debian and Ubuntu; python-xpcom is part
+of XULRunner and is also distributed with both Debian and Ubuntu.
+Other users should investigate the installation instructions for
+python-xpcom and hulahop for the operating system of their choice
+on the appropriate web sites.
 
 GNU/Linux, FreeBSD and other POSIX systems are strongly advised
 to use XULRunner for Pyjamas-Desktop: it is the most stable of the
@@ -118,9 +143,13 @@ http://wiki.github.com/lkcl/webkit/helping-with-16401master
 3) - MSHTML
 
 For Windows users, all that's required, other than installing python
-and Internet Explorer, is one further package: Win32 "comtypes".
+and Internet Explorer, is one further tiny package: Win32 "comtypes".
 
 Win32 "comtypes" can be downloaded here:
 * http://sourceforge.net/projects/comtypes/
 
+Unlike the other ports, which can comprise a whopping great bundle
+of anything up to 30mb in size, the MSHTML port literally requires
+nothing more than comtypes, thanks to the far-sighted design of the
+MSHTML Trident Engine and its extensive COM interface.
 
