@@ -28,6 +28,7 @@ sEventPreviewStack = []
 
 listeners = {}
 
+
 def get_listener(item):
     if item is None:
         return None
@@ -37,6 +38,7 @@ def get_listener(item):
         ret = listeners.get(hash(item))
     return ret
 
+
 def set_listener(item, listener):
     if hasattr(item, "__instance__"):
         listeners[item.__instance__] = listener
@@ -45,6 +47,7 @@ def set_listener(item, listener):
 
 # ugh, *spew*, *hurl* http://code.google.com/p/pyjamas/issues/detail?id=213
 hack_timer_workaround_bug_button = None
+
 
 def init():
 
@@ -59,11 +62,13 @@ def init():
     mf._addWindowEventListener("keydown", browser_event_cb)
     mf._addWindowEventListener("keypress", browser_event_cb)
 
+
 def _dispatchWindowEvent(sender, evt, useCap):
     pass
 
+
 def _dispatchEvent(sender, evt, useCap):
-    
+
     if evt is None:
         evt = wnd().event
     else:
@@ -73,8 +78,8 @@ def _dispatchEvent(sender, evt, useCap):
         except:
             pass
     listener = None
-    curElem =  sender
-    
+    curElem = sender
+
     #print "_dispatchEvent", sender, evt, evt.type
     cap = getCaptureElement()
     listener = get_listener(cap)
@@ -93,7 +98,8 @@ def _dispatchEvent(sender, evt, useCap):
     listener = get_listener(curElem)
     if listener:
         dispatchEvent(evt, curElem, listener)
-    
+
+
 def _dispatchCapturedMouseEvent(evt):
 
     if (_dispatchCapturedEvent(evt)):
@@ -103,6 +109,7 @@ def _dispatchCapturedMouseEvent(evt):
             dispatchEvent(evt, cap, listener)
             #print "dcmsev, stop propagation"
             evt.stopPropagation()
+
 
 def _dispatchCapturedMouseoutEvent(evt):
     cap = getCaptureElement()
@@ -118,7 +125,8 @@ def _dispatchCapturedMouseoutEvent(evt):
                 # this should be interesting...
                 lcEvent = doc().createEvent('UIEvent')
                 lcEvent.initUIEvent('losecapture', False, False, wnd(), 0)
-                dispatchEvent(lcEvent, cap, listener);
+                dispatchEvent(lcEvent, cap, listener)
+
 
 def browser_event_cb(view, event, from_window):
 
@@ -135,10 +143,12 @@ def browser_event_cb(view, event, from_window):
     elif et == 'mouseout':
         #print "mouse out", event
         return _dispatchCapturedMouseoutEvent(event)
-    elif et == 'keyup' or et == 'keydown' or et == 'keypress' or et == 'change':
+    elif (et == 'keyup' or et == 'keydown' or
+          et == 'keypress' or et == 'change'):
         return _dispatchCapturedEvent(event)
     else:
         return _dispatchCapturedMouseEvent(event)
+
 
 def _dispatchCapturedEvent(event):
 
@@ -153,9 +163,11 @@ def _dispatchCapturedEvent(event):
 def addEventPreview(preview):
     sEventPreviewStack.append(preview)
 
+
 def appendChild(parent, child):
     #print "appendChild", parent, child
     parent.appendChild(child)
+
 
 def buttonClick(element):
     evt = doc().createEvent('MouseEvents')
@@ -163,110 +175,144 @@ def buttonClick(element):
                         False, False, False, 0, element)
     element.dispatchEvent(evt)
 
+
 def compare(elem1, elem2):
     if hasattr(elem1, "isSameNode"):
         return elem1.isSameNode(elem2)
     return elem1 == elem2
 
+
 def createAnchor():
     return createElement("A")
+
 
 def createButton():
     return createElement("button")
 
+
 def createCol():
     return createElement("col")
+
 
 def createDiv():
     return createElement("div")
 
+
 def createElement(tag):
     return doc().createElement(tag)
+
 
 def createFieldSet():
     return createElement("fieldset")
 
+
 def createForm():
     return createElement("form")
+
 
 def createIFrame():
     return createElement("iframe")
 
+
 def createImg():
     return createElement("img")
+
 
 def createInputCheck():
     return createInputElement("checkbox")
 
+
 def createInputElement(elementType):
     e = createElement("INPUT")
-    e.type = elementType;
+    e.type = elementType
     return e
+
 
 def createInputPassword():
     return createInputElement("password")
+
 
 def createInputRadio(group):
     e = createInputElement('radio')
     e.name = group
     return e
 
+
 def createInputText():
     return createInputElement("text")
+
 
 def createLabel():
     return createElement("label")
 
+
 def createLegend():
     return createElement("legend")
+
 
 def createOptions():
     return createElement("options")
 
+
 def createSelect():
     return createElement("select")
+
 
 def createSpan():
     return createElement("span")
 
+
 def createTable():
     return createElement("table")
+
 
 def createTBody():
     return createElement("tbody")
 
+
 def createTD():
     return createElement("td")
+
 
 def createTextArea():
     return createElement("textarea")
 
+
 def createTH():
     return createElement("th")
+
 
 def createTR():
     return createElement("tr")
 
+
 def eventStopPropagation(evt):
     evt.stopPropagation()
+
 
 def eventCancelBubble(evt, cancel):
     evt.cancelBubble = cancel
 
+
 def eventGetAltKey(evt):
     return evt.altKey
+
 
 def eventGetButton(evt):
     return evt.button
 
+
 def eventGetClientX(evt):
     return evt.clientX
+
 
 def eventGetClientY(evt):
     return evt.clientY
 
+
 def eventGetCtrlKey(evt):
     return evt.ctrlKey
+
 
 def eventGetFromElement(evt):
     try:
@@ -274,26 +320,34 @@ def eventGetFromElement(evt):
     except:
         return None
 
+
 def eventGetKeyCode(evt):
     return evt.which or evt.keyCode or 0
+
 
 def eventGetRepeat(evt):
     return evt.repeat
 
+
 def eventGetScreenX(evt):
     return evt.screenX
+
 
 def eventGetScreenY(evt):
     return evt.screenY
 
+
 def eventGetShiftKey(evt):
     return evt.shiftKey
+
 
 def eventGetCurrentTarget(event):
     return event.currentTarget
 
+
 def eventGetTarget(event):
     return event.target
+
 
 def eventGetToElement(evt):
     type = eventGetType(evt)
@@ -302,6 +356,7 @@ def eventGetToElement(evt):
     elif type == 'mouseover':
         return evt.target
     return None
+
 
 def eventGetType(event):
     return event.type
@@ -327,23 +382,30 @@ eventmap = {
       "contextmenu": 0x20000,
       }
 
+
 def eventGetTypeInt(event):
     return eventmap.get(str(event.type), 0)
+
 
 def eventGetTypeString(event):
     return eventGetType(event)
 
+
 def eventPreventDefault(evt):
     evt.preventDefault()
+
 
 def eventSetKeyCode(evt, key):
     evt.keyCode = key
 
+
 def eventToString(evt):
     return evt.toString()
 
+
 def iframeGetSrc(elem):
     return elem.src
+
 
 def getAbsoluteLeft(elem):
     left = 0
@@ -353,10 +415,11 @@ def getAbsoluteLeft(elem):
         curr = curr.parentNode
 
     while elem:
-        left += elem.offsetLeft - elem.scrollLeft;
-        elem = elem.offsetParent;
-    
+        left += elem.offsetLeft - elem.scrollLeft
+        elem = elem.offsetParent
+
     return left
+
 
 def getAbsoluteTop(elem):
     top = 0
@@ -366,14 +429,16 @@ def getAbsoluteTop(elem):
         curr = curr.parentNode
 
     while elem:
-        top += elem.offsetTop - elem.scrollTop;
-        elem = elem.offsetParent;
-    
-    return top 
+        top += elem.offsetTop - elem.scrollTop
+        elem = elem.offsetParent
+
+    return top
+
 
 def getAttribute(elem, attr):
     mf = get_main_frame()
     return str(getattr(elem, attr))
+
 
 def getElemAttribute(elem, attr):
     mf = get_main_frame()
@@ -381,17 +446,21 @@ def getElemAttribute(elem, attr):
         return str(getattr(elem, mf.mash_attrib(attr)))
     return str(elem.getAttribute(attr))
 
+
 def getBooleanAttribute(elem, attr):
     mf = get_main_frame()
     return bool(getattr(elem, mf.mash_attrib(attr)))
+
 
 def getBooleanElemAttribute(elem, attr):
     if not elem.hasAttribute(attr):
         return None
     return bool(elem.getAttribute(attr))
 
+
 def getCaptureElement():
     return sCaptureElem
+
 
 def getChild(elem, index):
     """
@@ -400,13 +469,14 @@ def getChild(elem, index):
     count = 0
     child = elem.firstChild
     while child:
-        next = child.nextSibling;
+        next = child.nextSibling
         if child.nodeType == 1:
             if index == count:
-              return child;
+                return child
             count += 1
         child = next
     return None
+
 
 def getChildCount(elem):
     """
@@ -414,21 +484,22 @@ def getChildCount(elem):
     over all the children of that element and counts them.
     """
     count = 0
-    child = elem.firstChild;
+    child = elem.firstChild
     while child:
-      if child.nodeType == 1:
-          count += 1
-      child = child.nextSibling;
-    return count;
+        if child.nodeType == 1:
+            count += 1
+        child = child.nextSibling
+    return count
+
 
 def getChildIndex(parent, toFind):
     """
     Return the index of the given child in the given parent.
-    
+
     This performs a linear search.
     """
     count = 0
-    child = parent.firstChild;
+    child = parent.firstChild
     while child:
         if child == toFind:
             return count
@@ -436,13 +507,15 @@ def getChildIndex(parent, toFind):
             count += 1
         child = child.nextSibling
 
-    return -1;
+    return -1
+
 
 def getElementById(id):
     """
     Return the element in the document's DOM tree with the given id.
     """
     return doc().getElementById(id)
+
 
 def getEventListener(element):
     """
@@ -452,6 +525,7 @@ def getEventListener(element):
 
 eventbitsmap = {}
 
+
 def getEventsSunk(element):
     """
     Return which events are currently "sunk" for a given DOM node.  See
@@ -459,11 +533,13 @@ def getEventsSunk(element):
     """
     return eventbitsmap.get(element, 0)
 
+
 def getFirstChild(elem):
     child = elem and elem.firstChild
     while child and child.nodeType != 1:
         child = child.nextSibling
     return child
+
 
 def getInnerHTML(element):
     try:
@@ -471,30 +547,35 @@ def getInnerHTML(element):
     except:
         return element and element.innerHTML # hulahop / xul.  yuk.
 
+
 def getInnerText(element):
     # To mimic IE's 'innerText' property in the W3C DOM, we need to recursively
     # concatenate all child text nodes (depth first).
     text = ''
-    child = element.firstChild;
+    child = element.firstChild
     while child:
-      if child.nodeType == 1:
-        text += child.getInnerText()
-      elif child.nodeValue:
-        text += child.nodeValue
-      child = child.nextSibling
+        if child.nodeType == 1:
+            text += child.getInnerText()
+        elif child.nodeValue:
+            text += child.nodeValue
+        child = child.nextSibling
     return text
+
 
 def getIntAttribute(elem, attr):
     mf = get_main_frame()
     return int(getattr(elem, attr))
+
 
 def getIntElemAttribute(elem, attr):
     if not elem.hasAttribute(attr):
         return None
     return int(elem.getAttribute(attr))
 
+
 def getIntStyleAttribute(elem, attr):
     return getIntAttribute(elem.style, attr)
+
 
 def getNextSibling(elem):
     sib = elem.nextSibling
@@ -502,16 +583,19 @@ def getNextSibling(elem):
         sib = sib.nextSibling
     return sib
 
+
 def getNodeType(elem):
-    return elem.nodeType 
+    return elem.nodeType
+
 
 def getParent(elem):
-    parent = elem.parentNode 
+    parent = elem.parentNode
     if parent is None:
         return None
     if getNodeType(parent) != 1:
         return None
-    return parent 
+    return parent
+
 
 def getStyleAttribute(elem, attr):
     try:
@@ -521,16 +605,17 @@ def getStyleAttribute(elem, attr):
     except:
         return None
 
+
 def insertChild(parent, toAdd, index):
     count = 0
     child = parent.firstChild
-    before = None;
+    before = None
     while child:
         if child.nodeType == 1:
             if (count == index):
-                before = child;
+                before = child
                 break
-            
+
             count += 1
         child = child.nextSibling
 
@@ -539,21 +624,27 @@ def insertChild(parent, toAdd, index):
     else:
         parent.insertBefore(toAdd, before)
 
+
 class IterChildrenClass:
+
     def __init__(self, elem):
         self.parent = elem
         self.child = elem.firstChild
         self.lastChild = None
-    def next (self):
+
+    def next(self):
         if not self.child:
             raise StopIteration
-        self.lastChild = self.child;
+        self.lastChild = self.child
         self.child = getNextSibling(self.child)
         return self.lastChild
+
     def remove(self):
-        self.parent.removeChild(self.lastChild);
+        self.parent.removeChild(self.lastChild)
+
     def __iter__(self):
         return self
+
 
 def iterChildren(elem):
     """
@@ -561,6 +652,7 @@ def iterChildren(elem):
     DOM node.
     """
     return IterChildrenClass(elem)
+
 
 class IterWalkChildren:
 
@@ -578,7 +670,7 @@ class IterWalkChildren:
         nextSibling = getNextSibling(self.child)
         if firstChild is not None:
             if nextSibling is not None:
-               self.stack.append((nextSibling, self.parent))
+                self.stack.append((nextSibling, self.parent))
             self.parent = self.child
             self.child = firstChild
         elif nextSibling is not None:
@@ -595,6 +687,7 @@ class IterWalkChildren:
     def __iter__(self):
         return self
 
+
 def walkChildren(elem):
     """
     Walk an entire subtree of the DOM.  This returns an
@@ -603,16 +696,18 @@ def walkChildren(elem):
     """
     return IterWalkChildren(elem)
 
+
 def isOrHasChild(parent, child):
     while child:
         if compare(parent, child):
             return True
-        child = child.parentNode;
+        child = child.parentNode
         if not child:
             return False
         if child.nodeType != 1:
             child = None
     return False
+
 
 def releaseCapture(elem):
     global sCaptureElem
@@ -620,27 +715,33 @@ def releaseCapture(elem):
         sCaptureElem = None
     return
 
+
 def removeChild(parent, child):
     parent.removeChild(child)
+
 
 def replaceChild(parent, newChild, oldChild):
     parent.replaceChild(newChild, oldChild)
 
+
 def removeEventPreview(preview):
     sEventPreviewStack.remove(preview)
+
 
 def getOffsetHeight(elem):
     return elem.offsetHeight
 
+
 def getOffsetWidth(elem):
     return elem.offsetWidth
+
 
 def scrollIntoView(elem):
     left = elem.offsetLeft
     top = elem.offsetTop
     width = elem.offsetWidth
     height = elem.offsetHeight
-    
+
     if elem.parentNode != elem.offsetParent:
         left -= elem.parentNode.offsetLeft
         top -= elem.parentNode.offsetTop
@@ -660,7 +761,7 @@ def scrollIntoView(elem):
 
         offsetLeft = cur.offsetLeft
         offsetTop = cur.offsetTop
-        if cur.parentNode != cur.offsetParent :
+        if cur.parentNode != cur.offsetParent:
             if hasattr(cur.parentNode, "offsetLeft"):
                 offsetLeft -= cur.parentNode.offsetLeft
             if hasattr(cur.parentNode, "offsetTop"):
@@ -669,6 +770,7 @@ def scrollIntoView(elem):
         left += offsetLeft - cur.scrollLeft
         top += offsetTop - cur.scrollTop
         cur = cur.parentNode
+
 
 def mash_name_for_glib(name, joiner='-'):
     res = ''
@@ -679,23 +781,29 @@ def mash_name_for_glib(name, joiner='-'):
             res += c
     return res
 
+
 def removeAttribute(element, attribute):
     elem.removeAttribute(attribute)
+
 
 def setAttribute(element, attribute, value):
     setattr(element, attribute, value)
 
+
 def setElemAttribute(element, attribute, value):
     element.setAttribute(attribute, value)
+
 
 def setBooleanAttribute(elem, attr, value):
     mf = get_main_frame()
     setattr(elem, mf.mash_attrib(attr), value)
 
+
 def setCapture(elem):
     global sCaptureElem
     sCaptureElem = elem
     #print "setCapture", sCaptureElem
+
 
 def setEventListener(element, listener):
     """
@@ -706,11 +814,13 @@ def setEventListener(element, listener):
     """
     set_listener(element, listener)
 
+
 def setInnerHTML(element, html):
     try:
         element.innerHtml = html # webkit. yuk.
     except:
         element.innerHTML = html # hulahop / xul.  yukk.
+
 
 def setInnerText(elem, text):
     #Remove all children first.
@@ -718,11 +828,14 @@ def setInnerText(elem, text):
         elem.removeChild(elem.firstChild)
     elem.appendChild(doc().createTextNode(text or ''))
 
+
 def setIntElemAttribute(elem, attr, value):
     elem.setAttribute(attr, str(value))
 
+
 def setIntAttribute(elem, attr, value):
     setattr(elem, attr, int(value))
+
 
 def setIntStyleAttribute(elem, attr, value):
     mf = get_main_frame()
@@ -731,9 +844,11 @@ def setIntStyleAttribute(elem, attr, value):
     else:
         elem.style.setAttribute(mf.mash_attrib(attr), str(value), "")
 
+
 def setOptionText(select, text, index):
     option = select.options.item(index)
     option.textContent = text
+
 
 def setStyleAttribute(element, name, value):
     if hasattr(element.style, 'setProperty'):
@@ -741,11 +856,12 @@ def setStyleAttribute(element, name, value):
     else:
         element.style.setAttribute(name, value, "")
 
+
 def sinkEvents(element, bits):
     """
     Set which events should be captured on a given element and passed to the
     registered listener.  To set the listener, use setEventListener().
-    
+
     @param bits: A combination of bits; see ui.Event for bit values
     """
     mask = getEventsSunk(element) ^ bits
@@ -756,7 +872,7 @@ def sinkEvents(element, bits):
     bits = mask
 
     if not bits:
-        return 
+        return
     #cb = lambda x,y,z: _dispatchEvent(y)
     cb = _dispatchEvent
     mf = get_main_frame()
@@ -797,6 +913,7 @@ def sinkEvents(element, bits):
     if (bits & 0x20000):
         mf.addEventListener(element, "contextmenu", cb)
 
+
 def toString(elem):
     temp = elem.cloneNode(True)
     tempDiv = createDiv()
@@ -805,29 +922,34 @@ def toString(elem):
     setInnerHTML(temp, "")
     return outer
 
+
 # TODO: missing dispatchEventAndCatch
 def dispatchEvent(event, element, listener):
     dispatchEventImpl(event, element, listener)
+
 
 def previewEvent(evt):
     ret = True
     #print sEventPreviewStack
     if len(sEventPreviewStack) > 0:
         preview = sEventPreviewStack[len(sEventPreviewStack) - 1]
-        
+
         ret = preview.onEventPreview(evt)
         if not ret:
+
             #print "previewEvent, cancel, prevent default"
             eventCancelBubble(evt, True)
             eventPreventDefault(evt)
 
     return ret
 
+
 # TODO
 def dispatchEventAndCatch(evt, elem, listener, handler):
     pass
 
 currentEvent = None
+
 
 def dispatchEventImpl(event, element, listener):
     global sCaptureElem
@@ -841,8 +963,10 @@ def dispatchEventImpl(event, element, listener):
     listener.onBrowserEvent(event)
     currentEvent = prevCurrentEvent
 
+
 def eventGetCurrentEvent():
     return currentEvent
+
 
 def insertListItem(select, item, value, index):
     option = createElement("OPTION")
@@ -854,8 +978,10 @@ def insertListItem(select, item, value, index):
     else:
         insertChild(select, option, index)
 
+
 def getBodyOffsetTop():
     return 0
+
 
 def getBodyOffsetLeft():
     return 0
@@ -863,5 +989,3 @@ def getBodyOffsetLeft():
 
 if sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
     init()
-
-
