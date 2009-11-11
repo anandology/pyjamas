@@ -54,12 +54,11 @@ def get(id=None):
     return panel
 
 class RootPanelCls(AbsolutePanel):
-    def __init__(self, Element=None):
-        AbsolutePanel.__init__(self)
+    def __init__(self, Element=None, **kwargs):
         if Element is None:
             Element = self.getBodyElement()
-
-        self.setElement(Element)
+        kwargs['Element'] = Element
+        AbsolutePanel.__init__(self, **kwargs)
         self.onAttach()
 
     def getBodyElement(self):

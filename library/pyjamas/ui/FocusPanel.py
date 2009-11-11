@@ -32,12 +32,10 @@ class FocusPanel(SimplePanel, FocusHandler, KeyboardHandler,
         """ pass in Widget={the widget} so that Applier will call setWidget.  
         """
 
+        SimplePanel.__init__(self, Focus.createFocusable(), **kwargs)
         FocusHandler.__init__(self)
         KeyboardHandler.__init__(self)
         ClickHandler.__init__(self)
         MouseHandler.__init__(self)
 
-        SimplePanel.__init__(self, Focus.createFocusable(), **kwargs)
-
 Factory.registerClass('pyjamas.ui.FocusPanel', FocusPanel)
-
