@@ -3,7 +3,7 @@
 """ simple creation of three commands, customised for your specific system.
     windows users get a corresponding batch file.  yippeeyaiyay.
 """
-version = '0.7~pre1'
+version = '0.7~pre1+'
 
 import os
 import sys
@@ -85,7 +85,7 @@ shift
 goto setArgs
 :doneSetArgs
 
-python %s %%CMD_LINE_ARGS%%
+python "%s.py" %%CMD_LINE_ARGS%%
 '''
 
 def make_cmd(prefix, pth, pyjsversion, pyjspth, cmdname, txt):
@@ -103,6 +103,9 @@ def make_cmd(prefix, pth, pyjsversion, pyjspth, cmdname, txt):
     cmd = os.path.join(prefix, cmd)
 
     if os.path.exists(cmd):
+        if     sys.platform == 'win32' \
+           and hasattr(os, "chmod"):
+            os.chmod(cmd, 0755)
         os.unlink(cmd)
     f = open(cmd, "w")
     f.write(txt % {'exec': sys.executable, 
@@ -115,12 +118,12 @@ def make_cmd(prefix, pth, pyjsversion, pyjspth, cmdname, txt):
         os.chmod(cmd, 0555)
 
     if sys.platform == 'win32':
-
         cmd = os.path.join("bin", cmdname)
         cmd = os.path.join(prefix, cmd)
+        cmd = os.path.abspath(cmd)
         batcmd = "%s.bat" % cmd
         f = open(batcmd, "w")
-        f.write(batcmdtxt % cmd_name)
+        f.write(batcmdtxt % cmd)
         f.close()
 
 if __name__ == '__main__':
