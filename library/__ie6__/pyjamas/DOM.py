@@ -105,8 +105,10 @@ def getAbsoluteTop(elem):
     var zoomMultiple = $doc.body.parentElement.offsetWidth / 
                        $doc.body.offsetWidth;
     try {
+        var scrollTop = $doc.parent ? $doc.parent.body.scrollTop : 0;
+        scrollTop += $doc.body.scrollTop;
         return Math.floor((elem.getBoundingClientRect().top / zoomMultiple) +
-                            $doc.body.parentElement.scrollTop );
+                            scrollTop);
     } catch (e) {
         return 0;
     }
