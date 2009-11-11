@@ -1,4 +1,4 @@
-# Copyright 2009 Daniel Carvalho <idnael@gmail.com>
+# Copyright (C) 2009 Daniel Carvalho <idnael@gmail.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,13 +13,13 @@
 # limitations under the License.
 from __pyjamas__ import JS
 
-from Utils import dictToJs,createListenerMethods
+from Utils import dictToJs, createListenerMethods
 
 ### GOOGLE MAPS WRAPPERS ###
-MapTypeId               = JS("$wnd.google.maps.MapTypeId")
-MapTypeControlStyle     = JS("$wnd.google.maps.MapTypeControlStyle")
-NavigationControlStyle  = JS("$wnd.google.maps.NavigationControlStyle")
-ScaleControlStyle       = JS("$wnd.google.maps.ScaleControlStyle")
+MapTypeId = JS("$wnd.google.maps.MapTypeId")
+MapTypeControlStyle = JS("$wnd.google.maps.MapTypeControlStyle")
+NavigationControlStyle = JS("$wnd.google.maps.NavigationControlStyle")
+ScaleControlStyle = JS("$wnd.google.maps.ScaleControlStyle")
 
 def MapOptions(**params):
     return dictToJs(params)
@@ -35,7 +35,7 @@ def ScaleControlOptions(**params):
 
 def Map(el, options):
    if options:
-       map = JS("""new $wnd.google.maps.Map(el,options);""")
+       map = JS("""new $wnd.google.maps.Map(el, options);""")
    else:
        map = JS("""new $wnd.google.maps.Map(el);""")
 

@@ -1,4 +1,4 @@
-# Copyright 2009 Daniel Carvalho <idnael@gmail.com>
+# Copyright (C) 2009 Daniel Carvalho <idnael@gmail.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ def toJSON(jsarray):
 
 def gmapsJsObjectToPy(obj, fieldName, fields):
     JS("""
-    //console.log("gmapsJsObjectToPy2 "+fieldName)
+    //console.log("gmapsJsObjectToPy2 " + fieldName)
 
     if (! (fieldName in fields)) 
     {
@@ -30,25 +30,25 @@ def gmapsJsObjectToPy(obj, fieldName, fields):
       return obj;
     }
     else{
-        action=fields[fieldName]
-        //console.log("action="+action)
+        action = fields[fieldName]
+        //console.log("action=" + action)
 
-        if (action=='d')
+        if (action == 'd')
         {
           //console.log("eh dict")
-          var newobj=pyjslib({})
+          var newobj = pyjslib({})
           for (var i in obj)
              // vai ficar disponivel como uma propriedade, no python!
-             newobj[i]=Utils.gmapsJsObjectToPy(obj[i], i,fields );
+             newobj[i] = Utils.gmapsJsObjectToPy(obj[i], i, fields );
           return newobj
 
         }
-        else if (action=='l')
+        else if (action == 'l')
         {
           //console.log("eh list")
-          var newobj=pyjslib.List([])
+          var newobj = pyjslib.List([])
           for (var i in obj)
-             newobj.append(Utils.gmapsJsObjectToPy(obj[i],fieldName+"[]",fields ));
+             newobj.append(Utils.gmapsJsObjectToPy(obj[i], fieldName + "[]", fields ));
           return newobj
         }
         else
@@ -62,7 +62,7 @@ def gmapsJsObjectToPy(obj, fieldName, fields):
 
 #def gmapsJsObjectToPy(obj, fieldName, listFields, dictFields):
 #    JS("""
-#    //console.log("gmapsJsObjectToPy "+fieldName)
+#    //console.log("gmapsJsObjectToPy " + fieldName)
 #    if (dictFields.indexOf(fieldName)!=-1) 
 #    {
 #      //console.log("eh dict")
@@ -78,7 +78,7 @@ def gmapsJsObjectToPy(obj, fieldName, fields):
 #      //console.log("eh list")
 #      var newobj=pyjslib.List([])
 #      for (var i in obj)
-#         newobj.append(Utils.gmapsJsObjectToPy(obj[i],fieldName+"[]",listFields, dictFields ));
+#         newobj.append(Utils.gmapsJsObjectToPy(obj[i],fieldName + "[]",listFields, dictFields ));
 #      return newobj
 #    }
 #    else
@@ -103,11 +103,11 @@ def dictToJs(dict):
     #   gives always True... so I don't know how to detect if dict is defined or not...
     #   but print dict gives undefined...
 
-    obj=JS("{}")
+    obj = JS("{}")
     try:
         for key in dict: 
-            value=dict[key]
-            JS("obj[key]=value")
+            value = dict[key]
+            JS("obj[key] = value")
     except:
         pass
 
@@ -125,20 +125,20 @@ def createListenerMethods(obj):
 
    #obj.dumpListeners = __dumpListeners # para debug
 
-   obj.__listeners={} #__ !
+   obj.__listeners = {} #__ !
     
 def __dumpListeners():
-    self=JS("this")
+    self = JS("this")
     print "DUMP"
     for eventName in self.__listeners:
-        print "  "+eventName
+        print "  " + eventName
         for list in self.__listeners[eventName]:
-            print "    "+str(list)
+            print "    " + str(list)
 
-def __addListener(eventName,callback):
-    self=JS("this")
+def __addListener(eventName, callback):
+    self = JS("this")
 
-    list=JS("""
+    list = JS("""
        $wnd.google.maps.event.addListener(this, eventName, function(event) {
          callback(event);
        });
@@ -147,12 +147,12 @@ def __addListener(eventName,callback):
     if eventName in self.__listeners:
         self.__listeners[eventName].append(list)
     else:
-        self.__listeners[eventName]=[list]
+        self.__listeners[eventName] = [list]
 
     return list
 
 def __removeListener(list):
-    self=JS("this")
+    self = JS("this")
 
     for eventName in self.__listeners:
         if list in self.__listeners[eventName]:
@@ -162,14 +162,14 @@ def __removeListener(list):
     # nothing to remove, the listener specified doesn't exist or does not belong to this object
 
 def __clearListeners(eventName):
-    self=JS("this")
+    self = JS("this")
 
-    JS("""$wnd.google.maps.event.clearListeners(this,eventName);""")
+    JS("""$wnd.google.maps.event.clearListeners(this, eventName);""")
     if eventName in self.__listeners:
         del self.__listeners[eventName]
 
 def __clearInstanceListeners():
-    self=JS("this")
+    self = JS("this")
 
     JS("""$wnd.google.maps.event.clearInstanceListeners(this);""")
-    self.__listeners={}
+    self.__listeners = {}

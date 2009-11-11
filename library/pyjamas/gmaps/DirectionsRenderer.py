@@ -1,4 +1,4 @@
-# Copyright 2009 Daniel Carvalho <idnael@gmail.com>
+# Copyright (C) 2009 Daniel Carvalho <idnael@gmail.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,17 +16,17 @@ from __pyjamas__ import JS
 from Utils import dictToJs
 
 class DirectionsRenderer:
-    def __init__(self,options):
+    def __init__(self, options):
         if options:
-            self.renderer=JS("""new $wnd.google.maps.DirectionsRenderer(options);""")
+            self.renderer = JS("""new $wnd.google.maps.DirectionsRenderer(options);""")
         else:
-            self.renderer=JS("""new $wnd.google.maps.DirectionsRenderer();""")
+            self.renderer = JS("""new $wnd.google.maps.DirectionsRenderer();""")
 
-    def setDirections(self,results):
+    def setDirections(self, results):
         self.renderer.setDirections(results.__jsResults)
         #self.renderer.setDirections(results)
 
-    def setMap(self,map):
+    def setMap(self, map):
         self.renderer.setMap(map)
 
     # TODO! faltam os outros metodos!!

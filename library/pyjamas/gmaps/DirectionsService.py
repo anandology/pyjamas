@@ -1,4 +1,4 @@
-# Copyright 2009 Daniel Carvalho <idnael@gmail.com>
+# Copyright (C) 2009 Daniel Carvalho <idnael@gmail.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,9 +13,9 @@
 # limitations under the License.
 from __pyjamas__ import JS
 
-DirectionsStatus       = JS("$wnd.google.maps.DirectionsStatus")
-DirectionsTravelMode    = JS("$wnd.google.maps.DirectionsTravelMode")
-DirectionsUnitSystem    = JS("$wnd.google.maps.DirectionsUnitSystem")
+DirectionsStatus = JS("$wnd.google.maps.DirectionsStatus")
+DirectionsTravelMode = JS("$wnd.google.maps.DirectionsTravelMode")
+DirectionsUnitSystem = JS("$wnd.google.maps.DirectionsUnitSystem")
 
 from pyjamas.gmaps.Utils import gmapsJsObjectToPy
 from Utils import dictToJs
@@ -31,18 +31,18 @@ from Geocoder import geocoderResultToPy
        
 
 
-directionsResultsFields=dictToJs({
-        "trips":'l' ,"warnings":'l' ,"routes":'l' ,"steps":'l' , 
-        "results":'d' ,"trips[]":'d' ,"routes[]":'d' ,"steps[]":'d' ,
+directionsResultsFields = dictToJs({
+        "trips":'l' , "warnings":'l' , "routes":'l' , "steps":'l' , 
+        "results":'d' , "trips[]":'d' , "routes[]":'d' , "steps[]":'d' , 
 
-        "start_geocode":geocoderResultToPy ,"end_geocode":geocoderResultToPy , 
+        "start_geocode":geocoderResultToPy , "end_geocode":geocoderResultToPy , 
         })
 
 def directionsResultsToPy(jsResults):
-    results= gmapsJsObjectToPy(jsResults,"results",directionsResultsFields)
+    results = gmapsJsObjectToPy(jsResults, "results", directionsResultsFields)
 
     # DirectionsRenderer will need this!
-    results.__jsResults=jsResults
+    results.__jsResults = jsResults
 
     return results
     
@@ -50,10 +50,10 @@ def directionsResultsToPy(jsResults):
 
 class DirectionsService:
     def __init__(self):
-        self.ds=JS("""new $wnd.google.maps.DirectionsService();""")
+        self.ds = JS("""new $wnd.google.maps.DirectionsService();""")
 
-    def route(self,request,callback):
-        self.ds.route(request,lambda jsResults,status: callback(directionsResultsToPy(jsResults),status))
+    def route(self, request, callback):
+        self.ds.route(request, lambda jsResults, status: callback(directionsResultsToPy(jsResults), status))
         
 
 def DirectionsRequest(**params):

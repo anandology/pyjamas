@@ -1,4 +1,4 @@
-# Copyright 2009 Daniel Carvalho <idnael@gmail.com>
+# Copyright (C) 2009 Daniel Carvalho <idnael@gmail.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
 # limitations under the License.
 from __pyjamas__ import JS
 
-from Utils import dictToJs,createListenerMethods
+from Utils import dictToJs, createListenerMethods
 
 def Marker(options):
       marker = JS("""new $wnd.google.maps.Marker(options)""")
@@ -25,8 +25,8 @@ def Marker(options):
 def MarkerOptions(**params):
       return dictToJs(params)
 
-def MarkerImage(url,size,origin,anchor):
-      markerImage = JS("""new $wnd.google.maps.MarkerImage(url,size,origin,anchor)""")
+def MarkerImage(url, size, origin, anchor):
+      markerImage = JS("""new $wnd.google.maps.MarkerImage(url, size, origin, anchor)""")
 
       createListenerMethods(marker)
 

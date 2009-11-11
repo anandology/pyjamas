@@ -1,4 +1,4 @@
-# Copyright 2009 Daniel Carvalho <idnael@gmail.com>
+# Copyright (C) 2009 Daniel Carvalho <idnael@gmail.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@ from pyjamas.gmaps.Utils import gmapsJsObjectToPy, dictToJs
 
 from pyjamas.JSONParser import JSONParser
 
-GeocoderStatus       = JS("$wnd.google.maps.GeocoderStatus")
+GeocoderStatus = JS("$wnd.google.maps.GeocoderStatus")
 GeocoderLocationType = JS("$wnd.google.maps.GeocoderLocationType")
 
 
@@ -29,22 +29,22 @@ GeocoderLocationType = JS("$wnd.google.maps.GeocoderLocationType")
 
 
 
-geocoderResultsFields=dictToJs({"results":'l', "types":'l', "address_components":'l',
+geocoderResultsFields = dictToJs({"results":'l', "types":'l', "address_components":'l',
                                 "results[]":'d', "address_components[]":'d', "geometry":'d',
                                 "result":'d'})
 
 def geocoderResultToPy(jsResult):
-    return gmapsJsObjectToPy(jsResult,"result",geocoderResultsFields)
+    return gmapsJsObjectToPy(jsResult, "result", geocoderResultsFields)
 
 def geocoderResultsToPy(jsResults):
-    return gmapsJsObjectToPy(jsResults,"results",geocoderResultsFields)
+    return gmapsJsObjectToPy(jsResults, "results", geocoderResultsFields)
 
 class Geocoder:
     def __init__(self):
-        self.geocoder=JS("new $wnd.google.maps.Geocoder();")
+        self.geocoder = JS("new $wnd.google.maps.Geocoder();")
 
-    def geocode(self,request, callback):
-        self.geocoder.geocode(request,lambda jsResults,status: callback(geocoderResultsToPy(jsResults),status))
+    def geocode(self, request, callback):
+        self.geocoder.geocode(request, lambda jsResults, status: callback(geocoderResultsToPy(jsResults), status))
     
 
 def GeocoderRequest(**params):

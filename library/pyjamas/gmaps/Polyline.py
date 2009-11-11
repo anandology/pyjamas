@@ -1,4 +1,4 @@
-# Copyright 2009 Daniel Carvalho <idnael@gmail.com>
+# Copyright (C) 2009 Daniel Carvalho <idnael@gmail.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,8 +13,8 @@
 # limitations under the License.
 from __pyjamas__ import JS
 
-def Polyline(points,color,width):
-    JS("return new $wnd.google.maps.Polyline(points,color,width);")
+def Polyline(points, color, width):
+    JS("return new $wnd.google.maps.Polyline(points, color, width);")
 
 def PolylineOptions():
     JS("return {};")
