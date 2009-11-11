@@ -1,12 +1,8 @@
 #!/bin/bash
 
-./build.sh
-
-./pyv8test.sh --strict | grep 'failed'
-python2.5 LibTest.py
+./compile_only.py
 
 BULK=output/some_in_one.js
-
 cat output/lib/*.js > $BULK
 
 python -c "
