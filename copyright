@@ -175,6 +175,15 @@ License: Apache
 Copyright: 2009, Luke Kenneth Casson Leighton <lkcl@lkcl.net>
 Copyright: 2009, Phil Hands <phil@hands.com>
 
+Files: library/pyjamas/gmaps/*
+Copyright: 2009, Daniel Carvalho <idnael@gmail.com>
+License: Apache
+
+Files: examples/gmaps/*
+Copyright: 2009, Daniel Carvalho <idnael@gmail.com>
+License: Apache
+
+
 License: PSF
     http://www.python.org/psf/license/
     http://www.python.org/download/releases/2.6.2/license/
