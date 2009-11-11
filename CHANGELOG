@@ -1,6 +1,8 @@
                     Changes made to Pyjamas since 0.6
                     ---------------------------------
 
+ * Added str.isalpha and str.isupper, thanks to Marcus Brinkmann
+
  * Modified bootstrap.py: place absolute path in pyjsbuild.bat file to
    reference python.exe direct (thanks to Rich Newpol) closes #324
 
