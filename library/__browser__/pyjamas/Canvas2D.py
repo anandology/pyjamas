@@ -7,7 +7,7 @@ class Canvas(Widget):
 
     def init(self):
         JS("""
-        var el = this.getElement().firstChild;
+        var el = this.canvas;
         if (typeof $wnd.G_vmlCanvasManager != "undefined") {
             var parent = el.parent;
             
