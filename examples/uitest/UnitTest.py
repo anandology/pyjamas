@@ -62,6 +62,10 @@ class GetTestOutput:
         self.unittest.assertTrue(ok)
         self.unittest.tests_outstanding -= 1
 
+        # clear the test HTML
+        e1.innerHTML = ''
+        e2.innerHTML = ''
+
 
     def onError(self, responseText, status):
         self.unittest.async_test_name = self.test_name
