@@ -28,6 +28,10 @@ class Grid(HTMLTable):
         if rows > 0 or columns > 0:
             self.resize(rows, columns)
 
+    def removeRow(self, row):
+        HTMLTable.removeRow(self, row)
+        self.numRows -= 1
+
     def resize(self, rows, columns):
         self.resizeColumns(columns)
         self.resizeRows(rows)
