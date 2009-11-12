@@ -162,6 +162,8 @@ class UnitTest:
         if self.tests_outstanding is None:
             return
         if self.tests_outstanding == 0:
+            if hasattr(self, 'lastTestsCheck'):
+                self.lastTestsCheck()
             self.displayStats()
             self.start_next_test()
             return

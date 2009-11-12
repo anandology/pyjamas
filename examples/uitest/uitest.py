@@ -8,6 +8,7 @@ from UnitTest import IN_BROWSER, IN_JS, IN_BROWSER
 
 from LabelTest import LabelTest
 from DOMTest import DOMTest
+from EventTest import EventTest
 
 import write
 import sys
@@ -51,6 +52,7 @@ def main(test_gen_out):
     pyjd.setup("public/uitest.html")
     t = RunTests(test_gen_out)
     t.add(LabelTest)
+    t.add(EventTest)
     t.add(DOMTest)
     pyjd.run()
 
