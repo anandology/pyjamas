@@ -9,6 +9,7 @@ from pyjamas import DOM
 from pyjamas.Timer import Timer
 
 from pyjamas.HTTPRequest import HTTPRequest
+from pyjamas.ui.RootPanel import RootPanel
 
 class GetTestOutput:
 
@@ -21,8 +22,46 @@ class GetTestOutput:
         # TODO - cope with unicode / utf-8 test results
         print "onCompletion", self.unittest.tests_outstanding, self.test_name
         self.unittest.async_test_name = self.test_name
-        self.unittest.assertEqual(responseText, str(self.output))
+        e1 = DOM.getElementById('testcompare1')
+        e2 = DOM.getElementById('testcompare2')
+        e1.innerHTML = responseText
+        e2.innerHTML = responseText
+        i1 = DOM.walkChildren(e1)
+        i2 = DOM.walkChildren(e2)
+        ok = True
+        while ok:
+            try:
+                ec1 = i1.next()
+                ec2 = i2.next()
+            except StopIteration:
+                break
+            ok = ok and (ec1.nodeType == ec2.nodeType)
+            if not ok:
+                break
+            print ec1.nodeName, ec1.nodeValue
+            ok = ok and (ec1.nodeName == ec2.nodeName)
+            ok = ok and (ec1.nodeValue == ec2.nodeValue)
+            if not ok:
+                break
+            if hasattr(ec1, 'getInnerText') and hasattr(ec2, 'getInnerText'):
+                print ec1.getInnerText()
+                ok = ok and (ec1.getInnerText() == ec2.getInnerText())
+            if not ok:
+                break
+            if hasattr(ec1, 'attributes') and hasattr(ec2, 'attributes'):
+                a1 = ec1.attributes
+                a2 = ec2.attributes
+                ok = ok and (a1.length == a2.length)
+                if not ok:
+                    break
+                for i in range(a1.length):
+                    ai1 = a1.item(i)
+                    ai2 = a2.item(i)
+                    ok = ok and (ai1.nodeValue == ai2.nodeValue)
+                    ok = ok and (ai1.nodeName == ai2.nodeName)
+        self.unittest.assertTrue(ok)
         self.unittest.tests_outstanding -= 1
+
 
     def onError(self, responseText, status):
         self.unittest.async_test_name = self.test_name
@@ -109,7 +148,7 @@ class UnitTest:
             self.check_start_next_test()
             return
 
-        for i in range(10):
+        for i in range(1):
             if self.test_idx >= len(self.test_methods):
                 self.test_idx = 'DONE'
                 self.check_start_next_test()

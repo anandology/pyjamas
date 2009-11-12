@@ -7,6 +7,7 @@ from __pyjamas__ import doc
 from UnitTest import IN_BROWSER, IN_JS, IN_BROWSER
 
 from LabelTest import LabelTest
+from DOMTest import DOMTest
 
 import write
 import sys
@@ -26,8 +27,9 @@ class RunTests:
         self.start_test()
 
     def start_test(self):
+        print self.test_idx
         if self.test_idx >= len(self.testlist):
-            print "num tests outstanding", self.current_test.tests_outstanding
+            print "num tests outstanding", self.current_test.__class__.__name__, self.current_test.tests_outstanding
             if self.current_test.tests_outstanding > 0:
                 Timer(100, self)
                 return
@@ -49,6 +51,7 @@ def main(test_gen_out):
     pyjd.setup("public/uitest.html")
     t = RunTests(test_gen_out)
     t.add(LabelTest)
+    t.add(DOMTest)
     pyjd.run()
 
 if __name__ == '__main__':
