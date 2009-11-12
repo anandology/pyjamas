@@ -45,7 +45,7 @@ def get(id=None):
         if not element:
             return None
 
-    manageRootPanel(RootPanelCls(element), id)
+    return manageRootPanel(RootPanelCls(element), id)
 
 def manageRootPanel(panel, id=None):
 
