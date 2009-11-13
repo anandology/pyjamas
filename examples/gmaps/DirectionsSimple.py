@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 from pyjamas.ui.RootPanel import RootPanel, RootPanelCls
 from pyjamas.ui.SimplePanel import SimplePanel
 from pyjamas.ui.DockPanel import DockPanel
@@ -25,10 +26,15 @@ from pyjamas import Window
 from pyjamas.gmaps.Map import Map, MapTypeId, MapOptions
 from pyjamas.gmaps.Base import LatLng
 
-from pyjamas.gmaps.DirectionsService import DirectionsService, DirectionsRequest, DirectionsTravelMode, DirectionsStatus
+from pyjamas.gmaps.DirectionsService import DirectionsService, \
+    DirectionsRequest, DirectionsTravelMode, DirectionsStatus
 from pyjamas.gmaps.DirectionsRenderer import DirectionsRenderer
 
+from __pyjamas__ import JS
+
+
 class DirectionsSimple(DockPanel):
+
     def __init__(self):
         DockPanel.__init__(self)
         self.setSize('100%', '100%')
@@ -52,9 +58,8 @@ class DirectionsSimple(DockPanel):
             "kingman, az": "Kingman",
             "barstow, ca": "Barstow",
             "san bernardino, ca": "San Bernardino",
-            "los angeles, ca": "Los Angeles"
-            }
-            
+            "los angeles, ca": "Los Angeles"}
+
         self.start = ListBox()
         self.end = ListBox()
 
@@ -75,8 +80,8 @@ class DirectionsSimple(DockPanel):
         self.add(mapPanel, DockPanel.CENTER)
 
         chigado = LatLng(41.850033, -87.6500523)
-        options = MapOptions(zoom = 7, center = chigado,
-                           mapTypeId = MapTypeId.ROADMAP)
+        options = MapOptions(zoom=7, center=chigado,
+                           mapTypeId=MapTypeId.ROADMAP)
 
         self.map = Map(mapPanel.getElement(), options)
 
@@ -90,16 +95,15 @@ class DirectionsSimple(DockPanel):
         start = self.start.getValue(self.start.getSelectedIndex())
         end = self.end.getValue(self.end.getSelectedIndex())
 
-        print "calcRoute"
-        print "start", start
-        print "end", end
+        print "calcRoute start:", start, "end:", end
 
-        request = DirectionsRequest(origin = start, destination = end, travelMode = DirectionsTravelMode.DRIVING)
-        
+        request = DirectionsRequest(origin=start, destination=end, \
+            travelMode=DirectionsTravelMode.DRIVING)
+
         self.directionsService.route(request, self.directionsResult)
 
     def directionsResult(self, response, status):
-        print "directionsResult"
+        print "directionsResult:"
 
         if status == DirectionsStatus.OK:
 
@@ -118,6 +122,6 @@ class DirectionsSimple(DockPanel):
 
 
 if __name__ == '__main__':
-    
+
     root = RootPanel()
     root.add(DirectionsSimple())

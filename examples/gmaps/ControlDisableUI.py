@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 from pyjamas.ui.RootPanel import RootPanel, RootPanelCls
 from pyjamas.ui.SimplePanel import SimplePanel
 from pyjamas import DOM
@@ -19,7 +20,9 @@ from pyjamas.Timer import Timer
 from pyjamas.gmaps.Map import Map, MapTypeId, MapOptions
 from pyjamas.gmaps.Base import LatLng
 
+
 class ControlDisableUI(SimplePanel):
+
     def __init__(self):
         SimplePanel.__init__(self)
         self.setSize('100%', '100%')
@@ -33,9 +36,9 @@ class ControlDisableUI(SimplePanel):
         options.disableDefaultUI = True
 
         self.map = Map(self.getElement(), options)
-        
+
 
 if __name__ == '__main__':
-    
+
     root = RootPanel()
     root.add(ControlDisableUI())

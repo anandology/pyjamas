@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 from pyjamas.ui.RootPanel import RootPanel, RootPanelCls
 from pyjamas.ui.SimplePanel import SimplePanel
 from pyjamas import DOM
@@ -18,11 +19,14 @@ from pyjamas import DOM
 from pyjamas.gmaps.Map import Map, MapTypeId, MapOptions
 from pyjamas.gmaps.Base import LatLng
 
+
 if __name__ == '__main__':
+
     mapPanel = SimplePanel()
     mapPanel.setSize('100%', '100%')
-    
-    options = MapOptions(zoom = 8, center = LatLng(-34.397, 150.644), mapTypeId = MapTypeId.ROADMAP)
+
+    options = MapOptions(zoom=8, center=LatLng(-34.397, 150.644),
+                         mapTypeId=MapTypeId.ROADMAP)
 
     #options = MapOptions()
     #options.zoom = 8

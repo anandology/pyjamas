@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 from pyjamas.ui.RootPanel import RootPanel, RootPanelCls
 from pyjamas.ui.SimplePanel import SimplePanel
 from pyjamas import DOM
@@ -19,7 +20,9 @@ from pyjamas.Timer import Timer
 from pyjamas.gmaps.Map import Map, MapTypeId, MapOptions
 from pyjamas.gmaps.Base import LatLng
 
+
 class EventSimple(SimplePanel):
+
     def __init__(self):
         SimplePanel.__init__(self)
         self.setSize('100%', '100%')
@@ -30,9 +33,9 @@ class EventSimple(SimplePanel):
         options.mapTypeId = MapTypeId.ROADMAP
 
         self.map = Map(self.getElement(), options)
-        
+
         self.map.addListener("zoom_changed", self.zoomChanged)
-        
+
         self.map.addListener("click", self.clicked)
 
     def zoomChanged(self):
@@ -41,12 +44,13 @@ class EventSimple(SimplePanel):
 
     def moveToDarwin(self):
         darwin = LatLng(-12.461334, 130.841904)
-        self.map.setCenter(darwin);
+        self.map.setCenter(darwin)
 
     def clicked(self):
         self.map.setZoom(8)
 
+
 if __name__ == '__main__':
-    
+
     root = RootPanel()
     root.add(EventSimple())

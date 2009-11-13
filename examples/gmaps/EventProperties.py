@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 from pyjamas.ui.RootPanel import RootPanel, RootPanelCls
 from pyjamas.ui.SimplePanel import SimplePanel
 from pyjamas import DOM
@@ -23,7 +24,9 @@ from pyjamas.gmaps.Map import Map, MapTypeId, MapOptions
 from pyjamas.gmaps.Base import LatLng, LatLngBounds
 from pyjamas.gmaps.InfoWindow import InfoWindow, InfoWindowOptions
 
+
 class EventProperties(SimplePanel):
+
     def __init__(self):
         SimplePanel.__init__(self)
         self.setSize('100%', '100%')
@@ -47,17 +50,16 @@ class EventProperties(SimplePanel):
 
         self.map.addListener("zoom_changed", self.zoomChanged)
 
-
     def zoomChanged(self):
         zoomLevel = self.map.get_zoom()
         self.map.setCenter(self.myLatLng)
         self.infoWindow.setContent("Zoom: " + str(zoomLevel))
-        
+
         if zoomLevel == 0:
             self.map.setZoom(10)
 
 
 if __name__ == '__main__':
-    
+
     root = RootPanel()
     root.add(EventProperties())

@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 from pyjamas.ui.RootPanel import RootPanel, RootPanelCls
 from pyjamas.ui.SimplePanel import SimplePanel
 from pyjamas import DOM
@@ -23,7 +24,9 @@ from pyjamas.gmaps.Map import Map, MapTypeId, MapOptions
 from pyjamas.gmaps.Base import LatLng, LatLngBounds
 from pyjamas.gmaps.Marker import Marker, MarkerOptions
 
+
 class EventArguments(SimplePanel):
+
     def __init__(self):
         SimplePanel.__init__(self)
         self.setSize('100%', '100%')
@@ -50,7 +53,8 @@ class EventArguments(SimplePanel):
 
         self.map.setCenter(location)
 
+
 if __name__ == '__main__':
-    
+
     root = RootPanel()
     root.add(EventArguments())

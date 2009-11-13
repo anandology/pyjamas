@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 from pyjamas.ui.RootPanel import RootPanel, RootPanelCls
 from pyjamas.ui.SimplePanel import SimplePanel
 from pyjamas.ui.DockPanel import DockPanel
@@ -28,7 +29,9 @@ from pyjamas.gmaps.Base import LatLng
 from pyjamas.gmaps.Geocoder import Geocoder, GeocoderRequest, GeocoderStatus
 from pyjamas.gmaps.Marker import Marker, MarkerOptions
 
+
 class GeocodingSimple(DockPanel):
+
     def __init__(self):
         DockPanel.__init__(self)
         self.setSize('100%', '100%')
@@ -57,8 +60,8 @@ class GeocodingSimple(DockPanel):
         mapPanel.setSize('600', '400')
         self.add(mapPanel, DockPanel.CENTER)
 
-        options = MapOptions(zoom = 8, center = LatLng(-34.397, 150.644),
-                           mapTypeId = MapTypeId.ROADMAP)
+        options = MapOptions(zoom=8, center=LatLng(-34.397, 150.644),
+                           mapTypeId=MapTypeId.ROADMAP)
 
         self.map = Map(mapPanel.getElement(), options)
 
@@ -68,8 +71,8 @@ class GeocodingSimple(DockPanel):
         print "codeAddress ", address
 
         if self.geocoder:
-            request = GeocoderRequest(address = address)
-            self.geocoder.geocode( request, self.geocodeResult)
+            request = GeocoderRequest(address=address)
+            self.geocoder.geocode(request, self.geocodeResult)
 
     def geocodeResult(self, results, status):
         print "geocodeResult"
@@ -86,12 +89,16 @@ class GeocodingSimple(DockPanel):
 
             self.map.setCenter(results[0].geometry.location)
 
-            marker = Marker(MarkerOptions(map = self.map, position = results[0].geometry.location))
+            marker = Marker(MarkerOptions(map=self.map,
+                position=results[0].geometry.location))
 
         else:
-            Window.alert("Geocode was not successful for the following reason: " + status)
+            Window.alert(
+                "Geocode was not successful for the following reason: " +
+                status)
+
 
 if __name__ == '__main__':
-    
+
     root = RootPanel()
     root.add(GeocodingSimple())

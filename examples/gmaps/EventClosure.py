@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 from pyjamas.ui.RootPanel import RootPanel, RootPanelCls
 from pyjamas.ui.SimplePanel import SimplePanel
 from pyjamas import DOM
@@ -24,7 +25,9 @@ from pyjamas.gmaps.Base import LatLng, LatLngBounds
 from pyjamas.gmaps.Marker import Marker, MarkerOptions
 from pyjamas.gmaps.InfoWindow import InfoWindow, InfoWindowOptions
 
+
 class EventClosure(SimplePanel):
+
     def __init__(self):
         SimplePanel.__init__(self)
         self.setSize('100%', '100%')
@@ -35,7 +38,7 @@ class EventClosure(SimplePanel):
         options.mapTypeId = MapTypeId.ROADMAP
 
         self.map = Map(self.getElement(), options)
-        
+
         # Add 5 markers to the map at random locations
         southWest = LatLng(-31.203405, 125.244141)
         northEast = LatLng(-25.363882, 131.044922)
@@ -47,9 +50,12 @@ class EventClosure(SimplePanel):
 
         # this is the same...
         #JS("""
-        #  var southWest = new $wnd.google.maps.LatLng(-31.203405,125.244141);
-        #  var northEast = new $wnd.google.maps.LatLng(-25.363882, 131.044922);
-        #  var bounds = new $wnd.google.maps.LatLngBounds(southWest, northEast);
+        #  var southWest =
+        #    new $wnd.google.maps.LatLng(-31.203405,125.244141);
+        #  var northEast =
+        #    new $wnd.google.maps.LatLng(-25.363882, 131.044922);
+        #  var bounds =
+        #    new $wnd.google.maps.LatLngBounds(southWest, northEast);
         #  this.map.fitBounds(bounds);
         #""")
 
@@ -67,8 +73,7 @@ class EventClosure(SimplePanel):
             marker = Marker(options)
             marker.setTitle(str(i + 1))
 
-            self.attachSecretMessage(marker, i);
-
+            self.attachSecretMessage(marker, i)
 
     def attachSecretMessage(self, marker, number):
         message = ["This", "is", "the", "secret", "message"]
@@ -77,11 +82,11 @@ class EventClosure(SimplePanel):
         options.content = message[number]
 
         infoWindow = InfoWindow(options)
-        
+
         marker.addListener('click', lambda: infoWindow.open(self.map, marker))
 
-       
+
 if __name__ == '__main__':
-    
+
     root = RootPanel()
     root.add(EventClosure())
