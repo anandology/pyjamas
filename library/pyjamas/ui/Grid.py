@@ -59,8 +59,7 @@ class Grid(HTMLTable):
             self.numRows = rows
         else:
             while self.numRows > rows:
-                self.numRows -= 1
-                self.removeRow(self.numRows)
+                self.removeRow(self.numRows - 1)
 
     def createCell(self):
         td = HTMLTable.createCell(self)
