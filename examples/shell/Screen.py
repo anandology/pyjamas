@@ -8,6 +8,7 @@ class Application(DialogBoxModal):
         DialogBoxModal.__init__(self, title, None, False, screen)
         self.screen = screen
         self.setText(title)
+        self.dragged = False
         #self.setWidth(width)
         #self.setHeight(height)
 
@@ -102,4 +103,5 @@ class Screen(AbsolutePanel):
             Window.alert("%s not in app" % app.identifier)
         t.hide()
         del self.window[app.identifier]
+        del self.window_zindex[app.identifier]
 

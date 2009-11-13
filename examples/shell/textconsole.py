@@ -44,7 +44,7 @@ class TextWindow(AbsolutePanel):
         AbsolutePanel.setWidth(self, "%dpx" % (self.cols*self.fontsize))
 
         ratio = self.fontsize / self.fontheight 
-        DOM.setStyleAttribute(self.getElement(), 'fontSizeAdjust', ratio)
+        DOM.setStyleAttribute(self.getElement(), 'fontSizeAdjust', str(ratio))
         #log.writebr(str(ratio))
 
     def setHeight(self, height):

@@ -1,3 +1,5 @@
+import pyjd
+
 from pyjamas.ui.RootPanel import RootPanel
 from pyjamas.ui.Controls import VerticalDemoSlider
 from pyjamas import Window
@@ -5,7 +7,10 @@ from pyjamas.Timer import Timer
 from textconsole import TextWindow
 from Screen import Screen
 
-import pyjslib
+try:
+    import pyjslib
+except:
+    pass
 import sys
 
 def slider_app():
@@ -62,9 +67,12 @@ class ShellApp():
         self.loading_app = appname
         self.loading_desc = description
 
-        sys.setloadpath(path)
-        pyjslib.preload_app_modules(sys.getloadpath(), [[appname]],
-                                    self, 1, None)
+        try:
+            sys.setloadpath(path)
+            pyjslib.preload_app_modules(sys.getloadpath(), [[appname]],
+                                        self, 1, None)
+        except:
+            pass
 
     def onTimer(self, timerid):
         self.importDone()
@@ -88,5 +96,6 @@ class ShellApp():
             self.add_app(path, appname, description )
 
 if __name__ == '__main__':
+    pyjd.setup('./public/Shell.html')
     app = ShellApp()
-
+    pyjd.run()
