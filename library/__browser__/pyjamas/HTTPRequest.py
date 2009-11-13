@@ -65,7 +65,7 @@ class HTTPRequest:
                         response = xmlHttp.responseText;
                     handler = null;
                     xmlHttp = null;
-                    if(status == 200) {
+                    if(status == 200 || status == 0) {
                         localHandler.onCompletion(response);
                     } else {
                         localHandler.onError(response, status);
@@ -106,7 +106,7 @@ class HTTPRequest:
                         response = xmlHttp.responseText;
                     handler = null;
                     xmlHttp = null;
-                    if(status == 200) {
+                    if(status == 200 || status == 0) {
                         localHandler.onCompletion(response);
                     } else {
                         localHandler.onError(response, status);
@@ -147,7 +147,7 @@ class HTTPRequest:
                         response = xmlHttp.responseText;
                     handler = null;
                     xmlHttp = null;
-                    if(status == 200) {
+                    if(status == 200 || status == 0) {
                         localHandler.onCompletion(response);
                     } else {
                         localHandler.onError(response, status);
@@ -189,7 +189,7 @@ class HTTPRequest:
                         response = xmlHttp.responseText;
                     handler = null;
                     xmlHttp = null;
-                    if(status == 200) {
+                    if(status == 200 || status == 0) {
                         localHandler.onCompletion(response);
                     } else {
                         localHandler.onError(response, status);
