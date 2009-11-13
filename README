@@ -46,6 +46,14 @@ In the User-Interface suite, which is separate from the Pyjamas
 stand-alone python-to-javascript compiler, the features and
 enhancements include:
 
+* The beginnings of a User-Interface and DOM regression test suite, that
+  is asynchronous and can generate and test the consequences of events.
+  It works by recording, using Pyjamas-Desktop, the HTML created by adding
+  and interacting with widgets and DOM (in "record" mode), then fetching
+  that HTML back using AJAX when the tests are run by the Browsers.
+  Care is taken to ensure that browsers that re-order Element Attributes are
+  taken into consideration.
+
 * An SVG / VML Canvas Library (a port of GWTCanvas).  This has been ported
   to pure python, and consequently work under Pyjamas-Desktop as well.
 
