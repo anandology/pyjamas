@@ -309,6 +309,7 @@ class HorizontalSplitPanel(SplitPanel):
         self.impl.onDetach()
 
     def onSplitterResize(self, x, y):
+        self.lastSplitPosition = x
         self.impl.onSplitterResize(self.initialLeftWidth + x -
                                    self.initialThumbPos)
 
