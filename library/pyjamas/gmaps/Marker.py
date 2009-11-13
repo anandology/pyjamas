@@ -11,23 +11,27 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from __pyjamas__ import JS
 
+from __pyjamas__ import JS
 from Utils import dictToJs, createListenerMethods
 
+
 def Marker(options):
-      marker = JS("""new $wnd.google.maps.Marker(options)""")
+    marker = JS("""new $wnd.google.maps.Marker(options)""")
+    createListenerMethods(marker)
 
-      createListenerMethods(marker)
+    return marker
 
-      return marker
 
 def MarkerOptions(**params):
-      return dictToJs(params)
+    return dictToJs(params)
+
 
 def MarkerImage(url, size, origin, anchor):
-      markerImage = JS("""new $wnd.google.maps.MarkerImage(url, size, origin, anchor)""")
+    markerImage = JS("""
+       new $wnd.google.maps.MarkerImage(url, size, origin, anchor)
+    """)
 
-      createListenerMethods(marker)
+    createListenerMethods(marker)
 
-      return markerImage
+    return markerImage

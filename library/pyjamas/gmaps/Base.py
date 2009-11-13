@@ -11,7 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 from __pyjamas__ import JS
+
 
 def LatLng(lat, lng, nowrap):
     if noWrap:
@@ -19,23 +21,31 @@ def LatLng(lat, lng, nowrap):
     else:
         JS("return new $wnd.google.maps.LatLng(lat, lng);")
 
+
 def LatLngBounds(sw, ne):
     if sw and ne:
         JS("return new $wnd.google.maps.LatLngBounds(sw, ne);")
     else:
         JS("return new $wnd.google.maps.LatLngBounds();")
 
+
 def MVCArray(array):
     JS("return new $wnd.google.maps.MVCArray(array);")
+
 
 def Point(x, y):
     JS("return new $wnd.google.maps.Point(x, y);")
 
+
 def Size(width, height, widthUnit, heightUnit):
-    if widthUnit and heightUnit:   
-      JS("return new $wnd.google.maps.Size(width, height, widthUnit, heightUnit);")
+    if widthUnit and heightUnit:
+        JS("""
+        return new $wnd.google.maps.Size
+           (width, height, widthUnit, heightUnit);
+        """)
     else:
-      JS("return new $wnd.google.maps.Size(width, height);")
+        JS("return new $wnd.google.maps.Size(width, height);")
+
 
 def Array():
     JS("return new Array();")

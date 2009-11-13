@@ -11,10 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 from __pyjamas__ import JS
+
 
 def Polyline(points, color, width):
     JS("return new $wnd.google.maps.Polyline(points, color, width);")
+
 
 def PolylineOptions():
     JS("return {};")

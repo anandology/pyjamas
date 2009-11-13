@@ -11,12 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 from __pyjamas__ import JS
+
 
 def Polygon(options):
     JS("return new $wnd.google.maps.Polygon(options);")
 
+
 def PolygonOptions():
     JS("return {};")
-
-

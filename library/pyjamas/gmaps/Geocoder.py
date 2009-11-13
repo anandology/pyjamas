@@ -11,42 +11,49 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 from __pyjamas__ import JS
-
-from pyjamas.gmaps.Utils import gmapsJsObjectToPy, dictToJs
-
 from pyjamas.JSONParser import JSONParser
+
+from Utils import translateGmapsObject, dictToJs #, gmapsPyObjectToJs
+
 
 GeocoderStatus = JS("$wnd.google.maps.GeocoderStatus")
 GeocoderLocationType = JS("$wnd.google.maps.GeocoderLocationType")
 
 
-#def geocoderResultsToPy(jsResults):
-#    listFields=JS('[ "results","types","address_components"]')
-#    dictFields=JS('[ "results[]","address_components[]","geometry"]')
-#
-#    return gmapsJsObjectToPy2(jsResults,"results",listFields,dictFields)
+geocoderResultsFields = dictToJs(
+    {"results": 'l', "types": 'l', "address_components": 'l',
+     "results[]": 'd', "address_components[]": 'd', "geometry": 'd',
+     "result": 'd'})
 
 
+# translates a geocoderResults structure from js to python
+# and vice-versa
 
-geocoderResultsFields = dictToJs({"results":'l', "types":'l', "address_components":'l',
-                                "results[]":'d', "address_components[]":'d', "geometry":'d',
-                                "result":'d'})
+def translateGeocoderResults(jsResults, pyToJs=False):
+    return translateGmapsObject(jsResults, "results", \
+                                    geocoderResultsFields, pyToJs)
 
-def geocoderResultToPy(jsResult):
-    return gmapsJsObjectToPy(jsResult, "result", geocoderResultsFields)
 
-def geocoderResultsToPy(jsResults):
-    return gmapsJsObjectToPy(jsResults, "results", geocoderResultsFields)
+# translates just one element of the geocoderResults
+# (because it is used inside directionsResults...)
+def translateGeocoderResult(jsResult, pyToJs=False):
+    return translateGmapsObject(jsResult, "result", \
+                                    geocoderResultsFields, pyToJs)
+
 
 class Geocoder:
+
     def __init__(self):
         self.geocoder = JS("new $wnd.google.maps.Geocoder();")
 
     def geocode(self, request, callback):
-        self.geocoder.geocode(request, lambda jsResults, status: callback(geocoderResultsToPy(jsResults), status))
-    
+
+        self.geocoder.geocode(request,
+            lambda jsResults, status:
+            callback(translateGeocoderResults(jsResults), status))
+
 
 def GeocoderRequest(**params):
     return dictToJs(params)
-

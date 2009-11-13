@@ -11,9 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 from __pyjamas__ import JS
 
 from Utils import dictToJs, createListenerMethods
+
 
 def InfoWindow(content):
     infoWindow = JS("""new $wnd.google.maps.InfoWindow(content)""")
@@ -21,6 +23,7 @@ def InfoWindow(content):
     createListenerMethods(infoWindow)
 
     return infoWindow
+
 
 def InfoWindowOptions(**params):
     return dictToJs(params)

@@ -11,26 +11,34 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 from __pyjamas__ import JS
+
 
 from Utils import dictToJs
 
+
+from DirectionsService import translateDirectionsResults
+
+
 class DirectionsRenderer:
+
     def __init__(self, options):
         if options:
-            self.renderer = JS("""new $wnd.google.maps.DirectionsRenderer(options);""")
+            self.renderer = \
+                JS("""new $wnd.google.maps.DirectionsRenderer(options);""")
         else:
-            self.renderer = JS("""new $wnd.google.maps.DirectionsRenderer();""")
+            self.renderer = \
+                JS("""new $wnd.google.maps.DirectionsRenderer();""")
 
     def setDirections(self, results):
-        self.renderer.setDirections(results.__jsResults)
-        #self.renderer.setDirections(results)
+        self.renderer.setDirections(translateDirectionsResults(results, True))
 
     def setMap(self, map):
         self.renderer.setMap(map)
 
     # TODO! faltam os outros metodos!!
 
+
 def DirectionsRendererOptions(**params):
     return dictToJs(params)
-

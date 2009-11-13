@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 from __pyjamas__ import JS
 
 from Utils import dictToJs, createListenerMethods
@@ -21,31 +22,36 @@ MapTypeControlStyle = JS("$wnd.google.maps.MapTypeControlStyle")
 NavigationControlStyle = JS("$wnd.google.maps.NavigationControlStyle")
 ScaleControlStyle = JS("$wnd.google.maps.ScaleControlStyle")
 
+
 def MapOptions(**params):
     return dictToJs(params)
+
 
 def MapTypeControlOptions(**params):
     return dictToJs(params)
 
+
 def NavigationControlOptions(**params):
     return dictToJs(params)
+
 
 def ScaleControlOptions(**params):
     return dictToJs(params)
 
-def Map(el, options):
-   if options:
-       map = JS("""new $wnd.google.maps.Map(el, options);""")
-   else:
-       map = JS("""new $wnd.google.maps.Map(el);""")
 
-   createListenerMethods(map)
-   return map
+def Map(el, options):
+    if options:
+        map = JS("""new $wnd.google.maps.Map(el, options);""")
+    else:
+        map = JS("""new $wnd.google.maps.Map(el);""")
+
+    createListenerMethods(map)
+    return map
+
 
 def MapPanes(el):
     JS("""return new $wnd.google.maps.MapPanes(el);""")
 
+
 def MapCanvasProjection(el):
     JS("""return new $wnd.google.maps.MapCanvasProjection(el);""")
-
-
