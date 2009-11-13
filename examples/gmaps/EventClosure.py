@@ -37,27 +37,43 @@ class EventClosure(SimplePanel):
         options.center = LatLng(-25.363882, 131.044922)
         options.mapTypeId = MapTypeId.ROADMAP
 
-        self.map = Map(self.getElement(), options)
+        # the fitBounds will only work if I do this:
+        element=JS("""$wnd.document.getElementById("map_canvas")""")
+        # instead of
+        #element=self.getElement()
+        self.map = Map(element, options)
+
+        # if I create te map in js, the problem happens anyway!
+        # The problem is solved if i create the map with $wnd.document.getElementById("map_canvas")!!!
+
+#         JS("""
+#             var myLatlng = new $wnd.google.maps.LatLng(-25.363882,131.044922);
+#             var myOptions = {
+#               zoom: 4,
+#               center: myLatlng,
+#               mapTypeId: $wnd.google.maps.MapTypeId.ROADMAP
+#             };
+#             //this.map=new $wnd.google.maps.Map(this.getElement(), myOptions);
+#             this.map=new $wnd.google.maps.Map($wnd.document.getElementById("map_canvas"), myOptions);
+#             var southWest =
+#               new $wnd.google.maps.LatLng(-31.203405,125.244141);
+#             var northEast =
+#               new $wnd.google.maps.LatLng(-25.363882, 131.044922);
+#             var bounds =
+#               new $wnd.google.maps.LatLngBounds(southWest, northEast);
+#             this.map.fitBounds(bounds);
+#             //this.map.setCenter(southWest)
+#         """)
 
         # Add 5 markers to the map at random locations
+
         southWest = LatLng(-31.203405, 125.244141)
         northEast = LatLng(-25.363882, 131.044922)
         bounds = LatLngBounds(southWest, northEast)
-        print "boundsx", bounds
+        print "bounds", bounds
 
         # this is not working well!! it opens the entire world...
         self.map.fitBounds(bounds)
-
-        # this is the same...
-        #JS("""
-        #  var southWest =
-        #    new $wnd.google.maps.LatLng(-31.203405,125.244141);
-        #  var northEast =
-        #    new $wnd.google.maps.LatLng(-25.363882, 131.044922);
-        #  var bounds =
-        #    new $wnd.google.maps.LatLngBounds(southWest, northEast);
-        #  this.map.fitBounds(bounds);
-        #""")
 
         lngSpan = northEast.lng() - southWest.lng()
         latSpan = northEast.lat() - southWest.lat()
