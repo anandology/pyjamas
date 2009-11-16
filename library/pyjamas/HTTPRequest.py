@@ -12,53 +12,45 @@ handlers = {}
 
 class XULrunnerHackCallback:
     def __init__(self, htr, mode, user, pwd, url, postData=None, handler=None,
-                        return_xml=0, content_type='text/plain charset=utf8'):
+                 return_xml=False, content_type=None, headers = None):
         pass
 
     def callback(self):
-        if self.mode == 'GET':
-            return self.htr.asyncGetImpl(self.user, self.pwd, self.url,
-                                         self.handler,
-                                         self.return_xml, self.content_type)
-        else:
-            return self.htr.asyncPostImpl(self.user, self.pwd, self.url,
-                                         self.postData, self.handler,
-                                         self.return_xml, self.content_type)
+        return self.htr.asyncImpl(self.mode, self.user, self.pwd, self.url,
+                                  self.postData, self.handler, self.return_xml, 
+                                  self.content_type, self.headers)
 
 
 class HTTPRequest:
-    # also callable as: asyncPut(self, url, postData, handler)
-    def asyncPut(self, user, pwd, url, postData=None, handler=None,
-                        return_xml=0, content_type='text/plain charset=utf8'):
-        if postData is None:
-            return self.asyncPutImpl(None, None, user, pwd, url,
-                                      return_xml, content_type)
-        return self.asyncPutImpl(user, pwd, url, postData, handler,
-                                 return_xml, content_type)
+    def asyncGet(self, url, handler, returnxml=False, 
+                 content_type=None, headers=None, user=None, pwd=None):
+        postData = None
+        if not hasattr(handler, 'onCompletion'):
+            raise RuntimeError("Invalid call to asyncGet: handler is not a valid request handler")
+        self.asyncImpl('GET', user, pwd, url, postData, handler,
+                       returnxml, content_type, headers)
 
-    # also callable as: asyncDelete(self, url, handler)
-    def asyncDelete(self, user, pwd, url=None, handler=None):
-        if url is None:
-            return self.asyncDeleteImpl(None, None, user, pwd)
-        return self.asyncDeleteImpl(user, pwd, url, handler)
+    def asyncPost(self, url, postData, handler, returnxml=False, 
+                  content_type=None, headers=None, user=None, pwd=None):
+        if not hasattr(handler, 'onCompletion'):
+            raise RuntimeError("Invalid call to asyncPost: handler is not a valid request handler")
+        self.asyncImpl('GET', user, pwd, url, postData, handler,
+                       returnxml, content_type, headers)
 
-    # also callable as: asyncPost(self, url, postData, handler)
-    def asyncPost(self, user, pwd, url, postData=None, handler=None,
-                        return_xml=0, content_type='text/plain charset=utf8'):
-        if postData is None:
-            return self.asyncPostImpl(None, None, user, pwd, url,
-                                      return_xml, content_type)
-        return self.asyncPostImpl(user, pwd, url, postData, handler,
-                                 return_xml, content_type)
+    def asyncDelete(self, url, handler, returnxml=False, 
+                    content_type=None, headers=None, user=None, pwd=None):
+        postData = None
+        if not hasattr(handler, 'onCompletion'):
+            raise RuntimeError("Invalid call to asyncDelete: handler is not a valid request handler")
+        self.asyncImpl('DELETE', user, pwd, url, postData, handler,
+                       returnxml, content_type, headers)
 
-    # also callable as: asyncGet(self, url, handler)
-    def asyncGet(self, user, pwd, url=None, handler=None,
-                        return_xml=0, content_type='text/plain charset=utf8'):
-        if url is None:
-            return self.asyncGetImpl(None, None, user, pwd,
-                                      return_xml, content_type)
-        return self.asyncGetImpl(user, pwd, url, handler,
-                                 return_xml, content_type)
+    def asyncPut(self, url, postData, handler, returnxml=False, 
+                 content_type=None, headers=None, user=None, pwd=None):
+        if not hasattr(handler, 'onCompletion'):
+            raise RuntimeError("Invalid call to asyncPut: handler is not a valid request handler")
+        self.asyncImpl('GET', user, pwd, url, postData, handler,
+                       returnxml, content_type, headers)
 
     def createXmlHTTPRequest(self):
         return self.doCreateXmlHTTPRequest()
@@ -130,86 +122,49 @@ class HTTPRequest:
 
         return url
 
-    def asyncPutImpl(self, user, pwd, url, postData, handler, 
-                            return_xml, content_type):
-        mf = get_main_frame()
-        xmlHttp = self.doCreateXmlHTTPRequest()
-        url = self._convertUrlToAbsolute(url)
-        print "xmlHttp", user, pwd, url, postData, handler, dir(xmlHttp)
-        #try :
-        if mf.platform == 'webkit' or mf.platform == 'mshtml':
-            xmlHttp.open("PUT", url, True, '', '')
-        else:
-            # EEK!  xmlhttprequest.open in xpcom is a miserable bastard.
-            #xmlHttp.open("PUT", url, True, '', '')
-            print url, xmlHttp.open("PUT", url)
-        xmlHttp.setRequestHeader("Content-Type", content_type)
-        xmlHttp.setRequestHeader("Content-Length", str(len(postData)))
+    def asyncImpl(self, method, user, pwd, url, postData, handler,
+                  returnxml=False, content_type=None, headers=None):
+        if headers is None:
+            headers = {}
+        if user and pwd and not "Authorization" in headers:
+            import base64
+            headers["Authorization"] = 'Basic %s' % (base64.b64encode('%s:%s' % (user, pwd)))
+
+        if postData is not None and not "Content-Length" in headers:
+            headers["Content-Length"] = str(len(postData))
+        if content_type is not None:
+            headers["Content-Type"] = content_type
+        if not "Content-Type" in headers:
+            if returnxml:
+                headers["Content-Type"] = "application/xml; charset=utf-8"
+            else:
+                headers["Content-Type"] = "text/plain; charset=utf-8"
+
         #for c in Cookies.get_crumbs():
         #    xmlHttp.setRequestHeader("Set-Cookie", c)
         #    print "setting cookie", c
 
-        if mf.platform == 'webkit' or mf.platform == 'mshtml':
-            mf._addXMLHttpRequestEventListener(xmlHttp, "onreadystatechange",
-                                         self.onReadyStateChange)
-        else:
-            mf._addXMLHttpRequestEventListener(xmlHttp, "load",
-                                         self.onLoad)
-        handlers[xmlHttp] = handler
-        xmlHttp.send(postData)
-            
-        return True
-    
-        #except:
-            #del xmlHttp.onreadystatechange
-        handler = None
-        xmlHttp = None
-        localHandler.onError(str(e))
-        return False
-        
-    def asyncDeleteImpl(self, user, pwd, url, handler):
-        mf = get_main_frame()
-        url = self._convertUrlToAbsolute(url)
-        xmlHttp = self.doCreateXmlHTTPRequest()
-        print dir(xmlHttp)
-        print user, pwd, url, handler
-        #try :
-
-        if mf.platform == 'webkit':
-            xmlHttp.open("DELETE", url, True, user, pwd)
-        else:
-            xmlHttp.open("DELETE", url)
-        xmlHttp.setRequestHeader("Content-Type", "text/plain charset=utf-8")
-        # TODO: xmlHttp.onreadystatechange = self.onReadyStateChange
-
-        if mf.platform == 'webkit' or mf.platform == 'mshtml':
-            mf._addXMLHttpRequestEventListener(xmlHttp, "onreadystatechange",
-                                         self.onReadyStateChange)
-        else:
-            mf._addXMLHttpRequestEventListener(xmlHttp, "load",
-                                         self.onLoad)
-        handlers[xmlHttp] = handler
-        xmlHttp.send('')
-
-        return True
-    
-    def asyncPostImpl(self, user, pwd, url, postData, handler, 
-                            return_xml, content_type):
         mf = get_main_frame()
         xmlHttp = self.doCreateXmlHTTPRequest()
         url = self._convertUrlToAbsolute(url)
-        print "xmlHttp", user, pwd, url, postData, handler, dir(xmlHttp)
+        print "xmlHttp", method, user, pwd, url, postData, handler, dir(xmlHttp)
         #try :
         if mf.platform == 'webkit' or mf.platform == 'mshtml':
-            xmlHttp.open("POST", url, True, '', '')
+            xmlHttp.open(method, url, True, '', '')
         else:
             # EEK!  xmlhttprequest.open in xpcom is a miserable bastard.
             #xmlHttp.open("POST", url, True, '', '')
-            print url, xmlHttp.open("POST", url)
-        xmlHttp.setRequestHeader("Content-Type", content_type)
-        xmlHttp.setRequestHeader("Content-Length", str(len(postData)))
+            print url, xmlHttp.open(method, url)
+        for h in headers:
+            if isinstance(headers[h], str):
+                xmlHttp.setRequestHeader(h, headers[h])
+            else:
+                hval = ';'.join([str(i) for i in headers[h]])
+                xmlHttp.setRequestHeader(h, hval)
+        #if not "Set-Cookie" in headers:
+        #    headers["Set-Cookie"] = []
         #for c in Cookies.get_crumbs():
-        #    xmlHttp.setRequestHeader("Set-Cookie", c)
+        #    headers["Set-Cookie"].append(c)
         #    print "setting cookie", c
 
         if mf.platform == 'webkit' or mf.platform == 'mshtml':
@@ -220,48 +175,13 @@ class HTTPRequest:
                                          self.onLoad)
         handlers[xmlHttp] = handler
         xmlHttp.send(postData)
-            
+
         return True
-    
+
         #except:
             #del xmlHttp.onreadystatechange
         handler = None
         xmlHttp = None
         localHandler.onError(str(e))
         return False
-        
 
-    def asyncGetImpl(self, user, pwd, url, handler,
-                            return_xml, content_type):
-        mf = get_main_frame()
-        url = self._convertUrlToAbsolute(url)
-        xmlHttp = self.doCreateXmlHTTPRequest()
-        print dir(xmlHttp)
-        print user, pwd, url, handler
-        #try :
-
-        if mf.platform == 'webkit':
-            xmlHttp.open("GET", url, True, user, pwd)
-        else:
-            xmlHttp.open("GET", url)
-        xmlHttp.setRequestHeader("Content-Type", content_type)
-        # TODO: xmlHttp.onreadystatechange = self.onReadyStateChange
-
-        if mf.platform == 'webkit' or mf.platform == 'mshtml':
-            mf._addXMLHttpRequestEventListener(xmlHttp, "onreadystatechange",
-                                         self.onReadyStateChange)
-        else:
-            mf._addXMLHttpRequestEventListener(xmlHttp, "load",
-                                         self.onLoad)
-        handlers[xmlHttp] = handler
-        xmlHttp.send('')
-
-        return True
-    
-        #except:
-        #    #TODO: del xmlHttp.onreadystatechange
-        #    handler = None
-        #    xmlHttp = None
-        #    handler.onError(err)
-        #    return False
-        
