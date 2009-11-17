@@ -246,6 +246,6 @@ def eventGetKeyCode(evt):
         return evt.keyCode
     return 0
 
-def stopPropagation(evt):
+def eventStopPropagation(evt):
     eventCancelBubble(evt)
 
