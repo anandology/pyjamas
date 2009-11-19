@@ -28,6 +28,14 @@ class DictTest(UnitTest):
             return
         self.fail('__getitem__ must raise KeyError')
 
+        d = {}
+        self.assertEqual(1, d.setdefault('foo', 1))
+        self.assertEqual(1, d.setdefault('foo', 2))
+        self.assertEqual(1, d.get('foo', 2))
+        self.assertEqual(2, d.get('bar', 2))
+        self.assertEqual(2, d.setdefault('bar', 3))
+
+
     def testTupleKeys(self):
         d = {}
         d[1] = 1

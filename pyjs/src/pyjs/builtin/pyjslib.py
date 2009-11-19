@@ -4301,7 +4301,7 @@ class Dict:
     def setdefault(self, key, default_value):
         JS("""
         var sKey = (key===null?null:(typeof key.$H != 'undefined'?key.$H:((typeof key=='string'||key.__number__)?'$'+key:pyjslib.__hash(key))));
-        return typeof self.__object[sKey] == 'undefined' ? (self.__object[sKey]=[key, value]) : self.__object[sKey][1];
+        return typeof self.__object[sKey] == 'undefined' ? (self.__object[sKey]=[key, default_value]) : self.__object[sKey][1];
 """)
 
     def get(self, key, default_value=None):
