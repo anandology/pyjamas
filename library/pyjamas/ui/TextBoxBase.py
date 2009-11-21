@@ -61,6 +61,17 @@ class TextBoxBase(FocusWidget):
         except:
             return 0
 
+    # have to override Focus here for TextBoxBase
+    # because FocusWidget (actually FocusMixin) assumes that
+    # CreateFocusable has been used to create the element.
+    # in "input box" type scenarios, it hasn't: it's created
+    # by TextBox class etc.
+    def setFocus(self, focused):
+        if (focused):
+            self.getElement().focus()
+        else:
+            self.getElement().blur()
+
     def getText(self):
         return DOM.getAttribute(self.getElement(), "value")
 

@@ -1,6 +1,10 @@
                     Changes made to Pyjamas since 0.6
                     ---------------------------------
 
+ * Added setFocus function to TextBoxBase to override FocusMixin.setFocus
+   because FocusMixin assumes that you called Focus.createFocusable to
+   create the input box.
+
  * Added str.isalpha and str.isupper, thanks to Marcus Brinkmann
 
  * Modified bootstrap.py: place absolute path in pyjsbuild.bat file to
