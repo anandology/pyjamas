@@ -387,12 +387,20 @@ class GWTCanvasImplIE6:
         c = math.cos(-angle)
         a = self.matrix[0]
         b = self.matrix[1]
-        self.matrix[0] = a * c - (b * s)
-        self.matrix[1] = a * s + b * c
+        m1 = a * c
+        m2 = b * s
+        self.matrix[0] = m1 - m2
+        m1 = a * s
+        m2 = b * c
+        self.matrix[1] = m1 + m2
         a = self.matrix[3]
         b = self.matrix[4]
-        self.matrix[3] = a * c - (b * s)
-        self.matrix[4] = a * s + b * c
+        m1 = a * c
+        m2 = b * s
+        self.matrix[3] = m1 - m2
+        m1 = a * s
+        m2 = b * c
+        self.matrix[4] = m1 + m2
 
 
     def saveContext(self):
