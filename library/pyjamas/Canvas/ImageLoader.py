@@ -16,6 +16,7 @@
 
 from pyjamas import DOM
 from pyjamas.ui.Image import Image
+from pyjamas.ui import Event
 
 """*
 * Static internal collection of ImageLoader instances.
@@ -94,6 +95,7 @@ class ImageLoader:
         # in this case, we want a load even _even though_ the Image
         # widget is not yet attached (and quite likely won't be).
         DOM.setEventListener(img.getElement(), img)
+        DOM.sinkEvents(img.getElement(), Event.ONLOAD)
         return img
         
     def onLoad(self, img):
