@@ -209,7 +209,7 @@ class GWTCanvas(Widget):
             img_width = DOM.getIntAttribute(img, "offsetWidth")
             img_height = DOM.getIntAttribute(img, "offsetHeight")
         if len(args) == 8:
-            self.impl.drawImage(img, *args)
+            self.impl.drawImage(img, args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7])
         elif len(args) == 4:
             sourceX = 0
             sourceY = 0
@@ -223,7 +223,7 @@ class GWTCanvas(Widget):
                                      sourceWidth, sourceHeight,
                                      destX, destY, destWidth, destHeight)
         elif len(args) == 2:
-            self.impl.drawImage(img, *args)
+            self.impl.drawImage(img, args[0], args[1])
     
     
     """*
