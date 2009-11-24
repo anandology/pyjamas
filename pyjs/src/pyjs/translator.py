@@ -3278,8 +3278,6 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             list_expr = self._subscript(node.list, current_klass)
         elif isinstance(node.list, self.ast.Const):
             list_expr = self._const(node.list)
-        elif isinstance(node.list, self.ast.Const):
-            list_expr = self._const(node.list)
         elif isinstance(node.list, self.ast.List):
             list_expr = self._list(node.list, current_klass)
         elif isinstance(node.list, self.ast.Slice):
