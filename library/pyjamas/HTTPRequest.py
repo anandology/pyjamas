@@ -34,7 +34,7 @@ class HTTPRequest:
                   content_type=None, headers=None, user=None, pwd=None):
         if not hasattr(handler, 'onCompletion'):
             raise RuntimeError("Invalid call to asyncPost: handler is not a valid request handler")
-        self.asyncImpl('POST', user, pwd, url, postData, handler,
+        return self.asyncImpl('POST', user, pwd, url, postData, handler,
                        returnxml, content_type, headers)
 
     def asyncDelete(self, url, handler, returnxml=False, 
@@ -42,14 +42,14 @@ class HTTPRequest:
         postData = None
         if not hasattr(handler, 'onCompletion'):
             raise RuntimeError("Invalid call to asyncDelete: handler is not a valid request handler")
-        self.asyncImpl('DELETE', user, pwd, url, postData, handler,
+        return self.asyncImpl('DELETE', user, pwd, url, postData, handler,
                        returnxml, content_type, headers)
 
     def asyncPut(self, url, postData, handler, returnxml=False, 
                  content_type=None, headers=None, user=None, pwd=None):
         if not hasattr(handler, 'onCompletion'):
             raise RuntimeError("Invalid call to asyncPut: handler is not a valid request handler")
-        self.asyncImpl('PUT', user, pwd, url, postData, handler,
+        return self.asyncImpl('PUT', user, pwd, url, postData, handler,
                        returnxml, content_type, headers)
 
     def createXmlHTTPRequest(self):
