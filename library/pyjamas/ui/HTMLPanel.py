@@ -71,6 +71,9 @@ class HTMLPanel(ComplexPanel):
     def setHTML(self, html):
         DOM.setInnerHTML(self.getElement(), html)
 
+    def getHTML(self):
+        return DOM.getInnerHTML(self.getElement())
+
     def add(self, widget, id):
         element = getElementById(self.getElement(), id)
         if element is None:
