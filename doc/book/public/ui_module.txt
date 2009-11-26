@@ -1230,7 +1230,7 @@ The example image file named "myImage.jpg" must be stored in "images"
 sub-directory, which must be in the "public" directory of the
 application's main source directory.
 
-As well as passing the image URL to the initialiser, setURL() can be called
+As well as passing the image URL to the initialiser, setUrl() can be called
 to change the image being displayed, at any time.  addClickListener() can
 also be used to add a listener function callback that will be called
 when the user clicks on the image.
