@@ -1,8 +1,8 @@
 from __pyjamas__ import JS
 
-def makeUrlDict(s):
+def makeUrlDict(urlstring):
     dict = {}
-    pairs = s.split("&")
+    pairs = urlstring.split("&")
     for pair in pairs:
         if len(pair) < 3: continue
         kv = pair.split("=",1)
@@ -70,7 +70,9 @@ class Location:
         if isinstance(self.location, str):
             return {}
         if not self.searchDict:
-            self.searchDict = makeUrlDict(self.getSearch()[1:])
+            self.searchDict = {}
+            search = self.getSearch()[1:]
+            self.searchDict = makeUrlDict(search)
         return self.searchDict
 
     def getSearchVar(self, key):
