@@ -15,7 +15,7 @@ def quote(s, safe=''):
     from __javascript__ import encodeURIComponent
     return encodeURIComponent(s)
 
-def unquote_plus(s):
+def unquote_plus(st):
     """
     This function is equivalent to urllib.unquote_plus
 
@@ -28,7 +28,22 @@ def unquote_plus(s):
 
     """
     from __javascript__ import decodeURIComponent
-    return decodeURIComponent(s)
+    return decodeURIComponent((st.replace('+', ' '))
+
+def unquote(st):
+    """
+    This function is equivalent to urllib.unquote
+
+    Example:
+
+    >>> unquote("hey")
+    'hey'
+    >>> unquote('%24%25%26%2F%3F%2F%2B%20s')
+    "$%&/?/+ s"
+
+    """
+    from __javascript__ import decodeURIComponent
+    return decodeURIComponent(st)
 
 def urlencode(d):
     """

@@ -58,10 +58,13 @@ def manageRootPanel(panel, id=None):
 
 class RootPanelCls(AbsolutePanel):
     def __init__(self, Element=None, **kwargs):
-        if Element is None:
-            Element = self.getBodyElement()
-        kwargs['Element'] = Element
+        if Element:
+            kwargs['Element'] = Element
         AbsolutePanel.__init__(self, **kwargs)
+        if Element is None:
+            # avoid having CSS styles position:relative and hidden set on body
+            Element = self.getBodyElement()
+            self.setElement(Element)
         self.onAttach()
 
     def getBodyElement(self):
