@@ -28,7 +28,7 @@ def unquote_plus(st):
 
     """
     from __javascript__ import decodeURIComponent
-    return decodeURIComponent((st.replace('+', ' '))
+    return decodeURIComponent((st.replace('+', ' ')))
 
 def unquote(st):
     """
