@@ -52,6 +52,27 @@ class Trees(Sink):
         Sink.__init__(self)
         self.test = "Trees"
 
+class TestClass1Bug339(object):
+    def __init__(self):
+        self.test = TestClass2()
+        # The following method call causes the problem:
+        self.test.test_method(test_arg=0)
+        # The problem happens when a method is called with keyword
+        # arguments on an object that is referenced as an attribute of
+        # another object. In other words, this method could be called
+        # in either of the following ways with no problem:
+        test = TestClass2()
+        test.test_method(test_arg=0)
+        # or
+        self.test = TestClass2()
+        self.test.test_method(0)
+
+class TestClass2(object):
+    def test_method(self, test_arg):
+        # Because of the way this method is called, self will be undefined
+        # and the following line will cause an exception
+        self.value = 0
+
 class ClassTest(UnitTest):
 
     def testInstancePassing(self):
@@ -59,6 +80,14 @@ class ClassTest(UnitTest):
         i = s.getInstance()
         self.assertEquals(i.test, "Trees")
         self.assertEquals(i.sink, "Sink")
+
+    def testBug339(self):
+        try:
+            TestClass1Bug339()
+        except:
+            self.fail("Bug #339 encountered")
+        finally:
+            self.assertTrue(True)
 
     def testSubAssign(self):
         self.assertEquals(names['SubAssignBase'], 'SubAssignBase')
