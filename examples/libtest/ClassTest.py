@@ -73,6 +73,16 @@ class TestClass2(object):
         # and the following line will cause an exception
         self.value = 0
 
+class UserListPanel():
+   def setUsers(self, title, screennames=None):
+       pass
+
+class TestClassBug342(object):
+   def __init__(self):
+       self.u = UserListPanel()
+       self.u.setUsers('title', screennames=33)
+
+
 class ClassTest(UnitTest):
 
     def testInstancePassing(self):
@@ -80,6 +90,14 @@ class ClassTest(UnitTest):
         i = s.getInstance()
         self.assertEquals(i.test, "Trees")
         self.assertEquals(i.sink, "Sink")
+
+    def testBug342(self):
+        try:
+            t = TestClassBug342()
+        except:
+            self.fail("Bug #342 encountered")
+        finally:
+            self.assertTrue(True)
 
     def testBug339(self):
         try:
