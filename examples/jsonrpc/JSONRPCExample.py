@@ -111,7 +111,6 @@ after newline
         # onRemoteError gets the HTTP error code or 0 and
         # errobj is an jsonrpc 2.0 error dict:
         #     {
-        #       'jsonrpc': "2.0",
         #       'code': jsonrpc-error-code (integer) ,
         #       'message': jsonrpc-error-message (string) ,
         #       'data' : extra-error-data

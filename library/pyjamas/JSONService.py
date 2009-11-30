@@ -51,7 +51,14 @@ class JSONService(object):
         The handler object should implement 
             onRemoteResponse(value, requestInfo)
         to accept the return value of the remote method, and
-            onRemoteError(code, message, requestInfo)
+            onRemoteError(code, error_dict, requestInfo)
+                 code = http-code or 0
+                 error_dict is an jsonrpc 2.0 error dict:
+                     {
+                       'code': jsonrpc-error-code (integer) ,
+                       'message': jsonrpc-error-message (string) ,
+                       'data' : extra-error-data
+                     }
         to handle errors.
         """
         self.url = url
@@ -139,7 +146,7 @@ class JSONResponseTextHandler(object):
             response = loads(json_str)
         except JSONDecodeException:
             # err.... help?!!
-            error = dict(jsonrpc="2.0",
+            error = dict(
                          code=-32700,
                          message="Parse error while decoding response",
                          data=None,
@@ -148,7 +155,7 @@ class JSONResponseTextHandler(object):
             return
 
         if not response:
-            error = dict(jsonrpc="2.0",
+            error = dict(
                          code=-32603,
                          message="Empty Resonse",
                          data=None,
@@ -166,7 +173,7 @@ class JSONResponseTextHandler(object):
                     message = error
                 else:
                     data = error.get("error")
-            error = dict(jsonrpc=jsonrpc,
+            error = dict(
                          code=code,
                          message=message,
                          data=data,
@@ -176,11 +183,15 @@ class JSONResponseTextHandler(object):
             self.request.handler.onRemoteResponse(response["result"], 
                                                   self.request)
         else:
-            self.request.handler.onRemoteError(error.get("code", 0), 
-                                               self.request)
+            error = dict(
+                         code=-32603,
+                         message="No reult or error in response",
+                         data=response,
+                        )
+            self.request.handler.onRemoteError(0, error, self.request)
 
     def onError(self, error_str, error_code):
-        error = dict(jsonrpc="2.0",
+        error = dict(
                      code=error_code,
                      message=error_str,
                      data=None,
