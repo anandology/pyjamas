@@ -1,6 +1,10 @@
                     Changes made to Pyjamas since 0.6
                     ---------------------------------
 
+ * Updated JSONRPC to conform JSON-RPC 1.0/1.1/2.0 and to return
+   JSON-RPC 2.0 error dicts ini onRemeoteError (other errors are 
+   mapped to JSON-RPC 2.0 format)
+
  * Enhanced dict initialization: dict(a=1, b=2)
 
  * Added setFocus function to TextBoxBase to override FocusMixin.setFocus

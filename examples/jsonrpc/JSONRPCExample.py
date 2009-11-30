@@ -18,7 +18,10 @@ class JSONRPCExample:
         self.METHOD_REVERSE = "Reverse"
         self.METHOD_UPPERCASE = "UPPERCASE"
         self.METHOD_LOWERCASE = "lowercase"
-        self.methods = [self.METHOD_ECHO, self.METHOD_REVERSE, self.METHOD_UPPERCASE, self.METHOD_LOWERCASE]
+        self.METHOD_NONEXISTANT = "Non existant"
+        self.methods = [self.METHOD_ECHO, self.METHOD_REVERSE, 
+                        self.METHOD_UPPERCASE, self.METHOD_LOWERCASE, 
+                        self.METHOD_NONEXISTANT]
 
         self.remote_php = EchoServicePHP()
         self.remote_py = EchoServicePython()
@@ -87,6 +90,8 @@ after newline
                 id = self.remote_php.uppercase(text, self)
             elif method == self.METHOD_LOWERCASE:
                 id = self.remote_php.lowercase(text, self)
+            elif method == self.METHOD_NONEXISTANT:
+                id = self.remote_php.nonexistant(text, self)
         else:
             if method == self.METHOD_ECHO:
                 id = self.remote_py.echo(text, self)
@@ -96,25 +101,39 @@ after newline
                 id = self.remote_py.uppercase(text, self)
             elif method == self.METHOD_LOWERCASE:
                 id = self.remote_py.lowercase(text, self)
-        if id<0:
-            self.status.setText(self.TEXT_ERROR)
+            elif method == self.METHOD_NONEXISTANT:
+                id = self.remote_py.nonexistant(text, self)
 
     def onRemoteResponse(self, response, request_info):
         self.status.setText(response)
 
-    def onRemoteError(self, code, message, request_info):
-        self.status.setText("Server Error or Invalid Response: ERROR %d - %s" %
-                            (code, message))
+    def onRemoteError(self, code, errobj, request_info):
+        # onRemoteError gets the HTTP error code or 0 and
+        # errobj is an jsonrpc 2.0 error dict:
+        #     {
+        #       'jsonrpc': "2.0",
+        #       'code': jsonrpc-error-code (integer) ,
+        #       'message': jsonrpc-error-message (string) ,
+        #       'data' : extra-error-data
+        #     }
+        message = errobj['message']
+        if code != 0:
+            self.status.setText("HTTP error %d: %s" % 
+                                (code, message))
+        else:
+            code = errobj['code']
+            self.status.setText("JSONRPC Error %s: %s" %
+                                (code, message))
 
 
 class EchoServicePHP(JSONProxy):
     def __init__(self):
-        JSONProxy.__init__(self, "services/EchoService.php", ["echo", "reverse", "uppercase", "lowercase"])
+        JSONProxy.__init__(self, "services/EchoService.php", ["echo", "reverse", "uppercase", "lowercase", "nonexistant"])
 
 
 class EchoServicePython(JSONProxy):
     def __init__(self):
-        JSONProxy.__init__(self, "services/EchoService.py", ["echo", "reverse", "uppercase", "lowercase"])
+        JSONProxy.__init__(self, "services/EchoService.py", ["echo", "reverse", "uppercase", "lowercase", "nonexistant"])
 
 if __name__ == '__main__':
     # for pyjd, set up a web server and load the HTML from there:
