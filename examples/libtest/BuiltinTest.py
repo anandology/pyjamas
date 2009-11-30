@@ -201,7 +201,7 @@ class BuiltinTest(UnitTest):
         self.assertEqual(1 & 3 + 1, 0, "and error 1")
         self.assertEqual((1 & 3) + 1, 2, "and error 2")
         self.assertEqual(4 >> 2, 1, "right shift error 1")
-        self.assertEqual(-4 >> 2, -1, "right shift error 2")
+        self.assertEqual(-4 >> 2, -1, "right shift error 2 - bug #341")
 
     def testLocals(self):
         v1 = 1
@@ -385,7 +385,7 @@ class BuiltinTest(UnitTest):
         try:
             self.assertTrue(type(object) is type)
         except NotImplementedError, why:
-            self.fail(str(why))
+            self.fail("Bug #229" + str(why))
 
     def testIter(self):
         class G(object):
