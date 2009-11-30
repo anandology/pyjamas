@@ -4052,12 +4052,14 @@ JS("pyjslib.Tuple.toString = pyjslib.Tuple.__str__;")
 tuple = Tuple
 
 class Dict:
-    def __init__(self, data=JS("[]")):
+    def __init__(self, seq=JS("[]"), **kwargs):
+        self.__object = JS("{}")
         # Transform data into an array with [key,value] and add set self.__object
         # Input data can be Array(key, val), iteratable (key,val) or Object/Function
-        JS("""
+        def init(data):
+            JS("""
         var item, i, n, sKey;
-        self.__object = {};
+        //self.__object = {};
 
         if (data === null) {
             throw pyjslib['TypeError']("'NoneType' is not iterable");
@@ -4134,6 +4136,9 @@ class Dict:
         }
         return null;
         """)
+        init(seq)
+        if kwargs:
+            init(kwargs)
 
     def __hash__(self):
         raise TypeError("dict objects are unhashable")
@@ -4376,17 +4381,38 @@ class Dict:
         s += "}";
         return s;
         """)
+
+    def toString(self):
+        return self.__repr__()
+
 JS("pyjslib.Dict.has_key = pyjslib.Dict.__contains__;")
 JS("pyjslib.Dict.iterkeys = pyjslib.Dict.__iter__;")
 JS("pyjslib.Dict.__str__ = pyjslib.Dict.__repr__;")
-JS("pyjslib.Dict.toString = pyjslib.Dict.__str__;")
 
 dict = Dict
 
+# __empty_dict is used in kwargs initialization
+# There must me a temporary __init__ function used to prevent infinite 
+# recursion
+def __empty_dict():
+    JS("""
+    var dict__init__ = pyjslib.dict.__init__;
+    var d;
+    pyjslib.dict.__init__ = function() {
+        this.__object = {};
+    }
+    d = pyjslib.dict();
+    d.__init__ = pyjslib.dict.__init__ = dict__init__;
+    return d;
+""")
+
+
 class set(object):
     def __init__(self, data=JS("[]")):
-        # Transform data into an array with [key,value] and add set self.__object
-        # Input data can be Array(key, val), iteratable (key,val) or Object/Function
+        # Transform data into an array with [key,value] and add set 
+        # self.__object
+        # Input data can be Array(key, val), iteratable (key,val) or 
+        # Object/Function
         if isSet(data):
             JS("""
             self.__object = {};

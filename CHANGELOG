@@ -1,6 +1,8 @@
                     Changes made to Pyjamas since 0.6
                     ---------------------------------
 
+ * Enhanced dict initialization: dict(a=1, b=2)
+
  * Added setFocus function to TextBoxBase to override FocusMixin.setFocus
    because FocusMixin assumes that you called Focus.createFocusable to
    create the input box.

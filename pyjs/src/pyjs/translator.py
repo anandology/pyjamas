@@ -1697,7 +1697,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             revargs.reverse()
             print >> output, """\
 %(s)sif (typeof %(k)s == 'undefined') {
-%(s)s\t%(k)s = pyjslib['Dict']({});\
+%(s)s\t%(k)s = pyjslib['__empty_dict']();\
 """ % {'s': self.spacing(), 'k': kwargname}
             for v in revargs:
                 print >> output, """\

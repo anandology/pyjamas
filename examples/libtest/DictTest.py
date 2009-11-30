@@ -98,6 +98,14 @@ class DictTest(UnitTest):
         # XXX: the other constructors handle javascript objets only,
         # we need the other constructors too, like:
         # d = dict({1:1, 2:2})
+        d = dict(a=1, b=2)
+        self.assertEqual(d['a'], 1)
+        self.assertEqual(d['b'], 2)
+        d = dict([(1, 1), (2,2)], a=1, b=2)
+        self.assertEqual(d[1], 1)
+        self.assertEqual(d[2], 2)
+        self.assertEqual(d['a'], 1)
+        self.assertEqual(d['b'], 2)
 
     def testIter(self):
         d = {1: [1,2,3], 2: {'a': 1, 'b': 2, 'c': 3}}
