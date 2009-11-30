@@ -89,7 +89,7 @@ after newline
             elif method == self.METHOD_UPPERCASE:
                 id = self.remote_php.uppercase(text, self)
             elif method == self.METHOD_LOWERCASE:
-                id = self.remote_php.lowercase(text, self)
+                id = self.remote_php.lowercase(self, msg=text)
             elif method == self.METHOD_NONEXISTANT:
                 id = self.remote_php.nonexistant(text, self)
         else:

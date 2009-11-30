@@ -20,6 +20,9 @@ except ImportError:
     JSONDecodeException = None
 
 
+class JSONServiceError(Exception):
+    pass
+
 __requestID = 0
 __requestIDPrefix = 'ID'
 __lastRequestID = None
@@ -203,13 +206,23 @@ class ServiceProxy(JSONService):
         JSONService.__init__(self, serviceURL, headers=headers)
         self.__serviceName = serviceName
 
-    def __call__(self, *params):
+    def __call__(self, *params, **kwargs):
         if isinstance(params, tuple):
             params = list(params)
         if hasattr(params[-1], "onRemoteResponse"):
-            handler = params[-1]
+            handler = params.pop()
+        else:
+            handler = None
+        if kwargs:
+            if params:
+                if not isinstance(params, dict):
+                    raise JSONServiceError("Cannot mix positional and keyword arguments")
+                params.update(kwargs)
+            else:
+                params = kwargs
+        if handler is not None:
             return JSONService.sendRequest(self, self.__serviceName,
-                                            params[:-1], handler)
+                                           params, handler)
         else:
             return JSONService.sendNotify(self, self.__serviceName, params)
 
