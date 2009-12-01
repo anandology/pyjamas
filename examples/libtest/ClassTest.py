@@ -4,7 +4,7 @@ from UnitTest import UnitTest, IN_BROWSER
 # syntax check
 # import a, b, c
 if True:
-    import imports.child, imports.circ1
+    import imports.circ1
 from imports import exec_order, imports as IMPORTS
 from imports import exec_order as EXEC_ORDER
 import I18N
@@ -480,13 +480,17 @@ class ClassTest(UnitTest):
         self.assertEqual(imports.exec_order[3], 'circ1-2')
         self.assertEqual(imports.exec_order[3], IMPORTS.exec_order[3])
 
-        # import imports.child # FIXME: if the import statement is here in stead of at the top, this fails on compiling
+        import imports.child
         teststring = 'import test'
         try:
             c = imports.child.Child()
             self.assertEqual(c.value(teststring), teststring)
         except AttributeError, e:
             self.fail(e.message)
+
+        class C(imports.child.Child): pass
+        c = C()
+        self.assertEqual(c.value(teststring), teststring)
 
     def testPassMeAClass(self):
         res = PassMeAClassFunction(PassMeAClass)
