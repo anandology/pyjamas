@@ -182,7 +182,7 @@ class JSONResponseTextHandler(object):
                          data=data,
                         )
             self.request.handler.onRemoteError(0, error, self.request)
-        elif response.get("result"):
+        elif "result" in response:
             self.request.handler.onRemoteResponse(response["result"], 
                                                   self.request)
         else:
