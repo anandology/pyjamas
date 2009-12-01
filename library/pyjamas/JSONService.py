@@ -79,7 +79,7 @@ class JSONService(object):
         else:
             return self.sendRequest(method, params, handler)
 
-    def onCompletion(self):
+    def onCompletion(self, response):
         pass
 
     def sendNotify(self, method, params):
