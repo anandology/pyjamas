@@ -2186,6 +2186,9 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             raise TranslationError(
                 "unsupported type (in _callfunc)", v.node, self.module_name)
 
+        if method_name in pyjs_attrib_remap:
+            method_name = pyjs_attrib_remap[method_name]
+
         call_name = strip_py(call_name)
 
         kwargs = []

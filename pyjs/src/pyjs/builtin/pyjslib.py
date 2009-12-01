@@ -6022,6 +6022,8 @@ def toJSObjects(x):
             }
             return result;
          """)
+    if isString(x):
+        return str(x)
     return x
 
 def sprintf(strng, args):
