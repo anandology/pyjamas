@@ -2153,7 +2153,9 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                 call_name, method_name = self._name2(v.node.expr, current_klass, attrname)
                 call_args = []
             elif isinstance(v.node.expr, self.ast.Getattr):
-                call_name = self.attrib_join(self._getattr2(v.node.expr, current_klass, v.node.attrname))
+                call_name = self._getattr2(v.node.expr, current_klass, v.node.attrname)
+                method_name = call_name.pop()
+                call_name = self.attrib_join(call_name)
                 call_args = []
             elif isinstance(v.node.expr, self.ast.CallFunc):
                 call_name = self._callfunc(v.node.expr, current_klass)
