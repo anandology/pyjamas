@@ -160,7 +160,7 @@ class JSONResponseTextHandler(object):
         if not response:
             error = dict(
                          code=-32603,
-                         message="Empty Resonse",
+                         message="Empty Response",
                          data=None,
                         )
             self.request.handler.onRemoteError(0, error, self.request)
@@ -188,7 +188,7 @@ class JSONResponseTextHandler(object):
         else:
             error = dict(
                          code=-32603,
-                         message="No reult or error in response",
+                         message="No result or error in response",
                          data=response,
                         )
             self.request.handler.onRemoteError(0, error, self.request)
