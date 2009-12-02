@@ -5485,7 +5485,7 @@ def isinstance(object_, classinfo):
         case 'str':
             return typeof object_ == 'string';
         case 'bool':
-            return pyjslib.isBool(object_);
+            return typeof object_ == 'boolean';
         case 'long':
             return object_.__number__ == 0x04;
     }
