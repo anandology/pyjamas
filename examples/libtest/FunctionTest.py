@@ -160,6 +160,13 @@ class FunctionTest(UnitTest):
             return inittest
         self.assertEqual(f(), inittest)
 
+    def testKwargs(self):
+        def f(**kwargs):
+            return kwargs
+
+        self.assertEqual(f(), {})
+        self.assertEqual(f(a=1), dict(a=1))
+
     def testFunctionDecorating(self):
         log = []
         def deco1(f):

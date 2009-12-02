@@ -1683,7 +1683,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
     def _default_args_handler(self, node, arg_names, current_klass, kwargname,
                               output=None):
         output = output or self.output
-        if node.kwargs and (len(arg_names) > 0):
+        if node.kwargs:
             # This is necessary when **kwargs in function definition
             # and the call didn't pass the pyjs_kwargs_call().
             # See libtest testKwArgsInherit
