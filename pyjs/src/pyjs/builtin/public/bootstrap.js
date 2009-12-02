@@ -15,9 +15,13 @@ var __pygwt_onLoadError = function (exception, name) {
    if (typeof exc_name == 'undefined') {
      exc_name = exception.name;
    }
-   if (msg == '' || msg == exc_name) {
-     if (exception.args.l.length > 0) {
-        msg = exception.args.l.join(", ");
+   if (typeof msg == 'undefined' || msg == '' || msg == exc_name) {
+     if (    exception.args
+         && exception.args.__array
+	 && exception.args.__array.length > 0) {
+        msg = exception.args.__array.join(", ");
+     } else {
+        msg = exception.toString();
      }
    }
    alert( name + " " + exc_name + ': '  + msg );
