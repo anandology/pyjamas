@@ -166,12 +166,12 @@ class JSONResponseTextHandler(object):
             self.request.handler.onRemoteError(0, error, self.request)
         elif response.get("error"):
             error = response["error"]
-            jsonrpc = error.get("jsonrpc")
+            jsonrpc = response.get("jsonrpc")
             code = error.get("code", 0)
-            message = error.get("message", errors)
+            message = error.get("message", error)
             data = error.get("data")
             if not jsonrpc:
-                jsonrpc = error.get("version", "1.0")
+                jsonrpc = response.get("version", "1.0")
                 if jsonrpc == "1.0":
                     message = error
                 else:
