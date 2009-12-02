@@ -751,6 +751,7 @@ class Translator:
         self.constant_int = {}
         self.constant_long = {}
         self.top_level = True
+        PYJSLIB_BUILTIN_MAPPING['__file__'] = "'%s'" % module_file_name
 
         print >>self.output, self.spacing() + "/* start module: %s */" % module_name
         if not '.' in module_name:
