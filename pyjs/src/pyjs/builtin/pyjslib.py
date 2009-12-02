@@ -1686,13 +1686,13 @@ JS("""
     $int.__rshift__ = function (y) {
         if (y.__number__ != 0x02) return pyjslib['NotImplemented'];
         y = y.__v;
-        return new $int(this.__v >>> y);
+        return new $int(this.__v >> y);
     };
 
     $int.__rrshift__ = function (y) {
         if (y.__number__ != 0x02) return pyjslib['NotImplemented'];
         y = y.__v;
-        return new $int(y >>> this.__v);
+        return new $int(y >> this.__v);
     };
 
     $int.__and__ = function (y) {
