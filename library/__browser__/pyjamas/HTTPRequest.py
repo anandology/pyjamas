@@ -33,7 +33,7 @@ class HTTPRequest:
                 headers["Content-Type"] = "text/plain; charset=utf-8"
         xmlHttp = self.doCreateXmlHTTPRequest()
 
-        def onreadystatechange(evnt):
+        def onreadystatechange(evnt=None):
             global xmlHttp, handler
             if xmlHttp.readyState == 4:
                 # For IE:
