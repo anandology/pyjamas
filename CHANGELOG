@@ -1,6 +1,10 @@
                     Changes made to Pyjamas since 0.6
                     ---------------------------------
 
+ * Add initial port of python logging module
+   Supports logging.StreamHandler (to log to console with print statement) and
+   logging.handlers.HTTPHandler (to log to remote webserver)
+
  * Updated JSONRPC to conform JSON-RPC 1.0/1.1/2.0 and to return
    JSON-RPC 2.0 error dicts ini onRemeoteError (other errors are 
    mapped to JSON-RPC 2.0 format)
