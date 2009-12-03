@@ -35,6 +35,11 @@ class DictTest(UnitTest):
         self.assertEqual(2, d.get('bar', 2))
         self.assertEqual(2, d.setdefault('bar', 3))
 
+        d = {}
+        d.update({1:1})
+        d.update({2:2}, a='a')
+        self.assertEqual(d, {1:1, 2:2, 'a':'a'})
+        self.assertRaises(TypeError, getattr(d, 'update'), {}, {})
 
     def testTupleKeys(self):
         d = {}

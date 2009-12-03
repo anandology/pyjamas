@@ -4321,9 +4321,15 @@ class Dict:
         return typeof self.__object[sKey] == 'undefined' ? default_value : self.__object[sKey][1];
 """)
 
-    def update(self, d):
-        for k,v in d.iteritems():
-            self[k] = v
+    def update(self, *args, **kwargs):
+        if args:
+            if len(args) > 1:
+                raise TypeError("update expected at most 1 arguments, got %d" % len(args))
+            for k,v in args[0].iteritems():
+                self[k] = v
+        if kwargs:
+            for k,v in kwargs.iteritems():
+                self[k] = v
 
     def pop(self, k, *d):
         if len(d) > 1:
