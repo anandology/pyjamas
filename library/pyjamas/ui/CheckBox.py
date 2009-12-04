@@ -17,6 +17,7 @@ from pyjamas import Factory
 
 from ButtonBase import ButtonBase
 from pyjamas.ui import Event
+from pyjamas.ui import Focus
 
 _CheckBox_unique_id=0;
 
@@ -84,7 +85,7 @@ class CheckBox(ButtonBase):
     def setEnabled(self, enabled):
         DOM.setBooleanAttribute(self.inputElem, "disabled", not enabled)
 
-    def setFocus(focused):
+    def setFocus(self, focused):
         if focused:
             Focus.focus(self.inputElem)
         else:
