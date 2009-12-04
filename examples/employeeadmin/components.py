@@ -69,11 +69,9 @@ class RolePanel(AbsolutePanel):
         self.roleCombo = ListBox()
         self.roleCombo.addClickListener(self.onComboClick)
         self.roleCombo.addKeyboardListener(self)
-        self.addBtn = Button("Add", self)
-        self.addBtn.addClickListener(self.onAdd)
+        self.addBtn = Button("Add")
         self.addBtn.setEnabled(False)
-        self.removeBtn = Button("Remove", self)
-        self.removeBtn.addClickListener(self.onRemove)
+        self.removeBtn = Button("Remove")
         self.removeBtn.setEnabled(False)
 
         vpanel = VerticalPanel()
@@ -123,12 +121,6 @@ class RolePanel(AbsolutePanel):
         self.addBtn.setEnabled(False)
         self.roleCombo.setItemTextSelection(None)
     
-    def onAdd(self, evt):
-        self.mediator.sendNotification(EmployeeAdmin.AppFacade.ADD_ROLE,self.selectedRole)
-    
-    def onRemove(self,evt):
-        self.mediator.sendNotification(EmployeeAdmin.AppFacade.REMOVE_ROLE,self.selectedRole)
-
     def onClick(self, sender):
         pass
 
@@ -169,8 +161,8 @@ class UserList(AbsolutePanel):
         self.userGrid.setColLabelValue(4,"Department")
         self.userGrid.setColLabelValue(5,"Password")
 
-        self.newBtn = Button("New", self.onNew)
-        self.deleteBtn = Button("Delete", self.onDelete)
+        self.newBtn = Button("New")
+        self.deleteBtn = Button("Delete")
         self.deleteBtn.setEnabled(False)
 
         self.add(self.userGrid)
@@ -200,21 +192,12 @@ class UserList(AbsolutePanel):
                 self.userGrid.selectRow(-1)
                 self.selectedUser = None
                 self.deleteBtn.setEnabled(False)
-            self.mediator.sendNotification(EmployeeAdmin.AppFacade.USER_SELECTED,self.selectedUser)
         except IndexError:
             pass
     
     def deSelect(self):
         self.userGrid.selectRow(-1)
     
-    def onNew(self, sender):
-        self.mediator.sendNotification(EmployeeAdmin.AppFacade.NEW_USER)
-        self.deSelect()
-
-    def onDelete(self, sender):
-        if self.selectedUser:
-            self.mediator.sendNotification(EmployeeAdmin.AppFacade.DELETE_USER, self.selectedUser)
-            self.deSelect()
 
 class UserForm(AbsolutePanel):
     
@@ -282,10 +265,10 @@ class UserForm(AbsolutePanel):
         ftable.setWidget(6, 1, self.departmentCombo)
 
         hpanel = HorizontalPanel()
-        self.addBtn = Button("Add User", self.onAdd)
+        self.addBtn = Button("Add User")
         self.addBtn.setEnabled(False)
         hpanel.add(self.addBtn)
-        self.cancelBtn = Button("Cancel", self.onCancel)
+        self.cancelBtn = Button("Cancel")
         hpanel.add(self.cancelBtn)
         ftable.setWidget(7, 0, hpanel)
         ftableFormatter.setColSpan(7, 0, 2)
@@ -317,16 +300,6 @@ class UserForm(AbsolutePanel):
         else:
             self.addBtn.setText("Update User")
         
-    def onAdd(self, evt):       
-        if self.mode == self.MODE_ADD:
-            self.mediator.sendNotification(EmployeeAdmin.AppFacade.ADD_USER)
-        else:
-            self.mediator.sendNotification(EmployeeAdmin.AppFacade.UPDATE_USER)
-        self.checkValid()
-
-    def onCancel(self, evt):
-        self.mediator.sendNotification(EmployeeAdmin.AppFacade.CANCEL_USER)
-
     def checkValid(self, evt=None):
         if self.enableSubmit(self.usernameInput.getText(),self.passwordInput.getText(),self.confirmInput.getText(), self.departmentCombo.getSelectedItemText(True)):
             self.addBtn.setEnabled(True)

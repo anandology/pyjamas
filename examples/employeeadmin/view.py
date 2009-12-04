@@ -42,6 +42,8 @@ class UserFormMediator(puremvc.patterns.mediator.Mediator, puremvc.interfaces.IM
     def __init__(self, viewComponent):
         super(UserFormMediator, self).__init__(UserFormMediator.NAME, viewComponent)
         self.viewComponent.mediator = self
+        self.viewComponent.addBtn.addClickListener(self.onAdd)
+        self.viewComponent.cancelBtn.addClickListener(self.onCancel)
         
         self.userProxy = self.facade.retrieveProxy(model.UserProxy.NAME)
         self.viewComponent.updateDepartmentCombo(consts.DeptList, consts.DEPT_NONE_SELECTED)
@@ -49,9 +51,6 @@ class UserFormMediator(puremvc.patterns.mediator.Mediator, puremvc.interfaces.IM
     def listNotificationInterests(self):
         return [
         EmployeeAdmin.AppFacade.NEW_USER,
-        EmployeeAdmin.AppFacade.ADD_USER,
-        EmployeeAdmin.AppFacade.UPDATE_USER,
-        EmployeeAdmin.AppFacade.CANCEL_USER,
         EmployeeAdmin.AppFacade.USER_DELETED,
         EmployeeAdmin.AppFacade.USER_SELECTED
         ]
@@ -64,15 +63,6 @@ class UserFormMediator(puremvc.patterns.mediator.Mediator, puremvc.interfaces.IM
                 self.clearForm()
                 self.viewComponent.firstInput.setFocus(True)
             
-            if noteName == EmployeeAdmin.AppFacade.ADD_USER:
-                self.onAdd()
-
-            if noteName == EmployeeAdmin.AppFacade.UPDATE_USER:
-                self.onUpdate()
-
-            if noteName == EmployeeAdmin.AppFacade.CANCEL_USER:
-                self.onCancel()
-
             if noteName == EmployeeAdmin.AppFacade.USER_DELETED:
                 self.viewComponent.user = None
                 self.clearForm()
@@ -97,7 +87,13 @@ class UserFormMediator(puremvc.patterns.mediator.Mediator, puremvc.interfaces.IM
         self.viewComponent.confirmInput.setText('')
         self.viewComponent.departmentCombo.setItemTextSelection(None)
     
-    def onAdd(self):
+    def onAdd(self, evnt):
+        if self.viewComponent.mode == self.viewComponent.MODE_ADD:
+            self.addUser()
+        else:
+            self.updateUser()
+
+    def addUser(self):
         l = self.viewComponent.departmentCombo.getSelectedItemText(True)
         l = l and l[0] or None
         user = vo.UserVO(self.viewComponent.usernameInput.getText(), 
@@ -111,7 +107,7 @@ class UserFormMediator(puremvc.patterns.mediator.Mediator, puremvc.interfaces.IM
         self.sendNotification(EmployeeAdmin.AppFacade.USER_ADDED, user)
         self.clearForm()
 
-    def onUpdate(self):
+    def updateUser(self):
         l = self.viewComponent.departmentCombo.getSelectedItemText(True)
         l = l and l[0] or None
         user = vo.UserVO(self.viewComponent.usernameInput.getText(), 
@@ -125,7 +121,7 @@ class UserFormMediator(puremvc.patterns.mediator.Mediator, puremvc.interfaces.IM
         self.sendNotification(EmployeeAdmin.AppFacade.USER_UPDATED, user)
         self.clearForm()
 
-    def onCancel(self):
+    def onCancel(self, evnt):
         self.sendNotification(EmployeeAdmin.AppFacade.CANCEL_SELECTED)
         self.clearForm()
 
@@ -137,7 +133,9 @@ class UserListMediator(puremvc.patterns.mediator.Mediator, puremvc.interfaces.IM
 
     def __init__(self, viewComponent):
         super(UserListMediator, self).__init__(UserListMediator.NAME, viewComponent)
-        self.viewComponent.mediator = self
+        self.viewComponent.newBtn.addClickListener(self.onNewUser)
+        self.viewComponent.deleteBtn.addClickListener(self.onDeleteUser)
+        self.viewComponent.userGrid.addTableListener(self.onSelectUser)
         
         self.userProxy = self.facade.retrieveProxy(model.UserProxy.NAME)
         self.viewComponent.updateUserGrid(self.userProxy.getUsers())
@@ -153,6 +151,7 @@ class UserListMediator(puremvc.patterns.mediator.Mediator, puremvc.interfaces.IM
     def handleNotification(self, note):
         try:
             noteName = note.getName()
+            self.viewComponent.deSelect()
             if noteName == EmployeeAdmin.AppFacade.CANCEL_SELECTED:
                 self.viewComponent.deSelect()
                 self.viewComponent.updateUserGrid(self.userProxy.getUsers())
@@ -171,15 +170,18 @@ class UserListMediator(puremvc.patterns.mediator.Mediator, puremvc.interfaces.IM
         except:
             raise
             
-    def onSelect(self, evt):
+    def onSelectUser(self, evt):
         self.sendNotification(EmployeeAdmin.AppFacade.USER_SELECTED,self.viewComponent.selectedUser)
     
-    def onNew(self, evt):
-        user = vo.UserVO()
-        self.sendNotification(EmployeeAdmin.AppFacade.NEW_USER, user)
+    def onNewUser(self, evnt):
+        self.viewComponent.deSelect()
+        self.sendNotification(EmployeeAdmin.AppFacade.NEW_USER)
 
-    def onDelete(self, evt):
-        self.sendNotification(EmployeeAdmin.AppFacade.DELETE_USER,self.viewComponent.selectedUser)
+    def onDeleteUser(self, evnt):
+        if self.viewComponent.selectedUser:
+            self.sendNotification(EmployeeAdmin.AppFacade.DELETE_USER,self.viewComponent.selectedUser)
+            self.viewComponent.deSelect()
+
 
 class RolePanelMediator(puremvc.patterns.mediator.Mediator, puremvc.interfaces.IMediator):
 
@@ -189,7 +191,8 @@ class RolePanelMediator(puremvc.patterns.mediator.Mediator, puremvc.interfaces.I
 
     def __init__(self, viewComponent):
         super(RolePanelMediator, self).__init__(RolePanelMediator.NAME, viewComponent)
-        self.viewComponent.mediator = self
+        self.viewComponent.addBtn.addClickListener(self.onAddRole)
+        self.viewComponent.removeBtn.addClickListener(self.onRemoveRole)
 
         self.roleProxy = self.facade.retrieveProxy(model.RoleProxy.NAME)
         self.viewComponent.updateRoleCombo(consts.RoleList, consts.ROLE_NONE_SELECTED)
@@ -197,10 +200,10 @@ class RolePanelMediator(puremvc.patterns.mediator.Mediator, puremvc.interfaces.I
     def getRolePanel(self):
         return viewComponent
     
-    def onAddRole(self):
+    def onAddRole(self, evnt):
         self.roleProxy.addRoleToUser(self.viewComponent.user, self.viewComponent.selectedRole)
 
-    def onRemoveRole(self):
+    def onRemoveRole(self, evnt):
         self.roleProxy.removeRoleFromUser(self.viewComponent.user, self.viewComponent.selectedRole)
         self.viewComponent.updateRoleList(self.roleProxy.getUserRoles(self.viewComponent.user.username))
 
@@ -212,9 +215,7 @@ class RolePanelMediator(puremvc.patterns.mediator.Mediator, puremvc.interfaces.I
         EmployeeAdmin.AppFacade.USER_DELETED,
         EmployeeAdmin.AppFacade.CANCEL_SELECTED,
         EmployeeAdmin.AppFacade.USER_SELECTED,
-        EmployeeAdmin.AppFacade.ADD_ROLE,
         EmployeeAdmin.AppFacade.ADD_ROLE_RESULT,
-        EmployeeAdmin.AppFacade.REMOVE_ROLE,
         ]
 
     def handleNotification(self, note): 
@@ -246,14 +247,8 @@ class RolePanelMediator(puremvc.patterns.mediator.Mediator, puremvc.interfaces.I
                 else:
                     self.viewComponent.updateRoleList(self.roleProxy.getUserRoles(self.viewComponent.user.username))
 
-            elif noteName ==  EmployeeAdmin.AppFacade.ADD_ROLE:
-                self.onAddRole()
-            
             elif noteName ==  EmployeeAdmin.AppFacade.ADD_ROLE_RESULT:
                 self.viewComponent.updateRoleList(self.roleProxy.getUserRoles(self.viewComponent.user.username))
-            
-            elif noteName ==  EmployeeAdmin.AppFacade.REMOVE_ROLE:
-                self.onRemoveRole()
         except:
             raise
         

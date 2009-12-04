@@ -31,16 +31,8 @@ class AppFacade(puremvc.patterns.facade.Facade):
     USER_UPDATED      = "userUpdated"
     USER_DELETED      = "userDeleted"
 
-    ADD_USER          = "addUser"
-    UPDATE_USER       = "updateUser"
-    CANCEL_USER       = "cancelUser"
-
-    ADD_ROLE          = "addRole"
     ADD_ROLE_RESULT   = "addRoleResult"
     
-    REMOVE_ROLE       = "removeRole"
-    REMOVE_ROLE_RESULT= "removeRoleResule"
-
     SHOW_DIALOG       = "showDialog"
     
     
