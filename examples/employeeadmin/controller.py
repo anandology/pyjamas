@@ -5,33 +5,34 @@ Copyright(c) 2007-08 Toby de Havilland, Some rights reserved.
 Addapted for pyjamas: Kees Bos
 """
 
-import puremvc.patterns.command
-import puremvc.interfaces
-import model, view, EmployeeAdmin
+from puremvc.patterns.command import SimpleCommand
+import model, view
+from ApplicationConstants import Command, Notification
 
-
-class StartupCommand(puremvc.patterns.command.SimpleCommand, puremvc.interfaces.ICommand):
+class StartupCommand(SimpleCommand):
     def execute(self,note):
-        self.facade.registerProxy(model.UserProxy())
-        self.facade.registerProxy(model.RoleProxy())
+        facade = self.facade
+        facade.registerProxy(model.UserProxy())
+        facade.registerProxy(model.RoleProxy())
     
         mainPanel = note.getBody()
-        self.facade.registerMediator(view.DialogMediator(mainPanel))
-        self.facade.registerMediator(view.UserFormMediator(mainPanel.userForm))
-        self.facade.registerMediator(view.UserListMediator(mainPanel.userList))
-        self.facade.registerMediator(view.RolePanelMediator(mainPanel.rolePanel))
+        facade.registerMediator(view.DialogMediator(mainPanel))
+        facade.registerMediator(view.UserFormMediator(mainPanel.userForm))
+        facade.registerMediator(view.UserListMediator(mainPanel.userList))
+        facade.registerMediator(view.RolePanelMediator(mainPanel.rolePanel))
 
-class AddRoleResultCommand(puremvc.patterns.command.SimpleCommand, puremvc.interfaces.ICommand):
+class AddRoleResultCommand(SimpleCommand):
     def execute(self,note):
         result = note.getBody()
         if not result:
-            self.facade.sendNotification(EmployeeAdmin.AppFacade.SHOW_DIALOG, "Role already exists for this user.")
+            self.facade.sendNotification(Notification.SHOW_DIALOG, "Role already exists for this user.")
 
-class DeleteUserCommand(puremvc.patterns.command.SimpleCommand, puremvc.interfaces.ICommand):
+class DeleteUserCommand(SimpleCommand):
     def execute(self,note):
            user = note.getBody()
-           userProxy = self.facade.retrieveProxy(model.UserProxy.NAME)
-           roleProxy = self.facade.retrieveProxy(model.RoleProxy.NAME)
+           facade = self.facade
+           userProxy = facade.retrieveProxy(model.UserProxy.NAME)
+           roleProxy = facade.retrieveProxy(model.RoleProxy.NAME)
            userProxy.deleteItem(user)       
            roleProxy.deleteItem(user)
-           self.facade.sendNotification(EmployeeAdmin.AppFacade.USER_DELETED)
+           facade.sendNotification(Notification.USER_DELETED)

@@ -3,6 +3,7 @@ PureMVC Python Demo - wxPython Employee Admin
 By Toby de Havilland <toby.de.havilland@puremvc.org>
 Copyright(c) 2007-08 Toby de Havilland, Some rights reserved.
 Addapted for pyjamas: Kees Bos
+Suggestions and code enhancements: Jim Washington
 """
 
 import pyjd # dummy
@@ -17,43 +18,22 @@ which doesn't seem to be available.\n\
 See README.
 """)
 
+from puremvc.patterns.facade import Facade
+from ApplicationConstants import Command
 import controller, components
 
-class AppFacade(puremvc.patterns.facade.Facade):
-    
-    STARTUP           = "startup"
-    NEW_USER          = "newUser"
-    DELETE_USER       = "deleteUser"
-    CANCEL_SELECTED   = "cancelSelected"
-
-    USER_SELECTED     = "userSelected"
-    USER_ADDED        = "userAdded"
-    USER_UPDATED      = "userUpdated"
-    USER_DELETED      = "userDeleted"
-
-    ADD_ROLE_RESULT   = "addRoleResult"
-    
-    SHOW_DIALOG       = "showDialog"
-    
+class AppFacade(Facade):
     
     def __init__(self):
         self.initializeFacade()
+        self.initializeController()
+        self.registerCommand(Command.STARTUP, controller.StartupCommand)
+        self.registerCommand(Command.DELETE_USER, controller.DeleteUserCommand)
+        self.registerCommand(Command.ADD_ROLE_RESULT, controller.AddRoleResultCommand)
         
     @staticmethod
     def getInstance():
         return AppFacade()
-        
-    def initializeFacade(self):
-        super(AppFacade, self).initializeFacade()
-    
-        self.initializeController()
-   
-    def initializeController(self):
-        super(AppFacade, self).initializeController()
-        
-        super(AppFacade, self).registerCommand(AppFacade.STARTUP, controller.StartupCommand)
-        super(AppFacade, self).registerCommand(AppFacade.DELETE_USER, controller.DeleteUserCommand)
-        super(AppFacade, self).registerCommand(AppFacade.ADD_ROLE_RESULT, controller.AddRoleResultCommand)
 
 
 if __name__ == '__main__':
@@ -61,5 +41,5 @@ if __name__ == '__main__':
     pyjd.setup("./public/EmployeeAdmin.html")
     app = AppFacade.getInstance()
     pyjsApp = components.PyJsApp()
-    app.sendNotification(AppFacade.STARTUP, pyjsApp.appFrame)
+    app.sendNotification(Command.STARTUP, pyjsApp.appFrame)
     pyjd.run()

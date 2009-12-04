@@ -18,8 +18,7 @@ from pyjamas.ui.PasswordTextBox import PasswordTextBox
 from pyjamas.ui.ListBox import ListBox
 
 from Grid import Grid
-
-import EmployeeAdmin
+import ApplicationConstants
 
 class PyJsApp(object):
     
@@ -101,7 +100,9 @@ class RolePanel(AbsolutePanel):
     
     def onComboClick(self, sender, keyCode=None, modifiers=None):
         selected = self.roleCombo.getSelectedItemText()
-        if not selected or not self.user:
+        if  not selected \
+            or selected[0] == ApplicationConstants.ROLE_NONE_SELECTED \
+            or not self.user:
             self.addBtn.setEnabled(False)
             self.selectedRole=None
         else:

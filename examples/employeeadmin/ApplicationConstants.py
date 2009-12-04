@@ -49,3 +49,22 @@ RoleList =  [ ROLE_NONE_SELECTED,
             ROLE_SHIPPING,
             ROLE_RETURNS
             ]
+
+class Command(object):
+    STARTUP           = "startup"
+
+    DELETE_USER       = "deleteUser"
+
+    ADD_ROLE_RESULT   = "addRoleResult"
+
+class Notification(object):
+    NEW_USER          = "newUser"
+    CANCEL_SELECTED   = "cancelSelected"
+
+    USER_SELECTED     = "userSelected"
+    USER_ADDED        = "userAdded"
+    USER_UPDATED      = "userUpdated"
+    USER_DELETED      = "userDeleted"
+
+    SHOW_DIALOG       = "showDialog"
+
