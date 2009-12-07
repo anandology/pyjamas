@@ -8,9 +8,9 @@ from pyjamas.ui.FlexTable import FlexTable
 from pyjamas.ui.Label import Label
 from pyjamas.ui.TextBox import TextBox
 
-from components.Grid import Grid
+from Grid import Grid
 
-from vo.TimeVO import TimeVO
+from model.vo.TimeVO import TimeVO
 
 class TimeGrid(FlexTable):
 

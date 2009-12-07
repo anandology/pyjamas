@@ -11,10 +11,10 @@ from pyjamas.ui.VerticalPanel import VerticalPanel
 
 from pyjamas.ui.Button import Button
 
-from components.Menu import Menu
-from components.DatePicker import DatePicker
-from components.TimeGrid import TimeGrid
-from components.Summary import Summary
+from Menu import Menu
+from DatePicker import DatePicker
+from TimeGrid import TimeGrid
+from Summary import Summary
 
 
 class AppFrame(RootPanelCls):

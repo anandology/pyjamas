@@ -14,7 +14,7 @@ from pyjamas.Timer import Timer
 
 from ApplicationConstants import Notification
 from controller.StartupCommand import StartupCommand
-from components.AppFrame import AppFrame
+from view.components.AppFrame import AppFrame
 
 class AppFacade(Facade):
 

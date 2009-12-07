@@ -7,7 +7,7 @@ from ApplicationConstants import Notification
 
 import model
 from model.TimeProxy import TimeProxy
-from vo.TimeVO import TimeVO
+from model.vo.TimeVO import TimeVO
 
 from pyjamas.Cookies import setCookie
 from pyjamas.Window import alert

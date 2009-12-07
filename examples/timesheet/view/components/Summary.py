@@ -7,7 +7,7 @@ from pyjamas.ui.VerticalPanel import VerticalPanel
 from pyjamas.ui.FlexTable import FlexTable
 from pyjamas.ui.Label import Label
 
-from components.Grid import Grid
+from Grid import Grid
 
 import time
 
