@@ -29,7 +29,6 @@ class Summary(FlexTable):
             raise
 
     def setEntries(self, entries):
-      print 'setEntries:', entries
       try:
         #tt = time.localtime(time.time())
         tt = [0] * 9
@@ -62,12 +61,9 @@ class Summary(FlexTable):
             descr[0] = descr[0] + dt
             project[2][timeVO.description.lower()] = descr
             timelines[timeVO.project.lower()] = project
-        print 'timelines:', timelines
-        print 'getRowCount (1):', self.getRowCount()
         for row in range(self.getRowCount()):
             self.removeRow(0)
         self.rows = 0
-        print 'getRowCount (2):', self.getRowCount()
         self.addHeader()
         projects = timelines.keys()
         projects.sort()

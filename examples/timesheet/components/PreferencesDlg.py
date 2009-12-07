@@ -28,7 +28,10 @@ class PreferencesDlg(DialogBox):
         ftableFormatter = ftable.getFlexCellFormatter()
         row = 0
 
-        self.fileLocation = getCookie("fileLocation")
+        try:
+            self.fileLocation = getCookie("fileLocation")
+        except:
+            self.fileLocation = None
 
         row += 1
         ftable.setWidget(row, 0, Label("Sheet loaded on startup", wordWrap=False))
@@ -55,7 +58,10 @@ class PreferencesDlg(DialogBox):
         self.hide()
 
     def onSave(self, sender):
-        setCookie("fileLocation", self.fileLocationInput.getText(), 1000000000)
+        try:
+            setCookie("fileLocation", self.fileLocationInput.getText(), 1000000000)
+        except:
+            pass
         self.hide()
 
     def checkValid(self, evt=None):

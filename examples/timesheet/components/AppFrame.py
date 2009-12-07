@@ -44,13 +44,3 @@ class AppFrame(RootPanelCls):
             self.add(vpanel)
         except:
             raise
-
-    def onHello(self, sender):
-        self.mediator.sendNotification(Notification.HELLO)
-
-    def onOpen(self, sender):
-        self.mediator.sendNotification(Notification.MENU_FILE_OPEN)
-
-    def onSaveAs(self, sender):
-        self.mediator.sendNotification(Notification.MENU_FILE_SAVEAS)
-

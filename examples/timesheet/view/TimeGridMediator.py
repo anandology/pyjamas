@@ -71,5 +71,8 @@ class TimeGridMediator(Mediator):
             return False
         date = self.timeProxy.importData(data, invalid)
         if date:
-            setCookie("fileLocation", filename, 1000000000)
+            try:
+                setCookie("fileLocation", filename, 1000000000)
+            except:
+                pass
             self.sendNotification(Notification.DATE_SELECTED, date)

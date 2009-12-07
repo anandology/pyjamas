@@ -12,32 +12,20 @@ class DatePickerMediator(Mediator):
     NAME = 'DatePickerMediator'
 
     def __init__(self, viewComponent):
-        super(DatePickerMediator, self).__init__(DatePickerMediator.NAME, viewComponent)
-        self.viewComponent.mediator = self
-        self.viewComponent.displayDay()
+        Mediator.__init__(self, DatePickerMediator.NAME, viewComponent)
+        viewComponent.prevDayBtn.addClickListener(self.displayDay)
+        viewComponent.nextDayBtn.addClickListener(self.displayDay)
+        viewComponent.prevWeekBtn.addClickListener(self.displayDay)
+        viewComponent.nextWeekBtn.addClickListener(self.displayDay)
+        self.displayDay()
 
     def listNotificationInterests(self):
-        return [
-            Notification.PREV_DAY,
-            Notification.NEXT_DAY,
-            Notification.PREV_WEEK,
-            Notification.NEXT_WEEK,
-            Notification.DISPLAY_DAY,
-        ]
+        return []
 
     def handleNotification(self, note):
-        try:
-            noteName = note.getName()
-            if noteName == Notification.PREV_DAY:
-                self.viewComponent.prevDay()
-            elif noteName == Notification.NEXT_DAY:
-                self.viewComponent.nextDay()
-            elif noteName == Notification.PREV_WEEK:
-                self.viewComponent.prevWeek()
-            elif noteName == Notification.NEXT_WEEK:
-                self.viewComponent.nextWeek()
-            elif noteName == Notification.DISPLAY_DAY:
-                self.viewComponent.displayDay()
-        except:
-            raise
+        pass
 
+    def displayDay(self, sender=None):
+        self.viewComponent.displayDay()
+        self.sendNotification(Notification.DATE_SELECTED, 
+                              self.viewComponent.date)

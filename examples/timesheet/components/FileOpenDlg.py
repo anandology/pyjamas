@@ -30,6 +30,8 @@ class FileOpenDlg(DialogBox):
         global has_getAsText
         try:
             DialogBox.__init__(self, modal = False)
+            self.filename = None
+            self.data = None
 
             self.setPopupPosition(left, top)
             self.dockPanel = DockPanel()
@@ -42,7 +44,6 @@ class FileOpenDlg(DialogBox):
                 location =  fileLocation
                 if fileLocation.find("://") < 0:
                     base = Window.getLocation().getHref()
-                    print base
                     if base.find('/') >= 0:
                         sep = '/'
                     else:
@@ -80,9 +81,9 @@ class FileOpenDlg(DialogBox):
             if self.iframe:
                 self.iframe.setWidth("36em")
             hpanel = HorizontalPanel()
-            self.openBtn = Button("Open", self)
+            self.openBtn = Button("Open", self.onClickOpen)
             hpanel.add(self.openBtn)
-            self.cancelBtn = Button("Cancel", self)
+            self.cancelBtn = Button("Cancel", self.onClickCancel)
             hpanel.add(self.cancelBtn)
             self.dockPanel.add(hpanel, DockPanel.SOUTH)
 
@@ -90,40 +91,41 @@ class FileOpenDlg(DialogBox):
         except:
             raise
 
-    def onClick(self, sender):
+    def onClickCancel(self, sender):
+        self.hide()
+
+    def onClickOpen(self, sender):
         global has_getAsText
-        if sender == self.cancelBtn:
-            self.hide()
-        elif sender == self.openBtn:
-            data = None
-            filename = None
-            if self.files:
-                if self.files.length == 0:
-                    return
-                if self.files.length > 1:
-                    alert("Cannot open more than one file")
-                    return
-                file = self.files.item(0)
-                filename = file.fileName
-                try:
-                    data = file.getAsText("")
-                except AttributeError, e:
-                    has_getAsText = False
-                    alert("Sorry. cannot retrieve file in this browser.\nTry again.")
+        data = None
+        filename = None
+        if self.files:
+            if self.files.length == 0:
+                return
+            if self.files.length > 1:
+                alert("Cannot open more than one file")
+                return
+            file = self.files.item(0)
+            filename = file.fileName
+            try:
+                data = file.getAsText("")
+            except AttributeError, e:
+                has_getAsText = False
+                alert("Sorry. cannot retrieve file in this browser.\nTry again.")
+        else:
+            elem = self.iframe.getElement()
+            # On firefox, this runs into:
+            #   Permission denied to get property Window.document
+            # when the file is not in the current domain
+            body = elem.contentWindow.document.body
+            try:
+                filename = '' + elem.contentWindow.location
+            except:
+                filename = None
+            if body.childNodes.length == 1:
+                data = '' + body.childNodes.item(0).innerHTML
             else:
-                elem = self.iframe.getElement()
-                # On firefox, this runs into:
-                #   Permission denied to get property Window.document
-                # when the file is not in the current domain
-                body = elem.contentWindow.document.body
-                try:
-                    filename = '' + elem.contentWindow.location
-                except:
-                    filename = None
-                if body.childNodes.length == 1:
-                    data = '' + body.childNodes.item(0).innerHTML
-                else:
-                    data = '' + body.innerHTML
-            self.hide()
-            if data:
-                self.mediator.sendNotification(Notification.FILE_LOADED, (filename, data))
+                data = '' + body.innerHTML
+        self.hide()
+        if data:
+            self.data = data
+            self.filename = filename

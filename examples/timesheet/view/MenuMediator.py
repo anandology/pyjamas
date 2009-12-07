@@ -25,51 +25,45 @@ class MenuMediator(Mediator):
     fileLocation = None
 
     def __init__(self, viewComponent):
-        super(MenuMediator, self).__init__(MenuMediator.NAME, viewComponent)
-        self.viewComponent.mediator = self
+        Mediator.__init__(self, MenuMediator.NAME, viewComponent)
+        viewComponent.mFileOpen.setHandler(self.onFileOpen)
+        viewComponent.mFileSaveAs.setHandler(self.onFileSaveAs)
+        viewComponent.mFilePreferences.setHandler(self.onFilePreferences)
+        viewComponent.mViewEdit.setHandler(self.onViewEdit)
+        viewComponent.mViewSummary.setHandler(self.onViewSummary)
+        viewComponent.mHelpContents.setHandler(self.onHelpContents)
+        viewComponent.mHelpAbout.setHandler(self.onHelpAbout)
         self.timeProxy = self.facade.retrieveProxy(TimeProxy.NAME)
-        self.fileLocation = getCookie("fileLocation")
-        if not self.fileLocation:
-            self.fileLocation = "timesheet.txt"
+        try:
+            fileLocation = getCookie("fileLocation")
+        except:
+            fileLocation = None
+        self.fileLocation = self.checkFileLocation(fileLocation)
         self.onFileOpen(self.fileLocation)
 
     def listNotificationInterests(self):
-        return [
-            Notification.MENU_FILE_OPEN,
-            Notification.MENU_FILE_SAVEAS,
-            Notification.MENU_FILE_PREFS,
-            Notification.MENU_VIEW_EDIT,
-            Notification.MENU_VIEW_SUM,
-            Notification.MENU_VIEW_EDIT,
-            Notification.MENU_VIEW_SUM,
-            Notification.MENU_HELP_CONTENTS,
-            Notification.MENU_HELP_ABOUT,
-        ]
+        return []
 
     def handleNotification(self, note):
-        try:
-            noteName = note.getName()
-            if noteName == Notification.MENU_FILE_OPEN:
-                self.onFileOpen()
-            elif noteName == Notification.MENU_FILE_SAVEAS:
-                self.onFileSaveAs()
-            elif noteName == Notification.MENU_FILE_PREFS:
-                self.onPreferences()
-            elif noteName == Notification.MENU_VIEW_EDIT:
-                self.onViewEdit()
-            elif noteName == Notification.MENU_VIEW_SUM:
-                self.onViewSummary()
-            elif noteName == Notification.MENU_HELP_CONTENTS:
-                self.onHelpContents()
-            elif noteName == Notification.MENU_HELP_ABOUT:
-                self.onHelpAbout()
-        except:
-            raise
+        pass
+
+    def checkFileLocation(self, fileLocation):
+        if fileLocation is None \
+           or fileLocation is "null":
+            fileLocation = "timesheet.txt"
+        return fileLocation
 
     def onFileOpen(self, fileLocation = None):
         try:
+            dlg = None
+
+            def onOpen(sender):
+                self.sendNotification(Notification.FILE_LOADED, 
+                                      (dlg.filename, dlg.data))
+
+            fileLocation = self.checkFileLocation(fileLocation)
             dlg = FileOpenDlg(fileLocation = fileLocation)
-            dlg.mediator = self
+            dlg.openBtn.addClickListener(onOpen)
             dlg.show()
         except:
             raise
@@ -85,7 +79,7 @@ class MenuMediator(Mediator):
         wnd.document.write("</pre>")
         wnd.document.close()
 
-    def onPreferences(self):
+    def onFilePreferences(self):
         dlg = PreferencesDlg()
         dlg.mediator = self
         dlg.show()
@@ -105,4 +99,3 @@ class MenuMediator(Mediator):
         dlg = HelpAboutDlg()
         dlg.mediator = self
         dlg.show()
-
