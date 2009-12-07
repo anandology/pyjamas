@@ -1,11 +1,13 @@
-import puremvc.interfaces
-import puremvc.patterns.mediator
+
+# vim: set ts=4 sw=4 expandtab:
+
+from puremvc.patterns.mediator import Mediator
 
 from ApplicationConstants import Notification
 
 from pyjamas.Window import alert
 
-class DialogMediator(puremvc.patterns.mediator.Mediator, puremvc.interfaces.IMediator):
+class DialogMediator(Mediator):
 
     NAME = 'DialogMediator'
 

@@ -1,8 +1,7 @@
 
 # vim: set ts=4 sw=4 expandtab:
 
-import puremvc.interfaces
-import puremvc.patterns.mediator
+from puremvc.patterns.mediator import Mediator
 
 from ApplicationConstants import Notification
 
@@ -20,7 +19,7 @@ from __pyjamas__ import wnd
 
 import base64
 
-class MenuMediator(puremvc.patterns.mediator.Mediator, puremvc.interfaces.IMediator):
+class MenuMediator(Mediator):
 
     NAME = 'MenuMediator'
     fileLocation = None

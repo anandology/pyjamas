@@ -1,8 +1,7 @@
 
 # vim: set ts=4 sw=4 expandtab:
 
-import puremvc.patterns.command
-import puremvc.interfaces
+from puremvc.patterns.command import SimpleCommand
 
 from model.TimeProxy import TimeProxy
 
@@ -12,7 +11,7 @@ from view.DatePickerMediator import DatePickerMediator
 from view.TimeGridMediator import TimeGridMediator
 from view.SummaryMediator import SummaryMediator
 
-class StartupCommand(puremvc.patterns.command.SimpleCommand, puremvc.interfaces.ICommand):
+class StartupCommand(SimpleCommand):
     def execute(self,note):
         self.facade.registerProxy(TimeProxy())
 

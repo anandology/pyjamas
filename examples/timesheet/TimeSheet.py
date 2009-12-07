@@ -1,7 +1,7 @@
 import pyjd
 
 try:
-    import puremvc.patterns.facade
+    from puremvc.patterns.facade import Facade
 except:
     from pyjamas.Window import alert
     alert("""\
@@ -16,22 +16,16 @@ from ApplicationConstants import Notification
 from controller.StartupCommand import StartupCommand
 from components.AppFrame import AppFrame
 
-class AppFacade(puremvc.patterns.facade.Facade):
+class AppFacade(Facade):
 
     def __init__(self):
         self.initializeFacade()
+        self.initializeController()
+        self.registerCommand(Notification.STARTUP, StartupCommand)
 
     @staticmethod
     def getInstance():
         return AppFacade()
-
-    def initializeFacade(self):
-        super(AppFacade, self).initializeFacade()
-        self.initializeController()
-
-    def initializeController(self):
-        super(AppFacade, self).initializeController()
-        super(AppFacade, self).registerCommand(Notification.STARTUP, StartupCommand)
 
 # workaround for pyjd xulrunner issue: timesheet uses XMLHttpRequest.
 class TimerCls:

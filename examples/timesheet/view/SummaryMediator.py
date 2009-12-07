@@ -1,8 +1,7 @@
 
 # vim: set ts=4 sw=4 expandtab:
 
-import puremvc.interfaces
-import puremvc.patterns.mediator
+from puremvc.patterns.mediator import Mediator
 
 from ApplicationConstants import Notification
 
@@ -11,7 +10,7 @@ from model.TimeProxy import TimeProxy
 
 from pyjamas.Window import alert
 
-class SummaryMediator(puremvc.patterns.mediator.Mediator, puremvc.interfaces.IMediator):
+class SummaryMediator(Mediator):
 
     NAME = 'SummaryMediator'
 
