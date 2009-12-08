@@ -474,6 +474,7 @@ class ClassTest(UnitTest):
         self.assertEqual(["SuperArg3",a3.a1_args], ['SuperArg3', [('a', 1), ('b', 2), ('c', 3)]])
 
     def testImportTest(self):
+        import imports
         self.assertEqual(imports.exec_order[0], 'circ1-1')
         self.assertEqual(exec_order[1], 'circ2-1')
         self.assertEqual(EXEC_ORDER[2], 'circ2-2')

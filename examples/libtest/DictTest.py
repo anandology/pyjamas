@@ -22,18 +22,17 @@ class DictTest(UnitTest):
 
         try:
             x = d['notthere']
+            self.fail('__getitem__ must raise KeyError')
         except KeyError, e:
             self.assertEqual(e.__class__.__name__, 'KeyError')
             self.assertEqual(str(e), "'notthere'")
-            return
-        self.fail('__getitem__ must raise KeyError')
 
         d = {}
         self.assertEqual(1, d.setdefault('foo', 1))
         self.assertEqual(1, d.setdefault('foo', 2))
         self.assertEqual(1, d.get('foo', 2))
         self.assertEqual(2, d.get('bar', 2))
-        self.assertEqual(2, d.setdefault('bar', 3))
+        self.assertEqual(3, d.setdefault('bar', 3))
 
         d = {}
         d.update({1:1})
