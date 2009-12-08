@@ -775,6 +775,8 @@ class BaseException:
         return repr(self.args)
 
     def __repr__(self):
+        if callable(self):
+            return "<type '%s'>" % self.__name__
         return self.__name__ + repr(self.args)
 
 class Exception(BaseException):
@@ -3858,10 +3860,8 @@ class List:
     #See monkey patch at the end of the List class definition
 
     def __repr__(self):
-        #r = []
-        #for item in self:
-        #    r.append(repr(item))
-        #return '[' + ', '.join(r) + ']'
+        if callable(self):
+            return "<type '%s'>" % self.__name__
         JS("""
         var s = "[";
         for (var i=0; i < self.__array.length; i++) {
@@ -4011,12 +4011,8 @@ class Tuple:
     #See monkey patch at the end of the Tuple class definition
 
     def __repr__(self):
-        #r = []
-        #for item in self:
-        #    r.append(repr(item))
-        #if len(r) == 1:
-        #    return '(' + ', '.join(r) + ',)'
-        #return '(' + ', '.join(r) + ')'
+        if callable(self):
+            return "<type '%s'>" % self.__name__
         JS("""
         var s = "(";
         for (var i=0; i < self.__array.length; i++) {
@@ -4368,10 +4364,8 @@ class Dict:
     #See monkey patch at the end of the Dict class definition
 
     def __repr__(self):
-        #r = []
-        #for item in self:
-        #    r.append(repr(item) + ': ' + repr(self[item]))
-        #return '{' + ', '.join(r) + '}'
+        if callable(self):
+            return "<type '%s'>" % self.__name__
         JS("""
         var keys = new Array();
         for (var key in self.__object)
@@ -4560,6 +4554,8 @@ class set(object):
     #See monkey patch at the end of the set class definition
 
     def __repr__(self):
+        if callable(self):
+            return "<type '%s'>" % self.__name__
         JS("""
         var values = new Array();
         var i = 0,
@@ -4977,6 +4973,8 @@ class frozenset(object):
     #See monkey patch at the end of the set class definition
 
     def __repr__(self):
+        if callable(self):
+            return "<type '%s'>" % self.__name__
         JS("""
         var values = new Array();
         var i = 0,
@@ -5407,6 +5405,8 @@ def repr(x):
     """ Return the string representation of 'x'.
     """
     if hasattr(x, '__repr__'):
+        if callable(x):
+            return x.__repr__(x)
         return x.__repr__()
     JS("""
        if (x === null)
