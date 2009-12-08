@@ -9,7 +9,7 @@ function $pyjs_kwargs_call(obj, func, star_args, dstar_args, args)
 
     // Merge dstar_args into args[0]
     if (dstar_args) {
-        if (pyjslib.get_pyjs_classtype(dstar_args) != 'Dict') {
+        if (pyjslib.get_pyjs_classtype(dstar_args) != 'dict') {
             throw (pyjslib.TypeError(func.__name__ + "() arguments after ** must be a dictionary " + pyjslib.repr(dstar_args)));
         }
         var i;
@@ -139,7 +139,7 @@ function $pyjs_kwargs_call(obj, func, star_args, dstar_args, args)
         }
         return func.apply(obj, _args);
     }
-    a = pyjslib.Dict(args[0]);
+    a = pyjslib.dict(args[0]);
     a['$pyjs_is_kwarg'] = true;
     _args.push(a);
     res = func.apply(obj, _args);
@@ -423,7 +423,7 @@ function $pyjs__class_function(cls_fn, prop, bases) {
     }
     cls_fn.__name__ = class_name;
     cls_fn.__module__ = class_module;
-    //cls_fn.__mro__ = pyjslib.List(new Array(cls_fn).concat(__mro__));
+    //cls_fn.__mro__ = pyjslib.list(new Array(cls_fn).concat(__mro__));
     cls_fn.__mro__ = new Array(cls_fn).concat(__mro__);
     cls_fn.prototype = cls_fn;
     cls_fn.__dict__ = cls_fn;

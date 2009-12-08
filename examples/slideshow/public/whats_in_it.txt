@@ -1,6 +1,6 @@
  * Stand-alone Python-to-Javascript Compiler
    ** pyjs.py - understands functions, modules, classes etc.
-   ** pyjslib.py - wraps builtins such as List, Tuple, Dict, string
+   ** pyjslib.py - wraps builtins such as list, tuple, dict, string
  * DOM model module - DOM.py
    ** Javascript/Python hybrid (inline asm-like javascript snippets)
    ** Provides full access to browser DOM (getElementById etc.)

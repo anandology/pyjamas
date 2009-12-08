@@ -7,9 +7,9 @@ JSONEncode:
     +---------------+-------------------+---------------+
     | PYGWT         | Python            | JSON          |
     +===============+===================+===============+
-    | pyjslib.Dict  | dict              | object        |
+    | pyjslib.dict  | dict              | object        |
     +---------------+-------------------+---------------+
-    | pyjslib.List  | list, tuple       | array         |
+    | pyjslib.list  | list, tuple       | array         |
     +---------------+-------------------+---------------+
     | string        | str, unicode      | string        |
     +---------------+-------------------+---------------+
@@ -27,9 +27,9 @@ JSONDecode:
     +---------------+-------------------+--------------+
     | JSON          | Python            | PYGWT        |
     +===============+===================+==============+
-    | object        | dict              | pyjslib.Dict |
+    | object        | dict              | pyjslib.dict |
     +---------------+-------------------+--------------+
-    | array         | list              | pyjslib.List |
+    | array         | list              | pyjslib.list |
     +---------------+-------------------+--------------+
     | string        | unicode           | string       |
     +---------------+-------------------+--------------+
@@ -63,11 +63,11 @@ class JSONParser:
         JS("""
         if (pyjslib.isArray(obj)) {
             for (var i in obj) obj[i] = this.jsObjectToPy(obj[i]);
-            obj=new pyjslib.List(obj);
+            obj=new pyjslib.list(obj);
             }
         else if (pyjslib.isObject(obj)) {
             for (var i in obj) obj[i]=this.jsObjectToPy(obj[i]);
-            obj=new pyjslib.Dict(obj);
+            obj=new pyjslib.dict(obj);
             }
         
         return obj;
@@ -77,7 +77,7 @@ class JSONParser:
         JS("""
         if (pyjslib.isArray(obj)) {
             for (var i in obj) obj[i] = this.jsObjectToPyObject(obj[i]);
-            obj=new pyjslib.List(obj);
+            obj=new pyjslib.list(obj);
             }
         else if (pyjslib.isObject(obj)) {
             if (obj["__jsonclass__"]) {
@@ -89,14 +89,14 @@ class JSONParser:
                 }
             else {
                 for (var i in obj) obj[i]=this.jsObjectToPyObject(obj[i]);
-                obj=new pyjslib.Dict(obj);
+                obj=new pyjslib.dict(obj);
                 }       
             }
         
         return obj;
         """)
     
-    # modified to detect pyjslib.List & pyjslib.Dict
+    # modified to detect pyjslib.list & pyjslib.dict
     def toJSONString(self, obj):
         JS(r"""
    var m = {
@@ -148,10 +148,10 @@ class JSONParser:
                     if (x instanceof Array) {
                         return s.array(x);
                     }
-                    if (x instanceof pyjslib.List) {
+                    if (x instanceof pyjslib.list) {
                         return s.array(x.__array);
                     }
-                    if (x instanceof pyjslib.Dict) {
+                    if (x instanceof pyjslib.dict) {
                         return s.object(pyjslib.toJSObjects(x));
                     }
                     var a = ['{'], b, f, i, v;

@@ -2,7 +2,7 @@ function dictobj() {
 }
 
 function dict_init(d) {
-    var u = new pyjslib.Dict([['goodbye', 2]]);
+    var u = new pyjslib.dict([['goodbye', 2]]);
     this.d = d;
     d.update(u);
 }

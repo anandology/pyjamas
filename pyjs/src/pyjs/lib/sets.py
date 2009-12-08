@@ -37,7 +37,7 @@ class Set:
 
     def __iter__(self):
         JS("""
-        var items=new pyjslib.List();
+        var items=new pyjslib.list();
         for (var key in self.__object) items.append(self.__object[key]);
         return items.__iter__();
         """)

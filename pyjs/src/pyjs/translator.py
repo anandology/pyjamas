@@ -1516,7 +1516,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
 """ % (kwargname, maxargs1)
             s = self.spacing()
             print >> output, """\
-%(s)sif (typeof %(kwargname)s != 'object' || %(kwargname)s.__name__ != 'Dict' || typeof %(kwargname)s.$pyjs_is_kwarg == 'undefined') {\
+%(s)sif (typeof %(kwargname)s != 'object' || %(kwargname)s.__name__ != 'dict' || typeof %(kwargname)s.$pyjs_is_kwarg == 'undefined') {\
 """ % locals()
             if node.varargs:
                 print >> output, """\
@@ -1559,7 +1559,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
 """ % (kwargname, maxargs2)
             s = self.spacing()
             print >> output, """\
-%(s)sif (typeof %(kwargname)s != 'object' || %(kwargname)s.__name__ != 'Dict' || typeof %(kwargname)s.$pyjs_is_kwarg == 'undefined') {\
+%(s)sif (typeof %(kwargname)s != 'object' || %(kwargname)s.__name__ != 'dict' || typeof %(kwargname)s.$pyjs_is_kwarg == 'undefined') {\
 """ % locals()
             if node.varargs:
                 print >> output, """\
@@ -1620,7 +1620,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
 """ % (kwargname, maxargs)
             s = self.spacing()
             print >> output, """\
-%(s)sif (typeof %(kwargname)s != 'object' || %(kwargname)s.__name__ != 'Dict' || typeof %(kwargname)s.$pyjs_is_kwarg == 'undefined') {\
+%(s)sif (typeof %(kwargname)s != 'object' || %(kwargname)s.__name__ != 'dict' || typeof %(kwargname)s.$pyjs_is_kwarg == 'undefined') {\
 """ % locals()
             if node.varargs:
                 print >> output, """\
@@ -1669,7 +1669,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
 """ % (kwargname, maxargs)
             s = self.spacing()
             print >> output, """\
-%(s)sif (typeof %(kwargname)s != 'object' || %(kwargname)s.__name__ != 'Dict' || typeof %(kwargname)s.$pyjs_is_kwarg == 'undefined') {\
+%(s)sif (typeof %(kwargname)s != 'object' || %(kwargname)s.__name__ != 'dict' || typeof %(kwargname)s.$pyjs_is_kwarg == 'undefined') {\
 """ % locals()
             if node.varargs:
                 print >> output, """\
@@ -1731,7 +1731,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         else:
             end = "arguments.length"
         print >> self.output, """\
-%(s)svar %(v)s = pyjslib['Tuple']($pyjs_array_slice.call(arguments,%(b)d,%(e)s));
+%(s)svar %(v)s = pyjslib['tuple']($pyjs_array_slice.call(arguments,%(b)d,%(e)s));
 """ % {'s': self.spacing(), 'v': varargname, 'b': start, 'e': end}
 
     def _kwargs_parser(self, node, function_name, arg_names, current_klass, method_ = False):
@@ -1788,7 +1788,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
 %(s)s}
 """ % {'s': self.spacing()}
         if node.kwargs:
-            print >>self.output, self.spacing() + "__r.push(pyjslib['Dict'](__kwargs));"
+            print >>self.output, self.spacing() + "__r.push(pyjslib['dict'](__kwargs));"
         print >>self.output, self.spacing() + "return __r;"
         if not method_:
             print >>self.output, self.dedent() + "};"
@@ -2567,7 +2567,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 %(s)sif ($pyjs__raise_expr2 !== null && $pyjs__raise_expr1.__is_instance__ === true) {
 %(s)s\tthrow pyjslib['TypeError']('instance exception may not have a separate value');
 %(s)s}
-%(s)sif (pyjslib['isinstance']($pyjs__raise_expr2, pyjslib['Tuple'])) {
+%(s)sif (pyjslib['isinstance']($pyjs__raise_expr2, pyjslib['tuple'])) {
 %(s)s\tthrow ($pyjs__raise_expr1.apply($pyjs__raise_expr1, $pyjs__raise_expr2.getArray()));
 %(s)s} else {
 %(s)s\tthrow ($pyjs__raise_expr1($pyjs__raise_expr2));
@@ -3620,7 +3620,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 "unsupported flag (in _assign)", v, self.module_name)
 
     def _list(self, node, current_klass):
-        return self.track_call("pyjslib['List']([" + ", ".join([self.expr(x, current_klass) for x in node.nodes]) + "])", node.lineno)
+        return self.track_call("pyjslib['list']([" + ", ".join([self.expr(x, current_klass) for x in node.nodes]) + "])", node.lineno)
 
     def _dict(self, node, current_klass):
         items = []
@@ -3628,10 +3628,10 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             key = self.expr(x[0], current_klass)
             value = self.expr(x[1], current_klass)
             items.append("[" + key + ", " + value + "]")
-        return self.track_call("pyjslib['Dict']([" + ", ".join(items) + "])")
+        return self.track_call("pyjslib['dict']([" + ", ".join(items) + "])")
 
     def _tuple(self, node, current_klass):
-        return self.track_call("pyjslib['Tuple']([" + ", ".join([self.expr(x, current_klass) for x in node.nodes]) + "])", node.lineno)
+        return self.track_call("pyjslib['tuple']([" + ", ".join([self.expr(x, current_klass) for x in node.nodes]) + "])", node.lineno)
 
     def _lambda(self, node, current_klass):
         function_name = self.uniqid("$lambda")
@@ -3651,7 +3651,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         save_output = self.output
         self.output = StringIO()
         print >> self.output, "function(){"
-        print >> self.output, "var %s = pyjslib['List']();" % resultlist
+        print >> self.output, "var %s = pyjslib['list']();" % resultlist
 
         tnode = self.ast.Discard(self.ast.CallFunc(self.ast.Getattr(self.ast.Name(resultlist), 'append'), [node.expr], None, None))
         for qual in node.quals[::-1]:

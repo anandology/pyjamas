@@ -976,7 +976,7 @@ String.prototype.__contains__ = function(s){
 String.prototype.__split = String.prototype.split;
 
 String.prototype.$$split = function(sep, maxsplit) {
-    var items=pyjslib.List();
+    var items=pyjslib.list();
     var do_max=false;
     var subject=this;
     var start=0;
@@ -1359,7 +1359,7 @@ def cmp(a,b):
     return -1;
     """)
 
-# for List.sort()
+# for list.sort()
 __cmp = cmp
 
 def bool(v):
@@ -1891,7 +1891,7 @@ JS("""
             37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37,
             37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37,
             37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37,
-            37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37,
+            37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37
     ];
     var $log_base_PyLong_BASE = new Array();
     var $convwidth_base = new Array();
@@ -3581,7 +3581,7 @@ $enumerate_array.prototype.next = function (noStop, reuseTuple) {
     } else {
         this.tl[0] = new pyjslib['int'](this.i);
     }
-    return reuseTuple === true ? this.tuple : pyjslib.Tuple(this.tl);
+    return reuseTuple === true ? this.tuple : pyjslib.tuple(this.tl);
 };
 $enumerate_array.prototype.__iter__ = function ( ) {
     return this;
@@ -3590,7 +3590,7 @@ $enumerate_array.prototype.$genfunc = $enumerate_array.prototype.next;
 """)
 # NOTE: $genfunc is defined to enable faster loop code
 
-class List:
+class list:
     def __init__(self, data=JS("[]")):
         # Basically the same as extend, but to save expensive function calls...
         JS("""
@@ -3737,7 +3737,7 @@ class List:
         """)
 
     def __cmp__(self, l):
-        if not isinstance(l, List):
+        if not isinstance(l, list):
             return -1
         JS("""
         var n1 = self.__array.length,
@@ -3756,8 +3756,8 @@ class List:
 
     def __getslice__(self, lower, upper):
         JS("""
-        if (upper==null) return pyjslib.List(self.__array.slice(lower));
-        return pyjslib.List(self.__array.slice(lower, upper));
+        if (upper==null) return pyjslib.list(self.__array.slice(lower));
+        return pyjslib.list(self.__array.slice(lower, upper));
         """)
 
     def __delslice__(self, lower, upper):
@@ -3857,7 +3857,7 @@ class List:
 
     #def __str__(self):
     #    return self.__repr__()
-    #See monkey patch at the end of the List class definition
+    #See monkey patch at the end of the list class definition
 
     def __repr__(self):
         if callable(self):
@@ -3889,12 +3889,11 @@ class List:
 
     def __rmul__(self, n):
         return self.__mul__(n)
-JS("pyjslib.List.__str__ = pyjslib.List.__repr__;")
-JS("pyjslib.List.toString = pyjslib.List.__str__;")
+JS("pyjslib.list.__str__ = pyjslib.list.__repr__;")
+JS("pyjslib.list.toString = pyjslib.list.__str__;")
 
-list = List
 
-class Tuple:
+class tuple:
     def __init__(self, data=JS("[]")):
         JS("""
         if (data === null) {
@@ -3940,7 +3939,7 @@ class Tuple:
         return '$tuple$' + str(self.__array)
 
     def __cmp__(self, l):
-        if not isinstance(l, Tuple):
+        if not isinstance(l, tuple):
             return 1
         JS("""
         var n1 = self.__array.length,
@@ -3959,8 +3958,8 @@ class Tuple:
 
     def __getslice__(self, lower, upper):
         JS("""
-        if (upper==null) return pyjslib.Tuple(self.__array.slice(lower));
-        return pyjslib.Tuple(self.__array.slice(lower, upper));
+        if (upper==null) return pyjslib.tuple(self.__array.slice(lower));
+        return pyjslib.tuple(self.__array.slice(lower, upper));
         """)
 
     def __getitem__(self, index):
@@ -4008,7 +4007,7 @@ class Tuple:
 
     #def __str__(self):
     #    return self.__repr__()
-    #See monkey patch at the end of the Tuple class definition
+    #See monkey patch at the end of the tuple class definition
 
     def __repr__(self):
         if callable(self):
@@ -4042,12 +4041,11 @@ class Tuple:
 
     def __rmul__(self, n):
         return self.__mul__(n)
-JS("pyjslib.Tuple.__str__ = pyjslib.Tuple.__repr__;")
-JS("pyjslib.Tuple.toString = pyjslib.Tuple.__str__;")
+JS("pyjslib.tuple.__str__ = pyjslib.tuple.__repr__;")
+JS("pyjslib.tuple.toString = pyjslib.tuple.__str__;")
 
-tuple = Tuple
 
-class Dict:
+class dict:
     def __init__(self, seq=JS("[]"), **kwargs):
         self.__object = JS("{}")
         # Transform data into an array with [key,value] and add set self.__object
@@ -4170,7 +4168,7 @@ class Dict:
         """)
 
     def __cmp__(self, other):
-        if not isinstance(other, Dict):
+        if not isinstance(other, dict):
             raise TypeError("dict.__cmp__(x,y) requires y to be a 'dict'")
         JS("""
         var self_sKeys = new Array(),
@@ -4215,7 +4213,7 @@ class Dict:
 
     #def has_key(self, key):
     #    return self.__contains__(key)
-    #See monkey patch at the end of the Dict class definition
+    #See monkey patch at the end of the dict class definition
 
     def __delitem__(self, key):
         JS("""
@@ -4231,7 +4229,7 @@ class Dict:
 
     def keys(self):
         JS("""
-        var keys=pyjslib.List(),
+        var keys=pyjslib.list(),
             selfObj = self.__object,
             __array = keys.__array,
             i = 0;
@@ -4250,7 +4248,7 @@ class Dict:
 
     def values(self):
         JS("""
-        var values=pyjslib.List();
+        var values=pyjslib.list();
         var i = 0;
         for (var key in self.__object) {
             values.__array[i++] = self.__object[key][1];
@@ -4260,11 +4258,11 @@ class Dict:
 
     def items(self):
         JS("""
-        var items = pyjslib.List();
+        var items = pyjslib.list();
         var i = 0;
         for (var key in self.__object) {
           var kv = self.__object[key];
-          items.__array[i++] = pyjslib.List(kv);
+          items.__array[i++] = pyjslib.list(kv);
           }
           return items;
         """)
@@ -4291,7 +4289,7 @@ class Dict:
 
     #def iterkeys(self):
     #    return self.__iter__()
-    #See monkey patch at the end of the Dict class definition
+    #See monkey patch at the end of the dict class definition
 
     def itervalues(self):
         return self.values().__iter__();
@@ -4354,14 +4352,14 @@ class Dict:
         return self.__object
 
     def copy(self):
-        return Dict(self.items())
+        return dict(self.items())
 
     def clear(self):
         self.__object = JS("{}")
 
     #def __str__(self):
     #    return self.__repr__()
-    #See monkey patch at the end of the Dict class definition
+    #See monkey patch at the end of the dict class definition
 
     def __repr__(self):
         if callable(self):
@@ -4385,11 +4383,9 @@ class Dict:
     def toString(self):
         return self.__repr__()
 
-JS("pyjslib.Dict.has_key = pyjslib.Dict.__contains__;")
-JS("pyjslib.Dict.iterkeys = pyjslib.Dict.__iter__;")
-JS("pyjslib.Dict.__str__ = pyjslib.Dict.__repr__;")
-
-dict = Dict
+JS("pyjslib.dict.has_key = pyjslib.dict.__contains__;")
+JS("pyjslib.dict.iterkeys = pyjslib.dict.__iter__;")
+JS("pyjslib.dict.__str__ = pyjslib.dict.__repr__;")
 
 # __empty_dict is used in kwargs initialization
 # There must me a temporary __init__ function used to prevent infinite 
@@ -5499,8 +5495,8 @@ def isinstance(object_, classinfo):
         return false;
     }
 """)
-    if _isinstance(classinfo, Tuple):
-        if _isinstance(object_, Tuple):
+    if _isinstance(classinfo, tuple):
+        if _isinstance(object_, tuple):
             return True
         for ci in classinfo:
             if isinstance(object_, ci):
@@ -5638,7 +5634,7 @@ def hasattr(obj, name):
 
 def dir(obj):
     JS("""
-    var properties=pyjslib.List();
+    var properties=pyjslib.list();
     for (property in obj) properties.append(property);
     return properties;
     """)
@@ -5987,7 +5983,7 @@ def isSet(a):
 """)
 def toJSObjects(x):
     """
-       Convert the pyjs pythonic List and Dict objects into javascript Object and Array
+       Convert the pyjs pythonic list and dict objects into javascript Object and Array
        objects, recursively.
     """
     if isArray(x):
@@ -6003,7 +5999,7 @@ def toJSObjects(x):
     if isObject(x):
         if x.__number__:
             return x.valueOf()
-        elif isinstance(x, Dict):
+        elif isinstance(x, dict):
             JS("""
             var o = x.getObject();
             var result = {};
@@ -6012,7 +6008,7 @@ def toJSObjects(x):
             }
             return result;
             """)
-        elif isinstance(x, List):
+        elif isinstance(x, list):
             return toJSObjects(x.__array)
         elif hasattr(x, '__class__'):
             # we do not have a special implementation for custom
@@ -6252,18 +6248,18 @@ def sprintf(strng, args):
         }
     }
 
-    var constructor = args === null ? 'NoneType' : (args.__md5__ == pyjslib.Tuple.__md5__ ? 'Tuple': (args.__md5__ == pyjslib.Dict.__md5__ ? 'Dict': 'Other'));
+    var constructor = args === null ? 'NoneType' : (args.__md5__ == pyjslib.tuple.__md5__ ? 'tuple': (args.__md5__ == pyjslib.dict.__md5__ ? 'dict': 'Other'));
     if (strng.indexOf("%(") >= 0) {
         if (re_dict.exec(strng) !== null) {
-            if (constructor != "Dict") {
+            if (constructor != "dict") {
                 throw pyjslib['TypeError']("format requires a mapping");
             }
             sprintf_dict(strng, args);
             return result.join("");
         }
     }
-    if (constructor != "Tuple") {
-        args = pyjslib['Tuple']([args]);
+    if (constructor != "tuple") {
+        args = pyjslib['tuple']([args]);
     }
     nargs = args.__array.length;
     sprintf_list(strng, args);
