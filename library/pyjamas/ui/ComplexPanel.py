@@ -30,6 +30,9 @@ class ComplexPanel(Panel):
     def getWidget(self, index):
         return self.children[index]
 
+    def getWidgetIndex(self, child):
+        return self.children.index(child)
+
     def getChildren(self):
         return self.children
 
