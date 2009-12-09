@@ -14,12 +14,13 @@
 # limitations under the License.
 from pyjamas import DOM
 from pyjamas import Factory
+from pyjamas.ui import InnerText
 
 from Widget import Widget
 from MouseListener import MouseHandler
 from ClickListener import ClickHandler
 
-class Label(Widget, MouseHandler, ClickHandler):
+class Label(Widget, MouseHandler, ClickHandler, InnerText):
 
     def __init__(self, text=None, wordWrap=True, **kwargs):
         if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-Label"
@@ -41,18 +42,12 @@ class Label(Widget, MouseHandler, ClickHandler):
     def getHorizontalAlignment(self):
         return self.horzAlign
 
-    def getText(self):
-        return DOM.getInnerText(self.getElement())
-
     def getWordWrap(self):
         return not (DOM.getStyleAttribute(self.getElement(), "whiteSpace") == "nowrap")
 
     def setHorizontalAlignment(self, align):
         self.horzAlign = align
         DOM.setStyleAttribute(self.getElement(), "textAlign", align)
-
-    def setText(self, text):
-        DOM.setInnerText(self.getElement(), text)
 
     def setWordWrap(self, wrap):
         if wrap:

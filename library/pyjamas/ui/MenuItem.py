@@ -17,8 +17,9 @@ from pyjamas import Factory
 
 from UIObject import UIObject
 from pyjamas.ui import Event
+from pyjamas.ui import InnerHTML, InnerText
 
-class MenuItem(UIObject):
+class MenuItem(UIObject, InnerHTML, InnerText):
     # also callable as:
     #   MenuItem(text, cmd)
     #   MenuItem(text, asHTML, cmd)
@@ -68,29 +69,17 @@ class MenuItem(UIObject):
     def getCommand(self):
         return self.command
 
-    def getHTML(self):
-        return DOM.getInnerHTML(self.getElement())
-
     def getParentMenu(self):
         return self.parentMenu
 
     def getSubMenu(self):
         return self.subMenu
 
-    def getText(self):
-        return DOM.getInnerText(self.getElement())
-
     def setCommand(self, cmd):
         self.command = cmd
 
-    def setHTML(self, html):
-        DOM.setInnerHTML(self.getElement(), html)
-
     def setSubMenu(self, subMenu):
         self.subMenu = subMenu
-
-    def setText(self, text):
-        DOM.setInnerText(self.getElement(), text)
 
     def setParentMenu(self, parentMenu):
         self.parentMenu = parentMenu

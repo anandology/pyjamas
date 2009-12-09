@@ -15,23 +15,12 @@
 from pyjamas import DOM
 from pyjamas import Factory
 from FocusWidget import FocusWidget
+from pyjamas.ui import InnerText, InnerHTML
 
-class ButtonBase(FocusWidget):
+class ButtonBase(FocusWidget, InnerHTML, InnerText):
 
     def __init__(self, element, **kwargs):
         FocusWidget.__init__(self, element, **kwargs)
-
-    def getHTML(self):
-        return DOM.getInnerHTML(self.getElement())
-
-    def getText(self):
-        return DOM.getInnerText(self.getElement())
-
-    def setHTML(self, html):
-        DOM.setInnerHTML(self.getElement(), html)
-
-    def setText(self, text):
-        DOM.setInnerText(self.getElement(), text)
 
 Factory.registerClass('pyjamas.ui.ButtonBase', ButtonBase)
 

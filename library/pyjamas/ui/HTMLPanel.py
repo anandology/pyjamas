@@ -14,6 +14,7 @@
 # limitations under the License.
 from pyjamas import DOM
 from pyjamas import Factory
+from pyjamas.ui import InnerHTML
 
 from ComplexPanel import ComplexPanel
 
@@ -55,7 +56,7 @@ def getElementById(element, id):
     return None
 
 
-class HTMLPanel(ComplexPanel):
+class HTMLPanel(ComplexPanel, InnerHTML):
     def __init__(self, html, **kwargs):
         # NOTE! don't set a default style on this panel, because the
         # HTML might expect to have one already.
@@ -67,12 +68,6 @@ class HTMLPanel(ComplexPanel):
             element = DOM.createDiv()
         self.setElement(element)
         ComplexPanel.__init__(self, **kwargs)
-
-    def setHTML(self, html):
-        DOM.setInnerHTML(self.getElement(), html)
-
-    def getHTML(self):
-        return DOM.getInnerHTML(self.getElement())
 
     def add(self, widget, id):
         element = getElementById(self.getElement(), id)

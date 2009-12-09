@@ -8,7 +8,7 @@ from pyjamas import Window
 import pygwt
 
 def greet(fred):
-    print "greet button"
+    fred.setText("No, really click me!")
     Window.alert("Hello, AJAX!")
 
 if __name__ == '__main__':

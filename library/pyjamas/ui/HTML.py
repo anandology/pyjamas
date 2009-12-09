@@ -17,8 +17,9 @@ from pyjamas import Factory
 
 from Label import Label
 from pyjamas.ui import Event
+from pyjamas.ui import InnerHTML
 
-class HTML(Label):
+class HTML(Label, InnerHTML):
 
     def __init__(self, html=None, wordWrap=True, Element=None, **kwargs):
         if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-HTML"
@@ -29,12 +30,6 @@ class HTML(Label):
         self.setElement(Element)
         Label.__init__(self, **kwargs)
         self.sinkEvents(Event.ONCLICK | Event.MOUSEEVENTS)
-
-    def getHTML(self):
-        return DOM.getInnerHTML(self.getElement())
-
-    def setHTML(self, html):
-        DOM.setInnerHTML(self.getElement(), html)
 
 Factory.registerClass('pyjamas.ui.HTML', HTML)
 
