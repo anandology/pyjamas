@@ -77,15 +77,6 @@ class StackPanel(ComplexPanel):
         if stackText != "":
             self.setStackText(self.getWidgetCount() - 1, stackText, asHTML)
 
-    def getWidget(self, index):
-        return self.children[index]
-
-    def getWidgetCount(self):
-        return len(self.children)
-
-    def getWidgetIndex(self, child):
-        return self.children.index(child)
-
     def onBrowserEvent(self, event):
         if DOM.eventGetType(event) == "click":
             index = self.getDividerIndex(DOM.eventGetTarget(event))

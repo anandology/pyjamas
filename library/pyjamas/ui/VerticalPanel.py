@@ -40,15 +40,6 @@ class VerticalPanel(CellPanel):
     def getVerticalAlignment(self):
         return self.vertAlign
 
-    def getWidget(self, index):
-        return self.children[index]
-
-    def getWidgetCount(self):
-        return len(self.children)
-
-    def getWidgetIndex(self, child):
-        return self.children.index(child)
-
     def setWidget(self, index, widget):
         """Replace the widget at the given index with a new one"""
         existing = self.getWidget(index)

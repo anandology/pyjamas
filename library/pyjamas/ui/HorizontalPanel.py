@@ -43,15 +43,6 @@ class HorizontalPanel(CellPanel):
     def getVerticalAlignment(self):
         return self.vertAlign
 
-    def getWidget(self, index):
-        return self.children[index]
-
-    def getWidgetCount(self):
-        return len(self.children)
-
-    def getWidgetIndex(self, child):
-        return self.children.index(child)
-
     def insert(self, widget, beforeIndex):
         widget.removeFromParent()
 
