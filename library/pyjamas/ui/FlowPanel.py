@@ -30,15 +30,6 @@ class FlowPanel(ComplexPanel):
     def add(self, w):
         ComplexPanel.add(self, w, self.getElement())
 
-    def getWidget(self, index):
-        return self.children[index]
-
-    def getWidgetCount(self):
-        return len(self.children)
-
-    def getWidgetIndex(self, child):
-        return self.children.index(child)
-
     def remove(self, index):
         if isinstance(index, int):
             index = self.getWidget(index)
