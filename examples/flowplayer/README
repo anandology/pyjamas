@@ -1,0 +1,17 @@
+
+
+To use the example:
+
+
+- download (http://flowplayer.org) and copy flowplayer.swf,
+	flowplayer.controls.swf, flowplayer.content.swf to swf/
+
+- run 'build.sh'
+
+- copy some flv-files to movies
+
+- edit fp.py and set correct names for the swf-files and configure the playlist
+
+- start the server with 'python server.py'
+
+- open the url http://localhost:8080

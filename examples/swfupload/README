@@ -1,0 +1,10 @@
+
+To use the example:
+
+- run 'build.sh'
+
+- copy swfupload.swf to swf/
+
+- start the server with 'python server.py'
+
+- open the url http://localhost:8080
