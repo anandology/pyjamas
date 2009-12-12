@@ -43,7 +43,7 @@ class ClickHandler(object):
         elif type == "dblclick":
             if self._clickPreventDefault:
                 DOM.eventPreventDefault(event)
-            for listener in self._clickListeners:
+            for listener in self._doubleclickListeners:
                 if hasattr(listener, "onDoubleClick"):
                     listener.onDoubleClick(self)
                 else:
