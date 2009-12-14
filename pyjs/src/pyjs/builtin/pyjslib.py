@@ -984,12 +984,16 @@ String.prototype.$$split = function(sep, maxsplit) {
 
     if (sep === null || typeof sep == 'undefined') {
         sep=" ";
+        if (subject.length == 0) {
+            return items;
+        }
         subject=subject.strip();
         subject=subject.$$replace(/\s+/g, sep);
     }
     else if (typeof maxsplit != 'undefined') do_max=true;
 
     if (subject.length == 0) {
+        items.__array.push('');
         return items;
     }
 

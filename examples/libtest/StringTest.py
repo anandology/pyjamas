@@ -109,7 +109,13 @@ class StringTest(UnitTest):
         self.assertEquals(result, expected_result3)
 
         result=empty.split()
-        self.assertEquals(len(result), 0)
+        self.assertEquals(result, [])
+
+        result=empty.split(None)
+        self.assertEquals(result, [])
+
+        result=empty.split(' ')
+        self.assertEquals(result, [''])
 
     def testStrip(self):
         text=" this is  a rather long string  "
