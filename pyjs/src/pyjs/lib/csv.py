@@ -16,13 +16,18 @@ class CSVReader(object):
         for line in lines:
             lineno += 1
             self.addNewline(lineno)
-            if line == '':
+            if line == '' or line == '\n':
                 continue
             cols = line.split(self.delimeter)
             if len(cols) > 0:
                 self.addValue(cols[0], True)
                 for col in cols[1:]:
                     self.addValue(col, False)
+        if len(self.__values) > 0:
+            row = self.__values[-1]
+            if len(row) > 1 and len(row[-1]) > 0:
+                if row[-1][-1] == '\n':
+                    row[-1] = row[-1][:-1]
 
     def addNewline(self, lineno):
         if self.__inQuoted:
@@ -30,9 +35,11 @@ class CSVReader(object):
         else:
             if len(self.__values) > 0:
                 row = self.__values[-1]
-                if len(row) > 1 and len(row[-1]) > 0:
-                    if row[-1][-1] == '\n':
+                if len(row) > 1:
+                    while len(row[-1]) > 0 and row[-1][-1] == '\n':
                         row[-1] = row[-1][:-1]
+                    if len(row) == 2 and row[1] == '':
+                        del row[1]
             self.__values.append([lineno])
 
     def addValue(self, value, isFirst):
