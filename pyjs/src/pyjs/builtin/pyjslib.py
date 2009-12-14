@@ -836,6 +836,9 @@ class ZeroDivisionError(ArithmeticError):
 class OverflowError(ArithmeticError):
     pass
 
+class UndefinedValueError(ValueError):
+    pass
+
 def init():
 
     # There seems to be an bug in Chrome with accessing the message
@@ -5464,6 +5467,9 @@ def repr(x):
 def len(object):
     v = 0
     JS("""
+    if (typeof object == 'undefined') {
+        throw pyjslib['UndefinedValueError']("obj");
+    }
     if (object === null) return v;
     else if (typeof object.__array != 'undefined') v = object.__array.length;
     else if (typeof object.__len__ == 'function') v = object.__len__();
@@ -5592,6 +5598,9 @@ def _del(obj):
 
 def delattr(obj, name):
     JS("""
+    if (typeof obj == 'undefined') {
+        throw pyjslib['UndefinedValueError']("obj");
+    }
     if (   obj !== null
         && (typeof obj == 'object' || typeof obj == 'function')
         && (typeof(obj[name]) != "undefined")&&(typeof(obj[name]) != "function") ){
@@ -5613,6 +5622,9 @@ def delattr(obj, name):
 
 def setattr(obj, name, value):
     JS("""
+    if (typeof obj == 'undefined') {
+        throw pyjslib['UndefinedValueError']("obj");
+    }
     if (typeof name != 'string') {
         throw pyjslib['TypeError']("attribute name must be string");
     }
@@ -5627,6 +5639,9 @@ def setattr(obj, name, value):
 
 def hasattr(obj, name):
     JS("""
+    if (typeof obj == 'undefined') {
+        throw pyjslib['UndefinedValueError']("obj");
+    }
     if (typeof name != 'string') {
         throw pyjslib['TypeError']("attribute name must be string");
     }
@@ -5638,6 +5653,9 @@ def hasattr(obj, name):
 
 def dir(obj):
     JS("""
+    if (typeof obj == 'undefined') {
+        throw pyjslib['UndefinedValueError']("obj");
+    }
     var properties=pyjslib.list();
     for (property in obj) properties.append(property);
     return properties;
