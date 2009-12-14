@@ -43,6 +43,7 @@ from UrllibModuleTest import UrllibModuleTest
 from Base64ModuleTest import Base64ModuleTest
 from RandomModuleTest import RandomModuleTest
 from ReModuleTest import ReModuleTest
+from CsvModuleTest import CsvModuleTest
 
 from write import writebr
 
@@ -96,6 +97,7 @@ def main():
     t.add(Base64ModuleTest)
     t.add(ReModuleTest)
     t.add(RandomModuleTest)
+    t.add(CsvModuleTest)
 
     if IN_BROWSER:
         t.add(JSOTest)

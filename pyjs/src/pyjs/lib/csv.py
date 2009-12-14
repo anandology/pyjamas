@@ -6,7 +6,7 @@
 class CSVReader(object):
     def __init__(self, lines, dialect = None, **kwargs):
         self.__values = []
-        self.__inString = False
+        self.__inQuoted = False
         self.delimeter = kwargs.get('delimeter', ',')
         self.quotechar = kwargs.get('quotechar', '"')
         self.dialect = dialect
@@ -16,6 +16,8 @@ class CSVReader(object):
         for line in lines:
             lineno += 1
             self.addNewline(lineno)
+            if line == '':
+                continue
             cols = line.split(self.delimeter)
             if len(cols) > 0:
                 self.addValue(cols[0], True)
@@ -23,7 +25,7 @@ class CSVReader(object):
                     self.addValue(col, False)
 
     def addNewline(self, lineno):
-        if self.__inString:
+        if self.__inQuoted:
             self.__values[-1][0] = lineno
         else:
             if len(self.__values) > 0:
@@ -33,40 +35,44 @@ class CSVReader(object):
                         row[-1] = row[-1][:-1]
             self.__values.append([lineno])
 
-    def addValue(self, v, isFirst):
-        if self.__inString:
-            # Check for end of string
-            sv = v.rstrip()
-            idx0 = idx = len(sv)-1
-            while idx > 0 and sv[idx] == self.quotechar:
+    def addValue(self, value, isFirst):
+        wasInQuoted = self.__inQuoted
+        endOfQuoted = False
+        quotechar = self.quotechar
+        v = value
+        # Check for end of quoted
+        sv = v.rstrip()
+        if len(sv) > 0 and sv[-1] == quotechar:
+            svlen = len(sv)-1
+            idx = svlen - 2
+            while idx > 0 and sv[idx] == quotechar:
                 idx -= 1
-            if (idx0 - idx) % 2:
-                v = sv[:-1]
-                self.__inString = False
-            v = v.replace(self.quotechar + self.quotechar, self.quotechar)
+            if (svlen - idx) % 2 == 0:
+                v = sv[:-1] + v[svlen+1:]
+                endOfQuoted = True
+        # Check for start of quoted
+        if not self.__inQuoted and \
+           len(v) > 0 and v[0] == quotechar:
+            idx = 1
+            vlen = len(v)
+            while idx < vlen and v[idx] == quotechar:
+                idx += 1
+            if idx % 2 == 1:
+                v = v[1:]
+                self.__inQuoted = True
+            else:
+                v = value[idx:]
+        if self.__inQuoted:
+            v = v.replace(quotechar + quotechar, quotechar)
+        if wasInQuoted:
             if isFirst:
                 self.__values[-1][-1] += v
             else:
                 self.__values[-1][-1] += self.delimeter + v
         else:
-            sv = v.lstrip()
-            if len(sv) > 0 and sv[0] == self.quotechar:
-                self.__inString = True
-                v = sv[1:]
-                sv = v.rstrip()
-                idx0 = idx = len(sv)-1
-                while idx > 0 and sv[idx] == self.quotechar:
-                    idx -= 1
-                if (idx0 - idx) % 2:
-                    v = sv[:-1]
-                    self.__inString = False
-            if isFirst:
-                if len(sv) > 0 and sv[-1] == self.quotechar:
-                    if len(sv) == 1 or sv[-2] != self.quotechar:
-                        v = sv[:-1]
-                        self.__inString = False
-            v = v.replace(self.quotechar + self.quotechar, self.quotechar)
             self.__values[-1].append(v)
+        if endOfQuoted:
+            self.__inQuoted = False
 
     def __iter__(self):
         self.__iter = self.__values.__iter__()
