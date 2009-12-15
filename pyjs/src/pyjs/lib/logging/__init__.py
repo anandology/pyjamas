@@ -193,7 +193,7 @@ class LogRecord(object):
         self.levelname = getLevelName(level)
         self.levelno = level
         self.pathname = pathname
-        self.filename = pathname + '.py'
+        self.filename = "%s.py" % pathname
         self.module = pathname
         self.exc_info = exc_info
         self.exc_text = None      # used to cache the traceback text
