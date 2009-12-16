@@ -78,6 +78,8 @@ class BuiltinTest(UnitTest):
         except ValueError, e:
             self.assertEqual(e[0], "invalid literal for float(): not float")
 
+        self.assertTrue(isinstance(1.0, float), "1.0 should be instance of float")
+
     def testOrdChr(self):
         for i in range(256):
             self.assertEqual(ord(chr(i)), i)

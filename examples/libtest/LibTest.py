@@ -1,5 +1,4 @@
 from UnitTest import IN_BROWSER, IN_JS, IN_BROWSER
-'''
 from LoopTest import LoopTest
 from StringTest import StringTest
 from ListTest import ListTest
@@ -44,7 +43,6 @@ from UrllibModuleTest import UrllibModuleTest
 from Base64ModuleTest import Base64ModuleTest
 from RandomModuleTest import RandomModuleTest
 from ReModuleTest import ReModuleTest
-'''
 from CsvModuleTest import CsvModuleTest
 
 from write import writebr
@@ -72,7 +70,6 @@ class RunTests:
 def main():
 
     t = RunTests()
-    '''
     t.add(LoopTest)
     t.add(BoolTest)
     t.add(ListTest)
@@ -100,14 +97,11 @@ def main():
     t.add(Base64ModuleTest)
     t.add(ReModuleTest)
     t.add(RandomModuleTest)
-    '''
     t.add(CsvModuleTest)
 
-    '''
     if IN_BROWSER:
         t.add(JSOTest)
         t.add(WindowTest)
-    '''
 
     t.start_test()
 

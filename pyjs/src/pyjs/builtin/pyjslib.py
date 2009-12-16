@@ -5491,6 +5491,8 @@ def isinstance(object_, classinfo):
         return false;
     }
     switch (classinfo.__name__) {
+        case 'float':
+            return typeof object_ == 'number' && object_.__number__ == 0x01 && isFinite(object_);
         case 'int':
         case 'float_int':
             return object_ !== null && object_.__number__ && (object_.__number__ != 0x01 || isFinite(object_));/* XXX TODO: check rounded? */
