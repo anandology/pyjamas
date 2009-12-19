@@ -1,5 +1,6 @@
 # Copyright 2006 James Tauber and contributors
 # Copyright (C) 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
+# Copyright (C) 2009 Pavel Mironchyk <p.mironchyk@gmail.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -182,8 +183,13 @@ class MenuBar(Widget):
 
     def itemOver(self, item):
         if item is None:
-            if (self.selectedItem is not None) and (self.shownChildMenu == self.selectedItem.getSubMenu()):
-                return
+            if (self.selectedItem is not None):
+                if self.selectedItem.getSubMenu() != None:
+                    if (self.shownChildMenu == self.selectedItem.getSubMenu()):
+                        return
+                else:
+                    self.selectItem(item)
+                    return
 
         self.selectItem(item)
 
