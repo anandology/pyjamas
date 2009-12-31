@@ -187,6 +187,9 @@ Files: examples/gmaps/*
 License: Apache
 Copyright: 2009, Daniel Carvalho <idnael@gmail.com>
 
+Files:  library/pyjamas/ui/FlashPanel.py addons/FlowPlayer.py addons/SWFUpload.py examples/flowplayer/* examples/swfupload/*
+License: Apache
+Copyright: 2009, Tobias Weber <tobi-weber@gmx.de>
 
 License: PSF
     http://www.python.org/psf/license/
