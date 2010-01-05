@@ -1,12 +1,14 @@
 """ Control Widgets.  Presently comprises a Vertical Slider Demo.
 
-    Copyright (C) 2008 - Luke Kenneth Casson Leighton <lkcl@lkcl.net>
+    Copyright (C) 2008, 2009 - Luke Kenneth Casson Leighton <lkcl@lkcl.net>
+    Copyright (C) 2010 - Cedric Gestes <gestes@aldebaran-robotics.com>
 
 """
 
 from pyjamas import Factory
 import math
 from pyjamas import DOM
+from pyjamas import Window
 from FocusWidget import FocusWidget
 from MouseListener import MouseHandler
 from pyjamas.ui import Event
@@ -32,7 +34,7 @@ class Control(FocusWidget, MouseHandler):
         self.valuechange_listeners = []
         self.dragging = False
         self.drag_enabled = False
-        
+
         if not kwargs.has_key("TabIndex"): kwargs['TabIndex'] = 0
         FocusWidget.__init__(self, element, **kwargs)
         MouseHandler.__init__(self)
@@ -79,16 +81,16 @@ class Control(FocusWidget, MouseHandler):
         self.setFocus(True);
         # work out the relative position of cursor
         event = DOM.eventGetCurrentEvent()
-        mouse_x = DOM.eventGetClientX(event) 
-        mouse_y = DOM.eventGetClientY(event) 
+        mouse_x = DOM.eventGetClientX(event) + Window.getScrollLeft()
+        mouse_y = DOM.eventGetClientY(event) + Window.getScrollTop()
         self.moveControl(mouse_x - self.getAbsoluteLeft(),
                          mouse_y - self.getAbsoluteTop())
 
     def onMouseMove(self, sender, x, y):
         if not self.dragging:
             return
-        self.moveControl(x, y)
-        
+        self.moveControl(x + Window.getScrollLeft(), y + Window.getScrollTop())
+
     def onLoseFocus(self, sender):
         self.dragging = False
         DOM.releaseCapture(self.getElement())
@@ -102,7 +104,7 @@ class Control(FocusWidget, MouseHandler):
             return
         self.dragging = True
         DOM.setCapture(self.getElement())
-        self.moveControl(x, y)
+        self.moveControl(x + Window.getScrollLeft(), y + Window.getScrollTop())
 
     def onMouseUp(self, sender, x, y):
         self.dragging = False
