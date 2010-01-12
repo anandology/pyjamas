@@ -30,3 +30,6 @@ class TextBoxBase(FocusWidget):
         except :
             pass
 
+    def getText(self):
+        return DOM.getAttribute(self.getElement(), "value") or ""
+
