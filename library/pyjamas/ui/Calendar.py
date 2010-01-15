@@ -22,10 +22,15 @@ from pyjamas import DOM
 import time
 
 class Calendar(FocusPanel):
+    monthsOfYear = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+    daysOfWeek = ['S','M','T','W','T','F','S']
+    today = 'Today'
+    tomorrow = 'Tomorrow'
+    yesterday = 'Yesterday'
+    cancel = 'Cancel'
+
     def __init__(self, **kwargs):
         FocusPanel.__init__(self, **kwargs)
-        self.monthsOfYear = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
-        self.daysOfWeek = ['S','M','T','W','T','F','S']
         yr,mth,day = time.strftime("%Y-%m-%d").split("-")
         self.todayYear = int(yr)
         self.todayMonth = int(mth)  # change to offset 0 as per javascript
@@ -40,6 +45,12 @@ class Calendar(FocusPanel):
         self.defaultGrid = None # used later
 
         return
+
+    def getMonthsOfYear(self):
+        return self.monthsOfYear
+
+    def getDaysOfWeek(self):
+        return self.daysOfWeek
 
     def addSelectedDateListener(self,listener):
         self.selectedDateListeners.append(listener)
@@ -114,7 +125,7 @@ class Calendar(FocusPanel):
             #
             # what about the title panel?
             #
-            self.titlePanel.setWidget(HTML("<b>" + self.monthsOfYear[month-1] + " " + str(year) + "</b>" ) )
+            self.titlePanel.setWidget(HTML("<b>" + self.getMonthsOfYear()[month-1] + " " + str(year) + "</b>" ) )
             self.setVisible(True)
 
         return
@@ -150,7 +161,7 @@ class Calendar(FocusPanel):
         # titlePanel can be changed, whenever we draw, so keep the reference
 
         self.titlePanel = SimplePanel()
-        self.titlePanel.setWidget(HTML("<b>" + self.monthsOfYear[mth-1] + " " + str(yr) + "</b>" ) )
+        self.titlePanel.setWidget(HTML("<b>" + self.getMonthsOfYear()[mth-1] + " " + str(yr) + "</b>" ) )
         self.titlePanel.setStyleName("calendar-center")
 
         tp.add( self.titlePanel )
@@ -172,13 +183,13 @@ class Calendar(FocusPanel):
         #
         # some links & handlers
         #
-        bh1 = Hyperlink('Yesterday')
+        bh1 = Hyperlink(self.yesterday)
         bh1.addClickListener( getattr(self,'onYesterday') )
-        bh2 = Hyperlink('Today')
+        bh2 = Hyperlink(self.today)
         bh2.addClickListener( getattr(self,'onToday') )
-        bh3 = Hyperlink('Tomorrow')
+        bh3 = Hyperlink(self.tomorrow)
         bh3.addClickListener( getattr(self,'onTomorrow') )
-        bh4 = Hyperlink('Cancel')
+        bh4 = Hyperlink(self.cancel)
         bh4.addClickListener( getattr(self,'onCancel') )
         #
         # add code to test another way of doing the layout
@@ -214,7 +225,7 @@ class Calendar(FocusPanel):
         # put some content into the grid cells
         #
         for i in range(7):
-            grid.setText(0, i, self.daysOfWeek[i] )
+            grid.setText(0, i, self.getDaysOfWeek()[i] )
             grid.cellFormatter.addStyleName(0,i,"calendar-header")
         #
         # draw cells which are empty first
@@ -351,6 +362,11 @@ class Calendar(FocusPanel):
 
 class DateField(Composite):
 
+    icon_img = "icon_calendar.gif"
+    icon_style = "calendar-img"
+    today_text = "Today"
+    today_style = "calendar-today-link"
+
     def __init__(self,format='%d-%m-%Y'):
         self.format = format
         self.tbox = TextBox()
@@ -366,11 +382,11 @@ class DateField(Composite):
             self.sep = ''
         # self.sep = format[2] # is this too presumptious?
         self.calendar = Calendar()
-        img = Image("icon_calendar.gif")
-        img.addStyleName("calendar-img")
-        self.calendarLink = HyperlinkImage(img)
-        self.todayLink = Hyperlink('Today')
-        self.todayLink.addStyleName("calendar-today-link")
+        self.img = Image(self.icon_img)
+        self.img.addStyleName(self.icon_style)
+        self.calendarLink = HyperlinkImage(self.img)
+        self.todayLink = Hyperlink(today_text)
+        self.todayLink.addStyleName(today_style)
         #
         # lay it out
         #
