@@ -90,7 +90,13 @@ class TabBar(Composite):
         return None
 
     def insertTab(self, text, asHTML, beforeIndex=None):
-        """ 1st arg can, instead of being 'text', be a widget
+        """ 1st arg can, instead of being 'text', be a widget.
+
+            1st arg can also be None, which results in a blank
+            space between tabs.  Use this to push subsequent
+            tabs out to the right hand end of the TabBar.
+            (the "blank" tab, by not being focussable, is not
+            clickable).
         """
         if beforeIndex is None:
             beforeIndex = asHTML
@@ -99,6 +105,14 @@ class TabBar(Composite):
         if (beforeIndex < 0) or (beforeIndex > self.getTabCount()):
             #throw new IndexOutOfBoundsException();
             pass
+
+        if text is None:
+            text = HTML("&nbsp;", True)
+            text.setWidth("100%")
+            text.setStyleName("gwt-TabBarRest")
+            self.panel.insert(text, beforeIndex + 1)
+            self.panel.setCellWidth(text, "100%")
+            return
 
         if isinstance(text, str):
             if asHTML:

@@ -1,5 +1,6 @@
 import pyjd # dummy in pyjs
 
+from pyjamas.ui.TabBar import TabBar
 from pyjamas.ui.TabPanel import TabPanel
 from pyjamas.ui import HasAlignment
 from pyjamas.ui.Image import Image
@@ -53,6 +54,9 @@ class Tabs:
         self.fTabs.add(self.createImage("rembrandt/SelfPortrait1640.jpg"), green, True)
         self.fTabs.add(self.createImage("rembrandt/LaMarcheNocturne.jpg"), "1642")
         self.fTabs.add(self.createImage("rembrandt/TheReturnOfTheProdigalSon.jpg"), "1662")
+        self.fTabs.add(HTML("shouldn't be here!"), None)
+        self.fTabs.add(HTML("This is a Test.<br />Tab should be on right"),
+                       "Test")
         self.fTabs.selectTab(0)
 
         dp = DecoratorTitledPanel("Tabs", "bluetitle", "bluetitleicon",
