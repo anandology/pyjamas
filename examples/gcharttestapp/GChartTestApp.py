@@ -106,8 +106,8 @@ class AddOneChart:
         self.needsUpdate = needsUpdate
     
     def execute(self):
-        RootPanel().get("testappcharts").add(HTML(getTitle(self.gchart)))
-        RootPanel().get("testappcharts").add(self.gchart)
+        RootPanel("testappcharts").add(HTML(getTitle(self.gchart)))
+        RootPanel("testappcharts").add(self.gchart)
         if self.needsUpdate:
             self.gchart.update()
         
@@ -402,7 +402,7 @@ def onModuleLoad():
 
     #addChart(TestGChart00())
     
-    RootPanel().get("loadingMessage").setVisible(False)
+    RootPanel("loadingMessage").setVisible(False)
     
     
     
