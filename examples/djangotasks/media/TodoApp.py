@@ -46,8 +46,8 @@ class TodoApp:
             id = self.remote.addTask(sender.getText(),self)
             sender.setText("")
 
-        if id<0:
-            self.status.setText("Server Error or Invalid Response")
+            if id<0:
+                self.status.setText("Server Error or Invalid Response")
 
 
     def onClick(self, sender):
@@ -66,8 +66,9 @@ class TodoApp:
         else:
             self.status.setText(self.status.getText() + "none!")
 
-    def onRemoteError(self, code, message, request_info):
-        self.status.setText("Server Error or Invalid Response: ERROR " + code + " - " + message)
+    def onRemoteError(self, code, errobj, request_info):
+        message = errobj['message']
+        self.status.setText("Server Error or Invalid Response: ERROR %s - %s" % (code, message))
 
 class DataService(JSONProxy):
     def __init__(self):

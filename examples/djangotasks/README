@@ -1,6 +1,12 @@
 A very brief walk through of how to get this running:
 
-Create the db:
+Install pimentech if required:
+
+    * svn checkout http://svn.pimentech.org/pimentech/libcommonDjango
+    * cd libcommonDjango
+    * make install
+
+Create the db (not required when using sqlite3):
 
     * mysql -u root
     * > CREATE DATABASE todo;
@@ -9,7 +15,7 @@ Create the db:
 
 Create the tables:
 
-    * cd pyjsDemo
+    * cd djangotasks
     * python manage.py syncdb
 
 Build the javascript:
