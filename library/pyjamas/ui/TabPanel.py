@@ -50,8 +50,10 @@ class TabPanel(Composite):
         Composite.__init__(self, panel, **kwargs)
 
     def add(self, widget, tabText=None, asHTML=False):
-        if tabText is None:
-            console.error("A tabText parameter must be specified with add().")
+        """ tabText=None now means insert a spacer, pushed out at 100%
+            width so that any subsequent tabs added will be pushed to
+            the right hand side
+        """
         self.insert(widget, tabText, asHTML, self.getWidgetCount())
 
     def addTabListener(self, listener):
