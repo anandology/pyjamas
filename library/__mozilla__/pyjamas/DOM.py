@@ -62,21 +62,24 @@ def getAbsoluteLeft(elem):
     // getBoundingClientRect can be float: 73.1 instead of 74, see
     // gwt's workaround at user/src/com/google/gwt/dom/client/DOMImplMozilla.java:47
     // Please note, their implementation has 1px offset.
-    if (   typeof elem.getBoundingClientRect == 'function'
-        && elem.ownerDocument.getViewportElement == 'function') {
+    if (   typeof elem.getBoundingClientRect == 'function'  ) {
         var left = Math.ceil(elem.getBoundingClientRect().left);
-        return left + elem.ownerDocument.getViewportElement().scrollLeft;
+        
+        return left  + $doc.body.scrollLeft + $doc.documentElement.scrollLeft;
     }
-    var left = $doc.getBoxObjectFor(elem).x;
-    var parent = elem.parentNode;
-    while (parent) {
-        if (parent.scrollLeft > 0) {
-            left = left -  parent.scrollLeft;
+    // Older Firefox can use getBoxObjectFor
+    else {
+        var left = $doc.getBoxObjectFor(elem).x;
+        var parent = elem.parentNode;
+        while (parent) {
+            if (parent.scrollLeft > 0) {
+                left = left -  parent.scrollLeft;
+            }
+            parent = parent.parentNode;
         }
-        parent = parent.parentNode;
+        
+        return left + $doc.body.scrollLeft + $doc.documentElement.scrollLeft;
     }
-
-    return left + $doc.body.scrollLeft + $doc.documentElement.scrollLeft;
     """)
 
 # This is what is in GWT 1.5 for getAbsoluteTop.  err...
@@ -104,21 +107,23 @@ def getAbsoluteLeft(elem):
 def getAbsoluteTop(elem):
     JS("""
     // Firefox 3 expects getBoundingClientRect
-    if (   typeof elem.getBoundingClientRect == 'function'
-        && elem.ownerDocument.getViewportElement == 'function') {
+    if (   typeof elem.getBoundingClientRect == 'function'  ) {
         var top = Math.ceil(elem.getBoundingClientRect().top);
-        return top + elem.ownerDocument.getViewportElement().scrollTop;
+        return top + $doc.body.scrollTop + $doc.documentElement.scrollTop;
     }
-    var top = $doc.getBoxObjectFor(elem).y;
-    var parent = elem.parentNode;
-    while (parent) {
-        if (parent.scrollTop > 0) {
-            top -= parent.scrollTop;
+    // Older Firefox can use getBoxObjectFor
+    else {
+        var top = $doc.getBoxObjectFor(elem).y;
+        var parent = elem.parentNode;
+        while (parent) {
+            if (parent.scrollTop > 0) {
+                top -= parent.scrollTop;
+            }
+            parent = parent.parentNode;
         }
-        parent = parent.parentNode;
+    
+        return top + $doc.body.scrollTop + $doc.documentElement.scrollTop;
     }
-
-    return top + $doc.body.scrollTop + $doc.documentElement.scrollTop;
     """)
 
 def getChildIndex(parent, child):
