@@ -99,16 +99,6 @@ class SplitPanel(Panel):
         self.setElemWidth(elem, fullSize)
         self.setElemHeight(elem, fullSize)
 
-    def getOffsetHeight(self, elem):
-        """ Returns the offsetHeight element property.
-        """
-        return DOM.getIntAttribute(elem, "offsetHeight")
-
-    def getOffsetWidth(self, elem):
-        """  Returns the offsetWidth element property.
-        """
-        return DOM.getIntAttribute(elem, "offsetWidth")
-
     def preventBoxStyles(self, elem):
         """ Adds zero or none CSS values for padding, margin and
             border to prevent stylesheet overrides. Returns the

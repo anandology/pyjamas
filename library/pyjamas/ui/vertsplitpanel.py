@@ -64,8 +64,8 @@ class ImplVerticalSplitPanel:
     def setSplitPosition(self, px):
         splitElem = self.panel.getSplitElement()
 
-        rootElemHeight = self.panel.getOffsetHeight(self.panel.container)
-        splitElemHeight = self.panel.getOffsetHeight(splitElem)
+        rootElemHeight = DOM.getOffsetHeight(self.panel.container)
+        splitElemHeight = DOM.getOffsetHeight(splitElem)
 
         # layout not settled, set height to what it _should_ be... yuk.
         if splitElemHeight == 0:
@@ -183,7 +183,7 @@ class ImplIE6VerticalSplitPanel:
          """)
 
     def onResize(self):
-        self.setSplitPosition(self.panel.getOffsetHeight(self.panel.getWidgetElement(0)))
+        self.setSplitPosition(DOM.getOffsetHeight(self.panel.getWidgetElement(0)))
 
 class VerticalSplitPanel(SplitPanel):
     """ A panel that arranges two widgets in a single vertical
@@ -245,7 +245,7 @@ class VerticalSplitPanel(SplitPanel):
         self.lastSplitPosition = pos
         topElem = self.getWidgetElement(0)
         self.setElemHeight(topElem, pos)
-        self.impl.setSplitPosition(self.getOffsetHeight(topElem))
+        self.impl.setSplitPosition(DOM.getOffsetHeight(topElem))
 
     def setTopWidget(self, w):
         """ Sets the widget in the top of the panel.
@@ -273,7 +273,7 @@ class VerticalSplitPanel(SplitPanel):
 
     def onSplitterResizeStarted(self, x, y):
         self.initialThumbPos = y
-        self.initialTopHeight = self.getOffsetHeight(self.getWidgetElement(0))
+        self.initialTopHeight = DOM.getOffsetHeight(self.getWidgetElement(0))
 
     def buildDOM(self):
         topDiv = self.getWidgetElement(0)

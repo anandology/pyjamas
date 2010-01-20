@@ -80,7 +80,7 @@ class ImplHorizontalSplitPanel:
     def setSplitPosition(self, pos):
         leftElem = self.panel.getWidgetElement(0)
         self.panel.setElemWidth(leftElem, pos)
-        self.setSplitPositionUsingPixels(self.panel.getOffsetWidth(leftElem))
+        self.setSplitPositionUsingPixels(DOM.getOffsetWidth(leftElem))
 
     def setSplitPositionUsingPixels(self, px):
         self._setSplitPositionUsingPixels(px)
@@ -95,8 +95,8 @@ class ImplHorizontalSplitPanel:
         """
         splitElem = self.panel.getSplitElement()
 
-        rootElemWidth = self.panel.getOffsetWidth(self.panel.container)
-        splitElemWidth = self.panel.getOffsetWidth(splitElem)
+        rootElemWidth = DOM.getOffsetWidth(self.panel.container)
+        splitElemWidth = DOM.getOffsetWidth(splitElem)
 
         # This represents an invalid state where layout is incomplete. This
         # typically happens before DOM attachment, but I leave it here as a
@@ -315,7 +315,7 @@ class HorizontalSplitPanel(SplitPanel):
 
     def onSplitterResizeStarted(self, x, y):
         self.initialThumbPos = x
-        self.initialLeftWidth = self.getOffsetWidth(self.getWidgetElement(0))
+        self.initialLeftWidth = DOM.getOffsetWidth(self.getWidgetElement(0))
 
 
     def buildDOM(self):
