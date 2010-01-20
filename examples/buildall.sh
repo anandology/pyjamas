@@ -12,6 +12,7 @@ if echo $options |grep -- '--downloads-no'>/dev/null ; then
 	options=`echo "$options"|sed 's/--downloads-no//g'`
 fi
 
+(cd asteroids; ./build.sh $options)
 (cd browserdetect; ./build.sh $options)
 (cd dynamictable; ./build.sh $options)
 (cd gears; ./build.sh $options)
