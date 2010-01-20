@@ -9,7 +9,9 @@ JSONEncode:
     +===============+===================+===============+
     | pyjslib.dict  | dict              | object        |
     +---------------+-------------------+---------------+
-    | pyjslib.list  | list, tuple       | array         |
+    | pyjslib.list  | list              | array         |
+    +---------------+-------------------+---------------+
+    | pyjslib.tuple | tuple             | array         |
     +---------------+-------------------+---------------+
     | string        | str, unicode      | string        |
     +---------------+-------------------+---------------+
@@ -149,6 +151,9 @@ class JSONParser:
                         return s.array(x);
                     }
                     if (x instanceof pyjslib.list) {
+                        return s.array(x.__array);
+                    }
+                    if (x instanceof pyjslib.tuple) {
                         return s.array(x.__array);
                     }
                     if (x instanceof pyjslib.dict) {
