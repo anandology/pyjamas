@@ -114,7 +114,12 @@ class TabBar(Composite):
             self.panel.setCellWidth(text, "100%")
             return
 
-        if isinstance(text, str):
+        try:
+            istext = isinstance(text, str) or isinstance(text, unicode)
+        except:
+            istext = isinstance(text, str)
+
+        if istext:
             if asHTML:
                 item = HTML(text)
             else:
