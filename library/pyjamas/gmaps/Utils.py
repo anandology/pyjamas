@@ -69,7 +69,7 @@ def translateGmapsObject(obj, fieldName, fields, pyToJs):
               return newobj
           }else{
               //console.log("is list js->py")
-              var newobj = pyjslib.List([])
+              var newobj = pyjslib.list([])
               for (var i in obj)
                  newobj.append(Utils.translateGmapsObject(
                      obj[i], fieldName + "[]", fields,pyToJs ));
