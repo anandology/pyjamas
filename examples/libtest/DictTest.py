@@ -174,6 +174,17 @@ class DictTest(UnitTest):
         self.assertEqual(cmp({'1':1, '2':2}, {'1':2}), 1)
         self.assertEqual(cmp({'1':1, '2':2}, {'2':2, '1':1}), 0)
 
+    def testEq(self):
+        self.failUnlessEqual({}, {})
+        self.failUnlessEqual({'1':1}, {'1':1})
+        self.failIfEqual({},{'1':1})
+        self.failIfEqual({'1':1},{'1':2})
+        # test for bug 362
+        try:
+            self.failIfEqual({'1':1}, [1,2], "Test for Bug 362")
+        except TypeError:
+            self.fail("Bug 362 - comparison between dict and non-dict")
+
     def testFromkeys(self):
         d1 = {'a':1, 'b':1}
         d2 = {'a':None, 'b':None}
