@@ -87,19 +87,23 @@ def op_eq(a,b):
             return a.__cmp__(new pyjslib['long'](b.valueOf())) == 0;
     }
     if ((typeof a == 'object' || typeof a == 'function') && typeof a.__cmp__ == 'function') {
-        // special case for dict to non-dict comparison
-        if (a.__name__=="dict" && b.__name__!="dict")
-        {
+        if (typeof b.__cmp__ != 'function') {
             return false;
         }
-        return a.__cmp__(b) == 0;
+        if (a.__cmp__ === b.__cmp__) {
+            return a.__cmp__(b) == 0;
+        }
+        if (pyjslib['_isinstance'](a, b)) {
+            return a.__cmp__(b) == 0;
+        }
+        return false;
     } else if ((typeof b == 'object' || typeof b == 'function') && typeof b.__cmp__ == 'function') {
-        // special case for dict to non-dict comparison
-        if (a.__name__=="dict" && b.__name__!="dict")
-        {
-            return false;
+        // typeof b.__cmp__ != 'function'
+        // a.__cmp__ !== b.__cmp__
+        if (pyjslib['_isinstance'](a, b)) {
+            return b.__cmp__(a) == 0;
         }
-        return b.__cmp__(a) == 0;
+        return false;
     }
     return a == b;
     """)

@@ -185,6 +185,11 @@ class DictTest(UnitTest):
         except TypeError:
             self.fail("Bug 362 - comparison between dict and non-dict")
 
+        class DICT(dict): pass
+        self.failUnlessEqual(DICT(), {})
+        self.failUnlessEqual({}, DICT())
+        self.failUnlessEqual(DICT(a=1), dict(a=1))
+
     def testFromkeys(self):
         d1 = {'a':1, 'b':1}
         d2 = {'a':None, 'b':None}
