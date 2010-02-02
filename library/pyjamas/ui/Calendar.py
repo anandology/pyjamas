@@ -267,10 +267,13 @@ class Calendar(FocusPanel):
     def onCellClicked(self, grid, row, col):
         if row == 0:
             return
-        text = grid.getText(row, col)
+        text = grid.getText(row, col).strip()
         if text == "":
             return
-        selectedDay = int(text)
+        try:
+            selectedDay = int(text)
+        except ValueError, e:
+            return
         # well if anyone is listening to the listener, fire that event
         for listener in self.selectedDateListeners:
             if hasattr(listener, "onDateSelected"):
