@@ -385,8 +385,8 @@ class DateField(Composite):
         self.img = Image(self.icon_img)
         self.img.addStyleName(self.icon_style)
         self.calendarLink = HyperlinkImage(self.img)
-        self.todayLink = Hyperlink(today_text)
-        self.todayLink.addStyleName(today_style)
+        self.todayLink = Hyperlink(self.today_text)
+        self.todayLink.addStyleName(self.today_style)
         #
         # lay it out
         #
