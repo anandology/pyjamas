@@ -6,17 +6,17 @@ class Datetime:
             raise NontImplementedError("tzinfo")
         JS("""	
     if (microseconds !== null)
-        self.date = new Date(year, month, day, hours, minutes, seconds, 0.5+microseconds/1000.0);
+        self.date = new Date(year, month-1, day, hours, minutes, seconds, 0.5+microseconds/1000.0);
 	else if (seconds !== null)
-	    self.date = new Date(year, month, day, hours, minutes, seconds);
+	    self.date = new Date(year, month-1, day, hours, minutes, seconds);
 	else if (minutes !== null)
-	    self.date = new Date(year, month, day, hours, minutes);
+	    self.date = new Date(year, month-1, day, hours, minutes);
 	else if (hours !== null)
-	    self.date = new Date(year, month, day, hours);
+	    self.date = new Date(year, month-1, day, hours);
 	else if (day !== null)
-	    self.date = new Date(year, month, day);
+	    self.date = new Date(year, month-1, day);
 	else if (month !== null)
-	    self.date = new Date(year, month);
+	    self.date = new Date(year, month-1);
 	else if (year !== null)
     {
         if (pyjslib.isNumber(year))
