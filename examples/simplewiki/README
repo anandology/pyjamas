@@ -1,0 +1,7 @@
+to get this example working, make sure you have webpy and pymongo installed.  pymongo must be running.
+
+To start the backend, run:
+
+    python server.py
+
+
