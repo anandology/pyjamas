@@ -353,11 +353,10 @@ pyjs_attrib_remap_names = [\
 pyjs_attrib_remap = {}
 for a in pyjs_attrib_remap_names:
     pyjs_attrib_remap[a] = '$$' + a
-# Specific for IE6:
-#for a in JavaScript_Reserved_Words:
-#    pyjs_attrib_remap[a] = '$$' + a
-#for a in ECMAScipt_Reserved_Words:
-#    pyjs_attrib_remap[a] = '$$' + a
+for a in JavaScript_Reserved_Words:
+    pyjs_attrib_remap[a] = '$$' + a
+for a in ECMAScipt_Reserved_Words:
+    pyjs_attrib_remap[a] = '$$' + a
 
 
 # pass in the compiler module (lib2to3 pgen or "standard" python one)
@@ -1324,7 +1323,7 @@ $generator['send'] = function ($val) {
     $is_executing=false;
     return $res;
 };
-$generator['throw'] = function ($exc_type, $exc_value) {
+$generator['$$throw'] = function ($exc_type, $exc_value) {
 %(src1)s
     $yield_value = null;
     $exc=(typeof $exc_value == 'undefined'?$exc_type():$exc_type($exc_value));

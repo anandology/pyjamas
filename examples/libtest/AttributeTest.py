@@ -10,6 +10,7 @@ class Foo:
     a = 1
     b = [1,2]
     name = "Foo"
+    label = "label"
 
     def __init__(self, v):
         self.v = v
@@ -120,4 +121,6 @@ class AttributeTest(UnitTest):
         self.assertEqual(prototype, 'Foo')
         self.assertEqual(apply, 'foo')
         self.assertEqual(constructor, 'Foo')
+        self.assertEqual(Foo.label, 'label')
+        self.assertEqual(f.label, 'label')
 
