@@ -2201,7 +2201,8 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
 
         for ch4 in v.args:
             if isinstance(ch4, self.ast.Keyword):
-                kwarg = ch4.name + ":" + self.expr(ch4.expr, current_klass)
+                kwarg = self.vars_remap(ch4.name) + ":" + \
+                        self.expr(ch4.expr, current_klass)
                 kwargs.append(kwarg)
             else:
                 arg = self.expr(ch4, current_klass)
