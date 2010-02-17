@@ -209,7 +209,7 @@ class ServiceProxy(JSONService):
     def __call__(self, *params, **kwargs):
         if isinstance(params, tuple):
             params = list(params)
-        if hasattr(params[-1], "onRemoteResponse"):
+        if params and hasattr(params[-1], "onRemoteResponse"):
             handler = params.pop()
         else:
             handler = None
