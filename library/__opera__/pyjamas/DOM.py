@@ -12,7 +12,7 @@ def getAbsoluteLeft(elem):
     var left = 0;
     var curr = elem.parentNode;
     // This intentionally excludes body
-    while (curr != $doc.body) {
+    while (curr && curr != $doc.body) {
 
       // see https://bugs.opera.com/show_bug.cgi?id=249965
       // The net effect is that TR and TBODY elemnts report the scroll offsets
@@ -36,7 +36,7 @@ def getAbsoluteTop(elem):
 
     // This intentionally excludes body
     var curr = elem.parentNode;
-    while (curr != $doc.body) {
+    while (curr && curr != $doc.body) {
       // see getAbsoluteLeft()
       if (curr.tagName != 'TR' && curr.tagName != 'TBODY') {
         top -= curr.scrollTop;
