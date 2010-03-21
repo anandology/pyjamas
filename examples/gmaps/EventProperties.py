@@ -18,8 +18,6 @@ from pyjamas import DOM
 from pyjamas.Timer import Timer
 from __pyjamas__ import JS
 
-from random import random
-
 from pyjamas.gmaps.Map import Map, MapTypeId, MapOptions
 from pyjamas.gmaps.Base import LatLng, LatLngBounds
 from pyjamas.gmaps.InfoWindow import InfoWindow, InfoWindowOptions
@@ -51,7 +49,7 @@ class EventProperties(SimplePanel):
         self.map.addListener("zoom_changed", self.zoomChanged)
 
     def zoomChanged(self):
-        zoomLevel = self.map.get_zoom()
+        zoomLevel = self.map.getZoom()
         self.map.setCenter(self.myLatLng)
         self.infoWindow.setContent("Zoom: " + str(zoomLevel))
 
