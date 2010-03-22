@@ -18,7 +18,7 @@ def browser():
 
 class FlashPanel(Panel):
     
-    def __init__(self):
+    def __init__(self, **kwargs):
         element = DOM.createDiv()
         self.setElement(element)
         Panel.__init__(self, **kwargs)
