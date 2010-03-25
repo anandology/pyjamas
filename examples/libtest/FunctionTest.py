@@ -91,6 +91,14 @@ class FunctionTest(UnitTest):
         v = f(1,2,3,4)
         self.assertEqual(v[2][0], 3)
         self.assertEqual(v[2][1], 4)
+    
+        try:
+            class ClassWithLambda:
+                f = lambda self: 1
+        except:
+            self.fail("bug #385 - lambda in class definition")
+        else:
+            self.assertEqual(ClassWithLambda().f(), 1)
 
     def testProcedure(self):
         self.assertTrue(aFunctionReturningNone() is None,
