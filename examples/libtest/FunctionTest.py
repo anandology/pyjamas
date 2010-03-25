@@ -93,12 +93,22 @@ class FunctionTest(UnitTest):
         self.assertEqual(v[2][1], 4)
     
         try:
-            class ClassWithLambda:
-                f = lambda self: 1
+            class ClassWithLambdas1:
+                f1 = [lambda *args: args[0]]
         except:
-            self.fail("bug #385 - lambda in class definition")
+            self.fail("issue #385 - lambda in class definition")
         else:
-            self.assertEqual(ClassWithLambda().f(), 1)
+            c = ClassWithLambdas1()
+            self.assertEqual(c.f1[0](1), 1, 'issue #385 - lambda function called as bound method')
+
+        try:
+            class ClassWithLambdas2:
+                f2 = lambda *args: args[0]
+        except:
+            self.fail("issue #385 - lambda in class definition")
+        else:
+            c = ClassWithLambdas2()
+            self.assertEqual(c.f2(1), c, 'issue #385 - bound method lambda called as function')
 
     def testProcedure(self):
         self.assertTrue(aFunctionReturningNone() is None,

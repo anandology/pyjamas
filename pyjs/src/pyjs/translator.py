@@ -3634,14 +3634,21 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         return self.track_call("pyjslib['tuple']([" + ", ".join([self.expr(x, current_klass) for x in node.nodes]) + "])", node.lineno)
 
     def _lambda(self, node, current_klass):
+        save_local_prefix, self.local_prefix = self.local_prefix, None
+        save_is_class_definition, self.is_class_definition = self.is_class_definition, False
+        
         function_name = self.uniqid("$lambda")
-        print >> self.output, "var",
+        print >> self.output, self.spacing(), "var",
         code_node = self.ast.Stmt([self.ast.Return(node.code, node.lineno)], node.lineno)
         try: # python2.N
             func_node = self.ast.Function(None, function_name, node.argnames, node.defaults, node.flags, None, code_node, node.lineno)
         except: # lib2to3
             func_node = self.ast.Function(None, function_name, node.argnames, node.defaults, node.varargs, node.kwargs, None, code_node, node.lineno)
         self._function(func_node, current_klass, True)
+        
+        self.local_prefix = save_local_prefix
+        self.is_class_definition = save_is_class_definition
+        
         return function_name
 
     def _listcomp(self, node, current_klass):
