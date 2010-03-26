@@ -1,6 +1,8 @@
                     Changes made to Pyjamas since 0.6
                     ---------------------------------
 
+ * Added issubclass, thanks to Daniel Gerber
+
  * Off-by-one bug in datetime on months, fixed by Russell Yanofsky
 
  * Fix for menu highlighting by Pavel Mironchyk

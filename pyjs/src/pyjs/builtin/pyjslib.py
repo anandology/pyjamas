@@ -5551,6 +5551,20 @@ def _isinstance(object_, classinfo):
     return false;
     """)
 
+def issubclass(class_, classinfo):
+    if JS(""" typeof class_ == 'undefined' || class_ === null || class_.__is_instance__ !== false """):
+        raise TypeError("arg 1 must be a class")
+        
+    if isinstance(classinfo, tuple):
+        for ci in classinfo:
+            if issubclass(class_, ci):
+                return True
+        return False
+    else:
+        if JS(""" typeof classinfo == 'undefined' || classinfo.__is_instance__ !== false """):
+            raise TypeError("arg 2 must be a class or tuple of classes")
+        return _issubtype(class_, classinfo)
+    
 def _issubtype(object_, classinfo):
     JS("""
     if (   object_.__is_instance__ === null 
