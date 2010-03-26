@@ -1,5 +1,6 @@
 # Copyright 2006 James Tauber and contributors
 # Copyright (C) 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
+# Copyright (C) 2010 Glenn Washburn <crass@berlios.de>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -45,9 +46,8 @@ class ClickableHeader(SimplePanel):
 Factory.registerClass('pyjamas.ui.ClickableHeader', ClickableHeader)
 
 class DefaultHeader(Widget):
-    def __init__(self, text, disclosurePanel):
+    def __init__(self, text):
         Widget.__init__(self)
-        self.disclosurePanel = disclosurePanel
         self.imageBase = pygwt.getModuleBaseURL()
 
         self.root = DOM.createTable()
@@ -56,8 +56,6 @@ class DefaultHeader(Widget):
         self.imageTD = DOM.createTD()
         self.labelTD = DOM.createTD()
         self.imgElem = DOM.createImg()
-
-        self.updateState()
 
         self.setElement(self.root)
         DOM.appendChild(self.root, self.tbody)
@@ -68,9 +66,6 @@ class DefaultHeader(Widget):
 
         self.setText(text)
 
-        disclosurePanel.addEventHandler(self)
-        self.updateState()
-
     def getText(self):
         return DOM.getInnerText(self.labelTD)
 
@@ -78,13 +73,13 @@ class DefaultHeader(Widget):
         DOM.setInnerText(self.labelTD, text)
 
     def onOpen(self, panel):
-        self.updateState()
+        self.updateState(True)
 
     def onClose(self, panel):
-        self.updateState()
+        self.updateState(False)
 
-    def updateState(self):
-        if self.disclosurePanel.getOpen():
+    def updateState(self, setOpen):
+        if setOpen:
             DOM.setAttribute(self.imgElem, "src",
                              self.imageBase + "disclosurePanelOpen.png")
         else:
@@ -98,20 +93,45 @@ class DefaultHeader(Widget):
 
 class DisclosurePanel(Composite):
 
-    def __init__(self, headerText, isOpen=False, **kwargs):
+    def __init__(self, *args, **kwargs):
 
         self.handlers = []
         self.content = None
 
         # this is awkward: VerticalPanel is the composite,
         # so we get the element here, and pass it in to VerticalPanel.
-        element = None
-        if kwargs.has_key('Element'):
-            element = kwargs.pop('Element')
+        element = kwargs.pop('Element', None)
+
+        # process the passed arguments
+        headerText = headerWidget = None
+        isOpen = False
+        if len(args) == 1:
+            header = args[0]
+        if len(args) == 2:
+            header, isOpen = args[:2]
+        # apparently "basestring" is not understood
+        if isinstance(header, str):
+            headerText = header
+        else:
+            headerWidget = header
+        isOpen = kwargs.pop('isOpen', isOpen)
+        headerText = kwargs.pop('header', headerText)
+        headerWidget = kwargs.pop('header', headerWidget)
+        # TODO: add ImageBundle
+        # images = kwargs.pop('images', None)
+        
+        # If both headerText and headerWidget are arguments, headerText will
+        # be used to preserve API compatibility.
+        headerContent = headerWidget
+        if headerText is not None or headerContent is None:
+            if headerText is None:
+                headerText = ""
+            headerContent = DefaultHeader(headerText)
 
         self.mainPanel = VerticalPanel(Element=element)
 
-        self.header = ClickableHeader(self)
+        self._init_header(headerContent)
+
         self.contentWrapper = SimplePanel()
         self.mainPanel.add(self.header)
         self.mainPanel.add(self.contentWrapper)
@@ -120,15 +140,20 @@ class DisclosurePanel(Composite):
         DOM.setStyleAttribute(self.contentWrapper.getElement(),
                               "overflow", "hidden");
 
-        self.isOpen = isOpen
-
-        self.headerObj = DefaultHeader(headerText, self)
-        self.setHeader(self.headerObj)
-
         if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-DisclosurePanel"
         Composite.__init__(self, self.mainPanel, **kwargs)
 
+        # Must call setOpen after creating the initializing the object
+        self.isOpen = None
+        self.setOpen(isOpen)
+
         self.setContentDisplay()
+
+    def _init_header(self, headerContent):
+        self.header = ClickableHeader(self)
+        self.headerObj = headerContent
+        self.addEventHandler(self.headerObj)
+        self.setHeader(self.headerObj)
 
     def add(self, widget):
         if self.getContent() is None:
