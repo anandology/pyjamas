@@ -353,7 +353,24 @@ class ClassTest(UnitTest):
             self.fail('Failed to raise error for invalid instance')
         except TypeError, e:
             self.assertTrue(e.args[0].find('get_x() must be called') >= 0, e.args[0])
-
+    
+    def testIsSubclass(self):
+        class A: pass
+        class B(A): pass
+        class C(B): pass
+        class D: pass
+        class E(D, C): pass
+        
+        self.assertTrue(issubclass(A, A))
+        self.assertTrue(issubclass(C, A))
+        self.assertTrue(issubclass(E, A))
+        self.assertTrue(issubclass(E, (PassMeAClass, A)))
+        self.assertFalse(issubclass(A, PassMeAClass))
+        
+        self.assertRaises(TypeError, issubclass, PassMeAClass(), PassMeAClass)
+        self.assertRaises(TypeError, issubclass, PassMeAClass, PassMeAClass())
+        self.assertRaises(TypeError, issubclass, None, PassMeAClass)
+    
     def testMetaClass(self):
         Klass = type('MyClass', (object,), {'method': method, 'x': 5})
         instance = Klass()

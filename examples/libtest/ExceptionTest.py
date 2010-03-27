@@ -70,6 +70,8 @@ class ExceptionTest(UnitTest):
             raise "test"
         except "test":
             return
+        except TypeError, e:
+            self.fail(e)
         self.fail('"test" was not caught or raised')
 
     def testBuiltInException(self):
