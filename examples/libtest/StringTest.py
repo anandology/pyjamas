@@ -190,9 +190,6 @@ class StringTest(UnitTest):
     def testCenter(self):
         self.assertEqual('a'.center(4, '1'), '1a11')
 
-    def testZfill(self):
-        self.assertEqual('a'.zfill(4), '000a')
-
     def testSprintfList(self):
         self.assertEqual("%s" % 'foo', "foo")
         self.assertEqual("%% %s" % '', "% ")

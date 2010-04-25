@@ -38,7 +38,6 @@ if sys.platform != 'spidermonkey' and sys.platform != 'pyv8':
     from WindowTest import WindowTest
 from MD5Test import MD5Test
 from TimeModuleTest import TimeModuleTest
-from DateTimeModuleTest import DatetimeModuleTest
 from TypeCompatibilityTest import TypeCompatibilityTest
 from UrllibModuleTest import UrllibModuleTest
 from Base64ModuleTest import Base64ModuleTest
@@ -94,7 +93,6 @@ def main():
     t.add(TypeCompatibilityTest)
     t.add(MD5Test)
     t.add(TimeModuleTest)
-    t.add(DatetimeModuleTest)
     t.add(UrllibModuleTest)
     t.add(Base64ModuleTest)
     t.add(ReModuleTest)

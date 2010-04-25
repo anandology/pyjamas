@@ -5,7 +5,7 @@ from pyjamas.ui.Grid import Grid
 from pyjamas.ui.TextBox import TextBox
 from pyjamas.ui.Button import Button
 from pyjamas import log
-from time import time
+from datetime import Datetime
 
 class DbTest():
 
@@ -32,7 +32,7 @@ class DbTest():
 
     def onClick(self, sender):
         phrase = self.tb.getText()
-        currTime = time()
+        currTime = Datetime().getTime()
         self.db.execute('insert into Demo values (?, ?)', phrase, currTime);
 
         rs = self.db.execute('select * from Demo order by Timestamp desc');
