@@ -1,4 +1,4 @@
-VERSION=0.7~+pre2
+VERSION=0.7
 
 help:
 	@echo

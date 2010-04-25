@@ -1,12 +1,11 @@
-Current Release: 0.7~+pre2
+Current Release: 0.7
 ---------------
 
-This is a 0.7 prerelease of Pyjamas, to invite users to help test the
-latest version.  The latest svn is regularly but informally tested
-against the regression tests and the examples, and used in production,
-but not extensively tested against all known browsers on each commit.
-Community assistance by running against a wider range of browsers ensures
-that *you* get a stable release.
+This is the 0.7 release of Pyjamas.  Pyjamas comprises several projects,
+one of which is a stand-alone python-to-javascript compiler; other projects
+include a Graphical Widget Toolkit, such that pyjamas applications can run
+either in web browsers as pure javascript (with no plugins required)
+or stand-alone on the desktop (as a competitor to PyGTK2 and PyQT4).
 
 Features and enhancements of the stand-alone 0.7 series javascript
 compiler include:
