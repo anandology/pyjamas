@@ -85,6 +85,6 @@ class Game(SimplePanel):
 if __name__ == '__main__':
     pyjd.setup("public/lightout.html")
     game = Game(3)
-    RootPanel().get('game').add(game)
+    RootPanel('game').add(game)
     #RootPanel().add(game)
     pyjd.run()
