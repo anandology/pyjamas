@@ -82,9 +82,9 @@ class ASliderClass(VerticalPanel):
 
         self.setSpacing(10)
         if p2:
-            self.b = AreaDemoSlider2((0,0), (100,100))
+            self.b = AreaDemoSlider2([0,0], [100,100])
         else:
-            self.b = AreaDemoSlider((0,0), (100,100))
+            self.b = AreaDemoSlider([0,0], [100,100])
         self.add(self.b)
 
         self.b.setHeight("100px")
@@ -102,19 +102,19 @@ class ASliderClass(VerticalPanel):
 
         self.label_y.addControlValueListener(self)
 
-    def onControlValueChanged(self, sender,old_value_xy , new_value_xy):
+    def onControlValueChanged(self, sender, old_value_xy, new_value_xy):
 
         #no use of old_values? (old_value_x,old_value_y)
 
         if (sender == self.label_x):
 
-            self.b.setControlPos((new_value_xy,self.b.value_y))
-            self.b.setValue((new_value_xy,self.b.value_y), 0)       
+            self.b.setControlPos([new_value_xy, self.b.value_y])
+            self.b.setValue([new_value_xy, self.b.value_y], 0)       
 
         elif (sender == self.label_y):
 
-            self.b.setControlPos((self.b.value_x,new_value_xy))
-            self.b.setValue((self.b.value_x,new_value_xy), 0)
+            self.b.setControlPos([self.b.value_x, new_value_xy])
+            self.b.setValue([self.b.value_x, new_value_xy], 0)
 
         elif (sender == self.b):
 

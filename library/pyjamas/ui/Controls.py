@@ -146,27 +146,28 @@ Factory.registerClass('pyjamas.ui.Control', Control)
 
 class DControl(Control):
 
-    def __init__(self, element, (min_value_x, min_value_y),
-                                (max_value_x, max_value_y),
+    def __init__(self, element, min_value, max_value,
                        start_value_xy=None, step_xy=None, **kwargs):
 
-        self.min_value_x = min_value_x
-        self.min_value_y = min_value_y
+        self.min_value_x = min_value[0]
+        self.min_value_y = min_value[1]
 
-        self.max_value_x = max_value_x
-        self.max_value_y = max_value_y
+        self.max_value_x = max_value[0]
+        self.max_value_y = max_value[1]
 
         if start_value_xy is None:
-            self.start_value_x = min_value_x
-            self.start_value_y = min_value_y
+            self.start_value_x = self.min_value_x
+            self.start_value_y = self.min_value_y
         else:
-            (self.start_value_x, self.start_value_y) = start_value_xy
+            self.start_value_x = start_value_xy[0]
+            self.start_value_y = start_value_xy[1]
 
         if step_xy is None:
             self.step_x = (self.max_value_x - self.min_value_x) / 20
             self.step_y = (self.max_value_y - self.min_value_y) / 20        
         else:
-            self.step_x,self.step_y=step_xy
+            self.step_x = step_xy[0]
+            self.step_y = step_xy[1]
 
         self.value_x = self.start_value_x
         self.value_y = self.start_value_y
@@ -179,9 +180,13 @@ class DControl(Control):
         FocusWidget.__init__(self, element, **kwargs)
         MouseHandler.__init__(self)
 
-    def processValue(self, (value_x,value_y)):
+    def processValue(self, value):
+
         """ rounds and limits the value to acceptable range
         """
+        value_x = value[0]
+        value_y = value[1]
+
         value_x = math.floor((value_x - self.min_value_x) / self.step_x)
         value_x = (value_x * self.step_x) + self.min_value_x
         value_x = max(value_x, self.min_value_x)
@@ -192,22 +197,20 @@ class DControl(Control):
         value_y = max(value_y, self.min_value_y)
         value_y = min(value_y, self.max_value_y)    
 
-        return (value_x,value_y)
+        return [value_x, value_y]
 
     def setValue(self, (new_value_x,new_value_y), notify=1):
 
-        old_value_x = self.value_x
-        self.value_x = new_value_x
+        old_value = [self.value_x, self.value_y]
 
-        old_value_y = self.value_y
-        self.value_y = new_value_y    
+        self.value_x = new_value[0]
+        self.value_y = new_value[1]
 
         if not notify:
             return
 
         for listener in self.valuechange_listeners:
-            listener.onControlValueChanged(self, (old_value_x,old_value_y),
-                                                 (new_value_x,new_value_y))
+            listener.onControlValueChanged(self, old_value, new_value)
 
     def onControlValueChanged(self, value_old_xy, value_new_xy):
         pass
@@ -215,18 +218,18 @@ class DControl(Control):
     def onKeyDown(self, sender, keycode, modifiers):
         if keycode == KeyboardListener.KEY_UP:
             DOM.eventPreventDefault(DOM.eventGetCurrentEvent())
-            new_value_x, new_value_y = \
+            new_value = \
                 self.processValue((self.value_x + self.step_x,
                                    self.value_y + self.step_y))
-            self.setControlPos((new_value_x,new_value_y))
-            self.setValue((new_value_x, new_value_y))
+            self.setControlPos(new_value)
+            self.setValue(new_value)
         elif keycode == KeyboardListener.KEY_DOWN:
             DOM.eventPreventDefault(DOM.eventGetCurrentEvent())
-            new_value_x, new_value_y = \
+            new_value = \
                self.processValue((self.value_x - self.step_x,
                                   self.value_y-self.step_y))
-            self.setControlPos((new_value_x, new_value_y))
-            self.setValue((new_value_x, new_value_y))
+            self.setControlPos(new_value)
+            self.setValue(new_value)
 
 Factory.registerClass('pyjamas.ui.DControl', DControl)
 
@@ -428,8 +431,7 @@ Factory.registerClass('pyjamas.ui.HorizontalDemoSlider2', HorizontalDemoSlider2)
 
 
 class AreaDemoSlider(DControl):
-    def __init__(self, (min_value_x, min_value_y),
-                       (max_value_x, max_value_y),
+    def __init__(self, min_value, max_value,
                         start_value=None, step=None,
                        **kwargs):
 
@@ -456,8 +458,7 @@ class AreaDemoSlider(DControl):
         # plus a change in the handle style
         # this should be refactored, so that the AreaDemoSlider
         # can be built on VerticalDemaoSlider    
-        DControl.__init__(self, element, (min_value_x, min_value_y),
-                                         (max_value_x, max_value_y),
+        DControl.__init__(self, element, min_value, max_value,
                                start_value, step,
                                **kwargs)
 
@@ -468,21 +469,19 @@ class AreaDemoSlider(DControl):
         #Redefine VDS's styles for handle
         DOM.setStyleAttribute(self.handle, "width", "10px")
         DOM.setStyleAttribute(self.handle, "height", "10px")                                
-    def setValue(self, (new_value_x,new_value_y), notify=1):
+    def setValue(self, new_value, notify=1):
 
-        old_value_x = self.value_x
-        self.value_x = new_value_x
+        old_value = [self.value_x, self.value_y]
 
-        old_value_y = self.value_y
-        self.value_y = new_value_y    
+        self.value_x = new_value[0]
+        self.value_y = new_value[1]
 
         if not notify:
             return
 
         for listener in self.valuechange_listeners:
             # how to handle this? ???
-            listener.onControlValueChanged(self, (old_value_x, old_value_y),
-                                                 (new_value_x, new_value_y))
+            listener.onControlValueChanged(self, old_value, new_value)
 
     def onFocus(self, sender):
         self.addStyleName("gwt-VerticalSlider-focussed")
@@ -491,6 +490,7 @@ class AreaDemoSlider(DControl):
         self.removeStyleName("gwt-VerticalSlider-focussed")
         self.dragging = False
         DOM.releaseCapture(self.getElement())
+
     def moveControl(self, mouse_x, mouse_y):
 
         handle_height = DOM.getIntAttribute(self.handle, "offsetHeight")
@@ -522,11 +522,15 @@ class AreaDemoSlider(DControl):
         new_value_y = ((val_diff_y * relative_y) / height_range) + \
                       self.min_value_y
 
-        new_value_x, new_value_y = self.processValue((new_value_x, new_value_y))    
-        self.setControlPos((new_value_x, new_value_y))
-        self.setValue((new_value_x, new_value_y))
+        new_value = [new_value_x, new_value_y]
+        new_value = self.processValue(new_value)    
+        self.setControlPos(new_value)
+        self.setValue(new_value)
 
-    def setControlPos(self, (value_x, value_y)):
+    def setControlPos(self, value):
+
+        value_x = value[0]
+        value_y = value[1]
 
         widget_width = self.getOffsetWidth()
         length_range = widget_width - 10 # handle width is hard-coded
@@ -561,11 +565,9 @@ Factory.registerClass('pyjamas.ui.AreaDemoSlider', AreaDemoSlider)
 
 
 class AreaDemoSlider2(AreaDemoSlider):
-    def __init__(self, (min_value_x, min_value_y),
-                       (max_value_x, max_value_y), start_value=None, **kwargs):
+    def __init__(self, min_value, max_value, start_value=None, **kwargs):
 
-        AreaDemoSlider.__init__(self, (min_value_x, min_value_y),
-                                     (max_value_x, max_value_y), start_value,
+        AreaDemoSlider.__init__(self, min_value, max_value, start_value,
                                     **kwargs)
         self.addKeyboardListener(self)
         self.drag_enabled = True
