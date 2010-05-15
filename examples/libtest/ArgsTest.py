@@ -719,6 +719,11 @@ class ArgsTest(UnitTest):
         self.assertEqual(fn(), 1)
         self.assertEqual(A().fn(), 1)
 
+    def testArgIsModuleName(self):
+        def fn(ArgsTest):
+            return foo(ArgsTest, 2, 3)
+        self.assertEqual(__name__, 'ArgsTest', "Argument to fn must be equal to module name")
+        self.assertEqual(fn('foo'), ['foo', 2, 3])
 
 def foo(a, b, c):
     return [a, b, c]

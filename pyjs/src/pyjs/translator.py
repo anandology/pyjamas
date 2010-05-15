@@ -701,7 +701,7 @@ class Translator:
         self.ast = compiler.ast
         self.js_module_name = self.jsname("variable", module_name)
         if module_name:
-            self.module_prefix = module_name + "."
+            self.module_prefix = "$module."
         else:
             self.module_prefix = ""
         self.module_name = module_name
@@ -777,7 +777,7 @@ class Translator:
         parts = self.js_module_name.split('.')
         if len(parts) > 1:
             print >>self.output, self.spacing() + 'var %s = $pyjs.loaded_modules["%s"];' % (parts[0], module_name.split('.')[0])
-        print >>self.output, self.spacing() + '%s = $pyjs.loaded_modules["%s"];' % (self.js_module_name, module_name)
+        print >>self.output, self.spacing() + 'var $module = %s = $pyjs.loaded_modules["%s"];' % (self.js_module_name, module_name)
 
         print >>self.output, self.spacing() + self.js_module_name+".__was_initialized__ = true;"
         print >>self.output, self.spacing() + "if ((__mod_name__ === null) || (typeof __mod_name__ == 'undefined')) __mod_name__ = '%s';" % (module_name)
