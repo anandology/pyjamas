@@ -24,6 +24,10 @@ class Foo:
         apply = self.name.lower()
         return (name, prototype, apply, self.name)
 
+    def do(self):
+        return 'do'
+
+
 class AttributeTest(UnitTest):
 
     def testHasattr(self):
@@ -123,4 +127,5 @@ class AttributeTest(UnitTest):
         self.assertEqual(constructor, 'Foo')
         self.assertEqual(Foo.label, 'label')
         self.assertEqual(f.label, 'label')
-
+        self.assertEqual(f.do(), 'do')
+        self.assertEqual(getattr(f, 'do')(), 'do')
