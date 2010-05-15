@@ -109,12 +109,19 @@ def main():
 
     options = " ".join(sys.argv[1:])
     # Compile the application using Pyjamas.
-    stmt = (os.path.join(PATH_TO_PYJAMAS, 'bin', 'pyjsbuild') +
-            " " + options +
-            " -o " + os.path.join(here,'build') + " " +
-            " -I " + os.path.join(here, 'src') + " " +
-            'Showcase' +
-            " > /dev/null")
+    if sys.platform == "win32":
+        stmt = (os.path.join(PATH_TO_PYJAMAS, 'bin', 'pyjsbuild.py') +
+                " " + options +
+                " -o " + os.path.join(here,'build') + " " +
+                " -I " + os.path.join(here, 'src') + " " +
+                'Showcase')
+    else:
+        stmt = (os.path.join(PATH_TO_PYJAMAS, 'bin', 'pyjsbuild') +
+                " " + options +
+                " -o " + os.path.join(here,'build') + " " +
+                " -I " + os.path.join(here, 'src') + " " +
+                'Showcase' +
+                " > /dev/null")
     if os.system(stmt) != 0: return
 
     # Finally, launch a web browser to show the compiled application.
