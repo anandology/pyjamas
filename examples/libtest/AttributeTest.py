@@ -129,3 +129,9 @@ class AttributeTest(UnitTest):
         self.assertEqual(f.label, 'label')
         self.assertEqual(f.do(), 'do')
         self.assertEqual(getattr(f, 'do')(), 'do')
+        setattr(Foo, 'typeof', 1)
+        self.assertEqual(getattr(f, 'typeof'), 1)
+        try:
+            self.assertEqual(f.typeof, 1)
+        except AttributeError, e:
+            self.fail("Bug #402 setattr error for keywords")
