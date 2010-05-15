@@ -215,7 +215,7 @@ class SRE_Match:
         # Returns a tuple containing all the subgroups of the match. The
         # default argument is used for groups that did not participate in the
         # match (defaults to None).
-        return tuple(self._groups[1:])
+        return tuple([x if x is not None else default for x in self._groups[1:]])
 
     def groupdict(self, default=None):
         # Return a dictionary containing all the named subgroups of the match.

@@ -1294,7 +1294,17 @@ if (typeof Array.prototype.indexOf != 'function') {
 
     # Patching of the standard javascript RegExp
     JS("""
-RegExp.prototype.Exec = RegExp.prototype.exec;
+RegExp.prototype.Exec = function(pat) {
+    var m = this.exec(pat);
+    if (m !== null) {
+        var len = m.length >>> 0;
+        for (var i = 0; i < len; i++) {
+            if (typeof(m[i]) == 'undefined')
+                m[i] = null;
+        }
+    }
+    return m;
+};
 """)
     JS("""
 pyjslib.abs = Math.abs;

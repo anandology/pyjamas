@@ -124,3 +124,8 @@ class ReModuleTest(UnitTest.UnitTest):
         m = r.match("a1\na2", 3, 4)
         self.assertEqual(m.group(0), "a")
 
+        r = re.compile("([+])?(\d{1,})?")
+        m = r.match("1")
+        g = m.groups("")
+        self.assertEqual(g, ("", "1"))
+
