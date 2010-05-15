@@ -5610,7 +5610,7 @@ def getattr(obj, name, default_value=None):
     var mapped_name = name;
     if (typeof obj[name] == 'undefined') {
         mapped_name = '$$' + name;
-        if (typeof obj[mapped_name] == 'undefined') {
+        if (typeof obj[mapped_name] == 'undefined' || attrib_remap.indexOf(name) < 0) {
             if (arguments.length != 3) {
                 throw pyjslib.AttributeError("'" + pyjslib.repr(obj) + "' has no attribute '" + name + "'");
             }
@@ -5655,13 +5655,14 @@ def delattr(obj, name):
     if (typeof obj == 'undefined') {
         throw pyjslib['UndefinedValueError']("obj");
     }
+    var mapped_name = attrib_remap.indexOf(name) < 0 ? name : '$$'+name;
     if (   obj !== null
         && (typeof obj == 'object' || typeof obj == 'function')
-        && (typeof(obj[name]) != "undefined")&&(typeof(obj[name]) != "function") ){
-        if (typeof obj[name].__delete__ == 'function') {
-            obj[name].__delete__(obj);
+        && (typeof(obj[mapped_name]) != "undefined")&&(typeof(obj[mapped_name]) != "function") ){
+        if (typeof obj[mapped_name].__delete__ == 'function') {
+            obj[mapped_name].__delete__(obj);
         } else {
-            delete obj[name];
+            delete obj[mapped_name];
         }
         return;
     }
@@ -5682,6 +5683,9 @@ def setattr(obj, name, value):
     if (typeof name != 'string') {
         throw pyjslib['TypeError']("attribute name must be string");
     }
+    if (attrib_remap.indexOf(name) >= 0) {
+        name = '$$' + name;
+    }
     if (   typeof obj[name] != 'undefined'
         && obj[name] !== null
         && typeof obj[name].__set__ == 'function') {
@@ -5699,7 +5703,13 @@ def hasattr(obj, name):
     if (typeof name != 'string') {
         throw pyjslib['TypeError']("attribute name must be string");
     }
-    if (obj === null || typeof obj[name] == 'undefined') return false;
+    if (obj === null) return false;
+    if (typeof obj[name] == 'undefined' && (
+            typeof obj['$$'+name] == 'undefined' ||
+            attrib_remap.indexOf(name) < 0)
+      ) {
+        return false;
+    }
     if (typeof obj != 'object' && typeof obj != 'function') return false;
 
     return true;

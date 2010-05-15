@@ -135,3 +135,10 @@ class AttributeTest(UnitTest):
             self.assertEqual(f.typeof, 1)
         except AttributeError, e:
             self.fail("Bug #402 setattr error for keywords")
+        self.assertTrue(hasattr(Foo, 'typeof'))
+        delattr(Foo, 'typeof')
+        self.assertFalse(hasattr(Foo, 'typeof'))
+        setattr(Foo, 'typeof', 2)
+        self.assertTrue(hasattr(Foo, 'typeof'))
+        del Foo.typeof
+        self.assertFalse(hasattr(Foo, 'typeof'))

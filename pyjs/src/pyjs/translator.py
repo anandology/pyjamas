@@ -1095,6 +1095,9 @@ class Translator:
     def constant_decl(self):
         s = self.spacing()
         lines = []
+        remap = pyjs_attrib_remap.keys()
+        remap.sort()
+        lines.append("%(s)svar attrib_remap = %(remap)s;" % locals())
         for name in self.constant_int:
             lines.append("%(s)svar $constant_int_%(name)s = new pyjslib['int'](%(name)s);" % locals())
         for name in self.constant_long:
