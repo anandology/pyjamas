@@ -1,9 +1,10 @@
 # Check http://docs.python.org/library/time.html
 
 from __pyjamas__ import JS
+import math
 
 altzone = None
-timezone = JS("60 * (new Date()).getTimezoneOffset()")
+timezone = JS("60 * (new Date(new Date().getFullYear(), 0, 1)).getTimezoneOffset()")
 tzname = (None, None)
 
 __c__days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
@@ -11,7 +12,7 @@ __c__months = ["January", "February", "March", "April", "May", "June", "July", "
 
 
 def time():
-    JS(" return new Date().getTime() / 1000.0; ")
+    JS("return new Date().getTime() / 1000.0;")
 
 class struct_time(object):
     n_fields = 9
@@ -38,6 +39,20 @@ class struct_time(object):
             self.tm_wday = ttuple[6]
             self.tm_yday = ttuple[7]
             self.tm_isdst = ttuple[8]
+
+    def __str__(self):
+        t = (
+            self.tm_year,
+            self.tm_mon,
+            self.tm_mday,
+            self.tm_hour,
+            self.tm_min,
+            self.tm_sec,
+            self.tm_wday,
+            self.tm_yday,
+            self.tm_isdst,
+        )
+        return t.__str__()
 
     def __getitem__(self, idx):
         return [self.tm_year, self.tm_mon, self.tm_mday, 
@@ -78,9 +93,12 @@ def localtime(t = None):
     tm.tm_min = date.getMinutes()
     tm.tm_sec = date.getSeconds()
     tm.tm_wday = (date.getDay() + 6) % 7
-    startOfYear = int((JS("new Date(tm.tm_year,0,1)").getTime())/1000)
-    tm.tm_yday = 1 + int((t - startOfYear)/86400)
-    tm.tm_isdst = date.getTimezoneOffset()
+    startOfYear = JS("new Date(tm.tm_year,0,1)") # local time
+    startOfYearOffset = startOfYear.getTimezoneOffset()
+    startOfDay = JS("new Date(tm.tm_year,tm.tm_mon-1,tm.tm_mday)")
+    dt = startOfDay.getTime() - startOfYear.getTime()
+    tm.tm_yday = int(1 + math.ceil(dt/(1000*86400.0)))
+    tm.tm_isdst = 0 if startOfYearOffset == date.getTimezoneOffset() else 1
     return tm
 
 def mktime(t):
@@ -90,7 +108,10 @@ def mktime(t):
     tm_hour = t[3]
     tm_min = t[4]
     tm_sec = t[5]
-    JS("return new Date(tm_year, tm_mon, tm_mday, tm_hour, tm_min, tm_sec).getTime()/1000;")
+    date = JS("new Date(tm_year, tm_mon, tm_mday, tm_hour, tm_min, tm_sec)") # local time
+    if t[8] == 1:
+        return date.getTime()/1000 - 60 * date.getTimezoneOffset() + (60 * date.getTimezoneOffset() - timezone)
+    return date.getTime()/1000 - 60 * date.getTimezoneOffset()
 
 def strftime(fmt, t = None):
     if t is None:

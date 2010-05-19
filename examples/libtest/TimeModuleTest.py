@@ -46,3 +46,13 @@ class TimeModuleTest(UnitTest.UnitTest):
             time.asctime(time.localtime(t)),
             'Wed May 19 09:22:44 2010',
         )
+
+    def testLocaltime(self):
+        start2010utc = 1262304000
+        self.assertEqual(
+            str(time.gmtime(start2010utc)),
+            "(2010, 1, 1, 0, 0, 0, 4, 1, 0)",
+        )
+        t1 = time.gmtime(start2010utc - time.timezone)
+        t2 = time.localtime(start2010utc)
+        self.assertEqual(str(t1), str(t2))
