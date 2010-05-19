@@ -9,8 +9,8 @@ DEFAULT_SKIP_FILES=re.compile(
     r"(#.*#)|"
     r"(.*~)|"
     r"(.*\.py[co])|"
-    r"(.*\/RCS\/?.*)|"
-    r"(.*\/CVS\/?.*)|"
+    r"(.*[\/\\]RCS[\/\\]?.*)|"
+    r"(.*[\/\\]CVS[\/\\]?.*)|"
     r"(.*\.egg-info.*)|"
     r")$" % {'sep': os.path.sep})
 
