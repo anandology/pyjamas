@@ -7,7 +7,7 @@ timezone = JS("60 * (new Date()).getTimezoneOffset()")
 tzname = (None, None)
 
 __c__days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
-__c__months = ["Januari", "Februari", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+__c__months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 
 
 def time():
@@ -188,7 +188,7 @@ def strftime(fmt, t = None):
 def asctime(t = None):
     if t == None:
         t = localtime()
-    return "%s %s %02d %02d:%02d:%02d %04d" % (__c__days[t.tm_wday][:3], __c__months[t.tm_mon-1], t.tm_hour, t.tm_min, t.tm_sec, t.tm_year)
+    return "%s %s %02d %02d:%02d:%02d %04d" % (__c__days[(t.tm_wday+1)%7][:3], __c__months[t.tm_mon-1], t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec, t.tm_year)
 
 def ctime(t = None):
     t = localtime()

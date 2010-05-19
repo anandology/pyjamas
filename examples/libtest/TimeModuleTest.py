@@ -40,3 +40,9 @@ class TimeModuleTest(UnitTest.UnitTest):
         s = time.strftime("%x")
         s = time.strftime("%X")
 
+    def testAsctime(self):
+        t = 1274253764.618098
+        self.assertEqual(
+            time.asctime(time.localtime(t)),
+            'Wed May 19 09:22:44 2010',
+        )
