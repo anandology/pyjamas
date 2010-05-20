@@ -54,9 +54,9 @@ class TimeModuleTest(UnitTest.UnitTest):
         s = time.strftime("%X")
 
     def testAsctime(self):
-        t = 1274253764.618098
+        t = (2010, 5, 19, 9, 22, 44, 2, 139, 1)
         self.assertEqual(
-            time.asctime(time.localtime(t)),
+            time.asctime(t),
             'Wed May 19 09:22:44 2010',
         )
 
@@ -78,3 +78,33 @@ class TimeModuleTest(UnitTest.UnitTest):
                 self.time_tuple(time.gmtime(start2010utc + i*day)),
                 (2010, 1, i+1, 0, 0, 0, (4+i)%7, i+1, 0),
             )
+
+
+
+
+if __name__ == '__main__':
+    from write import writebr
+
+    class RunTests:
+        def __init__(self):
+            self.testlist = {}
+            self.test_idx = 0
+
+        def add(self, test):
+            self.testlist[len(self.testlist)] = test
+
+        def start_test(self):
+            if self.test_idx >= len(self.testlist):
+                return
+
+            idx = self.test_idx
+            self.test_idx += 1
+
+            test_kls = self.testlist[idx]
+            t = test_kls()
+            t.start_next_test = getattr(self, "start_test")
+            t.run()
+
+    t = RunTests()
+    t.add(TimeModuleTest)
+    t.start_test()

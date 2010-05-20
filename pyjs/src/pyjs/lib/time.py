@@ -220,7 +220,7 @@ def strftime(fmt, t = None):
 def asctime(t = None):
     if t == None:
         t = localtime()
-    return "%s %s %02d %02d:%02d:%02d %04d" % (__c__days[(t.tm_wday+1)%7][:3], __c__months[t.tm_mon-1], t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec, t.tm_year)
+    return "%s %s %02d %02d:%02d:%02d %04d" % (__c__days[(t[6]+1)%7][:3], __c__months[t[1]-1], t[2], t[3], t[4], t[5], t[0])
 
 def ctime(t = None):
     t = localtime()
