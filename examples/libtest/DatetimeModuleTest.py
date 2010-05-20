@@ -93,3 +93,11 @@ class DatetimeModuleTest(UnitTest.UnitTest):
         self.assertEqual(str(d1 + diff), "2010-06-13")
         self.assertEqual(str(d1 - diff), "2010-02-03")
 
+
+if __name__ == '__main__':
+    from RunTests import RunTests
+
+    t = RunTests()
+    t.add(DatetimeModuleTest)
+    t.start_test()
+
