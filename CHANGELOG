@@ -1,9 +1,9 @@
                     Changes made to Pyjamas since 0.6
                     ---------------------------------
 
- * Added string zfill function, thanks to A. Motolla.
+ * Added string zfill function, thanks to Angelo Motolla.
 
- * Added datetime module, thanks to A. Motolla.
+ * Added datetime module, thanks to Angelo Motolla.
 
  * Added issubclass, thanks to Daniel Gerber
 
