@@ -3,9 +3,19 @@
 from __pyjamas__ import JS
 import math
 
-altzone = None
 timezone = JS("60 * (new Date(new Date().getFullYear(), 0, 1)).getTimezoneOffset()")
-tzname = (None, None)
+altzone = JS("60 * (new Date(new Date().getFullYear(), 6, 1)).getTimezoneOffset()")
+if altzone > timezone:
+    # Probably on southern parth of the earth...
+    d = timezone
+    timezone = altzone
+    altzone = d
+d = JS("(new Date(new Date().getFullYear(), 0, 1))")
+d = d.toLocaleString().split()[-1]
+if d[0] == '(':
+    d = d[1:-1]
+tzname = (d, None)
+del d
 
 __c__days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 __c__months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
@@ -76,8 +86,8 @@ def gmtime(t = None):
     tm.tm_min = date.getUTCMinutes()
     tm.tm_sec = date.getUTCSeconds()
     tm.tm_wday = (date.getUTCDay() + 6) % 7
-    startOfYear = int((JS("new Date(tm.tm_year,0,1)").getTime())/1000)
-    tm.tm_yday = 1 + int((t - startOfYear)/86400)
+    startOfYear = JS("new Date(tm.tm_year,0,1)") # local time
+    tm.tm_yday = math.ceil((t - startOfYear.getTime()/1000 - startOfYear.getTimezoneOffset()*60)/86400)
     tm.tm_isdst = 0
     return tm
 
@@ -109,9 +119,10 @@ def mktime(t):
     tm_min = t[4]
     tm_sec = t[5]
     date = JS("new Date(tm_year, tm_mon, tm_mday, tm_hour, tm_min, tm_sec)") # local time
-    if t[8] == 1:
-        return date.getTime()/1000 - 60 * date.getTimezoneOffset() + (60 * date.getTimezoneOffset() - timezone)
-    return date.getTime()/1000 - 60 * date.getTimezoneOffset()
+    if t[8] == 0:
+        return date.getTime()/1000 - 60 * date.getTimezoneOffset()
+    #return date.getTime()/1000 - 60 * date.getTimezoneOffset() + (60 * date.getTimezoneOffset() - timezone)
+    return date.getTime()/1000 - timezone
 
 def strftime(fmt, t = None):
     if t is None:

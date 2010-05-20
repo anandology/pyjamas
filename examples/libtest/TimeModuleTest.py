@@ -7,6 +7,19 @@ import time
 
 class TimeModuleTest(UnitTest.UnitTest):
 
+    def time_tuple(self, tm):
+        return (
+            tm.tm_year,
+            tm.tm_mon,
+            tm.tm_mday,
+            tm.tm_hour,
+            tm.tm_min,
+            tm.tm_sec,
+            tm.tm_wday,
+            tm.tm_yday,
+            tm.tm_isdst,
+        )
+
     def testBasics(self):
         t = time.time()
         self.assertTrue(t > 1246924800, "time.time() result invalid")
@@ -25,7 +38,7 @@ class TimeModuleTest(UnitTest.UnitTest):
         self.assertEqual(ttuple[1], 7,    "Month mismatch")
         self.assertEqual(ttuple[2], 1,    "Month day mismatch")
         self.assertEqual(ttuple[3], 11,   "Hour mismatch")
-        self.assertEqual(ttuple[4], 2,   "Minute mismatch")
+        self.assertEqual(ttuple[4], 2,    "Minute mismatch")
         self.assertEqual(ttuple[5], 3,    "Second mismatch")
         self.assertEqual(ttuple[6], 2,    "Week day mismatch")
         self.assertEqual(ttuple[7], 182,  "Year day mismatch")
@@ -50,9 +63,18 @@ class TimeModuleTest(UnitTest.UnitTest):
     def testLocaltime(self):
         start2010utc = 1262304000
         self.assertEqual(
-            str(time.gmtime(start2010utc)),
-            "(2010, 1, 1, 0, 0, 0, 4, 1, 0)",
+            self.time_tuple(time.gmtime(start2010utc)),
+            (2010, 1, 1, 0, 0, 0, 4, 1, 0),
         )
         t1 = time.gmtime(start2010utc - time.timezone)
         t2 = time.localtime(start2010utc)
-        self.assertEqual(str(t1), str(t2))
+        self.assertEqual(self.time_tuple(t1), self.time_tuple(t2))
+
+    def testGmtime(self):
+        start2010utc = 1262304000
+        day = 86400
+        for i in [0,1,2,3,29,30]:
+            self.assertEqual(
+                self.time_tuple(time.gmtime(start2010utc + i*day)),
+                (2010, 1, i+1, 0, 0, 0, (4+i)%7, i+1, 0),
+            )
