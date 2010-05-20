@@ -24,8 +24,12 @@ class DatetimeModuleTest(UnitTest.UnitTest):
     def testTimestamp(self):
         d = datetime.date.fromtimestamp(1270804609)
         self.assertEqual(str(d), '2010-04-09')
-        dt = datetime.datetime.fromtimestamp(1270804609.95)
-        self.assertEqual(str(dt), '2010-04-09 11:16:49.950000')
+        dt = str(datetime.datetime.fromtimestamp(1270804609.95))
+        # CET: 2010-04-09 11:16:49.950000
+        self.assertEqual(
+            (dt[:11], dt[16:]),
+            ("2010-04-09 ", ":49.950000"),
+        )
 
     def testCtime(self):
         d = datetime.date(2010, 4, 9)
