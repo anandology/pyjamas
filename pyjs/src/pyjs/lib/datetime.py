@@ -5,6 +5,9 @@ from time import __c__days, __c__months, strftime, localtime, gmtime
 MINYEAR = 1
 MAXYEAR = 1000000
 
+# __Jan_01_0001 : local time for Mon Jan 01 0001 00:00:00
+__Jan_01_0001 = JS("""(new Date((new Date('Jan 1 1971')).getTime() - 62167132800000)).getTime()""")
+
 
 class date:
     def __init__(self, year, month, day, d=None):
@@ -27,8 +30,8 @@ class date:
     
     @classmethod
     def fromordinal(self, ordinal):
-        d = JS("""new Date()""")
-        d.setTime((ordinal - 719163.0) * 86400000.0)
+        t = __Jan_01_0001 + (ordinal-1) * 86400000.0
+        d = JS("""new Date(t)""")
         return date(d=d)
     
     def ctime(self):
@@ -99,7 +102,7 @@ class date:
         return tm
     
     def toordinal(self):
-        return int(self._d.getTime() / 86400000.0) + 719163
+        return 1 + int((self._d.getTime() - __Jan_01_0001) / 86400000.0)
     
     def weekday(self):
         return (self._d.getDay() + 6) % 7
