@@ -1,6 +1,6 @@
 This is the source code to the Pyjamas showcase.
 
-Before compiling it, you need to modify the compile.py module and set the
+Before compiling it, you might need to modify the compile.py module and set the
 PATH_TO_PYJAMAS variable to the path to your Pyjamas installation (relative to
 the directory in which compile.py is placed).  Then type:
 
