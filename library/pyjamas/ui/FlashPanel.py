@@ -11,7 +11,9 @@ from pyjamas import DOM
 from pyjamas.ui.Panel import Panel
 from pyjamas import log
 from __pyjamas__ import wnd
-
+import sys
+if sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
+    from __javascript__ import Array, Object, eval
 
 def browser():
     return 'w3c'

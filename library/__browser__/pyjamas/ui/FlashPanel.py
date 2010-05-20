@@ -7,8 +7,6 @@ Flash embedding Panel
 @contact: tobi-weber@gmx.de
 """
 
-from __javascript__ import Array, Object, eval
-
 class FlashPanel(Panel):
     
     def callFlash(self, functionName, arguments=[]):
