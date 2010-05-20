@@ -60,19 +60,48 @@ class TimeModuleTest(UnitTest.UnitTest):
             'Wed May 19 09:22:44 2010',
         )
 
-    def testLocaltime(self):
-        start2010utc = 1262304000
-        self.assertEqual(
-            self.time_tuple(time.gmtime(start2010utc)),
-            (2010, 1, 1, 0, 0, 0, 4, 1, 0),
-        )
-        t1 = time.gmtime(start2010utc - time.timezone)
-        t2 = time.localtime(start2010utc)
-        self.assertEqual(self.time_tuple(t1), self.time_tuple(t2))
-
     def testGmtime(self):
-        start2010utc = 1262304000
         day = 86400
+        start2010utc = 1262304000
+        Apr2010utc = start2010utc + 90 * day # Apr 1 2010 UTC
+        Jul2010utc = start2010utc + 181 * day # Jul 1 2010 UTC
+        Oct2010utc = start2010utc + 273 * day # Oct 1 2010 UTC
+        for i in [0,1,2,3,29,30]:
+            self.assertEqual(
+                self.time_tuple(time.gmtime(start2010utc + i*day)),
+                (2010, 1, i+1, 0, 0, 0, (4+i)%7, i+1, 0),
+            )
+        self.assertEqual(
+            self.time_tuple(time.gmtime(Apr2010utc)),
+            (2010, 4, 1, 0, 0, 0, 3, 91, 0),
+        )
+        self.assertEqual(
+            self.time_tuple(time.gmtime(Jul2010utc)),
+            (2010, 7, 1, 0, 0, 0, 3, 182, 0),
+        )
+        self.assertEqual(
+            self.time_tuple(time.gmtime(Oct2010utc)),
+            (2010, 10, 1, 0, 0, 0, 4, 274, 0),
+        )
+
+    def testLocaltime(self):
+        def cmp_times(t):
+            t1 = time.gmtime(t - time.timezone)
+            t2 = time.localtime(t)
+            if t2[-1] != 0:
+                t1 = time.gmtime(t - time.altzone)
+            self.assertEqual(self.time_tuple(t1)[:-1], self.time_tuple(t2)[:-1])
+
+        day = 86400
+        start2010utc = 1262304000
+        Apr2010utc = start2010utc + 90 * day # Apr 1 2010 UTC
+        Jul2010utc = start2010utc + 181 * day # Jul 1 2010 UTC
+        Oct2010utc = start2010utc + 273 * day # Oct 1 2010 UTC
+        cmp_times(start2010utc)
+        cmp_times(Apr2010utc)
+        cmp_times(Jul2010utc)
+        cmp_times(Oct2010utc)
+        return
         for i in [0,1,2,3,29,30]:
             self.assertEqual(
                 self.time_tuple(time.gmtime(start2010utc + i*day)),
@@ -104,6 +133,10 @@ if __name__ == '__main__':
             t = test_kls()
             t.start_next_test = getattr(self, "start_test")
             t.run()
+
+    print "time.tzname:", time.tzname
+    print "time.timezone:", time.timezone
+    print "time.altzone:", time.altzone
 
     t = RunTests()
     t.add(TimeModuleTest)

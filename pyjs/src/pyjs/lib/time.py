@@ -86,15 +86,16 @@ def gmtime(t = None):
     tm.tm_min = date.getUTCMinutes()
     tm.tm_sec = date.getUTCSeconds()
     tm.tm_wday = (date.getUTCDay() + 6) % 7
-    startOfYear = JS("new Date(tm.tm_year,0,1)") # local time
-    tm.tm_yday = math.ceil((t - startOfYear.getTime()/1000 - startOfYear.getTimezoneOffset()*60)/86400)
     tm.tm_isdst = 0
+    startOfYear = JS("new Date('Jan 1 '+tm.tm_year+' GMT+0000')")
+    tm.tm_yday = 1 + int((t - startOfYear.getTime()/1000)/86400)
     return tm
 
 def localtime(t = None):
     if t == None:
         t = time()
     date = JS("new Date(t*1000)")
+    dateOffset = date.getTimezoneOffset()
     tm = struct_time()
     tm.tm_year = date.getFullYear()
     tm.tm_mon = date.getMonth() + 1
@@ -103,12 +104,24 @@ def localtime(t = None):
     tm.tm_min = date.getMinutes()
     tm.tm_sec = date.getSeconds()
     tm.tm_wday = (date.getDay() + 6) % 7
+    tm.tm_isdst = 0 if timezone == 60*date.getTimezoneOffset() else 1
     startOfYear = JS("new Date(tm.tm_year,0,1)") # local time
     startOfYearOffset = startOfYear.getTimezoneOffset()
     startOfDay = JS("new Date(tm.tm_year,tm.tm_mon-1,tm.tm_mday)")
-    dt = startOfDay.getTime() - startOfYear.getTime()
-    tm.tm_yday = int(1 + math.ceil(dt/(1000*86400.0)))
-    tm.tm_isdst = 0 if startOfYearOffset == date.getTimezoneOffset() else 1
+    dt = (startOfDay.getTime() - startOfYear.getTime())/1000
+    dt = dt + 60 * (startOfYearOffset - dateOffset)
+    tm.tm_yday = 1 + int(dt/86400.0)
+    return tm
+    if startOfYearOffset != dateOffset:
+        # Changed from std to dst or the opposite
+        #if startOfYearOffset > dateOffset:
+        # Changed from std to dst
+        tm.tm_yday += 1
+        dt2 = dt + 60 * (startOfYearOffset - dateOffset)
+        print dt, dt/86400.0, (startOfYearOffset, dateOffset), dt2, dt2/86400.0
+        tm.tm_yday = 1 + int(dt2/86400.0)
+    #if tm.tm_isdst and 60*startOfYearOffset == timezone:
+    #    tm.tm_yday += 1
     return tm
 
 def mktime(t):
