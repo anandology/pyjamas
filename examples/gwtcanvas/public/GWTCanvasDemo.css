@@ -2,11 +2,11 @@ body {
   background-color: white;
   text-align: left;
 }
-.gwt-canvas{
+.gwt-canvas {
 	background-color: white;
 	border: 1px solid #000000;
 }
 
-.listBox{
+.listBox {
 	display:block;
 } 
