@@ -245,6 +245,17 @@ class GWTCanvas(Widget):
     def fillRect(self, startX, startY, width, height):
         self.impl.fillRect(startX, startY, width, height)
     
+    """*
+    * Places text, at the specified start
+    * coords, according to the current fillstyle.
+    *
+    * @param startX x coord of the top left corner in the destination space
+    * @param startY y coord of the top left corner in the destination space
+    * @param maxWidth maximum width of text
+    """
+    def fillText(self, text, startX, startY, maxWidth=None):
+        self.impl.fillText(text, startX, startY, maxWidth)
+    
     
     """*
     * Returns the height in pixels of the canvas.

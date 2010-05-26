@@ -60,6 +60,19 @@ class GWTCanvasImplDefault:
         self.canvasContext.bezierCurveTo(cp1x,cp1y,cp2x,cp2y,x,y)
 
 
+    def fillText(self, text, sourceX, sourceY, maxWidth=None):
+
+        try:
+            if maxWidth is None:
+                self.canvasContext.fillText(text, sourceX, sourceY)
+            else:
+                self.canvasContext.fillText(text, sourceX, sourceY, maxWidth)
+        except:
+            self.saveContext()
+            self.translate(sourceX, sourceY)
+            self.canvasContext.mozDrawText(unicode(text))
+            self.restoreContext()
+
     def drawImage(self, img, sourceX, sourceY, sourceWidth=None, sourceHeight=None, destX=None, destY=None, destWidth=None, destHeight=None):
 
         if isinstance(img, Widget):
