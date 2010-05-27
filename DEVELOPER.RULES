@@ -9,6 +9,16 @@ rules below, and you'll do ok with this multi-project project:
 * obey PEP8 where it's sensible to do so.  there's a program called pep8.py
   which automatically checks stuff.
 
+* please add yourself to copyright and CREDITS.  if kindly committing someone
+  else's patch, please add them rather than yourself, of course.
+
+  this is IMPORTANT.  the copyright file is crucial for the acceptance of
+  pyjamas into debian: each and EVERY single copyright holder MUST be
+  recorded.  please note that the copyright file is in the format specified
+  by debian DEP5 (which is pretty blindingly obvious, but just... please bear
+  it in mind that the copyright file is in a machine-readable
+  standards-compliant format)
+
 * pyjamas UI development: follow GWT source code as closely as possible.
   make use of java2py.py (in contrib) to do 95% of the conversion work for
   you.  don't just follow the GWT API: do _literally_ "blindly" follow
