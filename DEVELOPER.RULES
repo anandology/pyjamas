@@ -1,0 +1,67 @@
+For developers assisting on pyjamas, a laissez-faire attitude is taken:
+if you want repository access, all you have to do is ask.  Follow the
+rules below, and you'll do ok with this multi-project project:
+
+* break stuff in latest repo, it gets reverted.  the prime rule of pyjamas
+  is that the latest repository code MUST work, for production environments
+  to be able to use it.
+
+* obey PEP8 where it's sensible to do so.  there's a program called pep8.py
+  which automatically checks stuff.
+
+* pyjamas UI development: follow GWT source code as closely as possible.
+  make use of java2py.py (in contrib) to do 95% of the conversion work for
+  you.  don't just follow the GWT API: do _literally_ "blindly" follow
+  the GWT source code, trusting it pretty much 100%.  _don't_ try to
+  second-guess it; _don't_ try to "rework it"; in fact, don't _think_ at
+  all: just "go with the flow".  the reason is simple: the GWT team have
+  far more resources than we do, and if you want to re-learn all of the
+  "browser tricks" that they've spent man-decades finding and working
+  around _go ahead_ :)
+
+  if GWT source doesn't exist: try to find some.  if you _really_ can't
+  find anything, then find something that's pretty close to what you want,
+  subclass it if possible, and go from there.
+
+  also: make DAMN SURE that you are aware of the __browser__, __{engine}__
+  and the platform/* overrides systems BEFORE messing with UI code.
+
+* before pyjamas UI committing:
+  check as _many_ engines and browsers as you can using as many 
+  examples as you can stand, using both --strict _and_ -O for browsers.
+  if you don't have certain engines or browsers, TELL PEOPLE and ask them
+  to test on your behalf.  preferably before committing.
+
+* non-UI-related stuff (compiler-related) make damn sure you run libtest
+  with --strict and with standard http://python.org; and do consider running 
+  under pyv8run.sh as well (./pyv8test.sh --strict).  as there's a 64-bit
+  version of libv8, now, that's not as hard as it used to be: pyv8 
+  now compiles native on 64-bit. 
+
+* commits must be "single purpose".  if you're thinking of using the word
+  "and" in the commit message, STOP and think.  see very first rule as
+  to why this is important: i.e. if you break something, the WHOLE commit
+  will be reverted; NO effort will be spent "dividing" the patch, when that
+  should have been done by you in the first place.
+
+* special version of the above: please _don't_ do major whitespace
+  reorganisations at the same time as coding patches.  keep them separate,
+  and commit whitespace patches with a commit message mentioning "whitespace".
+  duh.
+
+* commit messages must describe the patch not the action being taken!
+  "added this"; "removed this" are NOT ok.
+
+* commit messages should really include the bugreport number of the issue
+  being fixed.  if there isn't a bugreport number, you should consider
+  raising one.  it's just good practice.
+
+* please try to keep discussion of bugs to the bugtracker, but also make
+  sure that the pyjamas-dev list is alerted when a bug is raised.  it might
+  not always work out that way, and if it doesn't, that's fine: it's just
+  nice to be able to know what the hell's going on with a particular bug,
+  without having to hunt through the rather obtuse pyjamas-dev google group.
+
+that's about it.  the rest - do what you like! make sure you keep
+people informed, engage them to help do testing.
+
