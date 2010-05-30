@@ -8,7 +8,7 @@ def init():
     // Get the initial token from the url's hash component.
     var hash = $wnd.location.hash;
     if (hash.length > 0)
-        $wnd.__historyToken = decodeURIComponent(hash.substring(1)).replace("%23", "#");
+        $wnd.__historyToken = decodeURI(hash.substring(1)).replace("%23", "#");
     else
         $wnd.__historyToken = '';
 
@@ -23,13 +23,13 @@ def init():
     if (tokenElement)
         $wnd.__historyToken = tokenElement.value;
     else
-        historyFrame.src = 'history.html?' + encodeURIComponent($wnd.__historyToken).replace("#", "%23");
+        historyFrame.src = 'history.html?' + encodeURI($wnd.__historyToken).replace("#", "%23");
 
     // Create the timer that checks the browser's url hash every 1/4 s.
     $wnd.__checkHistory = function() {
         var token = '', hash = $wnd.location.hash;
         if (hash.length > 0)
-            token = decodeURIComponent(hash.substring(1)).replace("%23", "#");
+            token = decodeURI(hash.substring(1)).replace("%23", "#");
 
         if (token != $wnd.__historyToken) {
             $wnd.__historyToken = token;
@@ -56,6 +56,6 @@ def newItem(historyToken):
     // recreating the url, rather than just setting location.hash.
 
     $wnd.location = $wnd.location.href.split('#')[0] + '#' +
-                   encodeURIComponent(historyToken).replace("#", "%23");
+                   encodeURI(historyToken).replace("#", "%23");
 
     """)

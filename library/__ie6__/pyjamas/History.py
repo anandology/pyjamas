@@ -8,7 +8,7 @@ def init():
     // Get the initial token from the url's hash component.
     var hash = $wnd.location.hash;
     if (hash.length > 0)
-        $wnd.__historyToken = decodeURIComponent(hash.substring(1));
+        $wnd.__historyToken = decodeURI(hash.substring(1)).replace('%23','#');
     else
         $wnd.__historyToken = '';
 
@@ -33,7 +33,7 @@ def init():
         // frame on IE, so we don't have to do a 'location.replace()'.
         if (token != $wnd.__historyToken) {
             $wnd.__historyToken = token;
-            $wnd.location.hash = encodeURIComponent(token);
+            $wnd.location.hash = encodeURI(token).replace('#','%23');
             // TODO - move init back into History
             // this.onHistoryChanged(token);
             pyjamas.History.onHistoryChanged(token);
@@ -49,7 +49,7 @@ def init():
     var urlChecker = function() {
         var hash = $wnd.location.hash;
         if (hash.length > 0) {
-            var token = decodeURIComponent(hash.substring(1));
+            var token = decodeURI(hash.substring(1)).replace('%23','#');
             if ($wnd.__historyToken && (token != $wnd.__historyToken))
                 $wnd.location.reload();
         }
