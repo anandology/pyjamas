@@ -4,13 +4,13 @@ import re
 import logging
 
 DEFAULT_SKIP_FILES=re.compile(
-    r"^(.*\%(sep)s)?("
-    r"(\..*)|"
-    r"(#.*#)|"
-    r"(.*~)|"
-    r"(.*\.py[co])|"
-    r"(.*[\/\\]RCS[\/\\]?.*)|"
-    r"(.*[\/\\]CVS[\/\\]?.*)|"
+    r"^(.*%(sep)s)?("
+    r"(\.[^%(sep)s]*)|"
+    r"(#[^%(sep)s]*#)|"
+    r"([^%(sep)s]*~)|"
+    r"([^%(sep)s]*\.py[co])|"
+    r"(.*%(sep)sRCS%(sep)s?.*)|"
+    r"(.*%(sep)sCVS%(sep)s?.*)|"
     r"(.*\.egg-info.*)|"
     r")$" % {'sep': os.path.sep})
 
