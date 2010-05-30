@@ -27,7 +27,7 @@ $pyjs.loadpath = './';
 --></script>
 %(app_headers)s
 </head>
-<body onload="if (parent && parent.__pygwt_webModeFrameOnLoad) parent.__pygwt_webModeFrameOnLoad(window, '%(app_name)s');">
+<body onload="if ($wnd && $wnd.__pygwt_modController) $wnd.__pygwt_modController.done($pyjs.appname);">
 <font face='arial' size='-1'>This script is part of module</font> <code>%(app_name)s</code>
 
 

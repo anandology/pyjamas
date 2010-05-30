@@ -238,9 +238,9 @@ class BrowserLinker(linker.BaseLinker):
             dynamic_modules = "['" + "','".join(dynamic_modules) + "']"
         else:
             dynamic_modules = "[]"
-        appscript = """<script type="text/javascript" src="%(path)s"></script>"""
+        appscript = "<script><!--\n$wnd.__pygwt_modController.init($pyjs.appname, window)\n$wnd.__pygwt_modController.load($pyjs.appname, [\n'%s'\n])\n--></script>"
         jsscript = """<script type="text/javascript" src="%(path)s" onload="$pyjs.script_onload('%(modname)s')" onreadystatechange="$pyjs.script_onreadystate('%(modname)s')"></script>"""
-        dynamic_app_libs = '\n'.join([appscript % {'path': lib[len_ouput_dir:]} for lib in dynamic_app_libs])
+        dynamic_app_libs = appscript % "',\n'".join([lib[len_ouput_dir:] for lib in dynamic_app_libs])
         dynamic_js_libs = '\n'.join([jsscript % {'path': lib, 'modname': js_modname(lib)} for lib in dynamic_js_libs])
         early_static_app_libs = static_code(early_static_app_libs)
         static_app_libs = static_code(static_app_libs)

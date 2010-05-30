@@ -173,10 +173,162 @@ function __pygwt_injectWebModeFrame(name) {
    }
 }
 
+//////////////////////////////////////////////////////////////////
+// Module Load Controller
+//
+var __pygwt_modController = {
+    __apps: {
+        block: 0,
+        list: {}
+    },
+    __listeners: {
+        disabled: {},
+        list: {
+            init: [],
+            appInit: [],
+            moduleInit: [],
+            moduleLoad: [],
+            appLoad: [],
+            load: [],
+            hookException: []
+        }
+    },
+    _get: function(type, item) {
+        type = '__' + type
+        if(!(type in this))
+            return false
+        if(!('list' in this[type]))
+            return false
+        if(!item)
+            return this[type].list
+        if(item in this[type].list)
+            return this[type].list[item]
+        return false
+    },
+    _onEvent: function(event, name, module) {
+        var l = this._get('listeners', event)
+        if(!l || this.__listeners.disabled[event])
+            return false
+        var app = this._get('apps', name)
+        try {
+            for(var i in l) if(l[i]) l[i](app, module)
+        } catch(e) {
+            try {
+                var l = this._get('listeners', 'hookException')
+                if(l) for(var i in l) if(l[i]) l[i](e)
+            } catch(e) { /* console.log(e) */ }
+        }
+        if(event=='init' || event=='load')
+            this.__listeners.disabled[event] = true
+        if(event=='appLoad')
+            __pygwt_webModeFrameOnLoad(app.reference, app.name)
+    },
+    _initApp: function(name, win) {
+        this._onEvent('init')
+        this.__apps.list[name] = {
+            name: name,
+            reference: win,
+            loaded: false,
+            modules: {
+                list: {},
+                block: 0,
+                init: function(module) {
+                    var m = this.list[module] = {}
+                    m.start = new Date().getTime()
+                    this.block++
+                },
+                load: function(module){
+                    var m = this.list[module]
+                    m.end = new Date().getTime()
+                    m.duration = m.end - m.start
+                    this.block--
+                }
+            }
+        }
+        this.__apps.block++
+        this._onEvent('appInit', name)
+    },
+    _initModule: function(name, module) {
+        var app = this._get('apps', name)
+        var doc = app.reference.document
+        var s = doc.createElement('script')
+        s.onload = s.onreadystatechange = function() {
+            if(s.onload.fired)
+                return
+            if(!s.readyState || s.readyState == 'loaded' || s.readyState == 'complete') {
+                s.onload.fired = true
+                __pygwt_modController._loadModule(name, module)
+            }
+        }
+        s.onload.fired = false
+        s.type = 'text/javascript'
+        s.src = module
+        doc.getElementsByTagName('head')[0].appendChild(s)
+        this._onEvent('moduleInit', name, module)
+    },
+    _loadModule: function(name, module) {
+        var app = this._get('apps', name)
+        app.modules.load(module)
+        this._onEvent('moduleLoad', name, module)
+        if(app.modules.block==0) this._loadApp(name)
+    },
+    _loadApp: function(name) {
+        var app = this._get('apps', name)
+        if(!app.loaded && app.modules.block==0) {
+            app.loaded = true
+            this.__apps.block--
+            this._onEvent('appLoad', name)
+            if(this.__apps.block==0) this._onEvent('load')
+        }
+    },
+    init: function(name, win) {
+        this._initApp(name, win)
+    },
+    load: function(name, modules) {
+        var i, app = this._get('apps', name)
+        var f = function(a, m) {
+            setTimeout(function(){
+                __pygwt_modController._initModule(a, m)
+                a=null; m=null
+            }, 1)
+            app.modules.init(m)
+        }
+        for(i in modules) if(modules[i]) f(name, modules[i])
+        if(i===undefined && modules) f(name, modules)
+    },
+    done: function(name) {
+        this._loadApp(name)
+    },
+    addListener: function(event, listener) {
+        var list = this._get('listeners', event)
+        if(list)
+            return list.push(listener)-1
+        return false
+    },
+    removeListener: function(event, target) {
+        var list = this._get('listeners', event)
+        if(!list)
+            return false
+        if(target in list)
+            return list.splice(target, 1, false)
+        for(var i in list)
+            if(target===list[i])
+                return list.splice(i, 1, false)
+        return false
+    }
+}
+
+//////////////////////////////////////////////////////////////////
+// Early user custom routines
+//
+function __pygwt_earlyUser() {
+    // bootsplash/custom stuff here
+}
 
 //////////////////////////////////////////////////////////////////
 // Set it up
 //
+__pygwt_earlyUser();
 __pygwt_processMetas();
 __pygwt_hookOnLoad();
 __pygwt_forEachModule(__pygwt_injectWebModeFrame);
