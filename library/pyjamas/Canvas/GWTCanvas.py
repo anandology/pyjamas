@@ -16,7 +16,8 @@
 
 from pyjamas import DOM
 
-from pyjamas.ui.Widget import Widget
+from pyjamas.ui.FocusWidget import FocusWidget
+from pyjamas.ui import Focus
 from pyjamas.Canvas.Color import Color
 
 from pyjamas.Canvas.LinearGradientImplDefault import LinearGradientImplDefault
@@ -39,7 +40,7 @@ from pyjamas.Canvas.GWTCanvasImplIE6 import GWTCanvasImplIE6
 * canvas self.implementation. Sub-pixel precision is supported where possible.
 * </p>
 """
-class GWTCanvas(Widget):
+class GWTCanvas(FocusWidget):
     
     """*
     * Creates a GWTCanvas element. Element type depends on deferred binding.
@@ -56,22 +57,29 @@ class GWTCanvas(Widget):
     * @param pixelX the CSS width in pixels of the canvas element
     * @param pixelY the CSS height in pixels of the canvas element
     """
-    def __init__(self, coordX=300, coordY=150, pixelX=300, pixelY=150):
+    def __init__(self, coordX=300, coordY=150, pixelX=300, pixelY=150,
+                       **kwargs):
         
         """
-        * Impl Instance. Compiler should statify all the methods, so we do not end up
-        * with duplicate code for each canvas instance.
+        * Impl Instance. Compiler should statify all the methods, so we
+        * do not end up with duplicate code for each canvas instance.
         """
         self.impl = self.getCanvasImpl()
         
         self.coordHeight = 0
         self.coordWidth = 0
-        Widget.__init__(self)
-        self.setElement(self.impl.createElement())
+        focusable = Focus.createFocusable()
+        self.canvas = self.impl.createElement()
+        DOM.appendChild(focusable, self.canvas)
+        FocusWidget.__init__(self, focusable, **kwargs)
+
         self.setPixelWidth(pixelX)
         self.setPixelHeight(pixelY)
         self.setCoordSize(coordX, coordY)
     
+    def getCanvasElement(self):
+        return self.getElement().firstChild
+
     def getCanvasImpl(self):
         return GWTCanvasImplDefault()
     
@@ -126,7 +134,7 @@ class GWTCanvas(Widget):
     * @return returns the CanvasGradient
     """
     def createLinearGradient(self, x0, y0, x1, y1):
-        return LinearGradientImplDefault(x0, y0, x1, y1, self.getElement())
+        return LinearGradientImplDefault(x0, y0, x1, y1, self.getCanvasElement())
     
     
     """*
@@ -143,7 +151,7 @@ class GWTCanvas(Widget):
     """
     def createRadialGradient(self, x0, y0, r0, x1, y1, r1):
         return RadialGradientImplDefault(x0, y0, r0, x1, y1, r1,
-                                        self.getElement())
+                                        self.getCanvasElement())
     
     
     """*
@@ -442,7 +450,7 @@ class GWTCanvas(Widget):
     * @param color the background color.
     """
     def setBackgroundColor(self, color):
-        self.impl.setBackgroundColor(self.getElement(), str(color))
+        self.impl.setBackgroundColor(self.getCanvasElement(), str(color))
     
     
     """*
@@ -454,7 +462,7 @@ class GWTCanvas(Widget):
     * @param height the size of the y component of the coordinate space
     """
     def setCoordHeight(self, height):
-        self.impl.setCoordHeight(self.getElement(), height)
+        self.impl.setCoordHeight(self.getCanvasElement(), height)
         self.coordHeight = height
     
     
@@ -481,7 +489,7 @@ class GWTCanvas(Widget):
     * @param width the size of the x component of the coordinate space
     """
     def setCoordWidth(self, width):
-        self.impl.setCoordWidth(self.getElement(), width)
+        self.impl.setCoordWidth(self.getCanvasElement(), width)
         self.coordWidth = width
     
     
@@ -581,7 +589,7 @@ class GWTCanvas(Widget):
     * @param height the height of the canvas in pixels
     """
     def setPixelHeight(self, height):
-        self.impl.setPixelHeight(self.getElement(), height)
+        self.impl.setPixelHeight(self.getCanvasElement(), height)
     
     
     """*
@@ -590,7 +598,7 @@ class GWTCanvas(Widget):
     * @param width width of the canvas in pixels
     """
     def setPixelWidth(self, width):
-        self.impl.setPixelWidth(self.getElement(), width)
+        self.impl.setPixelWidth(self.getCanvasElement(), width)
     
     
     """*

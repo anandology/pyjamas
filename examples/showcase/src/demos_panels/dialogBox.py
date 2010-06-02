@@ -30,6 +30,19 @@ Because the ``DialogBox`` class is derived from ``PopupPanel``, the user should
 be able to click outside the dialog box to close it.  However, because of a
 problem with Firefox 3, this does not work.  To get around this, the example
 shown below implements a "Close" button the user can click on.
+
+This example shows usage of a PopupPanel's shadowed background &mdash; a glass.
+A glass also requires stylesheet definitions. By default, "gwt-PopupPanelGlass"
+class name is supposed to use, unless redefined. The following stylesheet
+definitions are used in the example below:
+
+    .gwt-PopupPanelGlass {
+        background-color: #000;
+        opacity: 0.3;
+        filter: alpha(opacity=30);
+    }
+
+
 """
 from pyjamas.ui.SimplePanel import SimplePanel
 from pyjamas.ui.DialogBox import DialogBox
@@ -52,12 +65,12 @@ class DialogBoxDemo(SimplePanel):
         contents.add(Button("Close", getattr(self, "onClose")))
         contents.setStyleName("Contents")
 
-        self._dialog = DialogBox()
+        self._dialog = DialogBox(glass=True)
         self._dialog.setHTML('<b>Welcome to the dialog box</b>')
         self._dialog.setWidget(contents)
 
-        left = (Window.getClientWidth() - 200) / 2
-        top = (Window.getClientHeight() - 100) / 2
+        left = (Window.getClientWidth() - 200) / 2 + Window.getScrollLeft()
+        top = (Window.getClientHeight() - 100) / 2 + Window.getScrollTop()
         self._dialog.setPopupPosition(left, top)
         self._dialog.show()
 

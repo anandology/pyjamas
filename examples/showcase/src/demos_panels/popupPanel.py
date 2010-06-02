@@ -12,6 +12,10 @@ following stylesheet definitions were used in the example below:
         padding: 4px;
     }
 
+Also, PopupPanel implements an optional &ldquo;glass&rdquo; &mdash; a shadowed
+background that overlays everything under popup. See DialogBox demo to look at
+the glass usage example.
+
 Note that the popup panel is supposed to close when the user clicks outside of
 it.  However, this doesn't work under Firefox 3, so the code below adds a click
 handler so the user can click on the popup itself to close it.

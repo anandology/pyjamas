@@ -65,7 +65,7 @@ def init():
 
 class MyDialog(DialogBox):
     def __init__(self, baseURL):
-        DialogBox.__init__(self)
+        DialogBox.__init__(self, glass=True)
         self.setText("Sample DialogBox with embedded Frame")
         
         iframe = Frame(baseURL + "rembrandt/LaMarcheNocturne.html")

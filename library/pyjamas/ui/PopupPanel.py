@@ -1,5 +1,6 @@
 # Copyright 2006 James Tauber and contributors
 # Copyright (C) 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
+# Copyright (C) 2010 Serge Tarkovski <serge.tarkovski@gmail.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,21 +14,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from pyjamas import DOM
+from pyjamas import Window
 from pyjamas import Factory
-from __pyjamas__ import JS
+from __pyjamas__ import JS, doc
 from SimplePanel import SimplePanel
 from RootPanel import RootPanel
 from pyjamas.ui import MouseListener
 from pyjamas.ui import KeyboardListener
 
 class PopupPanel(SimplePanel):
-    def __init__(self, autoHide=False, modal=True, rootpanel=None, **kwargs):
+    def __init__(self, autoHide=False, modal=True, rootpanel=None, glass=False, **kwargs):
 
         self.popupListeners = []
         self.showing = False
         self.autoHide = autoHide
         self.modal = modal
-        
+
+        self.glass = glass
+        if self.glass:
+            self.glass = DOM.createDiv()
+            if not 'GlassStyleName' in kwargs:
+                kwargs['GlassStyleName'] = "gwt-PopupPanelGlass"
+
         if rootpanel is None:
             rootpanel = RootPanel()
 
@@ -58,6 +66,10 @@ class PopupPanel(SimplePanel):
         if not self.showing:
             return
         self.showing = False
+
+        if self.glass:
+            self.hideGlass()
+
         DOM.removeEventPreview(self)
 
         self.rootpanel.remove(self)
@@ -148,12 +160,45 @@ class PopupPanel(SimplePanel):
         DOM.setStyleAttribute(element, "left", "%dpx" % left)
         DOM.setStyleAttribute(element, "top", "%dpx" % top)
 
+    def setGlassStyleName(self, style="gwt-PopupPanelGlass"):
+        if self.glass:
+            DOM.setAttribute(self.glass, "className", style)
+
+    def setGlassPosition(self):
+        top = Window.getScrollTop()
+        left = Window.getScrollLeft()
+        height = Window.getClientHeight()
+        width = Window.getClientWidth()
+
+        DOM.setStyleAttribute(self.glass, "position", "absolute")
+        DOM.setStyleAttribute(self.glass, "left", "%s" % left if left == 0 else "%spx" % left)
+        DOM.setStyleAttribute(self.glass, "top", "%s" % top if top == 0 else "%spx" % top)
+        DOM.setStyleAttribute(self.glass, "height", "%spx" % (top + height))
+        DOM.setStyleAttribute(self.glass, "width", "%spx" % (left + width))
+
+    def showGlass(self):
+        Window.enableScrolling(False)
+        self.setGlassPosition()
+        doc().body.appendChild(self.glass)
+        Window.addWindowResizeListener(self)
+
+    def hideGlass(self):
+        Window.removeWindowResizeListener(self)
+        doc().body.removeChild(self.glass)
+        Window.enableScrolling(True)
+
+    def onWindowResized(self, width, height):
+        self.setGlassPosition()
 
     def show(self):
         if self.showing:
             return
 
         self.showing = True
+
+        if self.glass:
+            self.showGlass()
+
         DOM.addEventPreview(self)
 
         self.rootpanel.add(self)
