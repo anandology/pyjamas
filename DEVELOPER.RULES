@@ -48,6 +48,10 @@ rules below, and you'll do ok with this multi-project project:
   version of libv8, now, that's not as hard as it used to be: pyv8 
   now compiles native on 64-bit. 
 
+  also: compiler-related additions and changes _must_ be accompanied by
+  a unit test (hence the reason why libtest:must be run, under so many
+  different environments).
+
 * commits must be "single purpose".  if you're thinking of using the word
   "and" in the commit message, STOP and think.  see very first rule as
   to why this is important: i.e. if you break something, the WHOLE commit
