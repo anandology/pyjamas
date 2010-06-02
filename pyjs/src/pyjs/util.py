@@ -12,7 +12,7 @@ DEFAULT_SKIP_FILES=re.compile(
     r"(.*%(sep)sRCS%(sep)s?.*)|"
     r"(.*%(sep)sCVS%(sep)s?.*)|"
     r"(.*\.egg-info.*)|"
-    r")$" % {'sep': os.path.sep})
+    r")$" % {'sep': re.escape(os.path.sep)})
 
 def copytree_exists(src, dst, symlinks=False,
                     skip_files=DEFAULT_SKIP_FILES):
