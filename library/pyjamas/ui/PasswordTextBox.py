@@ -15,18 +15,14 @@
 from pyjamas import DOM
 from pyjamas import Factory
 
-from TextBoxBase import TextBoxBase
+from TextBox import TextBox
 
-class PasswordTextBox(TextBoxBase):
+class PasswordTextBox(TextBox):
     def __init__(self, **kwargs):
-        if kwargs.has_key('Element'):
-            element = kwargs.pop('Element')
-        else:
-            element = DOM.createInputPassword()
-        self.setElement(element)
+        if not kwargs.has_key('Element'):
+            kwargs['Element'] = DOM.createInputPassword()
         if not kwargs.has_key('StyleName'):
             kwargs['StyleName']="gwt-PasswordTextBox"
-        TextBoxBase.__init__(self, element, **kwargs)
+        TextBox.__init__(self, **kwargs)
 
 Factory.registerClass('pyjamas.ui.PasswordTextBox', PasswordTextBox)
-

@@ -1,6 +1,9 @@
 
 def kill_timer(timer):
-    timer.cancel()
+    # TODO: Check if the hasattr call _should_ be omitted
+    if hasattr(timer, "cancel"):
+        timer.cancel()
+
 
 def init():
     global timeout_add
