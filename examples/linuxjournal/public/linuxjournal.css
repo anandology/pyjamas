@@ -1,0 +1,17 @@
+body {
+    padding: 0px;
+    margin: 0px;
+}
+
+.leadboxstyle {
+  padding: 5px;
+  background-color: #ff8080;
+  border: 1px solid #000000;
+}
+
+.boxstyle {
+  padding: 5px;
+  background-color: #00ff00;
+  border: 1px solid #000000;
+}
+

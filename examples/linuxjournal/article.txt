@@ -1,0 +1,9 @@
+Pyjamas - Desktop Widget Toolkit, AJAX Web Framework or both?
+
+Pyjamas is several projects in one, the end result of which is that
+developers can write a python GUI application that will either run as a
+stand-alone Desktop application, or be compiled to pure Javascript
+to run in all major modern web browsers.  It began as a port of Google
+Web Toolkit; both GWT and Pyjamas can be classified as Rich Internet
+Application Frameworks.  However, thanks to the Desktop version, Pyjamas
+has become a competitor to Adobe AIR as well.  
