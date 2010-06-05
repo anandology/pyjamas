@@ -11,11 +11,11 @@ has become a competitor to Adobe AIR as well.
 The advantages of writing applications with the Pyjamas Framework, aside
 from applications being cross-platform and cross-desktop, are compelling.
 The full capabilities of HTML5 browsers, even on the Desktop versions,
-are available to the developer.  Designing applications in python, as
-classes and modules instead of having to mess about with javascript
-"prototype", makes for vastly more readable and maintainable code.
-Browser incompatibilities can be hidden from the user in a way which
-makes sense.
+are available to the developer (even the full capabilities of SVG Canvas).
+Designing applications in python, as classes and modules instead of
+having to mess about with javascript "prototype", makes for vastly
+more readable and maintainable code.  Browser incompatibilities
+can be hidden from the user in a way which makes sense.
 
 Writing applications with the Pyjamas Framework is not all roses.  There
 is a speed trade-off from supporting the features of python in javascript:
