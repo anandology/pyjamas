@@ -61,6 +61,8 @@ class GWTCanvasImplDefault:
 
 
     def fillText(self, text, sourceX, sourceY, maxWidth=None):
+        # TODO: split this dog's dinner into browser-specific
+        # and pyjd-specific overrides...
 
         try:
             if maxWidth is None:
@@ -72,9 +74,9 @@ class GWTCanvasImplDefault:
             self.translate(sourceX, sourceY)
             try:
                 text = unicode(text) # for pyjd / xulrunner
+                self.canvasContext.mozDrawText(text) # old xulrunner
             except:
-                pass
-            self.canvasContext.mozDrawText(text)
+                self.canvasContext.drawText(text)
             self.restoreContext()
 
     def drawImage(self, img, sourceX, sourceY, sourceWidth=None, sourceHeight=None, destX=None, destY=None, destWidth=None, destHeight=None):
