@@ -70,7 +70,11 @@ class GWTCanvasImplDefault:
         except:
             self.saveContext()
             self.translate(sourceX, sourceY)
-            self.canvasContext.mozDrawText(unicode(text))
+            try:
+                text = unicode(text) # for pyjd / xulrunner
+            except:
+                pass
+            self.canvasContext.mozDrawText(text)
             self.restoreContext()
 
     def drawImage(self, img, sourceX, sourceY, sourceWidth=None, sourceHeight=None, destX=None, destY=None, destWidth=None, destHeight=None):
