@@ -16,6 +16,7 @@ math.atan = Math.atan;
 math.atan2 = Math.atan2;
 math.pi = Math.PI;
 math.e = Math.E;
+math.__log10__ = Math.LN10;
 """)
 
 __log2__ = log(2)
@@ -41,3 +42,5 @@ def frexp(x):
 def ldexp(x, i):
     return x * (2**i)
 
+def log10 (arg):
+    return log(arg) / __log10__
