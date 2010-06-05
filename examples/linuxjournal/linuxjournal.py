@@ -35,6 +35,17 @@ from random import randint
 from time import time
 import math
 
+WARM_WORDS = """
+Click-hold left button to attract "0" box;<br />
+Click-hold right button to repel "0" box.<br />
+Other boxes will follow their neighbours.<br />
+"Gravity" always applies.<br />
+A small amount of "friction" keeps things reasonable.<br />
+If you click in a box, you can enter a new weight:<br />
+Press return and the box will react differently to the mouse.<br />
+Make sure you enter an integer.<br />
+"""
+
 class AnimatedBox(TextBox):
 
     def __init__(self, panel, **kwargs):
@@ -59,7 +70,7 @@ class AnimatedBox(TextBox):
         try:
             txt = self.getText()
             self.weight = int(txt)
-        except:
+        except ValueError:
             self.weight = 50
             Window.alert("Please enter an integer")
 
@@ -134,19 +145,8 @@ class AnimatedBoxes(AbsolutePanel, MouseHandler):
 
         self.boxes = []
         self.mouse_down = False
-
         self.addMouseListener(self)
-
-        self.add(HTML("""
-            Click-hold left button to attract "0" box;<br />
-            Click-hold right button to repel "0" box.<br />
-            Other boxes will follow their neighbours.<br />
-            "Gravity" always applies.<br />
-            A small amount of "friction" keeps things reasonable.<br />
-            If you click in a box, you can enter a new weight:<br />
-            Press return and the box will react differently to the mouse.<br />
-            Make sure you enter an integer.<br />
-            """, 0, 0))
+        self.add(HTML(WARM_WORDS), 0, 0))
 
         DeferredCommand.add(self) # deferred call to self.execute()
 

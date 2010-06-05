@@ -7,3 +7,183 @@ to run in all major modern web browsers.  It began as a port of Google
 Web Toolkit; both GWT and Pyjamas can be classified as Rich Internet
 Application Frameworks.  However, thanks to the Desktop version, Pyjamas
 has become a competitor to Adobe AIR as well.  
+
+The advantages of writing applications with the Pyjamas Framework, aside
+from applications being cross-platform and cross-desktop, are compelling.
+The full capabilities of HTML5 browsers, even on the Desktop versions,
+are available to the developer.  Designing applications in python, as
+classes and modules instead of having to mess about with javascript
+"prototype", makes for vastly more readable and maintainable code.
+Browser incompatibilities can be hidden from the user in a way which
+makes sense.
+
+Writing applications with the Pyjamas Framework is not all roses.  There
+is a speed trade-off from supporting the features of python in javascript:
+not everything conveniently translates, which leaves the developer with
+two diametrically opposed choices: "-O" for speed and less python
+compatibility; "--strict" for correctness.  Also, browser engines are
+notorious for being rubbish debugging environments: pyjamas tries to help
+there by providing a "-d" option which emulates python runtime stack traces,
+which are shown if a runtime exception occurs.  Overall, however, it is
+better to debug the application under both Pyjamas and Pyjamas Desktop:
+at least with Pyjamas Desktop it's pure python.
+
+In essence, pyjamas applications are nothing more than browser "DOM"
+manipulators, on a scale which is so unprecedented in "normal" web
+applications that is way above the average javascript-trained web developer's
+comfort level, but by contrast feels perfectly normal and natural to a PyQT4
+or a PyGTK2 developer.  Pyjamas Desktop works by bypassing the javascript
+entirely, and going direct to browser engine "DOM" methods, variables and
+features, with python bindings.
+
+At the web site http://pyjs.org there are tutorials, examples, download
+and installation instructions and more; the rest of this article will show
+a quite sophisticated animation "game-like" example, bringing together several
+pyjamas framework features which would otherwise be quite awkward to take
+advantage of in pure javascript.  The example has ten Text Input Boxes which
+move under gravity, bouncing around the screen.  Click-and-hold of the left
+mouse button results in the red box being attracted to the mouse, as if by
+gravitational pull, whilst click-and-hold of the right button repels it.
+If a Text Box is clicked, a new "weight" for the box can be entered, affecting
+its gravitational attraction.
+
+All pyjamas applications need the following lines, to initialise the
+application and start it running:
+
+    import pyjd 
+    from pyjamas.ui.RootPanel import RootPanel
+
+    pyjd.setup("public/linuxjournal.html")
+    RootPanel().add(AnimatedBoxes())
+    pyjd.run()
+
+To anyone familiar with PyGTK applications, the similarities here should be
+obvious.  What stands out is the HTML file, which is called the "loader" page.
+When compiled to javascript, this page is responsible for "bootstrap" loading
+the Pyjamas application (in a similar way to gmail "loading").  Under Pyjamas
+Desktop, it's still required, in order to make the application identical in
+both environments.
+
+Here is the __init__ function of the AnimatedBoxes class:
+
+    class AnimatedBoxes(AbsolutePanel, MouseHandler):
+
+        def __init__(self):
+            AbsolutePanel.__init__(self,
+                                   Width="100%",
+                                   Height="100%")
+            # preventDefault=True stops context menu, drag, focus etc.
+            MouseHandler.__init__(self, preventDefault=True)
+
+            self.boxes = []
+            self.mouse_down = False
+            self.addMouseListener(self)
+            self.add(HTML(WARM_WORDS), 0, 0))
+
+            DeferredCommand.add(self) # deferred call to self.execute()
+
+Immediately it is implicitly clear that the Pyjamas compiler supports multiple
+class inheritance - a feature which is a complete unknown, natively to
+javascript, as javascript does not even have the concept of classes.
+Pyjamas UI classes rougly fall into two categories: widgets and panels.
+AbsolutePanel is a type of panel where its child members can be positioned
+at absolute (x,y) coordinates: note the addition of some HTML "warm words"
+in the top-left corner.  MouseHandler is in a third category: helper classes.
+It's worthwhile actually looking at the source code of Pyjamas UI classes,
+to find out what they do, because they are so short.  In this case, MouseHandler
+simply enables mouse events, and defines the convention that any class which
+is added with "addMouseListener" will have functions onMouseDown, onMouseUp,
+onMouseMove, onMouseLeave and onMouseEnter; these functions will be called
+on each corresponding mouse event type.  It's also worth noting that the
+MouseHandler constructor can be made to prevent "default browser behaviour",
+which is very useful: in this case, it stops the context menu from appearing
+on right-mouse button; stops text-selection on mouse drag operations and
+stops focus events on mouse-click.  This latter is somewhat inconvenient
+but unavoidable, and a work-around has to be implemented.
+
+Lastly, the rest of the widget initialisation is carried out later
+(deferred), because at the time that the AnimatedBoxes instance is
+added to the browser DOM, the engine may not have "settled down".
+The AbsolutePanel was added with width and height of "100%": we want the
+browser to have a chance to calculate the exact width and height in pixels
+(known in DOM terminology as the "Offset" Width and Height).
+
+When the deferred execution occurs, in the function called "execute",
+ten instances of the AnimatedBox class are created.
+
+            box = AnimatedBox(self, Text="50",
+                                    VisibleLength=1,
+                                    StyleName=style)
+
+Note that the constructor takes the AbsolutePanel-derived AnimatedBoxes
+class instances as its first argument: this is so that the box can make
+a note of it, and can add itself to its parent panel.  Also note that
+the CSS Style name changes: only the first box gets a style name of
+"leadboxstyle" whereas all other boxes get "boxstyle".  These names tie
+up with the CSS styles defined and referenced by the HTML loader page,
+which should now serve to highlight the importance of the same.
+
+Looking at the constructor for the AnimatedBox class, features
+of the pyjamas compiler stand out:
+
+    class AnimatedBox(TextBox):
+        def __init__(self, panel, **kwargs):
+            TextBox.__init__(self, **kwargs)
+            self.panel = panel
+            [...]
+            self.panel.add(self, self.x, self.y)
+            self.addChangeListener(self)
+
+The pyjamas compiler supports the python concept of *args and
+**kwargs, whereas in javascript, functions can be called with
+random numbers of arguments without runtime errors occurring, and
+any parameters which are missing end up simply being "undefined".
+most convenient.
+
+It's worthwhile examining TextBox.py and TextBoxBase.py in the Pyjamas
+UI codebase, to see the relevance of the addChangeListener function.
+In TextBoxBase's onBrowserEvent function, the DOM event associated with
+"change" to text box contents is captured, and, if there are any listeners,
+the onChange function will be called:
+
+        def onChange(self, sender):
+            try:
+                txt = self.getText()
+                self.weight = int(txt)
+            except ValueError:
+                self.weight = 50
+                Window.alert("Please enter an integer")
+
+In this way, when a user enters text, it is converted to an integer.  If
+the conversion fails, the user is alerted.  Thus, the "weight" of the
+animated Text Box can be altered.
+
+Coming back to the AnimatedBoxes "execute" function, animation begins by
+creating a Timer, to activate within 1 millisecond.  This results in
+onTimer being called:
+
+        def onTimer(self, timer):
+            new_time = time()
+            diff_time = new_time - self.cur_time
+            self.cur_time = new_time
+            if self.mouse_down:
+                self.accel_boxes(self.mouse_x, self.mouse_y, self.mul_factor)
+            self.move(diff_time)
+            Timer(50, self)
+
+Note the use of what looks like a standard python module function "time":
+under Pyjamas Desktop, this is of course actually the standard python module
+function "time", but under the Pyjamas compiler, the time.py module is in fact
+a reimplementation in pure javascript, contributed by a pyjamas user.
+It's not a complete and total reimplementation: it's worth looking at
+(pyjamas/pyjs/src/pyjs/lib/time.py) and it's clear that it contains just
+enough to be useful.
+
+The difference between the last time that onTimer was called and its current
+execution is calculated, and it is this time delta which is used as the basis
+for animation.  In this way, regardless of CPU usage and other factors beyond
+the control of the application, visually smooth animation is attained.
+Here, also, the first signs of interactive mouse effects can be seen,
+in the call to accel_boxes.  Finally, after the boxes have been moved,
+another Timer is activated on a 50ms delay.
+
