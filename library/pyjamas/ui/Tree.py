@@ -134,7 +134,8 @@ class Tree(Widget):
 
         if type == "click":
             e = DOM.eventGetTarget(event)
-            if not self.shouldTreeDelegateFocusToElement(e):
+            if not self.shouldTreeDelegateFocusToElement(e) and \
+                            self.curSelection is not None:
                 self.setFocus(True)
         elif type == "mousedown":
             MouseListener.fireMouseEvent(self.mouseListeners, self, event)
