@@ -160,3 +160,16 @@ of anything up to 30mb in size, the MSHTML port literally requires
 nothing more than comtypes, thanks to the far-sighted design of the
 MSHTML Trident Engine and its extensive COM interface.
 
+4) - PyQt4
+
+Kindly contributed by Thomas Henning, the PyQT4 port requires a current
+PyQt-snapshot with Qt 4.6 (which includes QWebElement,
+a DOM-like API for WebKit).
+
+The PyQt4 engine is experimental, and requires a configuration file
+to explicitly enable it.  create a $HOME/.pyjd/pyjdrc file containing the
+following two lines:
+
+[gui]
+engine=pyqt4
+

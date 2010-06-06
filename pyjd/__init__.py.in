@@ -30,6 +30,8 @@ if engine is None:
         engine = 'mshtml'
     else:
         engine = 'hulahop'
+if engine == 'pyqt4':
+    from pyqt4 import *
 if engine == 'pywebkitgtk':
     from pywebkitgtk import *
 elif engine == 'hulahop':

@@ -28,6 +28,27 @@ sEventPreviewStack = []
 
 listeners = {}
 
+from pyjamas.ui.Event import (
+    ONBLUR,
+    ONCHANGE,
+    ONCLICK,
+    ONCONTEXTMENU,
+    ONDBLCLICK,
+    ONERROR,
+    ONFOCUS,
+    ONKEYDOWN,
+    ONKEYPRESS,
+    ONKEYUP,
+    ONLOAD,
+    ONLOSECAPTURE,
+    ONMOUSEDOWN,
+    ONMOUSEMOVE,
+    ONMOUSEOUT,
+    ONMOUSEOVER,
+    ONMOUSEUP,
+    ONSCROLL
+)
+
 
 def get_listener(item):
     if item is None:
