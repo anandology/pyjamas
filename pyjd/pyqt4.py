@@ -8,7 +8,7 @@ from cgi import escape as html_quote
 
 from PyQt4.QtCore import QUrl, SIGNAL, pyqtSignature, QObject, QVariant, QString
 from PyQt4.QtGui import QApplication, QMainWindow
-from PyQt4.QtWebKit import QWebView, QWebElement
+from PyQt4.QtWebKit import QWebView, QWebElement, QWebElementCollection
 
 
 
@@ -19,13 +19,11 @@ class _ElementBase(object):
     
     @property
     def nodeType(self):
-        js = "this.nodeType;"
-        return self._element.evaluateJavaScript(js)
+        return self._js("nodeType")
 
     @property
     def type(self):
         return self.getAttribute("type")
-
     
     @property
     def offsetParent(self):
@@ -52,7 +50,6 @@ class _ElementBase(object):
         return int(self.getAttribute("scrollLeft") or "0")
 
 
-
     def setInnerText(self, text):
         self.setInnerHTML(html_quote(text))
 
@@ -77,6 +74,9 @@ class _ElementBase(object):
         self._element.evaluateJavaScript("this.%s" % cmd)
         
     
+    def cloneNode(self, arg):
+        return _ElementProxy(self._element.clone())
+
     def blur(self):
         self._js("blur()");
     
