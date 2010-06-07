@@ -81,6 +81,9 @@ class CellFormatter(Applier):
         DOM.setStyleAttribute(self.getElement(row, column), "whiteSpace", wrap_str)
 
     def getCellElement(self, table, row, col):
+        DOM.setInnerHTML(table, "<tr><td>test</td></tr>")
+        print "table", DOM.getInnerHTML(table)
+        print "rows", table.rows
         length = table.rows.length
         if row >= length:
             return None

@@ -30,6 +30,9 @@ def setInnerHTML(element, html):
 def setInnerText(element, text):
     element.setInnerText(text)
 
+def getInnerHTML(element):
+    return element.getInnerHTML()
+
 def sinkEvents(element, bits):
     mask = getEventsSunk(element) ^ bits
     eventbitsmap[element] = bits

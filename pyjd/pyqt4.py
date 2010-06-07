@@ -22,6 +22,14 @@ class _ElementBase(object):
         return self._js("nodeType")
 
     @property
+    def innerHTML(self):
+        return self.getAttribute("html")
+    
+    @property
+    def length(self):
+        return self.getAttribute("length")
+    
+    @property
     def type(self):
         return self.getAttribute("type")
     
@@ -49,6 +57,13 @@ class _ElementBase(object):
     def scrollLeft(self):
         return int(self.getAttribute("scrollLeft") or "0")
 
+
+    @property
+    def rows(self):
+        rows = self._js("rows")
+        print "rows", repr(rows)
+        return _ElementProxy(rows)
+    
 
     def setInnerText(self, text):
         self.setInnerHTML(html_quote(text))
@@ -160,6 +175,9 @@ class _ElementProxy(_ElementBase):
             name = "class"
         self._element.setAttribute(name, value)
 
+
+    def getInnerHTML(self):
+        return self._element.toInnerXml()
 
     def setInnerHTML(self, html):
         self._element.setInnerXml(html)
