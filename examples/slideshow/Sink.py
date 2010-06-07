@@ -21,10 +21,7 @@ class SinkInfo:
         self.instance=None
 
     def createInstance(self):
-        if hasattr(self.object_type, "__new__"):
-            obj = self.object_type.__new__()
-        else:
-            obj = self.object_type()
+        obj = self.object_type()
         obj.name = self.name
         return obj
 
