@@ -306,6 +306,11 @@ class ClassTest(UnitTest):
 
     def testStaticMethod(self):
         self.assertEqual(ExampleClass.sampleStaticMethod("a"), "a", "Expected static method to take the parameter I give as its first parameter")
+        try:
+            m = ExampleClass.oldIdiomStaticMethod("middle")
+            self.assertEqual(m,"beforemiddleafter")
+        except TypeError:
+            self.fail("Old idiom for static methods improperly checks type")
 
     def test__new__Method(self):
         c = OtherClass1()
@@ -767,6 +772,7 @@ class ClassTest(UnitTest):
         self.assertTrue(exc_raised, "TypeError wrong arguments count not raised")
 
         self.assertEqual(obj.mtd_static("b"), "5b6")
+        self.assertEqual(DecoratedMethods.mtd_static(*["b"], **{}), "5b6")
         self.assertEqual(obj.mtd_static2("b"), "55b66")
         self.assertEqual(DecoratedMethods.mtd_static("b"), "5b6")
         self.assertEqual(DecoratedMethods.mtd_static2("b"), "55b66")
@@ -819,6 +825,11 @@ class ExampleClass:
     @staticmethod
     def sampleStaticMethod(arg):
         return arg
+    
+    def shouldntWork(arg):
+        return "before" + arg + "after"
+        
+    oldIdiomStaticMethod = staticmethod(shouldntWork)
 
     def fail_a(self):
         return a
@@ -913,6 +924,14 @@ class OtherSubclass1(OtherClass1):
 
 class OtherClass2(object):
     def __new__(cls):
+        return ObjectClass.__new__(cls)
+        
+class OtherClass3(object):
+    def _nonstatic(x):
+        return "before" + x + "after"
+    static = staticmethod(_nonstatic)
+    def __new__(cls):
+        s = cls.static("middle")
         return ObjectClass.__new__(cls)
 
 class ExampleMultiSuperclassParent1:
