@@ -310,14 +310,14 @@ class ClassTest(UnitTest):
             m = ExampleClass.oldIdiomStaticMethod("middle")
             self.assertEqual(m,"beforemiddleafter")
         except TypeError:
-            self.fail("Old idiom for static methods improperly checks type")
+            self.fail("Issue 415 - Old idiom for static methods improperly checks first argument type")
 
     def test__new__Method(self):
         c = OtherClass1()
         self.assertEqual(c.__class__.__name__, 'ObjectClass')
         self.assertEqual(c.prop, 1)
         c = OtherSubclass1()
-        self.assertEqual(c.__class__.__name__, 'ObjectClass', "__new__ method on superclass not called")
+        self.assertEqual(c.__class__.__name__, 'ObjectClass', "Issue 414: __new__ method on superclass not called")
         c = OtherClass2()
         self.assertEqual(c.__class__.__name__, 'OtherClass2')
         try:
