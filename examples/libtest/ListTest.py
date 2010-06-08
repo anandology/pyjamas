@@ -1,6 +1,35 @@
 from UnitTest import UnitTest
 
+class LetterNode(list):
 
+    def __init__(self, letter, childnodes=None):
+        self.letter = letter
+        if childnodes is None:
+            childnodes = []
+        list.__init__(self, childnodes)
+
+    def __cmp__(self, l):
+        if isinstance(l, LetterNode):
+            return cmp(self.letter, l.letter)
+        return cmp(self.letter, l)
+
+words = "golf fred frederick fried".split(" ")
+
+def get_test_letters():
+    res = []
+    for w in words:
+        p = res
+        for l in w:
+            try:
+                idx = p.index(l)
+                p = p[idx]
+            except ValueError:
+                ln = LetterNode(l)
+                p.append(ln)
+                p = ln
+        p.append(LetterNode("."))
+
+    return res
 
 class ListTest(UnitTest):
 
@@ -343,6 +372,19 @@ class ListTest(UnitTest):
 
         l = [[1],[2],[3]]
         self.assertEqual(l.index([2]), 1)
+
+    def testIndexClass(self):
+
+        l = get_test_letters()
+        self.assertEqual(l[0].letter, 'g', '#413 index __cmp__ class issue') 
+        self.assertEqual(l[1].letter, 'f', '#413 index __cmp__ class issue') 
+        self.assertEqual(l[0][0].letter, 'o', '#413 index __cmp__ class issue') 
+        self.assertEqual(l[1][0].letter, 'r', '#413 index __cmp__ class issue') 
+        self.assertEqual(len(l), 2, '#413 index __cmp__ class issue') 
+        self.assertEqual(len(l[0]), 1, '#413 index __cmp__ class issue')
+        self.assertEqual(len(l[1]), 1, '#413 index __cmp__ class issue') 
+        self.assertEqual(len(l[0][0]), 1, '#413 index __cmp__ class issue')
+        self.assertEqual(len(l[1][0]), 2, '#413 index __cmp__ class issue') 
 
     def testAugAssign(self):
         l = [10, 10.0]
