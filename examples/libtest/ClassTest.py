@@ -311,11 +311,13 @@ class ClassTest(UnitTest):
         c = OtherClass1()
         self.assertEqual(c.__class__.__name__, 'ObjectClass')
         self.assertEqual(c.prop, 1)
+        c = OtherSubclass1()
+        self.assertEqual(c.__class__.__name__, 'ObjectClass', "__new__ method on superclass not called")
         c = OtherClass2()
         self.assertEqual(c.__class__.__name__, 'OtherClass2')
         try:
             prop = c.prop
-            self.fail("failed to raise an error on c.prop")
+            self.fail("failed to raise an error on c.prop (improperly follows explicit __new__ with implicit __init__)")
         except:
             self.assertTrue(True)
 
@@ -905,6 +907,9 @@ class ObjectClass(object):
 class OtherClass1(object):
     def __new__(cls):
         return ObjectClass()
+        
+class OtherSubclass1(OtherClass1):
+    pass
 
 class OtherClass2(object):
     def __new__(cls):
