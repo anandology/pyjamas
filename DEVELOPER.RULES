@@ -79,3 +79,40 @@ rules below, and you'll do ok with this multi-project project:
 that's about it.  the rest - do what you like! make sure you keep
 people informed, engage them to help do testing.
 
+GIT BRANCH NAMING
+
+As it's probably well know, git makes branching super easy and cheap.
+
+Feature branches to the SF repository should be in the form of:
+
+<username>/(bug|feat)/<module>/<issueid>-<description>
+
+username = SF user
+bug|feat = whichever appropriate
+module = the affected module, if any, or bootstrap/builtin/etc.
+issueid = the issue corresponding to this branch, if any
+description = a small description of the branch activity
+
+EXAMPLE (developer):
+
+$ git clone ssh://<username>@pyjamas.git.sourceforge.net/gitroot/pyjamas/pyjamas
+$ git config remote.origin.push
+"refs/heads/<username>/*:refs/heads/<username>/*"
+$ ...(make/create some commits to new/old features/bugs)...
+$ git push
+
+the remote.origin.push config option will enable pushing all your
+branches by default
+
+EXAMPLE (user):
+
+$ git clone git://pyjamas.git.sourceforge.net/gitroot/pyjamas/pyjamas
+$ git checkout -b testing extofme/feat/bootstrap/406-async-init
+$ python bootstrap.py
+
+the checkout command will create a new branch, "testing", based off
+the remote branch "extofme/feat/bootstrap/406-async-init".  you can
+switch between branches (testing builds) without re-running
+bootstrap.py
+
+(thanks C Anthony for the above rules and examples)
