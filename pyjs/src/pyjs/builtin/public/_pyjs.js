@@ -374,7 +374,6 @@ function $pyjs__class_function(cls_fn, prop, bases) {
     var class_module = cls_fn.__module__;
     cls_fn.__number__ = null;
     var base_mro_list = new Array();
-    cls_fn.__new__ = null;
     for (var i = 0; i < bases.length; i++) {
         if (bases[i].__mro__ != null) {
             base_mro_list.push(new Array().concat(bases[i].__mro__));
@@ -382,9 +381,6 @@ function $pyjs__class_function(cls_fn, prop, bases) {
             base_mro_list.push(new Array().concat([bases[i].__class__]));
         } else if (typeof bases[i].prototype == 'function') {
             base_mro_list.push(new Array().concat([bases[i].prototype]));
-        }
-        if (bases[i].__new__ != undefined && bases[i].__new__.__args__[0] != "pyjscls") {
-            cls_fn.__new__ = bases[i].__new__;
         }
     }
     var __mro__ = $pyjs__mro_merge(base_mro_list);
@@ -395,8 +391,8 @@ function $pyjs__class_function(cls_fn, prop, bases) {
     }
     for (var p in prop) cls_fn[p] = prop[p];
 
-    if (prop.__new__ == null && cls_fn.__new__ == null) {
-        cls_fn.__new__ = $pyjs__bind_method(cls_fn, '__new__', function(pyjscls) {
+    if (prop.__new__ == null) {
+        cls_fn.__new__ = $pyjs__bind_method(cls_fn, '__new__', function(cls) {
     var instance = function () {};
     instance.prototype = arguments[0].prototype;
     instance = new instance();
@@ -404,7 +400,7 @@ function $pyjs__class_function(cls_fn, prop, bases) {
     instance.__dict__ = instance;
     instance.__is_instance__ = true;
     return instance;
-}, 1, ['pyjscls']);
+}, 1, ['cls']);
     }
     if (cls_fn['__init__'] == null) {
         cls_fn['__init__'] = $pyjs__bind_method(cls_fn, '__init__', function () {
