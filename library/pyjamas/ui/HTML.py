@@ -21,13 +21,10 @@ from pyjamas.ui import InnerHTML
 
 class HTML(Label, InnerHTML):
 
-    def __init__(self, html=None, wordWrap=True, Element=None, **kwargs):
+    def __init__(self, html=None, wordWrap=True, **kwargs):
         if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-HTML"
         if html: kwargs['HTML'] = html
         kwargs['WordWrap'] = wordWrap
-        if Element is None:
-            Element = DOM.createDiv()
-        self.setElement(Element)
         Label.__init__(self, **kwargs)
         self.sinkEvents(Event.ONCLICK | Event.MOUSEEVENTS)
 

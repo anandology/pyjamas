@@ -306,16 +306,23 @@ class ClassTest(UnitTest):
 
     def testStaticMethod(self):
         self.assertEqual(ExampleClass.sampleStaticMethod("a"), "a", "Expected static method to take the parameter I give as its first parameter")
+        try:
+            m = ExampleClass.oldIdiomStaticMethod("middle")
+            self.assertEqual(m,"beforemiddleafter")
+        except TypeError:
+            self.fail("Issue 415 - Old idiom for static methods improperly checks first argument type")
 
     def test__new__Method(self):
         c = OtherClass1()
         self.assertEqual(c.__class__.__name__, 'ObjectClass')
         self.assertEqual(c.prop, 1)
+        c = OtherSubclass1()
+        self.assertEqual(c.__class__.__name__, 'ObjectClass', "Issue 414: __new__ method on superclass not called")
         c = OtherClass2()
         self.assertEqual(c.__class__.__name__, 'OtherClass2')
         try:
             prop = c.prop
-            self.fail("failed to raise an error on c.prop")
+            self.fail("failed to raise an error on c.prop (improperly follows explicit __new__ with implicit __init__)")
         except:
             self.assertTrue(True)
 
@@ -765,6 +772,7 @@ class ClassTest(UnitTest):
         self.assertTrue(exc_raised, "TypeError wrong arguments count not raised")
 
         self.assertEqual(obj.mtd_static("b"), "5b6")
+        self.assertEqual(DecoratedMethods.mtd_static(*["b"], **{}), "5b6")
         self.assertEqual(obj.mtd_static2("b"), "55b66")
         self.assertEqual(DecoratedMethods.mtd_static("b"), "5b6")
         self.assertEqual(DecoratedMethods.mtd_static2("b"), "55b66")
@@ -817,6 +825,11 @@ class ExampleClass:
     @staticmethod
     def sampleStaticMethod(arg):
         return arg
+    
+    def shouldntWork(arg):
+        return "before" + arg + "after"
+        
+    oldIdiomStaticMethod = staticmethod(shouldntWork)
 
     def fail_a(self):
         return a
@@ -905,9 +918,20 @@ class ObjectClass(object):
 class OtherClass1(object):
     def __new__(cls):
         return ObjectClass()
+        
+class OtherSubclass1(OtherClass1):
+    pass
 
 class OtherClass2(object):
     def __new__(cls):
+        return ObjectClass.__new__(cls)
+        
+class OtherClass3(object):
+    def _nonstatic(x):
+        return "before" + x + "after"
+    static = staticmethod(_nonstatic)
+    def __new__(cls):
+        s = cls.static("middle")
         return ObjectClass.__new__(cls)
 
 class ExampleMultiSuperclassParent1:
