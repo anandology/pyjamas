@@ -17,6 +17,7 @@
 from pyjamas import DOM
 
 from pyjamas.ui.FocusWidget import FocusWidget
+from pyjamas.ui.Widget import Widget
 from pyjamas.ui import Focus
 from pyjamas.Canvas.Color import Color
 
