@@ -325,7 +325,18 @@ class ClassTest(UnitTest):
             self.fail("failed to raise an error on c.prop (improperly follows explicit __new__ with implicit __init__)")
         except:
             self.assertTrue(True)
+        try:
+            c = OtherClass3(41, 42)
+            self.assertTrue(True)
+        except:
+            self.fail("Issue 417: __new__ method fails for lack of arguments")
+        self.assertEqual(c.y if hasattr(c,"y") else 0, 42, "Issue 417: __new__ method not passed constructor arguments.")
 
+        try:
+            c = OtherClass3()
+            self.fail("Issue 418: __new__ method doesn't fail for lack of arguments")
+        except:
+            self.assertTrue(True)
         instance = MultiBase.__new__(MultiInherit1)
         self.assertEqual(instance.name, 'MultiInherit1')
         instance = MultiInherit1.__new__(MultiBase)
@@ -927,12 +938,10 @@ class OtherClass2(object):
         return ObjectClass.__new__(cls)
         
 class OtherClass3(object):
-    def _nonstatic(x):
-        return "before" + x + "after"
-    static = staticmethod(_nonstatic)
-    def __new__(cls):
-        s = cls.static("middle")
-        return ObjectClass.__new__(cls)
+    def __new__(cls, x, y):
+        val = object.__new__(cls)
+        val.x, val.y = x,y
+        return val
 
 class ExampleMultiSuperclassParent1:
     x = 'Initial X'
