@@ -7,8 +7,8 @@ from pyjamas.ui import HasAlignment
 from pyjamas.ui.Button import Button
 from pyjamas import Window
 
-from pyjamas.ui.vertsplitpanel import VerticalSplitPanel
-from pyjamas.ui.horizsplitpanel import HorizontalSplitPanel
+from pyjamas.ui.VerticalSplitPanel import VerticalSplitPanel
+from pyjamas.ui.HorizontalSplitPanel import HorizontalSplitPanel
 
 class SplitPanel:
 

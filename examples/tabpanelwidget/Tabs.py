@@ -13,8 +13,8 @@ from pyjamas.ui.Composite import Composite
 from pyjamas.ui import MouseListener
 from pyjamas.ui import Event
 from pyjamas import Window
-from pyjamas.ui.decoratorpanel import DecoratedTabPanel, DecoratorPanel
-from pyjamas.ui.decoratorpanel import DecoratorTitledPanel
+from pyjamas.ui.DecoratorPanel import DecoratedTabPanel, DecoratorPanel
+from pyjamas.ui.DecoratorPanel import DecoratorTitledPanel
 
 #class PrettyTab(DecoratorPanel):
 class PrettyTab(Composite):

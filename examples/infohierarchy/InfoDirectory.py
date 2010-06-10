@@ -18,7 +18,7 @@ from pyjamas.ui import HasVerticalAlignment
 from pyjamas.ui import HasAlignment
 from pyjamas import Window
 
-#from pyjamas.horizsplitpanel import HorizontalSplitPanel
+#from pyjamas.HorizSplitPanel import HorizontalSplitPanel
 
 from pyjamas.JSONService import JSONProxy
 

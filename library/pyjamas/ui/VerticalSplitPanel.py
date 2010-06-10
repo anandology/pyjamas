@@ -19,7 +19,7 @@
  */
 """
 
-from splitpanel import SplitPanel
+from SplitPanel import SplitPanel
 from pyjamas import Factory
 from pyjamas import DOM
 from pyjamas import DeferredCommand
