@@ -5395,6 +5395,13 @@ def __setslice(object, lower, upper, value):
 
 def str(text):
     JS("""
+    if (text === null) {
+        return "None";
+    }
+    if (typeof text == 'boolean') {
+        if (text) return "True";
+        return "False";
+    }
     if (pyjslib.hasattr(text,"__str__")) {
         return text.__str__();
     }
@@ -5441,7 +5448,7 @@ def repr(x):
         return x.__repr__()
     JS("""
        if (x === null)
-           return "null";
+           return "None";
 
        if (x === undefined)
            return "undefined";
@@ -5450,9 +5457,10 @@ def repr(x):
 
         //alert("repr typeof " + t + " : " + x);
 
-       if (t == "boolean")
-           return x.toString();
-
+       if (t == "boolean") {
+           if (x) return "True";
+           return "False";
+       }
        if (t == "function")
            return "<function " + x.toString() + ">";
 

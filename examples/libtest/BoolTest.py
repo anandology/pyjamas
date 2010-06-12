@@ -221,3 +221,12 @@ class BoolTest(UnitTest):
         except TypeError:
             self.fail("#297 TypeError should not have been thrown")
 
+    def testRepr(self):
+        self.assertEqual(repr(True), "True")
+        self.assertEqual(repr(False), "False")
+        self.assertEqual(repr(None), "None")
+
+    def testStr(self):
+        self.assertEqual(str(True), "True")
+        self.assertEqual(str(False), "False")
+        self.assertEqual(str(None), "None")
