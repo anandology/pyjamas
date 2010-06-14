@@ -804,7 +804,7 @@ def mash_name_for_glib(name, joiner='-'):
 
 
 def removeAttribute(element, attribute):
-    elem.removeAttribute(attribute)
+    element.removeAttribute(attribute)
 
 
 def setAttribute(element, attribute, value):
