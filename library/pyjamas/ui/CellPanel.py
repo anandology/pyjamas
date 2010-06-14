@@ -40,11 +40,34 @@ class CellPanel(ComplexPanel):
     def getBody(self):
         return self.body
 
+    def getBorderWidth(self):
+        return DOM.getAttribute(self.table, "border")
+
+    def getCellHeight(self, widget):
+        td = DOM.getParent(widget.getElement())
+        return DOM.getAttribute(td, "height")
+
+    def getCellWidth(self, widget):
+        td = DOM.getParent(widget.getElement())
+        return DOM.getAttribute(td, "width")
+
     def getSpacing(self):
         return self.spacing
 
     def getPadding(self):
         return self.padding
+
+    def getCellHorizontalAlignment(self, widget):
+        td = self.getWidgetTd(widget)
+        if td is None:
+            return None
+        return DOM.getAttribute(td, "align")
+
+    def getCellVerticalAlignment(self, widget):
+        td = self.getWidgetTd(widget)
+        if td is None:
+            return None
+        return DOM.getStyleAttribute(td, "verticalAlign")
 
     def getWidgetTd(self, widget):
         if widget.getParent() != self:
@@ -52,33 +75,54 @@ class CellPanel(ComplexPanel):
         return DOM.getParent(widget.getElement())
 
     def setBorderWidth(self, width):
-        DOM.setAttribute(self.table, "border", "%d" % width)
+        if width is None or width == "":
+            DOM.removeAttribute(self.table, "border")
+        else:
+            DOM.setAttribute(self.table, "border", "%d" % width)
 
     def setCellHeight(self, widget, height):
         td = DOM.getParent(widget.getElement())
-        DOM.setAttribute(td, "height", height)
+        if height is None:
+            DOM.removeAttribute(td, "height")
+        else:
+            DOM.setAttribute(td, "height", height)
 
     def setCellHorizontalAlignment(self, widget, align):
         td = self.getWidgetTd(widget)
         if td is not None:
-            DOM.setAttribute(td, "align", align)
+            if align is None:
+                DOM.removeAttribute(td, "align")
+            else:
+                DOM.setAttribute(td, "align", align)
 
     def setCellVerticalAlignment(self, widget, align):
         td = self.getWidgetTd(widget)
         if td is not None:
-            DOM.setStyleAttribute(td, "verticalAlign", align)
+            if align is None:
+                DOM.setStyleAttribute(td, "verticalAlign", "")
+            else:
+                DOM.setStyleAttribute(td, "verticalAlign", align)
 
     def setCellWidth(self, widget, width):
         td = DOM.getParent(widget.getElement())
-        DOM.setAttribute(td, "width", width)
+        if width is None:
+            DOM.removeAttribute(td, "width")
+        else:
+            DOM.setAttribute(td, "width", width)
 
     def setSpacing(self, spacing):
         self.spacing = spacing
-        DOM.setAttribute(self.table, "cellSpacing", str(spacing))
+        if spacing is None:
+            DOM.removeAttribute(self.table, "cellSpacing")
+        else:
+            DOM.setAttribute(self.table, "cellSpacing", str(spacing))
 
     def setPadding(self, padding):
         self.padding = padding
-        DOM.setAttribute(self.table, "cellPadding", str(padding))
+        if padding is None:
+            DOM.removeAttribute(self.table, "cellPadding")
+        else:
+            DOM.setAttribute(self.table, "cellPadding", str(padding))
 
 Factory.registerClass('pyjamas.ui.CellPanel', CellPanel)
 
