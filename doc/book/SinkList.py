@@ -13,7 +13,7 @@ class SinkList(Composite):
         self.selectedSink=-1
         
         self.sp = ScrollPanel(self.vp_list)
-        self.sp.setWidth("24em")
+        self.sp.setWidth("14em")
 
         self.initWidget(self.sp)
         self.setStyleName("ks-List")

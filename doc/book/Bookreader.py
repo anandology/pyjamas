@@ -60,8 +60,8 @@ class Bookreader:
 
         self.sp = ScrollPanel(self.sinkContainer)
         #self.sp = VerticalSplitPanel()
-        self.sp.setWidth("100%")
-        self.sp.setHeight("%dpx" % (height-110))
+        self.sp.setWidth("98%")
+        self.sp.setHeight("%dpx" % (height-200))
 
         #self.sp.setTopWidget(self.sinkContainer)
         #self.sp.setBottomWidget(self.nf)
@@ -88,10 +88,12 @@ class Bookreader:
         History.addHistoryListener(self)
         RootPanel().add(self.panel)
 
+        self.onWindowResized(Window.getClientWidth(), Window.getClientHeight())
 
     def onWindowResized(self, width, height):
-        self.sink_list.resize(width, height)
-        self.sp.setHeight("%dpx" % (height-110))
+        self.panel.setWidth(width-20)
+        self.sink_list.resize(width-20, height-200)
+        self.sp.setHeight("%dpx" % (height-200))
 
     def show(self, info, affectHistory):
         if info == self.curInfo:
