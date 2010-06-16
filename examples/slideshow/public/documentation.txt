@@ -11,3 +11,4 @@ Lots and lots of documentation for Pyjamas
    ** auto-generated pyjamas app, from doc strings
 All of these are "useful".
 There's always the source.
+Did you know: there's always the source.

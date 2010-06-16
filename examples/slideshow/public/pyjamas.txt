@@ -9,5 +9,6 @@
    ** Takes away all the HTML and AJAX pain...
  * How does it work?
    ** Compiles application classes and modules to Javascript
-   ** Compiles hybrid Widget set to Javascript
+   ** Compiles hybrid Widget set library to Javascript
    ** Runs in Web Browser
+   ** NO browser plugins needed: only Javascript

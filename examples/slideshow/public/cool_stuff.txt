@@ -1,7 +1,7 @@
  * Python Desktop OS!
    ** extjs and youos
  * Mail example - get it working.
-   ** Web IMAP proxy
+   ** Web IMAP proxy http://beammail.org
    ** Or - direct talking to gmail (JQuery?)
    ** No more gmail ads in gmail.  Hooray!
  * Offline and Distributed apps

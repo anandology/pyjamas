@@ -10,7 +10,6 @@
    ** AJAX-aware server talks turkey on your behalf.
  * Why can't I make network connections?
    ** See above
-   ** Help beat XulRunner into submission
    ** Consider using Pyjamas-Desktop
    ** Caveat 1: you're breaking MVC rules.
    ** Caveat 2: you can't go back to browser-only.

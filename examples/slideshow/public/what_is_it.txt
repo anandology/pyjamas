@@ -2,6 +2,7 @@
  * Compiles python into javascript, for execution in browsers, v8 etc.
    ** Pretty large subset of python is supported
    ** Couple of niggles (e.g. undefined gets in the way)
+   ** Two modes: -O and --strict.
  * Compiles an AJAX Library (hybrid of javascript and python) into Javascript
  * Provides, for browser use, access to the browser DOM model
  * Takes away the pain of Web development.
@@ -12,4 +13,3 @@
   ** No more disillusionment with dire AJAX awfulness
   ** No more "browser incompatibilities"
   ** No more CSS nastiness
-

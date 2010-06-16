@@ -1,15 +1,15 @@
  * Port of Pyjamas to Desktop
    ** Will run on any desktop platform (and some embedded ones, too!)
    ** Still supports CSS, HTML, NPAPI, SVG - everything thanks to...
- * Uses Webkit - but is webkit-port-independent AND webkit independent.
-   ** actually, PyWebkitGtk
+ * Uses Browser Engines
+   ** Three major runtimes: MSHTML, XulRunner and PyWebkitGtk
+   ** MSHTML (not free software) ironically most stable runtime.
    ** pywebkitqt4 needs DOM model manipulation if to be used.
  * Uses port of Pyjamas Library (identical API) to Python
    ** All javascript ripped out, replaced with python
    ** DOM.py most heavily modified
-   ** ui.py pretty much left as-is (a few bug-fixes)
+   ** pyjamas.ui.* pretty much left as-is (a few bug-fixes)
    ** pyjslib.py and pyjs.py compiler ripped out.
  * Any comprehensive Python-based DOM manipulator will do, BUT:
    ** Python-KDE3 (KHTMLPart) has subtle bugs (c++ RTTI dependence)
-   ** PyXPComExt / PyDOM is insanely obtuse - valiantly resisting useability
-   ** XulRunner's nsdom doesn't compile.  yippee.
+   ** PyXPCOMExt / PyDOM is insanely obtuse - valiantly resisting useability
