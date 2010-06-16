@@ -7,7 +7,7 @@ gendocs:
 # sf being stupid.
 upload:
 	rsync -rlvz * lkcl,pyjamas@web.sf.net:/home/groups/p/py/pyjamas/htdocs/
-	rsync -rlvz api lkcl,pyjd@web.sf.net:htdocs/
+	rsync -rlvz api lkcl,pyjamas@web.sf.net:htdocs/
 
 uploadexamples:
 	rsync -rlvz ../examples lkcl,pyjamas@web.sf.net:/home/groups/p/py/pyjamas/htdocs/
