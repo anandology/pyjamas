@@ -25,11 +25,11 @@ class VerticalPanelDemo(SimplePanel):
     def __init__(self):
         SimplePanel.__init__(self)
 
-        panel = VerticalPanel()
-        panel.setBorderWidth(1)
-
-        panel.setHorizontalAlignment(HasAlignment.ALIGN_CENTER)
-        panel.setVerticalAlignment(HasAlignment.ALIGN_MIDDLE)
+        panel = VerticalPanel(BorderWidth=1,
+                              HorizontalAlignment=HasAlignment.ALIGN_CENTER,
+                              VerticalAlignment=HasAlignment.ALIGN_MIDDLE,
+                              Width="50%",
+                              Height="300px")
 
         part1 = Label("Part 1")
         part2 = Label("Part 2")
@@ -47,9 +47,6 @@ class VerticalPanelDemo(SimplePanel):
         panel.setCellHeight(part4, "10%")
 
         panel.setCellHorizontalAlignment(part3, HasAlignment.ALIGN_RIGHT)
-
-        panel.setWidth("50%")
-        panel.setHeight("300px")
 
         self.add(panel)
 

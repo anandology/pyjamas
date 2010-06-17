@@ -20,20 +20,16 @@ class AbsolutePanelDemo(SimplePanel):
     def __init__(self):
         SimplePanel.__init__(self)
 
-        panel = AbsolutePanel()
+        panel = AbsolutePanel(Width="100%", Height="100px")
 
         panel.add(self.makeBox("Child 1"), 20, 10)
         panel.add(self.makeBox("Child 2"), 30, 30)
-
-        panel.setWidth("100%")
-        panel.setHeight("100px")
 
         self.add(panel)
 
 
     def makeBox(self, label):
-        wrapper = VerticalPanel()
-        wrapper.setBorderWidth(1)
+        wrapper = VerticalPanel(BorderWidth=1)
         wrapper.add(HTML(label))
         DOM.setAttribute(wrapper.getTable(), "cellPadding", "10")
         DOM.setAttribute(wrapper.getTable(), "bgColor", "#C3D9FF")
