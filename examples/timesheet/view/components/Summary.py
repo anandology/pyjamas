@@ -31,7 +31,8 @@ class Summary(FlexTable):
     def setEntries(self, entries):
       try:
         #tt = time.localtime(time.time())
-        tt = [0] * 9
+        #tt = [0] * 9 # This needs --operator-funcs compile option
+        tt = [0,0,0,0,0,0,0,0,0]
         if self.date:
             tt[0] = int(self.date[:4])
             tt[1] = int(self.date[4:6])
