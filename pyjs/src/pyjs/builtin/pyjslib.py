@@ -953,12 +953,16 @@ String.prototype.isdigit = function() {
     return (this.match(/^\d+$/g) !== null);
 };
 
+String.prototype.isalnum = function() {
+    return (this.match(/^[a-zA-Z\d]+$/g) !== null);
+};
+
 String.prototype.isalpha = function() {
     return (this.match(/^[a-zA-Z]+$/g) !== null);
 };
 
 String.prototype.isupper = function() {
-    return (this.match(/^[A-Z]+$/g) !== null);
+    return (this.match(/[a-z]/g) === null);
 };
 
 String.prototype.__replace=String.prototype.replace;
