@@ -3,7 +3,6 @@ from pyjamas.ui.Hyperlink import Hyperlink
 
 from pyjamas import Window
 from pyjamas import DOM
-#from pyjamas import log
 
 class HTMLLinkPanel(HTMLPanel):
     def __init__(self, html="", **kwargs):
@@ -31,11 +30,12 @@ class HTMLLinkPanel(HTMLPanel):
             html = DOM.getInnerHTML(el)
             parent = DOM.getParent(el)
             index = DOM.getChildIndex(parent, el)
-            #log.writebr("href %s %s %s %s" % ( pagehref, href, token, html))
             hl = Hyperlink(TargetHistoryToken=token,
                            HTML=html,
                            Element=DOM.createSpan())
             DOM.insertChild(parent, hl.getElement(), index)
-            self.children.insert(index, hl)
             parent.removeChild(el)
+
+            self.children.insert(index, hl)
+            hl.setParent(self)
 
