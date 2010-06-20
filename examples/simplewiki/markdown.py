@@ -31,7 +31,7 @@ def ts(txt):
         r.append(urlmap(line))
     return '<br />'.join(r)
 
-def markdown(text):
+def makeHTML(text):
     result = ''
     ul_stack1 = 0
     ul_stack2 = 0
@@ -44,7 +44,7 @@ def markdown(text):
                 doing_code = 0
                 line = "</pre>"
                 txt += line
-                self.vp.add(HTML(txt))
+                result += txt
                 txt = ''
                 continue
             if line:
@@ -97,4 +97,51 @@ def markdown(text):
             result += txt
             txt = ''
     return result
+
+
+def makeWikiLinks(txt):
+    res = ''
+    i = 0
+    txtlen = len(txt)
+    while i < txtlen:
+        letter = txt[i]
+        if letter.isalnum() and letter.upper() == letter and \
+           (i == 0 or not txt[i-1].isalnum()) and i < txtlen-1:
+            # possible wikiword?
+            nextletter = txt[i+1]
+            if nextletter.isalnum() and nextletter.lower() == nextletter:
+                # capitalised - ok, possible wikiword.
+                j = i + 2
+                wikiword = letter + nextletter
+                is_wiki_word = None # so far...
+                is_lower_now = True
+                while j < txtlen:
+                    letter = txt[j]
+                    if is_wiki_word != False:
+                        if is_lower_now and letter.upper() == letter:
+                            is_lower_now = False
+                        elif not is_lower_now and letter.upper() == letter:
+                            is_wiki_word = False # whoops...
+                        elif not is_lower_now and letter.lower() == letter:
+                            # 2nd transition from upper to lower
+                            is_lower_now = True
+                            is_wiki_word = True
+                    if not letter.isalnum() or j == txtlen-1:
+                        # end!
+                        if letter.lower() != letter:
+                            is_wiki_word = False
+                        i = j
+                        if is_wiki_word:
+                            if j == txtlen-1 and letter.isalnum():
+                                wikiword += letter
+                                letter = ''
+                            res += '<a href="#%s">%s</a>' % (wikiword.lower(), wikiword)
+                        else:
+                            res += wikiword
+                        break
+                    j += 1
+                    wikiword += letter
+        i += 1
+        res += letter
+    return res
 
