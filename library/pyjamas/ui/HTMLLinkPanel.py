@@ -5,14 +5,14 @@ from pyjamas import Window
 from pyjamas import DOM
 
 class HTMLLinkPanel(HTMLPanel):
-    def __init__(self, sink, html="", title="", **kwargs):
-        self.sink = sink
-        self.title = title
-        HTMLPanel.__init__(self, html, **kwargs)
+    def __init__(self, **kwargs):
+        HTMLPanel.__init__(self, **kwargs)
 
-    def replaceLinks(self, tagname="a"):
+    def replaceLinks(self, tagname="a", use_page_href=True):
         """ replaces <tag href="#pagename">sometext</tag> with:
-            Hyperlink("sometext", "pagename")
+            Hyperlink("sometext", "pagename").  Hyperlinks use
+            the History module so the notification will come
+            in on an onHistoryChanged.
         """
         tags = self.findTags(tagname)
         pageloc = Window.getLocation()
@@ -22,7 +22,7 @@ class HTMLLinkPanel(HTMLPanel):
             l = href.split("#")
             if len(l) != 2:
                 continue
-            if not l[0].startswith(pagehref):
+            if use_page_href and not l[0].startswith(pagehref):
                 continue
             token = l[1]
             if not token:
