@@ -22,7 +22,7 @@ HTMLPanel_sUid = 0
 
 def getElementsByTagName(element, tagname):
     try:
-        element_tagname = element.nodeName # DOM.getAttribute(element, "nodeName")
+        element_tagname = element.nodeName
         element_tagname = str(element_tagname).lower()
     except:
         element_tagname = None
@@ -59,21 +59,18 @@ def getElementById(element, id):
 class HTMLPanel(ComplexPanel, InnerHTML):
     def __init__(self, html, **kwargs):
         # NOTE! don't set a default style on this panel, because the
-        # HTML might expect to have one already.
+        # HTML might expect to have one already.  Explicitly add a StyleName
+        # if one is needed.
         #if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-HTMLPanel"
         if html: kwargs['HTML'] = html
-        if kwargs.has_key('Element'):
-            element = kwargs.pop('Element')
-        else:
-            element = DOM.createDiv()
+        element = kwargs.pop('Element', DOM.createDiv())
         self.setElement(element)
         ComplexPanel.__init__(self, **kwargs)
 
     def add(self, widget, id):
         element = getElementById(self.getElement(), id)
         if element is None:
-            # throw new NoSuchElementException()
-            return
+            raise Exception("HTMLPanel.add: no element with id '%s'" % str(id))
         ComplexPanel.add(self, widget, element)
 
     def findTags(self, tagname):
