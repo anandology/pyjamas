@@ -3,10 +3,11 @@ from pyjamas.ui.Hyperlink import Hyperlink
 
 from pyjamas import Window
 from pyjamas import DOM
+#from pyjamas import log
 
 class HTMLLinkPanel(HTMLPanel):
-    def __init__(self, **kwargs):
-        HTMLPanel.__init__(self, **kwargs)
+    def __init__(self, html="", **kwargs):
+        HTMLPanel.__init__(self, html, **kwargs)
 
     def replaceLinks(self, tagname="a", use_page_href=True):
         """ replaces <tag href="#pagename">sometext</tag> with:
@@ -30,6 +31,7 @@ class HTMLLinkPanel(HTMLPanel):
             html = DOM.getInnerHTML(el)
             parent = DOM.getParent(el)
             index = DOM.getChildIndex(parent, el)
+            #log.writebr("href %s %s %s %s" % ( pagehref, href, token, html))
             hl = Hyperlink(TargetHistoryToken=token,
                            HTML=html,
                            Element=DOM.createSpan())
