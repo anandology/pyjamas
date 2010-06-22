@@ -6,7 +6,21 @@ from pyjamas import DOM
 
 class HTMLLinkPanel(HTMLPanel):
     def __init__(self, html="", **kwargs):
+        self.hyperlinks = []
         HTMLPanel.__init__(self, html, **kwargs)
+
+    def setHTML(self, html):
+        self._clear_hyperlinks()
+        HTMLPanel.setHTML(self, html)
+
+    def _clear_hyperlinks(self):
+        while self.hyperlinks:
+            hl = self.hyperlinks.pop()
+            el = hl.getElement()
+            parent = DOM.getParent(el)
+            if parent:
+                parent.removeChild(el)
+            hl.setParent(None)
 
     def replaceLinks(self, tagname="a", use_page_href=True):
         """ replaces <tag href="#pagename">sometext</tag> with:
@@ -14,6 +28,7 @@ class HTMLLinkPanel(HTMLPanel):
             the History module so the notification will come
             in on an onHistoryChanged.
         """
+        self._clear_hyperlinks()
         tags = self.findTags(tagname)
         pageloc = Window.getLocation()
         pagehref = pageloc.getPageHref()
@@ -38,4 +53,5 @@ class HTMLLinkPanel(HTMLPanel):
 
             self.children.insert(index, hl)
             hl.setParent(self)
+            self.hyperlinks.append(hl)
 
