@@ -25,9 +25,8 @@ from pyjamas import Window
 
 class DialogBox(PopupPanel):
     def __init__(self, autoHide=None, modal=True, centered=False,
-                       closeable=False, **kwargs):
+                       **kwargs):
 
-        PopupPanel.__init__(self, autoHide, modal, **kwargs)
         self.caption = HTML()
         self.child = None
         self.dragging = False
@@ -36,31 +35,46 @@ class DialogBox(PopupPanel):
         self.panel = FlexTable(Height="100%", BorderWidth="0",
                                 CellPadding="0", CellSpacing="0")
         self.panel.setWidget(0, 0, self.caption)
-        self.panel.getCellFormatter().setHeight(1, 0, "100%")
-        self.panel.getCellFormatter().setWidth(1, 0, "100%")
-        self.panel.getCellFormatter().setAlignment(1, 0, HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE)
-        PopupPanel.setWidget(self, self.panel)
+        cf = self.panel.getCellFormatter()
+        cf.setHeight(1, 0, "100%")
+        cf.setWidth(1, 0, "100%")
+        cf.setAlignment(1, 0,
+                        HasHorizontalAlignment.ALIGN_CENTER,
+                        HasVerticalAlignment.ALIGN_MIDDLE)
 
-        self.setStyleName("gwt-DialogBox")
         self.caption.setStyleName("Caption")
         self.caption.addMouseListener(self)
 
         self.centered = centered
 
         self.closeable = False
-        if closeable:
-            self.makeClosable()
 
-    def makeCloseable(self):
-        if not self.closeable:
-            closeButton = Image("window_close.gif")
-            closeButton.setStyleName("Caption closeBtn")
-            closeButton.addClickListener(getattr(self, "hide"))
-            self.panel.setWidget(0, 1, closeButton)
-            self.panel.getFlexCellFormatter().setColSpan(1, 0, 2)
-            self.panel.getCellFormatter().setWidth(0, 1, "16px")
-            self.panel.getCellFormatter().setAlignment(0, 1, HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE)
-            self.closeable = True
+        kwargs['StyleName'] = kwargs.get('StyleName', "gwt-DialogBox")
+        PopupPanel.__init__(self, autoHide, modal, **kwargs)
+        PopupPanel.setWidget(self, self.panel)
+
+    def _closeClicked(self, sender):
+        self.hide()
+
+    def setCloseable(self, closeable):
+        """ Note: only use this to set closeable to True,
+            and do not attempt to set closeable to False:
+            it won't work.
+        """
+        if self.closeable or not closeable:
+            return
+
+        closeButton = Image("window_close.gif")
+        closeButton.setStyleName("Caption closeBtn")
+        closeButton.addClickListener(getattr(self, "_closeClicked"))
+        self.panel.setWidget(0, 1, closeButton)
+        self.panel.getFlexCellFormatter().setColSpan(1, 0, 2)
+        cf = self.panel.getCellFormatter()
+        cf.setWidth(0, 1, "16px")
+        cf.setAlignment(0, 1,
+                        HasHorizontalAlignment.ALIGN_RIGHT,
+                        HasVerticalAlignment.ALIGN_MIDDLE)
+        self.closeable = True
 
     def getHTML(self):
         return self.caption.getHTML()
@@ -96,7 +110,8 @@ class DialogBox(PopupPanel):
         if self.dragging:
             absX = x + self.getAbsoluteLeft()
             absY = y + self.getAbsoluteTop()
-            self.setPopupPosition(absX - self.dragStartX, absY - self.dragStartY)
+            self.setPopupPosition(absX - self.dragStartX,
+                                  absY - self.dragStartY)
 
     def onMouseUp(self, sender, x, y):
         self.dragging = False
