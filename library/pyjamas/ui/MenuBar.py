@@ -59,7 +59,9 @@ class MenuBar(Widget):
         Widget.__init__(self, **kwargs)
 
     def getDefaultStyleName(self):
-        return "gwt-MenuBar " + "gwt-MenuBar-vertical" if self.vertical else "gwt-MenuBar-horizontal"
+        if self.vertical:
+            return "gwt-MenuBar " + "gwt-MenuBar-vertical"
+        return "gwt-MenuBar-horizontal"
 
     def setStyleName(self, StyleName, **kwargs):
         if not StyleName or StyleName == 'gwt-MenuBar':
@@ -140,14 +142,16 @@ class MenuBar(Widget):
         while curMenu is not None:
             curMenu.close()
 
-            if curMenu.parentMenu is None and curMenu.selectedItem is not None:
+            if curMenu.parentMenu is None and \
+               curMenu.selectedItem is not None:
                 curMenu.selectedItem.setSelectionStyle(False)
                 curMenu.selectedItem = None
 
             curMenu = curMenu.parentMenu
 
     def doItemAction(self, item, fireCommand):
-        if (self.shownChildMenu is not None) and (item.getSubMenu() == self.shownChildMenu):
+        if (self.shownChildMenu is not None) and \
+           (item.getSubMenu() == self.shownChildMenu):
             return
 
         if (self.shownChildMenu is not None):
@@ -201,7 +205,8 @@ class MenuBar(Widget):
         self.selectItem(item)
 
         if item is not None:
-            if (self.shownChildMenu is not None) or (self.parentMenu is not None) or self.autoOpen:
+            if (self.shownChildMenu is not None) or \
+               (self.parentMenu is not None) or self.autoOpen:
                 self.doItemAction(item, False)
 
     def close(self):
