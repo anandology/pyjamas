@@ -1,6 +1,8 @@
                     Changes made to Pyjamas since 0.7
                     ---------------------------------
 
+ * Added default style name to MenuBar, by Serge Tarkovski 
+
  * Added makeCloseable and centring to DialogBox, by Serge Tarkovski 
 
  * Added default style to CaptionPanel, by Serge Tarkovski 
