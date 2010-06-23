@@ -20,9 +20,12 @@ from HTML import HTML
 from FlexTable import FlexTable
 from pyjamas.ui import HasHorizontalAlignment
 from pyjamas.ui import HasVerticalAlignment
+from pyjamas.ui.Image import Image
+from pyjamas import Window
 
 class DialogBox(PopupPanel):
-    def __init__(self, autoHide=None, modal=True, **kwargs):
+    def __init__(self, autoHide=None, modal=True, centered=False,
+                       closeable=False, **kwargs):
 
         PopupPanel.__init__(self, autoHide, modal, **kwargs)
         self.caption = HTML()
@@ -41,6 +44,23 @@ class DialogBox(PopupPanel):
         self.setStyleName("gwt-DialogBox")
         self.caption.setStyleName("Caption")
         self.caption.addMouseListener(self)
+
+        self.centered = centered
+
+        self.closeable = False
+        if closeable:
+            self.makeClosable()
+
+    def makeCloseable(self):
+        if not self.closeable:
+            closeButton = Image("window_close.gif")
+            closeButton.setStyleName("Caption closeBtn")
+            closeButton.addClickListener(getattr(self, "hide"))
+            self.panel.setWidget(0, 1, closeButton)
+            self.panel.getFlexCellFormatter().setColSpan(1, 0, 2)
+            self.panel.getCellFormatter().setWidth(0, 1, "16px")
+            self.panel.getCellFormatter().setAlignment(0, 1, HasHorizontalAlignment.ALIGN_RIGHT, HasVerticalAlignment.ALIGN_MIDDLE)
+            self.closeable = True
 
     def getHTML(self):
         return self.caption.getHTML()
@@ -112,6 +132,31 @@ class DialogBox(PopupPanel):
             self.panel.setWidget(1, 0, widget)
 
         self.child = widget
+
+    def centerBox(self):
+        self_width = self.getOffsetWidth()
+        self_height = self.getOffsetHeight()
+
+        height = Window.getClientHeight()
+        width = Window.getClientWidth()
+
+        center_x = int(width) / 2
+        center_y = int(height) / 2
+
+        self_top  = center_y - (int(self_height) / 2)
+        self_left = center_x - (int(self_width)  / 2)
+
+        self.setPopupPosition(self_left, self_top)
+
+    def onWindowResized(self, width, height):
+        super(DialogBox, self).onWindowResized(width, height)
+        if self.centered:
+            self.centerBox()
+
+    def show(self):
+        super(DialogBox, self).show()
+        if self.centered:
+            self.centerBox()
 
 Factory.registerClass('pyjamas.ui.DialogBox', DialogBox)
 

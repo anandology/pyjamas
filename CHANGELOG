@@ -1,6 +1,8 @@
                     Changes made to Pyjamas since 0.7
                     ---------------------------------
 
+ * Added makeCloseable and centring to DialogBox, by Serge Tarkovski 
+
  * Added default style to CaptionPanel, by Serge Tarkovski 
 
  * Added log10 to math module
