@@ -76,12 +76,6 @@ class DialogBox(PopupPanel):
                         HasVerticalAlignment.ALIGN_MIDDLE)
         self.closeable = True
 
-    def getHTML(self):
-        return self.caption.getHTML()
-
-    def getText(self):
-        return self.caption.getText()
-
     def onEventPreview(self, event):
         # preventDefault on mousedown events, outside of the
         # dialog, to stop text-selection on dragging
@@ -93,6 +87,18 @@ class DialogBox(PopupPanel):
             if event_targets_popup:
                 DOM.eventPreventDefault(event)
         return PopupPanel.onEventPreview(self, event)
+
+    def getHTML(self):
+        return self.caption.getHTML()
+
+    def getText(self):
+        return self.caption.getText()
+
+    def setHTML(self, html):
+        self.caption.setHTML(html)
+
+    def setText(self, text):
+        self.caption.setText(text)
 
     def onMouseDown(self, sender, x, y):
         self.dragging = True
@@ -124,12 +130,6 @@ class DialogBox(PopupPanel):
         self.panel.remove(widget)
         self.child = None
         return True
-
-    def setHTML(self, html):
-        self.caption.setHTML(html)
-
-    def setText(self, text):
-        self.caption.setText(text)
 
     def doAttachChildren(self):
         PopupPanel.doAttachChildren(self)
