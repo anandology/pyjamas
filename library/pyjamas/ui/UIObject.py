@@ -87,7 +87,8 @@ class UIObject(Applier):
 
     def setHeight(self, height):
         """Set the height of the element associated with this UIObject.  The
-           value should be given as a CSS value, such as 100px, 30%, or 50pi"""
+           value should be given as a CSS value, such as 100px, 30%, or 50pi
+        """
         DOM.setStyleAttribute(self.element, "height", str(height))
 
     def getHeight(self):
@@ -95,28 +96,34 @@ class UIObject(Applier):
 
     def setPixelSize(self, width, height):
         """Set the width and height of the element associated with this UIObject
-           in pixels.  Width and height should be numbers."""
+           in pixels.  Width and height should be numbers.
+        """
         if width >= 0:
             self.setWidth("%dpx" % width)
         if height >= 0:
             self.setHeight("%dpx" % height)
 
     def setSize(self, width, height):
-        """Set the width and height of the element associated with this UIObject.  The
-           values should be given as a CSS value, such as 100px, 30%, or 50pi"""
+        """Set the width and height of the element associated with this
+           UIObject.  The values should be given as a CSS value,
+           such as 100px, 30%, or 50pi
+        """
         self.setWidth(width)
         self.setHeight(height)
 
     def addStyleName(self, style):
-        """Append a style to the element associated with this UIObject.  This is
-        a CSS class name.  It will be added after any already-assigned CSS class for
-        the element."""
+        """Append a style to the element associated with this UIObject.
+           This is a CSS class name.  It will be added after any
+           already-assigned CSS class for the element.
+        """
         self.setStyleName(self.element, style, True)
 
     def addStyleDependentName(self, styleSuffix):
         """Adds a secondary or dependent style name to this element.
-        For example if the primary stylename is gwt-TextBox, 
-        self.addStyleDependentName("readonly") will return gwt-TextBox-readonly."""
+           For example if the primary stylename is gwt-TextBox, 
+           self.addStyleDependentName("readonly") will return
+           gwt-TextBox-readonly.
+        """
         self.addStyleName(self.getStylePrimaryName()+"-"+styleSuffix)
 
     def removeStyleName(self, style):
@@ -125,14 +132,17 @@ class UIObject(Applier):
         self.setStyleName(self.element, style, False)
     
     def removeStyleDependentName(self, styleSuffix):
-        """Remove a dependent style name by specifying the style name's suffix."""
+        """Remove a dependent style name by specifying the style name's suffix.
+        """
         self.removeStyleName(self.getStylePrimaryName()+"-"+styleSuffix)
 
     # also callable as: setStyleName(self, style)
     def setStyleName(self, element, style=None, add=True):
-        """When called with a single argument, this replaces all the CSS classes
-        associated with this UIObject's element with the given parameter.  Otherwise,
-        this is assumed to be a worker function for addStyleName and removeStyleName."""
+        """When called with a single argument, this replaces all the CSS
+           classes associated with this UIObject's element with the given
+           parameter.  Otherwise, this is assumed to be a worker function
+           for addStyleName and removeStyleName.
+        """
         # emulate setStyleName(self, style)
         if style is None:
             style = element
@@ -145,19 +155,23 @@ class UIObject(Applier):
 
     def setWidth(self, width):
         """Set the width of the element associated with this UIObject.  The
-           value should be given as a CSS value, such as 100px, 30%, or 50pi"""
+           value should be given as a CSS value, such as 100px, 30%, or 50pi
+        """
         DOM.setStyleAttribute(self.element, "width", str(width))
 
     def getWidth(self):
         return DOM.getStyleAttribute(self.element, "width")
 
     def sinkEvents(self, eventBitsToAdd):
-        """Request that the given events be delivered to the event handler for this
-        element.  The event bits passed are added (using inclusive OR) to the events
-        already "sunk" for the element associated with the UIObject.  The event bits
-        are a combination of values from class L{Event}."""
+        """Request that the given events be delivered to the event handler
+           for this element.  The event bits passed are added (using inclusive
+           OR) to the events already "sunk" for the element associated with
+           the UIObject.  The event bits are a combination of values from
+           class L{Event}.
+           """
         if self.element:
-            DOM.sinkEvents(self.getElement(), eventBitsToAdd | DOM.getEventsSunk(self.getElement()))
+            DOM.sinkEvents(self.getElement(),
+                         eventBitsToAdd | DOM.getEventsSunk(self.getElement()))
 
     def setzIndex(self, index):
         DOM.setIntStyleAttribute(self.element, "zIndex", index)
@@ -175,10 +189,11 @@ class UIObject(Applier):
 
     # also callable as: setVisible(visible)
     def setVisible(self, element, visible=None):
-        """Set whether this element is visible or not.  If a single parameter is
-        given, the self.element is used.  This modifies the CSS property 'display',
-        which means that an invisible element not only is not drawn, but doesn't
-        occupy any space on the page."""
+        """Set whether this element is visible or not.  If a single parameter
+           is given, the self.element is used.  This modifies the CSS
+           property 'display', which means that an invisible element not
+           only is not drawn, but doesn't occupy any space on the page.
+        """
         if visible is None:
             visible = element
             element = self.element
@@ -189,8 +204,10 @@ class UIObject(Applier):
             DOM.setStyleAttribute(element, 'display', "none")
 
     def unsinkEvents(self, eventBitsToRemove):
-        """Reverse the operation of sinkEvents.  See L{UIObject.sinkevents}."""
-        DOM.sinkEvents(self.getElement(), ~eventBitsToRemove & DOM.getEventsSunk(self.getElement()))
+        """Reverse the operation of sinkEvents.  See L{UIObject.sinkevents}.
+        """
+        DOM.sinkEvents(self.getElement(),
+                      ~eventBitsToRemove & DOM.getEventsSunk(self.getElement()))
 
 Factory.registerClass('pyjamas.ui.UIObject', UIObject)
 
