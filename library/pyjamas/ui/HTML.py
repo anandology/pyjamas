@@ -22,10 +22,10 @@ from pyjamas.ui import InnerHTML
 class HTML(Label, InnerHTML):
 
     def __init__(self, html=None, wordWrap=True, **kwargs):
-        if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-HTML"
-        if html: kwargs['HTML'] = html
-        kwargs['WordWrap'] = wordWrap
-        Label.__init__(self, **kwargs)
+        kwargs['StyleName'] = kwargs.get('StyleName', "gwt-HTML")
+        if html:
+            kwargs['HTML'] = html
+        Label.__init__(self, wordWrap=wordWrap, **kwargs)
         self.sinkEvents(Event.ONCLICK | Event.MOUSEEVENTS)
 
 Factory.registerClass('pyjamas.ui.HTML', HTML)
