@@ -24,10 +24,7 @@ import pygwt
 
 class ClickableHeader(SimplePanel):
     def __init__(self, disclosurePanel, **kwargs):
-        if kwargs.has_key('Element'):
-            element = kwargs.pop('Element')
-        else:
-            element = DOM.createAnchor()
+        element = kwargs.pop('Element', DOM.createAnchor())
         SimplePanel.__init__(self, element)
         self.disclosurePanel = disclosurePanel
         element = self.getElement()
@@ -37,8 +34,8 @@ class ClickableHeader(SimplePanel):
         self.setStyleName("header")
 
     def onBrowserEvent(self, event):
-        type = DOM.eventGetType(event)
-        if type == "click":
+        etype = DOM.eventGetType(event)
+        if etype == "click":
             DOM.eventPreventDefault(event)
             newstate = not self.disclosurePanel.getOpen()
             self.disclosurePanel.setOpen(newstate)
@@ -140,7 +137,7 @@ class DisclosurePanel(Composite):
         DOM.setStyleAttribute(self.contentWrapper.getElement(),
                               "overflow", "hidden");
 
-        if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-DisclosurePanel"
+        kwargs['StyleName'] = kwargs.get('StyleName', "gwt-DisclosurePanel")
         Composite.__init__(self, self.mainPanel, **kwargs)
 
         # Must call setOpen after creating the initializing the object
