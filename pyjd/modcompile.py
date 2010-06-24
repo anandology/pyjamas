@@ -26,7 +26,7 @@ import imp
 from compiler.pycodegen import ModuleCodeGenerator
 
 class PlatformParser:
-    def __init__(self, platform_dir = "", verbose=True, chain_plat=None):
+    def __init__(self, platform_dir = "", verbose=False, chain_plat=None):
         self.platform_dir = platform_dir
         self.parse_cache = {}
         self.platform = ""
@@ -35,6 +35,17 @@ class PlatformParser:
 
     def setPlatform(self, platform):
         self.platform = platform
+
+    def checkOverridePlatformFile(self, file_name):
+
+        if self.chain_plat:
+            return self.chain_plat.checkOverridePlatformFile(file_name)
+        if not self.platform:
+            return None
+        platform_file_name = self.generatePlatformFilename(file_name)
+        if os.path.isfile(platform_file_name):
+            return platform_file_name
+        return None
 
     def parseModule(self, module_name, file_name):
 
@@ -51,7 +62,8 @@ class PlatformParser:
 
         override = False
         platform_file_name = self.generatePlatformFilename(file_name)
-        print "platform", platform_file_name
+        if self.verbose:
+            print "platform", platform_file_name
         if self.platform and os.path.isfile(platform_file_name):
             mod = copy.deepcopy(mod)
             mod_override = compiler.parseFile(platform_file_name)

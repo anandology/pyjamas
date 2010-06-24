@@ -34,6 +34,8 @@ class CaptionPanel(SimplePanel):
         kwargs['Caption'] = caption
         if widget is not None:
             kwargs['Widget'] = widget
+        if not 'StyleName' in kwargs:
+            kwargs['StyleName'] = 'gwt-CaptionPanel'
         SimplePanel.__init__(self, element, **kwargs)
 
     def getCaption(self):
