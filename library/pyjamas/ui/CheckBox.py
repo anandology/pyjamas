@@ -24,22 +24,19 @@ _CheckBox_unique_id=0;
 class CheckBox(ButtonBase):
 
     def __init__(self, label=None, asHTML=False, **kwargs):
-        if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-CheckBox"
+        kwargs['StyleName'] = kwargs.get('StyleName', "gwt-CheckBox")
         if label:
             if asHTML:
                 kwargs['HTML'] = label
             else:
                 kwargs['Text'] = label
-
-        self.initElement(DOM.createInputCheck(), **kwargs)
+        element = kwargs.pop('Element', DOM.createInputCheck())
+        self.initElement(element, **kwargs)
 
     def initElement(self, element, **kwargs):
         self.inputElem = element
         self.labelElem = DOM.createLabel()
-        if kwargs.has_key('Element'):
-            element = kwargs.pop('Element')
-        else:
-            element = DOM.createSpan()
+        element = kwargs.pop('Element', DOM.createSpan())
         ButtonBase.__init__(self, element, **kwargs)
 
         self.unsinkEvents(Event.FOCUSEVENTS| Event.ONCLICK)
