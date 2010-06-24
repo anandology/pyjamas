@@ -24,11 +24,8 @@ class TextArea(TextBoxBase):
     get and access the current text.
     """
     def __init__(self, **kwargs):
-        if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-TextArea"
-        if kwargs.has_key('Element'):
-            element = kwargs.pop('Element')
-        else:
-            element = DOM.createTextArea()
+        kwargs['StyleName'] = kwargs.get('StyleName', "gwt-TextArea")
+        element = kwargs.pop('Element', DOM.createTextArea())
         TextBoxBase.__init__(self, element, **kwargs)
 
     def getCharacterWidth(self):
