@@ -23,16 +23,11 @@ from ClickListener import ClickHandler
 class Label(Widget, MouseHandler, ClickHandler, InnerText):
 
     def __init__(self, text=None, wordWrap=True, **kwargs):
-        if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-Label"
-        if text: kwargs['Text'] = text
-        kwargs['WordWrap'] = wordWrap
-
-        if kwargs.has_key('Element'):
-            element = kwargs.pop('Element')
-        else:
-            element = DOM.createDiv()
-
-        self.setElement(element)
+        kwargs['StyleName'] = kwargs.get('StyleName', "gwt-Label")
+        kwargs['WordWrap'] = kwargs.get('WordWrap', wordWrap)
+        if text:
+            kwargs['Text'] = text
+        self.setElement(kwargs.pop('Element', DOM.createDiv()))
         self.horzAlign = ""
 
         Widget.__init__(self, **kwargs)
@@ -43,17 +38,15 @@ class Label(Widget, MouseHandler, ClickHandler, InnerText):
         return self.horzAlign
 
     def getWordWrap(self):
-        return not (DOM.getStyleAttribute(self.getElement(), "whiteSpace") == "nowrap")
+        ws = DOM.getStyleAttribute(self.getElement(), "whiteSpace")
+        return ws != "nowrap"
 
     def setHorizontalAlignment(self, align):
         self.horzAlign = align
         DOM.setStyleAttribute(self.getElement(), "textAlign", align)
 
     def setWordWrap(self, wrap):
-        if wrap:
-            style = "normal"
-        else:
-            style = "nowrap"
+        style = wrap and "normal" or "nowrap"
         DOM.setStyleAttribute(self.getElement(), "whiteSpace", style)
 
 Factory.registerClass('pyjamas.ui.Label', Label)
