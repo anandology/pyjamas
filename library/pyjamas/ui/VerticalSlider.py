@@ -8,8 +8,9 @@
     Copyright (C) 2009, 2010 - Bill Winder <wgwinder@gmail.com>
 
 
-    To do: All controls with draggable=True do not fire the OnFocus methon on single click.
-    the control does not activate the OnFocus method. Clicking the handle does fire OnFocus, however.
+    TODO: All controls with draggable=True do not fire the OnFocus method
+    on single click.  the control does not activate the OnFocus method.
+    Clicking the handle does fire OnFocus, however.
 
 """
 
@@ -24,14 +25,10 @@ class VerticalSlider(Control):
     def __init__(self, min_value, max_value, start_value=None, step=None,
                        **kwargs):
 
-        if not kwargs.has_key("StyleName"):
-            kwargs['StyleName'] = "gwt-VerticalSlider"
+        kwargs["StyleName"] = kwargs.get('StyleName', "gwt-VerticalSlider")
 
-        if kwargs.has_key('Element'):
-            # XXX FIXME: Focus.createFocusable is here for a reason...
-            element = kwargs.pop('Element')
-        else:
-            element = Focus.createFocusable()
+        # XXX FIXME: Focus.createFocusable is here for a reason...
+        element = kwargs.pop('Element', Focus.createFocusable())
         DOM.setStyleAttribute(element, "position", "relative")
         DOM.setStyleAttribute(element, "overflow", "hidden")
 
@@ -40,8 +37,8 @@ class VerticalSlider(Control):
 
         self.setHandleStyle("1px", "100%", "10px", "#808080")
 
-        Control.__init__(self, element, min_value, max_value, start_value, step,
-                               **kwargs)
+        Control.__init__(self, element, min_value, max_value, start_value,
+                         step, **kwargs)
 
         self.addClickListener(self)
         self.addFocusListener(self)
@@ -55,7 +52,8 @@ class VerticalSlider(Control):
         if height is not None:
             DOM.setStyleAttribute(self.handle, "height", height)
         if backgroundColor is not None:
-            DOM.setStyleAttribute(self.handle, "backgroundColor", backgroundColor)
+            DOM.setStyleAttribute(self.handle, "backgroundColor",
+                                  backgroundColor)
 
     def onFocus(self, sender):
         self.addStyleName("gwt-VerticalSlider-focussed")
