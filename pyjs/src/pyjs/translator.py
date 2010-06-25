@@ -848,6 +848,9 @@ class Translator:
                 self._assattr(child, None)
             elif isinstance(child, self.ast.AssName):
                 self._assname(child, None)
+            elif isinstance(child, self.ast.AssTuple):
+                for node in child.nodes:
+                    self._stmt(node, None)
             elif isinstance(child, self.ast.Slice):
                 print >> self.output, self.spacing() + self._slice(child, None)
             else:
@@ -2814,6 +2817,9 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             else:
                 raise TranslationError(
                     "unsupported AssName type (in _stmt)", node, self.module_name)
+        elif isinstance(node, self.ast.AssTuple):
+            for node in node.nodes:
+                self._stmt(node, current_klass)
         else:
             raise TranslationError(
                 "unsupported type (in _stmt)", node, self.module_name)
@@ -3296,6 +3302,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             list_expr = self._listcomp(node.list, current_klass)
         elif isinstance(node.list, self.ast.Tuple):
             list_expr = self._tuple(node.list, current_klass)
+        elif isinstance(node.list, self.ast.Add):
+            list_expr = self._add(node.list, current_klass)
         else:
             raise TranslationError(
                 "unsupported type (in _for)", node.list, self.module_name)
