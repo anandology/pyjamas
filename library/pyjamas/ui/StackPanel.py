@@ -41,9 +41,9 @@ class StackPanel(ComplexPanel):
 
         self.setElement(table)
 
-        if not kwargs.has_key('Spacing'): kwargs['Spacing'] = 0
-        if not kwargs.has_key('Padding'): kwargs['Padding'] = 0
-        if not kwargs.has_key('StyleName'): kwargs['StyleName'] = "gwt-StackPanel"
+        kwargs['Spacing'] = kwargs.get('Spacing', 0)
+        kwargs['Padding'] = kwargs.get('Padding', 0)
+        kwargs['StyleName'] = kwargs.get('StyleName', "gwt-StackPanel")
 
         DOM.sinkEvents(table, Event.ONCLICK)
 

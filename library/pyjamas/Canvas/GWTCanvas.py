@@ -79,11 +79,17 @@ class GWTCanvas(FocusWidget):
         self.setCoordSize(coordX, coordY)
     
     def getCanvasElement(self):
-        return self.getElement().firstChild
+        return self.canvas
 
     def getCanvasImpl(self):
         return GWTCanvasImplDefault()
     
+    def setWidth(self, width):
+        self.setPixelWidth(width)
+
+    def setHeight(self, height):
+        self.setPixelHeight(height)
+
     """*
     * Draws an arc. If the context has a non-empty path, then the method must add
     * a straight line from the last point in the path to the start point of the
@@ -590,6 +596,7 @@ class GWTCanvas(FocusWidget):
     * @param height the height of the canvas in pixels
     """
     def setPixelHeight(self, height):
+        FocusWidget.setHeight(self, height)
         self.impl.setPixelHeight(self.getCanvasElement(), height)
     
     
@@ -599,6 +606,7 @@ class GWTCanvas(FocusWidget):
     * @param width width of the canvas in pixels
     """
     def setPixelWidth(self, width):
+        FocusWidget.setWidth(self, width)
         self.impl.setPixelWidth(self.getCanvasElement(), width)
     
     

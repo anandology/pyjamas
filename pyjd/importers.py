@@ -37,9 +37,9 @@ _c_suffixes = filter(lambda x: x[2] == imp.C_EXTENSION, imp.get_suffixes())
 
 from modcompile import PlatformParser, Module
 
-pp = PlatformParser('platform', verbose=1)
+pp = PlatformParser('platform', verbose=False)
 pp.platform =  pyjd.engine
-parser = PlatformParser(verbose=1, chain_plat=pp)
+parser = PlatformParser(verbose=False, chain_plat=pp)
 
 def _timestamp(pathname):
     "Return the file modification time as a Long."
@@ -73,30 +73,80 @@ def _fs_import(dir, modname, fqname):
                 values['__file__'] = file
                 return 0, module, values
 
-    t_py = _timestamp(pathname + '.py')
-    t_pyc = _timestamp(pathname + _suffix)
+    filename = pathname + '.py'
+    filenamec = pathname + _suffix
+    t_py = _timestamp(filename)
+    t_pyc = _timestamp(filenamec)
     if t_py is None and t_pyc is None:
         return None
     code = None
+    out_t_py = t_py
+    out_filename = filename
     # XXX TODO - read .pyc from platform-specific locations...
-    if False: # t_py is None or (t_pyc is not None and t_pyc >= t_py):
-        file = pathname + _suffix
-        f = open(file, 'rb')
+    platform_file = parser.checkOverridePlatformFile(filename)
+    #print "check platform file", filename, platform_file
+    if platform_file:
+        platform_filec = platform_file[:-3] + _suffix
+        t_p_py = _timestamp(platform_file)
+        t_p_pyc = _timestamp(platform_filec)
+        #print "platform file", platform_file, platform_filec, t_p_py, t_p_pyc
+        if t_p_py is not None or t_p_pyc is not None:
+            # platform file exists: must check that instead.
+            ok = True
+            if t_py is not None and t_pyc is not None and t_py > t_pyc:
+                # .py exists, .pyc exists, .py is newer than pyc: nope
+                ok = False
+            if t_py is not None and t_p_py is not None and t_py > t_p_py:
+                # .py exists, platform.py exists, .py is newer than pyc: nope
+                ok = False
+            if t_py is not None and t_p_pyc is not None and t_py > t_p_pyc:
+                # .py exists, platform.pyc exists, .py is newer than pyc: nope
+                ok = False
+
+            if ok and \
+                (t_p_py is None or (t_p_pyc is not None and t_p_pyc >= t_p_py)):
+                f = open(platform_filec, 'rb')
+                if f.read(4) == imp.get_magic():
+                    t = struct.unpack('<I', f.read(4))[0]
+                    if t == t_py:
+                        code = marshal.load(f)
+                f.close()
+
+    if code is None and \
+       (t_py is None or (t_pyc is not None and t_pyc >= t_py)):
+        f = open(filename, 'rb')
         if f.read(4) == imp.get_magic():
             t = struct.unpack('<I', f.read(4))[0]
             if t == t_py:
                 code = marshal.load(f)
         f.close()
+
     if code is None:
-        file = pathname + '.py'
-        mod, file = parser.parseModule(modname, file)
-        code = Module(mod, file)
+        filename = pathname + '.py'
+        mod, filename = parser.parseModule(modname, filename)
+        code = Module(mod, filename)
         code.compile()
         code = code.getCode()
         
-        #code = imputil._compile(file, t_py)
+        if platform_file and t_p_py:
+            out_t_py = t_p_py
+            out_filename = platform_file
 
-    values['__file__'] = file
+        # try to cache the compiled code
+        try:
+            f = open(out_filename + _suffix_char, 'wb')
+        except IOError:
+            pass
+        else:
+            f.write('\0\0\0\0')
+            f.write(struct.pack('<I', out_t_py))
+            marshal.dump(code, f)
+            f.flush()
+            f.seek(0, 0)
+            f.write(imp.get_magic())
+            f.close()
+
+    values['__file__'] = filename
     return ispkg, code, values
 
 ######################################################################

@@ -1,9 +1,11 @@
 == XULRunner ==
- * PyXPComExt / PyDOM / NsDOM
-   ** Much promise! (Komodo and Miro)
-   ** Complete lack of stand-alone examples
-   ** Utterly obtuse and developer-hostile
- * Needs simple way to fire up an app
-   ** Blank sheet
-   ** Python app loads HTML content (like demobrowser.py)
- * None of this "chrome" bullshit.
+python-xpcom and python-hulahop
+ * Works well
+ * two main bugs
+   ** SVG Canvas drawImage
+   ** XMLHttpRequest no user/password parameters
+BUT:
+ * Mozilla Documentation pretty much useless
+ * python-xpcom being excluded from Mozilla codebase
+ * Mozilla Foundation Losing Plot (speed, speed, speed)
+ * Inexplicable and Total lack of interest in XPCOM

@@ -287,15 +287,23 @@ class StringTest(UnitTest):
         self.assertEqual("2" * 3, "222")
         self.assertEqual(3 * "3", "333")
 
+    def testIsAlnum(self):
+        self.assertTrue("abc".isalnum())
+        self.assertTrue("0bc".isalnum())
+        self.assertFalse(".?abc".isalnum())
+        self.assertFalse(" 0bc".isalnum())
+
     def testIsAlpha(self):
         self.assertTrue("abc".isalpha())
         self.assertFalse("0bc".isalpha())
 
     def testIsUpper(self):
-        self.assertTrue("ABC".isupper())
-        self.assertFalse("AbC".isupper())
-        self.assertTrue("A0C".isupper())
-        self.assertFalse("A0c".isupper())
+        self.assertTrue("ABC".isupper(), "ABC")
+        self.assertFalse("AbC".isupper(), "AbC")
+        self.assertTrue("A0C".isupper(), "A0C")
+        self.assertFalse("A0c".isupper(), "A0c")
+        self.assertTrue("A C".isupper(), "A C")
+        self.assertFalse("A c".isupper(), "A c")
 
 
 class ClassWithOwnToString(object):

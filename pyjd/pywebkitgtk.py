@@ -559,10 +559,15 @@ def setup(application, appdir=None, width=800, height=600):
 def is_loaded():
     return wv.already_initialised
 
-def run(one_event=False):
+def run(one_event=False, block=True):
     if one_event:
-        gtk.main_iteration()
+        if block or gtk.events_pending():
+            gtk.main_iteration()
+            sys.stdout.flush()
+        return gtk.events_pending()
     else:
-        gtk.main()
+        while 1:
+            gtk.main_iteration()
+            sys.stdout.flush()
 
 

@@ -24,15 +24,16 @@ from pyjamas.ui import Event
 
 class MenuBar(Widget):
     def __init__(self, vertical=False, **kwargs):
-        if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-MenuBar"
+        self.vertical = vertical
 
+        if not 'StyleName' in kwargs or kwargs['StyleName'] == 'gwt-MenuBar':
+            kwargs['StyleName'] = self.getDefaultStyleName()
         self.body = None
         self.items = []
         self.parentMenu = None
         self.popup = None
         self.selectedItem = None
         self.shownChildMenu = None
-        self.vertical = False
         self.autoOpen = False
 
         if kwargs.has_key('Element'):
@@ -52,12 +53,20 @@ class MenuBar(Widget):
             tr = DOM.createTR()
             DOM.appendChild(self.body, tr)
 
-        self.vertical = vertical
-
         outer = DOM.createDiv()
         DOM.appendChild(outer, table)
         self.setElement(outer)
         Widget.__init__(self, **kwargs)
+
+    def getDefaultStyleName(self):
+        if self.vertical:
+            return "gwt-MenuBar " + "gwt-MenuBar-vertical"
+        return "gwt-MenuBar-horizontal"
+
+    def setStyleName(self, StyleName, **kwargs):
+        if not StyleName or StyleName == 'gwt-MenuBar':
+            StyleName = self.getDefaultStyleName()
+        super(MenuBar, self).setStyleName(StyleName, **kwargs)
 
     # also callable as:
     #   addItem(item)
@@ -133,14 +142,16 @@ class MenuBar(Widget):
         while curMenu is not None:
             curMenu.close()
 
-            if curMenu.parentMenu is None and curMenu.selectedItem is not None:
+            if curMenu.parentMenu is None and \
+               curMenu.selectedItem is not None:
                 curMenu.selectedItem.setSelectionStyle(False)
                 curMenu.selectedItem = None
 
             curMenu = curMenu.parentMenu
 
     def doItemAction(self, item, fireCommand):
-        if (self.shownChildMenu is not None) and (item.getSubMenu() == self.shownChildMenu):
+        if (self.shownChildMenu is not None) and \
+           (item.getSubMenu() == self.shownChildMenu):
             return
 
         if (self.shownChildMenu is not None):
@@ -161,7 +172,7 @@ class MenuBar(Widget):
         self.popup.addPopupListener(self)
 
         if self.vertical:
-            self.popup.setPopupPosition(self.getAbsoluteLeft() + 
+            self.popup.setPopupPosition(self.getAbsoluteLeft() +
                                         self.getOffsetWidth() - 1,
                                         item.getAbsoluteTop())
         else:
@@ -194,7 +205,8 @@ class MenuBar(Widget):
         self.selectItem(item)
 
         if item is not None:
-            if (self.shownChildMenu is not None) or (self.parentMenu is not None) or self.autoOpen:
+            if (self.shownChildMenu is not None) or \
+               (self.parentMenu is not None) or self.autoOpen:
                 self.doItemAction(item, False)
 
     def close(self):

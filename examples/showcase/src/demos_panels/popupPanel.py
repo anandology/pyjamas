@@ -30,8 +30,7 @@ class PopupPanelDemo(SimplePanel):
     def __init__(self):
         SimplePanel.__init__(self)
 
-        vPanel = VerticalPanel()
-        vPanel.setSpacing(4)
+        vPanel = VerticalPanel(Spacing=4)
 
         self._btn = Button("Click Me", getattr(self, "showPopup"))
 

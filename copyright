@@ -66,7 +66,6 @@ Copyright: 2010 Serge Tarkovski <serge.tarkovski@gmail.com>
 Copyright: 2010 Edwin Cox
 Copyright: 2010 Henning Schroeder <henning.schroeder@gmail.com>
 
-
 Files: examples/flowpanel/*
 Copyright: 2009 jordonwii (http://code.google.com/u/jordonwii)
 License: Apache
@@ -203,7 +202,7 @@ Files: examples/gmaps/*
 License: Apache
 Copyright: 2009, Daniel Carvalho <idnael@gmail.com>
 
-Files:  library/pyjamas/ui/FlashPanel.py addons/FlowPlayer.py addons/SWFUpload.py examples/flowplayer/* examples/swfupload/*
+Files: library/pyjamas/ui/FlashPanel.py addons/FlowPlayer.py addons/SWFUpload.py examples/flowplayer/* examples/swfupload/*
 License: Apache
 Copyright: 2009, Tobias Weber <tobi-weber@gmx.de>
 

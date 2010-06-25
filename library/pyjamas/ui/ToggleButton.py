@@ -32,7 +32,7 @@ class ToggleButton (CustomButton):
         """
         Constructor for ToggleButton.
         """
-        if not kwargs.has_key('StyleName'): kwargs['StyleName']=self.STYLENAME_DEFAULT
+        kwargs['StyleName'] = kwargs.get('StyleName', self.STYLENAME_DEFAULT)
         CustomButton.__init__(self, upImageText, downImageText, handler,
                                     **kwargs)
 

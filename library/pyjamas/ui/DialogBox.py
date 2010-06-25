@@ -20,11 +20,13 @@ from HTML import HTML
 from FlexTable import FlexTable
 from pyjamas.ui import HasHorizontalAlignment
 from pyjamas.ui import HasVerticalAlignment
+from pyjamas.ui.Image import Image
+from pyjamas import Window
 
 class DialogBox(PopupPanel):
-    def __init__(self, autoHide=None, modal=True, **kwargs):
+    def __init__(self, autoHide=None, modal=True, centered=False,
+                       **kwargs):
 
-        PopupPanel.__init__(self, autoHide, modal, **kwargs)
         self.caption = HTML()
         self.child = None
         self.dragging = False
@@ -33,20 +35,46 @@ class DialogBox(PopupPanel):
         self.panel = FlexTable(Height="100%", BorderWidth="0",
                                 CellPadding="0", CellSpacing="0")
         self.panel.setWidget(0, 0, self.caption)
-        self.panel.getCellFormatter().setHeight(1, 0, "100%")
-        self.panel.getCellFormatter().setWidth(1, 0, "100%")
-        self.panel.getCellFormatter().setAlignment(1, 0, HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE)
-        PopupPanel.setWidget(self, self.panel)
+        cf = self.panel.getCellFormatter()
+        cf.setHeight(1, 0, "100%")
+        cf.setWidth(1, 0, "100%")
+        cf.setAlignment(1, 0,
+                        HasHorizontalAlignment.ALIGN_CENTER,
+                        HasVerticalAlignment.ALIGN_MIDDLE)
 
-        self.setStyleName("gwt-DialogBox")
         self.caption.setStyleName("Caption")
         self.caption.addMouseListener(self)
 
-    def getHTML(self):
-        return self.caption.getHTML()
+        self.centered = centered
 
-    def getText(self):
-        return self.caption.getText()
+        self.closeable = False
+
+        kwargs['StyleName'] = kwargs.get('StyleName', "gwt-DialogBox")
+        PopupPanel.__init__(self, autoHide, modal, **kwargs)
+        PopupPanel.setWidget(self, self.panel)
+
+    def _closeClicked(self, sender):
+        self.hide()
+
+    def setCloseable(self, closeable):
+        """ Note: only use this to set closeable to True,
+            and do not attempt to set closeable to False:
+            it won't work.
+        """
+        if self.closeable or not closeable:
+            return
+
+        closeButton = Image("window_close.gif")
+        closeButton.setStyleName("Caption closeBtn")
+        closeButton.addClickListener(getattr(self, "_closeClicked"))
+        self.panel.setWidget(0, 1, closeButton)
+        self.panel.getFlexCellFormatter().setColSpan(1, 0, 2)
+        cf = self.panel.getCellFormatter()
+        cf.setWidth(0, 1, "16px")
+        cf.setAlignment(0, 1,
+                        HasHorizontalAlignment.ALIGN_RIGHT,
+                        HasVerticalAlignment.ALIGN_MIDDLE)
+        self.closeable = True
 
     def onEventPreview(self, event):
         # preventDefault on mousedown events, outside of the
@@ -59,6 +87,18 @@ class DialogBox(PopupPanel):
             if event_targets_popup:
                 DOM.eventPreventDefault(event)
         return PopupPanel.onEventPreview(self, event)
+
+    def getHTML(self):
+        return self.caption.getHTML()
+
+    def getText(self):
+        return self.caption.getText()
+
+    def setHTML(self, html):
+        self.caption.setHTML(html)
+
+    def setText(self, text):
+        self.caption.setText(text)
 
     def onMouseDown(self, sender, x, y):
         self.dragging = True
@@ -76,7 +116,8 @@ class DialogBox(PopupPanel):
         if self.dragging:
             absX = x + self.getAbsoluteLeft()
             absY = y + self.getAbsoluteTop()
-            self.setPopupPosition(absX - self.dragStartX, absY - self.dragStartY)
+            self.setPopupPosition(absX - self.dragStartX,
+                                  absY - self.dragStartY)
 
     def onMouseUp(self, sender, x, y):
         self.dragging = False
@@ -89,12 +130,6 @@ class DialogBox(PopupPanel):
         self.panel.remove(widget)
         self.child = None
         return True
-
-    def setHTML(self, html):
-        self.caption.setHTML(html)
-
-    def setText(self, text):
-        self.caption.setText(text)
 
     def doAttachChildren(self):
         PopupPanel.doAttachChildren(self)
@@ -112,6 +147,31 @@ class DialogBox(PopupPanel):
             self.panel.setWidget(1, 0, widget)
 
         self.child = widget
+
+    def centerBox(self):
+        self_width = self.getOffsetWidth()
+        self_height = self.getOffsetHeight()
+
+        height = Window.getClientHeight()
+        width = Window.getClientWidth()
+
+        center_x = int(width) / 2
+        center_y = int(height) / 2
+
+        self_top  = center_y - (int(self_height) / 2)
+        self_left = center_x - (int(self_width)  / 2)
+
+        self.setPopupPosition(self_left, self_top)
+
+    def onWindowResized(self, width, height):
+        super(DialogBox, self).onWindowResized(width, height)
+        if self.centered:
+            self.centerBox()
+
+    def show(self):
+        super(DialogBox, self).show()
+        if self.centered:
+            self.centerBox()
 
 Factory.registerClass('pyjamas.ui.DialogBox', DialogBox)
 

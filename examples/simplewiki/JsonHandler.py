@@ -1,9 +1,9 @@
-import json
+import simplejson
 import web
 
 class JsonHandler:
   def POST(self):
-    args = json.loads(web.data())
+    args = simplejson.loads(web.data())
     json_func = getattr(self, args[u"method"])
     json_params = args[u"params"]
     json_method_id = args[u"id"]
@@ -13,4 +13,4 @@ class JsonHandler:
     args["result"] = result
     args["error"] = None # IMPORTANT!!
     web.header("Content-Type","text/html; charset=utf-8")
-    return json.dumps(args)
+    return simplejson.dumps(args)

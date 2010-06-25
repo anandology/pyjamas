@@ -23,8 +23,8 @@ class VerticalPanel(CellPanel):
 
     def __init__(self, **kwargs):
 
-        if not kwargs.has_key('Spacing'): kwargs['Spacing'] = 0
-        if not kwargs.has_key('Padding'): kwargs['Padding'] = 0
+        kwargs['Spacing'] = kwargs.get('Spacing', 0)
+        kwargs['Padding'] = kwargs.get('Padding', 0)
 
         self.horzAlign = HasHorizontalAlignment.ALIGN_LEFT
         self.vertAlign = HasVerticalAlignment.ALIGN_TOP

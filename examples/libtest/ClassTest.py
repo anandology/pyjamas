@@ -311,6 +311,10 @@ class ClassTest(UnitTest):
             self.assertEqual(m,"beforemiddleafter")
         except TypeError:
             self.fail("Issue 415 - Old idiom for static methods improperly checks first argument type")
+        except:
+            exc = sys.exc_info()
+            self.fail("Issue 415?: %s" % exc[1])
+            print sys.trackstackstr()
 
     def test__new__Method(self):
         c = OtherClass1()

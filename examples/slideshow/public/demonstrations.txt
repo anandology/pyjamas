@@ -14,3 +14,6 @@
  * Mail
    ** Shows possibilities
    ** Shows off Window "resize"
+ * Asteroids
+   ** Shows SVG 2D Canvas
+   ** Useable game in 400 lines of python!

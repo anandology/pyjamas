@@ -109,7 +109,7 @@ class TextBoxBase(FocusWidget):
 
         if (pos < 0) or (length + pos > len(self.getText())):
             #throw new IndexOutOfBoundsException("From Index: " + pos + "  To Index: " + (pos + length) + "  Text Length: " + getText().length());
-            console.error("From Index: " + pos + "  To Index: " + (pos + length) + "  Text Length: " + len(self.getText()))
+            console.error("From Index: %d " % pos + "  To Index: %d " % (pos + length) + "  Text Length: %d " % len(self.getText()))
 
         element = self.getElement()
         element.setSelectionRange(pos, pos + length)

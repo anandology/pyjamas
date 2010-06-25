@@ -1,4 +1,4 @@
-Introduction: Pyjamas EuroPython 2009
+Introduction: Pyjamas EuroPython 2010
 Pyjamas: About Pyjamas (for Web Browsers)
 What is it: What does Pyjamas do?
 Whats in it: What's in Pyjamas (for Web Browsers)?

@@ -45,30 +45,31 @@ class Hyperlink(Widget, ClickHandler):
         Widget.__init__(self, **kwargs)
         ClickHandler.__init__(self)
 
-    def getHTML(self):
-        return DOM.getInnerHTML(self.anchorElem)
-
-    def getTargetHistoryToken(self):
-        return self.targetHistoryToken
-
-    def getText(self):
-        return DOM.getInnerText(self.anchorElem)
-
     def onBrowserEvent(self, event):
         Widget.onBrowserEvent(self, event)
-        if DOM.eventGetType(event) == "click":
+        event_type = DOM.eventGetType(event)
+        if event_type == "click":
             DOM.eventPreventDefault(event)
             History.newItem(self.targetHistoryToken)
+
+    def getHTML(self):
+        return DOM.getInnerHTML(self.anchorElem)
 
     def setHTML(self, html):
         DOM.setInnerHTML(self.anchorElem, html)
 
-    def setTargetHistoryToken(self, targetHistoryToken):
-        self.targetHistoryToken = targetHistoryToken
-        DOM.setAttribute(self.anchorElem, "href", "#" + targetHistoryToken)
+    def getText(self):
+        return DOM.getInnerText(self.anchorElem)
 
     def setText(self, text):
         DOM.setInnerText(self.anchorElem, text)
+
+    def getTargetHistoryToken(self):
+        return self.targetHistoryToken
+
+    def setTargetHistoryToken(self, targetHistoryToken):
+        self.targetHistoryToken = targetHistoryToken
+        DOM.setAttribute(self.anchorElem, "href", "#" + targetHistoryToken)
 
 Factory.registerClass('pyjamas.ui.Hyperlink', Hyperlink)
 

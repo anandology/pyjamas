@@ -71,13 +71,13 @@ class MenuMediator(Mediator):
     def onFileSaveAs(self):
         data = self.timeProxy.exportData()
         data_uri = 'data:text/plain;base64,%s' % base64.encodestring(data)
-        wnd = wnd().open('','_blank','scrollbars=yes,width=300,height=300')
-        wnd.document.open("text/html")
-        wnd.document.write("""<a href="%s">Right click here</a> if your browser supports data uri<br />Otherwise, you'll have to copy and paste this output to a text file<br />\n""" % data_uri)
-        wnd.document.write("<pre>")
-        wnd.document.write(data)
-        wnd.document.write("</pre>")
-        wnd.document.close()
+        w = wnd().open('','_blank','scrollbars=yes,width=300,height=300')
+        w.document.open("text/html")
+        w.document.write("""<a href="%s">Right click here</a> if your browser supports data uri<br />Otherwise, you'll have to copy and paste this output to a text file<br />\n""" % data_uri)
+        w.document.write("<pre>")
+        w.document.write(data)
+        w.document.write("</pre>")
+        w.document.close()
 
     def onFilePreferences(self):
         dlg = PreferencesDlg()

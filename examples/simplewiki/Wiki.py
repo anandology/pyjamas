@@ -1,30 +1,26 @@
+import pyjd
+import sys
+IN_BROWSER = sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']
 from pyjamas.ui.RootPanel import RootPanel
 from pyjamas.ui.HTML import HTML
+from pyjamas.ui.HTMLLinkPanel import HTMLLinkPanel
 from pyjamas.ui.TextArea import TextArea
 from pyjamas.ui.Label import Label
-from pyjamas.ui import InnerHTML
 from pyjamas.ui.KeyboardListener import KeyboardHandler
 from pyjamas.JSONService import JSONProxy
-
-from __javascript__ import Showdown
-from __pyjamas__ import JS
-from __pyjamas__ import jsimport
 
 from pyjamas import log
 from pyjamas import History
 
-jsimport("showdown.js")
+from markdown import makeHTML, makeWikiLinks
 
-def getShowdown():
-    JS("""return new Showdown.converter()""")
+class WikiBox(HTMLLinkPanel):
 
-class WikiBox(HTML):
-    def __init__(self, html=None, wordWrap=True, Element=None, **kwargs):
-        self.converter = getShowdown()
-        HTML.__init__(self, html, wordWrap, Element, **kwargs)
     def setHTML(self, text):
-        newText = self.converter.makeHtml(text)
-        InnerHTML.setHTML(self, newText)
+        text = makeWikiLinks(text)
+        text = makeHTML(text)
+        HTMLLinkPanel.setHTML(self, text)
+        self.replaceLinks(use_page_href=False)
 
 class Wiki(KeyboardHandler):
     def __init__(self):
@@ -42,7 +38,7 @@ class Wiki(KeyboardHandler):
         self.name = None
         initToken = History.getToken()
         if not (initToken and len(initToken)):
-            initToken = 'welcome'
+            initToken = 'welcomepage'
         self.onHistoryChanged(initToken)
 
     def onHistoryChanged(self,token):
@@ -62,8 +58,8 @@ class Wiki(KeyboardHandler):
             self.t.setText(response['content'])
 
     def onRemoteError(self, code, message, request_info):
-        log.writebr('remote error! ' + message)
-        log.writebr('remote error! ' + request_info)
+        log.writebr('remote error! ' + str(message))
+        log.writebr('remote error! ' + str(request_info))
 
     def onKeyUp(self, sender, keycode, modifiers): 
         if sender == self.t:
@@ -71,7 +67,11 @@ class Wiki(KeyboardHandler):
 
 class DataService(JSONProxy):
     def __init__(self):
-        JSONProxy.__init__(self, '../json', ['find_one','insert'])
+        JSONProxy.__init__(self, '/json', ['find_one','insert'])
 
 if __name__ == '__main__':
+    if not IN_BROWSER:
+        pyjd.setup("http://127.0.0.1:8080/Wiki.html")
     Wiki()
+    pyjd.run()
+

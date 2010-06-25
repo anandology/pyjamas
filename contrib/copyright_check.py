@@ -121,6 +121,8 @@ def find_file_copyright_notices(fname):
         if idx < 0:
             continue
         copyright = l[idx+9:].strip()
+        if not copyright:
+            continue
         copyright = sanitise(copyright)
         # hmm, do a quick check to see if there's a year,
         # if not, skip it
@@ -190,7 +192,7 @@ class DebSect:
         for fname in self.files:
             if fname.endswith("copyright_check.py"): # skip this program!
                 continue
-            if fname == 'debian/copyright': # skip this one duh
+            if fname == 'copyright': # skip this one duh
                 continue
             cops = find_file_copyright_notices(fname)
             self.listed_copyrights.update(cops)
@@ -247,7 +249,7 @@ current_debsect = None
 current_copyrights = set()
 current_licenses = set()
 
-dc = open("debian/copyright")
+dc = open("copyright")
 for l in dc.readlines():
     if l.startswith("License:"):
         current_licenses.add(strip(l[8:]))

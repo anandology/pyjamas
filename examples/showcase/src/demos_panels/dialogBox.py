@@ -59,11 +59,10 @@ class DialogBoxDemo(SimplePanel):
 
 
     def showDialog(self, event):
-        contents = VerticalPanel()
-        contents.setSpacing(4)
+        contents = VerticalPanel(StyleName="Contents",
+                                 Spacing=4)
         contents.add(HTML('You can place any contents you like in a dialog box.'))
         contents.add(Button("Close", getattr(self, "onClose")))
-        contents.setStyleName("Contents")
 
         self._dialog = DialogBox(glass=True)
         self._dialog.setHTML('<b>Welcome to the dialog box</b>')

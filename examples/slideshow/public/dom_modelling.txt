@@ -11,5 +11,14 @@
    ** Grand-daddy of Webkit!
    ** PyKHTML
  * Option C: XulRunner
-   ** PyXPComExt / PyDOM for "embedded" (chrome)
-   ** NsDOM for python-controlled apps (?)
+   ** python-xpcom and python-hulahop
+   ** XulRunner 1.9.1 works 99.95%
+   ** XulRunner 1.9.2 works 98% (but missing 2% is critical)
+   ** Mozilla Foundation Losing The Plot
+ * Option D: MSHTML
+   ** python-comtypes: well cool.  small dependency (350k)
+   ** works perfectly.
+ * Option E: GrailBrowser!
+   ** Independent of other c-based projects
+   ** Insanely slow and insanely old
+   ** Who cares!  It's ambitious!

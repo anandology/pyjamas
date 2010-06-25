@@ -1,6 +1,15 @@
                     Changes made to Pyjamas since 0.7
                     ---------------------------------
 
+ * Fixes to pyjslib for compatibility with Dean Edwards' JS Packer
+   (http://dean.edwards.name/packer/) by Angelo Mottola
+
+ * Added default style name to MenuBar, by Serge Tarkovski 
+
+ * Added makeCloseable and centring to DialogBox, by Serge Tarkovski 
+
+ * Added default style to CaptionPanel, by Serge Tarkovski 
+
  * Added log10 to math module
 
  * Added "glass" opaque background option to PopupPanel, by Serge Tarkovski 

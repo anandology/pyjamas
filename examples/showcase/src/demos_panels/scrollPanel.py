@@ -15,7 +15,7 @@ class ScrollPanelDemo(SimplePanel):
     def __init__(self):
         SimplePanel.__init__(self)
 
-        panel = ScrollPanel()
+        panel = ScrollPanel(Size=("300px", "100px"))
 
         contents = HTML("<b>Tao Te Ching, Chapter One</b><p>" +
                         "The Way that can be told of is not an unvarying " +
@@ -26,6 +26,5 @@ class ScrollPanelDemo(SimplePanel):
                         "each after its kind.")
 
         panel.add(contents)
-        panel.setSize("300px", "100px")
         self.add(panel)
 

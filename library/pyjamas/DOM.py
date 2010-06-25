@@ -620,11 +620,11 @@ def getParent(elem):
 
 def getStyleAttribute(elem, attr):
     try:
-        if hasattr(element.style, 'getProperty'):
+        if hasattr(elem.style, 'getProperty'):
             return elem.style.getProperty(mash_name_for_glib(attr))
         return elem.style.getAttribute(attr)
-    except:
-        return None
+    except AttributeError:
+        return getattr(elem.style, attr, None)
 
 
 def insertChild(parent, toAdd, index):
@@ -804,7 +804,7 @@ def mash_name_for_glib(name, joiner='-'):
 
 
 def removeAttribute(element, attribute):
-    elem.removeAttribute(attribute)
+    element.removeAttribute(attribute)
 
 
 def setAttribute(element, attribute, value):

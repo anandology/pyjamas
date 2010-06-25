@@ -79,40 +79,49 @@ rules below, and you'll do ok with this multi-project project:
 that's about it.  the rest - do what you like! make sure you keep
 people informed, engage them to help do testing.
 
-GIT BRANCH NAMING
+DEVELOPER GIT BRANCHES
 
-As it's probably well know, git makes branching super easy and cheap.
-
-Feature branches to the SF repository should be in the form of:
+as it's probably well know, git makes branching super easy and cheap.
+individual, public-facing branches should be in the form of:
 
 <username>/(bug|feat)/<module>/<issueid>-<description>
 
-username = SF user
-bug|feat = whichever appropriate
-module = the affected module, if any, or bootstrap/builtin/etc.
-issueid = the issue corresponding to this branch, if any
-description = a small description of the branch activity
+username    = SourceForge user
+bug|feat    = whichever appropriate
+module      = the affected module, if any, or bootstrap/builtin/etc.
+issueid     = the issue corresponding to this branch, if any
+description = a small description of the branch's activities/purpose
 
-EXAMPLE (developer):
+this will assist anyone testing/observing.
 
-$ git clone ssh://<username>@pyjamas.git.sourceforge.net/gitroot/pyjamas/pyjamas
-$ git config remote.origin.push
-"refs/heads/<username>/*:refs/heads/<username>/*"
-$ ...(make/create some commits to new/old features/bugs)...
-$ git push
+example (developer):
+
+# git clone git://pyjamas.git.sourceforge.net/gitroot/pyjamas/pyjamas
+# git config remote.origin.pushurl ssh://<username>@pyjamas.git.sourceforge.net/gitroot/pyjamas/pyjamas
+# git config remote.origin.push "refs/heads/<username>/*:refs/heads/<username>/*"
+# git checkout -b <userXZY>/bug/101-default-stylesheet
+# ...working/commiting/building...
+# git push
+   (branch get reviewed/tested/accepted)
+# git checkout master
+# git pull
+# git rebase -i <userXZY>/bug/101-default-stylesheet
+   (remove any merge commits)
+# git push origin master
 
 the remote.origin.push config option will enable pushing all your
-branches by default
+branches by default.  when you want to push to master (public), you must
+specify explicitly.
 
-EXAMPLE (user):
+exxample (user):
 
-$ git clone git://pyjamas.git.sourceforge.net/gitroot/pyjamas/pyjamas
-$ git checkout -b testing extofme/feat/bootstrap/406-async-init
-$ python bootstrap.py
+# git clone git://pyjamas.git.sourceforge.net/gitroot/pyjamas/pyjamas
+# git checkout -b testing <userXYZ>/bug/101-default-stylesheet
+# git merge master
+# python bootstrap.py
+   (build apps/examples/etc.)
 
 the checkout command will create a new branch, "testing", based off
-the remote branch "extofme/feat/bootstrap/406-async-init".  you can
-switch between branches (testing builds) without re-running
-bootstrap.py
-
-(thanks C Anthony for the above rules and examples)
+the remote branch "<userXZY>/bug/101-default-stylesheet".  you can
+switch between branches (testing different builds) without re-running
+bootstrap.py.  for each new branch, merge "master".

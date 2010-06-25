@@ -9,10 +9,7 @@
    ** ply (lex) compiler needed
  * Update to GWT 1.5.2
    ** and more
- * Fix damn "capture" event-handling
-   ** several weeks so far...
- * IE8 and stupid user-agent string changes
-   ** deep joy.
- * Equivalent of Glade
+ * Equivalent of Glade (PyJSGlade)
+   ** http://code.google.com/p/pyjsglade
    ** UI layout specified in (sadly) an XML document
    ** Loaded using AJAX or inline XML

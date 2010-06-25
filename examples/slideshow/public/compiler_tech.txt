@@ -1,9 +1,6 @@
 == pyjs.py ==
- * Not as fully-loaded as PyPy
-   ** but is only 1200 lines (!)
- * llpamies branch supports exceptions
-   ** but main release doesn't
-   ** llpampies experiment went bit too far
+ * Well on the way to supporting all of Python 2.N
+   ** in 4000 lines of code
  * javascript "undefined" complete pain
    ** not caught at run-time
    ** causes strings n stuff to disappear

@@ -15,7 +15,7 @@ from __pyjamas__ import doc
 
 
 from WebPageEdit import WebPageEdit
-from HTMLLinkPanel import HTMLLinkPanel
+from pyjamas.ui.HTMLLinkPanel import HTMLLinkPanel
 
 import Email # don't do anything with it - just import it and use factory
 
@@ -43,7 +43,7 @@ class WebApp:
         self.onHistoryChanged(initToken)
 
     def createPage(self, ref, html, title):
-        htp = HTMLLinkPanel(self, html, title)
+        htp = HTMLLinkPanel(html)
         htp.replaceLinks()
         htp.setWidth("100%")
         self.pages[ref] = htp
