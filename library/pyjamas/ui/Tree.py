@@ -28,7 +28,7 @@ from pyjamas.ui import FocusListener
 
 class Tree(Widget):
     def __init__(self, **kwargs):
-        if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-Tree"
+        kwargs['StyleName'] = kwargs.get('StyleName', "gwt-Tree")
 
         self.root = None
         self.childWidgets = Set()
@@ -41,10 +41,7 @@ class Tree(Widget):
         self.listeners = []
         self.lastEventType = ""
 
-        if kwargs.has_key('Element'):
-            element = kwargs.pop('Element')
-        else:
-            element = DOM.createDiv()
+        element = kwargs.pop('Element', DOM.createDiv())
         self.setElement(element)
         DOM.setStyleAttribute(self.getElement(), "position", "relative")
         self.focusable = Focus.createFocusable()
@@ -64,7 +61,6 @@ class Tree(Widget):
         Widget.__init__(self, **kwargs)
 
         self.sinkEvents(Event.ONMOUSEDOWN | Event.ONCLICK | Event.KEYEVENTS)
-        #DOM.sinkEvents(self.focusable, Event.FOCUSEVENTS | Event.KEYEVENTS | DOM.getEventsSunk(self.focusable))
         DOM.sinkEvents(self.focusable, Event.FOCUSEVENTS)
 
     def add(self, widget):
@@ -130,21 +126,22 @@ class Tree(Widget):
         return self.childWidgets.__iter__()
 
     def onBrowserEvent(self, event):
-        type = DOM.eventGetType(event)
+        etype = DOM.eventGetType(event)
 
-        if type == "click":
+        if etype == "click":
             e = DOM.eventGetTarget(event)
             if not self.shouldTreeDelegateFocusToElement(e) and \
                             self.curSelection is not None:
                 self.setFocus(True)
-        elif type == "mousedown":
+        elif etype == "mousedown":
             MouseListener.fireMouseEvent(self.mouseListeners, self, event)
             self.elementClicked(self.root, DOM.eventGetTarget(event))
-        elif type == "mouseup" or type == "mousemove" or type == "mouseover" or type == "mouseout":
+        elif etype == "mouseup" or etype == "mousemove" or \
+             etype == "mouseover" or etype == "mouseout":
             MouseListener.fireMouseEvent(self.mouseListeners, self, event)
-        elif type == "blur" or type == "focus":
+        elif etype == "blur" or etype == "focus":
             FocusListener.fireFocusEvent(self.focusListeners, self, event)
-        elif type == "keydown":
+        elif etype == "keydown":
             if self.curSelection is None:
                 if self.root.getChildCount() > 0:
                     self.onSelection(self.root.getChild(0), True)
@@ -169,22 +166,23 @@ class Tree(Widget):
                 if not self.curSelection.getState():
                     self.curSelection.setState(True)
                 DOM.eventPreventDefault(event)
-        elif type == "keyup":
+        elif etype == "keyup":
             if DOM.eventGetKeyCode(event) == KeyboardListener.KEY_TAB:
                 chain = []
-                self.collectElementChain(chain, self.getElement(), DOM.eventGetTarget(event))
+                self.collectElementChain(chain, self.getElement(),
+                                         DOM.eventGetTarget(event))
                 item = self.findItemByChain(chain, 0, self.root)
                 if item != self.getSelectedItem():
                     self.setSelectedItem(item, True)
-        elif type == "keypress":
-            KeyboardListener.fireKeyboardEvent(self.keyboardListeners, self, event)
+        elif etype == "keypress":
+            KeyboardListener.fireKeyboardEvent(self.keyboardListeners,
+                                               self, event)
 
         Widget.onBrowserEvent(self, event)
-        self.lastEventType = type
+        self.lastEventType = etype
 
     def remove(self, widget):
-        #throw new UnsupportedOperationException("Widgets should never be directly removed from a tree")
-        console.error("Widgets should never be directly removed from a tree")
+        raise Exception("Widgets should never be directly removed from a tree")
 
     def removeFocusListener(self, listener):
         self.focusListeners.remove(listener)
@@ -259,7 +257,7 @@ class Tree(Widget):
     def findDeepestOpenChild(self, item):
         if not item.getState():
             return item
-        return self.findDeepestOpenChild(item.getChild(item.getChildCount() - 1))
+        return self.findDeepestOpenChild(item.getChild(item.getChildCount()-1))
 
     def findItemByChain(self, chain, idx, root):
         if idx == len(chain):
@@ -376,8 +374,8 @@ class Tree(Widget):
     def shouldTreeDelegateFocusToElement(self, elem):
         name = str(elem.nodeName)
         name = name.lower()
-        return name == 'select' or\
-               name == 'input' or\
+        return name == 'select' or \
+               name == 'input' or \
                name == 'checkbox'
 
 Factory.registerClass('pyjamas.ui.Tree', Tree)

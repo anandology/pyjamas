@@ -183,7 +183,8 @@ class ImplIE6VerticalSplitPanel:
          """)
 
     def onResize(self):
-        self.setSplitPosition(DOM.getOffsetHeight(self.panel.getWidgetElement(0)))
+        self.setSplitPosition(DOM.getOffsetHeight(
+                              self.panel.getWidgetElement(0)))
 
 class VerticalSplitPanel(SplitPanel):
     """ A panel that arranges two widgets in a single vertical
@@ -197,11 +198,8 @@ class VerticalSplitPanel(SplitPanel):
     def __init__(self, **kwargs):
         """ Creates an empty vertical split panel.
         """
-        if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-VerticalSplitPanel"
-        if kwargs.has_key('Element'):
-            element = kwargs.pop('Element')
-        else:
-            element = DOM.createDiv()
+        kwargs['StyleName'] = kwargs.get('StyleName', "gwt-VerticalSplitPanel")
+        element = kwargs.pop('Element', DOM.createDiv())
         SplitPanel.__init__(self, element,
                             DOM.createDiv(),
                             self.preventBoxStyles(DOM.createDiv()),
