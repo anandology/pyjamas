@@ -11,7 +11,8 @@ import sys
 from HTTPRequest import HTTPRequest
 
 try:
-    from jsonrpc.json import dumps, loads, JSONDecodeException
+    #from jsonrpc.json import dumps, loads, JSONDecodeException
+    from simplejson import dumps, loads, JSONDecodeError
 except ImportError:
     from pyjamas.JSONParser import JSONParser
     parser = JSONParser()
@@ -139,15 +140,33 @@ class JSONRequestInfo(object):
         self.method = method
         self.handler = handler
 
-
+def create_object(items):
+    """ creates an object by looking for __jsonclass__ hint,
+        loading the class from that and then constructing an
+        object from the rest of the dictionary as kwargs
+    """
+    clsname = items.pop('__jsonclass__', None)
+    if not clsname:
+        return items
+    dot = clsname.rfind('.')
+    modulename = clsname[:dot]
+    clsname = clsname[dot+1:]
+    vars = {}
+    exec "from %s import %s as kls" % (modulename, clsname) in vars
+    kls = vars['kls']
+    vars = {}
+    for (k, v) in items.items():
+        vars[str(k)] = v
+    return kls(**vars)
+    
 class JSONResponseTextHandler(object):
     def __init__(self, request):
         self.request = request
 
     def onCompletion(self, json_str):
         try:
-            response = loads(json_str)
-        except JSONDecodeException:
+            response = loads(json_str, object_hook=create_object)
+        except JSONDecodeError:
             # err.... help?!!
             error = dict(
                          code=-32700,

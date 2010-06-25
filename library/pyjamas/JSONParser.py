@@ -52,11 +52,11 @@ JSONDecode:
 # toJSONString & parseJSON from http://www.json.org/json.js
 
 class JSONParser:
-    def decode(self, str):
-        return self.jsObjectToPy(self.parseJSON(str))
+    def decode(self, string):
+        return self.jsObjectToPy(self.parseJSON(string))
 
-    def decodeAsObject(self, str):
-        return self.jsObjectToPyObject(self.parseJSON(str))
+    def decodeAsObject(self, string, object_hook=None):
+        return self.jsObjectToPyObject(self.parseJSON(string))
     
     def encode(self, obj):
         return self.toJSONString(obj)
