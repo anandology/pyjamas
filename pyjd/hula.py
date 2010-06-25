@@ -218,6 +218,7 @@ def run(one_event=False, block=True):
         if block or gtk.events_pending():
             gtk.main_iteration()
             sys.stdout.flush()
+        return gtk.events_pending()
     else:
         while 1:
             gtk.main_iteration()
