@@ -1262,13 +1262,13 @@ Boolean.prototype.__str__= function () {
 Boolean.prototype.__repr__ = Boolean.prototype.__str__;
 Boolean.prototype.__and__ = function (y) {
     return this & y.valueOf();
-}
+};
 Boolean.prototype.__or__ = function (y) {
     return this | y.valueOf();
-}
+};
 Boolean.prototype.__xor__ = function (y) {
     return this ^ y.valueOf();
-}
+};
 
 """)
 
@@ -2114,7 +2114,7 @@ JS("""
                 for (i = 0; i < size_a; ++i) {
                     accum |= aa.ob_digit[i] << accumbits;
                     accumbits += PyLong_SHIFT;
-                    for (;;) {
+                    while (1) {
                         var cdigit = accum & (base - 1);
                         str[--p] = $cdigit.charAt(cdigit);
                         accumbits -= basebits;
@@ -2130,7 +2130,7 @@ JS("""
                 var scratch, pin, scratch_idx, pin_idx;
                 var powbase = base, power = 1, size = size_a;
                
-                for (;;) {
+                while (1) {
                     var newpow = powbase * base;
                     if (newpow >>> PyLong_SHIFT)  /* doesn't fit in a digit */
                         break;
@@ -2663,7 +2663,7 @@ JS("""
                     var i = 1;
                     convmax = radix;
                     $log_base_PyLong_BASE[radix] = Math.log(radix) / Math.log(PyLong_BASE);
-                    for (;;) {
+                    while (1) {
                         var next = convmax * radix;
                         if (next > PyLong_BASE) break;
                         convmax = next;
@@ -4145,7 +4145,7 @@ class dict:
         if (data[0].constructor === Array) {
             while (i < n) {
                 item = data[i++];
-                key = item[0]
+                key = item[0];
                 sKey = (key===null?null:(typeof key.$H != 'undefined'?key.$H:((typeof key=='string'||key.__number__)?'$'+key:pyjslib.__hash(key))));
                 self.__object[sKey] = [key, item[1]];
             }
@@ -4154,7 +4154,7 @@ class dict:
         if (typeof data[0].__array != 'undefined') {
             while (i < n) {
                 item = data[i++].__array;
-                key = item[0]
+                key = item[0];
                 sKey = (key===null?null:(typeof key.$H != 'undefined'?key.$H:((typeof key=='string'||key.__number__)?'$'+key:pyjslib.__hash(key))));
                 self.__object[sKey] = [key, item[1]];
             }
@@ -4435,7 +4435,7 @@ def __empty_dict():
     var d;
     pyjslib.dict.__init__ = function() {
         this.__object = {};
-    }
+    };
     d = pyjslib.dict();
     d.__init__ = pyjslib.dict.__init__ = dict__init__;
     return d;
@@ -4558,7 +4558,7 @@ class set(object):
             for (var v in obj) {
                 hashes[i++] = v;
             }
-            hashes.sort()
+            hashes.sort();
             var h = hashes.join("|");
             return typeof self.__object[h] != 'undefined';
 """)
@@ -4970,7 +4970,7 @@ class frozenset(object):
             for (var v in obj) {
                 hashes[i++] = v;
             }
-            hashes.sort()
+            hashes.sort();
             var h = hashes.join("|");
             return typeof self.__object[h] != 'undefined';
 """)
@@ -4982,7 +4982,7 @@ class frozenset(object):
         for (var v in obj) {
             hashes[i++] = v;
         }
-        hashes.sort()
+        hashes.sort();
         return (self.$H = hashes.join("|"));
 """)
 
@@ -5941,7 +5941,7 @@ if JS("typeof 'a'[0] == 'undefined'"):
         }
         obj.setAttribute('$H', ++pyjslib.next_hash_id);
         return pyjslib.next_hash_id;
-    }
+    };
         """)
 
     #def hash(obj):
@@ -5975,7 +5975,7 @@ if JS("typeof 'a'[0] == 'undefined'"):
         }
         obj.setAttribute('$H', ++pyjslib.next_hash_id);
         return pyjslib.next_hash_id;
-    }
+    };
         """)
 else:
     #def __hash(obj):
@@ -5989,7 +5989,7 @@ else:
         if (typeof obj.__hash__ == 'function') return obj.__hash__();
         obj.$H = ++pyjslib.next_hash_id;
         return obj.$H;
-    }
+    };
         """)
 
     #def hash(obj):
@@ -6007,7 +6007,7 @@ else:
         if (typeof obj.__hash__ == 'function') return obj.__hash__();
         obj.$H = ++pyjslib.next_hash_id;
         return obj.$H;
-    }
+    };
         """)
 
 
@@ -6378,12 +6378,12 @@ if (   typeof $wnd.console != 'undefined'
     && typeof $wnd.console.debug == 'function') {
     $printFunc = function(s) {
         $wnd.console.debug(s);
-    }
+    };
 } else if (   typeof $wnd.opera != 'undefined'
            && typeof $wnd.opera.postError == 'function') {
     $printFunc = function(s) {
         $wnd.opera.postError(s);
-    }
+    };
 }
 """)
 
