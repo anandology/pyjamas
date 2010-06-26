@@ -21,7 +21,7 @@ from TreeContentPanel import TreeContentPanel
 class TreeItem(UIObject):
 
     # also callable as TreeItem(widget)
-    def __init__(self, html=None, **kwargs):
+    def __init__(self, html=None, **ka):
         self.children = []
         self.contentPanel = None
         self.itemTable = None
@@ -34,7 +34,7 @@ class TreeItem(UIObject):
         self.tree = None
         self.userObject = None
 
-        element = kwargs.pop('Element', DOM.createDiv())
+        element = ka.pop('Element', None) or DOM.createDiv()
         self.setElement(element)
 
         self.itemTable = DOM.createTable()
@@ -74,15 +74,15 @@ class TreeItem(UIObject):
         DOM.setStyleAttribute(self.childSpanElem, "whiteSpace", "nowrap")
         self.setStyleName(self.contentElem, "gwt-TreeItem", True)
 
-        #if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-TreeItem"
+        #if not ka.has_key('StyleName'): ka['StyleName']="gwt-TreeItem"
 
         if html is not None:
             if isinstance(html, str):
-                kwargs['HTML'] = html
+                ka['HTML'] = html
             else:
-                kwargs['Widget'] = html
+                ka['Widget'] = html
 
-        UIObject.__init__(self, **kwargs)
+        UIObject.__init__(self, **ka)
 
     # also callable as addItem(widget) and addItem(itemText)
     def addItem(self, item):

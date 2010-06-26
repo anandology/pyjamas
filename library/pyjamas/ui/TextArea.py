@@ -20,13 +20,14 @@ from TextBoxBase import TextBoxBase
 
 class TextArea(TextBoxBase):
     """
-    HTML textarea widget, allowing multi-line text entry.  Use setText/getText to
+    HTML textarea widget, allowing multi-line text entry.
+    Use setText/getText to
     get and access the current text.
     """
-    def __init__(self, **kwargs):
-        kwargs['StyleName'] = kwargs.get('StyleName', "gwt-TextArea")
-        element = kwargs.pop('Element', DOM.createTextArea())
-        TextBoxBase.__init__(self, element, **kwargs)
+    def __init__(self, **ka):
+        ka['StyleName'] = ka.get('StyleName', "gwt-TextArea")
+        element = ka.pop('Element', None) or DOM.createTextArea()
+        TextBoxBase.__init__(self, element, **ka)
 
     def getCharacterWidth(self):
         return DOM.getIntAttribute(self.getElement(), "cols")

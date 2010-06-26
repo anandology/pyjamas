@@ -18,9 +18,9 @@ from pyjamas import Factory
 from TextBox import TextBox
 
 class PasswordTextBox(TextBox):
-    def __init__(self, **kwargs):
-        kwargs['Element'] = kwargs.get('Element', DOM.createInputPassword())
-        kwargs['StyleName'] = kwargs.get('StyleName', "gwt-PasswordTextBox")
-        TextBox.__init__(self, **kwargs)
+    def __init__(self, **ka):
+        ka['Element'] = ka.get('Element', None) or DOM.createInputPassword()
+        ka['StyleName'] = ka.get('StyleName', "gwt-PasswordTextBox")
+        TextBox.__init__(self, **ka)
 
 Factory.registerClass('pyjamas.ui.PasswordTextBox', PasswordTextBox)

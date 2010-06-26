@@ -195,16 +195,16 @@ class VerticalSplitPanel(SplitPanel):
         decorated with scrollbars when necessary.
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, **ka):
         """ Creates an empty vertical split panel.
         """
-        kwargs['StyleName'] = kwargs.get('StyleName', "gwt-VerticalSplitPanel")
-        element = kwargs.pop('Element', DOM.createDiv())
+        ka['StyleName'] = ka.get('StyleName', "gwt-VerticalSplitPanel")
+        element = ka.pop('Element', None) or DOM.createDiv()
         SplitPanel.__init__(self, element,
                             DOM.createDiv(),
                             self.preventBoxStyles(DOM.createDiv()),
                             self.preventBoxStyles(DOM.createDiv()),
-                            **kwargs)
+                            **ka)
 
         self.container = self.preventBoxStyles(DOM.createDiv())
         self.buildDOM()

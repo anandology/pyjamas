@@ -23,12 +23,12 @@ from Control import Control
 class VerticalSlider(Control):
 
     def __init__(self, min_value, max_value, start_value=None, step=None,
-                       **kwargs):
+                       **ka):
 
-        kwargs["StyleName"] = kwargs.get('StyleName', "gwt-VerticalSlider")
+        ka["StyleName"] = ka.get('StyleName', "gwt-VerticalSlider")
 
         # XXX FIXME: Focus.createFocusable is here for a reason...
-        element = kwargs.pop('Element', Focus.createFocusable())
+        element = ka.pop('Element', None) or Focus.createFocusable()
         DOM.setStyleAttribute(element, "position", "relative")
         DOM.setStyleAttribute(element, "overflow", "hidden")
 
@@ -38,7 +38,7 @@ class VerticalSlider(Control):
         self.setHandleStyle("1px", "100%", "10px", "#808080")
 
         Control.__init__(self, element, min_value, max_value, start_value,
-                         step, **kwargs)
+                         step, **ka)
 
         self.addClickListener(self)
         self.addFocusListener(self)

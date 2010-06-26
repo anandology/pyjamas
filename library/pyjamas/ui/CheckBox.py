@@ -23,24 +23,25 @@ _CheckBox_unique_id=0;
 
 class CheckBox(ButtonBase):
 
-    def __init__(self, label=None, asHTML=False, **kwargs):
-        kwargs['StyleName'] = kwargs.get('StyleName', "gwt-CheckBox")
+    def __init__(self, label=None, asHTML=False, **ka):
+        ka['StyleName'] = ka.get('StyleName', "gwt-CheckBox")
         if label:
             if asHTML:
-                kwargs['HTML'] = label
+                ka['HTML'] = label
             else:
-                kwargs['Text'] = label
-        element = kwargs.pop('Element', DOM.createInputCheck())
-        self.initElement(element, **kwargs)
+                ka['Text'] = label
+        element = ka.pop('Element', None) or DOM.createInputCheck()
+        self.initElement(element, **ka)
 
-    def initElement(self, element, **kwargs):
+    def initElement(self, element, **ka):
         self.inputElem = element
         self.labelElem = DOM.createLabel()
-        element = kwargs.pop('Element', DOM.createSpan())
-        ButtonBase.__init__(self, element, **kwargs)
+        element = ka.pop('Element', None) or DOM.createSpan()
+        ButtonBase.__init__(self, element, **ka)
 
-        self.unsinkEvents(Event.FOCUSEVENTS| Event.ONCLICK)
-        DOM.sinkEvents(self.inputElem, Event.FOCUSEVENTS | Event.ONCLICK | DOM.getEventsSunk(self.inputElem))
+        self.unsinkEvents(Event.FOCUSEVENTS | Event.ONCLICK)
+        DOM.sinkEvents(self.inputElem, Event.FOCUSEVENTS | Event.ONCLICK |
+                       DOM.getEventsSunk(self.inputElem))
 
         DOM.appendChild(self.getElement(), self.inputElem)
         DOM.appendChild(self.getElement(), self.labelElem)

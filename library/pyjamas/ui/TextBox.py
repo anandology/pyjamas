@@ -18,10 +18,10 @@ from pyjamas import Factory
 from TextBoxBase import TextBoxBase
 
 class TextBox(TextBoxBase):
-    def __init__(self, **kwargs):
-        kwargs['StyleName'] = kwargs.get('StyleName', "gwt-TextBox")
-        element = kwargs.pop('Element', DOM.createInputText())
-        TextBoxBase.__init__(self, element, **kwargs)
+    def __init__(self, **ka):
+        ka['StyleName'] = ka.get('StyleName', "gwt-TextBox")
+        element = ka.pop('Element', None) or DOM.createInputText()
+        TextBoxBase.__init__(self, element, **ka)
 
     def getMaxLength(self):
         return DOM.getIntAttribute(self.getElement(), "maxLength")

@@ -20,15 +20,12 @@ from ComplexPanel import ComplexPanel
 
 class AbsolutePanel(ComplexPanel):
 
-    def __init__(self, **kwargs):
-        if kwargs.has_key('Element'):
-            element = kwargs.pop('Element')
-        else:
-            element = DOM.createDiv()
+    def __init__(self, **ka):
+        element = ka.pop('Element', None) or DOM.createDiv()
         self.setElement(element)
-        DOM.setStyleAttribute(self.getElement(), "position", "relative")
-        DOM.setStyleAttribute(self.getElement(), "overflow", "hidden")
-        ComplexPanel.__init__(self, **kwargs)
+        DOM.setStyleAttribute(element, "position", "relative")
+        DOM.setStyleAttribute(element, "overflow", "hidden")
+        ComplexPanel.__init__(self, **ka)
 
     def add(self, widget, left=None, top=None):
         ComplexPanel.add(self, widget, self.getElement())
@@ -59,8 +56,7 @@ class AbsolutePanel(ComplexPanel):
 
     def checkWidgetParent(self, widget):
         if widget.getParent() != self:
-            # TODO: raise as exception instead
-            console.error("Widget must be a child of this panel.")
+            raise Exception("Widget must be a child of this panel.")
 
 Factory.registerClass('pyjamas.ui.AbsolutePanel', AbsolutePanel)
 

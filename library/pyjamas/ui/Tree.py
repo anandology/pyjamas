@@ -27,8 +27,8 @@ from pyjamas.ui import KeyboardListener
 from pyjamas.ui import FocusListener
 
 class Tree(Widget):
-    def __init__(self, **kwargs):
-        kwargs['StyleName'] = kwargs.get('StyleName', "gwt-Tree")
+    def __init__(self, **ka):
+        ka['StyleName'] = ka.get('StyleName', "gwt-Tree")
 
         self.root = None
         self.childWidgets = Set()
@@ -41,7 +41,7 @@ class Tree(Widget):
         self.listeners = []
         self.lastEventType = ""
 
-        element = kwargs.pop('Element', DOM.createDiv())
+        element = ka.pop('Element', None) or DOM.createDiv()
         self.setElement(element)
         DOM.setStyleAttribute(self.getElement(), "position", "relative")
         self.focusable = Focus.createFocusable()
@@ -58,7 +58,7 @@ class Tree(Widget):
         self.root = RootTreeItem()
         self.root.setTree(self)
 
-        Widget.__init__(self, **kwargs)
+        Widget.__init__(self, **ka)
 
         self.sinkEvents(Event.ONMOUSEDOWN | Event.ONCLICK | Event.KEYEVENTS)
         DOM.sinkEvents(self.focusable, Event.FOCUSEVENTS)

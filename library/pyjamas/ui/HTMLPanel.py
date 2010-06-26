@@ -57,15 +57,15 @@ def getElementById(element, id):
 
 
 class HTMLPanel(ComplexPanel, InnerHTML):
-    def __init__(self, html, **kwargs):
+    def __init__(self, html, **ka):
         # NOTE! don't set a default style on this panel, because the
         # HTML might expect to have one already.  Explicitly add a StyleName
         # if one is needed.
-        #if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-HTMLPanel"
-        if html: kwargs['HTML'] = html
-        element = kwargs.pop('Element', DOM.createDiv())
+        #if not ka.has_key('StyleName'): ka['StyleName']="gwt-HTMLPanel"
+        if html: ka['HTML'] = html
+        element = ka.pop('Element', None) or DOM.createDiv()
         self.setElement(element)
-        ComplexPanel.__init__(self, **kwargs)
+        ComplexPanel.__init__(self, **ka)
 
     def add(self, widget, id):
         element = getElementById(self.getElement(), id)
