@@ -1,3 +1,9 @@
+""" CSS Stylesheet messing example
+
+    Copyright (C) 2010, Stolati <mickael.kerbrat@gmail.com>
+    Copyright (C) 2010, Luke Kenneth Casson Leighton <lkcl@lkcl.net>
+"""
+
 import pyjd # this is dummy in pyjs.
 from pyjamas.ui.RootPanel import RootPanel
 from pyjamas.ui.Button import Button

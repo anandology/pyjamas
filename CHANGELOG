@@ -1,6 +1,9 @@
                     Changes made to Pyjamas since 0.7
                     ---------------------------------
 
+ * Added example dynamic CSS stylesheet changer, thanks to Stolati
+   for the CSS changing class.
+
  * Fixes to pyjslib for compatibility with Dean Edwards' JS Packer
    (http://dean.edwards.name/packer/) by Angelo Mottola
 
