@@ -1,0 +1,9 @@
+This is a port of Google's CSSMess example.
+
+To build, first read the top-level README (run boostrap and buildout)
+
+Then, run ./build.sh or:
+
+    ../../bin/pyjsbuild CSSMess.py
+
+and then open output/CSSMess.html in a web browser.
