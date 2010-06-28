@@ -12,6 +12,8 @@ class MultiListener(object):
         onMouseUp = ["onMouseEnter","onMouseLeave","onMouseMove","onMouseDown"],
         onMouseEnter = ["onMouseLeave","onMouseMove","onMouseDown","onMouseUp"],
         onMouseLeave = ["onMouseMove","onMouseDown","onMouseUp","onMouseEnter"],
+        onTabSelected = ["onBeforeTabSelected"],
+        onBeforeTabSelected = ["onTabSelected"],
     )
 
     def __init__(self, obj, **kwargs):
@@ -27,4 +29,4 @@ class MultiListener(object):
                         setattr(self, k1, ignore)
 
     def ignore(self, *args, **kwargs):
-        pass
+        return True
