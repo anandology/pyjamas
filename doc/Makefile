@@ -2,13 +2,14 @@ all: gendocs upload uploadexamples
 
 gendocs:
 	python gendocs.py
+	rsync --delete -rlvz api pyjs.org:/var/www/pyjs.org/htdocs/
 
 # you need to make this your own username,pyjamasgroupname unfortunately.
 # sf being stupid.
 upload:
 	cp -aux pyjs_site/output/* .
 	#rsync --exclude=examples --delete -rlvz * lkcl,pyjamas@web.sf.net:/home/groups/p/py/pyjamas/htdocs/
-	rsync --exclude=examples --delete -rlvz * pyjs.org:/var/www/pyjs.org/htdocs/
+	rsync --exclude=examples --exclude=api --delete -rlvz * pyjs.org:/var/www/pyjs.org/htdocs/
 
 uploadsitehtml:
 	cp -aux pyjs_site/public/* .
