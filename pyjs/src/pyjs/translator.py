@@ -2753,6 +2753,9 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                         return True
         return False
 
+    def _exec(self, node, current_klass):
+        pass
+
     def _stmt(self, node, current_klass):
         self.track_lineno(node)
 
@@ -2800,6 +2803,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             self._from(node, current_klass)
         elif isinstance(node, self.ast.AssAttr):
             self._assattr(node, current_klass)
+        elif isinstance(node, self.ast.Exec):
+            self._exec(node, current_klass)
         elif isinstance(node, self.ast.Assert):
             self._assert(node, current_klass)
         elif isinstance(node, self.ast.Class):
