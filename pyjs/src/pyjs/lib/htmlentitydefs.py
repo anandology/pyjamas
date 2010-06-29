@@ -270,4 +270,4 @@ for (name, codepoint) in name2codepoint.iteritems():
     else:
         entitydefs[name] = '&#%d;' % codepoint
 
-del name, codepoint
+# del name, codepoint

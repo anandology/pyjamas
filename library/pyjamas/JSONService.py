@@ -148,6 +148,7 @@ def create_object(items):
     clsname = items.pop('__jsonclass__', None)
     if not clsname:
         return items
+    clsname = clsname[0]
     dot = clsname.rfind('.')
     modulename = clsname[:dot]
     clsname = clsname[dot+1:]
