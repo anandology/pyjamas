@@ -9,7 +9,8 @@ gendocs:
 upload:
 	cp -aux pyjs_site/output/* .
 	#rsync --exclude=examples --delete -rlvz * lkcl,pyjamas@web.sf.net:/home/groups/p/py/pyjamas/htdocs/
-	rsync --exclude=examples --exclude=api --delete -rlvz * pyjs.org:/var/www/pyjs.org/htdocs/
+	rsync --exclude=pygit --exclude=examples --exclude=api \
+          --delete -rlvz * pyjs.org:/var/www/pyjs.org/htdocs/
 
 uploadsitehtml:
 	cp -aux pyjs_site/public/* .
