@@ -123,7 +123,7 @@ Files: pyjd/sessionhistory.py
 Copyright: 2007, One Laptop Per Child
 License: GPL-2
 
-Files: pyjd/importers.py pyjd/imputil.py
+Files: pyjd/importers.py pyjd/imputil.py pyjs/src/pyjs/lib/htmlentitydefs.py
 License: PSF 
 Copyright: 2001, 2002, 2003, 2004, 2005, 2006 Python Software Foundation
 Copyright: 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
