@@ -176,11 +176,12 @@ class ImplIE6VerticalSplitPanel:
         self.panel.setElemHeight(bottomElem, bottomHeight + "px")
 
     def addResizeListener(self, container):
-        JS("""
-         this.container.onresize = function() {
-               __ImplIE6VerticalSplitPanel_onResize();
-                                   }
-         """)
+        self.container.resize = getattr(self, "onResize")
+        #JS("""
+        # this.container.onresize = function() {
+        #       __ImplIE6VerticalSplitPanel_onResize();
+        #                           }
+        # """)
 
     def onResize(self):
         self.setSplitPosition(DOM.getOffsetHeight(
@@ -220,6 +221,10 @@ class VerticalSplitPanel(SplitPanel):
         self.initialThumbPos = 0
 
         self.lastSplitPosition = ""
+        self.resizeListeners = []
+
+    def addResizeListener(self, notifier):
+        self.resizeListeners.append(notifier)
 
     def getBottomWidget(self):
         """ Gets the widget in the bottom of the panel.
@@ -266,8 +271,10 @@ class VerticalSplitPanel(SplitPanel):
         self.impl.onDetach()
 
     def onSplitterResize(self, x, y):
-        self.impl.onSplitterResize(self.initialTopHeight + y -
-                                   self.initialThumbPos)
+        px = self.initialTopHeight + y - self.initialThumbPos
+        self.impl.onSplitterResize(px)
+        for listener in self.resizeListeners:
+            listener.onSplitterResize(self, px)
 
     def onSplitterResizeStarted(self, x, y):
         self.initialThumbPos = y
