@@ -868,6 +868,8 @@ class Translator:
             captured_output = captured_output.replace("@CONSTANT_DECLARATION@", self.constant_decl())
         else:
             print >> self.output, self.constant_decl()
+        if captured_output.find("@ATTRIB_REMAP_DECLARATION@") >= 0:
+            captured_output = captured_output.replace("@ATTRIB_REMAP_DECLARATION@", self.attrib_remap_decl())
         print >> self.output, captured_output,
 
         if attribute_checking:
@@ -1095,12 +1097,17 @@ class Translator:
             depth -= 1
         return self.modpfx() + name
 
-    def constant_decl(self):
+    def attrib_remap_decl(self):
         s = self.spacing()
         lines = []
         remap = pyjs_attrib_remap.keys()
         remap.sort()
         lines.append("%(s)svar attrib_remap = %(remap)s;" % locals())
+        return "\n".join(lines)
+
+    def constant_decl(self):
+        s = self.spacing()
+        lines = []
         for name in self.constant_int:
             lines.append("%(s)svar $constant_int_%(name)s = new pyjslib['int'](%(name)s);" % locals())
         for name in self.constant_long:
@@ -3085,7 +3092,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             # we can safely remove all constants that are discarded,
             # e.g None fo empty expressions after a unneeded ";" or
             # mostly important to remove doc strings
-            if node.expr.value in ["@CONSTANT_DECLARATION@"]:
+            if node.expr.value in ["@CONSTANT_DECLARATION@", "@ATTRIB_REMAP_DECLARATION@"]:
                 print >>self.output, node.expr.value
             return
         elif isinstance(node.expr, self.ast.Yield):

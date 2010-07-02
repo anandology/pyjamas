@@ -3554,6 +3554,7 @@ JS("""
 """)
 
 
+"""@ATTRIB_REMAP_DECLARATION@"""
 """@CONSTANT_DECLARATION@"""
 
 class NotImplementedType(object):
