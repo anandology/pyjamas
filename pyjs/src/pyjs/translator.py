@@ -34,9 +34,6 @@ if pyjs.pyjspth is None:
 else:
     LIBRARY_PATH = os.path.join(pyjs.pyjspth, "pyjs", "src", "pyjs")
 
-# this is the python function used to wrap native javascript
-NATIVE_JS_FUNC_NAME = "JS"
-
 # See http://www.quackit.com/javascript/javascript_reserved_words.cfm
 JavaScript_Reserved_Words = frozenset((
     'break',
@@ -413,20 +410,28 @@ re_return = re.compile(r'\breturn\b')
 class __Pyjamas__(object):
     console = "console"
 
-    def JS(self, translator, node):
-        if len(node.args) != 1:
-            raise TranslationError(
-                "JS function requires one argument",
-                node.node)
-        if (     isinstance(node.args[0], translator.ast.Const)
-             and isinstance(node.args[0].value, str)
-           ):
-            translator.ignore_debug = True
-            return node.args[0].value, not re_return.search(node.args[0].value) is None
-        else:
-            raise TranslationError(
-                "JS function only support constant strings",
-                node.node)
+    native_js_funcs = []
+
+    @classmethod
+    def register_native_js_func(cls, name, func):
+        def native(self, translator, node):
+            if len(node.args) != 1:
+                raise TranslationError(
+                    "%s function requires one argument" % name,
+                    node.node)
+            if (     isinstance(node.args[0], translator.ast.Const)
+                 and isinstance(node.args[0].value, str)
+               ):
+                translator.ignore_debug = True
+                converted = func(node.args[0].value)
+                return converted, re_return.search(converted) is not None
+            else:
+                raise TranslationError(
+                    "%s function only supports constant strings" % name,
+                    node.node)
+
+        cls.native_js_funcs.append(name)
+        setattr(cls, name, native)
 
     def wnd(self, translator, node):
         if len(node.args) != 0:
@@ -556,6 +561,14 @@ class __Pyjamas__(object):
         return expr, False
 
 
+def native_js_func(func):
+    __Pyjamas__.register_native_js_func(func.__name__, func)
+    return func
+
+@native_js_func
+def JS(content):
+    return content
+
 __pyjamas__ = __Pyjamas__()
 
 # This is taken from the django project.
@@ -639,7 +652,7 @@ def mod_var_name_decl(module_name):
     child_name = name[-1]
     return "var %s = %s;\n" % (child_name, module_name)
 
-class Translator:
+class Translator(object):
 
     decorator_compiler_options = {\
         'Debug': [('debug', True)],
@@ -2756,7 +2769,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             if isinstance(node.expr, self.ast.CallFunc):
                 if isinstance(node.expr.node, self.ast.Name):
                     name_type, pyname, jsname, depth, is_local = self.lookup(node.expr.node.name)
-                    if name_type == '__pyjamas__' and jsname == NATIVE_JS_FUNC_NAME:
+                    if name_type == '__pyjamas__' and jsname in __pyjamas__.native_js_funcs:
                         return True
         return False
 
@@ -3083,7 +3096,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             expr = self._callfunc(node.expr, current_klass)
             if isinstance(node.expr.node, self.ast.Name):
                 name_type, pyname, jsname, depth, is_local = self.lookup(node.expr.node.name)
-                if name_type == '__pyjamas__' and jsname == NATIVE_JS_FUNC_NAME:
+                if name_type == '__pyjamas__' and jsname in __pyjamas__.native_js_funcs:
                     print >>self.output, expr
                     return
             print >>self.output, self.spacing() + expr + ";"

@@ -1,6 +1,9 @@
                     Changes made to Pyjamas since 0.7
                     ---------------------------------
 
+ * Add infrastructure for registering alternative JS functions for
+   native javascript inline output, by W Kornewald
+
  * Added example dynamic CSS stylesheet changer, thanks to Stolati
    for the CSS changing class.
 
