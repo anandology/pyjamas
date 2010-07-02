@@ -17,7 +17,8 @@ from pyjamas import Factory
 
 from UIObject import UIObject
 from pyjamas.ui import Event
-from pyjamas.ui import InnerHTML, InnerText
+from pyjamas.ui.InnerHTML import InnerHTML
+from pyjamas.ui.InnerText import InnerText
 
 class MenuItem(UIObject, InnerHTML, InnerText):
     # also callable as:

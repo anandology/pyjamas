@@ -17,7 +17,7 @@ from pyjamas import Factory
 
 from Label import Label
 from pyjamas.ui import Event
-from pyjamas.ui import InnerHTML
+from pyjamas.ui.InnerHTML import InnerHTML
 
 class HTML(Label, InnerHTML):
 

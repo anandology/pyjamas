@@ -156,8 +156,8 @@ class Browser(WebView):
 
         print "loaded"
 
-        if self.already_initialised:
-            return
+        #if self.already_initialised:
+        #    return
         self.already_initialised = True
 
         dw = self.get_dom_window()
@@ -173,9 +173,10 @@ class Browser(WebView):
             pth = os.path.abspath(self.appdir)
         sys.path.append(pth)
 
-        #for m in pygwt_processMetas():
-        #    minst = module_load(m)
-        #    minst.onModuleLoad()
+        for m in pygwt_processMetas():
+            minst = module_load(m)
+            if hasattr(minst, "onModuleLoad"):
+                minst.onModuleLoad()
 
     def _loading(self, progress_listener, progress):
         pass

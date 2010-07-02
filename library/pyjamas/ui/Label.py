@@ -14,7 +14,7 @@
 # limitations under the License.
 from pyjamas import DOM
 from pyjamas import Factory
-from pyjamas.ui import InnerText
+from pyjamas.ui.InnerText import InnerText
 
 from Widget import Widget
 from MouseListener import MouseHandler

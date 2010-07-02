@@ -13,8 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyjamas import DOM
-
 class HasHorizontalAlignment:
     ALIGN_LEFT = "left"
     ALIGN_CENTER = "center"
@@ -63,19 +61,4 @@ class Applier(object):
                         fn(*args)
                     else:
                         fn(args)
-class InnerHTML(object):
-
-    def getHTML(self):
-        return DOM.getInnerHTML(self.getElement())
-
-    def setHTML(self, html):
-        DOM.setInnerHTML(self.getElement(), html)
-
-class InnerText(object):
-
-    def setText(self, text):
-        DOM.setInnerText(self.getElement(), text)
-
-    def getText(self):
-        return DOM.getInnerText(self.getElement())
 

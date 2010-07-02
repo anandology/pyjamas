@@ -1,5 +1,5 @@
 # Copyright 2006 James Tauber and contributors
-# Copyright (C) 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
+# Copyright 2009 Luke Kenneth Casson Leighton
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,16 +12,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 from pyjamas import DOM
-from pyjamas import Factory
-from FocusWidget import FocusWidget
-from pyjamas.ui.InnerHTML import InnerHTML
-from pyjamas.ui.InnerText import InnerText
 
-class ButtonBase(FocusWidget, InnerHTML, InnerText):
+class InnerText(object):
 
-    def __init__(self, element, **kwargs):
-        FocusWidget.__init__(self, element, **kwargs)
+    def setText(self, text):
+        DOM.setInnerText(self.getElement(), text)
 
-Factory.registerClass('pyjamas.ui.ButtonBase', ButtonBase)
+    def getText(self):
+        return DOM.getInnerText(self.getElement())
 
