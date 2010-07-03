@@ -25,6 +25,7 @@ class StackPanel(ComplexPanel):
         self.body = None
         self.visibleStack = -1
         self.indices = {}
+        self.stackListeners = []
 
         if kwargs.has_key('Element'):
             table = kwargs.pop('Element')
@@ -48,6 +49,9 @@ class StackPanel(ComplexPanel):
         DOM.sinkEvents(table, Event.ONCLICK)
 
         ComplexPanel.__init__(self, **kwargs)
+
+    def addStackChangeListener(self, listener):
+        self.stackListeners.append(listener)
 
     def add(self, widget, stackText="", asHTML=False):
         widget.removeFromParent()
@@ -143,6 +147,8 @@ class StackPanel(ComplexPanel):
 
         self.visibleStack = index
         self.setStackVisible(self.visibleStack, True)
+        for listener in self.stackListeners:
+            listener.onStackChanged(self, index)
 
     def getDividerIndex(self, elem):
         while (elem is not None) and not DOM.compare(elem, self.getElement()):
