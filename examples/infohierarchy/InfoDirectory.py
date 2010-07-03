@@ -8,7 +8,6 @@ from pyjamas.ui.HorizontalPanel import HorizontalPanel
 from pyjamas.ui.AbsolutePanel import AbsolutePanel
 from pyjamas.ui.ScrollPanel import ScrollPanel
 from pyjamas.ui.Grid import Grid
-from pyjamas.ui.TabPanel import TabPanel
 from pyjamas.ui.SimplePanel import SimplePanel
 from pyjamas.ui.FlexTable import FlexTable
 from pyjamas.ui.Image import Image
