@@ -416,3 +416,5 @@ class md5:
             self.md5.finish()
         return self.md5.getdigestBits()
 
+new = md5
+
