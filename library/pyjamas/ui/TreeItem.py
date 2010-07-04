@@ -84,6 +84,9 @@ class TreeItem(UIObject):
 
         UIObject.__init__(self, **ka)
 
+    def __iter__(self):
+        return self.getTree().__iter__()
+
     # also callable as addItem(widget) and addItem(itemText)
     def addItem(self, item):
         return self.insertItem(item)
