@@ -123,7 +123,7 @@ class Tree(Widget):
         return Focus.getTabIndex(self.focusable)
 
     def __iter__(self):
-        return self.childWidgets.__iter__()
+        return self.root.__iter__()
 
     def onBrowserEvent(self, event):
         etype = DOM.eventGetType(event)
