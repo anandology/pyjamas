@@ -836,6 +836,10 @@ def setEventListener(element, listener):
     set_listener(element, listener)
 
 
+def createTextNode(txt):
+    return doc().createTextNode(txt) 
+
+
 def setInnerHTML(element, html):
     try:
         element.innerHtml = html # webkit. yuk.
@@ -847,7 +851,7 @@ def setInnerText(elem, text):
     #Remove all children first.
     while elem.firstChild:
         elem.removeChild(elem.firstChild)
-    elem.appendChild(doc().createTextNode(text or ''))
+    elem.appendChild(createTextNode(text or ''))
 
 
 def setIntElemAttribute(elem, attr, value):

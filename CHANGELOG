@@ -1,6 +1,8 @@
                     Changes made to Pyjamas since 0.7
                     ---------------------------------
 
+ * Add DOM.createTextNode function, thanks to Jordon Wii
+
  * Fix issue in GWTCanvas Transparency demo, thanks to Alex Tsepkov
 
  * Add infrastructure for registering alternative JS functions for
