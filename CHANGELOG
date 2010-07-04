@@ -1,6 +1,8 @@
                     Changes made to Pyjamas since 0.7
                     ---------------------------------
 
+ * Fix issue in GWTCanvas Transparency demo, thanks to Alex Tsepkov
+
  * Add infrastructure for registering alternative JS functions for
    native javascript inline output, by W Kornewald
 

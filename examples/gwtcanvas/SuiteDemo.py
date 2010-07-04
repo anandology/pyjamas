@@ -457,7 +457,7 @@ class SuiteDemoControls (Composite):
         self.canvas.setFillStyle(Color.Color("rgb(255,51,0)"))
         self.canvas.fillRect(0, 112.5, 150, 37.5)
         for i in range(10):
-            self.canvas.setFillStyle(Color.Color("rgba(255,255,255,%d)" %
+            self.canvas.setFillStyle(Color.Color("rgba(255,255,255,%f)" %
                                                 ((i + 1) / 10.0)))
             for j in range(4):
                 self.canvas.fillRect(5 + i * 14.0, 5 + j * 37.5, 14, 27.5)
