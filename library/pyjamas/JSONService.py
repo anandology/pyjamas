@@ -10,15 +10,25 @@
 import sys
 from HTTPRequest import HTTPRequest
 
+# jeeeez...
 try:
-    #from jsonrpc.json import dumps, loads, JSONDecodeException
-    from simplejson import dumps, loads, JSONDecodeError
+    # some random library from somewhere...
+    from jsonrpc.json import dumps, loads
 except ImportError:
-    from pyjamas.JSONParser import JSONParser
-    parser = JSONParser()
-    dumps = getattr(parser, 'encode')
-    loads = getattr(parser, 'decodeAsObject')
-    JSONDecodeException = None
+    try:
+        # recommended library (python 2.5)
+        from simplejson import dumps, loads
+    except ImportError:
+        try:
+            # included in python 2.6...
+            from json import dumps, loads
+        except ImportError:
+            # who's the pyjs daddy?
+            from pyjamas.JSONParser import JSONParser
+            parser = JSONParser()
+            dumps = getattr(parser, 'encode')
+            loads = getattr(parser, 'decodeAsObject')
+            JSONDecodeException = None
 
 
 class JSONServiceError(Exception):
@@ -167,7 +177,7 @@ class JSONResponseTextHandler(object):
     def onCompletion(self, json_str):
         try:
             response = loads(json_str, object_hook=create_object)
-        except JSONDecodeError:
+        except: # just catch... everything.
             # err.... help?!!
             error = dict(
                          code=-32700,
