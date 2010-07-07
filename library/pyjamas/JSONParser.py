@@ -53,7 +53,7 @@ JSONDecode:
 
 class JSONParser:
     def decode(self, s):
-        return self.jsObjectToPy(self.parseJSON(string))
+        return self.jsObjectToPy(self.parseJSON(s))
 
     def decodeAsObject(self, s, object_hook=None):
         return self.jsObjectToPyObject(self.parseJSON(s))
