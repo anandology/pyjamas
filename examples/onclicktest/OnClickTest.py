@@ -11,10 +11,16 @@ def onButtonClick(sender):
 
 class OnClickTest:
 	def onModuleLoad(self):
+		def localFunc(sender):
+			Window.alert("anon object + local func called")
+		obj = object()
+		setattr(obj, 'onClick', localFunc)
 		self.b = Button("function callback", onButtonClick)
 		self.b2 = Button("object callback", self)
+		self.b3 = Button("anon object + local func callback", obj)
 		RootPanel().add(self.b)
 		RootPanel().add(self.b2)
+		RootPanel().add(self.b3)
 
 	def onClick(self, sender):
 		Window.alert("object called")
