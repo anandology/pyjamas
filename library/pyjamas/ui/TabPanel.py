@@ -24,7 +24,9 @@ from TabBar import TabBar
 class TabPanel(Composite):
     def __init__(self, tabBar=None, **kwargs):
         self.tab_children = [] # TODO: can self.children be used instead?
-        self.deck = DeckPanel(StyleName="gwt-TabPanelBottom")
+        self.deck = kwargs.pop('Deck', None)
+        if self.deck is None:
+            self.deck = DeckPanel(StyleName="gwt-TabPanelBottom")
         if tabBar is None:
             self.tabBar = TabBar()
         else:
@@ -33,19 +35,17 @@ class TabPanel(Composite):
 
         # this is awkward: VerticalPanel is the composite,
         # so we get the element here, and pass it in to VerticalPanel.
-        element = None
-        if kwargs.has_key('Element'):
-            element = kwargs.pop('Element')
+        element = kwargs.pop('Element', None)
 
         panel = VerticalPanel(Element=element)
         panel.add(self.tabBar)
-        panel.add(self.deck)
-
-        panel.setCellHeight(self.deck, "100%")
+        if self.deck.getParent() is None:
+            panel.add(self.deck)
+            panel.setCellHeight(self.deck, "100%")
         self.tabBar.setWidth("100%")
         self.tabBar.addTabListener(self)
 
-        if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-TabPanel"
+        kwargs['StyleName'] = kwargs.get('StyleName', "gwt-TabPanel")
 
         Composite.__init__(self, panel, **kwargs)
 
