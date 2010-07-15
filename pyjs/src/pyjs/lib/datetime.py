@@ -301,6 +301,8 @@ class timedelta:
         self.seconds = (hours * 3600.0) + (minutes * 60.0) + seconds
         self.microseconds = (milliseconds * 1000.0) + microseconds
 
+class tzinfo(object):
+    pass
 
 date.min = date(1,1,1)
 date.max = date(9999,12,31)
