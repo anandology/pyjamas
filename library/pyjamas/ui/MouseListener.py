@@ -14,6 +14,7 @@
 # limitations under the License.
 from pyjamas import DOM
 from pyjamas.ui import Event
+from pyjamas.EventController import Handler
 
 def fireMouseEvent(listeners, sender, event):
     x = DOM.eventGetClientX(event) - DOM.getAbsoluteLeft(sender.getElement())
@@ -23,22 +24,28 @@ def fireMouseEvent(listeners, sender, event):
     if etype == "mousedown":
         for listener in listeners:
             listener.onMouseDown(sender, x, y)
+        return True
     elif etype == "mouseup":
         for listener in listeners:
             listener.onMouseUp(sender, x, y)
+        return True
     elif etype == "mousemove":
         for listener in listeners:
             listener.onMouseMove(sender, x, y)
+        return True
     elif etype == "mouseover":
         from_element = DOM.eventGetFromElement(event)
         if not DOM.isOrHasChild(sender.getElement(), from_element):
             for listener in listeners:
                 listener.onMouseEnter(sender)
+        return True
     elif etype == "mouseout":
         to_element = DOM.eventGetToElement(event)
         if not DOM.isOrHasChild(sender.getElement(), to_element):
             for listener in listeners:
                 listener.onMouseLeave(sender)
+        return True
+    return False
 
 MOUSE_EVENTS = [ "mousedown", "mouseup", "mousemove", "mouseover", "mouseout"]
 
@@ -55,7 +62,8 @@ class MouseHandler(object):
         if etype in MOUSE_EVENTS:
             if self._mousePreventDefault:
                 DOM.eventPreventDefault(event)
-            fireMouseEvent(self._mouseListeners, self, event)
+            return fireMouseEvent(self._mouseListeners, self, event)
+        return False
 
     def addMouseListener(self, listener):
         self._mouseListeners.append(listener)

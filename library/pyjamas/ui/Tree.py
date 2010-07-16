@@ -133,11 +133,9 @@ class Tree(Widget):
             if not self.shouldTreeDelegateFocusToElement(e) and \
                             self.curSelection is not None:
                 self.setFocus(True)
-        elif etype == "mousedown":
-            MouseListener.fireMouseEvent(self.mouseListeners, self, event)
-            self.elementClicked(self.root, DOM.eventGetTarget(event))
-        elif etype == "mouseup" or etype == "mousemove" or \
-             etype == "mouseover" or etype == "mouseout":
+        elif etype in MouseListener.MOUSE_EVENTS:
+            if etype == "mousedown":
+                self.elementClicked(self.root, DOM.eventGetTarget(event))
             MouseListener.fireMouseEvent(self.mouseListeners, self, event)
         elif etype == "blur" or etype == "focus":
             FocusListener.fireFocusEvent(self.focusListeners, self, event)
