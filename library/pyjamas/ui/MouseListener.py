@@ -53,12 +53,7 @@ class MouseHandler(object):
 
     def __init__(self, preventDefault=False):
 
-        self._mouseListeners = 1
-        self._md = Handler(self, "MouseDown")
-        self._mu = Handler(self, "MouseUp")
-        self._mm = Handler(self, "MouseMove")
-        self._me = Handler(self, "MouseEnter")
-        self._ml = Handler(self, "MouseLeave")
+        self._mouseListeners = []
         self._mousePreventDefault = preventDefault
         self.sinkEvents( Event.MOUSEEVENTS )
 
@@ -67,28 +62,14 @@ class MouseHandler(object):
         if etype in MOUSE_EVENTS:
             if self._mousePreventDefault:
                 DOM.eventPreventDefault(event)
-            x = DOM.eventGetClientX(event) - \
-                DOM.getAbsoluteLeft(self.getElement())
-            y = DOM.eventGetClientY(event) - \
-                DOM.getAbsoluteTop(self.getElement())
-
-            if etype == "mousedown":
-                self.onMouseDownEvent(self, x, y)
-            elif etype == "mouseup":
-                self.onMouseUpEvent(self, x, y)
-            elif etype == "mousemove":
-                self.onMouseMoveEvent(self, x, y)
-            elif etype == "mouseover":
-                from_element = DOM.eventGetFromElement(event)
-                if not DOM.isOrHasChild(self.getElement(), from_element):
-                    self.onMouseEnterEvent(self)
-            elif etype == "mouseout":
-                to_element = DOM.eventGetToElement(event)
-                if not DOM.isOrHasChild(self.getElement(), to_element):
-                    self.onMouseLeaveEvent(self)
-            return True
-
+            return fireMouseEvent(self._mouseListeners, self, event)
         return False
+
+    def addMouseListener(self, listener):
+        self._mouseListeners.append(listener)
+
+    def removeMouseListener(self, listener):
+        self._mouseListeners.remove(listener)
 
     def onMouseMove(self, sender, x, y):
         pass
