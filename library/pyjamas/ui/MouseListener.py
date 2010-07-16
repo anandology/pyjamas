@@ -19,22 +19,22 @@ def fireMouseEvent(listeners, sender, event):
     x = DOM.eventGetClientX(event) - DOM.getAbsoluteLeft(sender.getElement())
     y = DOM.eventGetClientY(event) - DOM.getAbsoluteTop(sender.getElement())
 
-    type = DOM.eventGetType(event)
-    if type == "mousedown":
+    etype = DOM.eventGetType(event)
+    if etype == "mousedown":
         for listener in listeners:
             listener.onMouseDown(sender, x, y)
-    elif type == "mouseup":
+    elif etype == "mouseup":
         for listener in listeners:
             listener.onMouseUp(sender, x, y)
-    elif type == "mousemove":
+    elif etype == "mousemove":
         for listener in listeners:
             listener.onMouseMove(sender, x, y)
-    elif type == "mouseover":
+    elif etype == "mouseover":
         from_element = DOM.eventGetFromElement(event)
         if not DOM.isOrHasChild(sender.getElement(), from_element):
             for listener in listeners:
                 listener.onMouseEnter(sender)
-    elif type == "mouseout":
+    elif etype == "mouseout":
         to_element = DOM.eventGetToElement(event)
         if not DOM.isOrHasChild(sender.getElement(), to_element):
             for listener in listeners:
@@ -51,8 +51,8 @@ class MouseHandler(object):
         self.sinkEvents( Event.MOUSEEVENTS )
 
     def onBrowserEvent(self, event):
-        type = DOM.eventGetType(event)
-        if type in MOUSE_EVENTS:
+        etype = DOM.eventGetType(event)
+        if etype in MOUSE_EVENTS:
             if self._mousePreventDefault:
                 DOM.eventPreventDefault(event)
             fireMouseEvent(self._mouseListeners, self, event)
