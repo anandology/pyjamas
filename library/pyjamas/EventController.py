@@ -2,16 +2,11 @@
 
 class Handler(object):
 
-    def __init__(self, parent, event_type,
-                    callback_name=None,
-                    on_event_name=None):
+    def __init__(self, parent, event_type, on_event_name=None):
         self.parent = parent
         self.event_type = event_type
         self.listeners = {}
-        if callback_name:
-            self.callback_fnname = callback_name
-        else:
-            self.callback_fnname = "on%s" % event_type
+        self.callback_fnname = "on%s" % event_type
 
         # monkey-patch the parent with the callbacks
         add_listener_fnname = "add%sListener" % event_type
