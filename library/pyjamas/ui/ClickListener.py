@@ -4,12 +4,13 @@
 """
 from pyjamas import DOM
 from pyjamas.ui import Event
+from pyjamas.EventController import Handler
 
 class ClickHandler(object):
 
     def __init__(self, preventDefault=False):
-        self._clickListeners = []
-        self._doubleclickListeners = []
+        self._clickListeners = Handler(self, "Click")
+        self._doubleclickListeners = Handler(self, "DoubleClick")
         self._clickPreventDefault = preventDefault
         
         self.sinkEvents(Event.ONCLICK)
@@ -21,37 +22,17 @@ class ClickHandler(object):
     def onDoubleClick(self, sender=None):
         pass
 
-    def addDoubleClickListener(self, listener):
-        self._doubleclickListeners.append(listener)
-
-    def addClickListener(self, listener):
-        self._clickListeners.append(listener)
-
     def onBrowserEvent(self, event):
         """Listen to events raised by the browser and call the appropriate 
         method of the listener (widget, ..) object. 
         """
-        type = DOM.eventGetType(event)
-        if type == "click":
+        etype = DOM.eventGetType(event)
+        if etype == "click":
             if self._clickPreventDefault:
                 DOM.eventPreventDefault(event)
-            for listener in self._clickListeners:
-                if hasattr(listener, "onClick"):
-                    listener.onClick(self)
-                else:
-                    listener(self)
-        elif type == "dblclick":
+            self.onClickEvent(self)
+        elif etype == "dblclick":
             if self._clickPreventDefault:
                 DOM.eventPreventDefault(event)
-            for listener in self._doubleclickListeners:
-                if hasattr(listener, "onDoubleClick"):
-                    listener.onDoubleClick(self)
-                else:
-                    listener(self)
-
-    def removeClickListener(self, listener):
-        self._clickListeners.remove(listener)
-
-    def removeDoubleClickListener(self, listener):
-        self._doubleclickListeners.remove(listener)
+            self.onDoubleClickEvent(self)
 
