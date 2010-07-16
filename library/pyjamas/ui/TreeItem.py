@@ -117,6 +117,9 @@ class TreeItem(UIObject):
 
         return item
 
+    def onAttach(self):
+        pass
+
     def getChild(self, index):
         if (index < 0) or (index >= len(self.children)):
             return None
