@@ -77,10 +77,19 @@ class TreeItem(UIObject):
         #if not ka.has_key('StyleName'): ka['StyleName']="gwt-TreeItem"
 
         if html is not None:
-            if isinstance(html, str):
-                ka['HTML'] = html
-            else:
-                ka['Widget'] = html
+            try:
+                # messy. pyjd can do unicode, pyjs can't
+                if isinstance(html, unicode):
+                    ka['HTML'] = html
+                elif isinstance(html, str):
+                    ka['HTML'] = html
+                else:
+                    ka['Widget'] = html
+            except:
+                if isinstance(html, str):
+                    ka['HTML'] = html
+                else:
+                    ka['Widget'] = html
 
         UIObject.__init__(self, **ka)
 
