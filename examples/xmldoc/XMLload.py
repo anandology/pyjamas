@@ -48,9 +48,7 @@ class XMLload:
 
     def onModuleLoad(self):
         
-        HTTPRequest().asyncPost(None, None,
-                    "contacts.xml", "",
-                    XMLloader(self))
+        HTTPRequest().asyncGet("contacts.xml", XMLloader(self))
 
     def onError(self, text, code):
         # FIXME
