@@ -2,19 +2,9 @@
 Todos
 =====
 
-After the europython merge we have still some things to change.
-
-- test on windows (who is willing?)
-
-- fix debug stuff in translated code
-
 - fix all example build scripts
 
 - test all examples
-
-- move all python library modules implemented for js into pyjs/lib
-
-- move all builtin modules implemented for js into pyjs/builtin
 
 - fix v8 runner (implement linker)
 
@@ -53,8 +43,6 @@ translator support for:
                     pass
 
 
-#234 from Beni Cherniavsky:
-
 Python builtins missing under pyjs:
 
 Easy to implement:
@@ -76,14 +64,11 @@ Require work to implement:
     coerce (somewhat deprecated)
     complex
     format
-    frozenset
     id
     intern
     iter
     locals
-    long
     property
-    set
     unichr
     unicode
     vars
