@@ -461,9 +461,9 @@ function __pygwt_earlyUser() {
         splash.cont.appendChild(splash.infoCont)
         splash.infoCont.appendChild(splash.progressBar)
         // uncomment to use logo
-        //splash.cont.appendChild(splash.header)
-        //splash.header.appendChild(splash.logo)
-        splash.cont.appendChild(splash.status)
+        splash.cont.appendChild(splash.header)
+        splash.header.appendChild(splash.logo)
+        //splash.cont.appendChild(splash.status)
     }
 
     // connect to controller
