@@ -26,7 +26,7 @@ class MenuBar(Widget):
     def __init__(self, vertical=False, **kwargs):
         self.vertical = vertical
 
-        if not 'StyleName' in kwargs or kwargs['StyleName'] == 'gwt-MenuBar':
+        if 'StyleName' not in kwargs or kwargs['StyleName'] == 'gwt-MenuBar':
             kwargs['StyleName'] = self.getDefaultStyleName()
         self.body = None
         self.items = []
