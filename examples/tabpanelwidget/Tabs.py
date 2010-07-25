@@ -50,19 +50,26 @@ class Tabs:
         green = "1640"
 
         self.fTabs = DecoratedTabPanel(Size=("600px", "100%"))
-        self.fTabs.add(self.createImage("rembrandt/JohannesElison.jpg"), red, True)
-        self.fTabs.add(self.createImage("rembrandt/SelfPortrait1640.jpg"), green, True)
-        self.fTabs.add(self.createImage("rembrandt/LaMarcheNocturne.jpg"), "1642")
-        self.fTabs.add(self.createImage("rembrandt/TheReturnOfTheProdigalSon.jpg"), "1662")
-        self.fTabs.add(HTML("shouldn't be here!"), None)
+        self.fTabs.add(self.createImage("rembrandt/JohannesElison.jpg"),
+                        red, True, name="johannes")
+        self.fTabs.add(self.createImage("rembrandt/SelfPortrait1640.jpg"),
+                        green, True, name="self")
+        self.fTabs.add(self.createImage("rembrandt/LaMarcheNocturne.jpg"),
+                        "1642", name="lamarche")
+        self.fTabs.add(self.createImage(
+                        "rembrandt/TheReturnOfTheProdigalSon.jpg"),"1662",
+                        "prodigal")
+        self.fTabs.add(HTML("shouldn't be here!"), None) # None means separator
         self.fTabs.add(HTML("This is a Test.<br />Tab should be on right"),
-                       "Test")
+                       "Test", "test")
         self.fTabs.selectTab(0)
 
         dp = DecoratorTitledPanel("Tabs", "bluetitle", "bluetitleicon",
                       ["bluetop", "bluetop2", "bluemiddle", "bluebottom"])
         dp.add(self.fTabs)
         RootPanel().add(dp)
+
+        self.fTabs.addTabListener(self)
 
     def createImage(self, imageUrl):
         image = Image(imageUrl)
@@ -74,6 +81,18 @@ class Tabs:
         p.add(image)
 
         return p
+
+    def onTabSelected(self, sender, tabIndex):
+        pass
+
+    def onBeforeTabSelected(self, sender, tabIndex):
+        # 6 because one of them is the separator.
+        if self.fTabs.getWidgetCount() == 6:
+            self.fTabs.add(HTML("2nd Test.<br />Tab should be on right"),
+                           "2nd Test", name="test2")
+            return True
+        self.fTabs.remove("test2")
+        return tabIndex != 6 # don't allow change to tab 6 - we're removing it!
 
 if __name__ == '__main__':
     pyjd.setup("./public/Tabs.html")
