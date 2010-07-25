@@ -24,6 +24,7 @@ from TabBar import TabBar
 class TabPanel(Composite):
     def __init__(self, tabBar=None, **kwargs):
         self.tab_children = [] # TODO: can self.children be used instead?
+        self.tab_names = {} 
         self.deck = kwargs.pop('Deck', None)
         if self.deck is None:
             self.deck = DeckPanel(StyleName="gwt-TabPanelBottom")
@@ -49,12 +50,15 @@ class TabPanel(Composite):
 
         Composite.__init__(self, panel, **kwargs)
 
-    def add(self, widget, tabText=None, asHTML=False):
+    def add(self, widget, tabText=None, asHTML=False, name=None):
         """ tabText=None now means insert a spacer, pushed out at 100%
             width so that any subsequent tabs added will be pushed to
-            the right hand side
+            the right hand side.
+
+            name refers to an optional name (string) where the tab can
+            be removed by name, if desired, using TabBar.remove.
         """
-        self.insert(widget, tabText, asHTML, self.getWidgetCount())
+        self.insert(widget, tabText, asHTML, self.getWidgetCount(), name)
 
     def addTabListener(self, listener):
         self.tabListeners.append(listener)
@@ -78,12 +82,15 @@ class TabPanel(Composite):
     def getWidgetIndex(self, child):
         return self.tab_children.index(child)
 
-    def insert(self, widget, tabText, asHTML=False, beforeIndex=None):
+    def insert(self, widget, tabText, asHTML=False, beforeIndex=None,
+                                      name=None):
         if beforeIndex is None:
             beforeIndex = asHTML
             asHTML = False
 
         self.tab_children.insert(beforeIndex, widget)
+        if name is not None:
+            self.tab_names[name] = widget
         self.tabBar.insertTab(tabText, asHTML, beforeIndex)
         self.deck.insert(widget, beforeIndex)
 
@@ -102,8 +109,19 @@ class TabPanel(Composite):
             listener.onTabSelected(sender, tabIndex)
 
     def remove(self, widget):
-        if isinstance(widget, int):
+        """ widget to remove can be by integer, a widget in the panel,
+            or by name (string).  if by name, the name has to be one
+            which was given to add or insert
+        """
+        if isinstance(widget, str):
+            widget = self.tab_names[widget]
+        elif isinstance(widget, int):
             widget = self.getWidget(widget)
+
+        for (k, w) in self.tab_names.items():
+            if widget == w:
+                self.tab_names.pop(k)
+                break
 
         index = self.getWidgetIndex(widget)
         if index == -1:
