@@ -33,7 +33,7 @@ def confirm(msg):
     return wnd().confirm(msg)
 
 def prompt(msg, defaultReply=""):
-    return wnd().prompt(msg, defaultReply)
+    return wnd().prompt(msg, defaultReply, "", 0)
 
 def enableScrolling(enable):
     doc().body.style.overflow = enable and 'auto' or 'hidden'
