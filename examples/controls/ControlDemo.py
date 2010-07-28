@@ -14,6 +14,7 @@ from pyjamas.ui.Controls import HorizontalDemoSlider2
 from pyjamas.ui.Controls import AreaDemoSlider
 from pyjamas.ui.Controls import AreaDemoSlider2
 from pyjamas.ui.Controls import InputControl
+from pyjamas.ui.MouseInputControl import MouseInputControl
 from pyjamas.ui.HorizontalPanel import HorizontalPanel
 from pyjamas.ui.VerticalPanel import VerticalPanel
 from pyjamas.ui import HasAlignment
@@ -82,9 +83,9 @@ class ASliderClass(VerticalPanel):
 
         self.setSpacing(10)
         if p2:
-            self.b = AreaDemoSlider2([0,0], [100,100])
+            self.b = AreaDemoSlider2([0,0], [100,100], [0.2, 0.2])
         else:
-            self.b = AreaDemoSlider([0,0], [100,100])
+            self.b = AreaDemoSlider([0,0], [100,100], [0.2, 0.2])
         self.add(self.b)
 
         self.b.setHeight("100px")
@@ -92,12 +93,12 @@ class ASliderClass(VerticalPanel):
 
         self.b.addControlValueListener(self)
 
-        self.label_x = InputControl(0, 100)
+        self.label_x = MouseInputControl(0, 100, 0.2)
         self.add(self.label_x)
 
         self.label_x.addControlValueListener(self)
 
-        self.label_y = InputControl(0, 100)
+        self.label_y = MouseInputControl(0, 100, 0.2)
         self.add(self.label_y)
 
         self.label_y.addControlValueListener(self)
@@ -125,6 +126,7 @@ class ASliderClass(VerticalPanel):
 
             self.label_y.setControlPos(new_value_y)
             self.label_y.setValue(new_value_y, 0)
+
 class ControlDemo:
     def onModuleLoad(self):
 

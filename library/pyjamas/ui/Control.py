@@ -110,25 +110,31 @@ class Control(FocusWidget, MouseHandler):
 
     def onLoseFocus(self, sender):
         self.dragging = False
+        #print "lose focus"
+        #DOM.removeEventPreview(self)
         DOM.releaseCapture(self.getElement())
 
 
     def onMouseDown(self, sender, x, y):
         # regardless of drag_enabled, onMouseDown must prevent
         # default, in order to avoid losing focus.
+        self.setFocus(True)
         DOM.eventPreventDefault(DOM.eventGetCurrentEvent())
         if not self.drag_enabled:
             return
+        #DOM.addEventPreview(self)
         self.dragging = True
         DOM.setCapture(self.getElement())
         self.moveControl(x + Window.getScrollLeft(), y + Window.getScrollTop())
 
     def onMouseUp(self, sender, x, y):
         self.dragging = False
+        #DOM.removeEventPreview(self)
         DOM.releaseCapture(self.getElement())
 
     def onMouseEnter(self, sender):
         pass
+
     def onMouseLeave(self, sender):
         pass
 
@@ -149,5 +155,38 @@ class Control(FocusWidget, MouseHandler):
 
     def onKeyPress(self, sender, keycode, modifiers):
         pass
+
+    def _event_targets_control(self, event):
+        target = DOM.eventGetTarget(event)
+        return target and DOM.isOrHasChild(self.getElement(), target)
+
+    def onEventPreview(self, event):
+        etype = DOM.eventGetType(event)
+        print "control preview", etype, self._event_targets_control(event), \
+                     DOM.getCaptureElement() is not None
+        if etype == "keydown":
+            return self._event_targets_control(event)
+        elif etype == "keyup":
+            return self._event_targets_control(event)
+        elif etype == "keypress":
+            return self._event_targets_control(event)
+        elif (   etype == "mousedown"
+              or etype == "blur"
+             ):
+            if DOM.getCaptureElement() is not None:
+                return True
+            if not self._event_targets_control(event):
+                return True
+        elif (   etype == "mouseup"
+              or etype == "click"
+              or etype == "mousemove"
+              or etype == "dblclick"
+             ):
+            if DOM.getCaptureElement() is not None:
+                return True
+        elif etype == "mouseout":
+            if DOM.getCaptureElement() is not None:
+                return False
+        return self._event_targets_control(event)
 
 Factory.registerClass('pyjamas.ui.Control', Control)

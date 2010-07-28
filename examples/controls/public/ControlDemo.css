@@ -1,3 +1,11 @@
+body {
+    width: 100%;
+    height: 100%;
+    padding: 0px;
+    margin: 0px;
+    background-color:#ffe;
+}
+
 .gwt-VerticalSlider {
     border:1px solid #aaaaaa;
     background-color:#eeeeee;
@@ -18,3 +26,14 @@
     border:1px solid #000000;
     background-color:#cccccc;
 }
+.gwt-MouseInputControl {
+    border:1px solid #aaaaaa;
+    background-color:#eeeeee;
+    width: 45px;
+}
+
+.gwt-MouseInputControl-focussed {
+    border:1px solid #000000;
+    background-color:#cccccc;
+}
+
