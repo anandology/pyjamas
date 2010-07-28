@@ -21,6 +21,8 @@ from FlexTable import FlexTable
 from pyjamas.ui import HasHorizontalAlignment
 from pyjamas.ui import HasVerticalAlignment
 from pyjamas.ui.Image import Image
+from pyjamas.ui.GlassWidget import GlassWidget
+
 from pyjamas import Window
 
 class DialogBox(PopupPanel):
@@ -30,6 +32,7 @@ class DialogBox(PopupPanel):
         self.caption = HTML()
         self.child = None
         self.dragging = False
+        self.gw = GlassWidget(self)
         self.dragStartX = 0
         self.dragStartY = 0
         self.panel = FlexTable(Height="100%", BorderWidth="0",
@@ -102,7 +105,8 @@ class DialogBox(PopupPanel):
 
     def onMouseDown(self, sender, x, y):
         self.dragging = True
-        DOM.setCapture(self.caption.getElement())
+        DOM.setCapture(self.gw.getElement())
+        self.gw.show()
         self.dragStartX = x
         self.dragStartY = y
 
@@ -120,8 +124,18 @@ class DialogBox(PopupPanel):
                                   absY - self.dragStartY)
 
     def onMouseUp(self, sender, x, y):
+        self.endDragging()
+
+    def onMouseGlassEnter(self, sender):
+        pass
+
+    def onMouseGlassLeave(self, sender):
+        self.endDragging()
+
+    def endDragging(self):
         self.dragging = False
-        DOM.releaseCapture(self.caption.getElement())
+        DOM.releaseCapture(self.gw.getElement())
+        self.gw.hide()
 
     def remove(self, widget):
         if self.child != widget:
