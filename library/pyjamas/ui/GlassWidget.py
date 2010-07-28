@@ -22,20 +22,32 @@ from Widget import Widget
 from MouseListener import MouseHandler
 from RootPanel import RootPanel
 
+mousecapturer = None
+
+def getMouseCapturer(**kwargs):
+    global mousecapturer
+    if mousecapturer is None:
+        mousecapturer = GlassWidget(**kwargs)
+    return mousecapturer
+
+def show(mousetarget, **kwargs):
+    global mousecapturer
+    mc = getMouseCapturer(**kwargs)
+    mc.mousetarget = mousetarget
+    mc.show()
+
+def hide():
+    global mousecapturer
+    mousecapturer.hide()
+
 class GlassWidget(Widget, MouseHandler):
-    def __init__(self, mousetarget, rootpanel=None, **kwargs):
+    def __init__(self, **kwargs):
 
         self.glassListeners = []
         self.showing = False
-        self.mousetarget = mousetarget
 
         if not 'StyleName' in kwargs:
             kwargs['StyleName'] = "gwt-GlassWidget"
-
-        if rootpanel is None:
-            rootpanel = RootPanel()
-
-        self.rootpanel = rootpanel
 
         if kwargs.has_key('Element'):
             element = kwargs.pop('Element')
@@ -58,8 +70,9 @@ class GlassWidget(Widget, MouseHandler):
 
         DOM.removeEventPreview(self)
 
-        self.rootpanel.remove(self)
+        RootPanel().remove(self)
         self.onHideImpl(self.getElement())
+        DOM.releaseCapture(self.getElement())
         for listener in self.glassListeners:
             if hasattr(listener, 'onGlassHide'):
                 listener.onGlassHide(self, autoClosed)
@@ -72,7 +85,6 @@ class GlassWidget(Widget, MouseHandler):
 
     def onEventPreview(self, event):
         etype = DOM.eventGetType(event)
-        print "glass etype", etype
         if (   etype == "mousedown"
               or etype == "blur"
              ):
@@ -133,8 +145,9 @@ class GlassWidget(Widget, MouseHandler):
 
         DOM.addEventPreview(self)
 
-        self.rootpanel.add(self)
+        RootPanel().add(self)
         self.onShowImpl(self.getElement())
+        DOM.setCapture(self.getElement())
 
     def adjustMousePos(self, x, y):
         x += self.getAbsoluteLeft() - self.mousetarget.getAbsoluteLeft()
