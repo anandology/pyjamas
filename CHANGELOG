@@ -1,6 +1,10 @@
                     Changes made to Pyjamas since 0.7
                     ---------------------------------
 
+ * Fix long-standing bug with DialogBox: use an overlay to capture all
+   mouse events.  use same overlay trick in Controls so that slider
+   capture now works, too.
+
  * Add DOM.createTextNode function, thanks to Jordon Wii
 
  * Fix issue in GWTCanvas Transparency demo, thanks to Alex Tsepkov
