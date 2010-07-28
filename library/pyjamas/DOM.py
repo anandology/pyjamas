@@ -83,6 +83,18 @@ def init():
     mf._addWindowEventListener("keydown", browser_event_cb)
     mf._addWindowEventListener("keypress", browser_event_cb)
 
+def _init_testing():
+    body = doc().getElementsByTagName("body")[0]
+    mf._addEventListener(body, "click", cb)
+    mf._addEventListener(body, "change", cb)
+    mf._addEventListener(body, "mouseout", cb)
+    mf._addEventListener(body, "mousedown", cb)
+    mf._addEventListener(body, "mouseup", cb)
+    mf._addEventListener(body, "mousemove", cb)
+    mf._addEventListener(body, "resize", cb)
+    mf._addEventListener(body, "keyup", cb)
+    mf._addEventListener(body, "keydown", cb)
+    mf._addEventListener(body, "keypress", cb)
 
 def _dispatchWindowEvent(sender, evt, useCap):
     pass
@@ -105,7 +117,7 @@ def _dispatchEvent(sender, evt, useCap):
     cap = getCaptureElement()
     listener = get_listener(cap)
     if cap and listener:
-        #print "_dispatchEvent", cap, listener
+        #print "capture _dispatchEvent", cap, listener
         dispatchEvent(evt, cap, listener)
         evt.stopPropagation()
         return
@@ -123,48 +135,61 @@ def _dispatchEvent(sender, evt, useCap):
 
 def _dispatchCapturedMouseEvent(evt):
 
-    if (_dispatchCapturedEvent(evt)):
-        cap = getCaptureElement()
-        listener = get_listener(cap)
-        if cap and listener:
-            dispatchEvent(evt, cap, listener)
-            #print "dcmsev, stop propagation"
-            evt.stopPropagation()
+    #print "dcmsev"
+    if not _dispatchCapturedEvent(evt):
+        return
+    cap = getCaptureElement()
+    listener = get_listener(cap)
+    if cap and listener:
+        dispatchEvent(evt, cap, listener)
+        #print "dcmsev, stop propagation"
+        evt.stopPropagation()
 
 
 def _dispatchCapturedMouseoutEvent(evt):
     cap = getCaptureElement()
-    if cap:
-        #print "cap", dir(evt), cap
-        if not eventGetToElement(evt):
-            #print "synthesise", cap
-            #When the mouse leaves the window during capture, release capture
-            #and synthesize an 'onlosecapture' event.
-            setCapture(None)
-            listener = get_listener(cap)
-            if listener:
-                # this should be interesting...
-                lcEvent = doc().createEvent('UIEvent')
-                lcEvent.initUIEvent('losecapture', False, False, wnd(), 0)
-                dispatchEvent(lcEvent, cap, listener)
+    #print "cap", evt, cap
+    if cap is None:
+        return
+    #print "cap", evt, cap
+    if eventGetToElement(evt):
+        return
+    #print "synthesise", cap
+    #When the mouse leaves the window during capture, release capture
+    #and synthesize an 'onlosecapture' event.
+    setCapture(None)
+    listener = get_listener(cap)
+    if listener is None:
+        return
+    # this should be interesting...
+    #print "lose capture synthesised"
+    lcEvent = doc().createEvent('UIEvent')
+    lcEvent.initUIEvent('losecapture', False, False, wnd(), 0)
+    dispatchEvent(lcEvent, cap, listener)
 
 
 def browser_event_cb(view, event, from_window):
 
-    try:
-        event = get_main_frame().gobject_wrap(event) # webkit HACK!
-    except:
-        pass
+    global sCaptureElem
+    #print "sCaptureElem", sCaptureElem
+    if event is None:
+        event = wnd().event
+    else:
+        try:
+            event = get_main_frame().gobject_wrap(event) # webkit HACK!
+        except:
+            pass
+
     #print "browser_event_cb", event
     et = eventGetType(event)
     #print "browser_event_cb", event, et
     if et == "resize":
         onResize()
         return
-    elif et == 'mouseout':
+    if et == 'mouseout':
         #print "mouse out", event
-        return _dispatchCapturedMouseoutEvent(event)
-    elif (et == 'keyup' or et == 'keydown' or
+        _dispatchCapturedMouseoutEvent(event)
+    if (et == 'keyup' or et == 'keydown' or
           et == 'keypress' or et == 'change'):
         return _dispatchCapturedEvent(event)
     else:
@@ -480,6 +505,7 @@ def getBooleanElemAttribute(elem, attr):
 
 
 def getCaptureElement():
+    global sCaptureElem
     return sCaptureElem
 
 
@@ -731,6 +757,7 @@ def isOrHasChild(parent, child):
 
 
 def releaseCapture(elem):
+    #print "releaseCapture", elem
     global sCaptureElem
     if sCaptureElem and compare(elem, sCaptureElem):
         sCaptureElem = None
@@ -954,17 +981,17 @@ def dispatchEvent(event, element, listener):
 
 
 def previewEvent(evt):
-    ret = True
-    #print sEventPreviewStack
-    if len(sEventPreviewStack) > 0:
-        preview = sEventPreviewStack[len(sEventPreviewStack) - 1]
+    #print "previewEvent", sEventPreviewStack
+    if len(sEventPreviewStack) == 0:
+        return True
+    preview = sEventPreviewStack[-1]
+    ret = preview.onEventPreview(evt)
+    if ret:
+        return True
 
-        ret = preview.onEventPreview(evt)
-        if not ret:
-
-            #print "previewEvent, cancel, prevent default"
-            eventCancelBubble(evt, True)
-            eventPreventDefault(evt)
+    #print "previewEvent, cancel, prevent default"
+    eventCancelBubble(evt, True)
+    eventPreventDefault(evt)
 
     return ret
 
@@ -981,6 +1008,7 @@ def dispatchEventImpl(event, element, listener):
     global currentEvent
     if element == sCaptureElem:
         if eventGetType(event) == "losecapture":
+            # print "lose capture"
             sCaptureElem = None
     #print "dispatchEventImpl", listener, eventGetType(event)
     prevCurrentEvent = currentEvent
