@@ -40,10 +40,18 @@ class MouseInputControl(InputControl):
         self.dragging = False
         DOM.releaseCapture(self.getElement())
 
-    def moveControl(self, mouse_x, mouse_y):
-        height_range = 50
-        widget_height = self.getOffsetHeight()
-        relative_y = mouse_y - (widget_height / 2)
+    def moveControl(self, mouse_x, mouse_y, first_move=False):
+        height_range = 100.0
+        val_diff = self.max_value - self.min_value
+        if first_move:
+            # back-calculate value to offset so that control doesn't jump
+            value = self.value
+            self.height_offset = mouse_y - height_range + \
+                      (height_range * (value - self.min_value)) / val_diff
+
+        relative_y = mouse_y - self.height_offset
+        #widget_height = self.getOffsetHeight()
+        #relative_y = mouse_y - (widget_height / 2) - self.height_offset
         if relative_y < 0:
             relative_y = 0
         if relative_y >= height_range:
@@ -51,7 +59,6 @@ class MouseInputControl(InputControl):
 
         relative_y = height_range - relative_y # turn round (bottom to top)
 
-        val_diff = self.max_value - self.min_value
         new_value = ((val_diff * relative_y) / height_range) + self.min_value
         new_value = self.processValue(new_value)
 

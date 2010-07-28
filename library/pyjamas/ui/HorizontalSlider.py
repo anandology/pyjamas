@@ -27,7 +27,7 @@ class HorizontalSlider(VerticalSlider):
                                     **kwargs)
         self.setHandleStyle(None, "10px", "100%", None)
 
-    def moveControl(self, mouse_x, mouse_y):
+    def moveControl(self, mouse_x, mouse_y, first_move=False):
         handle_width = DOM.getIntAttribute(self.handle, "offsetWidth")
         widget_width = self.getOffsetWidth()
         length_range = widget_width - 10 # handle width is hard-coded

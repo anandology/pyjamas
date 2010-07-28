@@ -20,6 +20,7 @@ from pyjamas import Window
 from FocusWidget import FocusWidget
 from MouseListener import MouseHandler
 from pyjamas.ui import KeyboardListener
+from pyjamas.ui import GlassWidget
 
 
 class Control(FocusWidget, MouseHandler):
@@ -91,7 +92,7 @@ class Control(FocusWidget, MouseHandler):
     def removeControlValueListener(self, listener):
         self.valuechange_listeners.remove(listener)
 
-    def moveControl(self, x, y):
+    def moveControl(self, x, y, first_move=False):
         pass
 
     def onClick(self, sender=None):
@@ -101,7 +102,7 @@ class Control(FocusWidget, MouseHandler):
         mouse_x = DOM.eventGetClientX(event) + Window.getScrollLeft()
         mouse_y = DOM.eventGetClientY(event) + Window.getScrollTop()
         self.moveControl(mouse_x - self.getAbsoluteLeft(),
-                         mouse_y - self.getAbsoluteTop())
+                         mouse_y - self.getAbsoluteTop(), True)
 
     def onMouseMove(self, sender, x, y):
         if not self.dragging:
@@ -109,11 +110,7 @@ class Control(FocusWidget, MouseHandler):
         self.moveControl(x + Window.getScrollLeft(), y + Window.getScrollTop())
 
     def onLoseFocus(self, sender):
-        self.dragging = False
-        #print "lose focus"
-        #DOM.removeEventPreview(self)
-        DOM.releaseCapture(self.getElement())
-
+        self.endDragging()
 
     def onMouseDown(self, sender, x, y):
         # regardless of drag_enabled, onMouseDown must prevent
@@ -122,21 +119,31 @@ class Control(FocusWidget, MouseHandler):
         DOM.eventPreventDefault(DOM.eventGetCurrentEvent())
         if not self.drag_enabled:
             return
-        #DOM.addEventPreview(self)
         self.dragging = True
-        DOM.setCapture(self.getElement())
-        self.moveControl(x + Window.getScrollLeft(), y + Window.getScrollTop())
-
-    def onMouseUp(self, sender, x, y):
-        self.dragging = False
-        #DOM.removeEventPreview(self)
-        DOM.releaseCapture(self.getElement())
+        GlassWidget.show(self)
+        self.moveControl(x + Window.getScrollLeft(), y + Window.getScrollTop(),
+                         True)
 
     def onMouseEnter(self, sender):
         pass
 
     def onMouseLeave(self, sender):
         pass
+
+    def onMouseUp(self, sender, x, y):
+        self.endDragging()
+
+    def onMouseGlassEnter(self, sender):
+        pass
+
+    def onMouseGlassLeave(self, sender):
+        self.endDragging()
+
+    def endDragging(self):
+        if not self.dragging:
+            return
+        self.dragging = False
+        GlassWidget.hide()
 
     def onKeyDown(self, sender, keycode, modifiers):
         if keycode == KeyboardListener.KEY_UP:

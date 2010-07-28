@@ -87,7 +87,7 @@ class AreaSlider(DoubleControl):
         self.dragging = False
         DOM.releaseCapture(self.getElement())
 
-    def moveControl(self, mouse_x, mouse_y):
+    def moveControl(self, mouse_x, mouse_y, first_move=False):
         handle_height = DOM.getIntAttribute(self.handle, "offsetHeight")
         widget_height = self.getOffsetHeight()
         height_range = widget_height - 10 # handle height is hard-coded
