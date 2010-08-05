@@ -166,13 +166,16 @@ def create_object(items):
         vars[str(k)] = v
     return kls(**vars)
     
+def _decode_response(self, json_str):
+    return loads(json_str, object_hook=create_object)
+
 class JSONResponseTextHandler(object):
     def __init__(self, request):
         self.request = request
 
     def onCompletion(self, json_str):
         try:
-            response = loads(json_str, object_hook=create_object)
+            response = _decode_response(json_str)
         except: # just catch... everything.
             # err.... help?!!
             error = dict(
