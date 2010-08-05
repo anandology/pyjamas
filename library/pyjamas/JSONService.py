@@ -166,7 +166,7 @@ def create_object(items):
         vars[str(k)] = v
     return kls(**vars)
     
-def _decode_response(self, json_str):
+def _decode_response(json_str):
     return loads(json_str, object_hook=create_object)
 
 class JSONResponseTextHandler(object):

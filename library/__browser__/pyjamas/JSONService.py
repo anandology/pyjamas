@@ -3,6 +3,6 @@ def create_object(items):
     return items
 
 # nor call object_hook!
-def _decode_response(self, json_str):
+def _decode_response(json_str):
     return loads(json_str)
 
