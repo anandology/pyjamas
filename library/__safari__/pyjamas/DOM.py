@@ -101,3 +101,9 @@ def buttonClick(elem):
         elem.dispatchEvent(evt);
     """)
 
+def eventGetMouseWheelVelocityY(evt):
+    JS("""
+    return Math.round(-evt.wheelDelta / 40) || 0;
+    """)
+
+

@@ -23,5 +23,18 @@ def init():
     global hack_timer_workaround_bug_button
     mf._hack_timer_workaround_bug_button = createButton()
     mf.addEventListener(mf._hack_timer_workaround_bug_button, "click", cb)
+    _init_mousewheel()
 
+def _init_mousewheel():
+    mf = get_main_frame()
+    mf._addWindowEventListener("DOMMouseScroll", browser_event_cb)
+
+def sinkEventsMozilla(element, bits):
+    mf = get_main_frame()
+    if (bits & 0x40000):
+        print "add scroll", element
+        mf.addEventListener(element, "DOMMouseScroll", _dispatchEvent)
+
+def eventGetMouseWheelVelocityY(evt):
+    return evt.detail or 0.0
 

@@ -50,3 +50,9 @@ def getAbsoluteTop(elem):
     }
     return top;
     """)
+
+def eventGetMouseWheelVelocityY(evt):
+    JS("""
+    return evt.detail * 4 || 0;
+    """)
+

@@ -1,5 +1,5 @@
-
 # Copyright 2006 James Tauber and contributors
+# Copyright 2010 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -42,12 +42,13 @@ def init():
             var cap = DOM.getCaptureElement();
             if (cap) {
                 if (!evt.relatedTarget) {
-                    // When the mouse leaves the window during capture, release capture
-                    // and synthesize an 'onlosecapture' event.
+                    // When the mouse leaves the window during capture,
+                    // release capture and synthesize an 'onlosecapture' event.
                     DOM.sCaptureElem = null;
                     if (cap.__listener) {
                         var lcEvent = $doc.createEvent('UIEvent');
-                        lcEvent.initUIEvent('losecapture', false, false, $wnd, 0);
+                        lcEvent.initUIEvent('losecapture', false, false,
+                                             $wnd, 0);
                         DOM.dispatchEvent(lcEvent, cap, cap.__listener);
                     }
                 }
@@ -56,15 +57,17 @@ def init():
         true
     );
 
+    var dcme = $wnd.__dispatchCapturedMouseEvent;
+    var dce = $wnd.__dispatchCapturedEvent;
 
-    $wnd.addEventListener('click', $wnd.__dispatchCapturedMouseEvent, true);
-    $wnd.addEventListener('dblclick', $wnd.__dispatchCapturedMouseEvent, true);
-    $wnd.addEventListener('mousedown', $wnd.__dispatchCapturedMouseEvent, true);
-    $wnd.addEventListener('mouseup', $wnd.__dispatchCapturedMouseEvent, true);
-    $wnd.addEventListener('mousemove', $wnd.__dispatchCapturedMouseEvent, true);
-    $wnd.addEventListener('keydown', $wnd.__dispatchCapturedEvent, true);
-    $wnd.addEventListener('keyup', $wnd.__dispatchCapturedEvent, true);
-    $wnd.addEventListener('keypress', $wnd.__dispatchCapturedEvent, true);
+    $wnd.addEventListener('click', dcme, true);
+    $wnd.addEventListener('dblclick', dcme, true);
+    $wnd.addEventListener('mousedown', dcme, true);
+    $wnd.addEventListener('mouseup', dcme, true);
+    $wnd.addEventListener('mousemove', dcme, true);
+    $wnd.addEventListener('keydown', dce, true);
+    $wnd.addEventListener('keyup', dce, true);
+    $wnd.addEventListener('keypress', dce, true);
     
     $wnd.__dispatchEvent = function(evt) {
     
@@ -81,6 +84,13 @@ def init():
             DOM.dispatchEvent(evt, curElem, listener);
         }
     };
+    """)
+    _init_mousewheel()
+
+def _init_mousewheel():
+    JS("""
+    var dcme = $wnd.__dispatchCapturedMouseEvent;
+    $wnd.addEventListener('mousescroll', dcme, true);
     """)
 
 def addEventPreview(preview):
@@ -157,6 +167,8 @@ def eventGetTypeInt(event):
       case "scroll": return 0x04000;
       case "error": return 0x10000;
       case "contextmenu": return 0x20000;
+      case "mousewheel": return 0x40000;
+      case "DOMMouseScroll": return 0x40000;
     }
     """)
 
@@ -582,7 +594,9 @@ def sinkEvents(element, bits):
     element.onload      = (bits & 0x08000) ? $wnd.__dispatchEvent : null;
     element.onerror    = (bits & 0x10000) ? $wnd.__dispatchEvent : null;
     element.oncontextmenu = (bits & 0x20000) ? $wnd.__dispatchEvent : null;
+    element.onmousewheel = (bits & 0x40000) ? $wnd.__dispatchEvent : null;
     """)
+    sinkEventsMozilla(element, bits)
 
 def toString(elem):
     JS("""
