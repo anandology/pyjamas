@@ -2526,7 +2526,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         local_prefix = '$cls_definition'
         name_scope = {}
         current_klass = Klass(class_name, name_scope)
-        current_klass.__md5__ = self.md5(node)
+        if self.function_argument_checking:
+            current_klass.__md5__ = self.md5(node)
         if len(node.bases) == 0:
             base_classes = [("object", "pyjslib.object")]
         else:
@@ -2553,7 +2554,10 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         print >>self.output, self.indent() + class_name + """ = (function(){
 %(s)svar %(p)s = new Object();
 %(s)svar $method;
-%(s)s%(p)s.__md5__ = '%(m)s';""" % {'s': self.spacing(), 'n': node.name, 'p': local_prefix, 'm': current_klass.__md5__}
+%(s)s%(p)s.__module__ = '%(module)s';""" % {'s': self.spacing(), 'p': local_prefix, 'module': self.module_name}
+
+        if self.function_argument_checking:
+            print >>self.output, self.indent() + "%(p)s.__md5__ = '%(m)s';" % {'p': local_prefix, 'm': current_klass.__md5__}
 
         self.push_lookup(name_scope)
         for child in node.code:
