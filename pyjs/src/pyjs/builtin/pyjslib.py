@@ -35,6 +35,30 @@ $max_int = 0x7fffffff;
 $min_int = -0x80000000;
 """)
 
+def _create_class(clsname, bases=None, methods=None):
+    # Creates a new class, emulating parts of Python's new-style classes
+    # TODO: We should look at __metaclass__, but for now we only
+    # handle the fallback to __class__
+    if bases and hasattr(bases[0], '__class__') and hasattr(bases[0], '__new__'):
+        main_base = bases[0]
+        return main_base.__class__(clsname, bases, methods)
+    return type(clsname, bases, methods)
+
+def type(clsname, bases=None, methods=None):
+    if bases is None and methods is None:
+        return clsname.__class__
+    # creates a class, derived from bases, with methods and variables
+    JS(" var mths = {}; ")
+    if methods:
+        for k in methods.keys():
+            mth = methods[k]
+            JS(" mths[k] = mth; ")
+
+    JS(" var bss = null; ")
+    if bases:
+        JS("bss = bases.__array;")
+    JS(" return $pyjs_type(clsname, bss, mths); ")
+
 class object:
     pass
 
@@ -5640,7 +5664,8 @@ def getattr(obj, name, default_value=None):
         return method.__get__(null, obj.__class__);
     }
     if (   typeof method != 'function'
-        || obj.__is_instance__ !== true) {
+        || obj.__is_instance__ !== true
+        || name == '__class__') {
         return obj[mapped_name];
     }
 
@@ -6398,22 +6423,6 @@ def printFunc(objs, newline):
     }
     $printFunc(s);
     """)
-
-def type(clsname, bases=None, methods=None):
-    if bases is None and methods is None:
-        # return type of clsname
-        raise NotImplementedError("type() with single argument is not supported (use isinstance())")
-    # creates a class, derived from bases, with methods and variables
-    JS(" var mths = {}; ")
-    if methods:
-        for k in methods.keys():
-            mth = methods[k]
-            JS(" mths[k] = mth; ")
-
-    JS(" var bss = null; ")
-    if bases:
-        JS("bss = bases.__array;")
-    JS(" return $pyjs_type(clsname, bss, mths); ")
 
 def pow(x, y, z = None):
     p = None
