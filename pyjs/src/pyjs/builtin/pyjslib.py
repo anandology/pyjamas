@@ -5376,9 +5376,10 @@ def range(start, stop = None, step = 1):
     }
     stop = start + nstep * step;
     if (nstep <= 0) i = stop;
-    for (; i != stop; i += step)
+    for (; i != stop; i += step) {
 """)
     items.push(INT(i))
+    JS('}')
     return list(items)
 
 def slice(object, lower, upper):
