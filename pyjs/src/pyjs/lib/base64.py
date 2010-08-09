@@ -349,7 +349,7 @@ def decodestring(s):
     return binascii.a2b_base64(s)
 
 
-
+
 # Useable as a script...
 def test():
     """Small test program"""
