@@ -3902,7 +3902,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                     getattr_condition = "((%(v)s=%(attr)s) !== null && (%(vl)s=%(attr_left)s).__is_instance__) && typeof %(v)s == 'function'"
                 else:
                     getattr_condition = """((%(v)s=%(attr)s) !== null && ((%(vl)s=%(attr_left)s).__is_instance__) && typeof %(v)s == 'function') ||
-(%(vl)s['%(attr_right)s'] !== null && typeof %(vl)s['%(attr_right)s']['__get__'] == 'function')"""
+typeof %(vl)s['%(attr_right)s'] == 'undefined' || (%(vl)s['%(attr_right)s'] !== null && typeof %(vl)s['%(attr_right)s']['__get__'] == 'function')"""
                 attr_code = """\
 (""" + getattr_condition + """?
 \tpyjslib['getattr'](%(vl)s, '%(attr_right)s'):
