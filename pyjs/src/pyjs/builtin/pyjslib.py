@@ -803,7 +803,7 @@ class BaseException:
         return self.args.__getitem__(index)
 
     def toString(self):
-        return self.__str__()
+        return self.__name__ + ': ' + self.__str__()
 
     def __str__(self):
         if len(self.args) is 0:

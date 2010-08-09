@@ -1279,17 +1279,15 @@ class Translator(object):
 var %(dbg)s_retry = 0;
 try{var %(dbg)s_res=%(call_code)s;}catch(%(dbg)s_err){
     if (%(dbg)s_err.__name__ != 'StopIteration') {
-        var save_stack = $pyjs.__last_exception_stack__;
         sys.save_exception_stack();
-        var $pyjs_msg = "";
 
-        try {
-            $pyjs_msg = "\\n" + sys.trackstackstr();
-        } catch (s) {};
-        $pyjs.__last_exception_stack__ = save_stack;
-        if ($pyjs_msg !== $pyjs.debug_msg) {
-            pyjslib['debugReport']("Module %(mod)s at line %(lineno)s :\\n" + %(dbg)s_err + $pyjs_msg);
-            $pyjs.debug_msg = $pyjs_msg;
+        if (!$pyjs.in_try_except) {
+            var $pyjs_msg = '';
+            try {
+                $pyjs_msg = "\\n" + sys.trackstackstr();
+            } catch (s) {};
+            $pyjs.__active_exception_stack__ = null;
+            pyjslib['debugReport'](%(dbg)s_err + '\\nTraceback:' + $pyjs_msg);
             debugger;
         }
     }
@@ -2297,6 +2295,8 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         save_state_max_depth = self.state_max_depth
         start_states = len(self.generator_states)
         pyjs_try_err = '$pyjs_try_err'
+        if not self.ignore_debug and self.debug:
+            print >>self.output, self.spacing() + "$pyjs.in_try_except += 1;"
         if self.source_tracking:
             print >>self.output, self.spacing() + "var $pyjs__trackstack_size_%d = $pyjs.trackstack.length;" % self.stacksize_depth
         self.generator_switch_case(increment=True)
@@ -2324,6 +2324,11 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
 
         print >> self.output, self.dedent() + "} catch(%s) {" % pyjs_try_err
         self.indent()
+        if not self.ignore_debug and self.debug:
+            print >>self.output, self.spacing() + "$pyjs.in_try_except -= 1;"
+        if self.source_tracking:
+            print >>self.output, self.spacing() + "$pyjs.__last_exception_stack__ = sys.save_exception_stack();"
+            print >>self.output, self.spacing() + "$pyjs.__active_exception_stack__ = null;"
         if self.is_generator:
             print >> self.output, self.spacing() + "$generator_exc[%d] = %s;" % (self.try_depth, pyjs_try_err)
         try_state_max_depth = self.state_max_depth
@@ -2351,10 +2356,9 @@ if (%(e)s.__name__ == 'TryElse') {""" % {'e': pyjs_try_err}
         print >> self.output, self.spacing() + """\
 var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__name__ );\
 """ % {'e': pyjs_try_err}
-        print >> self.output, self.spacing() + "$pyjs.__last_exception__ = {error: %s, module: %s, try_lineno: %s};" % (pyjs_try_err, self.module_name, node.lineno)
+        print >> self.output, self.spacing() + "$pyjs.__last_exception__ = {error: %s, module: %s};" % (pyjs_try_err, self.module_name)
         if self.source_tracking:
             print >>self.output, """\
-%(s)ssys.save_exception_stack();
 %(s)sif ($pyjs.trackstack.length > $pyjs__trackstack_size_%(d)d) {
 %(s)s\t$pyjs.trackstack = $pyjs.trackstack.slice(0,$pyjs__trackstack_size_%(d)d);
 %(s)s\t$pyjs.track = $pyjs.trackstack.slice(-1)[0];
@@ -2373,7 +2377,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 if as_:
                     errName = as_.name
                 else:
-                    errName = 'err'
+                    errName = None
 
                 if not expr:
                     print >> self.output, "%s{" % else_str
@@ -2390,9 +2394,9 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                                 self.expr(expr, current_klass),pyjs_try_err, self.expr(expr, current_klass)) ]
                     print >> self.output, "%sif (%s) {" % (else_str, "||".join(l))
                 self.indent()
-                print >> self.output, self.spacing() + "$pyjs.__last_exception__.except_lineno = %d;" % lineno
-                tnode = self.ast.Assign([self.ast.AssName(errName, "OP_ASSIGN", lineno)], self.ast.Name(pyjs_try_err, lineno), lineno)
-                self._assign(tnode, current_klass)
+                if errName:
+                    tnode = self.ast.Assign([self.ast.AssName(errName, "OP_ASSIGN", lineno)], self.ast.Name(pyjs_try_err, lineno), lineno)
+                    self._assign(tnode, current_klass)
 
                 self.generator_add_state()
                 self.generator_switch_open()
@@ -2410,7 +2414,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
             if node.handlers[-1][0]:
                 # No default catcher, create one to fall through
-                print >> self.output, "%s{ throw %s; }" % (else_str, pyjs_try_err)
+                print >> self.output, "%s{ $pyjs.__active_exception_stack__ = $pyjs.__last_exception_stack__; $pyjs.__last_exception_stack__ = null; throw %s; }" % (else_str, pyjs_try_err)
             else:
                 print >> self.output
         if hasattr(node, 'else_') and node.else_:
@@ -2425,6 +2429,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         if final is not None:
             print >>self.output, self.dedent() + "} finally {"
             self.indent()
+            if not self.ignore_debug and self.debug:
+                print >>self.output, self.spacing() + "$pyjs.in_try_except -= 1;"
             if self.is_generator:
                 print >>self.output, self.spacing() + "if ($yielding === true) return $yield_value;"
                 #print >>self.output, self.spacing() + "if ($yielding === null) throw $exc;"
@@ -2578,9 +2584,11 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
     def _raise(self, node, current_klass):
         if self.is_generator:
-            print >> self.output, self.spacing() + "$generator_state[%d]=%d;" % (len(self.generator_states)-1, self.generator_states[-1]+1)
+            print >>self.output, self.spacing() + "$generator_state[%d]=%d;" % (len(self.generator_states)-1, self.generator_states[-1]+1)
 
         if node.expr1:
+            if self.source_tracking:
+                print >>self.output, self.spacing() + "$pyjs.__active_exception_stack__ = null;"
             if node.expr2:
                 if node.expr3:
                     print >> self.output, """
@@ -2616,6 +2624,9 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 print >> self.output, self.spacing() + "throw (%s);" % self.expr(
                     node.expr1, current_klass)
         else:
+            if self.source_tracking:
+                print >>self.output, self.spacing() + "$pyjs.__active_exception_stack__ = $pyjs.__last_exception_stack__;"
+                print >>self.output, self.spacing() + "$pyjs.__last_exception_stack__ = null;"
             s = self.spacing()
             print >> self.output, """\
 %(s)sthrow ($pyjs.__last_exception__?
