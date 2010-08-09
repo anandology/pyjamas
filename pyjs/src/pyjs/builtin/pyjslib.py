@@ -5698,7 +5698,7 @@ def delattr(obj, name):
     if (   obj !== null
         && (typeof obj == 'object' || typeof obj == 'function')
         && (typeof(obj[mapped_name]) != "undefined")&&(typeof(obj[mapped_name]) != "function") ){
-        if (typeof obj[mapped_name].__delete__ == 'function') {
+        if (obj.__is_instance__ && typeof obj[mapped_name].__delete__ == 'function') {
             obj[mapped_name].__delete__(obj);
         } else {
             delete obj[mapped_name];
@@ -5729,6 +5729,7 @@ def setattr(obj, name, value):
         name = '$$' + name;
     }
     if (   typeof obj[name] != 'undefined'
+        && obj.__is_instance__
         && obj[name] !== null
         && typeof obj[name].__set__ == 'function') {
         obj[name].__set__(obj, value);
