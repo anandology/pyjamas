@@ -5790,7 +5790,7 @@ def dir(obj):
         throw pyjslib['UndefinedValueError']("obj");
     }
     var properties=pyjslib.list();
-    for (property in obj) properties.append(property);
+    for (var property in obj) properties.append(property);
     return properties;
     """)
 
