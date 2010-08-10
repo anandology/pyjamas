@@ -35,6 +35,30 @@ $max_int = 0x7fffffff;
 $min_int = -0x80000000;
 """)
 
+def _create_class(clsname, bases=None, methods=None):
+    # Creates a new class, emulating parts of Python's new-style classes
+    # TODO: We should look at __metaclass__, but for now we only
+    # handle the fallback to __class__
+    if bases and hasattr(bases[0], '__class__') and hasattr(bases[0], '__new__'):
+        main_base = bases[0]
+        return main_base.__class__(clsname, bases, methods)
+    return type(clsname, bases, methods)
+
+def type(clsname, bases=None, methods=None):
+    if bases is None and methods is None:
+        return clsname.__class__
+    # creates a class, derived from bases, with methods and variables
+    JS(" var mths = {}; ")
+    if methods:
+        for k in methods.keys():
+            mth = methods[k]
+            JS(" mths[k] = mth; ")
+
+    JS(" var bss = null; ")
+    if bases:
+        JS("bss = bases.__array;")
+    JS(" return $pyjs_type(clsname, bss, mths); ")
+
 class object:
     pass
 
@@ -779,7 +803,7 @@ class BaseException:
         return self.args.__getitem__(index)
 
     def toString(self):
-        return self.__str__()
+        return self.__name__ + ': ' + self.__str__()
 
     def __str__(self):
         if len(self.args) is 0:
@@ -5352,9 +5376,10 @@ def range(start, stop = None, step = 1):
     }
     stop = start + nstep * step;
     if (nstep <= 0) i = stop;
-    for (; i != stop; i += step)
+    for (; i != stop; i += step) {
 """)
     items.push(INT(i))
+    JS('}')
     return list(items)
 
 def slice(object, lower, upper):
@@ -5640,7 +5665,8 @@ def getattr(obj, name, default_value=None):
         return method.__get__(null, obj.__class__);
     }
     if (   typeof method != 'function'
-        || obj.__is_instance__ !== true) {
+        || obj.__is_instance__ !== true
+        || name == '__class__') {
         return obj[mapped_name];
     }
 
@@ -5668,11 +5694,18 @@ def delattr(obj, name):
     if (typeof obj == 'undefined') {
         throw pyjslib['UndefinedValueError']("obj");
     }
+    if (typeof name != 'string') {
+        throw pyjslib['TypeError']("attribute name must be string");
+    }
+    if (obj.__is_instance__ && typeof obj.__delattr__ == 'function') {
+        obj.__delattr__(name);
+        return;
+    }
     var mapped_name = attrib_remap.indexOf(name) < 0 ? name : '$$'+name;
     if (   obj !== null
         && (typeof obj == 'object' || typeof obj == 'function')
         && (typeof(obj[mapped_name]) != "undefined")&&(typeof(obj[mapped_name]) != "function") ){
-        if (typeof obj[mapped_name].__delete__ == 'function') {
+        if (obj.__is_instance__ && typeof obj[mapped_name].__delete__ == 'function') {
             obj[mapped_name].__delete__(obj);
         } else {
             delete obj[mapped_name];
@@ -5696,10 +5729,15 @@ def setattr(obj, name, value):
     if (typeof name != 'string') {
         throw pyjslib['TypeError']("attribute name must be string");
     }
+    if (obj.__is_instance__ && typeof obj.__setattr__ == 'function') {
+        obj.__setattr__(name, value)
+        return;
+    }
     if (attrib_remap.indexOf(name) >= 0) {
         name = '$$' + name;
     }
     if (   typeof obj[name] != 'undefined'
+        && obj.__is_instance__
         && obj[name] !== null
         && typeof obj[name].__set__ == 'function') {
         obj[name].__set__(obj, value);
@@ -6398,22 +6436,6 @@ def printFunc(objs, newline):
     }
     $printFunc(s);
     """)
-
-def type(clsname, bases=None, methods=None):
-    if bases is None and methods is None:
-        # return type of clsname
-        raise NotImplementedError("type() with single argument is not supported (use isinstance())")
-    # creates a class, derived from bases, with methods and variables
-    JS(" var mths = {}; ")
-    if methods:
-        for k in methods.keys():
-            mth = methods[k]
-            JS(" mths[k] = mth; ")
-
-    JS(" var bss = null; ")
-    if bases:
-        JS("bss = bases.__array;")
-    JS(" return $pyjs_type(clsname, bss, mths); ")
 
 def pow(x, y, z = None):
     p = None

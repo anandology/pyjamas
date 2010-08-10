@@ -26,6 +26,8 @@ def addoverride(module_name, path):
     overrides[module_name] = path
 
 def exc_info():
+    # TODO: the stack should be a traceback object once we have a
+    # traceback module
     le = JS('$pyjs.__last_exception__')
     if not le:
         return (None, None, None)
@@ -33,28 +35,31 @@ def exc_info():
         cls = None
     else:
         cls = le.error.__class__
-    return (cls, le.error, None)
+    return (cls, le.error, JS('$pyjs.__last_exception_stack__'))
 
 def exc_clear():
-    JS('$pyjs.__last_exception__ = null;')
+    JS('$pyjs.__last_exception_stack__ = $pyjs.__last_exception__ = null;')
 
 # save_exception_stack is totally javascript, to prevent trackstack pollution
 JS("""sys.save_exception_stack = function () {
     var save_stack = [];
-    for (var needle in $pyjs.trackstack) {
+    if ($pyjs.__active_exception_stack__) {
+        return $pyjs.__active_exception_stack__;
+    }
+    for (var needle=0; needle < $pyjs.trackstack.length; needle++) {
         var t = new Object();
         for (var p in $pyjs.trackstack[needle]) {
             t[p] = $pyjs.trackstack[needle][p];
         }
         save_stack.push(t);
-        $pyjs.__last_exception_stack__ = save_stack;
     }
-return null;
+    $pyjs.__active_exception_stack__ = save_stack;
+    return $pyjs.__active_exception_stack__;
 };""")
 
 def trackstackstr(stack=None):
     if stack is None:
-        stack = JS('$pyjs.__last_exception_stack__')
+        stack = JS('$pyjs.__active_exception_stack__')
     if not stack:
         return ''
     stackstrings = []
