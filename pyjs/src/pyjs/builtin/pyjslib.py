@@ -5722,9 +5722,6 @@ def setattr(obj, name, value):
     if (typeof name != 'string') {
         throw pyjslib['TypeError']("attribute name must be string");
     }
-    if (obj.__is_instance__ && typeof obj.__setattr__ == 'function') {
-        return obj.__setattr__(name, value)
-    }
     if (attrib_remap.indexOf(name) >= 0) {
         name = '$$' + name;
     }
