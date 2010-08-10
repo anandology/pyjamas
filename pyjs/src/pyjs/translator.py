@@ -963,7 +963,7 @@ class Translator(object):
                     bind_type_num = BIND_TYPES_NUMERIC[bind_type]
                 except KeyError:
                     raise TranslationError("Unknown bind type: %s" % bind_type, node)
-                code = "$pyjs__decorated_method('%(method_name)s', %(code)s, %(bind_type)s)" % \
+                code = "$pyjs__decorated_method($cls_instance, '%(method_name)s', %(code)s, %(bind_type)s)" % \
                         {
                           "method_name": node.name,
                           "code": code,
@@ -2545,6 +2545,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             base_classes = []
         class_name = self.add_lookup('class', node.name, class_name)
         print >>self.output, self.indent() + class_name + """ = (function(){
+%(s)svar $cls_instance = $pyjs__class_instance('%(n)s');
 %(s)svar %(p)s = new Object();
 %(s)svar $method;
 %(s)s%(p)s.__md5__ = '%(m)s';""" % {'s': self.spacing(), 'n': node.name, 'p': local_prefix, 'm': current_klass.__md5__}
@@ -2554,20 +2555,10 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             self.is_class_definition = True
             self.local_prefix = local_prefix
             self._stmt(child, current_klass)
-        create_class = """\
-%(s)svar $bases = new Array(%(bases)s);"""
-        if self.module_name == 'pyjslib':
-            create_class += """
-%(s)sreturn $pyjs_type('%(n)s', $bases, %(local_prefix)s);"""
-        else:
-            create_class += """
-%(s)svar $data = pyjslib['dict']();
-%(s)sfor (var $item in %(local_prefix)s) { $data.__setitem__($item, %(local_prefix)s[$item]); }
-%(s)sreturn pyjslib['_create_class']('%(n)s', pyjslib['tuple']($bases), $data);"""
-        create_class %= {'n': node.name, 's': self.spacing(), 'local_prefix': local_prefix, 'bases': ",".join(map(lambda x: x[1], base_classes))}
-        create_class += """
+        print >>self.output, """\
+%(s)sreturn $pyjs__class_function($cls_instance, %(local_prefix)s, 
+%(s)s                            new Array(""" % {'s': self.spacing(), 'local_prefix': local_prefix}  + ",".join(map(lambda x: x[1], base_classes)) + """));
 %s})();""" % self.dedent()
-        print >>self.output, create_class
         self.pop_lookup()
         self.is_class_definition = None
         self.local_prefix = None
@@ -2676,7 +2667,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         else:
             function_args = "(" + ", ".join(declared_arg_names[1:]) + ")"
 
-        print >>self.output, self.indent() + "$method = $pyjs__bind_method2('"+method_name+"', function" + function_args + " {"
+        print >>self.output, self.indent() + "$method = $pyjs__bind_method($cls_instance, '"+method_name+"', function" + function_args + " {"
         if staticmethod:
             self._static_method_init(node, declared_arg_names, varargname, kwargname, current_klass)
         elif classmethod:
