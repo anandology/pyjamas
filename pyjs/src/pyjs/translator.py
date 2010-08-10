@@ -2310,13 +2310,15 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         save_state_max_depth = self.state_max_depth
         start_states = len(self.generator_states)
         pyjs_try_err = '$pyjs_try_err'
-        added_try_except_counter = not self.ignore_debug and self.debug
-        if added_try_except_counter:
-            print >>self.output, self.spacing() + "$pyjs.in_try_except += 1;"
         if self.source_tracking:
             print >>self.output, self.spacing() + "var $pyjs__trackstack_size_%d = $pyjs.trackstack.length;" % self.stacksize_depth
         self.generator_switch_case(increment=True)
         print >>self.output, self.indent() + "try {"
+        added_try_except_counter = not self.ignore_debug and self.debug
+        if added_try_except_counter:
+            print >>self.output, self.spacing() + "try {"
+            self.indent()
+            print >>self.output, self.spacing() + "$pyjs.in_try_except += 1;"
         if self.is_generator:
             print >> self.output, self.spacing() + "if (typeof $generator_exc[%d] != 'undefined' && $generator_exc[%d] !== null) throw $generator_exc[%d];" % (\
                 self.try_depth, self.try_depth, self.try_depth)
@@ -2337,11 +2339,10 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
 
         self.generator_switch_case(increment=True)
         self.generator_switch_close()
-
+        if added_try_except_counter:
+            print >>self.output, self.dedent() + "} finally { $pyjs.in_try_except -= 1; }"
         print >> self.output, self.dedent() + "} catch(%s) {" % pyjs_try_err
         self.indent()
-        if added_try_except_counter:
-            print >>self.output, self.spacing() + "$pyjs.in_try_except -= 1;"
         if self.source_tracking:
             print >>self.output, self.spacing() + "$pyjs.__last_exception_stack__ = sys.save_exception_stack();"
             print >>self.output, self.spacing() + "$pyjs.__active_exception_stack__ = null;"
@@ -2443,12 +2444,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             final = node.final_
 
         if final is not None:
-            if added_try_except_counter:
-                print >>self.output, self.spacing() + "$pyjs.in_try_except += 1;"
             print >>self.output, self.dedent() + "} finally {"
             self.indent()
-            if added_try_except_counter:
-                print >>self.output, self.spacing() + "$pyjs.in_try_except -= 1;"
             if self.is_generator:
                 print >>self.output, self.spacing() + "if ($yielding === true) return $yield_value;"
                 #print >>self.output, self.spacing() + "if ($yielding === null) throw $exc;"
@@ -2468,8 +2465,6 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
         self.generator_states = self.generator_states[:start_states+1]
         print >>self.output, self.dedent()  + "}"
-        if final is None and added_try_except_counter:
-            print >>self.output, self.spacing() + "$pyjs.in_try_except -= 1;"
         if self.is_generator:
             print >> self.output, self.spacing() + "$generator_exc[%d] = null;" % (self.try_depth, )
         self.generator_clear_state()
