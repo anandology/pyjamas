@@ -35,6 +35,24 @@ $max_int = 0x7fffffff;
 $min_int = -0x80000000;
 """)
 
+JS("""
+$module['_handle_exception'] = function(err) {
+    $pyjs.loaded_modules['sys'].save_exception_stack();
+
+    if (!$pyjs.in_try_except) {
+        var $pyjs_msg = '';
+        try {
+            $pyjs_msg = $pyjs.loaded_modules['sys'].trackstackstr();
+        } catch (s) {};
+        $pyjs.__active_exception_stack__ = null;
+        $pyjs_msg = err + '\\nTraceback:\\n' + $pyjs_msg;
+        $module['printFunc']([$pyjs_msg], true);
+        pyjslib['debugReport']($pyjs_msg);
+    }
+    throw err;
+};
+""")
+
 def _create_class(clsname, bases=None, methods=None):
     # Creates a new class, emulating parts of Python's new-style classes
     # TODO: We should look at __metaclass__, but for now we only
@@ -5256,7 +5274,7 @@ def staticmethod(func):
     };
     fnwrap.__name__ = func.__name__;
     fnwrap.__args__ = func.__args__;
-    fnwrap.__bind_type__ = 0;
+    fnwrap.__bind_type__ = 3;
     return fnwrap;
     """)
 

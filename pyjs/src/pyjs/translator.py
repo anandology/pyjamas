@@ -318,9 +318,10 @@ PYJSLIB_BUILTIN_MAPPING = {\
 SCOPE_KEY = 0
 
 BIND_TYPES_NUMERIC = {
-    "static": 0,
+    "func": 0,
     "bound": 1,
-    "class": 2
+    "class": 2,
+    "static": 3,
   }
 
 # Variable names that should be remapped in functions/methods
@@ -689,6 +690,8 @@ class Translator(object):
         'OperatorFuncs': [('operator_funcs', True)],
         'noNumberClasses': [('number_classes', False)],
         'NumberClasses': [('number_classes', True)],
+        'noDebugWithRetry': [('debug_with_retry', False)],
+        'DebugWithRetry': [('debug_with_retry', True)],
     }
 
     def __init__(self, compiler,
@@ -706,6 +709,7 @@ class Translator(object):
                  inline_code=True,
                  operator_funcs=True,
                  number_classes=True,
+                 debug_with_retry=False,
                 ):
 
         monkey_patch_broken_transformer(compiler)
@@ -746,6 +750,7 @@ class Translator(object):
         self.number_classes = number_classes
         if self.number_classes:
             self.operator_funcs = True
+        self.debug_with_retry = debug_with_retry
 
         self.imported_modules = []
         self.imported_js = []
@@ -926,7 +931,7 @@ class Translator(object):
             self.attribute_checking, self.bound_methods, self.descriptors,
             self.source_tracking, self.line_tracking, self.store_source,
             self.inline_bool, self.inline_eq, self.inline_len, self.inline_cmp, self.inline_getitem,
-            self.operator_funcs, self.number_classes,
+            self.operator_funcs, self.number_classes, self.debug_with_retry,
         ))
     def pop_options(self):
         (\
@@ -934,7 +939,7 @@ class Translator(object):
             self.attribute_checking, self.bound_methods, self.descriptors,
             self.source_tracking, self.line_tracking, self.store_source,
             self.inline_bool, self.inline_eq, self.inline_len, self.inline_cmp, self.inline_getitem,
-            self.operator_funcs, self.number_classes,
+            self.operator_funcs, self.number_classes, self.debug_with_retry,
         ) = self.option_stack.pop()
 
     def parse_decorators(self, node, funcname, current_class = None, 
@@ -1000,6 +1005,8 @@ class Translator(object):
         self.pop_lookup()
         if code != '%s':
             code = code % "pyjslib['staticmethod'](%s)"
+            if staticmethod:
+                code = "pyjslib['staticmethod'](%s)" % code
         return (staticmethod, classmethod, code)
 
     # Join an list into a variable with optional attributes
@@ -1274,22 +1281,14 @@ class Translator(object):
         if not self.ignore_debug and self.debug and len(call_code.strip()) > 0:
             dbg = self.uniqid("$pyjs_dbg_")
             mod = self.module_name
-            call_code = """\
+            if self.debug_with_retry:
+                call_code = """\
 (function(){\
 var %(dbg)s_retry = 0;
 try{var %(dbg)s_res=%(call_code)s;}catch(%(dbg)s_err){
     if (%(dbg)s_err.__name__ != 'StopIteration') {
-        sys.save_exception_stack();
-
-        if (!$pyjs.in_try_except) {
-            var $pyjs_msg = '';
-            try {
-                $pyjs_msg = "\\n" + sys.trackstackstr();
-            } catch (s) {};
-            $pyjs.__active_exception_stack__ = null;
-            pyjslib['debugReport'](%(dbg)s_err + '\\nTraceback:' + $pyjs_msg);
-            debugger;
-        }
+        pyjslib['_handle_exception'](%(dbg)s_err);
+        debugger;
     }
     switch (%(dbg)s_retry) {
         case 1:
@@ -1301,6 +1300,16 @@ try{var %(dbg)s_res=%(call_code)s;}catch(%(dbg)s_err){
             throw %(dbg)s_err;
     }
 }return %(dbg)s_res})()""" % locals()
+            else:
+                s = self.spacing()
+                call_code = """\
+(function(){try{
+%(s)sreturn %(call_code)s;
+}catch(%(dbg)s_err){\
+if (%(dbg)s_err.__name__ != 'StopIteration')\
+{pyjslib['_handle_exception'](%(dbg)s_err);}\
+throw %(dbg)s_err;
+}})()""" % locals()
         return call_code
 
     __generator_code_str = """\
@@ -2067,7 +2076,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         print >>self.output, self.spacing() + "%s.__name__ = '%s';\n" % (function_name, node.name)
 
         self.pop_lookup()
-        self.func_args(node, current_klass, function_name, 'static', declared_arg_names, varargname, kwargname)
+        self.func_args(node, current_klass, function_name, 'func', declared_arg_names, varargname, kwargname)
 
         if decorator_code:
             decorator_code = decorator_code % function_name
@@ -2301,7 +2310,8 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         save_state_max_depth = self.state_max_depth
         start_states = len(self.generator_states)
         pyjs_try_err = '$pyjs_try_err'
-        if not self.ignore_debug and self.debug:
+        added_try_except_counter = not self.ignore_debug and self.debug
+        if added_try_except_counter:
             print >>self.output, self.spacing() + "$pyjs.in_try_except += 1;"
         if self.source_tracking:
             print >>self.output, self.spacing() + "var $pyjs__trackstack_size_%d = $pyjs.trackstack.length;" % self.stacksize_depth
@@ -2330,7 +2340,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
 
         print >> self.output, self.dedent() + "} catch(%s) {" % pyjs_try_err
         self.indent()
-        if not self.ignore_debug and self.debug:
+        if added_try_except_counter:
             print >>self.output, self.spacing() + "$pyjs.in_try_except -= 1;"
         if self.source_tracking:
             print >>self.output, self.spacing() + "$pyjs.__last_exception_stack__ = sys.save_exception_stack();"
@@ -2433,9 +2443,11 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             final = node.final_
 
         if final is not None:
+            if added_try_except_counter:
+                print >>self.output, self.spacing() + "$pyjs.in_try_except += 1;"
             print >>self.output, self.dedent() + "} finally {"
             self.indent()
-            if not self.ignore_debug and self.debug:
+            if added_try_except_counter:
                 print >>self.output, self.spacing() + "$pyjs.in_try_except -= 1;"
             if self.is_generator:
                 print >>self.output, self.spacing() + "if ($yielding === true) return $yield_value;"
@@ -2456,6 +2468,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
         self.generator_states = self.generator_states[:start_states+1]
         print >>self.output, self.dedent()  + "}"
+        if final is None and added_try_except_counter:
+            print >>self.output, self.spacing() + "$pyjs.in_try_except -= 1;"
         if self.is_generator:
             print >> self.output, self.spacing() + "$generator_exc[%d] = null;" % (self.try_depth, )
         self.generator_clear_state()
@@ -2784,7 +2798,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.pop_options()
 
         self.push_lookup(current_klass.name_scope)
-        staticmethod, classmethod, decorator_code = self.parse_decorators(node, node.name, current_klass, 
+        staticmethod, classmethod, decorator_code = self.parse_decorators(node, node.name, current_klass,
                                                                           True, bind_type)
         decorator_code = decorator_code % '$method'
         print >>self.output, self.spacing() + "%s = %s;" % (jsmethod_name, decorator_code)
@@ -3904,11 +3918,9 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             self.add_lookup('variable', v, v)
             self.add_lookup('variable', vl, vl)
             if self.bound_methods or self.descriptors:
-                if not self.descriptors:
-                    getattr_condition = "((%(v)s=%(attr)s) !== null && (%(vl)s=%(attr_left)s).__is_instance__) && typeof %(v)s == 'function'"
-                else:
-                    getattr_condition = """((%(v)s=%(attr)s) !== null && ((%(vl)s=%(attr_left)s).__is_instance__) && typeof %(v)s == 'function') ||
-typeof %(vl)s['%(attr_right)s'] == 'undefined' || (%(vl)s['%(attr_right)s'] !== null && typeof %(vl)s['%(attr_right)s']['__get__'] == 'function')"""
+                getattr_condition = """(%(v)s=(%(vl)s=%(attr_left)s)['%(attr_right)s']) == null || ((%(vl)s.__is_instance__) && typeof %(v)s == 'function')"""
+                if self.descriptors:
+                    getattr_condition += """ || (typeof %(v)s['__get__'] == 'function')"""
                 attr_code = """\
 (""" + getattr_condition + """?
 \tpyjslib['getattr'](%(vl)s, '%(attr_right)s'):
@@ -3993,6 +4005,7 @@ def translate(compiler, sources, output_file, module_name=None,
               inline_code=False,
               operator_funcs=True,
               number_classes=True,
+              debug_with_retry=False,
              ):
 
     sources = map(os.path.abspath, sources)
@@ -4034,6 +4047,7 @@ def translate(compiler, sources, output_file, module_name=None,
                    inline_code = inline_code,
                    operator_funcs = operator_funcs,
                    number_classes = number_classes,
+                   debug_with_retry = debug_with_retry,
                   )
     output.close()
     return t.imported_modules, t.imported_js
@@ -4255,6 +4269,7 @@ class AppTranslator:
                  inline_code=False,
                  operator_funcs=True,
                  number_classes=True,
+                 debug_with_retry=False,
                 ):
         self.compiler = compiler
         self.extension = ".py"
@@ -4276,6 +4291,7 @@ class AppTranslator:
         self.inline_code = inline_code
         self.operator_funcs = operator_funcs
         self.number_classes = number_classes
+        self.debug_with_retry = debug_with_retry
 
         if not parser:
             self.parser = PlatformParser(self.compiler)
@@ -4335,6 +4351,7 @@ class AppTranslator:
                        inline_code = self.inline_code,
                        operator_funcs = self.operator_funcs,
                        number_classes = self.number_classes,
+                       debug_with_retry = self.debug_with_retry,
                       )
 
         module_str = output.getvalue()
@@ -4546,6 +4563,18 @@ def add_compile_options(parser):
     speed_options['number_classes'] = False
     pythonic_options['number_classes'] = True
 
+    parser.add_option("--no-debug-with-retry",
+                      dest = "debug_with_retry",
+                      action="store_false",
+                      help = "Do not generate retry debug code (default)",
+                     )
+    parser.add_option("--debug-with-retry",
+                      dest = "debug_with_retry",
+                      action="store_true",
+                      help = "Generate retry debug code (not recommended)",
+                     )
+    speed_options['debug_with_retry'] = False
+    pythonic_options['debug_with_retry'] = False
 
     def set_multiple(option, opt_str, value, parser, **kwargs):
         for k in kwargs.keys():
@@ -4581,6 +4610,7 @@ def add_compile_options(parser):
                         inline_code = False,
                         operator_funcs = True,
                         number_classes = False,
+                        debug_with_retry = False,
                        )
 
 
@@ -4627,6 +4657,7 @@ def main():
               inline_code = options.inline_code,
               operator_funcs = options.operator_funcs,
               number_classes = options.number_classes,
+              debug_with_retry = options.debug_with_retry,
     ),
 
 if __name__ == "__main__":

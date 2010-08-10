@@ -433,6 +433,7 @@ def build_script():
         inline_code = options.inline_code,
         operator_funcs = options.operator_funcs,
         number_classes = options.number_classes,
+        debug_with_retry = options.debug_with_retry,
     )
 
     l = BrowserLinker(args,
