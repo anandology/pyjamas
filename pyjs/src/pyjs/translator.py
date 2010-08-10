@@ -2532,7 +2532,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         local_prefix = '$cls_definition'
         name_scope = {}
         current_klass = Klass(class_name, name_scope)
-        if self.function_argument_checking or self.module_name == 'pyjslib':
+        if self.function_argument_checking:
             current_klass.__md5__ = self.md5(node)
         if len(node.bases) == 0:
             base_classes = [("object", "pyjslib.object")]
@@ -2562,7 +2562,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 %(s)svar $method;
 %(s)s%(p)s.__module__ = '%(module)s';""" % {'s': self.spacing(), 'p': local_prefix, 'module': self.module_name}
 
-        if self.function_argument_checking or self.module_name == 'pyjslib':
+        if self.function_argument_checking:
             print >>self.output, self.indent() + "%(p)s.__md5__ = '%(m)s';" % {'p': local_prefix, 'm': current_klass.__md5__}
 
         self.push_lookup(name_scope)
