@@ -1856,9 +1856,6 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             mod = self.lookup(importName)
             package_mod = self.lookup(importName.split('.', 1)[0])
 
-            if self.source_tracking:
-                print >>self.output, self.spacing() + "$pyjs.track={module:$pyjs.track.module,lineno:$pyjs.track.lineno};$pyjs.trackstack.push($pyjs.track);"
-
             import_stmt = None
             if (   mod[0] != 'root-module'
                 or (assignBase and not package_mod[0] in ['root-module', 'module'])
@@ -1902,9 +1899,6 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                 else:
                     stmt = "%s = %s);"% (lhs, import_stmt)
                 print >> self.output, self.spacing() + stmt
-
-            if self.source_tracking:
-                print >>self.output, self.spacing() + "$pyjs.trackstack.pop();$pyjs.track=$pyjs.trackstack.pop();$pyjs.trackstack.push($pyjs.track);"
 
     def _from(self, node, current_klass, root_level = False):
         if node.modname == '__pyjamas__':
