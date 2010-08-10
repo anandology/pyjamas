@@ -3899,9 +3899,9 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             self.add_lookup('variable', vl, vl)
             if self.bound_methods or self.descriptors:
                 if not self.descriptors:
-                    getattr_condition = "((%(v)s=%(attr)s) !== null && (%(vl)s=%(attr_left)s).__is_instance__) && typeof %(v)s == 'function'"
+                    getattr_condition = "((%(v)s=%(attr)s) !== null & (%(vl)s=%(attr_left)s).__is_instance__) && typeof %(v)s == 'function'"
                 else:
-                    getattr_condition = """((%(v)s=%(attr)s) !== null && ((%(vl)s=%(attr_left)s).__is_instance__) && typeof %(v)s == 'function') ||
+                    getattr_condition = """((%(v)s=%(attr)s) !== null & ((%(vl)s=%(attr_left)s).__is_instance__) && typeof %(v)s == 'function') ||
 (%(vl)s['%(attr_right)s'] !== null && typeof %(vl)s['%(attr_right)s']['__get__'] == 'function')"""
                 attr_code = """\
 (""" + getattr_condition + """?
