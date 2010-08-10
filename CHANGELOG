@@ -1,6 +1,11 @@
                     Changes made to Pyjamas since 0.7
                     ---------------------------------
 
+ * Series of fixes by W Kornewald: #229, #385, #414, #417 and more.
+   accidental exception catching in debug handling sorted; class creation
+   uses __class__ on the base (behaves like http://python.org); added
+   __delattr__ support; extended tracebacks to include module imports.
+
  * Fix long-standing bug with DialogBox: use an overlay to capture all
    mouse events.  use same overlay trick in Controls so that slider
    capture now works, too.
