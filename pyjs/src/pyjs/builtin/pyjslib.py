@@ -5694,13 +5694,6 @@ def delattr(obj, name):
     if (typeof obj == 'undefined') {
         throw pyjslib['UndefinedValueError']("obj");
     }
-    if (typeof name != 'string') {
-        throw pyjslib['TypeError']("attribute name must be string");
-    }
-    if (obj.__is_instance__ && typeof obj.__delattr__ == 'function') {
-        obj.__delattr__(name);
-        return;
-    }
     var mapped_name = attrib_remap.indexOf(name) < 0 ? name : '$$'+name;
     if (   obj !== null
         && (typeof obj == 'object' || typeof obj == 'function')
@@ -5730,8 +5723,7 @@ def setattr(obj, name, value):
         throw pyjslib['TypeError']("attribute name must be string");
     }
     if (obj.__is_instance__ && typeof obj.__setattr__ == 'function') {
-        obj.__setattr__(name, value)
-        return;
+        return obj.__setattr__(name, value)
     }
     if (attrib_remap.indexOf(name) >= 0) {
         name = '$$' + name;
