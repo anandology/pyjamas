@@ -1,5 +1,8 @@
 import pyjd
-pyjd.setup("./public/GChartTestApp.html")
+
+if __name__ == '__main__':
+    # whoops, this has to be done before GChartConsts are imported...
+    pyjd.setup("./public/GChartTestApp.html")
 
 from pyjamas import DeferredCommand
 from pyjamas.ui.HTML import HTML
@@ -408,5 +411,6 @@ def onModuleLoad():
     
     
 
-onModuleLoad()
-pyjd.run()
+if __name__ == '__main__':
+    onModuleLoad()
+    pyjd.run()
