@@ -4001,6 +4001,7 @@ def translate(compiler, sources, output_file, module_name=None,
               operator_funcs=True,
               number_classes=True,
               debug_with_retry=False,
+              list_imports=False,
              ):
 
     sources = map(os.path.abspath, sources)
@@ -4026,7 +4027,16 @@ def translate(compiler, sources, output_file, module_name=None,
     f = file(sources[0], "r")
     src = f.read()
     f.close()
-    output = file(output_file, 'w')
+    if list_imports:
+        v = ImportVisitor(module_name)
+        compiler.walk(tree, v)
+        print '\n'.join(v.imported_modules)
+        return v.imported_modules, None
+
+    if output_file == '-':
+        output = sys.stdout
+    else:
+        output = file(output_file, 'w')
 
     t = Translator(compiler,
                    module_name, sources[0], src, tree, output,
@@ -4249,10 +4259,21 @@ def dotreplace(fname):
 
 class ImportVisitor(object):
 
-    def visitImport(self, node, imp):
-        self._doImport(node.names, imp)
+    def __init__(self, module_name):
+        self.module_name = module_name
+        self.imported_modules = []
 
-    def _doImport(self, names, imp):
+    def add_imported_module(self, importName):
+        if not importName in self.imported_modules:
+            self.imported_modules.append(importName)
+
+    def visitModule(self, node):
+        self.visit(node.node)
+
+    def visitImport(self, node):
+        self._doImport(node.names)
+
+    def _doImport(self, names):
         for importName, importAs in names:
             if importName == '__pyjamas__':
                 continue
@@ -4260,9 +4281,9 @@ class ImportVisitor(object):
                 imp.add_imported_module(importName)
                 continue
 
-            imp.add_imported_module(importName)
+            self.add_imported_module(importName)
 
-    def visitFrom(self, node, imp):
+    def visitFrom(self, node):
         if node.modname == '__pyjamas__':
             return
         if node.modname == '__javascript__':
@@ -4292,7 +4313,7 @@ class ImportVisitor(object):
         for name in node.names:
             sub = modname + '.' + name[0]
             ass_name = name[1] or name[0]
-            self._doImport(((sub, ass_name),), imp)
+            self._doImport(((sub, ass_name),))
 
 class AppTranslator:
 
@@ -4666,9 +4687,14 @@ def main():
 
     parser = OptionParser(usage = usage)
     parser.add_option("-o", "--output", dest="output",
+                      default="-",
                       help="Place the output into <output>")
     parser.add_option("-m", "--module-name", dest="module_name",
                       help="Module name of output")
+    parser.add_option("-i", "--list-imports", dest="list_imports",
+                      default=False,
+                      action="store_true",
+                      help="List import dependencies (without compiling)")
     add_compile_options(parser)
     (options, args) = parser.parse_args()
 
@@ -4679,7 +4705,8 @@ def main():
 
     if not options.output:
         parser.error("No output file specified")
-    options.output = os.path.abspath(options.output)
+    if options.output == '-':
+        options.output = os.path.abspath(options.output)
 
     file_names = map(os.path.abspath, args)
     for fn in file_names:
@@ -4700,6 +4727,7 @@ def main():
               operator_funcs = options.operator_funcs,
               number_classes = options.number_classes,
               debug_with_retry = options.debug_with_retry,
+              list_imports = options.list_imports,
     ),
 
 if __name__ == "__main__":
