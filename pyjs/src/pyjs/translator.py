@@ -4030,8 +4030,7 @@ def translate(compiler, sources, output_file, module_name=None,
     if list_imports:
         v = ImportVisitor(module_name)
         compiler.walk(tree, v)
-        print '\n'.join(v.imported_modules)
-        return v.imported_modules, None
+        return v.imported_modules, []
 
     if output_file == '-':
         output = sys.stdout
@@ -4714,7 +4713,8 @@ def main():
             print >> sys.stderr, "Input file not found %s" % fn
             sys.exit(1)
 
-    translate(compiler, file_names, options.output, options.module_name,
+    imports, js = translate(compiler, file_names, options.output,
+              options.module_name,
               debug = options.debug,
               print_statements = options.print_statements,
               function_argument_checking = options.function_argument_checking,
@@ -4728,7 +4728,9 @@ def main():
               number_classes = options.number_classes,
               debug_with_retry = options.debug_with_retry,
               list_imports = options.list_imports,
-    ),
+    )
+    if options.list_imports:
+        print '\n'.join(imports)
 
 if __name__ == "__main__":
     main()
