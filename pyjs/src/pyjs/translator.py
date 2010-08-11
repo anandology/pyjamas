@@ -4247,6 +4247,53 @@ def dotreplace(fname):
     path, ext = os.path.splitext(fname)
     return path.replace(".", "/") + ext
 
+class ImportVisitor(object):
+
+    def visitImport(self, node, imp):
+        self._doImport(node.names, imp)
+
+    def _doImport(self, names, imp):
+        for importName, importAs in names:
+            if importName == '__pyjamas__':
+                continue
+            if importName.endswith(".js"):
+                imp.add_imported_module(importName)
+                continue
+
+            imp.add_imported_module(importName)
+
+    def visitFrom(self, node, imp):
+        if node.modname == '__pyjamas__':
+            return
+        if node.modname == '__javascript__':
+            return
+        # XXX: hack for in-function checking, we should have another
+        # object to check our scope
+        absPath = False
+        modname = node.modname
+        if hasattr(node, 'level') and node.level > 0:
+            absPath = True
+            modname = self.module_name.split('.')
+            level = node.level
+            if len(modname) < level:
+                raise TranslationError(
+                    "Attempted relative import beyond toplevel package",
+                    node, self.module_name)
+            if node.modname != '':
+                level += 1
+            if level > 1:
+                modname = '.'.join(modname[:-(node.level-1)])
+            else:
+                modname = self.module_name
+            if node.modname != '':
+                modname += '.' + node.modname
+                if modname[0] == '.':
+                    modname = modname[1:]
+        for name in node.names:
+            sub = modname + '.' + name[0]
+            ass_name = name[1] or name[0]
+            self._doImport(((sub, ass_name),), imp)
+
 class AppTranslator:
 
     def __init__(self, compiler,
