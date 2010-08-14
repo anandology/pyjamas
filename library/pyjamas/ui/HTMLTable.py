@@ -24,6 +24,11 @@ widgethash = {}
 
 class HTMLTable(Panel):
 
+    props = [ ("border", "Border width", "BorderWidth", int),
+              ("spacing", "Spacing", "Spacing", None),
+              ("padding", "Padding", "Padding", None)
+             ]
+
     def __init__(self, **kwargs):
         if not kwargs.has_key('CellFormatter'):
             kwargs['CellFormatter'] = CellFormatter(self)
@@ -50,6 +55,9 @@ class HTMLTable(Panel):
         self.sinkEvents(Event.ONCLICK)
 
         Panel.__init__(self, **kwargs)
+
+    def _getProps(self):
+        return Panel._getProps() + self.props
 
     def addTableListener(self, listener):
         self.tableListeners.append(listener)

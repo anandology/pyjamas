@@ -19,16 +19,28 @@ from SimplePanel import SimplePanel
 from pyjamas.ui import Event
 
 class ScrollPanel(SimplePanel):
+
+    props = [("always", "Always show scroll bars",
+                              "AlwaysShowScrollBars", None),
+             ("position", "Vertical Scroll Position",
+                              "ScrollPosition", None),
+             ("horizPos", "Horizontal Scroll Position",
+                              "HorizontalScrollPosition", None),
+            ]
+
     def __init__(self, child=None, **kwargs):
         self.scrollListeners = []
 
         if child is not None:
             kwargs['Widget'] = child
-        if not kwargs.has_key('AlwaysShowScrollBars'):
-             kwargs['AlwaysShowScrollBars'] = False
+        kwargs['AlwaysShowScrollBars'] = kwargs.get('AlwaysShowScrollBars',
+                                                    False)
 
         SimplePanel.__init__(self, **kwargs)
         self.sinkEvents(Event.ONSCROLL)
+
+    def _getProps(self):
+        return SimplePanel._getProps() + self.props
 
     def addScrollListener(self, listener):
         self.scrollListeners.append(listener)
@@ -48,7 +60,8 @@ class ScrollPanel(SimplePanel):
         type = DOM.eventGetType(event)
         if type == "scroll":
             for listener in self.scrollListeners:
-                listener.onScroll(self, self.getHorizontalScrollPosition(), self.getScrollPosition())
+                listener.onScroll(self, self.getHorizontalScrollPosition(),
+                                        self.getScrollPosition())
 
     def removeScrollListener(self, listener):
         self.scrollListeners.remove(listener)
