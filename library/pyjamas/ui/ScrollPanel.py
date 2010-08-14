@@ -33,8 +33,8 @@ class ScrollPanel(SimplePanel):
 
         if child is not None:
             kwargs['Widget'] = child
-        kwargs['AlwaysShowScrollBars'] = kwargs.get('AlwaysShowScrollBars',
-                                                    False)
+        if not kwargs.has_key('AlwaysShowScrollBars'):
+             kwargs['AlwaysShowScrollBars'] = False
 
         SimplePanel.__init__(self, **kwargs)
         self.sinkEvents(Event.ONSCROLL)
