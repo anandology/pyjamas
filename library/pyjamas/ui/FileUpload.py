@@ -20,7 +20,7 @@ from Widget import Widget
 class FileUpload(Widget):
 
     props = [("name", "Name", "Name", None),
-              "filename", "File Name", "FileName", None),
+             ("filename", "File Name", "FileName", None),
             ]
 
     def __init__(self, **kwargs):

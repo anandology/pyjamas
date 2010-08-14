@@ -28,6 +28,7 @@ class TextBox(TextBoxBase):
         element = ka.pop('Element', None) or DOM.createInputText()
         TextBoxBase.__init__(self, element, **ka)
 
+    @classmethod
     def _getProps(self):
         return TextBoxBase._getProps() + self._props
 

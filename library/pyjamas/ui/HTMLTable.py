@@ -125,6 +125,14 @@ class HTMLTable(Panel):
     def getIndexedChild(self, index):
         return self.getWidget(index[0], index[1])
 
+    def addIndexedItem(self, index, item):
+        row, col = index
+        while row >= self.getDOMRowCount():
+            self.insertRow(self.getDOMRowCount())
+        while col >= self.getDOMCellCount(row):
+            self.insertCells(row, self.getDOMCellCount(row), 1)
+        self.setWidget(row, col, item)
+        
     def isCellPresent(self, row, column):
         # GWT uses "and", possibly a bug
         if row >= self.getRowCount() or row < 0:

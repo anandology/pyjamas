@@ -109,9 +109,11 @@ class Applier(object):
 
         return res
 
+    @classmethod
     def _getProps(self):
         return self._props
 
+    @classmethod
     def _getElementProps(self):
         return self._elem_props
 
@@ -129,7 +131,7 @@ class Applier(object):
                  val = convert_to_type(val) if val else None
             args[p[PROP_FNAM]] = val
 
-        self.applyValues(args) 
+        self.applyValues(**args) 
 
     def setElementProperties(self, context, elemProps):
         args = {}
@@ -143,5 +145,5 @@ class Applier(object):
                 val = p[ELPROP_DFLT]
             args[p[ELPROP_FNAM]] = (context, val,)
 
-        self.applyValues(args) 
+        self.applyValues(**args) 
 

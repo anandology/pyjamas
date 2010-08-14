@@ -35,6 +35,7 @@ class TextBoxBase(FocusWidget):
         FocusWidget.__init__(self, element, **kwargs)
         self.sinkEvents(Event.ONCHANGE)
 
+    @classmethod
     def _getProps(self):
         return FocusWidget._getProps() + self._props
 

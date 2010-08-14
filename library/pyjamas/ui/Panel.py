@@ -26,6 +26,9 @@ class Panel(Widget):
     def add(self):
         console.error("This panel does not support no-arg add()")
 
+    def addIndexedItem(self, index, child):
+        self.add(child)
+
     def clear(self):
         # use this method, due to list changing as it's being iterated.
         children = []
