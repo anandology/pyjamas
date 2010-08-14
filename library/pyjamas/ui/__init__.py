@@ -48,9 +48,9 @@ class Applier(object):
                 x.setVisible(False)
         """
 
-        self.apply(**kwargs)
+        self.applyValues(**kwargs)
 
-    def apply(self, **kwargs):
+    def applyValues(self, **kwargs):
 
         if not kwargs:
             return
@@ -69,7 +69,7 @@ class Applier(object):
             else:
                 fn(args)
 
-    def applierValues(self, *args):
+    def retrieveValues(self, *args):
         """ use this function to obtain a dictionary of properties, as
             stored in getXXX functions.
         """
