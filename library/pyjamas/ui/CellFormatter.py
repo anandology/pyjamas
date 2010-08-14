@@ -34,6 +34,11 @@ class CellFormatter(Applier):
         return DOM.getAttribute(self.getElement(row, column), "className")
 
     def isVisible(self, row, column):
+        """ DEPRECATED: please use getVisible
+        """
+        return self.getVisible(row, column)
+
+    def getVisible(self, row, column):
         element = self.getElement(row, column)
         return self.outer.isVisible(element)
 
