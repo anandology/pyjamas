@@ -22,8 +22,7 @@ from ClickListener import ClickHandler
 
 class Label(Widget, MouseHandler, ClickHandler, InnerText):
 
-    props = [("label", "Text", "Text", None),
-             ("wordwrap", "Word Wrap", "WordWrap", None),
+    props = [("wordwrap", "Word Wrap", "WordWrap", None),
              ("horzAlign", "Horizontal Alignment", "HorizontalAlignment", None),
             ]
 
@@ -31,15 +30,17 @@ class Label(Widget, MouseHandler, ClickHandler, InnerText):
         kwargs['StyleName'] = kwargs.get('StyleName', "gwt-Label")
         kwargs['WordWrap'] = kwargs.get('WordWrap', wordWrap)
         kwargs['HorizontalAlignment'] = kwargs.get('HorizontalAlignment', "")
-        kwargs['Text'] = kwargs.get("Text", text)
+        if text:
+            kwargs['Text'] = text
         self.setElement(kwargs.pop('Element', None) or DOM.createDiv())
+        self.horzAlign = ""
 
         Widget.__init__(self, **kwargs)
         MouseHandler.__init__(self)
         ClickHandler.__init__(self)
 
     def _getProps(self):
-        return Widget.props + self.props
+        return Widget.props + InnerText.props + self.props
 
     def getHorizontalAlignment(self):
         return self.horzAlign
