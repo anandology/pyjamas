@@ -20,8 +20,15 @@ from pyjamas.ui.InnerText import InnerText
 
 class ButtonBase(FocusWidget, InnerHTML, InnerText):
 
+    props = [("label", "Text", "Text", None),
+             ("html", "HTML text", "HTML", None),
+            ]
+
     def __init__(self, element, **kwargs):
         FocusWidget.__init__(self, element, **kwargs)
+
+    def _getProps(self):
+        return FocusWidget.props + InnerText.props + InnerHTML.props
 
 Factory.registerClass('pyjamas.ui.ButtonBase', ButtonBase)
 
