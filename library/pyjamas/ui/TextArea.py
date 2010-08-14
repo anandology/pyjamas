@@ -24,10 +24,18 @@ class TextArea(TextBoxBase):
     Use setText/getText to
     get and access the current text.
     """
+
+    props = [("rows", "Rows", "VisibleLines", None),
+             ("cols", "Columns", "CharacterWidth", None),
+            ]
+
     def __init__(self, **ka):
         ka['StyleName'] = ka.get('StyleName', "gwt-TextArea")
         element = ka.pop('Element', None) or DOM.createTextArea()
         TextBoxBase.__init__(self, element, **ka)
+
+    def _getProps(self):
+        return TextBoxBase.props + self.props
 
     def getCharacterWidth(self):
         return DOM.getIntAttribute(self.getElement(), "cols")

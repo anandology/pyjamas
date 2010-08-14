@@ -20,12 +20,12 @@ class InnerText(object):
     props = [("label", "Text", "Text", None),
             ]
 
+    def _getProps(self):
+        return self.props
+
     def setText(self, text):
         DOM.setInnerText(self.getElement(), text)
 
     def getText(self):
         return DOM.getInnerText(self.getElement())
-
-    def _getProps(self):
-        return self.props
 
