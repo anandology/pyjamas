@@ -690,8 +690,6 @@ class Translator(object):
         'OperatorFuncs': [('operator_funcs', True)],
         'noNumberClasses': [('number_classes', False)],
         'NumberClasses': [('number_classes', True)],
-        'noDebugWithRetry': [('debug_with_retry', False)],
-        'DebugWithRetry': [('debug_with_retry', True)],
     }
 
     def __init__(self, compiler,
@@ -709,7 +707,6 @@ class Translator(object):
                  inline_code=True,
                  operator_funcs=True,
                  number_classes=True,
-                 debug_with_retry=False,
                 ):
 
         monkey_patch_broken_transformer(compiler)
@@ -750,7 +747,6 @@ class Translator(object):
         self.number_classes = number_classes
         if self.number_classes:
             self.operator_funcs = True
-        self.debug_with_retry = debug_with_retry
 
         self.imported_modules = []
         self.imported_js = []
@@ -931,7 +927,7 @@ class Translator(object):
             self.attribute_checking, self.bound_methods, self.descriptors,
             self.source_tracking, self.line_tracking, self.store_source,
             self.inline_bool, self.inline_eq, self.inline_len, self.inline_cmp, self.inline_getitem,
-            self.operator_funcs, self.number_classes, self.debug_with_retry,
+            self.operator_funcs, self.number_classes,
         ))
     def pop_options(self):
         (\
@@ -939,7 +935,7 @@ class Translator(object):
             self.attribute_checking, self.bound_methods, self.descriptors,
             self.source_tracking, self.line_tracking, self.store_source,
             self.inline_bool, self.inline_eq, self.inline_len, self.inline_cmp, self.inline_getitem,
-            self.operator_funcs, self.number_classes, self.debug_with_retry,
+            self.operator_funcs, self.number_classes,
         ) = self.option_stack.pop()
 
     def parse_decorators(self, node, funcname, current_class = None, 
@@ -1281,28 +1277,8 @@ class Translator(object):
         if not self.ignore_debug and self.debug and len(call_code.strip()) > 0:
             dbg = self.uniqid("$pyjs_dbg_")
             mod = self.module_name
-            if self.debug_with_retry:
-                call_code = """\
-(function(){\
-var %(dbg)s_retry = 0;
-try{var %(dbg)s_res=%(call_code)s;}catch(%(dbg)s_err){
-    if (%(dbg)s_err.__name__ != 'StopIteration') {
-        pyjslib['_handle_exception'](%(dbg)s_err);
-        debugger;
-    }
-    switch (%(dbg)s_retry) {
-        case 1:
-            %(dbg)s_res=%(call_code)s;
-            break;
-        case 2:
-            break;
-        default:
-            throw %(dbg)s_err;
-    }
-}return %(dbg)s_res})()""" % locals()
-            else:
-                s = self.spacing()
-                call_code = """\
+            s = self.spacing()
+            call_code = """\
 (function(){try{
 %(s)sreturn %(call_code)s;
 }catch(%(dbg)s_err){\
@@ -4000,7 +3976,6 @@ def translate(compiler, sources, output_file, module_name=None,
               inline_code=False,
               operator_funcs=True,
               number_classes=True,
-              debug_with_retry=False,
               list_imports=False,
              ):
 
@@ -4051,7 +4026,6 @@ def translate(compiler, sources, output_file, module_name=None,
                    inline_code = inline_code,
                    operator_funcs = operator_funcs,
                    number_classes = number_classes,
-                   debug_with_retry = debug_with_retry,
                   )
     output.close()
     return t.imported_modules, t.imported_js
@@ -4331,7 +4305,6 @@ class AppTranslator:
                  inline_code=False,
                  operator_funcs=True,
                  number_classes=True,
-                 debug_with_retry=False,
                 ):
         self.compiler = compiler
         self.extension = ".py"
@@ -4353,7 +4326,6 @@ class AppTranslator:
         self.inline_code = inline_code
         self.operator_funcs = operator_funcs
         self.number_classes = number_classes
-        self.debug_with_retry = debug_with_retry
 
         if not parser:
             self.parser = PlatformParser(self.compiler)
@@ -4413,7 +4385,6 @@ class AppTranslator:
                        inline_code = self.inline_code,
                        operator_funcs = self.operator_funcs,
                        number_classes = self.number_classes,
-                       debug_with_retry = self.debug_with_retry,
                       )
 
         module_str = output.getvalue()
@@ -4625,19 +4596,6 @@ def add_compile_options(parser):
     speed_options['number_classes'] = False
     pythonic_options['number_classes'] = True
 
-    parser.add_option("--no-debug-with-retry",
-                      dest = "debug_with_retry",
-                      action="store_false",
-                      help = "Do not generate retry debug code (default)",
-                     )
-    parser.add_option("--debug-with-retry",
-                      dest = "debug_with_retry",
-                      action="store_true",
-                      help = "Generate retry debug code (not recommended)",
-                     )
-    speed_options['debug_with_retry'] = False
-    pythonic_options['debug_with_retry'] = False
-
     def set_multiple(option, opt_str, value, parser, **kwargs):
         for k in kwargs.keys():
             setattr(parser.values, k, kwargs[k])
@@ -4672,7 +4630,6 @@ def add_compile_options(parser):
                         inline_code = False,
                         operator_funcs = True,
                         number_classes = False,
-                        debug_with_retry = False,
                        )
 
 
@@ -4726,7 +4683,6 @@ def main():
               inline_code = options.inline_code,
               operator_funcs = options.operator_funcs,
               number_classes = options.number_classes,
-              debug_with_retry = options.debug_with_retry,
               list_imports = options.list_imports,
     )
     if options.list_imports:

@@ -10,6 +10,10 @@
    mouse events.  use same overlay trick in Controls so that slider
    capture now works, too.
 
+ * Enable asynchronous loading of modules during bootstrap for -m build
+   flag (pyjs); new controller allows for custom bootsplash/early-user
+   javascript code; add bootsplash example.  by C Anthony Risinger
+
  * Add DOM.createTextNode function, thanks to Jordon Wii
 
  * Fix issue in GWTCanvas Transparency demo, thanks to Alex Tsepkov
