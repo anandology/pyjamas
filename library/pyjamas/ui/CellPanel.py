@@ -19,6 +19,13 @@ from ComplexPanel import ComplexPanel
 
 class CellPanel(ComplexPanel):
 
+    props = [("horzAlign", "Horizontal alignment", "HorizontalAlignment", None),
+              ("vertAlign", "Vertical alignment", "VerticalAlignment", None),
+              ("border", "Border width", "BorderWidth", int),
+              ("spacing", "Spacing", "Spacing", None),
+              ("padding", "Padding", "Padding", None)
+             ]
+
     def __init__(self, **kwargs):
         element = None
         if kwargs.has_key('Element'):
@@ -33,6 +40,9 @@ class CellPanel(ComplexPanel):
         DOM.appendChild(self.table, self.body)
 
         ComplexPanel.__init__(self, **kwargs)
+
+    def _getProps(self):
+        return ComplexPanel._getProps() + self.props
 
     def getTable(self):
         return self.table

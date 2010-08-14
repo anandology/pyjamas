@@ -31,8 +31,27 @@ class HasAlignment:
     ALIGN_LEFT = "left"
     ALIGN_RIGHT = "right"
 
+PROP_NAME = 0
+PROP_DESC = 1
+PROP_FNAM = 2
+PROP_TYPE = 3
+
+def get_list_columns(props, cols):
+    res = []
+    for p in props:
+        r = ()
+        for idx in cols:
+            r.append(p[idx])
+        res.append(r)
+    return res
+
+def get_prop_widget_function_names(props):
+    return get_list_columns(props, (PROP_FNAM,))
+
 class Applier(object):
              
+    _props = []
+
     def __init__(self, **kwargs):
         """ use this to apply properties as a dictionary, e.g.
                 x = klass(..., StyleName='class-name')
@@ -82,4 +101,24 @@ class Applier(object):
             res[prop] = fn()
 
         return res
+
+    def _getProps(self):
+        return self.props
+
+    def setDefaults(self, defaults):
+        divs = self.retrieveValues(wnames) 
+        for p in get_prop_widget_function_names(self._getProps()):
+            defaults[p[PROP_NAME]] = divs[p[PROP_FNAM]]
+
+    def updateInstance(self, app_context):
+        args = {}
+        for p in self._getProps():
+            val = app_context.getAppProperty(p[0])
+            convert_to_type = p[PROP_TYPE]
+            if convert_to_type:
+                 val = convert_to_type(val) if val else None
+            args[p[PROP_FNAM]] = val
+
+        self.applyValues(args) 
+
 
