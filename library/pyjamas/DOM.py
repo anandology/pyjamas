@@ -118,7 +118,7 @@ def _dispatchEvent(sender, evt, useCap):
     listener = None
     curElem = sender
 
-    print "_dispatchEvent", sender, evt, evt.type
+    #print "_dispatchEvent", sender, evt, evt.type
     cap = getCaptureElement()
     listener = get_listener(cap)
     if cap and listener:
@@ -187,7 +187,7 @@ def browser_event_cb(view, event, from_window):
 
     #print "browser_event_cb", event
     et = eventGetType(event)
-    print "browser_event_cb", event, et
+    #print "browser_event_cb", event, et
     if et == "resize":
         onResize()
         return
