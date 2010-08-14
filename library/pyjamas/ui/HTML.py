@@ -28,5 +28,8 @@ class HTML(Label, InnerHTML):
         Label.__init__(self, wordWrap=wordWrap, **kwargs)
         self.sinkEvents(Event.ONCLICK | Event.MOUSEEVENTS)
 
+    def _getProps(self):
+        return Label.props + InnerHTML.props
+
 Factory.registerClass('pyjamas.ui.HTML', HTML)
 

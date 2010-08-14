@@ -18,6 +18,7 @@ from pyjamas import Factory
 from Widget import Widget
 
 class Frame(Widget):
+
     props = [("url", "Url", "Url", None),
             ]
 

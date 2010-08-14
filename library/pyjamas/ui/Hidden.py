@@ -19,22 +19,24 @@ from pyjamas import DOM
 from Widget import Widget
 
 class Hidden(Widget):
+
+    props = [("name", "Name", "Name", None),
+             ("value", "Value", "Value", None),
+             ("defaultValue", "Default Value", "DefaultValue", None),
+            ]
+
     def __init__(self, name=None, value=None, **kwargs):
 
-        if kwargs.has_key('Element'):
-            element = kwargs.pop('Element')
-        else:
-            element = DOM.createElement("input")
+        kwargs['Name'] = kwargs.get("Name", name)
+        kwargs['Value'] = kwargs.get("Value", value)
+        element = kwargs.pop('Element', None) or DOM.createElement("input")
         self.setElement(element)
         DOM.setAttribute(element, "type", "hidden")
 
-        if name is not None:
-            kwargs['Name'] = name
-
-        if value is not None:
-            kwargs['Value'] = value
-
         Widget.__init__(self, **kwargs)
+
+    def _getProps(self):
+        return Widget.props + self.props
 
     def getDefaultValue(self):
         return DOM.getAttribute(self.getElement(), "defaultValue")

@@ -20,14 +20,18 @@ from pyjamas.ui import Event
 from __pyjamas__ import console
 
 class ListBox(FocusWidget):
+
+    props = [("visible", "Visible Count", "VisibleItemCount", None),
+             ("name", "Name", "Name", None),
+             ("selectedIndex", "Selected Index", "SelectedIndex", None),
+             ("multiple", "Multiple Select", "MultiplSelect", None),
+            ]
+
     def __init__(self, **kwargs):
         if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-ListBox"
         self.changeListeners = []
         self.INSERT_AT_END = -1
-        if kwargs.has_key('Element'):
-            element = kwargs.pop('Element')
-        else:
-            element = DOM.createSelect()
+        element = kwargs.pop('Element', None) or DOM.createSelect()
         FocusWidget.__init__(self, element, **kwargs)
         self.sinkEvents(Event.ONCHANGE)
 
@@ -80,9 +84,6 @@ class ListBox(FocusWidget):
         option = DOM.getChild(self.getElement(), index)
         return DOM.getBooleanAttribute(option, "selected")
 
-    def isMultipleSelect(self):
-        return DOM.getBooleanAttribute(self.getElement(), "multiple")
-
     def onBrowserEvent(self, event):
         if DOM.eventGetType(event) == "change":
             for listener in self.changeListeners:
@@ -104,6 +105,14 @@ class ListBox(FocusWidget):
         self.checkIndex(index)
         option = DOM.getChild(self.getElement(), index)
         DOM.setIntAttribute(option, "selected", selected and 1 or 0)
+
+    def isMultipleSelect(self):
+        """ this function is deprecated: use getMultipleSelect
+        """
+        return self.getMultipleSelect()
+
+    def getMultipleSelect(self):
+        return DOM.getBooleanAttribute(self.getElement(), "multiple")
 
     def setMultipleSelect(self, multiple):
         DOM.setBooleanAttribute(self.getElement(), "multiple", multiple)
