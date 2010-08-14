@@ -36,6 +36,12 @@ PROP_DESC = 1
 PROP_FNAM = 2
 PROP_TYPE = 3
 
+ELPROP_NAME = 0
+ELPROP_DESC = 1
+ELPROP_FNAM = 2
+ELPROP_TYPE = 3
+ELPROP_DFLT = 4
+
 def get_list_columns(props, cols):
     res = []
     for p in props:
@@ -51,6 +57,7 @@ def get_prop_widget_function_names(props):
 class Applier(object):
              
     _props = []
+    _elem_props = []
 
     def __init__(self, **kwargs):
         """ use this to apply properties as a dictionary, e.g.
@@ -103,7 +110,7 @@ class Applier(object):
         return res
 
     def _getProps(self):
-        return self.props
+        return self._props
 
     def setDefaults(self, defaults):
         divs = self.retrieveValues(wnames) 
@@ -121,4 +128,15 @@ class Applier(object):
 
         self.applyValues(args) 
 
+    def setElementProperties(self, context, elemProps):
+        args = {}
+        for p in self._getElementProps():
+            if not elemProps.has_key(p):
+                continue
+            convert_to_type = p[ELPROP_TYPE]
+            if convert_to_type:
+                 val = convert_to_type(val) if val else None
+            args[p[ELPROP_FNAM]] = (context, val,)
+
+        self.applyValues(args) 
 
