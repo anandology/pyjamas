@@ -112,6 +112,9 @@ class Applier(object):
     def _getProps(self):
         return self._props
 
+    def _getElementProps(self):
+        return self._elem_props
+
     def setDefaults(self, defaults):
         divs = self.retrieveValues(wnames) 
         for p in get_prop_widget_function_names(self._getProps()):
@@ -131,11 +134,13 @@ class Applier(object):
     def setElementProperties(self, context, elemProps):
         args = {}
         for p in self._getElementProps():
-            if not elemProps.has_key(p):
-                continue
-            convert_to_type = p[ELPROP_TYPE]
-            if convert_to_type:
-                 val = convert_to_type(val) if val else None
+            if elemProps.has_key(p):
+                val = elemProps[p]
+                convert_to_type = p[ELPROP_TYPE]
+                if convert_to_type:
+                     val = convert_to_type(val) if val else None
+            else:
+                val = p[ELPROP_DFLT]
             args[p[ELPROP_FNAM]] = (context, val,)
 
         self.applyValues(args) 

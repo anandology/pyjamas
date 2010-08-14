@@ -113,6 +113,18 @@ class HTMLTable(Panel):
             return None
         return self.widgetMap[key]
 
+    def getIndex(self, widget):
+        """ given a widget, return its index.
+        """
+        for row in xrange(self.getDOMRowCount()):
+            for col in xrange(self.getDOMCellCount(row)):
+                if self.getWidget(row, col) is widget:
+                    return (row, col)
+        return None
+
+    def getIndexedChild(self, index):
+        return self.getWidget(index[0], index[1])
+
     def isCellPresent(self, row, column):
         # GWT uses "and", possibly a bug
         if row >= self.getRowCount() or row < 0:

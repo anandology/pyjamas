@@ -20,7 +20,7 @@ from pyjamas.ui import Event
 
 class ScrollPanel(SimplePanel):
 
-    props = [("always", "Always show scroll bars",
+    _props = [("always", "Always show scroll bars",
                               "AlwaysShowScrollBars", None),
              ("position", "Vertical Scroll Position",
                               "ScrollPosition", None),
@@ -41,6 +41,12 @@ class ScrollPanel(SimplePanel):
 
     def _getProps(self):
         return SimplePanel._getProps() + self._props
+
+    def getIndex(self, index):
+        return 0
+
+    def getInstanceIndex(self, index):
+        return self.getWidget()
 
     def addScrollListener(self, listener):
         self.scrollListeners.append(listener)
