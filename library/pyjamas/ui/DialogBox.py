@@ -59,7 +59,7 @@ class DialogBox(PopupPanel):
         PopupPanel.setWidget(self, self.panel)
 
     def _getProps(self):
-        return PopupPanel.props + self.props
+        return PopupPanel._getProps() + self._props
 
     def _closeClicked(self, sender):
         self.hide()

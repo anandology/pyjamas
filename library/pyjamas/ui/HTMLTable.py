@@ -57,7 +57,7 @@ class HTMLTable(Panel):
         Panel.__init__(self, **kwargs)
 
     def _getProps(self):
-        return Panel._getProps() + self.props
+        return Panel._getProps() + self._props
 
     def addTableListener(self, listener):
         self.tableListeners.append(listener)

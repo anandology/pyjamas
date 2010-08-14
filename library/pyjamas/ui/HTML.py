@@ -29,7 +29,7 @@ class HTML(Label, InnerHTML):
         self.sinkEvents(Event.ONCLICK | Event.MOUSEEVENTS)
 
     def _getProps(self):
-        return Label.props + InnerHTML.props
+        return Label._getProps() + InnerHTML._getProps()
 
 Factory.registerClass('pyjamas.ui.HTML', HTML)
 

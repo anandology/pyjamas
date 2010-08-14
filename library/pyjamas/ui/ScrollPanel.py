@@ -40,7 +40,7 @@ class ScrollPanel(SimplePanel):
         self.sinkEvents(Event.ONSCROLL)
 
     def _getProps(self):
-        return SimplePanel._getProps() + self.props
+        return SimplePanel._getProps() + self._props
 
     def addScrollListener(self, listener):
         self.scrollListeners.append(listener)

@@ -28,7 +28,7 @@ class Frame(Widget):
         Widget.__init__(self, **kwargs)
 
     def _getProps(self):
-        return Widget.props + self.props
+        return Widget._getProps() + self._props
 
     def getUrl(self):
         return DOM.getAttribute(self.getElement(), "src")

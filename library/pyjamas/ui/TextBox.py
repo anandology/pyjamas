@@ -29,7 +29,7 @@ class TextBox(TextBoxBase):
         TextBoxBase.__init__(self, element, **ka)
 
     def _getProps(self):
-        return TextBoxBase.props + self.props
+        return TextBoxBase._getProps() + self._props
 
     def getMaxLength(self):
         return DOM.getIntAttribute(self.getElement(), "maxLength")

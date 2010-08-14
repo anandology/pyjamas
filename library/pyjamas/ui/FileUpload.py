@@ -31,7 +31,7 @@ class FileUpload(Widget):
         Widget.__init__(self, **kwargs)
 
     def _getProps(self):
-        return Widget.props + self.props
+        return Widget._getProps() + self._props
 
     def getFilename(self):
         return DOM.getAttribute(self.getElement(), "value")

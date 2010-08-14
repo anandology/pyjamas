@@ -36,7 +36,7 @@ class TextBoxBase(FocusWidget):
         self.sinkEvents(Event.ONCHANGE)
 
     def _getProps(self):
-        return FocusWidget.props + self.props
+        return FocusWidget._getProps() + self._props
 
     def addChangeListener(self, listener):
         self.changeListeners.append(listener)

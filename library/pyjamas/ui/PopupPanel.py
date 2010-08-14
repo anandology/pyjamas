@@ -55,7 +55,7 @@ class PopupPanel(SimplePanel):
         SimplePanel.__init__(self, element, **kwargs)
 
     def _getProps(self):
-        return SimplePanel.props + self.props
+        return SimplePanel._getProps() + self._props
 
     def addPopupListener(self, listener):
         self.popupListeners.append(listener)

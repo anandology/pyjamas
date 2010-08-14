@@ -39,7 +39,7 @@ class Image(Widget, MouseHandler, ClickHandler):
         self.loadListeners = []
 
     def _getProps(self):
-        return Widget.props + self.props
+        return Widget._getProps() + self._props
 
     def addLoadListener(self, listener):
         self.loadListeners.append(listener)

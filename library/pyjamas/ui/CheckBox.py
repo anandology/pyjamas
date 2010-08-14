@@ -36,7 +36,7 @@ class CheckBox(ButtonBase):
         self.initElement(element, **ka)
 
     def _getProps(self):
-        return ButtonBase.props + self.props
+        return ButtonBase._getProps() + self._props
 
     def initElement(self, element, **ka):
         self.inputElem = element

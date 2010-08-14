@@ -21,7 +21,7 @@ class InnerText(object):
             ]
 
     def _getProps(self):
-        return self.props
+        return self._props
 
     def setText(self, text):
         DOM.setInnerText(self.getElement(), text)

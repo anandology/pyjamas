@@ -40,7 +40,7 @@ class Label(Widget, MouseHandler, ClickHandler, InnerText):
         ClickHandler.__init__(self)
 
     def _getProps(self):
-        return Widget.props + InnerText.props + self.props
+        return Widget._getProps() + InnerText._getProps() + self._props
 
     def getHorizontalAlignment(self):
         return self.horzAlign

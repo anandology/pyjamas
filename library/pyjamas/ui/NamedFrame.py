@@ -30,7 +30,7 @@ class NamedFrame(Frame):
         Frame.__init__(self, None, iframe, **kwargs)
 
     def _getProps(self):
-        return Frame.props + self.props
+        return Frame._getProps() + self._props
 
     def getName(self):
         return DOM.getAttribute(self.getElement(), "name")

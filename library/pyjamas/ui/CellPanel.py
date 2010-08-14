@@ -51,7 +51,7 @@ class CellPanel(ComplexPanel):
         ComplexPanel.__init__(self, **kwargs)
 
     def _getProps(self):
-        return ComplexPanel._getProps() + self.props
+        return ComplexPanel._getProps() + self._props
 
     def getTable(self):
         return self.table
