@@ -52,18 +52,20 @@ class Applier(object):
 
     def apply(self, **kwargs):
 
-        if kwargs:
-            k = kwargs.keys()
-            l = len(k)
-            i = -1
-            while i < l-1:
-                i += 1
-                prop = k[i]
-                fn = getattr(self, "set%s" % prop, None)
-                if fn:
-                    args = kwargs[prop]
-                    if isinstance(args, tuple):
-                        fn(*args)
-                    else:
-                        fn(args)
+        if not kwargs:
+            return
+        k = kwargs.keys()
+        l = len(k)
+        i = -1
+        while i < l-1:
+            i += 1
+            prop = k[i]
+            fn = getattr(self, "set%s" % prop, None)
+            if not fn:
+                return
+            args = kwargs[prop]
+            if isinstance(args, tuple):
+                fn(*args)
+            else:
+                fn(args)
 
