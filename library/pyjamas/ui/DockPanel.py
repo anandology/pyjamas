@@ -44,11 +44,6 @@ class DockPanel(CellPanel):
 
     def __init__(self, **kwargs):
 
-        if not kwargs.has_key('Spacing'): kwargs['Spacing'] = 0
-        if not kwargs.has_key('Padding'): kwargs['Padding'] = 0
-
-        self.horzAlign = HasHorizontalAlignment.ALIGN_LEFT
-        self.vertAlign = HasVerticalAlignment.ALIGN_TOP
         self.center = None
         self.dock_children = [] # TODO: can self.children be used instead?
 
@@ -67,12 +62,6 @@ class DockPanel(CellPanel):
 
         self.dock_children.append(widget)
         self.realizeTable(widget)
-
-    def getHorizontalAlignment(self):
-        return self.horzAlign
-
-    def getVerticalAlignment(self):
-        return self.vertAlign
 
     def getWidgetDirection(self, widget):
         if widget.getParent() != self:
@@ -112,12 +101,6 @@ class DockPanel(CellPanel):
         data.width = width
         if data.td:
             DOM.setStyleAttribute(data.td, "width", data.width)
-
-    def setHorizontalAlignment(self, align):
-        self.horzAlign = align
-
-    def setVerticalAlignment(self, align):
-        self.vertAlign = align
 
     def realizeTable(self, beingAdded):
         bodyElement = self.getBody()

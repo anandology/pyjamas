@@ -16,6 +16,9 @@ from pyjamas import DOM
 from pyjamas import Factory
 
 from ComplexPanel import ComplexPanel
+from pyjamas.ui import HasHorizontalAlignment
+from pyjamas.ui import HasVerticalAlignment
+
 
 class CellPanel(ComplexPanel):
 
@@ -27,6 +30,14 @@ class CellPanel(ComplexPanel):
              ]
 
     def __init__(self, **kwargs):
+
+        kwargs['Spacing'] = kwargs.get('Spacing', 0)
+        kwargs['Padding'] = kwargs.get('Padding', 0)
+        kwargs['HorizontalAlignment'] = kwargs.get('HorizontalAlignment',
+                            HasHorizontalAlignment.ALIGN_LEFT)
+        kwargs['VerticalAlignment'] = kwargs.get('VerticalAlignment',
+                            HasVerticalAlignment.ALIGN_TOP)
+
         element = None
         if kwargs.has_key('Element'):
             element = kwargs.pop('Element')
@@ -35,8 +46,6 @@ class CellPanel(ComplexPanel):
         self.table = element
         self.setElement(self.table)
         self.body = DOM.createTBody()
-        self.spacing = None
-        self.padding = None
         DOM.appendChild(self.table, self.body)
 
         ComplexPanel.__init__(self, **kwargs)
@@ -133,6 +142,19 @@ class CellPanel(ComplexPanel):
             DOM.removeAttribute(self.table, "cellPadding")
         else:
             DOM.setAttribute(self.table, "cellPadding", str(padding))
+
+    def setHorizontalAlignment(self, align):
+        self.horzAlign = align
+
+    def setVerticalAlignment(self, align):
+        self.vertAlign = align
+
+    def getHorizontalAlignment(self):
+        return self.horzAlign
+
+    def getVerticalAlignment(self):
+        return self.vertAlign
+
 
 Factory.registerClass('pyjamas.ui.CellPanel', CellPanel)
 

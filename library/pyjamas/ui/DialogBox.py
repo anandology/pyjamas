@@ -26,6 +26,9 @@ from pyjamas.ui import GlassWidget
 from pyjamas import Window
 
 class DialogBox(PopupPanel):
+    props = [( "caption", "Caption", "Caption", None),
+            ]
+
     def __init__(self, autoHide=None, modal=True, centered=False,
                        **kwargs):
 
@@ -54,6 +57,9 @@ class DialogBox(PopupPanel):
         kwargs['StyleName'] = kwargs.get('StyleName', "gwt-DialogBox")
         PopupPanel.__init__(self, autoHide, modal, **kwargs)
         PopupPanel.setWidget(self, self.panel)
+
+    def _getProps(self):
+        return PopupPanel.props + self.props
 
     def _closeClicked(self, sender):
         self.hide()
