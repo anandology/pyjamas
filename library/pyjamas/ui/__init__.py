@@ -69,3 +69,17 @@ class Applier(object):
             else:
                 fn(args)
 
+    def applierValues(self, *args):
+        """ use this function to obtain a dictionary of properties, as
+            stored in getXXX functions.
+        """
+
+        res = {}
+        for prop in args:
+            fn = getattr(self, "get%s" % prop, None)
+            if not fn:
+                continue
+            res[prop] = fn()
+
+        return res
+
