@@ -18,18 +18,26 @@ from pyjamas import Factory
 from Widget import Widget
 
 class FileUpload(Widget):
+
+    props = [("name", "Name", "Name", None),
+              "filename", "File Name", "FileName", None),
+            ]
+
     def __init__(self, **kwargs):
-        if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-FileUpload"
-        if kwargs.has_key('Element'):
-            element = kwargs.pop('Element')
-        else:
-            element = DOM.createElement("input")
+        kwargs['StyleName'] = kwargs.get('StyleName', "gwt-FileUpload")
+        element = kwargs.pop('Element', None) or DOM.createElement("input")
         DOM.setAttribute(element, "type", "file")
         self.setElement(element)
         Widget.__init__(self, **kwargs)
 
+    def _getProps(self):
+        return Widget.props + self.props
+
     def getFilename(self):
         return DOM.getAttribute(self.getElement(), "value")
+
+    def setFilename(self, value):
+        DOM.setAttribute(self.getElement(), "value", value)
 
     def getName(self):
         return DOM.getAttribute(self.getElement(), "name")
