@@ -47,6 +47,11 @@ class Applier(object):
                 x.setSize("100%", "20px")
                 x.setVisible(False)
         """
+
+        self.apply(**kwargs)
+
+    def apply(self, **kwargs):
+
         if kwargs:
             k = kwargs.keys()
             l = len(k)
