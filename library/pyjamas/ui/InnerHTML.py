@@ -28,5 +28,5 @@ class InnerHTML(object):
 
     @classmethod
     def _getProps(self):
-        return props
+        return self._props
 

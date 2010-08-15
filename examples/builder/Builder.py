@@ -22,9 +22,24 @@ xmlfile = """\
 			<property name="name" value="AppFrame"/>
 		</properties>
 		<components>
-			<component id="txbTextBoxSurname" name="TextBox" type="Widget" index="0">
+			<component id="txbHTML" name="Label" type="Widget" index="0">
+				<properties name="widget">
+					<property name="label" value="txbHTML"/>
+				</properties>
+				<properties name="common">
+					<property name="name" value="txbHTML"/>
+				</properties>
+				<properties name="events">
+					<property name="onClick" value="onHTMLClicked"/>
+					<property name="onMouseMove" value="onHTMLMouseMoved"/>
+				</properties>
+			</component>
+			<component id="txbTextBoxSurname" name="TextBox" type="Widget" index="1">
 				<properties name="common">
 					<property name="name" value="txbTextBoxSurname"/>
+				</properties>
+				<properties name="events">
+					<property name="onFocus" value="onInputBoxFocus"/>
 				</properties>
 			</component>
 		</components>
@@ -32,9 +47,23 @@ xmlfile = """\
 </components>
 """
 
+class EventTest(object):
+
+    def onHTMLMouseMoved(self, sender, x, y):
+        print "moved", sender, x, y
+
+    def onInputBoxFocus(self, sender):
+        print "input box focus", sender
+
+    def onHTMLClicked(self, sender):
+        print "clicked", sender
+
 if __name__ == '__main__':
     pyjd.setup("public/Builder.html?fred=foo#me")
     b = Builder(xmlfile)
-    i = b.createInstance("AppFrame")
+    et = EventTest()
+    i = b.createInstance("AppFrame", et)
+    #print dir(et)
+    #print dir(i.txbHTML)
     RootPanel().add(i)
     pyjd.run()
