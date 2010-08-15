@@ -25,7 +25,7 @@ class TextArea(TextBoxBase):
     get and access the current text.
     """
 
-    props = [("rows", "Rows", "VisibleLines", None),
+    _props = [("rows", "Rows", "VisibleLines", None),
              ("cols", "Columns", "CharacterWidth", None),
             ]
 
@@ -34,6 +34,7 @@ class TextArea(TextBoxBase):
         element = ka.pop('Element', None) or DOM.createTextArea()
         TextBoxBase.__init__(self, element, **ka)
 
+    @classmethod
     def _getProps(self):
         return TextBoxBase._getProps() + self._props
 

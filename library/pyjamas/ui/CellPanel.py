@@ -22,11 +22,12 @@ from pyjamas.ui import HasVerticalAlignment
 
 class CellPanel(ComplexPanel):
 
-    props = [("horzAlign", "Horizontal alignment", "HorizontalAlignment", None),
-              ("vertAlign", "Vertical alignment", "VerticalAlignment", None),
-              ("border", "Border width", "BorderWidth", int),
-              ("spacing", "Spacing", "Spacing", None),
-              ("padding", "Padding", "Padding", None)
+    _props = [
+            ("horzAlign", "Horizontal alignment", "HorizontalAlignment", None),
+            ("vertAlign", "Vertical alignment", "VerticalAlignment", None),
+            ("border", "Border width", "BorderWidth", int),
+            ("spacing", "Spacing", "Spacing", None),
+            ("padding", "Padding", "Padding", None)
              ]
 
     def __init__(self, **kwargs):
@@ -38,11 +39,7 @@ class CellPanel(ComplexPanel):
         kwargs['VerticalAlignment'] = kwargs.get('VerticalAlignment',
                             HasVerticalAlignment.ALIGN_TOP)
 
-        element = None
-        if kwargs.has_key('Element'):
-            element = kwargs.pop('Element')
-        if element is None:
-            element = DOM.createTable()
+        element = kwargs.pop('Element', None) or DOM.createTable()
         self.table = element
         self.setElement(self.table)
         self.body = DOM.createTBody()

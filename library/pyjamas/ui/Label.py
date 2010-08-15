@@ -22,7 +22,7 @@ from ClickListener import ClickHandler
 
 class Label(Widget, MouseHandler, ClickHandler, InnerText):
 
-    props = [("wordwrap", "Word Wrap", "WordWrap", None),
+    _props = [("wordwrap", "Word Wrap", "WordWrap", None),
              ("horzAlign", "Horizontal Alignment", "HorizontalAlignment", None),
             ]
 
@@ -39,6 +39,7 @@ class Label(Widget, MouseHandler, ClickHandler, InnerText):
         MouseHandler.__init__(self)
         ClickHandler.__init__(self)
 
+    @classmethod
     def _getProps(self):
         return Widget._getProps() + InnerText._getProps() + self._props
 

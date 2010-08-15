@@ -39,6 +39,7 @@ class ScrollPanel(SimplePanel):
         SimplePanel.__init__(self, **kwargs)
         self.sinkEvents(Event.ONSCROLL)
 
+    @classmethod
     def _getProps(self):
         return SimplePanel._getProps() + self._props
 

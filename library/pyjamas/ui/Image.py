@@ -24,7 +24,7 @@ prefetchImages = {}
 
 class Image(Widget, MouseHandler, ClickHandler):
 
-    props = [("url", "Url", "Url", None),
+    _props = [("url", "Url", "Url", None),
             ]
 
     def __init__(self, url="", **kwargs):
@@ -38,6 +38,7 @@ class Image(Widget, MouseHandler, ClickHandler):
         self.sinkEvents(Event.ONLOAD | Event.ONERROR)
         self.loadListeners = []
 
+    @classmethod
     def _getProps(self):
         return Widget._getProps() + self._props
 

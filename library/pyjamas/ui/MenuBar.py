@@ -24,7 +24,7 @@ from pyjamas.ui import Event
 
 class MenuBar(Widget):
 
-    props = [("vertical", "Vertical", "Vertical", None),
+    _props = [("vertical", "Vertical", "Vertical", None),
             ]
 
     def __init__(self, vertical=False, **kwargs):
@@ -57,6 +57,7 @@ class MenuBar(Widget):
         self.setElement(outer)
         Widget.__init__(self, **kwargs)
 
+    @classmethod
     def _getProps(self):
         return Widget._getProps() + self._props
 

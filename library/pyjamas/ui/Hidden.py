@@ -20,7 +20,7 @@ from Widget import Widget
 
 class Hidden(Widget):
 
-    props = [("name", "Name", "Name", None),
+    _props = [("name", "Name", "Name", None),
              ("value", "Value", "Value", None),
              ("defaultValue", "Default Value", "DefaultValue", None),
             ]
@@ -35,6 +35,7 @@ class Hidden(Widget):
 
         Widget.__init__(self, **kwargs)
 
+    @classmethod
     def _getProps(self):
         return Widget._getProps() + self._props
 

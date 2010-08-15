@@ -28,6 +28,7 @@ class HTML(Label, InnerHTML):
         Label.__init__(self, wordWrap=wordWrap, **kwargs)
         self.sinkEvents(Event.ONCLICK | Event.MOUSEEVENTS)
 
+    @classmethod
     def _getProps(self):
         return Label._getProps() + InnerHTML._getProps()
 

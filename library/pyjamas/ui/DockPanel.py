@@ -75,6 +75,9 @@ class DockPanel(CellPanel):
         self.dock_children.append(widget)
         self.realizeTable(widget)
 
+    def addIndexedItem(self, index, item):
+        self.add(item, index[1])
+
     def getIndex(self, widget):
         index = self.dock_children.index(widget)
         direction = self.getWidgetDirection(widget)

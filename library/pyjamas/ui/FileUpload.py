@@ -19,7 +19,7 @@ from Widget import Widget
 
 class FileUpload(Widget):
 
-    props = [("name", "Name", "Name", None),
+    _props = [("name", "Name", "Name", None),
              ("filename", "File Name", "FileName", None),
             ]
 
@@ -30,6 +30,7 @@ class FileUpload(Widget):
         self.setElement(element)
         Widget.__init__(self, **kwargs)
 
+    @classmethod
     def _getProps(self):
         return Widget._getProps() + self._props
 

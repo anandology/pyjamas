@@ -24,7 +24,7 @@ from pyjamas.ui import KeyboardListener
 
 class PopupPanel(SimplePanel):
 
-    props = [("modal", "Modal", "Modal", None),
+    _props = [("modal", "Modal", "Modal", None),
             ]
 
     def __init__(self, autoHide=False, modal=True, rootpanel=None, glass=False,
@@ -54,6 +54,7 @@ class PopupPanel(SimplePanel):
 
         SimplePanel.__init__(self, element, **kwargs)
 
+    @classmethod
     def _getProps(self):
         return SimplePanel._getProps() + self._props
 

@@ -23,7 +23,7 @@ _CheckBox_unique_id=0;
 
 class CheckBox(ButtonBase):
 
-    props = [("name", "Name", "Name", None),
+    _props = [("name", "Name", "Name", None),
             ]
     def __init__(self, label=None, asHTML=False, **ka):
         ka['StyleName'] = ka.get('StyleName', "gwt-CheckBox")
@@ -35,6 +35,7 @@ class CheckBox(ButtonBase):
         element = ka.pop('Element', None) or DOM.createInputCheck()
         self.initElement(element, **ka)
 
+    @classmethod
     def _getProps(self):
         return ButtonBase._getProps() + self._props
 

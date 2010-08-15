@@ -19,7 +19,7 @@ from CheckBox import CheckBox
 
 class RadioButton(CheckBox):
 
-    props = [("group", "Group", "Name", None),
+    _props = [("group", "Group", "Name", None),
             ]
 
     def __init__(self, group=None, label=None, asHTML=False, **ka):
@@ -27,6 +27,7 @@ class RadioButton(CheckBox):
         ka['Element'] = ka.get('Element', None) or DOM.createInputRadio(group)
         CheckBox.__init__(self, label, asHTML, **ka)
 
+    @classmethod
     def _getProps(self):
         return CheckBox._getProps() + self._props
 

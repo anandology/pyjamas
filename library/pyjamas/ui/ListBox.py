@@ -21,7 +21,7 @@ from __pyjamas__ import console
 
 class ListBox(FocusWidget):
 
-    props = [("visible", "Visible Count", "VisibleItemCount", None),
+    _props = [("visible", "Visible Count", "VisibleItemCount", None),
              ("name", "Name", "Name", None),
              ("selectedIndex", "Selected Index", "SelectedIndex", None),
              ("multiple", "Multiple Select", "MultiplSelect", None),
@@ -34,6 +34,10 @@ class ListBox(FocusWidget):
         element = kwargs.pop('Element', None) or DOM.createSelect()
         FocusWidget.__init__(self, element, **kwargs)
         self.sinkEvents(Event.ONCHANGE)
+
+    @classmethod
+    def _getProps(self):
+        return FocusWidget._getProps() + self._props
 
     def addChangeListener(self, listener):
         self.changeListeners.append(listener)

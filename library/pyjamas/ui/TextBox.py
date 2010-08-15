@@ -17,9 +17,9 @@ from pyjamas import Factory
 
 from TextBoxBase import TextBoxBase
 
-
 class TextBox(TextBoxBase):
-    props = [("maxLength", "Max Length", "MaxLength", None),
+
+    _props = [("maxLength", "Max Length", "MaxLength", None),
              ("visibleLength", "Visible Length", "VisibleLength", None),
             ]
 

@@ -19,7 +19,7 @@ from Frame import Frame
 
 class NamedFrame(Frame):
 
-    props = [("name", "Name", "Name", None),
+    _props = [("name", "Name", "Name", None),
             ]
 
     def __init__(self, name, **kwargs):
@@ -29,6 +29,7 @@ class NamedFrame(Frame):
         iframe = DOM.getFirstChild(div)
         Frame.__init__(self, None, iframe, **kwargs)
 
+    @classmethod
     def _getProps(self):
         return Frame._getProps() + self._props
 

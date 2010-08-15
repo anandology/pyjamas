@@ -24,7 +24,7 @@ widgethash = {}
 
 class HTMLTable(Panel):
 
-    props = [ ("border", "Border width", "BorderWidth", int),
+    _props = [ ("border", "Border width", "BorderWidth", int),
               ("spacing", "Spacing", "Spacing", None),
               ("padding", "Padding", "Padding", None)
              ]
@@ -56,6 +56,7 @@ class HTMLTable(Panel):
 
         Panel.__init__(self, **kwargs)
 
+    @classmethod
     def _getProps(self):
         return Panel._getProps() + self._props
 

@@ -24,7 +24,7 @@ class TextBoxBase(FocusWidget):
     ALIGN_LEFT = "left"
     ALIGN_RIGHT = "right"
 
-    props = [("name", "Name", "Name", None),
+    _props = [("name", "Name", "Name", None),
              ("align", "Text Alignment", "TextAlign", None),
             ]
 

@@ -17,9 +17,10 @@ from pyjamas import DOM
 
 class InnerText(object):
 
-    props = [("label", "Text", "Text", None),
+    _props = [("label", "Text", "Text", None),
             ]
 
+    @classmethod
     def _getProps(self):
         return self._props
 

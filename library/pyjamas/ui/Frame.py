@@ -19,7 +19,7 @@ from Widget import Widget
 
 class Frame(Widget):
 
-    props = [("url", "Url", "Url", None),
+    _props = [("url", "Url", "Url", None),
             ]
 
     def __init__(self, url="", Element=None, **kwargs):
@@ -27,6 +27,7 @@ class Frame(Widget):
         self.setElement(Element or DOM.createIFrame())
         Widget.__init__(self, **kwargs)
 
+    @classmethod
     def _getProps(self):
         return Widget._getProps() + self._props
 

@@ -24,7 +24,7 @@ class CaptionPanel(SimplePanel):
     fieldset HTML element.
     """
 
-    props = [("caption", "Caption", "Caption", None),
+    _props = [("caption", "Caption", "Caption", None),
             ]
 
     def __init__(self, caption, widget=None, **kwargs):
@@ -41,6 +41,7 @@ class CaptionPanel(SimplePanel):
             kwargs['StyleName'] = 'gwt-CaptionPanel'
         SimplePanel.__init__(self, element, **kwargs)
 
+    @classmethod
     def _getProps(self):
         return SimplePanel._getProps() + self._props
 
