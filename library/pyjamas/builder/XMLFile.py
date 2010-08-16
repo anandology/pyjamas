@@ -157,14 +157,24 @@ class XMLFile(object):
         else:
             xmlAttrs = mXML.group(1)
             self.xmlAttrs = self.getAttrs(xmlAttrs)
-        properties = self.nextTag(["properties", "components"])
+        rootTag = None
+        properties = self.nextTag(["pyjsglade", "properties", "components"])
+        if properties[0] == 'pyjsglade':
+            rootTag = properties[0]
+            properties = self.nextTag(["properties", "components"])
         if properties[0] == 'properties':
             properties = properties[2]
             components = self.nextTag(["components"])[1]
         else:
              components = properties[1]
              properties = {}
+        if rootTag is not None:
+            line = self.nextLine()
+            self.getTagClose(line, rootTag)
         return properties, components
+
+    def tag_pyjsglade(self, tag):
+        return tag
 
     def tag_components(self, tag):
         tags = []
