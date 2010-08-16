@@ -20,6 +20,7 @@ class XMLFileError(RuntimeError):
     pass
 
 class XMLFile(object):
+    re_xml = re.compile('''<[?]xml([^?]*)[?]>''')
     re_tag = re.compile('''<\s*([^/]\S*)(.*)>''')
     re_tag_close = re.compile('''</\s*(\S+)\s*>''')
     #re_attr = re.compile('''(\S+)="([^"]*)"''') # Bug in pyjamas re module
@@ -30,6 +31,7 @@ class XMLFile(object):
             lines = lines.split("\n")
         self.lines = lines
         self.lineno = 0
+        self.xmlAttrs = None
 
     def error(self, msg):
         raise XMLFileError("Line %s: %s" % (self.lineno, msg))
@@ -148,14 +150,31 @@ class XMLFile(object):
         self.error("Unknown tag '%s'" % tag[0])
 
     def parse(self):
-        properties = self.nextTag(["properties", "components"])
+        line = self.nextLine()
+        mXML = self.re_xml.match(line)
+        if not mXML:
+            self.lineno -= 1
+        else:
+            xmlAttrs = mXML.group(1)
+            self.xmlAttrs = self.getAttrs(xmlAttrs)
+        rootTag = None
+        properties = self.nextTag(["pyjsglade", "properties", "components"])
+        if properties[0] == 'pyjsglade':
+            rootTag = properties[0]
+            properties = self.nextTag(["properties", "components"])
         if properties[0] == 'properties':
             properties = properties[2]
             components = self.nextTag(["components"])[1]
         else:
              components = properties[1]
              properties = {}
+        if rootTag is not None:
+            line = self.nextLine()
+            self.getTagClose(line, rootTag)
         return properties, components
+
+    def tag_pyjsglade(self, tag):
+        return tag
 
     def tag_components(self, tag):
         tags = []

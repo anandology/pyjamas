@@ -3,6 +3,10 @@ from pyjamas import Factory
 from pyjamas import ui
 from pyjamas.ui.MultiListener import MultiListener
 
+# All event listeners with a tuple that comprises of the listener add 
+# function and the additional (to 'self') parameters that are expected 
+# for the listener. E.g., def onClick(self, sender): ...
+# See also pyjamas.ui.MultiListener.MultiListener.combinations
 eventListeners = dict(
     onClick = ("addClickListener", "sender"),
     onDoubleClick = ("addDoubleClickListener", "sender"),
