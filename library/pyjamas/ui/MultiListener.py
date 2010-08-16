@@ -1,6 +1,10 @@
 
 
 class MultiListener(object):
+    # The combinations that are coupled. E.g., if onFocus is defined, then
+    # onLostFocus should also be defined. The set method will substitute the 
+    # missing methods with the ignore method.
+    # See also pyjamas.builder.Builder.eventListeners
     combinations = dict(
         onFocus = ["onLostFocus"],
         onLostFocus = ["onFocus"],
@@ -20,6 +24,8 @@ class MultiListener(object):
         self.set(obj, **kwargs)
 
     def set(self, obj, **kwargs):
+        """Check for missing event functions and substitute these with """
+        """the ignore method"""
         ignore = getattr(self, "ignore")
         for k, v in kwargs.iteritems():
             setattr(self, k, getattr(obj, v))
@@ -29,4 +35,7 @@ class MultiListener(object):
                         setattr(self, k1, ignore)
 
     def ignore(self, *args, **kwargs):
+        """Ignore event"""
+        # The methods returns True, which is only needed for the method
+        # onBeforeTabSelected.
         return True
