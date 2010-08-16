@@ -20,6 +20,7 @@ class XMLFileError(RuntimeError):
     pass
 
 class XMLFile(object):
+    re_xml = re.compile('''<[?]xml([^?]*)[?]>''')
     re_tag = re.compile('''<\s*([^/]\S*)(.*)>''')
     re_tag_close = re.compile('''</\s*(\S+)\s*>''')
     #re_attr = re.compile('''(\S+)="([^"]*)"''') # Bug in pyjamas re module
@@ -30,6 +31,7 @@ class XMLFile(object):
             lines = lines.split("\n")
         self.lines = lines
         self.lineno = 0
+        self.xmlAttrs = None
 
     def error(self, msg):
         raise XMLFileError("Line %s: %s" % (self.lineno, msg))
@@ -148,6 +150,13 @@ class XMLFile(object):
         self.error("Unknown tag '%s'" % tag[0])
 
     def parse(self):
+        line = self.nextLine()
+        mXML = self.re_xml.match(line)
+        if not mXML:
+            self.lineno -= 1
+        else:
+            xmlAttrs = mXML.group(1)
+            self.xmlAttrs = self.getAttrs(xmlAttrs)
         properties = self.nextTag(["properties", "components"])
         if properties[0] == 'properties':
             properties = properties[2]
