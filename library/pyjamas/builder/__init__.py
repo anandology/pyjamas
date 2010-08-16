@@ -30,7 +30,7 @@ from pyjamas.ui.FlowPanel import FlowPanel
 from pyjamas.ui.FlowTabBar import FlowTabBar 
 from pyjamas.ui.FocusPanel import FocusPanel 
 from pyjamas.ui.FocusWidget import FocusWidget 
-from pyjamas.ui.FontSize import FontSize 
+#from pyjamas.ui.FontSize import FontSize 
 from pyjamas.ui.FormPanel import FormPanel 
 from pyjamas.ui.Frame import Frame 
 from pyjamas.ui.GlassWidget import GlassWidget 
@@ -49,7 +49,7 @@ from pyjamas.ui.Image import Image
 from pyjamas.ui.InnerHTML import InnerHTML 
 from pyjamas.ui.InnerText import InnerText 
 from pyjamas.ui.InputControl import InputControl 
-from pyjamas.ui.Justification import Justification 
+#from pyjamas.ui.Justification import Justification 
 from pyjamas.ui.Label import Label 
 from pyjamas.ui.ListBox import ListBox 
 from pyjamas.ui.Map import ImageMap, MapArea
