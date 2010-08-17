@@ -91,7 +91,7 @@ class CheckBox(ButtonBase):
     def isEnabled(self):
         """ XXX this function is deprecated: use getEnabled
         """
-        return self.getEnabled():
+        return self.getEnabled()
 
     def getEnabled(self):
         return not DOM.getBooleanAttribute(self.inputElem, "disabled")
