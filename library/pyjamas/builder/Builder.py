@@ -37,10 +37,15 @@ class Builder(object):
 
     def __init__(self, text):
         xmlFile = XMLFile(str(text)) # XMLFile only accepts str not unicode!
+        self.widgets_by_name = {}
+        self.widgets_by_class = {}
         self.properties, self.components = xmlFile.parse()
 
     def createInstance(self, instancename,
                        eventTarget=None, targetItem=None, index=None):
+
+        widgets_by_name = {}
+        widgets_by_class = {}
 
         def addItem(comp, props, childs, parentInstance, eventTarget):
             klsname = comp['name']
@@ -61,6 +66,11 @@ class Builder(object):
                 fname = n[ui.PROP_FNAM]
                 args[fname] = wprops[name]
             item = kls(**args)
+            identifier = comp['id']
+            widgets_by_name[identifier] = klsname
+            l = widgets_by_class.get(klsname, [])
+            l.append(identifier)
+            widgets_by_class[klsname] = l
 
             #if parentInstance is not None:
             #    context = parentInstance.getIndexedChild(comp['index'])
@@ -114,6 +124,10 @@ class Builder(object):
             #    item.show()
             #else:
             #    item.hide()
+
+            self.widgets_by_name[instancename] = widgets_by_name
+            self.widgets_by_class[instancename] = widgets_by_class
+
             return item
         return None
 
