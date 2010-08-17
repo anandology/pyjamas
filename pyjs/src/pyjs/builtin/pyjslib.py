@@ -1471,11 +1471,11 @@ def bool(v):
 
 class float:
     __number__ = JS("0x01")
-    def __new__(self, args):
+    def __new__(self, num):
         JS("""
-        var v = Number(args[0]);
+        var v = Number(num);
         if (isNaN(v)) {
-            throw pyjslib.ValueError("invalid literal for float(): " + args[0]);
+            throw pyjslib.ValueError("invalid literal for float(): " + num);
         }
         return v;
 """)
