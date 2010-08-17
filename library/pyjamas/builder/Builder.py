@@ -38,12 +38,14 @@ class Builder(object):
     def __init__(self, text):
         xmlFile = XMLFile(str(text)) # XMLFile only accepts str not unicode!
         self.widgets_by_name = {}
+        self.widget_instances = {}
         self.widgets_by_class = {}
         self.properties, self.components = xmlFile.parse()
 
     def createInstance(self, instancename,
                        eventTarget=None, targetItem=None, index=None):
 
+        widget_instances = {}
         widgets_by_name = {}
         widgets_by_class = {}
 
@@ -53,6 +55,7 @@ class Builder(object):
             if modname is None:
                 modname = '.'.join(["pyjamas.ui", klsname])
             kls = Factory.lookupClass('.'.join([modname, klsname]))
+
             args = {}
             wprops = {}
             if props.has_key("common"):
@@ -65,9 +68,16 @@ class Builder(object):
                     continue
                 fname = n[ui.PROP_FNAM]
                 args[fname] = wprops[name]
+
+            # create item with properties including weird ones
+            # which can't fit into the name value structure
             item = kls(**args)
+            if hasattr(item, "_setWeirdProps"):
+                item._setWeirdProps(wprops)
+
             identifier = comp['id']
             widgets_by_name[identifier] = klsname
+            widget_instances[identifier] = item
             l = widgets_by_class.get(klsname, [])
             l.append(identifier)
             widgets_by_class[klsname] = l
@@ -125,6 +135,7 @@ class Builder(object):
             #else:
             #    item.hide()
 
+            self.widget_instances[instancename] = widget_instances
             self.widgets_by_name[instancename] = widgets_by_name
             self.widgets_by_class[instancename] = widgets_by_class
 

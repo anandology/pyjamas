@@ -39,6 +39,17 @@ class ListBox(FocusWidget):
     def _getProps(self):
         return FocusWidget._getProps() + self._props
 
+    def _setWeirdProps(self, props):
+        items = {}
+        for (k, v) in props.items():
+            if not isinstance(k, int):
+                continue
+            items[int(k)] = v
+        items = items.items()
+        items.sort()
+        for (k, v) in items:
+            self.addItem(*v)
+
     def addChangeListener(self, listener):
         self.changeListeners.append(listener)
 

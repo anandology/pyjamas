@@ -76,6 +76,11 @@ class CheckBox(ButtonBase):
         DOM.setBooleanAttribute(self.inputElem, "defaultChecked", checked)
 
     def isChecked(self):
+        """ XXX this function is deprecated: use getChecked
+        """
+        return self.getChecked()
+    
+    def getChecked(self):
         if self.isAttached():
             propName = "checked"
         else:
@@ -84,6 +89,11 @@ class CheckBox(ButtonBase):
         return DOM.getBooleanAttribute(self.inputElem, propName)
 
     def isEnabled(self):
+        """ XXX this function is deprecated: use getEnabled
+        """
+        return self.getEnabled()
+
+    def getEnabled(self):
         return not DOM.getBooleanAttribute(self.inputElem, "disabled")
 
     def setEnabled(self, enabled):
