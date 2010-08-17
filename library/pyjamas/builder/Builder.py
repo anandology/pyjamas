@@ -2,6 +2,8 @@ from pyjamas.builder.XMLFile import XMLFile
 from pyjamas import Factory
 from pyjamas import ui
 from pyjamas.ui.MultiListener import MultiListener
+from pyjamas.HTTPRequest import HTTPRequest
+
 
 # All event listeners with a tuple that comprises of the listener add 
 # function and the additional (to 'self') parameters that are expected 
@@ -114,4 +116,22 @@ class Builder(object):
             #    item.hide()
             return item
         return None
+
+
+class HTTPUILoader:
+    def __init__(self, app):
+        self.app = app
+
+    def load(self, xml_file):
+        HTTPRequest().asyncGet(xml_file, self)
+
+    def onCompletion(self, text):
+        self.app.onUILoaded(text)
+
+    def onError(self, text, code):
+        self.app.onUILoadError(text, code)
+
+    def onTimeout(self, text):
+        self.app.onUILoadingTimeout(text)
+
 

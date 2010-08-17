@@ -1,54 +1,25 @@
-import pyjd # this is dummy in pyjs.
-from pyjamas.ui.RootPanel import RootPanel
-from pyjamas.builder.Builder import Builder
+""" Example UI Builder: replace or edit ui.xml without recompiling the app
 
-xmlfile = """\
-<?xml version="1.0" encoding="UTF-8"?>
-<pyjsglade>
-<properties>
-	<property name="puremvc" value="False" />
-	<property name="xmlfile" value="ws.xml" />
-	<property name="version" value="0.1" />
-	<property name="name" value="ws" />
-	<property name="codefile" value="ws.py" />
-</properties>
-<components>
-	<component id="AppFrame" name="VerticalPanel" type="Panel" index="None" left="241" top="377" visible="True">
-		<properties name="elements">
-		</properties>
-		<properties name="layout">
-			<property name="spacing" value="0" />
-			<property name="padding" value="0" />
-		</properties>
-		<properties name="common">
-			<property name="name" value="AppFrame" />
-		</properties>
-		<components>
-			<component id="txbHTML" name="Label" module="pyjamas.ui.Label" type="Widget" index="0">
-				<properties name="widget">
-					<property name="label" value="txbHTML" />
-				</properties>
-				<properties name="common">
-					<property name="name" value="txbHTML" />
-				</properties>
-				<properties name="events">
-					<property name="onClick" value="onHTMLClicked" />
-					<property name="onMouseMove" value="onHTMLMouseMoved" />
-				</properties>
-			</component>
-			<component id="txbTextBoxSurname" name="TextBox" type="Widget" index="1">
-				<properties name="common">
-					<property name="name" value="txbTextBoxSurname" />
-				</properties>
-				<properties name="events">
-					<property name="onFocus" value="onInputBoxFocus" />
-				</properties>
-			</component>
-		</components>
-	</component>
-</components>
-</pyjsglade>
+Copyright (C) 2010 Luke Kenneth Casson Leighton <lkcl@lkcl.net>"
+
+It's also possible to simply place the text into the app (which obviously
+forces a recompile) and pass it as an argument to Builder:
+
+    text = """<?xml ....><pyjsglade>....</pyjsglade>"""
+    self.b = Builder(text)
+    self.ui = self.b.createInstance("AppFrame", self)
+
+The advantage of doing this is that the UI will be created immediately
+rather than be delayed waiting for an AJAX HTTPRequest.
+
+The UI file simply contains the event callbacks, by name.  An app instance
+object is passed in: createInstance uses getattr to find those functions
+and automatically links listeners to the widgets that get created.
 """
+
+import pyjd # this is dummy in pyjs.
+from pyjamas.builder.Builder import Builder, HTTPUILoader
+from pyjamas.ui.RootPanel import RootPanel
 
 class EventTest(object):
 
@@ -61,12 +32,21 @@ class EventTest(object):
     def onHTMLClicked(self, sender):
         print "clicked", sender
 
+    def onUILoaded(self, text):
+        self.b = Builder(text)
+        self.ui = self.b.createInstance("AppFrame", self)
+        RootPanel().add(self.ui)
+
+    def onUILoadingTimeout(self, text, code):
+        print "timeout loading UI", text, code
+
+    def onUILoadError(self, text, code):
+        print "error loading UI", text, code
+
+
 if __name__ == '__main__':
     pyjd.setup("public/Builder.html?fred=foo#me")
-    b = Builder(xmlfile)
     et = EventTest()
-    i = b.createInstance("AppFrame", et)
-    #print dir(et)
-    #print dir(i.txbHTML)
-    RootPanel().add(i)
+    HTTPUILoader(et).load("ui.xml")
+    
     pyjd.run()
