@@ -5,7 +5,7 @@ Copyright (C) 2010 Luke Kenneth Casson Leighton <lkcl@lkcl.net>"
 It's also possible to simply place the text into the app (which obviously
 forces a recompile) and pass it as an argument to Builder:
 
-    text = """<?xml ....><pyjsglade>....</pyjsglade>"""
+    text = '''<?xml ....><pyjsglade>....</pyjsglade>'''
     self.b = Builder(text)
     self.ui = self.b.createInstance("AppFrame", self)
 
