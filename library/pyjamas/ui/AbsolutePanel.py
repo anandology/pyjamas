@@ -58,5 +58,5 @@ class AbsolutePanel(ComplexPanel):
         if widget.getParent() != self:
             raise Exception("Widget must be a child of this panel.")
 
-Factory.registerClass('pyjamas.ui.AbsolutePanel', AbsolutePanel)
+Factory.registerClass('pyjamas.ui.AbsolutePanel', 'AbsolutePanel', AbsolutePanel)
 

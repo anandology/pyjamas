@@ -200,5 +200,5 @@ class TabBar(Composite):
                 self.setStyleName(DOM.getParent(item.getElement()),
                                 "gwt-TabBarItem-wrapper-selected", False)
 
-Factory.registerClass('pyjamas.ui.TabBar', TabBar)
+Factory.registerClass('pyjamas.ui.TabBar', 'TabBar', TabBar)
 

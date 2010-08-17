@@ -32,5 +32,5 @@ class RadioButton(CheckBox):
         return CheckBox._getProps() + self._props
 
 
-Factory.registerClass('pyjamas.ui.RadioButton', RadioButton)
+Factory.registerClass('pyjamas.ui.RadioButton', 'RadioButton', RadioButton)
 

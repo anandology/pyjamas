@@ -376,5 +376,5 @@ class Tree(Widget):
                name == 'input' or \
                name == 'checkbox'
 
-Factory.registerClass('pyjamas.ui.Tree', Tree)
+Factory.registerClass('pyjamas.ui.Tree', 'Tree', Tree)
 

@@ -46,5 +46,5 @@ class FileUpload(Widget):
     def setName(self, name):
         DOM.setAttribute(self.getElement(), "name", name)
 
-Factory.registerClass('pyjamas.ui.FileUpload', FileUpload)
+Factory.registerClass('pyjamas.ui.FileUpload', 'FileUpload', FileUpload)
 

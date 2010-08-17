@@ -63,5 +63,5 @@ class Hidden(Widget):
     def setValue(self, value):
         DOM.setAttribute(self.getElement(), "value", value)
 
-Factory.registerClass('pyjamas.ui.Hidden', Hidden)
+Factory.registerClass('pyjamas.ui.Hidden', 'Hidden', Hidden)
 

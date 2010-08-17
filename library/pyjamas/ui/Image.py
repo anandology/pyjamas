@@ -69,5 +69,5 @@ class Image(Widget, MouseHandler, ClickHandler):
     def setUrl(self, url):
         DOM.setElemAttribute(self.getElement(), "src", url)
 
-Factory.registerClass('pyjamas.ui.Image', Image)
+Factory.registerClass('pyjamas.ui.Image', 'Image', Image)
 

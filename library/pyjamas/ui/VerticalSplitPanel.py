@@ -302,5 +302,5 @@ class VerticalSplitPanel(SplitPanel):
         self.addScrolling(topDiv)
         self.addScrolling(bottomDiv)
 
-Factory.registerClass('pyjamas.ui.VerticalSplitPanel', VerticalSplitPanel)
+Factory.registerClass('pyjamas.ui.VerticalSplitPanel', 'VerticalSplitPanel', VerticalSplitPanel)
 

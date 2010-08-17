@@ -91,5 +91,5 @@ class MenuItem(UIObject, InnerHTML, InnerText):
         else:
             self.removeStyleName("gwt-MenuItem-selected")
 
-Factory.registerClass('pyjamas.ui.MenuItem', MenuItem)
+Factory.registerClass('pyjamas.ui.MenuItem', 'MenuItem', MenuItem)
 

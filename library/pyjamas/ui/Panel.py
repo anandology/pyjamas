@@ -68,5 +68,5 @@ class Panel(Widget):
     def __iter__(self):
         return self.children.__iter__()
 
-Factory.registerClass('pyjamas.ui.Panel', Panel)
+Factory.registerClass('pyjamas.ui.Panel', 'Panel', Panel)
 

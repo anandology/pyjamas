@@ -32,5 +32,5 @@ class HTML(Label, InnerHTML):
     def _getProps(self):
         return Label._getProps() + InnerHTML._getProps()
 
-Factory.registerClass('pyjamas.ui.HTML', HTML)
+Factory.registerClass('pyjamas.ui.HTML', 'HTML', HTML)
 

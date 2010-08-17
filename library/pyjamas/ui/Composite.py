@@ -61,5 +61,5 @@ class Composite(Widget):
         Widget.onBrowserEvent(self, event) # takes care of auto-handlers
         self.widget.onBrowserEvent(event)
 
-Factory.registerClass('pyjamas.ui.Composite', Composite)
+Factory.registerClass('pyjamas.ui.Composite', 'Composite', Composite)
 

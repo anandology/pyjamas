@@ -97,5 +97,5 @@ class Grid(HTMLTable):
         for rowNum in range(numRows):
             table.appendChild(row.cloneNode(True))
 
-Factory.registerClass('pyjamas.ui.Grid', Grid)
+Factory.registerClass('pyjamas.ui.Grid', 'Grid', Grid)
 

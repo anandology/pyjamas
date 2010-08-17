@@ -184,5 +184,5 @@ class FlowTabBar(Composite):
                 self.setStyleName(DOM.getParent(item.getElement()),
                                 "gwt-TabBarItem-wrapper-selected", False)
 
-Factory.registerClass('pyjamas.ui.FlowTabBar', FlowTabBar)
+Factory.registerClass('pyjamas.ui.FlowTabBar', 'FlowTabBar', FlowTabBar)
 

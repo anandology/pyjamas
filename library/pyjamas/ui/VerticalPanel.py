@@ -71,6 +71,6 @@ class VerticalPanel(CellPanel):
     def setVerticalAlignment(self, align):
         self.vertAlign = align
 
-Factory.registerClass('pyjamas.ui.VerticalPanel', VerticalPanel)
+Factory.registerClass('pyjamas.ui.VerticalPanel', 'VerticalPanel', VerticalPanel)
 
 

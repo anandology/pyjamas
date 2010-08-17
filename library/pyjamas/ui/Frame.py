@@ -37,5 +37,5 @@ class Frame(Widget):
     def setUrl(self, url):
         return DOM.setAttribute(self.getElement(), "src", url)
 
-Factory.registerClass('pyjamas.ui.Frame', Frame)
+Factory.registerClass('pyjamas.ui.Frame', 'Frame', Frame)
 

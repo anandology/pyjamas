@@ -55,5 +55,5 @@ class HorizontalPanel(CellPanel):
         return True
 
 
-Factory.registerClass('pyjamas.ui.HorizontalPanel', HorizontalPanel)
+Factory.registerClass('pyjamas.ui.HorizontalPanel', 'HorizontalPanel', HorizontalPanel)
 

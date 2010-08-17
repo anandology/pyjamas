@@ -60,4 +60,4 @@ class HorizontalSlider(VerticalSlider):
         DOM.setStyleAttribute(self.handle, "left", "%dpx" % relative_x)
         DOM.setStyleAttribute(self.handle, "position", "absolute")
 
-Factory.registerClass('pyjamas.ui.HorizontalSlider', HorizontalSlider)
+Factory.registerClass('pyjamas.ui.HorizontalSlider', 'HorizontalSlider', HorizontalSlider)

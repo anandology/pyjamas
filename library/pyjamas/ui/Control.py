@@ -206,4 +206,4 @@ class Control(FocusWidget, MouseHandler, MouseWheelHandler):
                 return False
         return self._event_targets_control(event)
 
-Factory.registerClass('pyjamas.ui.Control', Control)
+Factory.registerClass('pyjamas.ui.Control', 'Control', Control)

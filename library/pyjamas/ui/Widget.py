@@ -140,5 +140,5 @@ class Widget(UIObject):
         """Set the id attribute of the associated DOM element."""
         DOM.setAttribute(self.getElement(), "id", id)
 
-Factory.registerClass('pyjamas.ui.Widget', Widget)
+Factory.registerClass('pyjamas.ui.Widget', 'Widget', Widget)
 

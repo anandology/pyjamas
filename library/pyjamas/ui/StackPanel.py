@@ -175,5 +175,5 @@ class StackPanel(ComplexPanel):
     def getSelectedIndex(self):
         return self.visibleStack
 
-Factory.registerClass('pyjamas.ui.StackPanel', StackPanel)
+Factory.registerClass('pyjamas.ui.StackPanel', 'StackPanel', StackPanel)
 

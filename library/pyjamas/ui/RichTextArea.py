@@ -200,5 +200,5 @@ class RichTextArea (FocusWidget) :
 
 
 # TODO: sort out Element **kwargs for Factory.createWidgetOnElement
-#Factory.registerClass('pyjamas.ui.RichTextArea', RichTextArea)
+#Factory.registerClass('pyjamas.ui.RichTextArea', 'RichTextArea', RichTextArea)
 

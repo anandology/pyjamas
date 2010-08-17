@@ -201,5 +201,5 @@ class DockPanel(CellPanel):
                 return
         DOM.appendChild(parent, child)
 
-Factory.registerClass('pyjamas.ui.DockPanel', DockPanel)
+Factory.registerClass('pyjamas.ui.DockPanel', 'DockPanel', DockPanel)
 

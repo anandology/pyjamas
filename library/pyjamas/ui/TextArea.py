@@ -53,5 +53,5 @@ class TextArea(TextBoxBase):
     def setVisibleLines(self, lines):
         DOM.setIntAttribute(self.getElement(), "rows", lines)
 
-Factory.registerClass('pyjamas.ui.TextArea', TextArea)
+Factory.registerClass('pyjamas.ui.TextArea', 'TextArea', TextArea)
 

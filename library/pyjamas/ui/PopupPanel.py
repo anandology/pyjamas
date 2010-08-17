@@ -219,5 +219,5 @@ class PopupPanel(SimplePanel):
         self.rootpanel.add(self)
         self.onShowImpl(self.getElement())
 
-Factory.registerClass('pyjamas.ui.PopupPanel', PopupPanel)
+Factory.registerClass('pyjamas.ui.PopupPanel', 'PopupPanel', PopupPanel)
 

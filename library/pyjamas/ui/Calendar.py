@@ -449,7 +449,7 @@ class DateField(Composite):
         p.setPopupPosition(x,y)
         p.show()
 
-Factory.registerClass('pyjamas.ui.Calendar', Calendar)
+Factory.registerClass('pyjamas.ui.Calendar', 'Calendar', Calendar)
 
 class CalendarPopup(PopupPanel):
     def __init__(self, c):
@@ -460,4 +460,4 @@ class CalendarPopup(PopupPanel):
         p.setWidth("100%")
         self.setWidget(p)
 
-Factory.registerClass('pyjamas.ui.CalendarPopup', CalendarPopup)
+Factory.registerClass('pyjamas.ui.Calendar', 'CalendarPopup', CalendarPopup)

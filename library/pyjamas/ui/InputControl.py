@@ -65,4 +65,4 @@ class InputControl(Control):
         else:
             Control.onKeyPress(self, sender, keycode, modifiers)
 
-Factory.registerClass('pyjamas.ui.InputControl', InputControl)
+Factory.registerClass('pyjamas.ui.InputControl', 'InputControl', InputControl)

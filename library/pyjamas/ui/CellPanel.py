@@ -154,5 +154,5 @@ class CellPanel(ComplexPanel):
         return self.vertAlign
 
 
-Factory.registerClass('pyjamas.ui.CellPanel', CellPanel)
+Factory.registerClass('pyjamas.ui.CellPanel', 'CellPanel', CellPanel)
 

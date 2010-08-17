@@ -96,5 +96,5 @@ class ScrollPanel(SimplePanel):
             item = item.offsetParent
         scroll.scrollTop = realOffset - scroll.offsetHeight / 2
 
-Factory.registerClass('pyjamas.ui.ScrollPanel', ScrollPanel)
+Factory.registerClass('pyjamas.ui.ScrollPanel', 'ScrollPanel', ScrollPanel)
 

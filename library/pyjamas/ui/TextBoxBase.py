@@ -133,5 +133,5 @@ class TextBoxBase(FocusWidget):
 
 
 # TODO: work out if TextBoxBase is appropriate to create in Factory.
-# Factory.registerClass('pyjamas.ui.TextBoxBase', TextBoxBase)
+# Factory.registerClass('pyjamas.ui.TextBoxBase', 'TextBoxBase', TextBoxBase)
 

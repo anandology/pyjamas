@@ -52,5 +52,5 @@ class Button(ButtonBase):
         """
         self.getElement().click()
 
-Factory.registerClass('pyjamas.ui.Button', Button)
+Factory.registerClass('pyjamas.ui.Button', 'Button', Button)
 

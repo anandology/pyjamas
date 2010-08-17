@@ -110,4 +110,4 @@ class DoubleControl(Control):
             self.setControlPos(new_value)
             self.setValue(new_value)
 
-Factory.registerClass('pyjamas.ui.DoubleControl', DoubleControl)
+Factory.registerClass('pyjamas.ui.DoubleControl', 'DoubleControl', DoubleControl)

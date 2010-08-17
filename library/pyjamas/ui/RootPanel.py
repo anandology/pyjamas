@@ -70,7 +70,7 @@ class RootPanelCls(AbsolutePanel):
     def getBodyElement(self):
         return doc().body
 
-Factory.registerClass('pyjamas.ui.RootPanelCls', RootPanelCls)
+Factory.registerClass('pyjamas.ui.RootPanel', 'RootPanelCls', RootPanelCls)
 
 def RootPanel(id=None):
     return get(id)

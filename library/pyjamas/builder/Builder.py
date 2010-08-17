@@ -38,11 +38,14 @@ class Builder(object):
         self.properties, self.components = xmlFile.parse()
 
     def createInstance(self, instancename,
-                             eventTarget=None, targetItem=None, index=None):
+                       eventTarget=None, targetItem=None, index=None):
 
         def addItem(comp, props, childs, parentInstance, eventTarget):
             klsname = comp['name']
-            kls = Factory.lookupClass("pyjamas.ui.%s" % klsname)
+            modname = comp.get('module')
+            if modname is None:
+                modname = '.'.join(["pyjamas.ui", klsname])
+            kls = Factory.lookupClass('.'.join([modname, klsname]))
             args = {}
             wprops = {}
             if props.has_key("common"):

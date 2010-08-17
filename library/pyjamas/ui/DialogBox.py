@@ -194,5 +194,5 @@ class DialogBox(PopupPanel):
         if self.centered:
             self.centerBox()
 
-Factory.registerClass('pyjamas.ui.DialogBox', DialogBox)
+Factory.registerClass('pyjamas.ui.DialogBox', 'DialogBox', DialogBox)
 

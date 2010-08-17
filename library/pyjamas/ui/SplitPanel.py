@@ -271,5 +271,5 @@ class SplitPanel(Panel):
 
 # TODO: this is really an internal base class for Horizontal and Vertical
 # SplitPanels?
-#Factory.registerClass('pyjamas.ui.SplitPanel', SplitPanel)
+#Factory.registerClass('pyjamas.ui.SplitPanel', 'SplitPanel', SplitPanel)
 

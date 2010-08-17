@@ -213,5 +213,5 @@ class ListBox(FocusWidget):
             else:
                 self.setItemSelected(i, "")
 
-Factory.registerClass('pyjamas.ui.ListBox', ListBox)
+Factory.registerClass('pyjamas.ui.ListBox', 'ListBox', ListBox)
 

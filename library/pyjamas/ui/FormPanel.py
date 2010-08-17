@@ -208,5 +208,5 @@ class FormPanel(SimplePanel):
         iframe.removeEventListener("load", self._onload_listener, True)
         form.removeEventListener("onsubmit", self._onsubmit_listener, True)
 
-Factory.registerClass('pyjamas.ui.FormPanel', FormPanel)
+Factory.registerClass('pyjamas.ui.FormPanel', 'FormPanel', FormPanel)
 

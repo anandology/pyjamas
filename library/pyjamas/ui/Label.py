@@ -58,5 +58,5 @@ class Label(Widget, MouseHandler, ClickHandler, InnerText):
         style = wrap and "normal" or "nowrap"
         DOM.setStyleAttribute(self.getElement(), "whiteSpace", style)
 
-Factory.registerClass('pyjamas.ui.Label', Label)
+Factory.registerClass('pyjamas.ui.Label', 'Label', Label)
 

@@ -11,8 +11,11 @@ from pyjamas import DOM
 
 factory = {}
 
-def registerClass(name, kls):
+def registerClass(modname, klsname, kls):
     global factory
+    if modname is None:
+        modname = '.'.join(['pyjamas.ui', klsname])
+    name = '.'.join([modname, klsname])
     factory[name] = kls
 
 def lookupClass(name):

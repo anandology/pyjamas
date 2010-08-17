@@ -56,5 +56,5 @@ class CaptionPanel(SimplePanel):
         elif DOM.getParent(self.legend) is not None:
             DOM.removeChild(self.getElement(), self.legend)
 
-Factory.registerClass('pyjamas.ui.CaptionPanel', CaptionPanel)
+Factory.registerClass('pyjamas.ui.CaptionPanel', 'CaptionPanel', CaptionPanel)
 

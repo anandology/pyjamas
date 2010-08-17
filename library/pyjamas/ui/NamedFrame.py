@@ -40,5 +40,5 @@ class NamedFrame(Frame):
         DOM.setAttribute(self.getElement(), "name", name)
 
 
-Factory.registerClass('pyjamas.ui.NamedFrame', NamedFrame)
+Factory.registerClass('pyjamas.ui.NamedFrame', 'NamedFrame', NamedFrame)
 

@@ -111,5 +111,5 @@ class CheckBox(ButtonBase):
         self.setChecked(self.isChecked())
         ButtonBase.onDetach(self)
 
-Factory.registerClass('pyjamas.ui.CheckBox', CheckBox)
+Factory.registerClass('pyjamas.ui.CheckBox', 'CheckBox', CheckBox)
 

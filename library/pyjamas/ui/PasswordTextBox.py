@@ -23,4 +23,4 @@ class PasswordTextBox(TextBox):
         ka['StyleName'] = ka.get('StyleName', "gwt-PasswordTextBox")
         TextBox.__init__(self, **ka)
 
-Factory.registerClass('pyjamas.ui.PasswordTextBox', PasswordTextBox)
+Factory.registerClass('pyjamas.ui.PasswordTextBox', 'PasswordTextBox', PasswordTextBox)

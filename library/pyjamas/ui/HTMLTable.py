@@ -335,5 +335,5 @@ class HTMLTable(Panel):
     def setRowFormatter(self, rowFormatter):
         self.rowFormatter = rowFormatter
 
-Factory.registerClass('pyjamas.ui.HTMLTable', HTMLTable)
+Factory.registerClass('pyjamas.ui.HTMLTable', 'HTMLTable', HTMLTable)
 

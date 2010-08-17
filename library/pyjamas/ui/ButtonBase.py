@@ -32,5 +32,5 @@ class ButtonBase(FocusWidget, InnerHTML, InnerText):
         return FocusWidget._getProps() + InnerText._getProps() + \
                InnerHTML._getProps()
 
-Factory.registerClass('pyjamas.ui.ButtonBase', ButtonBase)
+Factory.registerClass('pyjamas.ui.ButtonBase', 'ButtonBase', ButtonBase)
 

@@ -45,5 +45,5 @@ class TextBox(TextBoxBase):
         DOM.setIntAttribute(self.getElement(), "size", length)
 
 
-Factory.registerClass('pyjamas.ui.TextBox', TextBox)
+Factory.registerClass('pyjamas.ui.TextBox', 'TextBox', TextBox)
 

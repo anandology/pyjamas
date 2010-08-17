@@ -266,5 +266,5 @@ class MenuBar(Widget):
 
         self.selectedItem = item
 
-Factory.registerClass('pyjamas.ui.MenuBar', MenuBar)
+Factory.registerClass('pyjamas.ui.MenuBar', 'MenuBar', MenuBar)
 

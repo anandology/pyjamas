@@ -61,5 +61,5 @@ class SimplePanel(Panel):
             self.adopt(widget, self.getContainerElement())
             self.children.append(widget)
 
-Factory.registerClass('pyjamas.ui.SimplePanel', SimplePanel)
+Factory.registerClass('pyjamas.ui.SimplePanel', 'SimplePanel', SimplePanel)
 

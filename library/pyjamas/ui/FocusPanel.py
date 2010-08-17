@@ -38,4 +38,4 @@ class FocusPanel(SimplePanel, FocusHandler, KeyboardHandler,
         ClickHandler.__init__(self)
         MouseHandler.__init__(self)
 
-Factory.registerClass('pyjamas.ui.FocusPanel', FocusPanel)
+Factory.registerClass('pyjamas.ui.FocusPanel', 'FocusPanel', FocusPanel)

@@ -209,5 +209,5 @@ class UIObject(Applier):
         DOM.sinkEvents(self.getElement(),
                       ~eventBitsToRemove & DOM.getEventsSunk(self.getElement()))
 
-Factory.registerClass('pyjamas.ui.UIObject', UIObject)
+Factory.registerClass('pyjamas.ui.UIObject', 'UIObject', UIObject)
 
