@@ -21,6 +21,7 @@ class XMLFileError(RuntimeError):
 
 class XMLFile(object):
     re_xml = re.compile('''<[?]xml([^?]*)[?]>''')
+    re_comment = re.compile('''<!--(-*)''')
     re_tag = re.compile('''<\s*([^/]\S*)(.*)>''')
     re_tag_close = re.compile('''</\s*(\S+)\s*>''')
     #re_attr = re.compile('''(\S+)="([^"]*)"''') # Bug in pyjamas re module
@@ -122,12 +123,30 @@ class XMLFile(object):
         if self.lineno > len(self.lines):
             return None
         line = self.lines[self.lineno].strip()
+        startlineno = self.lineno
+        mComment = self.re_comment.search(line)
+        while mComment:
+            start = '<!--%s' % mComment.group(1)
+            end = '%s-->' % mComment.group(1)
+            left = line.find(start) + len(start)
+            right = line.find(end, left)
+            if right >= left:
+                right += len(end)
+                line = line[:left - len(start)] + line[right + len(end):]
+                mComment = self.re_comment.search(line)
+            elif self.lineno == len(self.lines):
+                self.error(
+                    "Unterminated comment starting at line %s" % startlineno,
+                )
+            else:
+                self.lineno += 1
+                line = line[:left] + self.lines[self.lineno].strip()
         return line
 
     def nextLine(self):
         if self.lineno > len(self.lines):
             return None
-        line = self.lines[self.lineno].strip()
+        line = self.currentLine()
         self.lineno += 1
         return line
 
@@ -150,13 +169,12 @@ class XMLFile(object):
         self.error("Unknown tag '%s'" % tag[0])
 
     def parse(self):
-        line = self.nextLine()
+        line = self.currentLine()
         mXML = self.re_xml.match(line)
-        if not mXML:
-            self.lineno -= 1
-        else:
+        if mXML:
             xmlAttrs = mXML.group(1)
             self.xmlAttrs = self.getAttrs(xmlAttrs)
+            line = self.nextLine()
         rootTag = None
         properties = self.nextTag(["pyjsglade", "properties", "components"])
         if properties[0] == 'pyjsglade':
