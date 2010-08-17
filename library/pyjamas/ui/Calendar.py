@@ -23,7 +23,7 @@ from pyjamas import History
 import time
 
 class Calendar(FocusPanel):
-    monthsOfYear = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    monthsOfYear = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
                     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
     daysOfWeek = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
     today = 'Today'
@@ -33,7 +33,7 @@ class Calendar(FocusPanel):
 
     def __init__(self, **kwargs):
         FocusPanel.__init__(self, **kwargs)
-        yr,mth,day = time.strftime("%Y-%m-%d").split("-")
+        yr, mth, day = time.strftime("%Y-%m-%d").split("-")
         self.todayYear = int(yr)
         self.todayMonth = int(mth)  # change to offset 0 as per javascript
         self.todayDay = int(day)
@@ -54,23 +54,23 @@ class Calendar(FocusPanel):
     def getDaysOfWeek(self):
         return self.daysOfWeek
 
-    def addSelectedDateListener(self,listener):
+    def addSelectedDateListener(self, listener):
         self.selectedDateListeners.append(listener)
 
-    def removeSelectedDateListener(self,listener):
+    def removeSelectedDateListener(self, listener):
         self.selectedDateListeners.remove(listener)
 
-    def isLeapYear(self,year):
-        if (year % 4 == 0 and year % 100 != 0) or ( year % 400 == 0):
+    def isLeapYear(self, year):
+        if (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0):
             return True
         else:
             return False
 
-    def getDaysInMonth(self,mth,year):
+    def getDaysInMonth(self, mth, year):
         days = 0
-        if mth in [1,3,5,7,8,10,12]:
+        if mth in [1, 3, 5, 7, 8, 10, 12]:
             days=31
-        elif mth in [4,6,8,11]:
+        elif mth in [4, 6, 8, 11]:
             days = 30
         elif (mth==2 and self.isLeapYear(year)):
             days = 29
@@ -88,13 +88,13 @@ class Calendar(FocusPanel):
             left = 0
         if top < 0:
             top = 0
-        self.setPosition(left,top)
+        self.setPosition(left, top)
         self.drawCurrent()
         self.setVisible(True)
 
     def drawCurrent(self):
-        yr,mth,day = time.strftime("%Y-%m-%d").split("-")
-        self.draw( int(mth), int(yr) )
+        yr, mth, day = time.strftime("%Y-%m-%d").split("-")
+        self.draw(int(mth), int(yr))
 
     def draw(self, month , year):
         tod = time.localtime()
@@ -111,7 +111,7 @@ class Calendar(FocusPanel):
 
         # check to see if we have drawn the full widget before
         if self.defaultGrid is None:
-            self.drawFull(month,year)
+            self.drawFull(month, year)
         else:
             # ok means we are re-drawing, but first check if it is the same
             # as the defaultGrid, if yes, just use it
@@ -122,7 +122,7 @@ class Calendar(FocusPanel):
                 self.currentYear = self.todayYear
             else:
                 # we have to redraw the grid -- bah
-                g = self.drawGrid(month,year)
+                g = self.drawGrid(month, year)
 
                 if hasChangeMonth:
                     # reset the default grid as we have changed months
@@ -156,13 +156,13 @@ class Calendar(FocusPanel):
         tp.setSpacing(5)
 
         h1 = Hyperlink('<<', targetHistoryToken=History.getToken())
-        h1.addClickListener( getattr(self,'onPreviousYear') )
+        h1.addClickListener(getattr(self, 'onPreviousYear'))
         h2 = Hyperlink('<', targetHistoryToken=History.getToken())
-        h2.addClickListener( getattr(self,'onPreviousMonth') )
+        h2.addClickListener(getattr(self, 'onPreviousMonth'))
         h4 = Hyperlink('>', targetHistoryToken=History.getToken())
-        h4.addClickListener( getattr(self,'onNextMonth') )
+        h4.addClickListener(getattr(self, 'onNextMonth'))
         h5 = Hyperlink('>>', targetHistoryToken=History.getToken())
-        h5.addClickListener( getattr(self,'onNextYear') )
+        h5.addClickListener(getattr(self, 'onNextYear'))
 
         tp.add(h1)
         tp.add(h2)
@@ -175,7 +175,7 @@ class Calendar(FocusPanel):
         self.titlePanel.setWidget(HTML(txt))
         self.titlePanel.setStyleName("calendar-center")
 
-        tp.add( self.titlePanel )
+        tp.add(self.titlePanel)
         tp.add(h4)
         tp.add(h5)
         tvp = VerticalPanel()
@@ -187,7 +187,7 @@ class Calendar(FocusPanel):
         # done with top panel
 
         self.middlePanel = SimplePanel()
-        grid = self.drawGrid(mth,yr)
+        grid = self.drawGrid(mth, yr)
         self.middlePanel.setWidget(grid)
         self.vp.add(self.middlePanel)
         self.defaultGrid = grid
@@ -195,13 +195,13 @@ class Calendar(FocusPanel):
         # some links & handlers
         #
         bh1 = Hyperlink(self.yesterday, targetHistoryToken=History.getToken())
-        bh1.addClickListener( getattr(self,'onYesterday') )
+        bh1.addClickListener(getattr(self, 'onYesterday'))
         bh2 = Hyperlink(self.today, targetHistoryToken=History.getToken())
-        bh2.addClickListener( getattr(self,'onToday') )
+        bh2.addClickListener(getattr(self, 'onToday'))
         bh3 = Hyperlink(self.tomorrow, targetHistoryToken=History.getToken())
-        bh3.addClickListener( getattr(self,'onTomorrow') )
+        bh3.addClickListener(getattr(self, 'onTomorrow'))
         bh4 = Hyperlink(self.cancel, targetHistoryToken=History.getToken())
-        bh4.addClickListener( getattr(self,'onCancel') )
+        bh4.addClickListener(getattr(self, 'onCancel'))
         #
         # add code to test another way of doing the layout
         #
@@ -219,15 +219,15 @@ class Calendar(FocusPanel):
         self.setVisible(True)
         return
 
-    def drawGrid(self,month,year):
+    def drawGrid(self, month, year):
         # draw the grid in the middle of the calendar
 
         daysInMonth = self.getDaysInMonth(month, year)
         # first day of the month & year
-        secs = time.mktime( (year,month,1,0,0,0,0,0,-1) )
+        secs = time.mktime((year, month, 1, 0, 0, 0, 0, 0, -1))
         struct = time.localtime(secs)
         # 0 - sunday for our needs instead 0 = monday in tm_wday
-        startPos = (struct.tm_wday + 1 ) % 7
+        startPos = (struct.tm_wday + 1) % 7
         slots = startPos + daysInMonth - 1
         rows = int(slots/7) + 1
         grid = Grid(rows+1, 7) # extra row for the days in the week
@@ -238,8 +238,8 @@ class Calendar(FocusPanel):
         # put some content into the grid cells
         #
         for i in range(7):
-            grid.setText(0, i, self.getDaysOfWeek()[i] )
-            grid.cellFormatter.addStyleName(0,i,"calendar-header")
+            grid.setText(0, i, self.getDaysOfWeek()[i])
+            grid.cellFormatter.addStyleName(0, i, "calendar-header")
         #
         # draw cells which are empty first
         #
@@ -247,8 +247,8 @@ class Calendar(FocusPanel):
         pos = 0
         while pos < startPos:
             grid.setText(1, pos , " ")
-            grid.cellFormatter.setStyleAttr(1,pos,"background","#f3f3f3")
-            grid.cellFormatter.addStyleName(1,pos,"calendar-blank-cell")
+            grid.cellFormatter.setStyleAttr(1, pos, "background", "#f3f3f3")
+            grid.cellFormatter.addStyleName(1, pos, "calendar-blank-cell")
             pos += 1
         # now for days of the month
         row = 1
@@ -258,12 +258,12 @@ class Calendar(FocusPanel):
             if pos % 7 == 0 and day <> 1:
                 row += 1
             col = pos % 7
-            grid.setText(row,col, str(day) )
+            grid.setText(row, col, str(day))
             if self.currentYear == self.todayYear and \
                self.currentMonth == self.todayMonth and day == self.todayDay:
-                grid.cellFormatter.addStyleName(row,col,"calendar-cell-today")
+                grid.cellFormatter.addStyleName(row, col, "calendar-cell-today")
             else:
-                grid.cellFormatter.addStyleName(row,col,"calendar-day-cell")
+                grid.cellFormatter.addStyleName(row, col, "calendar-day-cell")
             day += 1
             pos += 1
         #
@@ -271,9 +271,9 @@ class Calendar(FocusPanel):
         #
         col += 1
         while col < 7:
-            grid.setText(row,col," ")
-            grid.cellFormatter.setStyleAttr(row,col,"background","#f3f3f3")
-            grid.cellFormatter.addStyleName(row,col,"calendar-blank-cell")
+            grid.setText(row, col, " ")
+            grid.cellFormatter.setStyleAttr(row, col, "background", "#f3f3f3")
+            grid.cellFormatter.addStyleName(row, col, "calendar-blank-cell")
             col += 1
 
         return grid
@@ -291,62 +291,62 @@ class Calendar(FocusPanel):
         # well if anyone is listening to the listener, fire that event
         for listener in self.selectedDateListeners:
             if hasattr(listener, "onDateSelected"):
-                listener.onDateSelected(self.currentYear, self.currentMonth,
+                listener.onDateSelected(self.currentYear, self.currentMonth, 
                                         selectedDay)
             else:
                 listener(self.currentYear, self.currentMonth, selectedDay)
         self.setVisible(False)
 
 
-    def onPreviousYear(self,event):
+    def onPreviousYear(self, event):
         self.drawPreviousYear()
 
-    def onPreviousMonth(self,event):
+    def onPreviousMonth(self, event):
         self.drawPreviousMonth()
 
-    def onNextMonth(self,event):
+    def onNextMonth(self, event):
         self.drawNextMonth()
 
-    def onNextYear(self,event):
+    def onNextYear(self, event):
         self.drawNextYear()
 
     def onDate(self, event, yy, mm, dd):
         for listener in self.selectedDateListeners:
             if hasattr(listener, "onDateSelected"):
-                listener.onDateSelected(yy,mm,dd)
+                listener.onDateSelected(yy, mm, dd)
             else:
-                listener(yy,mm,dd)
+                listener(yy, mm, dd)
         self.setVisible(False)
 
-    def onYesterday(self,event):
+    def onYesterday(self, event):
         yesterday = time.localtime(time.time() - 3600 * 24)
         mm = yesterday.tm_mon
         dd = yesterday.tm_mday
         yy = yesterday.tm_year
         self.onDate(event, yy, mm, dd)
 
-    def onToday(self,event):
+    def onToday(self, event):
         tod = time.localtime()
         mm = tod.tm_mon
         dd = tod.tm_mday
         yy = tod.tm_year
         self.onDate(event, yy, mm, dd)
 
-    def onTomorrow(self,event):
+    def onTomorrow(self, event):
         tom = time.localtime(time.time() + 3600 * 24)
         mm = tom.tm_mon
         dd = tom.tm_mday
         yy = tom.tm_year
         self.onDate(event, yy, mm, dd)
 
-    def onCancel(self,event):
+    def onCancel(self, event):
         self.setVisible(False)
 
     def drawCurrent(self):
-        yr,mth,day = time.strftime("%Y-%m-%d").split("-")
-        self.draw( int(mth), int(yr) )
+        yr, mth, day = time.strftime("%Y-%m-%d").split("-")
+        self.draw(int(mth), int(yr))
 
-    def drawDate(self, month, year ):
+    def drawDate(self, month, year):
         # if year == self.currentYear and month == self.currentYear():
             # self.drawCurrent()
         self.currentMonth = month
@@ -387,7 +387,7 @@ class DateField(Composite):
     today_text = "Today"
     today_style = "calendar-today-link"
 
-    def __init__(self,format='%d-%m-%Y'):
+    def __init__(self, format='%d-%m-%Y'):
         self.format = format
         self.tbox = TextBox()
         self.tbox.setVisibleLength(10)
@@ -404,7 +404,7 @@ class DateField(Composite):
         self.calendar = Calendar()
         self.img = Image(self.icon_img)
         self.img.addStyleName(self.icon_style)
-        self.calendarLink = HyperlinkImage(self.img,
+        self.calendarLink = HyperlinkImage(self.img, 
                                        targetHistoryToken=History.getToken())
         self.todayLink = Hyperlink(self.today_text, 
                                        targetHistoryToken=History.getToken())
@@ -427,9 +427,9 @@ class DateField(Composite):
         # done with layout, so now set up some listeners
         #
         self.tbox.addFocusListener(self) # hook to onLostFocus
-        self.calendar.addSelectedDateListener(getattr(self,"onDateSelected"))
-        self.todayLink.addClickListener(getattr(self,"onTodayClicked"))
-        self.calendarLink.addClickListener(getattr(self,"onShowCalendar"))
+        self.calendar.addSelectedDateListener(getattr(self, "onDateSelected"))
+        self.todayLink.addClickListener(getattr(self, "onTodayClicked"))
+        self.calendarLink.addClickListener(getattr(self, "onShowCalendar"))
 
     def getTextBox(self):
         return self.tbox
@@ -437,12 +437,12 @@ class DateField(Composite):
     def getCalendar(self):
         return self.calendar
 
-    def setID(self,id):
+    def setID(self, id):
         self.tbox.setID(id)
 
     def onDateSelected(self, yyyy, mm, dd):
-        secs = time.mktime((int(yyyy),int(mm),int(dd),0,0,0,0,0,-1))
-        d = time.strftime(self.format,time.localtime(secs))
+        secs = time.mktime((int(yyyy), int(mm), int(dd), 0, 0, 0, 0, 0, -1))
+        d = time.strftime(self.format, time.localtime(secs))
         self.tbox.setText(d)
 
     def onLostFocus(self, sender):
@@ -459,13 +459,13 @@ class DateField(Composite):
 
     def onTodayClicked(self, event):
         today = time.strftime(self.format)
-        self.tbox.setText( today )
+        self.tbox.setText(today)
 
     def onShowCalendar(self, sender):
         p = CalendarPopup(self.calendar)
         x = self.tbox.getAbsoluteLeft() + 10
         y = self.tbox.getAbsoluteTop() + 10
-        p.setPopupPosition(x,y)
+        p.setPopupPosition(x, y)
         p.show()
 
 Factory.registerClass('pyjamas.ui.Calendar', 'DateField', DateField)
@@ -476,7 +476,7 @@ class CalendarPopup(PopupPanel):
         PopupPanel.__init__(self, True)
         p = SimplePanel()
         p.add(c)
-        c.show(10,10)
+        c.show(10, 10)
         p.setWidth("100%")
         self.setWidget(p)
 
