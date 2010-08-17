@@ -55,6 +55,7 @@ class Builder(object):
             if modname is None:
                 modname = '.'.join(["pyjamas.ui", klsname])
             kls = Factory.lookupClass('.'.join([modname, klsname]))
+
             args = {}
             wprops = {}
             if props.has_key("common"):
@@ -67,7 +68,13 @@ class Builder(object):
                     continue
                 fname = n[ui.PROP_FNAM]
                 args[fname] = wprops[name]
+
+            # create item with properties including weird ones
+            # which can't fit into the name value structure
             item = kls(**args)
+            if hasattr(item, "_setWeirdProps"):
+                item._setWeirdProps(wprops)
+
             identifier = comp['id']
             widgets_by_name[identifier] = klsname
             widget_instances[identifier] = item
