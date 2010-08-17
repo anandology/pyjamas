@@ -17,7 +17,7 @@ from pyjamas import DOM
 
 class InnerHTML(object):
 
-    _props = [ ("html", "HTML text", "HTML", None),
+    _props = [ ("text", "HTML text", "HTML", None),
             ]
 
     def getHTML(self):

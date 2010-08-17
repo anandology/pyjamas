@@ -22,7 +22,8 @@ from ClickListener import ClickHandler
 
 class Label(Widget, MouseHandler, ClickHandler, InnerText):
 
-    _props = [("wordwrap", "Word Wrap", "WordWrap", None),
+    _props = [("label", "Label", "Text", None),
+              ("wordwrap", "Word Wrap", "WordWrap", None),
              ("horzAlign", "Horizontal Alignment", "HorizontalAlignment", None),
             ]
 
