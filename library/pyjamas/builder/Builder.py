@@ -39,6 +39,7 @@ class Builder(object):
         xmlFile = XMLFile(str(text)) # XMLFile only accepts str not unicode!
         self.widgets_by_name = {}
         self.widget_instances = {}
+        self.widget_order = {}
         self.widgets_by_class = {}
         self.properties, self.components = xmlFile.parse()
 
@@ -48,6 +49,7 @@ class Builder(object):
         widget_instances = {}
         widgets_by_name = {}
         widgets_by_class = {}
+        widget_order = []
 
         def addItem(comp, props, childs, parentInstance, eventTarget):
             klsname = comp['name']
@@ -76,6 +78,7 @@ class Builder(object):
                 item._setWeirdProps(wprops)
 
             identifier = comp['id']
+            widget_order.append(identifier)
             widgets_by_name[identifier] = klsname
             widget_instances[identifier] = item
             l = widgets_by_class.get(klsname, [])
@@ -138,6 +141,7 @@ class Builder(object):
             self.widget_instances[instancename] = widget_instances
             self.widgets_by_name[instancename] = widgets_by_name
             self.widgets_by_class[instancename] = widgets_by_class
+            self.widget_order[instancename] = widget_order
 
             return item
         return None
