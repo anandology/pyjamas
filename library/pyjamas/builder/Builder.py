@@ -34,7 +34,7 @@ eventListeners = dict(
 class Builder(object):
 
     def __init__(self, text):
-        xmlFile = XMLFile(text)
+        xmlFile = XMLFile(str(text)) # XMLFile only accepts str not unicode!
         self.properties, self.components = xmlFile.parse()
 
     def createInstance(self, instancename,
