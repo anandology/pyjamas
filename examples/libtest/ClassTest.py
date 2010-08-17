@@ -329,6 +329,7 @@ class ClassTest(UnitTest):
             self.fail("failed to raise an error on c.prop (improperly follows explicit __new__ with implicit __init__)")
         except:
             self.assertTrue(True)
+        self.assertTrue(c.init, "OtherClass2.__init__() is not executed")
         try:
             c = OtherClass3(41, 42)
             self.assertTrue(True)
@@ -341,6 +342,15 @@ class ClassTest(UnitTest):
             self.fail("Issue 418: __new__ method doesn't fail for lack of arguments")
         except:
             self.assertTrue(True)
+        c = OtherSubclass4(1, 2, c=3, d=4)
+        try:
+            self.assertEqual(c.args, (1,2))
+        except AttributeError:
+            self.fail("c.args is not defined")
+        try:
+            self.assertEqual(c.kwargs, dict(c=3, d=4))
+        except AttributeError:
+            self.fail("c.kwargs is not defined")
         instance = MultiBase.__new__(MultiInherit1)
         self.assertEqual(instance.name, 'MultiInherit1')
         instance = MultiInherit1.__new__(MultiBase)
@@ -933,19 +943,31 @@ class ObjectClass(object):
 class OtherClass1(object):
     def __new__(cls):
         return ObjectClass()
-        
+
 class OtherSubclass1(OtherClass1):
     pass
 
 class OtherClass2(object):
+    init = False
     def __new__(cls):
         return ObjectClass.__new__(cls)
+    def __init__(self):
+        self.init = True
         
 class OtherClass3(object):
     def __new__(cls, x, y):
         val = object.__new__(cls)
         val.x, val.y = x,y
         return val
+
+class OtherClass4(object):
+    def __new__(cls, *args, **kwargs):
+        return super(OtherClass4, cls).__new__(cls, *args, **kwargs)
+
+class OtherSubclass4(OtherClass4):
+    def __init__(self, *args, **kwargs):
+        self.args = args
+        self.kwargs = kwargs
 
 class ExampleMultiSuperclassParent1:
     x = 'Initial X'
