@@ -67,6 +67,15 @@ class MenuItem(UIObject, InnerHTML, InnerText):
         UIObject.__init__(self, **kwargs)
         self.sinkEvents(Event.ONCLICK | Event.ONMOUSEOVER | Event.ONMOUSEOUT)
 
+    #def _setWeirdProps(self, props):
+    #    if not props.has_key("text"):
+    #        return
+    #    txt = props["text"]
+    #    if props.get("html", False):
+    #        self.setHTML(txt)
+    #    else:
+    #        self.setText(txt)
+
     def getCommand(self):
         return self.command
 
