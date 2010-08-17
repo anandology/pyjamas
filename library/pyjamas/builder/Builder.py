@@ -66,7 +66,7 @@ class Builder(object):
             #    context = parentInstance.getIndexedChild(comp['index'])
             #    context.add(item.componentInstance)
             for (index, child) in enumerate(childs):
-                if child[0]["type"] is None:
+                if not child[0].has_key("type") or child[0]["type"] is None:
                     continue
                 childitem = addItem(child[0], child[1], child[2], item,
                                     eventTarget)
