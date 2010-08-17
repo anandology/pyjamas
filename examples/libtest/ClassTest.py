@@ -33,7 +33,7 @@ class GetAttribute():
 class Sink:
     def __init__(self):
         self.sink = "Sink"
-
+    
 class SinkInfo:
     def __init__(self, object_type):
         self.object_type=object_type
@@ -46,7 +46,7 @@ class SinkInfo:
         if self.instance==None:
             self.instance=self.createInstance()
         return self.instance
-
+    
 class Trees(Sink):
     def __init__(self):
         Sink.__init__(self)
@@ -375,24 +375,24 @@ class ClassTest(UnitTest):
             self.fail('Failed to raise error for invalid instance')
         except TypeError, e:
             self.assertTrue(e.args[0].find('get_x() must be called') >= 0, e.args[0])
-
+    
     def testIsSubclass(self):
         class A: pass
         class B(A): pass
         class C(B): pass
         class D: pass
         class E(D, C): pass
-
+        
         self.assertTrue(issubclass(A, A))
         self.assertTrue(issubclass(C, A))
         self.assertTrue(issubclass(E, A))
         self.assertTrue(issubclass(E, (PassMeAClass, A)))
         self.assertFalse(issubclass(A, PassMeAClass))
-
+        
         self.assertRaises(TypeError, issubclass, PassMeAClass(), PassMeAClass)
         self.assertRaises(TypeError, issubclass, PassMeAClass, PassMeAClass())
         self.assertRaises(TypeError, issubclass, None, PassMeAClass)
-
+    
     def testMetaClass(self):
         Klass = type('MyClass', (object,), {'method': method, 'x': 5})
         instance = Klass()
@@ -564,7 +564,7 @@ class ClassTest(UnitTest):
         self.assertEqual(pmc.foo(), "foo in PassMeAClass", "foo !in PassMeAClass")
 
         try:
-            pmc = ggetObject("mscp1", 5)
+            pmc = ggetObject("mscp1", 5) 
         except:
             self.assertEqual(False, True, "Exception indicates bug in compiler: 'Error: uncaught exception: ExampleMultiSuperclassParent1() arguments after ** must be a dictionary 5'")
         else:
@@ -723,7 +723,7 @@ class ClassTest(UnitTest):
                         def __init__(self):
                             self.v = 1
                 self.b = B()
-
+ 
         a = A(0)
         self.assertEqual(a.b.v, 0)
         a = A(1)
@@ -811,7 +811,7 @@ class PassMeAClass(object):
 
 def PassMeAClassFunction(klass):
     c = klass()
-    return c.foo()
+    return c.foo() 
 
 # testMetaClass
 def method(self):
@@ -840,10 +840,10 @@ class ExampleClass:
     @staticmethod
     def sampleStaticMethod(arg):
         return arg
-
+    
     def shouldntWork(arg):
         return "before" + arg + "after"
-
+        
     oldIdiomStaticMethod = staticmethod(shouldntWork)
 
     def fail_a(self):
@@ -933,14 +933,14 @@ class ObjectClass(object):
 class OtherClass1(object):
     def __new__(cls):
         return ObjectClass()
-
+        
 class OtherSubclass1(OtherClass1):
     pass
 
 class OtherClass2(object):
     def __new__(cls):
         return ObjectClass.__new__(cls)
-
+        
 class OtherClass3(object):
     def __new__(cls, x, y):
         val = object.__new__(cls)
