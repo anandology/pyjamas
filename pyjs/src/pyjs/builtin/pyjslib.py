@@ -5674,7 +5674,7 @@ def _issubtype(object_, classinfo):
 def __getattr_check(attr, attr_left, attr_right, attrstr,
                 bound_methods, descriptors,
                 attribute_checking, source_tracking):
-    JS("""
+    """
        (function(){
             var $pyjs__testval;
             var v, vl; /* hmm.... */
@@ -5696,7 +5696,8 @@ def __getattr_check(attr, attr_left, attr_right, attrstr,
                 (function(){throw TypeError(attrstr + " is undefined");})():
                 $pyjs__testval);
        )();
-    """)
+    """
+    pass
 
 def getattr(obj, name, default_value=None):
     JS("""
