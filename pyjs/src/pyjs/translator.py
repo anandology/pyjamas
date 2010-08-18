@@ -3319,7 +3319,10 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 child_name = child.name
                 self.add_lookup('variable', child_name, child_name)
                 child_name = self.add_lookup('variable', child_name, child_name)
-                assign_tuple.append("""%(child_name)s %(op)s %(nextval)s.__array[%(i)i];""" % locals())
+                if self.inline_code:
+                    assign_tuple.append("""%(child_name)s %(op)s %(nextval)s.__array[%(i)i];""" % locals())
+                else:
+                    assign_tuple.append("""%(child_name)s %(op)s %(nextval)s.$nextval.__array[%(i)i];""" % locals())
                 i += 1
         else:
             raise TranslationError(
@@ -3358,9 +3361,10 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             self.add_lookup('variable', var_trackstack_size, var_trackstack_size)
             print >>self.output, self.spacing() + "%s=$pyjs.trackstack.length;" % var_trackstack_size
         s = self.spacing()
-        print >>self.output, """\
+        if self.inline_code:
+            print >>self.output, """\
 %(s)s%(iterator_name)s = """ % locals() + self.track_call("%(list_expr)s" % locals(), node.lineno) + ';'
-        print >>self.output, """\
+            print >>self.output, """\
 %(s)sif (typeof (%(array)s = %(iterator_name)s.__array) != 'undefined') {
 %(s)s\t%(gentype)s = 0;
 %(s)s} else {
@@ -3368,7 +3372,14 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 %(s)s\t%(gentype)s = typeof (%(array)s = %(iterator_name)s.__array) != 'undefined'? 0 : (typeof %(iterator_name)s.$genfunc == 'function'? 1 : -1);
 %(s)s}
 %(s)s%(loopvar)s = 0;""" % locals()
-        condition = "typeof (%(nextval)s=(%(gentype)s?(%(gentype)s > 0?%(iterator_name)s.next(true,%(reuse_tuple)s):pyjslib['wrapped_next'](%(iterator_name)s)):%(array)s[%(loopvar)s++])) != 'undefined'" % locals()
+            condition = "typeof (%(nextval)s=(%(gentype)s?(%(gentype)s > 0?%(iterator_name)s.next(true,%(reuse_tuple)s):pyjslib['wrapped_next'](%(iterator_name)s)):%(array)s[%(loopvar)s++])) != 'undefined'" % locals()
+        else:
+            print >>self.output, """\
+%(s)s%(iterator_name)s = """ % locals() + self.track_call("%(list_expr)s" % locals(), node.lineno) + ';'
+            print >>self.output, """\
+%(s)s%(nextval)s=pyjslib['__iter_prepare'](%(iterator_name)s,%(reuse_tuple)s);\
+""" % locals()
+            condition = "typeof(pyjslib['__wrapped_next'](%(nextval)s).$nextval) != 'undefined'" % locals()
 
         self.generator_switch_case(increment=True)
 
@@ -3383,7 +3394,10 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.generator_switch_case(increment=False)
 
         if not assign_tuple:
-            print >>self.output, self.spacing() + """%(assign_name)s %(op)s %(nextval)s;""" % locals()
+            if self.inline_code:
+                print >>self.output, self.spacing() + """%(assign_name)s %(op)s %(nextval)s;""" % locals()
+            else:
+                print >>self.output, self.spacing() + """%(assign_name)s %(op)s %(nextval)s.$nextval;""" % locals()
         else:
             for line in assign_tuple:
                 print >>self.output, self.spacing() + line

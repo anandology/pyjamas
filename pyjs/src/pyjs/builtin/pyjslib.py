@@ -6600,6 +6600,28 @@ def any(iterable):
             return True
     return False
 
+__iter_prepare = JS("""function(iter, reuse_tuple) {
+    var it = {};
+    it.$iter = iter;
+    it.$loopvar = 0;
+    it.$reuse_tuple = reuse_tuple;
+    if (typeof (it.$arr = iter.__array) != 'undefined') {
+        it.$gentype = 0;
+    } else {
+        it.$iter = iter.__iter__();
+        it.$gentype = typeof (it.$arr = iter.__array) != 'undefined'? 0 : (typeof iter.$genfunc == 'function'? 1 : -1);
+    }
+    return it;
+}""")
+
+__wrapped_next = JS("""function(it) {
+    var iterator = it.$iter;
+    it.$nextval = it.$gentype?(it.$gentype > 0?
+        iterator.next(true,it.$reuse_tuple):pyjslib['wrapped_next'](iterator)
+                              ) : it.$arr[it.$loopvar++];
+    return it;
+}""")
+
 # For optimized for loops: fall back for userdef iterators
 wrapped_next = JS("""function (iter) {
     try {
