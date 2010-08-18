@@ -743,6 +743,7 @@ class Translator(object):
         self.inline_eq = inline_code
         self.inline_cmp = inline_code
         self.inline_getitem = inline_code
+        self.inline_code = inline_code
         self.operator_funcs = operator_funcs
         self.number_classes = number_classes
         if self.number_classes:
@@ -3508,9 +3509,12 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.add_lookup('variable', v1, v1)
         self.add_lookup('variable', v2, v2)
         s = self.spacing()
-        return """(typeof (%(v1)s=%(e1)s)==typeof (%(v2)s=%(e2)s) && (typeof %(v1)s=='number'||typeof %(v1)s=='string')?
+        if self.inline_code:
+            return """(typeof (%(v1)s=%(e1)s)==typeof (%(v2)s=%(e2)s) && (typeof %(v1)s=='number'||typeof %(v1)s=='string')?
 %(s)s\t%(v1)s+%(v2)s:
 %(s)s\tpyjslib['op_add'](%(v1)s,%(v2)s))""" % locals()
+        return """pyjslib['__op_add'](%(v1)s=%(e1)s,%(v2)s=%(e2)s)""" % \
+                        locals()
 
     def _sub(self, node, current_klass):
         if not self.operator_funcs:
@@ -3522,9 +3526,12 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.add_lookup('variable', v1, v1)
         self.add_lookup('variable', v2, v2)
         s = self.spacing()
-        return """(typeof (%(v1)s=%(e1)s)==typeof (%(v2)s=%(e2)s) && (typeof %(v1)s=='number'||typeof %(v1)s=='string')?
+        if self.inline_code:
+            return """(typeof (%(v1)s=%(e1)s)==typeof (%(v2)s=%(e2)s) && (typeof %(v1)s=='number'||typeof %(v1)s=='string')?
 %(s)s\t%(v1)s-%(v2)s:
 %(s)s\tpyjslib['op_sub'](%(v1)s,%(v2)s))""" % locals()
+        return """pyjslib['__op_sub'](%(v1)s=%(e1)s,%(v2)s=%(e2)s)""" % \
+                        locals()
 
     def _floordiv(self, node, current_klass):
         if not self.operator_funcs:

@@ -178,6 +178,14 @@ def op_usub(v):
 """)
     raise TypeError("bad operand type for unary -: '%r'" % v)
 
+def __op_add(x, y):
+    JS("""
+        return (typeof (x)==typeof (y) && 
+                (typeof x=='number'||typeof x=='string')?
+                x+y:
+                pyjslib['op_add'](x,y));
+    """)
+
 def op_add(x, y):
     JS("""
     if (x !== null && y !== null) {
@@ -212,6 +220,14 @@ def op_add(x, y):
     }
 """)
     raise TypeError("unsupported operand type(s) for +: '%r', '%r'" % (x, y))
+
+def __op_sub(x, y):
+    JS("""
+        return (typeof (x)==typeof (y) && 
+                (typeof x=='number'||typeof x=='string')?
+                x-y:
+                pyjslib['op_sub'](x,y));
+    """)
 
 def op_sub(x, y):
     JS("""
@@ -5653,6 +5669,33 @@ def _issubtype(object_, classinfo):
         if (object_.__mro__[n] === classinfo.__class__) return true;
     }
     return false;
+    """)
+
+def __getattr_check(attr, attr_left, attr_right, attrstr,
+                bound_methods, descriptors,
+                attribute_checking, source_tracking):
+    JS("""
+       (function(){
+            var $pyjs__testval;
+            var v, vl; /* hmm.... */
+            if (bound_methods || descriptors) {
+                pyjs__testval = (v=(vl=attr_left)[attr_right]) == null || 
+                                ((vl.__is_instance__) && 
+                                 typeof v == 'function');
+                if (descriptors) {
+                    pyjs_testval = pyjs_testval || 
+                            (typeof v['__get__'] == 'function');
+                }
+                pyjs__testval = (pyjs__testval ?
+                    pyjslib['getattr'](vl, attr_right):
+                    attr);
+            } else {
+                pyjs__testval = attr;
+            }
+            return (typeof $pyjs__testval=='undefined'?
+                (function(){throw TypeError(attrstr + " is undefined");})():
+                $pyjs__testval);
+       )();
     """)
 
 def getattr(obj, name, default_value=None):
