@@ -342,6 +342,10 @@ class ClassTest(UnitTest):
             self.fail("Issue 418: __new__ method doesn't fail for lack of arguments")
         except:
             self.assertTrue(True)
+        try:
+            c = OtherClass4()
+        except TypeError:
+            self.fail("TypeError on OtherClass4()")
         c = OtherSubclass4(1, 2, c=3, d=4)
         try:
             self.assertEqual(c.args, (1,2))
@@ -960,7 +964,10 @@ class OtherClass3(object):
         val.x, val.y = x,y
         return val
 
-class OtherClass4(object):
+class OtherClass4Mixin:
+    pass
+
+class OtherClass4(object, OtherClass4Mixin):
     def __new__(cls, *args, **kwargs):
         return super(OtherClass4, cls).__new__(cls, *args, **kwargs)
 

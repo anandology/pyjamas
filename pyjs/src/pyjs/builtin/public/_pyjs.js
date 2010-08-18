@@ -140,8 +140,10 @@ function $pyjs_kwargs_call(obj, func, star_args, dstar_args, args)
         return func.apply(obj, _args);
     }
     a = pyjslib.dict(args[0]);
-    a['$pyjs_is_kwarg'] = true;
-    _args.push(a);
+    if (a.__len__() > 0) {
+        a['$pyjs_is_kwarg'] = true;
+        _args.push(a);
+    }
     res = func.apply(obj, _args);
     delete a['$pyjs_is_kwarg'];
     return res;
