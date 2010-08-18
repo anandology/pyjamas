@@ -1280,9 +1280,9 @@ class Translator(object):
             mod = self.module_name
             s = self.spacing()
             call_code = """\
-(function(){try{
+(function(){try{try{$pyjs.in_try_except += 1;
 %(s)sreturn %(call_code)s;
-}catch(%(dbg)s_err){\
+}finally{$pyjs.in_try_except-=1;}}catch(%(dbg)s_err){\
 if (%(dbg)s_err.__name__ != 'StopIteration')\
 {pyjslib['_handle_exception'](%(dbg)s_err);}\
 throw %(dbg)s_err;
