@@ -3891,6 +3891,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             attr = self.attrib_join(attr_)
             attr_left = self.attrib_join(attr_[:-1])
             attr_right = attr_[-1]
+            attrstr = attr
             v = self.uniqid('$attr')
             vl = self.uniqid('$attr')
             self.add_lookup('variable', v, v)
@@ -3909,6 +3910,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 attr_code = "%(attr)s"
             attr_code = attr_code % locals()
             s = self.spacing()
+
+            orig_attr = attr
 
             if not self.attribute_checking:
                 attr = attr_code
@@ -3936,6 +3939,17 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 %(s)s\t\t(function(){throw TypeError(\"%(attrstr)s is undefined");})():
 %(s)s\t\t$pyjs__testval);
 %(s)s})()""" % locals()
+            if True: # not self.attribute_checking or self.inline_code:
+                return attr
+            bound_methods = self.bound_methods and "true" or "false"
+            descriptors = self.descriptors and "true" or "false"
+            attribute_checking = self.attribute_checking and "true" or "false"
+            source_tracking = self.source_tracking and "true" or "false"
+            attr = """\
+pyjslib['__getattr_check'](%(attr)s, %(attr_left)s, %(attr_right)s,\
+"%(attrstr)s", %(bound_methods)s, %(descriptors)s, %(attribute_checking)s,\
+%(source_tracking)s)
+                """ % locals()
             return attr
         elif isinstance(node, self.ast.List):
             return self._list(node, current_klass)
