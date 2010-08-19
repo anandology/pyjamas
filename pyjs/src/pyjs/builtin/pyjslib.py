@@ -223,42 +223,42 @@ def op_add(x, y):
 
 def __op_sub(x, y):
     JS("""
-        return (typeof (x)==typeof (y) && 
-                (typeof x=='number'||typeof x=='string')?
-                x-y:
-                @{{op_sub}}(x,y));
+        return (typeof (@{{x}})==typeof (y) && 
+                (typeof @{{x}}=='number'||typeof @{{x}}=='string')?
+                @{{x}}-y:
+                @{{op_sub}}(@{{x}},y));
     """)
 
 def op_sub(x, y):
     JS("""
-    if (x !== null && y !== null) {
-        switch ((x.__number__ << 8) | y.__number__) {
+    if (@{{x}}!== null && @{{y}}!== null) {
+        switch ((@{{x}}.__number__ << 8) | @{{y}}.__number__) {
             case 0x0101:
             case 0x0104:
             case 0x0401:
-                return x - y;
+                return @{{x}}- @{{y}};
             case 0x0102:
-                return x - y.__v;
+                return @{{x}}- @{{y}}.__v;
             case 0x0201:
-                return x.__v - y;
+                return @{{x}}.__v - @{{y}};
             case 0x0202:
-                return new @{{int}}(x.__v - y.__v);
+                return new @{{int}}(@{{x}}.__v - @{{y}}.__v);
             case 0x0204:
-                return (new @{{long}}(x.__v)).__sub(y);
+                return (new @{{long}}(@{{x}}.__v)).__sub(@{{y}});
             case 0x0402:
-                return x.__sub(new @{{long}}(y.__v));
+                return @{{x}}.__sub(new @{{long}}(@{{y}}.__v));
             case 0x0404:
-                return x.__sub(y);
+                return @{{x}}.__sub(@{{y}});
         }
-        if (!x.__number__) {
-            if (   !y.__number__
-                && x.__mro__.length > y.__mro__.length
-                && @{{isinstance}}(x, y)
-                && typeof x['__sub__'] == 'function')
-                return y.__sub__(x);
-            if (typeof x['__sub__'] == 'function') return x.__sub__(y);
+        if (!@{{x}}.__number__) {
+            if (   !@{{y}}.__number__
+                && @{{x}}.__mro__.length > @{{y}}.__mro__.length
+                && @{{isinstance}}(@{{x}}, @{{y}})
+                && typeof @{{x}}['__sub__'] == 'function')
+                return @{{y}}.__sub__(@{{x}});
+            if (typeof @{{x}}['__sub__'] == 'function') return @{{x}}.__sub__(@{{y}});
         }
-        if (!y.__number__ && typeof y['__rsub__'] == 'function') return y.__rsub__(x);
+        if (!@{{y}}.__number__ && typeof @{{y}}['__rsub__'] == 'function') return @{{y}}.__rsub__(@{{x}});
     }
 """)
     raise TypeError("unsupported operand type(s) for -: '%r', '%r'" % (x, y))
