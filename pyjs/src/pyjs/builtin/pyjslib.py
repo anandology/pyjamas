@@ -70,12 +70,12 @@ def type(clsname, bases=None, methods=None):
     if methods:
         for k in methods.keys():
             mth = methods[k]
-            JS(" mths[k] = mth; ")
+            JS(" mths[k] = @{{mth}}; ")
 
     JS(" var bss = null; ")
     if bases:
-        JS("bss = bases.__array;")
-    JS(" return $pyjs_type(clsname, bss, mths); ")
+        JS("bss = @{{bases}}.__array;")
+    JS(" return $pyjs_type(@{{clsname}}, bss, mths); ")
 
 class object:
     pass
