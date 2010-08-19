@@ -173,5 +173,5 @@ class GlassWidget(Widget, MouseHandler):
         self.mousetarget.onMouseUp(sender, x, y)
 
 
-Factory.registerClass('pyjamas.ui.GlassWidget', GlassWidget)
+Factory.registerClass('pyjamas.ui.GlassWidget', 'GlassWidget', GlassWidget)
 

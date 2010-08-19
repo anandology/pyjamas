@@ -351,5 +351,5 @@ class HorizontalSplitPanel(SplitPanel):
         return 1
         # TODO: return (LocaleInfo.getCurrentLocale().isRTL() ? 1 : 0)
 
-Factory.registerClass('pyjamas.ui.HorizontalSplitPanel', HorizontalSplitPanel)
+Factory.registerClass('pyjamas.ui.HorizontalSplitPanel', 'HorizontalSplitPanel', HorizontalSplitPanel)
 

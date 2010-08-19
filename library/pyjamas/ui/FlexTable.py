@@ -68,5 +68,5 @@ class FlexTable(HTMLTable):
             cell = doc().createElement("td")
             rowElem.appendChild(cell)
 
-Factory.registerClass('pyjamas.ui.FlexTable', FlexTable)
+Factory.registerClass('pyjamas.ui.FlexTable', 'FlexTable', FlexTable)
 

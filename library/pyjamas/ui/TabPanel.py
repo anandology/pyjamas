@@ -138,5 +138,5 @@ class TabPanel(Composite):
     def selectTab(self, index):
         self.tabBar.selectTab(index)
 
-Factory.registerClass('pyjamas.ui.TabPanel', TabPanel)
+Factory.registerClass('pyjamas.ui.TabPanel', 'TabPanel', TabPanel)
 

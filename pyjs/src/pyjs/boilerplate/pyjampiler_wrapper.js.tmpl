@@ -20,8 +20,10 @@ $pyjs.options.set_all(true);
 $pyjs.trackstack = [];
 $pyjs.track = {module:'__main__', lineno: 1};
 $pyjs.trackstack.push($pyjs.track);
+$pyjs.__active_exception_stack__ = null;
 $pyjs.__last_exception_stack__ = null;
 $pyjs.__last_exception__ = null;
+$pyjs.in_try_except = 0;
 
 %(_pyjs)s
 

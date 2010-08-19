@@ -17,9 +17,16 @@ from pyjamas import DOM
 
 class InnerHTML(object):
 
+    _props = [ ("text", "HTML text", "HTML", None),
+            ]
+
     def getHTML(self):
         return DOM.getInnerHTML(self.getElement())
 
     def setHTML(self, html):
         DOM.setInnerHTML(self.getElement(), html)
+
+    @classmethod
+    def _getProps(self):
+        return self._props
 

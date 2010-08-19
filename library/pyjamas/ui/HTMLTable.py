@@ -24,6 +24,11 @@ widgethash = {}
 
 class HTMLTable(Panel):
 
+    _props = [ ("border", "Border width", "BorderWidth", int),
+              ("spacing", "Spacing", "Spacing", None),
+              ("padding", "Padding", "Padding", None)
+             ]
+
     def __init__(self, **kwargs):
         if not kwargs.has_key('CellFormatter'):
             kwargs['CellFormatter'] = CellFormatter(self)
@@ -50,6 +55,10 @@ class HTMLTable(Panel):
         self.sinkEvents(Event.ONCLICK)
 
         Panel.__init__(self, **kwargs)
+
+    @classmethod
+    def _getProps(self):
+        return Panel._getProps() + self._props
 
     def addTableListener(self, listener):
         self.tableListeners.append(listener)
@@ -105,6 +114,26 @@ class HTMLTable(Panel):
             return None
         return self.widgetMap[key]
 
+    def getIndex(self, widget):
+        """ given a widget, return its index.
+        """
+        for row in xrange(self.getDOMRowCount()):
+            for col in xrange(self.getDOMCellCount(row)):
+                if self.getWidget(row, col) is widget:
+                    return (row, col)
+        return None
+
+    def getIndexedChild(self, index):
+        return self.getWidget(index[0], index[1])
+
+    def addIndexedItem(self, index, item):
+        row, col = index
+        while row >= self.getDOMRowCount():
+            self.insertRow(self.getDOMRowCount())
+        while col >= self.getDOMCellCount(row):
+            self.insertCells(row, self.getDOMCellCount(row), 1)
+        self.setWidget(row, col, item)
+        
     def isCellPresent(self, row, column):
         # GWT uses "and", possibly a bug
         if row >= self.getRowCount() or row < 0:
@@ -306,5 +335,5 @@ class HTMLTable(Panel):
     def setRowFormatter(self, rowFormatter):
         self.rowFormatter = rowFormatter
 
-Factory.registerClass('pyjamas.ui.HTMLTable', HTMLTable)
+Factory.registerClass('pyjamas.ui.HTMLTable', 'HTMLTable', HTMLTable)
 

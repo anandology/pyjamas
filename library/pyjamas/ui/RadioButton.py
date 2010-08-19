@@ -18,10 +18,19 @@ from pyjamas import Factory
 from CheckBox import CheckBox
 
 class RadioButton(CheckBox):
+
+    _props = [("group", "Group", "Name", None),
+            ]
+
     def __init__(self, group=None, label=None, asHTML=False, **ka):
         ka['StyleName'] = ka.get('StyleName', "gwt-RadioButton")
         ka['Element'] = ka.get('Element', None) or DOM.createInputRadio(group)
         CheckBox.__init__(self, label, asHTML, **ka)
 
-Factory.registerClass('pyjamas.ui.RadioButton', RadioButton)
+    @classmethod
+    def _getProps(self):
+        return CheckBox._getProps() + self._props
+
+
+Factory.registerClass('pyjamas.ui.RadioButton', 'RadioButton', RadioButton)
 

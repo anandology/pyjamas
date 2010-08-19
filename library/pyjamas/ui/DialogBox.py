@@ -26,11 +26,15 @@ from pyjamas.ui import GlassWidget
 from pyjamas import Window
 
 class DialogBox(PopupPanel):
+    _props = [( "caption", "Caption", "Caption", None),
+            ]
+
     def __init__(self, autoHide=None, modal=True, centered=False,
                        **kwargs):
 
         self.caption = HTML()
         self.child = None
+        self.modal = modal
         self.dragging = False
         self.dragStartX = 0
         self.dragStartY = 0
@@ -54,6 +58,10 @@ class DialogBox(PopupPanel):
         kwargs['StyleName'] = kwargs.get('StyleName', "gwt-DialogBox")
         PopupPanel.__init__(self, autoHide, modal, **kwargs)
         PopupPanel.setWidget(self, self.panel)
+
+    @classmethod
+    def _getProps(self):
+        return PopupPanel._getProps() + self._props
 
     def _closeClicked(self, sender):
         self.hide()
@@ -187,5 +195,5 @@ class DialogBox(PopupPanel):
         if self.centered:
             self.centerBox()
 
-Factory.registerClass('pyjamas.ui.DialogBox', DialogBox)
+Factory.registerClass('pyjamas.ui.DialogBox', 'DialogBox', DialogBox)
 

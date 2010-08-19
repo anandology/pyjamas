@@ -22,17 +22,27 @@ from ClickListener import ClickHandler
 
 class Label(Widget, MouseHandler, ClickHandler, InnerText):
 
+    _props = [("label", "Label", "Text", None),
+              ("wordwrap", "Word Wrap", "WordWrap", None),
+             ("horzAlign", "Horizontal Alignment", "HorizontalAlignment", None),
+            ]
+
     def __init__(self, text=None, wordWrap=True, **kwargs):
         kwargs['StyleName'] = kwargs.get('StyleName', "gwt-Label")
         kwargs['WordWrap'] = kwargs.get('WordWrap', wordWrap)
+        kwargs['HorizontalAlignment'] = kwargs.get('HorizontalAlignment', "")
         if text:
             kwargs['Text'] = text
-        self.setElement(kwargs.pop('Element', DOM.createDiv()))
+        self.setElement(kwargs.pop('Element', None) or DOM.createDiv())
         self.horzAlign = ""
 
         Widget.__init__(self, **kwargs)
         MouseHandler.__init__(self)
         ClickHandler.__init__(self)
+
+    @classmethod
+    def _getProps(self):
+        return Widget._getProps() + InnerText._getProps() + self._props
 
     def getHorizontalAlignment(self):
         return self.horzAlign
@@ -49,5 +59,5 @@ class Label(Widget, MouseHandler, ClickHandler, InnerText):
         style = wrap and "normal" or "nowrap"
         DOM.setStyleAttribute(self.getElement(), "whiteSpace", style)
 
-Factory.registerClass('pyjamas.ui.Label', Label)
+Factory.registerClass('pyjamas.ui.Label', 'Label', Label)
 

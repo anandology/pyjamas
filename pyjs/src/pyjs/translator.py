@@ -318,9 +318,10 @@ PYJSLIB_BUILTIN_MAPPING = {\
 SCOPE_KEY = 0
 
 BIND_TYPES_NUMERIC = {
-    "static": 0,
+    "func": 0,
     "bound": 1,
-    "class": 2
+    "class": 2,
+    "static": 3,
   }
 
 # Variable names that should be remapped in functions/methods
@@ -742,6 +743,7 @@ class Translator(object):
         self.inline_eq = inline_code
         self.inline_cmp = inline_code
         self.inline_getitem = inline_code
+        self.inline_code = inline_code
         self.operator_funcs = operator_funcs
         self.number_classes = number_classes
         if self.number_classes:
@@ -963,7 +965,7 @@ class Translator(object):
                     bind_type_num = BIND_TYPES_NUMERIC[bind_type]
                 except KeyError:
                     raise TranslationError("Unknown bind type: %s" % bind_type, node)
-                code = "$pyjs__decorated_method($cls_instance, '%(method_name)s', %(code)s, %(bind_type)s)" % \
+                code = "$pyjs__decorated_method('%(method_name)s', %(code)s, %(bind_type)s)" % \
                         {
                           "method_name": node.name,
                           "code": code,
@@ -1000,6 +1002,8 @@ class Translator(object):
         self.pop_lookup()
         if code != '%s':
             code = code % "pyjslib['staticmethod'](%s)"
+            if staticmethod:
+                code = "pyjslib['staticmethod'](%s)" % code
         return (staticmethod, classmethod, code)
 
     # Join an list into a variable with optional attributes
@@ -1274,35 +1278,15 @@ class Translator(object):
         if not self.ignore_debug and self.debug and len(call_code.strip()) > 0:
             dbg = self.uniqid("$pyjs_dbg_")
             mod = self.module_name
+            s = self.spacing()
             call_code = """\
-(function(){\
-var %(dbg)s_retry = 0;
-try{var %(dbg)s_res=%(call_code)s;}catch(%(dbg)s_err){
-    if (%(dbg)s_err.__name__ != 'StopIteration') {
-        var save_stack = $pyjs.__last_exception_stack__;
-        sys.save_exception_stack();
-        var $pyjs_msg = "";
-
-        try {
-            $pyjs_msg = "\\n" + sys.trackstackstr();
-        } catch (s) {};
-        $pyjs.__last_exception_stack__ = save_stack;
-        if ($pyjs_msg !== $pyjs.debug_msg) {
-            pyjslib['debugReport']("Module %(mod)s at line %(lineno)s :\\n" + %(dbg)s_err + $pyjs_msg);
-            $pyjs.debug_msg = $pyjs_msg;
-            debugger;
-        }
-    }
-    switch (%(dbg)s_retry) {
-        case 1:
-            %(dbg)s_res=%(call_code)s;
-            break;
-        case 2:
-            break;
-        default:
-            throw %(dbg)s_err;
-    }
-}return %(dbg)s_res})()""" % locals()
+(function(){try{try{$pyjs.in_try_except += 1;
+%(s)sreturn %(call_code)s;
+}finally{$pyjs.in_try_except-=1;}}catch(%(dbg)s_err){\
+if (%(dbg)s_err.__name__ != 'StopIteration')\
+{pyjslib['_handle_exception'](%(dbg)s_err);}\
+throw %(dbg)s_err;
+}})()""" % locals()
         return call_code
 
     __generator_code_str = """\
@@ -1858,6 +1842,9 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             mod = self.lookup(importName)
             package_mod = self.lookup(importName.split('.', 1)[0])
 
+            if self.source_tracking:
+                print >>self.output, self.spacing() + "$pyjs.track={module:$pyjs.track.module,lineno:$pyjs.track.lineno};$pyjs.trackstack.push($pyjs.track);"
+
             import_stmt = None
             if (   mod[0] != 'root-module'
                 or (assignBase and not package_mod[0] in ['root-module', 'module'])
@@ -1901,6 +1888,9 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                 else:
                     stmt = "%s = %s);"% (lhs, import_stmt)
                 print >> self.output, self.spacing() + stmt
+
+            if self.source_tracking:
+                print >>self.output, self.spacing() + "$pyjs.trackstack.pop();$pyjs.track=$pyjs.trackstack.pop();$pyjs.trackstack.push($pyjs.track);"
 
     def _from(self, node, current_klass, root_level = False):
         if node.modname == '__pyjamas__':
@@ -2063,7 +2053,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         print >>self.output, self.spacing() + "%s.__name__ = '%s';\n" % (function_name, node.name)
 
         self.pop_lookup()
-        self.func_args(node, current_klass, function_name, 'static', declared_arg_names, varargname, kwargname)
+        self.func_args(node, current_klass, function_name, 'func', declared_arg_names, varargname, kwargname)
 
         if decorator_code:
             decorator_code = decorator_code % function_name
@@ -2301,6 +2291,11 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             print >>self.output, self.spacing() + "var $pyjs__trackstack_size_%d = $pyjs.trackstack.length;" % self.stacksize_depth
         self.generator_switch_case(increment=True)
         print >>self.output, self.indent() + "try {"
+        added_try_except_counter = not self.ignore_debug and self.debug
+        if added_try_except_counter:
+            print >>self.output, self.spacing() + "try {"
+            self.indent()
+            print >>self.output, self.spacing() + "$pyjs.in_try_except += 1;"
         if self.is_generator:
             print >> self.output, self.spacing() + "if (typeof $generator_exc[%d] != 'undefined' && $generator_exc[%d] !== null) throw $generator_exc[%d];" % (\
                 self.try_depth, self.try_depth, self.try_depth)
@@ -2321,9 +2316,13 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
 
         self.generator_switch_case(increment=True)
         self.generator_switch_close()
-
+        if added_try_except_counter:
+            print >>self.output, self.dedent() + "} finally { $pyjs.in_try_except -= 1; }"
         print >> self.output, self.dedent() + "} catch(%s) {" % pyjs_try_err
         self.indent()
+        if self.source_tracking:
+            print >>self.output, self.spacing() + "$pyjs.__last_exception_stack__ = sys.save_exception_stack();"
+            print >>self.output, self.spacing() + "$pyjs.__active_exception_stack__ = null;"
         if self.is_generator:
             print >> self.output, self.spacing() + "$generator_exc[%d] = %s;" % (self.try_depth, pyjs_try_err)
         try_state_max_depth = self.state_max_depth
@@ -2351,10 +2350,9 @@ if (%(e)s.__name__ == 'TryElse') {""" % {'e': pyjs_try_err}
         print >> self.output, self.spacing() + """\
 var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__name__ );\
 """ % {'e': pyjs_try_err}
-        print >> self.output, self.spacing() + "$pyjs.__last_exception__ = {error: %s, module: %s, try_lineno: %s};" % (pyjs_try_err, self.module_name, node.lineno)
+        print >> self.output, self.spacing() + "$pyjs.__last_exception__ = {error: %s, module: %s};" % (pyjs_try_err, self.module_name)
         if self.source_tracking:
             print >>self.output, """\
-%(s)ssys.save_exception_stack();
 %(s)sif ($pyjs.trackstack.length > $pyjs__trackstack_size_%(d)d) {
 %(s)s\t$pyjs.trackstack = $pyjs.trackstack.slice(0,$pyjs__trackstack_size_%(d)d);
 %(s)s\t$pyjs.track = $pyjs.trackstack.slice(-1)[0];
@@ -2373,7 +2371,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 if as_:
                     errName = as_.name
                 else:
-                    errName = 'err'
+                    errName = None
 
                 if not expr:
                     print >> self.output, "%s{" % else_str
@@ -2390,9 +2388,9 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                                 self.expr(expr, current_klass),pyjs_try_err, self.expr(expr, current_klass)) ]
                     print >> self.output, "%sif (%s) {" % (else_str, "||".join(l))
                 self.indent()
-                print >> self.output, self.spacing() + "$pyjs.__last_exception__.except_lineno = %d;" % lineno
-                tnode = self.ast.Assign([self.ast.AssName(errName, "OP_ASSIGN", lineno)], self.ast.Name(pyjs_try_err, lineno), lineno)
-                self._assign(tnode, current_klass)
+                if errName:
+                    tnode = self.ast.Assign([self.ast.AssName(errName, "OP_ASSIGN", lineno)], self.ast.Name(pyjs_try_err, lineno), lineno)
+                    self._assign(tnode, current_klass)
 
                 self.generator_add_state()
                 self.generator_switch_open()
@@ -2410,7 +2408,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
             if node.handlers[-1][0]:
                 # No default catcher, create one to fall through
-                print >> self.output, "%s{ throw %s; }" % (else_str, pyjs_try_err)
+                print >> self.output, "%s{ $pyjs.__active_exception_stack__ = $pyjs.__last_exception_stack__; $pyjs.__last_exception_stack__ = null; throw %s; }" % (else_str, pyjs_try_err)
             else:
                 print >> self.output
         if hasattr(node, 'else_') and node.else_:
@@ -2520,7 +2518,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         local_prefix = '$cls_definition'
         name_scope = {}
         current_klass = Klass(class_name, name_scope)
-        current_klass.__md5__ = self.md5(node)
+        if self.function_argument_checking or self.module_name == 'pyjslib':
+            current_klass.__md5__ = self.md5(node)
         if len(node.bases) == 0:
             base_classes = [("object", "pyjslib.object")]
         else:
@@ -2545,20 +2544,32 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             base_classes = []
         class_name = self.add_lookup('class', node.name, class_name)
         print >>self.output, self.indent() + class_name + """ = (function(){
-%(s)svar $cls_instance = $pyjs__class_instance('%(n)s');
 %(s)svar %(p)s = new Object();
 %(s)svar $method;
-%(s)s%(p)s.__md5__ = '%(m)s';""" % {'s': self.spacing(), 'n': node.name, 'p': local_prefix, 'm': current_klass.__md5__}
+%(s)s%(p)s.__module__ = '%(module)s';""" % {'s': self.spacing(), 'p': local_prefix, 'module': self.module_name}
+
+        if self.function_argument_checking or self.module_name == 'pyjslib':
+            print >>self.output, self.indent() + "%(p)s.__md5__ = '%(m)s';" % {'p': local_prefix, 'm': current_klass.__md5__}
 
         self.push_lookup(name_scope)
         for child in node.code:
             self.is_class_definition = True
             self.local_prefix = local_prefix
             self._stmt(child, current_klass)
-        print >>self.output, """\
-%(s)sreturn $pyjs__class_function($cls_instance, %(local_prefix)s, 
-%(s)s                            new Array(""" % {'s': self.spacing(), 'local_prefix': local_prefix}  + ",".join(map(lambda x: x[1], base_classes)) + """));
+        create_class = """\
+%(s)svar $bases = new Array(%(bases)s);"""
+        if self.module_name == 'pyjslib':
+            create_class += """
+%(s)sreturn $pyjs_type('%(n)s', $bases, %(local_prefix)s);"""
+        else:
+            create_class += """
+%(s)svar $data = pyjslib['dict']();
+%(s)sfor (var $item in %(local_prefix)s) { $data.__setitem__($item, %(local_prefix)s[$item]); }
+%(s)sreturn pyjslib['_create_class']('%(n)s', pyjslib['tuple']($bases), $data);"""
+        create_class %= {'n': node.name, 's': self.spacing(), 'local_prefix': local_prefix, 'bases': ",".join(map(lambda x: x[1], base_classes))}
+        create_class += """
 %s})();""" % self.dedent()
+        print >>self.output, create_class
         self.pop_lookup()
         self.is_class_definition = None
         self.local_prefix = None
@@ -2569,9 +2580,11 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
     def _raise(self, node, current_klass):
         if self.is_generator:
-            print >> self.output, self.spacing() + "$generator_state[%d]=%d;" % (len(self.generator_states)-1, self.generator_states[-1]+1)
+            print >>self.output, self.spacing() + "$generator_state[%d]=%d;" % (len(self.generator_states)-1, self.generator_states[-1]+1)
 
         if node.expr1:
+            if self.source_tracking:
+                print >>self.output, self.spacing() + "$pyjs.__active_exception_stack__ = null;"
             if node.expr2:
                 if node.expr3:
                     print >> self.output, """
@@ -2607,6 +2620,9 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 print >> self.output, self.spacing() + "throw (%s);" % self.expr(
                     node.expr1, current_klass)
         else:
+            if self.source_tracking:
+                print >>self.output, self.spacing() + "$pyjs.__active_exception_stack__ = $pyjs.__last_exception_stack__;"
+                print >>self.output, self.spacing() + "$pyjs.__last_exception_stack__ = null;"
             s = self.spacing()
             print >> self.output, """\
 %(s)sthrow ($pyjs.__last_exception__?
@@ -2667,7 +2683,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         else:
             function_args = "(" + ", ".join(declared_arg_names[1:]) + ")"
 
-        print >>self.output, self.indent() + "$method = $pyjs__bind_method($cls_instance, '"+method_name+"', function" + function_args + " {"
+        print >>self.output, self.indent() + "$method = $pyjs__bind_method2('"+method_name+"', function" + function_args + " {"
         if staticmethod:
             self._static_method_init(node, declared_arg_names, varargname, kwargname, current_klass)
         elif classmethod:
@@ -2754,7 +2770,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.pop_options()
 
         self.push_lookup(current_klass.name_scope)
-        staticmethod, classmethod, decorator_code = self.parse_decorators(node, node.name, current_klass, 
+        staticmethod, classmethod, decorator_code = self.parse_decorators(node, node.name, current_klass,
                                                                           True, bind_type)
         decorator_code = decorator_code % '$method'
         print >>self.output, self.spacing() + "%s = %s;" % (jsmethod_name, decorator_code)
@@ -3303,7 +3319,10 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 child_name = child.name
                 self.add_lookup('variable', child_name, child_name)
                 child_name = self.add_lookup('variable', child_name, child_name)
-                assign_tuple.append("""%(child_name)s %(op)s %(nextval)s.__array[%(i)i];""" % locals())
+                if self.inline_code:
+                    assign_tuple.append("""%(child_name)s %(op)s %(nextval)s.__array[%(i)i];""" % locals())
+                else:
+                    assign_tuple.append("""%(child_name)s %(op)s %(nextval)s.$nextval.__array[%(i)i];""" % locals())
                 i += 1
         else:
             raise TranslationError(
@@ -3342,9 +3361,10 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             self.add_lookup('variable', var_trackstack_size, var_trackstack_size)
             print >>self.output, self.spacing() + "%s=$pyjs.trackstack.length;" % var_trackstack_size
         s = self.spacing()
-        print >>self.output, """\
+        if self.inline_code:
+            print >>self.output, """\
 %(s)s%(iterator_name)s = """ % locals() + self.track_call("%(list_expr)s" % locals(), node.lineno) + ';'
-        print >>self.output, """\
+            print >>self.output, """\
 %(s)sif (typeof (%(array)s = %(iterator_name)s.__array) != 'undefined') {
 %(s)s\t%(gentype)s = 0;
 %(s)s} else {
@@ -3352,7 +3372,14 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 %(s)s\t%(gentype)s = typeof (%(array)s = %(iterator_name)s.__array) != 'undefined'? 0 : (typeof %(iterator_name)s.$genfunc == 'function'? 1 : -1);
 %(s)s}
 %(s)s%(loopvar)s = 0;""" % locals()
-        condition = "typeof (%(nextval)s=(%(gentype)s?(%(gentype)s > 0?%(iterator_name)s.next(true,%(reuse_tuple)s):pyjslib['wrapped_next'](%(iterator_name)s)):%(array)s[%(loopvar)s++])) != 'undefined'" % locals()
+            condition = "typeof (%(nextval)s=(%(gentype)s?(%(gentype)s > 0?%(iterator_name)s.next(true,%(reuse_tuple)s):pyjslib['wrapped_next'](%(iterator_name)s)):%(array)s[%(loopvar)s++])) != 'undefined'" % locals()
+        else:
+            print >>self.output, """\
+%(s)s%(iterator_name)s = """ % locals() + self.track_call("%(list_expr)s" % locals(), node.lineno) + ';'
+            print >>self.output, """\
+%(s)s%(nextval)s=pyjslib['__iter_prepare'](%(iterator_name)s,%(reuse_tuple)s);\
+""" % locals()
+            condition = "typeof(pyjslib['__wrapped_next'](%(nextval)s).$nextval) != 'undefined'" % locals()
 
         self.generator_switch_case(increment=True)
 
@@ -3367,7 +3394,10 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.generator_switch_case(increment=False)
 
         if not assign_tuple:
-            print >>self.output, self.spacing() + """%(assign_name)s %(op)s %(nextval)s;""" % locals()
+            if self.inline_code:
+                print >>self.output, self.spacing() + """%(assign_name)s %(op)s %(nextval)s;""" % locals()
+            else:
+                print >>self.output, self.spacing() + """%(assign_name)s %(op)s %(nextval)s.$nextval;""" % locals()
         else:
             for line in assign_tuple:
                 print >>self.output, self.spacing() + line
@@ -3493,9 +3523,12 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.add_lookup('variable', v1, v1)
         self.add_lookup('variable', v2, v2)
         s = self.spacing()
-        return """(typeof (%(v1)s=%(e1)s)==typeof (%(v2)s=%(e2)s) && (typeof %(v1)s=='number'||typeof %(v1)s=='string')?
+        if self.inline_code:
+            return """(typeof (%(v1)s=%(e1)s)==typeof (%(v2)s=%(e2)s) && (typeof %(v1)s=='number'||typeof %(v1)s=='string')?
 %(s)s\t%(v1)s+%(v2)s:
 %(s)s\tpyjslib['op_add'](%(v1)s,%(v2)s))""" % locals()
+        return """pyjslib['__op_add'](%(v1)s=%(e1)s,%(v2)s=%(e2)s)""" % \
+                        locals()
 
     def _sub(self, node, current_klass):
         if not self.operator_funcs:
@@ -3507,9 +3540,12 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.add_lookup('variable', v1, v1)
         self.add_lookup('variable', v2, v2)
         s = self.spacing()
-        return """(typeof (%(v1)s=%(e1)s)==typeof (%(v2)s=%(e2)s) && (typeof %(v1)s=='number'||typeof %(v1)s=='string')?
+        if self.inline_code:
+            return """(typeof (%(v1)s=%(e1)s)==typeof (%(v2)s=%(e2)s) && (typeof %(v1)s=='number'||typeof %(v1)s=='string')?
 %(s)s\t%(v1)s-%(v2)s:
 %(s)s\tpyjslib['op_sub'](%(v1)s,%(v2)s))""" % locals()
+        return """pyjslib['__op_sub'](%(v1)s=%(e1)s,%(v2)s=%(e2)s)""" % \
+                        locals()
 
     def _floordiv(self, node, current_klass):
         if not self.operator_funcs:
@@ -3869,16 +3905,15 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             attr = self.attrib_join(attr_)
             attr_left = self.attrib_join(attr_[:-1])
             attr_right = attr_[-1]
+            attrstr = attr
             v = self.uniqid('$attr')
             vl = self.uniqid('$attr')
             self.add_lookup('variable', v, v)
             self.add_lookup('variable', vl, vl)
             if self.bound_methods or self.descriptors:
-                if not self.descriptors:
-                    getattr_condition = "((%(v)s=%(attr)s) !== null & (%(vl)s=%(attr_left)s).__is_instance__) && typeof %(v)s == 'function'"
-                else:
-                    getattr_condition = """((%(v)s=%(attr)s) !== null & ((%(vl)s=%(attr_left)s).__is_instance__) && typeof %(v)s == 'function') ||
-(%(vl)s['%(attr_right)s'] !== null && typeof %(vl)s['%(attr_right)s']['__get__'] == 'function')"""
+                getattr_condition = """(%(v)s=(%(vl)s=%(attr_left)s)['%(attr_right)s']) == null || ((%(vl)s.__is_instance__) && typeof %(v)s == 'function')"""
+                if self.descriptors:
+                    getattr_condition += """ || (typeof %(v)s['__get__'] == 'function')"""
                 attr_code = """\
 (""" + getattr_condition + """?
 \tpyjslib['getattr'](%(vl)s, '%(attr_right)s'):
@@ -3889,6 +3924,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 attr_code = "%(attr)s"
             attr_code = attr_code % locals()
             s = self.spacing()
+
+            orig_attr = attr
 
             if not self.attribute_checking:
                 attr = attr_code
@@ -3916,6 +3953,17 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 %(s)s\t\t(function(){throw TypeError(\"%(attrstr)s is undefined");})():
 %(s)s\t\t$pyjs__testval);
 %(s)s})()""" % locals()
+            if True: # not self.attribute_checking or self.inline_code:
+                return attr
+            bound_methods = self.bound_methods and "true" or "false"
+            descriptors = self.descriptors and "true" or "false"
+            attribute_checking = self.attribute_checking and "true" or "false"
+            source_tracking = self.source_tracking and "true" or "false"
+            attr = """\
+pyjslib['__getattr_check'](%(attr)s, %(attr_left)s, %(attr_right)s,\
+"%(attrstr)s", %(bound_methods)s, %(descriptors)s, %(attribute_checking)s,\
+%(source_tracking)s)
+                """ % locals()
             return attr
         elif isinstance(node, self.ast.List):
             return self._list(node, current_klass)
@@ -3963,6 +4011,7 @@ def translate(compiler, sources, output_file, module_name=None,
               inline_code=False,
               operator_funcs=True,
               number_classes=True,
+              list_imports=False,
              ):
 
     sources = map(os.path.abspath, sources)
@@ -3988,7 +4037,15 @@ def translate(compiler, sources, output_file, module_name=None,
     f = file(sources[0], "r")
     src = f.read()
     f.close()
-    output = file(output_file, 'w')
+    if list_imports:
+        v = ImportVisitor(module_name)
+        compiler.walk(tree, v)
+        return v.imported_modules, []
+
+    if output_file == '-':
+        output = sys.stdout
+    else:
+        output = file(output_file, 'w')
 
     t = Translator(compiler,
                    module_name, sources[0], src, tree, output,
@@ -4207,6 +4264,64 @@ class PlatformParser:
 def dotreplace(fname):
     path, ext = os.path.splitext(fname)
     return path.replace(".", "/") + ext
+
+class ImportVisitor(object):
+
+    def __init__(self, module_name):
+        self.module_name = module_name
+        self.imported_modules = []
+
+    def add_imported_module(self, importName):
+        if not importName in self.imported_modules:
+            self.imported_modules.append(importName)
+
+    def visitModule(self, node):
+        self.visit(node.node)
+
+    def visitImport(self, node):
+        self._doImport(node.names)
+
+    def _doImport(self, names):
+        for importName, importAs in names:
+            if importName == '__pyjamas__':
+                continue
+            if importName.endswith(".js"):
+                imp.add_imported_module(importName)
+                continue
+
+            self.add_imported_module(importName)
+
+    def visitFrom(self, node):
+        if node.modname == '__pyjamas__':
+            return
+        if node.modname == '__javascript__':
+            return
+        # XXX: hack for in-function checking, we should have another
+        # object to check our scope
+        absPath = False
+        modname = node.modname
+        if hasattr(node, 'level') and node.level > 0:
+            absPath = True
+            modname = self.module_name.split('.')
+            level = node.level
+            if len(modname) < level:
+                raise TranslationError(
+                    "Attempted relative import beyond toplevel package",
+                    node, self.module_name)
+            if node.modname != '':
+                level += 1
+            if level > 1:
+                modname = '.'.join(modname[:-(node.level-1)])
+            else:
+                modname = self.module_name
+            if node.modname != '':
+                modname += '.' + node.modname
+                if modname[0] == '.':
+                    modname = modname[1:]
+        for name in node.names:
+            sub = modname + '.' + name[0]
+            ass_name = name[1] or name[0]
+            self._doImport(((sub, ass_name),))
 
 class AppTranslator:
 
@@ -4516,7 +4631,6 @@ def add_compile_options(parser):
     speed_options['number_classes'] = False
     pythonic_options['number_classes'] = True
 
-
     def set_multiple(option, opt_str, value, parser, **kwargs):
         for k in kwargs.keys():
             setattr(parser.values, k, kwargs[k])
@@ -4564,9 +4678,14 @@ def main():
 
     parser = OptionParser(usage = usage)
     parser.add_option("-o", "--output", dest="output",
+                      default="-",
                       help="Place the output into <output>")
     parser.add_option("-m", "--module-name", dest="module_name",
                       help="Module name of output")
+    parser.add_option("-i", "--list-imports", dest="list_imports",
+                      default=False,
+                      action="store_true",
+                      help="List import dependencies (without compiling)")
     add_compile_options(parser)
     (options, args) = parser.parse_args()
 
@@ -4577,7 +4696,8 @@ def main():
 
     if not options.output:
         parser.error("No output file specified")
-    options.output = os.path.abspath(options.output)
+    if options.output == '-':
+        options.output = os.path.abspath(options.output)
 
     file_names = map(os.path.abspath, args)
     for fn in file_names:
@@ -4585,7 +4705,8 @@ def main():
             print >> sys.stderr, "Input file not found %s" % fn
             sys.exit(1)
 
-    translate(compiler, file_names, options.output, options.module_name,
+    imports, js = translate(compiler, file_names, options.output,
+              options.module_name,
               debug = options.debug,
               print_statements = options.print_statements,
               function_argument_checking = options.function_argument_checking,
@@ -4597,7 +4718,10 @@ def main():
               inline_code = options.inline_code,
               operator_funcs = options.operator_funcs,
               number_classes = options.number_classes,
-    ),
+              list_imports = options.list_imports,
+    )
+    if options.list_imports:
+        print '\n'.join(imports)
 
 if __name__ == "__main__":
     main()

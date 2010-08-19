@@ -105,6 +105,15 @@ def init():
     mf.addEventListener(body, "blur", _dispatchEvent)
     mf.addEventListener(body, "dblclick", _dispatchEvent)
 
+    _init_mousewheel()
+
+def _init_mousewheel():
+    mf._addWindowEventListener("mousewheel", browser_event_cb)
+
+    # XXX whoops, see above...
+    body = doc().body
+    mf.addEventListener(body, "mousewheel", _dispatchEvent)
+    
 def compare(elem1, elem2):
     if not elem1 and not elem2:
         return True
@@ -248,4 +257,7 @@ def eventGetKeyCode(evt):
 
 def eventStopPropagation(evt):
     eventCancelBubble(evt)
+
+def eventGetMouseWheelVelocityY(evt):
+    return round(-evt.wheelDelta / 40.0) or 0.0
 

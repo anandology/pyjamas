@@ -33,5 +33,5 @@ class MenuBarPopupPanel(PopupPanel):
                 return False
         return PopupPanel.onEventPreview(self, event)
 
-Factory.registerClass('pyjamas.ui.MenuBarPopupPanel', MenuBarPopupPanel)
+Factory.registerClass('pyjamas.ui.MenuBarPopupPanel', 'MenuBarPopupPanel', MenuBarPopupPanel)
 

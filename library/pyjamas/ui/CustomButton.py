@@ -687,5 +687,5 @@ class CustomButton (ButtonBase):
         newFaceID &= ~self.DISABLED_ATTRIBUTE
         self.setCurrentFaceFromID(newFaceID)
 
-Factory.registerClass('pyjamas.ui.CustomButton', CustomButton)
+Factory.registerClass('pyjamas.ui.CustomButton', 'CustomButton', CustomButton)
 

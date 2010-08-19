@@ -24,10 +24,19 @@ class TextArea(TextBoxBase):
     Use setText/getText to
     get and access the current text.
     """
+
+    _props = [("rows", "Rows", "VisibleLines", None),
+             ("cols", "Columns", "CharacterWidth", None),
+            ]
+
     def __init__(self, **ka):
         ka['StyleName'] = ka.get('StyleName', "gwt-TextArea")
         element = ka.pop('Element', None) or DOM.createTextArea()
         TextBoxBase.__init__(self, element, **ka)
+
+    @classmethod
+    def _getProps(self):
+        return TextBoxBase._getProps() + self._props
 
     def getCharacterWidth(self):
         return DOM.getIntAttribute(self.getElement(), "cols")
@@ -44,5 +53,5 @@ class TextArea(TextBoxBase):
     def setVisibleLines(self, lines):
         DOM.setIntAttribute(self.getElement(), "rows", lines)
 
-Factory.registerClass('pyjamas.ui.TextArea', TextArea)
+Factory.registerClass('pyjamas.ui.TextArea', 'TextArea', TextArea)
 

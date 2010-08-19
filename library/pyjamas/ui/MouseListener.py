@@ -86,3 +86,30 @@ class MouseHandler(object):
     def onMouseLeave(self, sender):
         pass
 
+class MouseWheelHandler(object):
+
+    def __init__(self, preventDefault=False):
+
+        self._mouseWheelListeners = []
+        self._mouseWheelPreventDefault = preventDefault
+        self.sinkEvents( Event.ONMOUSEWHEEL )
+
+    def onBrowserEvent(self, event):
+        etype = DOM.eventGetType(event)
+        if etype in ["mousewheel", "DOMMouseScroll"]:
+            if self._mouseWheelPreventDefault:
+                DOM.eventPreventDefault(event)
+            velocity = DOM.eventGetMouseWheelVelocityY(event)
+            for listener in self._mouseWheelListeners:
+                listener.onMouseWheel(self, velocity)
+            return True
+
+    def addMouseWheelListener(self, listener):
+        self._mouseWheelListeners.append(listener)
+
+    def removeMouseWheelListener(self, listener):
+        self._mouseWheelListeners.remove(listener)
+
+    def onMouseWheel(self, sender, velocity):
+        pass
+        

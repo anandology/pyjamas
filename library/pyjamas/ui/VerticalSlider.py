@@ -100,4 +100,4 @@ class VerticalSlider(Control):
         DOM.setStyleAttribute(self.handle, "top", "%dpx" % relative_y)
         DOM.setStyleAttribute(self.handle, "position", "absolute")
 
-Factory.registerClass('pyjamas.ui.VerticalSlider', VerticalSlider)
+Factory.registerClass('pyjamas.ui.VerticalSlider', 'VerticalSlider', VerticalSlider)

@@ -42,13 +42,20 @@ class DockPanel(CellPanel):
     SOUTH = "south"
     WEST = "west"
 
+    elem_props = [
+           ("height", "Cell Height", "CellHeight", str, None),
+           ("width", "Cell Width", "CellWidth", str, None),
+           ("halign", "Cell Horizontal Alignment",
+                      "CellHorizontalAlignment", None, "left"),
+           ("valign", "Cell Vertical Alignment",
+                      "CellVerticalAlignment", None, "top"),
+                 ]
+
+    def _getElementProps(self):
+        return CellPanel._getElementProps() + self.elem_props
+
     def __init__(self, **kwargs):
 
-        if not kwargs.has_key('Spacing'): kwargs['Spacing'] = 0
-        if not kwargs.has_key('Padding'): kwargs['Padding'] = 0
-
-        self.horzAlign = HasHorizontalAlignment.ALIGN_LEFT
-        self.vertAlign = HasVerticalAlignment.ALIGN_TOP
         self.center = None
         self.dock_children = [] # TODO: can self.children be used instead?
 
@@ -68,11 +75,17 @@ class DockPanel(CellPanel):
         self.dock_children.append(widget)
         self.realizeTable(widget)
 
-    def getHorizontalAlignment(self):
-        return self.horzAlign
+    def addIndexedItem(self, index, item):
+        self.add(item, index[1])
 
-    def getVerticalAlignment(self):
-        return self.vertAlign
+    def getIndex(self, widget):
+        index = self.dock_children.index(widget)
+        direction = self.getWidgetDirection(widget)
+        return (index, direction)
+
+    def getIndexedChild(self, index):
+        index, direction = index
+        return self.dock_children[index]
 
     def getWidgetDirection(self, widget):
         if widget.getParent() != self:
@@ -112,12 +125,6 @@ class DockPanel(CellPanel):
         data.width = width
         if data.td:
             DOM.setStyleAttribute(data.td, "width", data.width)
-
-    def setHorizontalAlignment(self, align):
-        self.horzAlign = align
-
-    def setVerticalAlignment(self, align):
-        self.vertAlign = align
 
     def realizeTable(self, beingAdded):
         bodyElement = self.getBody()
@@ -194,5 +201,5 @@ class DockPanel(CellPanel):
                 return
         DOM.appendChild(parent, child)
 
-Factory.registerClass('pyjamas.ui.DockPanel', DockPanel)
+Factory.registerClass('pyjamas.ui.DockPanel', 'DockPanel', DockPanel)
 

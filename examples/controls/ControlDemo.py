@@ -1,11 +1,11 @@
-
 """ ControlDemo Example
 
     Bill Winder <wgwinder@gmail.com> added HorizontalSlider demo.
-    Bill Winder <wgwinder@gmail.com> added AreaSlider demo.    
+    Bill Winder <wgwinder@gmail.com> added AreaSlider demo.
 """
 import pyjd # dummy in pyjs
 from pyjamas.ui.RootPanel import RootPanel
+from pyjamas.ui.CaptionPanel import CaptionPanel
 from pyjamas.ui.Label import Label
 from pyjamas.ui.Controls import VerticalDemoSlider
 from pyjamas.ui.Controls import VerticalDemoSlider2
@@ -20,6 +20,9 @@ from pyjamas.ui.VerticalPanel import VerticalPanel
 from pyjamas.ui import HasAlignment
 
 class SliderClass(VerticalPanel):
+    """ example of control which pairs up two other controls.
+        should really be made into a control itself.
+    """
     def __init__(self, p2):
         VerticalPanel.__init__(self)
 
@@ -49,6 +52,9 @@ class SliderClass(VerticalPanel):
             self.label.setValue(new_value, 0)
 
 class HSliderClass(VerticalPanel):
+    """ example of control which pairs up two other controls.
+        should really be made into a control itself.
+    """
     def __init__(self, p2):
         VerticalPanel.__init__(self)
 
@@ -78,6 +84,9 @@ class HSliderClass(VerticalPanel):
             self.label.setValue(new_value, 0)
 
 class ASliderClass(VerticalPanel):
+    """ example of control which pairs up two other controls.
+        should really be made into a control itself.
+    """
     def __init__(self, p2):
         VerticalPanel.__init__(self)
 
@@ -110,7 +119,7 @@ class ASliderClass(VerticalPanel):
         if (sender == self.label_x):
 
             self.b.setControlPos([new_value_xy, self.b.value_y])
-            self.b.setValue([new_value_xy, self.b.value_y], 0)       
+            self.b.setValue([new_value_xy, self.b.value_y], 0)
 
         elif (sender == self.label_y):
 
@@ -130,28 +139,43 @@ class ASliderClass(VerticalPanel):
 class ControlDemo:
     def onModuleLoad(self):
 
+        v = VerticalPanel(Spacing=10)
+
+        p = HorizontalPanel(Spacing=10,
+                            VerticalAlignment=HasAlignment.ALIGN_BOTTOM)
+
+        sc = SliderClass(False)
+        p.add(CaptionPanel("clickable only", sc))
+        sc = SliderClass(True)
+        p.add(CaptionPanel("draggable", sc))
+        sc = SliderClass(True)
+        p.add(CaptionPanel("draggable", sc))
+
+        v.add(CaptionPanel("Vertical Sliders with inputboxes", p))
+
         p = HorizontalPanel()
         p.setSpacing(10)
         p.setVerticalAlignment(HasAlignment.ALIGN_BOTTOM)
 
-        sc = SliderClass(False)
-        p.add(sc)
-        sc = SliderClass(True)
-        p.add(sc)
-        sc = SliderClass(True)
-        p.add(sc)
-
         sc = HSliderClass(False)
-        p.add(sc)
+        p.add(CaptionPanel("clickable only", sc))
         sc = HSliderClass(True)
-        p.add(sc)
+        p.add(CaptionPanel("draggable", sc))
+
+        v.add(CaptionPanel("Horizontal Sliders with inputboxes", p))
+
+        p = HorizontalPanel()
+        p.setSpacing(10)
+        p.setVerticalAlignment(HasAlignment.ALIGN_BOTTOM)
 
         sc = ASliderClass(False)
-        p.add(sc)
+        p.add(CaptionPanel("clickable only", sc))
         sc = ASliderClass(True)
-        p.add(sc)    
+        p.add(CaptionPanel("draggable", sc))
 
-        RootPanel().add(p)
+        v.add(CaptionPanel("2D Controls: Inputboxes are draggable as well", p))
+
+        RootPanel().add(v)
 
 
 if __name__ == '__main__':

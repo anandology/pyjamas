@@ -75,7 +75,8 @@ class BaseLinker(object):
                  early_static_app_libs = [], unlinked_modules = [], keep_lib_files = False,
                  platforms=[], path=[],
                  translator_arguments={},
-                 compile_inplace=False):
+                 compile_inplace=False,
+                 list_imports=False):
         modules = [mod.replace(os.sep, '.') for mod in modules]
         self.compiler = compiler
         self.js_path = os.path.abspath(output)
@@ -96,6 +97,7 @@ class BaseLinker(object):
         self.compile_inplace = compile_inplace
         self.top_module_path = None
         self.remove_files = {}
+        self.list_imports = list_imports
 
     def __call__(self):
         try:
@@ -110,8 +112,10 @@ class BaseLinker(object):
                 self.visit_modules(['pyjslib'], platform)
                 self.path = old_path
                 self.visit_modules(self.modules, platform)
-                self.visit_end_platform(platform)
-            self.visit_end()
+                if not self.list_imports:
+                    self.visit_end_platform(platform)
+            if not self.list_imports:
+                self.visit_end()
         except translator.TranslationError, e:
             raise e
 
@@ -195,11 +199,13 @@ class BaseLinker(object):
             or (out_file not in self.done.get(None,[]))
            ):
             if file_name.endswith('.js'):
-                fp = open(out_file, 'w')
-                fp.write("/* start javascript include: %s */\n" % file_name)
-                fp.write(open(file_path, 'r').read())
-                fp.write("$pyjs.loaded_modules['%s'] = function ( ) {return null;};\n" % file_name)
-                fp.write("/* end %s */\n" % file_name)
+                if not self.list_imports:
+                    fp = open(out_file, 'w')
+                    fp.write("/* start javascript include: %s */\n" % file_name)
+                    fp.write(open(file_path, 'r').read())
+                    fp.write("$pyjs.loaded_modules['%s'] = ")
+                    fp.write("function ( ) {return null;};\n" % file_name)
+                    fp.write("/* end %s */\n" % file_name)
                 deps = []
                 self.dependencies[out_file] = deps
             else:

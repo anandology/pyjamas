@@ -23,9 +23,12 @@ from MenuBarPopupPanel import MenuBarPopupPanel
 from pyjamas.ui import Event
 
 class MenuBar(Widget):
-    def __init__(self, vertical=False, **kwargs):
-        self.vertical = vertical
 
+    _props = [("vertical", "Vertical", "Vertical", None),
+            ]
+
+    def __init__(self, vertical=False, **kwargs):
+        self.setVertical(kwargs.pop('Vertical', vertical))
         if 'StyleName' not in kwargs or kwargs['StyleName'] == 'gwt-MenuBar':
             kwargs['StyleName'] = self.getDefaultStyleName()
         self.body = None
@@ -49,14 +52,28 @@ class MenuBar(Widget):
         self.body = DOM.createTBody()
         DOM.appendChild(table, self.body)
 
-        if not vertical:
-            tr = DOM.createTR()
-            DOM.appendChild(self.body, tr)
-
         outer = DOM.createDiv()
         DOM.appendChild(outer, table)
         self.setElement(outer)
         Widget.__init__(self, **kwargs)
+
+    @classmethod
+    def _getProps(self):
+        return Widget._getProps() + self._props
+
+    def setVertical(self, vertical):
+        self.vertical = vertical
+
+    def getVertical(self):
+        return self.vertical
+
+    def _checkVerticalContainer(self):
+        """ use this to delay effect of self.vertical being set.
+            self.setVertical can now be used, rather than self.vertical
+            force-set in constructor
+        """
+        if DOM.getChildCount(self.body) == 0:
+            DOM.appendChild(self.body, DOM.createTR())
 
     def getDefaultStyleName(self):
         if self.vertical:
@@ -65,7 +82,7 @@ class MenuBar(Widget):
 
     def setStyleName(self, StyleName, **kwargs):
         if not StyleName or StyleName == 'gwt-MenuBar':
-            StyleName = self.getDefaultStyleName()
+            StyleName = self.getDefaultStyleName(self.vertical)
         super(MenuBar, self).setStyleName(StyleName, **kwargs)
 
     # also callable as:
@@ -81,6 +98,7 @@ class MenuBar(Widget):
             tr = DOM.createTR()
             DOM.appendChild(self.body, tr)
         else:
+            self._checkVerticalContainer()
             tr = DOM.getChild(self.body, 0)
 
         DOM.appendChild(tr, item.getElement())
@@ -224,6 +242,7 @@ class MenuBar(Widget):
         if self.vertical:
             return self.body
         else:
+            self._checkVerticalContainer()
             return DOM.getChild(self.body, 0)
 
     def onHide(self):
@@ -247,5 +266,5 @@ class MenuBar(Widget):
 
         self.selectedItem = item
 
-Factory.registerClass('pyjamas.ui.MenuBar', MenuBar)
+Factory.registerClass('pyjamas.ui.MenuBar', 'MenuBar', MenuBar)
 

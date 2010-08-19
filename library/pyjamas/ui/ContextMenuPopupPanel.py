@@ -40,5 +40,5 @@ class ContextMenuPopupPanel(PopupPanel):
 
         return PopupPanel.onEventPreview(self, event)
 
-Factory.registerClass('pyjamas.ui.ContextMenuPopupPanel', ContextMenuPopupPanel)
+Factory.registerClass('pyjamas.ui.ContextMenuPopupPanel', 'ContextMenuPopupPanel', ContextMenuPopupPanel)
 

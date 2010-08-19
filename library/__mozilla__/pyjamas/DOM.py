@@ -188,4 +188,25 @@ def releaseCapture(elem):
     """)
 
 
+def _init_mousewheel():
+    JS("""
+    var dcme = $wnd.__dispatchCapturedMouseEvent;
+    $wnd.addEventListener('DOMMouseWheel', dcme, true);
+    """)
+
+def eventGetMouseWheelVelocityY(evt):
+    JS("""
+    return evt.detail || 0;
+    """)
+
+def sinkEventsMozilla(element, bits):
+    JS("""
+    if (bits & 0x40000) {
+        element.addEventListener("DOMMouseScroll", $wnd.__dispatchEvent,
+                                    false);
+    } else {
+        element.removeEventListener("DOMMouseScroll", $wnd.__dispatchEvent,
+                                    false);
+    }
+    """)
 

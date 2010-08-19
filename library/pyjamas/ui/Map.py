@@ -43,7 +43,7 @@ class ImageMap(ComplexPanel):
     def setName(self, name):
         DOM.setAttribute(self.getElement(), "name", name)
 
-Factory.registerClass('pyjamas.ui.ImageMap', ImageMap)
+Factory.registerClass('pyjamas.ui.Map', 'ImageMap', ImageMap)
 
 class MapArea(Widget, MouseHandler, ClickHandler):
     """ An area inside an imagemap
@@ -71,5 +71,5 @@ class MapArea(Widget, MouseHandler, ClickHandler):
     def setHref(self, href):
         DOM.setAttribute(self.getElement(), "href", href)
 
-Factory.registerClass('pyjamas.ui.MapArea', MapArea)
+Factory.registerClass('pyjamas.ui.Map', 'MapArea', MapArea)
 

@@ -18,18 +18,27 @@ from pyjamas import Factory
 from Frame import Frame
 
 class NamedFrame(Frame):
+
+    _props = [("name", "Name", "Name", None),
+            ]
+
     def __init__(self, name, **kwargs):
-        if kwargs.has_key('Element'):
-            div = kwargs.pop('Element')
-        else:
-            div = DOM.createDiv()
+        div = kwargs.pop('Element', None) or DOM.createDiv()
         DOM.setInnerHTML(div, "<iframe name='" + name + "'>")
 
         iframe = DOM.getFirstChild(div)
         Frame.__init__(self, None, iframe, **kwargs)
 
+    @classmethod
+    def _getProps(self):
+        return Frame._getProps() + self._props
+
     def getName(self):
         return DOM.getAttribute(self.getElement(), "name")
 
-Factory.registerClass('pyjamas.ui.NamedFrame', NamedFrame)
+    def setName(self, name):
+        DOM.setAttribute(self.getElement(), "name", name)
+
+
+Factory.registerClass('pyjamas.ui.NamedFrame', 'NamedFrame', NamedFrame)
 

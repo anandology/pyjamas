@@ -83,5 +83,5 @@ class HTMLPanel(ComplexPanel, InnerHTML):
         HTMLPanel_sUid += 1
         return "HTMLPanel_%d" % HTMLPanel_sUid
 
-Factory.registerClass('pyjamas.ui.HTMLPanel', HTMLPanel)
+Factory.registerClass('pyjamas.ui.HTMLPanel', 'HTMLPanel', HTMLPanel)
 

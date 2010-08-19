@@ -17,6 +17,13 @@ from pyjamas import DOM
 
 class InnerText(object):
 
+    _props = [("label", "Text", "Text", None),
+            ]
+
+    @classmethod
+    def _getProps(self):
+        return self._props
+
     def setText(self, text):
         DOM.setInnerText(self.getElement(), text)
 

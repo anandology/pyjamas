@@ -36,5 +36,5 @@ class HyperlinkImage(Hyperlink):
         else:
             Hyperlink.onBrowserEvent(self, event)
 
-Factory.registerClass('pyjamas.ui.HyperlinkImage', HyperlinkImage)
+Factory.registerClass('pyjamas.ui.HyperlinkImage', 'HyperlinkImage', HyperlinkImage)
 

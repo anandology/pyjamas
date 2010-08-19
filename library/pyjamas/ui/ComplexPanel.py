@@ -59,5 +59,5 @@ class ComplexPanel(Panel):
         self.children.remove(widget)
         return True
 
-Factory.registerClass('pyjamas.ui.ComplexPanel', ComplexPanel)
+Factory.registerClass('pyjamas.ui.ComplexPanel', 'ComplexPanel', ComplexPanel)
 

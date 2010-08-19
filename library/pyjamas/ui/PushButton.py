@@ -49,5 +49,5 @@ class PushButton (CustomButton):
     def onClickStart(self):
         self.setDown(True)
     
-Factory.registerClass('pyjamas.ui.PushButton', PushButton)
+Factory.registerClass('pyjamas.ui.PushButton', 'PushButton', PushButton)
 

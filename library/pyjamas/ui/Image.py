@@ -23,20 +23,24 @@ from ClickListener import ClickHandler
 prefetchImages = {}
 
 class Image(Widget, MouseHandler, ClickHandler):
+
+    _props = [("url", "Url", "Url", None),
+            ]
+
     def __init__(self, url="", **kwargs):
         if not kwargs.has_key('StyleName'): kwargs['StyleName']="gwt-Image"
         if url: kwargs['Url'] = url
 
-        if kwargs.has_key('Element'):
-            element = kwargs.pop('Element')
-        else:
-            element = DOM.createImg()
-        self.setElement(element)
+        self.setElement(kwargs.pop('Element', None) or DOM.createImg())
         Widget.__init__(self, **kwargs)
         MouseHandler.__init__(self)
         ClickHandler.__init__(self)
         self.sinkEvents(Event.ONLOAD | Event.ONERROR)
         self.loadListeners = []
+
+    @classmethod
+    def _getProps(self):
+        return Widget._getProps() + self._props
 
     def addLoadListener(self, listener):
         self.loadListeners.append(listener)
@@ -65,5 +69,5 @@ class Image(Widget, MouseHandler, ClickHandler):
     def setUrl(self, url):
         DOM.setElemAttribute(self.getElement(), "src", url)
 
-Factory.registerClass('pyjamas.ui.Image', Image)
+Factory.registerClass('pyjamas.ui.Image', 'Image', Image)
 

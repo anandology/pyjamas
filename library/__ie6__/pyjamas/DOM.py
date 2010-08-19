@@ -239,3 +239,8 @@ def toString(elem):
 def eventStopPropagation(evt):
     eventCancelBubble(evt)
 
+def eventGetMouseWheelVelocityY(evt):
+    JS("""
+    return Math.round(-evt.wheelDelta / 40) || 0;
+    """)
+

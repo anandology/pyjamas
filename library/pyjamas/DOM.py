@@ -82,6 +82,11 @@ def init():
     mf._addWindowEventListener("keyup", browser_event_cb)
     mf._addWindowEventListener("keydown", browser_event_cb)
     mf._addWindowEventListener("keypress", browser_event_cb)
+    _init_mousewheel()
+
+def _init_mousewheel():
+    mf = get_main_frame()
+    mf._addWindowEventListener("mousewheel", browser_event_cb)
 
 def _init_testing():
     body = doc().getElementsByTagName("body")[0]
@@ -426,6 +431,8 @@ eventmap = {
       "scroll": 0x04000,
       "error": 0x10000,
       "contextmenu": 0x20000,
+      "mousewheel": 0x40000,
+      "DOMMouseScroll": 0x40000,
       }
 
 
@@ -965,6 +972,11 @@ def sinkEvents(element, bits):
     if (bits & 0x20000):
         mf.addEventListener(element, "contextmenu", cb)
 
+    # mozilla stupidly has DOMMouseScroll...
+    sinkEventsMozilla(element, bits)
+
+def sinkEventsMozilla(element, bits):
+    pass
 
 def toString(elem):
     temp = elem.cloneNode(True)
@@ -1038,6 +1050,11 @@ def getBodyOffsetTop():
 
 def getBodyOffsetLeft():
     return 0
+
+def eventGetMouseWheelVelocityY(evt):
+    """ these are all different, across all platforms!
+    """
+    pass
 
 
 if sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:

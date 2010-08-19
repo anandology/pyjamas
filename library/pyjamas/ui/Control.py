@@ -18,12 +18,12 @@ import math
 from pyjamas import DOM
 from pyjamas import Window
 from FocusWidget import FocusWidget
-from MouseListener import MouseHandler
+from MouseListener import MouseHandler, MouseWheelHandler
 from pyjamas.ui import KeyboardListener
 from pyjamas.ui import GlassWidget
 
 
-class Control(FocusWidget, MouseHandler):
+class Control(FocusWidget, MouseHandler, MouseWheelHandler):
 
     def __init__(self, element, min_value, max_value,
                        start_value=None, step=None,
@@ -44,6 +44,8 @@ class Control(FocusWidget, MouseHandler):
         if not kwargs.has_key("TabIndex"): kwargs['TabIndex'] = 0
         FocusWidget.__init__(self, element, **kwargs)
         MouseHandler.__init__(self)
+        MouseWheelHandler.__init__(self, True)
+        self.addMouseWheelListener(self)
 
     def isDragable(self):
         return self.drag_enabled
@@ -103,6 +105,14 @@ class Control(FocusWidget, MouseHandler):
         mouse_y = DOM.eventGetClientY(event) + Window.getScrollTop()
         self.moveControl(mouse_x - self.getAbsoluteLeft(),
                          mouse_y - self.getAbsoluteTop(), True)
+
+    def onMouseWheel(self, sender, velocity):
+        print "mouse wheel", sender, velocity
+        if self.dragging: # don't accept wheel events if dragging!
+            return
+        new_value = self.processValue(self.value - self.step * velocity)
+        self.setControlPos(new_value)
+        self.setValue(new_value)
 
     def onMouseMove(self, sender, x, y):
         if not self.dragging:
@@ -196,4 +206,4 @@ class Control(FocusWidget, MouseHandler):
                 return False
         return self._event_targets_control(event)
 
-Factory.registerClass('pyjamas.ui.Control', Control)
+Factory.registerClass('pyjamas.ui.Control', 'Control', Control)

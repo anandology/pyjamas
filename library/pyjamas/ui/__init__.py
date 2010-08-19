@@ -31,8 +31,34 @@ class HasAlignment:
     ALIGN_LEFT = "left"
     ALIGN_RIGHT = "right"
 
+PROP_NAME = 0
+PROP_DESC = 1
+PROP_FNAM = 2
+PROP_TYPE = 3
+
+ELPROP_NAME = 0
+ELPROP_DESC = 1
+ELPROP_FNAM = 2
+ELPROP_TYPE = 3
+ELPROP_DFLT = 4
+
+def get_list_columns(props, cols):
+    res = []
+    for p in props:
+        r = ()
+        for idx in cols:
+            r.append(p[idx])
+        res.append(r)
+    return res
+
+def get_prop_widget_function_names(props):
+    return get_list_columns(props, (PROP_FNAM,))
+
 class Applier(object):
              
+    _props = []
+    _elem_props = []
+
     def __init__(self, **kwargs):
         """ use this to apply properties as a dictionary, e.g.
                 x = klass(..., StyleName='class-name')
@@ -47,18 +73,70 @@ class Applier(object):
                 x.setSize("100%", "20px")
                 x.setVisible(False)
         """
-        if kwargs:
-            k = kwargs.keys()
-            l = len(k)
-            i = -1
-            while i < l-1:
-                i += 1
-                prop = k[i]
-                fn = getattr(self, "set%s" % prop, None)
-                if fn:
-                    args = kwargs[prop]
-                    if isinstance(args, tuple):
-                        fn(*args)
-                    else:
-                        fn(args)
+
+        self.applyValues(**kwargs)
+
+    def applyValues(self, **kwargs):
+
+        for (prop, args) in kwargs.items():
+            fn = getattr(self, "set%s" % prop, None)
+            if not fn:
+                return
+            args = kwargs[prop]
+            if isinstance(args, tuple):
+                fn(*args)
+            else:
+                fn(args)
+
+    def retrieveValues(self, *args):
+        """ use this function to obtain a dictionary of properties, as
+            stored in getXXX functions.
+        """
+
+        res = {}
+        for prop in args:
+            fn = getattr(self, "get%s" % prop, None)
+            if not fn:
+                continue
+            res[prop] = fn()
+
+        return res
+
+    @classmethod
+    def _getProps(self):
+        return self._props
+
+    @classmethod
+    def _getElementProps(self):
+        return self._elem_props
+
+    def setDefaults(self, defaults):
+        divs = self.retrieveValues(wnames) 
+        for p in get_prop_widget_function_names(self._getProps()):
+            defaults[p[PROP_NAME]] = divs[p[PROP_FNAM]]
+
+    def updateInstance(self, app_context):
+        args = {}
+        for p in self._getProps():
+            val = app_context.getAppProperty(p[0])
+            convert_to_type = p[PROP_TYPE]
+            if convert_to_type:
+                 val = convert_to_type(val) if val else None
+            args[p[PROP_FNAM]] = val
+
+        self.applyValues(**args) 
+
+    def setElementProperties(self, context, elemProps):
+        args = {}
+        for p in self._getElementProps():
+            if elemProps.has_key(p):
+                val = elemProps[p]
+                convert_to_type = p[ELPROP_TYPE]
+                if convert_to_type:
+                     val = convert_to_type(val) if val else None
+            else:
+                val = p[ELPROP_DFLT]
+            args[p[ELPROP_FNAM]] = (context, val,)
+
+        self.applyValues(**args) 
 

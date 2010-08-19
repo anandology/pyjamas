@@ -18,10 +18,19 @@ from pyjamas import Factory
 from TextBoxBase import TextBoxBase
 
 class TextBox(TextBoxBase):
+
+    _props = [("maxLength", "Max Length", "MaxLength", None),
+             ("visibleLength", "Visible Length", "VisibleLength", None),
+            ]
+
     def __init__(self, **ka):
         ka['StyleName'] = ka.get('StyleName', "gwt-TextBox")
         element = ka.pop('Element', None) or DOM.createInputText()
         TextBoxBase.__init__(self, element, **ka)
+
+    @classmethod
+    def _getProps(self):
+        return TextBoxBase._getProps() + self._props
 
     def getMaxLength(self):
         return DOM.getIntAttribute(self.getElement(), "maxLength")
@@ -35,5 +44,6 @@ class TextBox(TextBoxBase):
     def setVisibleLength(self, length):
         DOM.setIntAttribute(self.getElement(), "size", length)
 
-Factory.registerClass('pyjamas.ui.TextBox', TextBox)
+
+Factory.registerClass('pyjamas.ui.TextBox', 'TextBox', TextBox)
 
