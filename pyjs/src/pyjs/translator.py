@@ -29,6 +29,8 @@ from compiler.visitor import ASTVisitor
 
 import pyjs
 
+escaped_subst = re.compile('@{{([ a-zA-Z0-9_\.]*)}}')
+
 if pyjs.pyjspth is None:
     LIBRARY_PATH = os.path.abspath(os.path.dirname(__file__))
 else:
@@ -275,6 +277,11 @@ PYJSLIB_BUILTIN_FUNCTIONS=frozenset((
     "type",
     "xrange",
     "zip",
+
+    # internal mappings needed
+    "wrapped_next",
+    "__iter_prepare",
+    "__wrapped_next",
     ))
 
 PYJSLIB_BUILTIN_CLASSES=[
@@ -1104,6 +1111,22 @@ class Translator(object):
                 jsname = PYJSLIB_BUILTIN_MAPPING[name]
         return (name_type, pyname, jsname, depth, (name_type is not None) and (max_depth > 0) and (max_depth == depth))
 
+    def translate_escaped_names(self, txt, current_klass):
+        """ escape replace names
+        """
+        l = escaped_subst.split(txt)
+        txt = l[0]
+        for i in xrange(1, len(l)-1, 2):
+            varname = l[i].strip()
+            name_type, pyname, jsname, depth, is_local = self.lookup(varname)
+            if name_type is None:
+                substname = self.scopeName(varname, depth, is_local)
+            else:
+                substname = jsname
+            txt += substname
+            txt += l[i+1]
+        return txt
+        
     def scopeName(self, name, depth, local):
         if local:
             return name
@@ -2144,6 +2167,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                         raw_js, has_js_return = raw_js(self, v)
                         if has_js_return:
                             self.has_js_return = True
+                    raw_js = self.translate_escaped_names(raw_js, current_klass)
                     return raw_js
                 except AttributeError, e:
                     raise TranslationError(
@@ -3112,7 +3136,9 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             expr = self._callfunc(node.expr, current_klass)
             if isinstance(node.expr.node, self.ast.Name):
                 name_type, pyname, jsname, depth, is_local = self.lookup(node.expr.node.name)
-                if name_type == '__pyjamas__' and jsname in __pyjamas__.native_js_funcs:
+                if name_type == '__pyjamas__' and \
+                   jsname in __pyjamas__.native_js_funcs:
+                    expr = self.translate_escaped_names(expr, current_klass)
                     print >>self.output, expr
                     return
             print >>self.output, self.spacing() + expr + ";"
