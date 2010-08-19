@@ -3,6 +3,7 @@ from pyjamas import Factory
 from pyjamas import ui
 from pyjamas.ui.MultiListener import MultiListener
 from pyjamas.HTTPRequest import HTTPRequest
+from pyjamas.ui.Tooltip import TooltipListener
 
 
 # All event listeners with a tuple that comprises of the listener add 
@@ -76,6 +77,10 @@ class Builder(object):
             item = kls(**args)
             if hasattr(item, "_setWeirdProps"):
                 item._setWeirdProps(wprops)
+
+            tooltip = wprops.get('tooltip')
+            if tooltip is not None:
+                item.addMouseListener(TooltipListener(tooltip))
 
             identifier = comp['id']
             widget_order.append(identifier)
