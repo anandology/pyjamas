@@ -811,22 +811,22 @@ def ___import___(path, context, module_name=None, get_base=True):
 def __dynamic_load__(importName):
     global __nondynamic_modules__
     setCompilerOptions("noDebug")
-    module = JS("""$pyjs.loaded_modules[importName]""")
+    module = JS("""$pyjs.loaded_modules[@{{importName}}]""")
     if sys is None or dynamic is None or __nondynamic_modules__.has_key(importName):
         return module
-    if JS("""typeof module == 'undefined'"""):
+    if JS("""typeof @{{module}}== 'undefined'"""):
         try:
             dynamic.ajax_import("lib/" + importName + ".__" + platform + "__.js")
-            module = JS("""$pyjs.loaded_modules[importName]""")
+            module = JS("""$pyjs.loaded_modules[@{{importName}}]""")
         except:
             pass
-    if JS("""typeof module == 'undefined'"""):
+    if JS("""typeof @{{module}}== 'undefined'"""):
         try:
             dynamic.ajax_import("lib/" + importName + ".js")
-            module = JS("""$pyjs.loaded_modules[importName]""")
+            module = JS("""$pyjs.loaded_modules[@{{importName}}]""")
         except:
             pass
-        if JS("""typeof module == 'undefined'"""):
+        if JS("""typeof @{{module}}== 'undefined'"""):
             __nondynamic_modules__[importName] = 1.0
     return module
 
