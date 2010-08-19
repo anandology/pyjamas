@@ -94,6 +94,8 @@ class PopupPanel(SimplePanel):
         return self.isModal()
 
     def isModal(self):
+        """ deprecated - please use getModal
+        """
         return self.modal
 
     def _event_targets_popup(self, event):
