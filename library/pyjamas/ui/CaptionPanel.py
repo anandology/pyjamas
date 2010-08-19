@@ -24,7 +24,7 @@ class CaptionPanel(SimplePanel):
     fieldset HTML element.
     """
 
-    _props = [("caption", "Caption", "Caption", None),
+    _props = [("caption", "Caption", "caption", None),
             ]
 
     def __init__(self, caption, widget=None, **kwargs):
