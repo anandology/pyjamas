@@ -1,6 +1,9 @@
                     Changes made to Pyjamas since 0.7
                     ---------------------------------
 
+ * Add pyjscompressor.py from Sujan Shakya to contrib: depends on java
+   and google java compressor tool.
+
  * Series of fixes by W Kornewald: #229, #385, #414, #417, #475 and more.
    accidental exception catching in debug handling sorted; class creation
    uses __class__ on the base (behaves like http://python.org); added
