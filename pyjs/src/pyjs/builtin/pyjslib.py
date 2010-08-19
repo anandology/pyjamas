@@ -103,51 +103,51 @@ def op_eq(a,b):
     #setCompilerOptions("InlineEq")
     #return a == b
     JS("""
-    if (a === null) {
-        if (b === null) return true;
+    if (@{{a}} === null) {
+        if (@{{b}} === null) return true;
         return false;
     }
-    if (b === null) {
+    if (@{{b}} === null) {
         return false;
     }
-    switch ((a.__number__ << 8) | b.__number__) {
+    switch ((@{{a}}.__number__ << 8) | @{{b}}.__number__) {
         case 0x0101:
         case 0x0401:
-            return a == b;
+            return @{{a}} == @{{b}};
         case 0x0102:
-            return a == b.__v;
+            return @{{a}} == @{{b}}.__v;
         case 0x0201:
-            return a.__v == b;
+            return @{{a}}.__v == @{{b}};
         case 0x0202:
-            return a.__v == b.__v;
+            return @{{a}}.__v == @{{b}}.__v;
         case 0x0104:
         case 0x0204:
-            a = new @{{long}}(a.valueOf());
+            @{{a}} = new @{{long}}(@{{a}}.valueOf());
         case 0x0404:
-            return a.__cmp__(b) == 0;
+            return @{{a}}.__cmp__(@{{b}}) == 0;
         case 0x0402:
-            return a.__cmp__(new @{{long}}(b.valueOf())) == 0;
+            return @{{a}}.__cmp__(new @{{long}}(@{{b}}.valueOf())) == 0;
     }
-    if ((typeof a == 'object' || typeof a == 'function') && typeof a.__cmp__ == 'function') {
-        if (typeof b.__cmp__ != 'function') {
+    if ((typeof @{{a}} == 'object' || typeof @{{a}} == 'function') && typeof @{{a}}.__cmp__ == 'function') {
+        if (typeof @{{b}}.__cmp__ != 'function') {
             return false;
         }
-        if (a.__cmp__ === b.__cmp__) {
-            return a.__cmp__(b) == 0;
+        if (@{{a}}.__cmp__ === @{{b}}.__cmp__) {
+            return @{{a}}.__cmp__(@{{b}}) == 0;
         }
-        if (@{{_isinstance}}(a, b)) {
-            return a.__cmp__(b) == 0;
+        if (@{{_isinstance}}(@{{a}}, @{{b}})) {
+            return @{{a}}.__cmp__(@{{b}}) == 0;
         }
         return false;
-    } else if ((typeof b == 'object' || typeof b == 'function') && typeof b.__cmp__ == 'function') {
-        // typeof b.__cmp__ != 'function'
-        // a.__cmp__ !== b.__cmp__
-        if (@{{_isinstance}}(a, b)) {
-            return b.__cmp__(a) == 0;
+    } else if ((typeof @{{b}} == 'object' || typeof @{{b}} == 'function') && typeof @{{b}}.__cmp__ == 'function') {
+        // typeof @{{b}}.__cmp__ != 'function'
+        // @{{a}}.__cmp__ !== @{{b}}.__cmp__
+        if (@{{_isinstance}}(@{{a}}, @{{b}})) {
+            return @{{b}}.__cmp__(@{{a}}) == 0;
         }
         return false;
     }
-    return a == b;
+    return @{{a}} == @{{b}};
     """)
 
 def op_uadd(v):
