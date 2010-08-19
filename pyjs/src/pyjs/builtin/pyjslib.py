@@ -156,24 +156,24 @@ def op_uadd(v):
         case 0x01:
         case 0x02:
         case 0x04:
-            return v;
+            return @{{v}};
     }
-    if (v !== null) {
-        if (typeof v['__pos__'] == 'function') return v.__pos__();
+    if (@{{v }}!== null) {
+        if (typeof @{{v}}['__pos__'] == 'function') return @{{v}}.__pos__();
     }
 """)
     raise TypeError("bad operand type for unary +: '%r'" % v)
 
 def op_usub(v):
     JS("""
-    switch (v.__number__) {
+    switch (@{{v}}.__number__) {
         case 0x01:
-            return -v;
+            return -@{{v}};
         case 0x02:
-            return new @{{int}}(-v);
+            return new @{{int}}(-@{{v}});
     }
-    if (v !== null) {
-        if (typeof v['__neg__'] == 'function') return v.__neg__();
+    if (@{{v}}!== null) {
+        if (typeof @{{v}}['__neg__'] == 'function') return @{{v}}.__neg__();
     }
 """)
     raise TypeError("bad operand type for unary -: '%r'" % v)
