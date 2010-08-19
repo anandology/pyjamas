@@ -82,15 +82,15 @@ class object:
 
 def op_is(a,b):
     JS("""
-    if (a === b) return true;
-    if (a !== null && b !== null) {
-        switch ((a.__number__ << 8) | b.__number__) {
+    if (@{{a}} === @{{b}}) return true;
+    if (@{{a}} !== null && @{{b}} !== null) {
+        switch ((@{{a}}.__number__ << 8) | @{{b}}.__number__) {
             case 0x0101:
-                return a == b;
+                return @{{a}} == @{{b}};
             case 0x0202:
-                return a.__v == b.__v;
+                return @{{a}}.__v == @{{b}}.__v;
             case 0x0404:
-                return a.__cmp__(b) == 0;
+                return @{{a}}.__cmp__(@{{b}}) == 0;
         }
     }
     return false;
