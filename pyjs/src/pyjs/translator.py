@@ -279,6 +279,8 @@ PYJSLIB_BUILTIN_FUNCTIONS=frozenset((
     "zip",
 
     # internal mappings needed
+    "next_hash_id",
+    "__hash",
     "wrapped_next",
     "__iter_prepare",
     "__wrapped_next",
