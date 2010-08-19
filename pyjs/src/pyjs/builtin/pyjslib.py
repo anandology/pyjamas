@@ -152,13 +152,13 @@ def op_eq(a,b):
 
 def op_uadd(v):
     JS("""
-    switch (v.__number__) {
+    switch (@{{v}}.__number__) {
         case 0x01:
         case 0x02:
         case 0x04:
             return @{{v}};
     }
-    if (@{{v }}!== null) {
+    if (@{{v}}!== null) {
         if (typeof @{{v}}['__pos__'] == 'function') return @{{v}}.__pos__();
     }
 """)
@@ -180,43 +180,43 @@ def op_usub(v):
 
 def __op_add(x, y):
     JS("""
-        return (typeof (x)==typeof (y) && 
-                (typeof x=='number'||typeof x=='string')?
-                x+y:
-                @{{op_add}}(x,y));
+        return (typeof (@{{x}})==typeof (@{{y}}) && 
+                (typeof @{{x}}=='number'||typeof @{{x}}=='string')?
+                @{{x}}+@{{y}}:
+                @{{op_add}}(@{{x}},@{{y}}));
     """)
 
 def op_add(x, y):
     JS("""
-    if (x !== null && y !== null) {
-        switch ((x.__number__ << 8) | y.__number__) {
+    if (@{{x}}!== null && @{{y}}!== null) {
+        switch ((@{{x}}.__number__ << 8) | @{{y}}.__number__) {
             case 0x0101:
             case 0x0104:
             case 0x0401:
-                return x + y;
+                return @{{x}}+ @{{y}};
             case 0x0102:
-                return x + y.__v;
+                return @{{x}}+ @{{y}}.__v;
             case 0x0201:
-                return x.__v + y;
+                return @{{x}}.__v + @{{y}};
             case 0x0202:
-                return new @{{int}}(x.__v + y.__v);
+                return new @{{int}}(@{{x}}.__v + @{{y}}.__v);
             case 0x0204:
-                return (new @{{long}}(x.__v)).__add(y);
+                return (new @{{long}}(@{{x}}.__v)).__add(@{{y}});
             case 0x0402:
-                return x.__add(new @{{long}}(y.__v));
+                return @{{x}}.__add(new @{{long}}(@{{y}}.__v));
             case 0x0404:
-                return x.__add(y);
+                return @{{x}}.__add(@{{y}});
         }
-        if (!x.__number__) {
-            if (typeof x == 'string' && typeof y == 'string') return x + y;
-            if (   !y.__number__
-                && x.__mro__.length > y.__mro__.length
-                && @{{isinstance}}(x, y)
-                && typeof x['__add__'] == 'function')
-                return y.__add__(x);
-            if (typeof x['__add__'] == 'function') return x.__add__(y);
+        if (!@{{x}}.__number__) {
+            if (typeof @{{x}}== 'string' && typeof @{{y}}== 'string') return @{{x}}+ @{{y}};
+            if (   !@{{y}}.__number__
+                && @{{x}}.__mro__.length > @{{y}}.__mro__.length
+                && @{{isinstance}}(@{{x}}, @{{y}})
+                && typeof @{{x}}['__add__'] == 'function')
+                return @{{y}}.__add__(@{{x}});
+            if (typeof @{{x}}['__add__'] == 'function') return @{{x}}.__add__(@{{y}});
         }
-        if (!y.__number__ && typeof y['__radd__'] == 'function') return y.__radd__(x);
+        if (!@{{y}}.__number__ && typeof @{{y}}['__radd__'] == 'function') return @{{y}}.__radd__(@{{x}});
     }
 """)
     raise TypeError("unsupported operand type(s) for +: '%r', '%r'" % (x, y))
@@ -798,7 +798,7 @@ def ___import___(path, context, module_name=None, get_base=True):
     # If we are here, the module is not loaded (yet).
     if JS("$pyjs.options.dynamic_loading"):
         module = __dynamic_load__(importName)
-        if JS("""typeof @{{module }}== 'function'"""):
+        if JS("""typeof @{{module}}== 'function'"""):
             module(module_name)
             JS("$pyjs.track.module = @{{save_track_module}};")
             if get_base:
