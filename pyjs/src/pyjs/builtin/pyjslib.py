@@ -270,16 +270,16 @@ def op_floordiv(x, y):
             case 0x0101:
             case 0x0104:
             case 0x0401:
-                if (y == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+                if (y == 0) throw @{{ZeroDivisionError}}('float divmod()');
                 return Math.floor(x / y);
             case 0x0102:
-                if (y.__v == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+                if (y.__v == 0) throw @{{ZeroDivisionError}}('float divmod()');
                 return Math.floor(x / y.__v);
             case 0x0201:
-                if (y == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+                if (y == 0) throw @{{ZeroDivisionError}}('float divmod()');
                 return Math.floor(x.__v / y);
             case 0x0202:
-                if (y.__v == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
+                if (y.__v == 0) throw @{{ZeroDivisionError}}('integer division or modulo by zero');
                 return new @{{int}}(Math.floor(x.__v / y.__v));
             case 0x0204:
                 return (new @{{long}}(x.__v)).__floordiv(y);
@@ -308,16 +308,16 @@ def op_div(x, y):
             case 0x0101:
             case 0x0104:
             case 0x0401:
-                if (y == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+                if (y == 0) throw @{{ZeroDivisionError}}('float divmod()');
                 return x / y;
             case 0x0102:
-                if (y.__v == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+                if (y.__v == 0) throw @{{ZeroDivisionError}}('float divmod()');
                 return x / y.__v;
             case 0x0201:
-                if (y == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+                if (y == 0) throw @{{ZeroDivisionError}}('float divmod()');
                 return x.__v / y;
             case 0x0202:
-                if (y.__v == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+                if (y.__v == 0) throw @{{ZeroDivisionError}}('float divmod()');
                 return new @{{int}}(x.__v / y.__v);
             case 0x0204:
                 return (new @{{long}}(x.__v)).__div(y);
@@ -380,16 +380,16 @@ def op_mod(x, y):
             case 0x0101:
             case 0x0104:
             case 0x0401:
-                if (y == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+                if (y == 0) throw @{{ZeroDivisionError}}('float divmod()');
                 return x % y;
             case 0x0102:
-                if (y.__v == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+                if (y.__v == 0) throw @{{ZeroDivisionError}}('float divmod()');
                 return x % y.__v;
             case 0x0201:
-                if (y == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+                if (y == 0) throw @{{ZeroDivisionError}}('float divmod()');
                 return x.__v % y;
             case 0x0202:
-                if (y.__v == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
+                if (y.__v == 0) throw @{{ZeroDivisionError}}('integer division or modulo by zero');
                 return new @{{int}}(x.__v % y.__v);
             case 0x0204:
                 return (new @{{long}}(x.__v)).__mod(y);
@@ -421,13 +421,13 @@ def op_pow(x, y):
             case 0x0101:
             case 0x0104:
             case 0x0401:
-                if (y == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+                if (y == 0) throw @{{ZeroDivisionError}}('float divmod()');
                 return Math.pow(x, y);
             case 0x0102:
-                if (y.__v == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+                if (y.__v == 0) throw @{{ZeroDivisionError}}('float divmod()');
                 return Math.pow(x,y.__v);
             case 0x0201:
-                if (y == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+                if (y == 0) throw @{{ZeroDivisionError}}('float divmod()');
                 return Math.pow(x.__v,y);
             case 0x0202:
                 return x.__pow__(y);
@@ -1569,25 +1569,25 @@ Number.prototype.__rsub__ = function (y) {
 
 Number.prototype.__floordiv__ = function (y) {
     if (!y.__number__ || isNaN(y = y.valueOf())) return pyjslib['NotImplemented'];
-    if (y == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+    if (y == 0) throw @{{ZeroDivisionError}}('float divmod()');
     return Math.floor(this / y);
 };
 
 Number.prototype.__rfloordiv__ = function (y) {
     if (!y.__number__ || isNaN(y = y.valueOf())) return pyjslib['NotImplemented'];
-    if (this == 0) throw pyjslib['ZeroDivisionError']('float divmod');
+    if (this == 0) throw @{{ZeroDivisionError}}('float divmod');
     return Math.floor(y / this);
 };
 
 Number.prototype.__div__ = function (y) {
     if (!y.__number__ || isNaN(y = y.valueOf())) return pyjslib['NotImplemented'];
-    if (y == 0) throw pyjslib['ZeroDivisionError']('float division');
+    if (y == 0) throw @{{ZeroDivisionError}}('float division');
     return this / y;
 };
 
 Number.prototype.__rdiv__ = function (y) {
     if (!y.__number__ || isNaN(y = y.valueOf())) return pyjslib['NotImplemented'];
-    if (this == 0) throw pyjslib['ZeroDivisionError']('float division');
+    if (this == 0) throw @{{ZeroDivisionError}}('float division');
     return y / this;
 };
 
@@ -1603,13 +1603,13 @@ Number.prototype.__rmul__ = function (y) {
 
 Number.prototype.__mod__ = function (y) {
     if (!y.__number__ || isNaN(y = y.valueOf())) return pyjslib['NotImplemented'];
-    if (y == 0) throw pyjslib['ZeroDivisionError']('float modulo');
+    if (y == 0) throw @{{ZeroDivisionError}}('float modulo');
     return this % y;
 };
 
 Number.prototype.__rmod__ = function (y) {
     if (!y.__number__ || isNaN(y = y.valueOf())) return pyjslib['NotImplemented'];
-    if (this == 0) throw pyjslib['ZeroDivisionError']('float modulo');
+    if (this == 0) throw @{{ZeroDivisionError}}('float modulo');
     return y % this;
 };
 
@@ -1895,28 +1895,28 @@ JS("""
     $int.__floordiv__ = function (y) {
         if (y.__number__ != 0x02) return pyjslib['NotImplemented'];
         y = y.__v;
-        if (y == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
+        if (y == 0) throw @{{ZeroDivisionError}}('integer division or modulo by zero');
         return new $int(Math.floor(this.__v / y));
     };
 
     $int.__rfloordiv__ = function (y) {
         if (y.__number__ != 0x02) return pyjslib['NotImplemented'];
         y = y.__v;
-        if (this.__v == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
+        if (this.__v == 0) throw @{{ZeroDivisionError}}('integer division or modulo by zero');
         return new $int(Math.floor(y / this.__v));
     };
 
     $int.__div__ = function (y) {
         if (y.__number__ != 0x02) return pyjslib['NotImplemented'];
         y = y.__v;
-        if (y == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
+        if (y == 0) throw @{{ZeroDivisionError}}('integer division or modulo by zero');
         return new $int(this.__v / y);
     };
 
     $int.__rdiv__ = function (y) {
         if (y.__number__ != 0x02) return pyjslib['NotImplemented'];
         y = y.__v;
-        if (this.__v == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
+        if (this.__v == 0) throw @{{ZeroDivisionError}}('integer division or modulo by zero');
         return new $int(y / this.__v);
     };
 
@@ -1938,14 +1938,14 @@ JS("""
     $int.__mod__ = function (y) {
         if (y.__number__ != 0x02) return pyjslib['NotImplemented'];
         y = y.__v;
-        if (y == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
+        if (y == 0) throw @{{ZeroDivisionError}}('integer division or modulo by zero');
         return new $int(this.__v % y);
     };
 
     $int.__rmod__ = function (y) {
         if (y.__number__ != 0x02) return pyjslib['NotImplemented'];
         y = y.__v;
-        if (this.__v == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
+        if (this.__v == 0) throw @{{ZeroDivisionError}}('integer division or modulo by zero');
         return new $int(y % this.__v);
     };
 
@@ -2247,7 +2247,7 @@ JS("""
         var z = null;
 
         if (size_b == 0) {
-            throw pyjslib['ZeroDivisionError']("long division or modulo by zero");
+            throw @{{ZeroDivisionError}}("long division or modulo by zero");
         }
         if (size_a < size_b ||
             (size_a == size_b &&
@@ -6553,19 +6553,19 @@ def divmod(x, y):
             case 0x0101:
             case 0x0104:
             case 0x0401:
-                if (y == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+                if (y == 0) throw @{{ZeroDivisionError}}('float divmod()');
                 var f = Math.floor(x / y);
                 return @{{tuple}}([f, x - f * y]);
             case 0x0102:
-                if (y.__v == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+                if (y.__v == 0) throw @{{ZeroDivisionError}}('float divmod()');
                 var f = Math.floor(x / y.__v);
                 return @{{tuple}}([f, x - f * y.__v]);
             case 0x0201:
-                if (y == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
+                if (y == 0) throw @{{ZeroDivisionError}}('float divmod()');
                 var f = Math.floor(x.__v / y);
                 return @{{tuple}}([f, x.__v - f * y]);
             case 0x0202:
-                if (y.__v == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
+                if (y.__v == 0) throw @{{ZeroDivisionError}}('integer division or modulo by zero');
                 var f = Math.floor(x.__v / y.__v);
                 return @{{tuple}}([new @{{int}}(f), new @{{int}}(x.__v - f * y.__v)]);
             case 0x0204:
