@@ -21,7 +21,8 @@ import pyjd # this is dummy in pyjs.
 from pyjamas.builder.Builder import Builder, HTTPUILoader
 from pyjamas.ui.RootPanel import RootPanel
 
-class EventTest(object):
+
+class Caption1Events(object):
 
     def onHTMLMouseMoved(self, sender, x, y):
         print "moved", sender, x, y
@@ -32,10 +33,18 @@ class EventTest(object):
     def onHTMLClicked(self, sender):
         print "clicked", sender
 
+
+class EventTest(Caption1Events):
+
+    def onHTMLMouseMoved(self, sender, x, y):
+        pass
+
     def onUILoaded(self, text):
         self.b = Builder(text)
-        self.ui = self.b.createInstance("AppFrame", self)
-        RootPanel().add(self.ui)
+        self.caption1 = self.b.createInstance("CaptionPanel1", Caption1Events())
+        self.caption2 = self.b.createInstance("CaptionPanel2", self)
+        RootPanel().add(self.caption1)
+        RootPanel().add(self.caption2)
 
     def onUILoadingTimeout(self, text, code):
         print "timeout loading UI", text, code
@@ -47,6 +56,6 @@ class EventTest(object):
 if __name__ == '__main__':
     pyjd.setup("public/Builder.html?fred=foo#me")
     et = EventTest()
-    HTTPUILoader(et).load("ui.xml")
+    HTTPUILoader(et).load("builder.xml")
     
     pyjd.run()
