@@ -289,6 +289,12 @@ PYJSLIB_BUILTIN_FUNCTIONS=frozenset((
     "_isinstance",
     "op_add",
     "op_sub",
+    "isObject",
+    "toJSObjects",
+    "_errorMapping",
+    "TryElse",
+    "sprintf",
+    "get_pyjs_classtype",
     ))
 
 PYJSLIB_BUILTIN_CLASSES=[

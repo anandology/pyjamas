@@ -399,7 +399,7 @@ def op_mod(x, y):
                 return x.__mod(y);
         }
         if (typeof x == 'string') {
-            return pyjslib.sprintf(x, y);
+            return @{{sprintf}}(x, y);
         }
         if (!x.__number__) {
             if (   !y.__number__
@@ -917,7 +917,7 @@ def init():
     # property, on which an error is thrown
     # Hence the declaration of 'var message' and the wrapping in try..catch
     JS("""
-pyjslib._errorMapping = function(err) {
+@{{_errorMapping}} = function(err) {
     if (err instanceof(ReferenceError) || err instanceof(TypeError)) {
         var message = '';
         try {
@@ -932,9 +932,9 @@ pyjslib._errorMapping = function(err) {
     # The TryElse 'error' is used to implement the else in try-except-else
     # (to raise an exception when there wasn't any)
     JS("""
-pyjslib.TryElse = function () { };
-pyjslib.TryElse.prototype = new Error();
-pyjslib.TryElse.__name__ = 'TryElse';
+@{{TryElse}} = function () { };
+@{{TryElse}}.prototype = new Error();
+@{{TryElse}}.__name__ = 'TryElse';
 """)
     # StopIteration is used to get out of an iteration loop
     JS("""
@@ -1248,7 +1248,7 @@ String.prototype.__getslice__ = function(lower, upper) {
 String.prototype.__getitem__ = function(idx) {
     if (idx < 0) idx += this.length;
     if (idx < 0 || idx > this.length) {
-        throw pyjslib.IndexError("string index out of range");
+        throw @{{IndexError}}("string index out of range");
     }
     return this.charAt(idx);
 };
@@ -1369,7 +1369,7 @@ RegExp.prototype.Exec = function(pat) {
 };
 """)
     JS("""
-pyjslib.abs = Math.abs;
+@{{abs}} = Math.abs;
 """)
 
 class Class:
@@ -1491,7 +1491,7 @@ class float:
         JS("""
         var v = Number(num);
         if (isNaN(v)) {
-            throw pyjslib.ValueError("invalid literal for float(): " + num);
+            throw @{{ValueError}}("invalid literal for float(): " + num);
         }
         return v;
 """)
@@ -1654,7 +1654,7 @@ def float_int(value, radix=None):
         throw @{{TypeError}}("TypeError: int() argument must be a string or a number");
     }
     if (isNaN(v) || !isFinite(v)) {
-        throw pyjslib.ValueError("invalid literal for int() with base " + radix + ": '" + value + "'");
+        throw @{{ValueError}}("invalid literal for int() with base " + radix + ": '" + value + "'");
     }
     return v;
 """)
@@ -1693,7 +1693,7 @@ JS("""
             throw @{{TypeError}}("TypeError: int() argument must be a string or a number");
         }
         if (isNaN(v) || !isFinite(v)) {
-            throw pyjslib.ValueError("invalid literal for int() with base " + radix + ": '" + value + "'");
+            throw @{{ValueError}}("invalid literal for int() with base " + radix + ": '" + value + "'");
         }
         if ($min_int <= v && v <= $max_int) {
             this.__v = v;
@@ -2160,7 +2160,7 @@ JS("""
             j = size_a * PyLong_SHIFT + bits - 1;
             sz = Math.floor(i + j / bits);
             if (j / PyLong_SHIFT < size_a || sz < i) {
-                throw pyjslib['OverflowError']("long is too large to format");
+                throw @{{OverflowError}}("long is too large to format");
             }
             str = new Array();
             p = sz;
@@ -2575,10 +2575,10 @@ JS("""
                 var neg = false;
 
                 if (isNaN(v)) {
-                    throw pyjslib['ValueError']('cannot convert float NaN to integer');
+                    throw @{{ValueError}}('cannot convert float NaN to integer');
                 }
                 if (!isFinite(v)) {
-                    throw pyjslib['OverflowError']('cannot convert float infinity to integer');
+                    throw @{{OverflowError}}('cannot convert float infinity to integer');
                 }
                 if (v == 0) {
                     this.ob_digit[0] = 0;
@@ -2613,7 +2613,7 @@ JS("""
                 this.ob_size = neg ? -ndig : ndig;
                 return this;
             }
-            throw pyjslib['ValueError']('cannot convert ' + pyjslib['repr'](value) + 'to integer');
+            throw @{{ValueError}}('cannot convert ' + @{{repr}}(value) + 'to integer');
         } else if (typeof v == 'string') {
             var nchars;
             var text = value.lstrip();
@@ -2650,7 +2650,7 @@ JS("""
                     }
                 }
             } else if (radix < 1 || radix > 36) {
-                throw pyjslib['ValueError']("long() arg 2 must be >= 2 and <= 36");
+                throw @{{ValueError}}("long() arg 2 must be >= 2 and <= 36");
             }
             if (text.charAt(0) == '0' && text.length > 1) {
                 switch (text.charAt(1)) {
@@ -2685,7 +2685,7 @@ JS("""
                 nchars = p;
                 n = p * bits_per_char + PyLong_SHIFT-1; //14 = PyLong_SHIFT - 1
                 if (n / bits_per_char < p) {
-                    throw pyjslib['ValueError']("long string too large to convert");
+                    throw @{{ValueError}}("long string too large to convert");
                 }
                 this.ob_size = n = Math.floor(n/PyLong_SHIFT);
                 for (var i = 0; i < n; i++) {
@@ -2775,13 +2775,13 @@ JS("""
             if (text.length === 0) {
                 return this;
             }
-            throw pyjslib.ValueError("invalid literal for long() with base " +
+            throw @{{ValueError}}("invalid literal for long() with base " +
                                      radix + ": " + value);
         } else {
             throw @{{TypeError}}("TypeError: long() argument must be a string or a number");
         }
         if (isNaN(v) || !isFinite(v)) {
-            throw pyjslib.ValueError("invalid literal for long() with base " + radix + ": '" + v + "'");
+            throw @{{ValueError}}("invalid literal for long() with base " + radix + ": '" + v + "'");
         }
         return this;
     };
@@ -2818,7 +2818,7 @@ JS("""
         // ldexp(a,b) == a * (2**b)
         v = x[0] * Math.pow(2.0, x[1] * PyLong_SHIFT);
         if (!isFinite(v)) {
-            throw pyjslib['OverflowError']('long int too large to convert to float');
+            throw @{{OverflowError}}('long int too large to convert to float');
         }
         return v;
     };
@@ -2888,10 +2888,10 @@ JS("""
         var a, z, wordshift, remshift, oldsize, newsize, 
             accum, i, j;
         if (y < 0) {
-            throw pyjslib['ValueError']('negative shift count');
+            throw @{{ValueError}}('negative shift count');
         }
         if (y >= $max_float_int) {
-            throw pyjslib['ValueError']('outrageous left shift count');
+            throw @{{ValueError}}('outrageous left shift count');
         }
         a = this;
 
@@ -2950,14 +2950,14 @@ JS("""
             y = y.valueOf();
         } else {
             if (y != Math.floor(y)) {
-                throw pyjslib['TypeError']("unsupported operand type(s) for >>: 'long' and 'float'");
+                throw @{{TypeError}}("unsupported operand type(s) for >>: 'long' and 'float'");
             }
         }
         if (y < 0) {
-            throw pyjslib['ValueError']('negative shift count');
+            throw @{{ValueError}}('negative shift count');
         }
         if (y >= $max_float_int) {
-            throw pyjslib['ValueError']('shift count too big');
+            throw @{{ValueError}}('shift count too big');
         }
         a = this;
         size = this.ob_size;
@@ -3482,14 +3482,14 @@ JS("""
 
         if (b.ob_size < 0) {
             if (c !== null) {
-                throw pyjslib['TypeError']("pow() 2nd argument cannot be negative when 3rd argument specified");
+                throw @{{TypeError}}("pow() 2nd argument cannot be negative when 3rd argument specified");
             }
             return Math.pow(v.valueOf(), w.valueOf());
         }
 
         if (c !== null) {
             if (c.ob_size == 0) {
-                throw pyjslib['ValueError']("pow() 3rd argument cannot be 0");
+                throw @{{ValueError}}("pow() 3rd argument cannot be 0");
             }
             if (c.ob_size < 0) {
                 negativeOutput = 1;
@@ -3679,7 +3679,7 @@ $enumerate_array.prototype.next = function (noStop, reuseTuple) {
     } else {
         this.tl[0] = new @{{int}}(this.i);
     }
-    return reuseTuple === true ? this.tuple : pyjslib.tuple(this.tl);
+    return reuseTuple === true ? this.tuple : @{{tuple}}(this.tl);
 };
 $enumerate_array.prototype.__iter__ = function ( ) {
     return this;
@@ -3693,7 +3693,7 @@ class list:
         # Basically the same as extend, but to save expensive function calls...
         JS("""
         if (data === null) {
-            throw pyjslib['TypeError']("'NoneType' is not iterable");
+            throw @{{TypeError}}("'NoneType' is not iterable");
         }
         if (data.constructor === Array) {
             self.__array = data.slice();
@@ -3728,7 +3728,7 @@ class list:
             self.__array = data;
             return null;
         }
-        throw pyjslib['TypeError']("'" + pyjslib['repr'](data) + "' is not iterable");
+        throw @{{TypeError}}("'" + @{{repr}}(data) + "' is not iterable");
         """)
 
     def __hash__(self):
@@ -3742,7 +3742,7 @@ class list:
         # Transform data into an array and append to self.__array
         JS("""
         if (data === null) {
-            throw pyjslib['TypeError']("'NoneType' is not iterable");
+            throw @{{TypeError}}("'NoneType' is not iterable");
         }
         if (data.constructor === Array) {
         } else if (typeof data.__iter__ == 'function') {
@@ -3771,7 +3771,7 @@ class list:
                 }
             }
         } else {
-            throw pyjslib['TypeError']("'" + pyjslib['repr'](data) + "' is not iterable");
+            throw @{{TypeError}}("'" + @{{repr}}(data) + "' is not iterable");
         }
         var l = self.__array;
         var j = self.__array.length;
@@ -3785,7 +3785,7 @@ class list:
         JS("""
         var index=self.index(value);
         if (index<0) {
-            throw pyjslib.ValueError("list.remove(x): x not in list");
+            throw @{{ValueError}}("list.remove(x): x not in list");
         }
         self.__array.splice(index, 1);
         return true;
@@ -3809,7 +3809,7 @@ class list:
 
             for (; start < len; start++) {
                 if (start in self.__array &&
-                    pyjslib.cmp(self.__array[start], value) == 0)
+                    @{{cmp}}(self.__array[start], value) == 0)
                     return start;
             }
         }
@@ -3825,9 +3825,9 @@ class list:
         if (index<0) index += self.__array.length;
         if (index < 0 || index >= self.__array.length) {
             if (self.__array.length == 0) {
-                throw pyjslib.IndexError("pop from empty list");
+                throw @{{IndexError}}("pop from empty list");
             }
-            throw pyjslib.IndexError("pop index out of range");
+            throw @{{IndexError}}("pop index out of range");
         }
         var a = self.__array[index];
         self.__array.splice(index, 1);
@@ -3845,7 +3845,7 @@ class list:
             n, c;
         n = (n1 < n2 ? n1 : n2);
         for (var i = 0; i < n; i++) {
-            c = pyjslib.cmp(a1[i], a2[i]);
+            c = @{{cmp}}(a1[i], a2[i]);
             if (c) return c;
         }
         if (n1 < n2) return -1;
@@ -3882,7 +3882,7 @@ class list:
         index = index.valueOf();
         if (index < 0) index += self.__array.length;
         if (index < 0 || index >= self.__array.length) {
-            throw pyjslib.IndexError("list index out of range");
+            throw @{{IndexError}}("list index out of range");
         }
         return self.__array[index];
         """)
@@ -3892,7 +3892,7 @@ class list:
         index = index.valueOf();
         if (index < 0) index += self.__array.length;
         if (index < 0 || index >= self.__array.length) {
-            throw pyjslib.IndexError("list assignment index out of range");
+            throw @{{IndexError}}("list assignment index out of range");
         }
         self.__array[index]=value;
         """)
@@ -3902,7 +3902,7 @@ class list:
         index = index.valueOf();
         if (index < 0) index += self.__array.length;
         if (index < 0 || index >= self.__array.length) {
-            throw pyjslib.IndexError("list assignment index out of range");
+            throw @{{IndexError}}("list assignment index out of range");
         }
         self.__array.splice(index, 1);
         """)
@@ -3963,7 +3963,7 @@ class list:
         JS("""
         var s = "[";
         for (var i=0; i < self.__array.length; i++) {
-            s += pyjslib.repr(self.__array[i]);
+            s += @{{repr}}(self.__array[i]);
             if (i < self.__array.length - 1)
                 s += ", ";
         }
@@ -3995,7 +3995,7 @@ class tuple:
     def __init__(self, data=JS("[]")):
         JS("""
         if (data === null) {
-            throw pyjslib['TypeError']("'NoneType' is not iterable");
+            throw @{{TypeError}}("'NoneType' is not iterable");
         }
         if (data.constructor === Array) {
             self.__array = data.slice();
@@ -4030,7 +4030,7 @@ class tuple:
             self.__array = data;
             return null;
         }
-        throw pyjslib['TypeError']("'" + pyjslib['repr'](data) + "' is not iterable");
+        throw @{{TypeError}}("'" + @{{repr}}(data) + "' is not iterable");
         """)
 
     def __hash__(self):
@@ -4047,7 +4047,7 @@ class tuple:
             n, c;
         n = (n1 < n2 ? n1 : n2);
         for (var i = 0; i < n; i++) {
-            c = pyjslib.cmp(a1[i], a2[i]);
+            c = @{{cmp}}(a1[i], a2[i]);
             if (c) return c;
         }
         if (n1 < n2) return -1;
@@ -4056,8 +4056,8 @@ class tuple:
 
     def __getslice__(self, lower, upper):
         JS("""
-        if (upper==null) return pyjslib.tuple(self.__array.slice(lower));
-        return pyjslib.tuple(self.__array.slice(lower, upper));
+        if (upper==null) return @{{tuple}}(self.__array.slice(lower));
+        return @{{tuple}}(self.__array.slice(lower, upper));
         """)
 
     def __getitem__(self, index):
@@ -4065,7 +4065,7 @@ class tuple:
         index = index.valueOf();
         if (index < 0) index += self.__array.length;
         if (index < 0 || index >= self.__array.length) {
-            throw pyjslib.IndexError("tuple index out of range");
+            throw @{{IndexError}}("tuple index out of range");
         }
         return self.__array[index];
         """)
@@ -4113,7 +4113,7 @@ class tuple:
         JS("""
         var s = "(";
         for (var i=0; i < self.__array.length; i++) {
-            s += pyjslib.repr(self.__array[i]);
+            s += @{{repr}}(self.__array[i]);
             if (i < self.__array.length - 1)
                 s += ", ";
         }
@@ -4139,8 +4139,8 @@ class tuple:
 
     def __rmul__(self, n):
         return self.__mul__(n)
-JS("pyjslib.tuple.__str__ = pyjslib.tuple.__repr__;")
-JS("pyjslib.tuple.toString = pyjslib.tuple.__str__;")
+JS("@{{tuple}}.__str__ = @{{tuple}}.__repr__;")
+JS("@{{tuple}}.toString = @{{tuple}}.__str__;")
 
 
 class dict:
@@ -4154,7 +4154,7 @@ class dict:
         //self.__object = {};
 
         if (data === null) {
-            throw pyjslib['TypeError']("'NoneType' is not iterable");
+            throw @{{TypeError}}("'NoneType' is not iterable");
         }
         if (data.constructor === Array) {
         } else if (typeof data.__object == 'object') {
@@ -4194,7 +4194,7 @@ class dict:
             }
             return null;
         } else {
-            throw pyjslib['TypeError']("'" + pyjslib['repr'](data) + "' is not iterable");
+            throw @{{TypeError}}("'" + @{{repr}}(data) + "' is not iterable");
         }
         // Assume uniform array content...
         if ((n = data.length) == 0) {
@@ -4238,7 +4238,7 @@ class dict:
     def __setitem__(self, key, value):
         JS("""
         if (typeof value == 'undefined') {
-            throw pyjslib['ValueError']("Value for key '" + key + "' is undefined");
+            throw @{{ValueError}}("Value for key '" + key + "' is undefined");
         }
         var sKey = (key===null?null:(typeof key.$H != 'undefined'?key.$H:((typeof key=='string'||key.__number__)?'$'+key:@{{__hash}}(key))));
         self.__object[sKey] = [key, value];
@@ -4249,7 +4249,7 @@ class dict:
         var sKey = (key===null?null:(typeof key.$H != 'undefined'?key.$H:((typeof key=='string'||key.__number__)?'$'+key:@{{__hash}}(key))));
         var value=self.__object[sKey];
         if (typeof value == 'undefined'){
-            throw pyjslib.KeyError(key);
+            throw @{{KeyError}}(key);
         }
         return value[1];
         """)
@@ -4291,11 +4291,11 @@ class dict:
         other_sKeys.sort();
         var c, sKey;
         for (var idx = 0; idx < selfLen; idx++) {
-            c = pyjslib.cmp(selfObj[sKey = self_sKeys[idx]][0], otherObj[other_sKeys[idx]][0]);
+            c = @{{cmp}}(selfObj[sKey = self_sKeys[idx]][0], otherObj[other_sKeys[idx]][0]);
             if (c != 0) {
                 return c;
             }
-            c = pyjslib.cmp(selfObj[sKey][1], otherObj[sKey][1]);
+            c = @{{cmp}}(selfObj[sKey][1], otherObj[sKey][1]);
             if (c != 0) {
                 return c;
             }
@@ -4470,7 +4470,7 @@ class dict:
         var s = "{";
         for (var i=0; i<keys.length; i++) {
             var v = self.__object[keys[i]];
-            s += pyjslib.repr(v[0]) + ": " + pyjslib.repr(v[1]);
+            s += @{{repr}}(v[0]) + ": " + @{{repr}}(v[1]);
             if (i < keys.length-1)
                 s += ", ";
         }
@@ -4481,22 +4481,22 @@ class dict:
     def toString(self):
         return self.__repr__()
 
-JS("pyjslib.dict.has_key = pyjslib.dict.__contains__;")
-JS("pyjslib.dict.iterkeys = pyjslib.dict.__iter__;")
-JS("pyjslib.dict.__str__ = pyjslib.dict.__repr__;")
+JS("@{{dict}}.has_key = @{{dict}}.__contains__;")
+JS("@{{dict}}.iterkeys = @{{dict}}.__iter__;")
+JS("@{{dict}}.__str__ = @{{dict}}.__repr__;")
 
 # __empty_dict is used in kwargs initialization
 # There must me a temporary __init__ function used to prevent infinite 
 # recursion
 def __empty_dict():
     JS("""
-    var dict__init__ = pyjslib.dict.__init__;
+    var dict__init__ = @{{dict}}.__init__;
     var d;
-    pyjslib.dict.__init__ = function() {
+    @{{dict}}.__init__ = function() {
         this.__object = {};
     };
-    d = pyjslib.dict();
-    d.__init__ = pyjslib.dict.__init__ = dict__init__;
+    d = @{{dict}}();
+    d.__init__ = @{{dict}}.__init__ = dict__init__;
     return d;
 """)
 
@@ -4521,7 +4521,7 @@ class set(object):
         var selfObj = self.__object = {};
 
         if (data === null) {
-            throw pyjslib['TypeError']("'NoneType' is not iterable");
+            throw @{{TypeError}}("'NoneType' is not iterable");
         }
         if (data.constructor === Array) {
         } else if (typeof data.__object == 'object') {
@@ -4561,7 +4561,7 @@ class set(object):
             }
             return null;
         } else {
-            throw pyjslib['TypeError']("'" + pyjslib['repr'](data) + "' is not iterable");
+            throw @{{TypeError}}("'" + @{{repr}}(data) + "' is not iterable");
         }
         // Assume uniform array content...
         if ((n = data.length) == 0) {
@@ -4656,7 +4656,7 @@ class set(object):
             obj = self.__object,
             s = self.__name__ + "([";
         for (var sVal in obj) {
-            values[i++] = pyjslib.repr(obj[sVal]);
+            values[i++] = @{{repr}}(obj[sVal]);
         }
         s += values.join(", ");
         s += "])";
@@ -4826,7 +4826,7 @@ class set(object):
         JS("""
         var h;
         if (typeof self.__object[(h = @{{hash}}(val))] == 'undefined') {
-            throw pyjslib['KeyError'](value);
+            throw @{{KeyError}}(value);
         }
         delete self.__object[@{{hash}}(val)];""")
 
@@ -4910,8 +4910,8 @@ class set(object):
         """)
         return None
 
-JS("pyjslib['set']['__str__'] = pyjslib['set']['__repr__'];")
-JS("pyjslib['set']['toString'] = pyjslib['set']['__repr__'];")
+JS("@{{set}}['__str__'] = @{{set}}['__repr__'];")
+JS("@{{set}}['toString'] = @{{set}}['__repr__'];")
 
 class frozenset(object):
     def __init__(self, data=JS("[]")):
@@ -4933,7 +4933,7 @@ class frozenset(object):
         var selfObj = self.__object = {};
 
         if (data === null) {
-            throw pyjslib['TypeError']("'NoneType' is not iterable");
+            throw @{{TypeError}}("'NoneType' is not iterable");
         }
         if (data.constructor === Array) {
         } else if (typeof data.__object == 'object') {
@@ -4973,7 +4973,7 @@ class frozenset(object):
             }
             return null;
         } else {
-            throw pyjslib['TypeError']("'" + pyjslib['repr'](data) + "' is not iterable");
+            throw @{{TypeError}}("'" + @{{repr}}(data) + "' is not iterable");
         }
         // Assume uniform array content...
         if ((n = data.length) == 0) {
@@ -5075,7 +5075,7 @@ class frozenset(object):
             obj = self.__object,
             s = self.__name__ + "([";
         for (var sVal in obj) {
-            values[i++] = pyjslib.repr(obj[sVal]);
+            values[i++] = @{{repr}}(obj[sVal]);
         }
         s += values.join(", ");
         s += "])";
@@ -5241,8 +5241,8 @@ class frozenset(object):
 """)
         return new_set
 
-JS("pyjslib['frozenset']['__str__'] = pyjslib['frozenset']['__repr__'];")
-JS("pyjslib['frozenset']['toString'] = pyjslib['frozenset']['__repr__'];")
+JS("@{{frozenset}}['__str__'] = @{{frozenset}}['__repr__'];")
+JS("@{{frozenset}}['toString'] = @{{frozenset}}['__repr__'];")
 
 
 class property(object):
@@ -5466,7 +5466,7 @@ def str(text):
         if (text) return "True";
         return "False";
     }
-    if (pyjslib.hasattr(text,"__str__")) {
+    if (@{{hasattr}}(text,"__str__")) {
         return text.__str__();
     }
     return String(text);
@@ -5545,14 +5545,14 @@ def repr(x):
 
        // If we get here, x is an object.  See if it's a Pyjamas class.
 
-       if (!pyjslib.hasattr(x, "__init__"))
+       if (!@{{hasattr}}(x, "__init__"))
            return "<" + x.toString() + ">";
 
        // Handle the common Pyjamas data types.
 
        var constructor = "UNKNOWN";
 
-       constructor = pyjslib.get_pyjs_classtype(x);
+       constructor = @{{get_pyjs_classtype}}(x);
 
         //alert("repr constructor: " + constructor);
 
@@ -5703,7 +5703,7 @@ def getattr(obj, name, default_value=None):
     JS("""
     if (obj === null || typeof obj == 'undefined') {
         if (arguments.length != 3 || typeof obj == 'undefined') {
-            throw @{{AttributeError}}("'" + pyjslib.repr(obj) + "' has no attribute '" + name + "'");
+            throw @{{AttributeError}}("'" + @{{repr}}(obj) + "' has no attribute '" + name + "'");
         }
         return default_value;
     }
@@ -5712,7 +5712,7 @@ def getattr(obj, name, default_value=None):
         mapped_name = '$$' + name;
         if (typeof obj[mapped_name] == 'undefined' || attrib_remap.indexOf(name) < 0) {
             if (arguments.length != 3) {
-                throw @{{AttributeError}}("'" + pyjslib.repr(obj) + "' has no attribute '" + name + "'");
+                throw @{{AttributeError}}("'" + @{{repr}}(obj) + "' has no attribute '" + name + "'");
             }
             return default_value;
         }
@@ -5757,7 +5757,7 @@ def delattr(obj, name):
         throw @{{UndefinedValueError}}("obj");
     }
     if (typeof name != 'string') {
-        throw pyjslib['TypeError']("attribute name must be string");
+        throw @{{TypeError}}("attribute name must be string");
     }
     if (obj.__is_instance__ && typeof obj.__delattr__ == 'function') {
         obj.__delattr__(name);
@@ -5789,7 +5789,7 @@ def setattr(obj, name, value):
         throw @{{UndefinedValueError}}("obj");
     }
     if (typeof name != 'string') {
-        throw pyjslib['TypeError']("attribute name must be string");
+        throw @{{TypeError}}("attribute name must be string");
     }
     if (obj.__is_instance__ && typeof obj.__setattr__ == 'function') {
         obj.__setattr__(name, value)
@@ -5814,7 +5814,7 @@ def hasattr(obj, name):
         throw @{{UndefinedValueError}}("obj");
     }
     if (typeof name != 'string') {
-        throw pyjslib['TypeError']("attribute name must be string");
+        throw @{{TypeError}}("attribute name must be string");
     }
     if (obj === null) return false;
     if (typeof obj[name] == 'undefined' && (
@@ -6137,7 +6137,7 @@ def isNull(a):
 
 def isArray(a):
     JS("""
-    return pyjslib.isObject(a) && a.constructor === Array;
+    return @{{isObject}}(a) && a.constructor === Array;
     """)
 
 def isUndefined(a):
@@ -6173,9 +6173,9 @@ def isSet(a):
     if (a === null) return false;
     if (typeof a.__object == 'undefined') return false;
     switch (a.__mro__[a.__mro__.length-2].__md5__) {
-        case pyjslib['set'].__md5__:
+        case @{{set}}.__md5__:
             return 1;
-        case pyjslib['frozenset'].__md5__:
+        case @{{frozenset}}.__md5__:
             return 2;
     }
     return false;
@@ -6190,7 +6190,7 @@ def toJSObjects(x):
         var result = [];
         for(var k=0; k < x.length; k++) {
            var v = x[k];
-           var tv = pyjslib.toJSObjects(v);
+           var tv = @{{toJSObjects}}(v);
            result.push(tv);
         }
         return result;
@@ -6203,7 +6203,7 @@ def toJSObjects(x):
             var o = x.getObject();
             var result = {};
             for (var i in o) {
-               result[o[i][0].toString()] = pyjslib.toJSObjects(o[i][1]);
+               result[o[i][0].toString()] = @{{toJSObjects}}(o[i][1]);
             }
             return result;
             """)
@@ -6218,7 +6218,7 @@ def toJSObjects(x):
         var result = {};
         for(var k in x) {
             var v = x[k];
-            var tv = pyjslib.toJSObjects(v);
+            var tv = @{{toJSObjects}}(v);
             result[k] = tv;
             }
             return result;
@@ -6327,11 +6327,11 @@ def sprintf(strng, args):
                 break;
             case 'r':
                 numeric = false;
-                subst = pyjslib['repr'](param);
+                subst = @{{repr}}(param);
                 break;
             case 's':
                 numeric = false;
-                subst = pyjslib['str'](param);
+                subst = @{{str}}(param);
                 break;
             case 'o':
                 param = @{{int}}(param);
@@ -6361,7 +6361,7 @@ def sprintf(strng, args):
                 }
                 break;
             default:
-                throw pyjslib['ValueError']("unsupported format character '" + conversion + "' ("+pyjslib['hex'](conversion.charCodeAt(0))+") at index " + (strng.length - remainder.length - 1));
+                throw @{{ValueError}}("unsupported format character '" + conversion + "' ("+@{{hex}}(conversion.charCodeAt(0))+") at index " + (strng.length - remainder.length - 1));
         }
         if (minlen && subst.length < minlen) {
             if (numeric && left_padding && flags.indexOf('0') >= 0) {
@@ -6390,7 +6390,7 @@ def sprintf(strng, args):
             __array[__array.length] = left;
             if (minlen == '*') {
                 if (argidx == nargs) {
-                    throw pyjslib['TypeError']("not enough arguments for format string");
+                    throw @{{TypeError}}("not enough arguments for format string");
                 }
                 minlen = args.__getitem__(argidx++);
                 switch (minlen.__number__) {
@@ -6402,12 +6402,12 @@ def sprintf(strng, args):
                             break;
                         }
                     default:
-                        throw pyjslib['TypeError']('* wants int');
+                        throw @{{TypeError}}('* wants int');
                 }
             }
             if (conversion != '%') {
                 if (argidx == nargs) {
-                    throw pyjslib['TypeError']("not enough arguments for format string");
+                    throw @{{TypeError}}("not enough arguments for format string");
                 }
                 param = args.__getitem__(argidx++);
             }
@@ -6447,11 +6447,11 @@ def sprintf(strng, args):
         }
     }
 
-    var constructor = args === null ? 'NoneType' : (args.__md5__ == pyjslib.tuple.__md5__ ? 'tuple': (args.__md5__ == pyjslib.dict.__md5__ ? 'dict': 'Other'));
+    var constructor = args === null ? 'NoneType' : (args.__md5__ == @{{tuple}}.__md5__ ? 'tuple': (args.__md5__ == @{{dict}}.__md5__ ? 'dict': 'Other'));
     if (strng.indexOf("%(") >= 0) {
         if (re_dict.exec(strng) !== null) {
             if (constructor != "dict") {
-                throw pyjslib['TypeError']("format requires a mapping");
+                throw @{{TypeError}}("format requires a mapping");
             }
             sprintf_dict(strng, args);
             return result.join("");
@@ -6463,7 +6463,7 @@ def sprintf(strng, args):
     nargs = args.__array.length;
     sprintf_list(strng, args);
     if (argidx != nargs) {
-        throw pyjslib['TypeError']('not all arguments converted during string formatting');
+        throw @{{TypeError}}('not all arguments converted during string formatting');
     }
     return result.join("");
 """)
