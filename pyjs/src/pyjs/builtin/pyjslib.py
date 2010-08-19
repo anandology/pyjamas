@@ -615,22 +615,24 @@ JS("""
 
 def op_bitor2(x, y):
     JS("""
-    if (x !== null && y !== null) {
-        switch ((x.__number__ << 8) | y.__number__) {
+    if (@{{x}} !== null && @{{y}} !== null) {
+        switch ((@{{x}}.__number__ << 8) | @{{y}}.__number__) {
             case 0x0202:
-                return x.__or__(y);
+                return @{{x}}.__or__(@{{y}});
             case 0x0204:
-                return y.__or(new @{{long}}(x));
+                return @{{y}}.__or(new @{{long}}(@{{x}}));
             case 0x0402:
-                return x.__or(new @{{long}}(y.__v));
+                return @{{x}}.__or(new @{{long}}(@{{y}}.__v));
             case 0x0404:
-                return x.__or(y);
+                return @{{x}}.__or(@{{y}});
         }
-        if (typeof x['__or__'] == 'function') {
-            var v = x.__or__(y);
+        if (typeof @{{x}}['__or__'] == 'function') {
+            var v = @{{x}}.__or__(@{{y}});
             if (v !== @{{NotImplemented}}) return v;
         }
-        if (typeof y['__ror__'] != 'undefined') return y.__ror__(x);
+        if (typeof @{{y}}['__ror__'] != 'undefined') {
+            return @{{y}}.__ror__(@{{x}});
+        }
     }
 """)
     raise TypeError("unsupported operand type(s) for &: '%r', '%r'" % (x, y))
