@@ -46,8 +46,8 @@ $module['_handle_exception'] = function(err) {
         } catch (s) {};
         $pyjs.__active_exception_stack__ = null;
         $pyjs_msg = err + '\\nTraceback:\\n' + $pyjs_msg;
-        $module['printFunc']([$pyjs_msg], true);
-        pyjslib['debugReport']($pyjs_msg);
+        @{{printFunc}}([$pyjs_msg], true);
+        @{{debugReport}}($pyjs_msg);
     }
     throw err;
 };
@@ -122,11 +122,11 @@ def op_eq(a,b):
             return a.__v == b.__v;
         case 0x0104:
         case 0x0204:
-            a = new pyjslib['long'](a.valueOf());
+            a = new @{{long}}(a.valueOf());
         case 0x0404:
             return a.__cmp__(b) == 0;
         case 0x0402:
-            return a.__cmp__(new pyjslib['long'](b.valueOf())) == 0;
+            return a.__cmp__(new @{{long}}(b.valueOf())) == 0;
     }
     if ((typeof a == 'object' || typeof a == 'function') && typeof a.__cmp__ == 'function') {
         if (typeof b.__cmp__ != 'function') {
@@ -135,14 +135,14 @@ def op_eq(a,b):
         if (a.__cmp__ === b.__cmp__) {
             return a.__cmp__(b) == 0;
         }
-        if (pyjslib['_isinstance'](a, b)) {
+        if (@{{_isinstance}}(a, b)) {
             return a.__cmp__(b) == 0;
         }
         return false;
     } else if ((typeof b == 'object' || typeof b == 'function') && typeof b.__cmp__ == 'function') {
         // typeof b.__cmp__ != 'function'
         // a.__cmp__ !== b.__cmp__
-        if (pyjslib['_isinstance'](a, b)) {
+        if (@{{_isinstance}}(a, b)) {
             return b.__cmp__(a) == 0;
         }
         return false;
@@ -170,7 +170,7 @@ def op_usub(v):
         case 0x01:
             return -v;
         case 0x02:
-            return new pyjslib['int'](-v);
+            return new @{{int}}(-v);
     }
     if (v !== null) {
         if (typeof v['__neg__'] == 'function') return v.__neg__();
@@ -183,7 +183,7 @@ def __op_add(x, y):
         return (typeof (x)==typeof (y) && 
                 (typeof x=='number'||typeof x=='string')?
                 x+y:
-                pyjslib['op_add'](x,y));
+                @{{op_add}}(x,y));
     """)
 
 def op_add(x, y):
@@ -199,11 +199,11 @@ def op_add(x, y):
             case 0x0201:
                 return x.__v + y;
             case 0x0202:
-                return new pyjslib['int'](x.__v + y.__v);
+                return new @{{int}}(x.__v + y.__v);
             case 0x0204:
-                return (new pyjslib['long'](x.__v)).__add(y);
+                return (new @{{long}}(x.__v)).__add(y);
             case 0x0402:
-                return x.__add(new pyjslib['long'](y.__v));
+                return x.__add(new @{{long}}(y.__v));
             case 0x0404:
                 return x.__add(y);
         }
@@ -211,7 +211,7 @@ def op_add(x, y):
             if (typeof x == 'string' && typeof y == 'string') return x + y;
             if (   !y.__number__
                 && x.__mro__.length > y.__mro__.length
-                && pyjslib['isinstance'](x, y)
+                && @{{isinstance}}(x, y)
                 && typeof x['__add__'] == 'function')
                 return y.__add__(x);
             if (typeof x['__add__'] == 'function') return x.__add__(y);
@@ -226,7 +226,7 @@ def __op_sub(x, y):
         return (typeof (x)==typeof (y) && 
                 (typeof x=='number'||typeof x=='string')?
                 x-y:
-                pyjslib['op_sub'](x,y));
+                @{{op_sub}}(x,y));
     """)
 
 def op_sub(x, y):
@@ -242,18 +242,18 @@ def op_sub(x, y):
             case 0x0201:
                 return x.__v - y;
             case 0x0202:
-                return new pyjslib['int'](x.__v - y.__v);
+                return new @{{int}}(x.__v - y.__v);
             case 0x0204:
-                return (new pyjslib['long'](x.__v)).__sub(y);
+                return (new @{{long}}(x.__v)).__sub(y);
             case 0x0402:
-                return x.__sub(new pyjslib['long'](y.__v));
+                return x.__sub(new @{{long}}(y.__v));
             case 0x0404:
                 return x.__sub(y);
         }
         if (!x.__number__) {
             if (   !y.__number__
                 && x.__mro__.length > y.__mro__.length
-                && pyjslib['isinstance'](x, y)
+                && @{{isinstance}}(x, y)
                 && typeof x['__sub__'] == 'function')
                 return y.__sub__(x);
             if (typeof x['__sub__'] == 'function') return x.__sub__(y);
@@ -280,18 +280,18 @@ def op_floordiv(x, y):
                 return Math.floor(x.__v / y);
             case 0x0202:
                 if (y.__v == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
-                return new pyjslib['int'](Math.floor(x.__v / y.__v));
+                return new @{{int}}(Math.floor(x.__v / y.__v));
             case 0x0204:
-                return (new pyjslib['long'](x.__v)).__floordiv(y);
+                return (new @{{long}}(x.__v)).__floordiv(y);
             case 0x0402:
-                return x.__floordiv(new pyjslib['long'](y.__v));
+                return x.__floordiv(new @{{long}}(y.__v));
             case 0x0404:
                 return x.__floordiv(y);
         }
         if (!x.__number__) {
             if (   !y.__number__
                 && x.__mro__.length > y.__mro__.length
-                && pyjslib['isinstance'](x, y)
+                && @{{isinstance}}(x, y)
                 && typeof x['__floordiv__'] == 'function')
                 return y.__floordiv__(x);
             if (typeof x['__floordiv__'] == 'function') return x.__floordiv__(y);
@@ -318,18 +318,18 @@ def op_div(x, y):
                 return x.__v / y;
             case 0x0202:
                 if (y.__v == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
-                return new pyjslib['int'](x.__v / y.__v);
+                return new @{{int}}(x.__v / y.__v);
             case 0x0204:
-                return (new pyjslib['long'](x.__v)).__div(y);
+                return (new @{{long}}(x.__v)).__div(y);
             case 0x0402:
-                return x.__div(new pyjslib['long'](y.__v));
+                return x.__div(new @{{long}}(y.__v));
             case 0x0404:
                 return x.__div(y);
         }
         if (!x.__number__) {
             if (   !y.__number__
                 && x.__mro__.length > y.__mro__.length
-                && pyjslib['isinstance'](x, y)
+                && @{{isinstance}}(x, y)
                 && typeof x['__div__'] == 'function')
                 return y.__div__(x);
             if (typeof x['__div__'] == 'function') return x.__div__(y);
@@ -352,18 +352,18 @@ def op_mul(x, y):
             case 0x0201:
                 return x.__v * y;
             case 0x0202:
-                return new pyjslib['int'](x.__v * y.__v);
+                return new @{{int}}(x.__v * y.__v);
             case 0x0204:
-                return (new pyjslib['long'](x.__v)).__mul(y);
+                return (new @{{long}}(x.__v)).__mul(y);
             case 0x0402:
-                return x.__mul(new pyjslib['long'](y.__v));
+                return x.__mul(new @{{long}}(y.__v));
             case 0x0404:
                 return x.__mul(y);
         }
         if (!x.__number__) {
             if (   !y.__number__
                 && x.__mro__.length > y.__mro__.length
-                && pyjslib['isinstance'](x, y)
+                && @{{isinstance}}(x, y)
                 && typeof x['__mul__'] == 'function')
                 return y.__mul__(x);
             if (typeof x['__mul__'] == 'function') return x.__mul__(y);
@@ -390,11 +390,11 @@ def op_mod(x, y):
                 return x.__v % y;
             case 0x0202:
                 if (y.__v == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
-                return new pyjslib['int'](x.__v % y.__v);
+                return new @{{int}}(x.__v % y.__v);
             case 0x0204:
-                return (new pyjslib['long'](x.__v)).__mod(y);
+                return (new @{{long}}(x.__v)).__mod(y);
             case 0x0402:
-                return x.__mod(new pyjslib['long'](y.__v));
+                return x.__mod(new @{{long}}(y.__v));
             case 0x0404:
                 return x.__mod(y);
         }
@@ -404,7 +404,7 @@ def op_mod(x, y):
         if (!x.__number__) {
             if (   !y.__number__
                 && x.__mro__.length > y.__mro__.length
-                && pyjslib['isinstance'](x, y)
+                && @{{isinstance}}(x, y)
                 && typeof x['__mod__'] == 'function')
                 return y.__mod__(x);
             if (typeof x['__mod__'] == 'function') return x.__mod__(y);
@@ -432,16 +432,16 @@ def op_pow(x, y):
             case 0x0202:
                 return x.__pow__(y);
             case 0x0204:
-                return (new pyjslib['long'](x.__v)).__pow(y);
+                return (new @{{long}}(x.__v)).__pow(y);
             case 0x0402:
-                return x.__pow(new pyjslib['long'](y.__v));
+                return x.__pow(new @{{long}}(y.__v));
             case 0x0404:
                 return x.__pow(y);
         }
         if (!x.__number__) {
             if (   !y.__number__
                 && x.__mro__.length > y.__mro__.length
-                && pyjslib['isinstance'](x, y)
+                && @{{isinstance}}(x, y)
                 && typeof x['__pow__'] == 'function')
                 return y.__pow__(x);
             if (typeof x['__pow__'] == 'function') return x.__pow__(y);
@@ -510,9 +510,9 @@ def op_bitand2(x, y):
             case 0x0202:
                 return x.__and__(y);
             case 0x0204:
-                return y.__and(new pyjslib['long'](x));
+                return y.__and(new @{{long}}(x));
             case 0x0402:
-                return x.__and(new pyjslib['long'](y.__v));
+                return x.__and(new @{{long}}(y.__v));
             case 0x0404:
                 return x.__and(y);
         }
@@ -565,9 +565,9 @@ def op_bitxor2(x, y):
             case 0x0202:
                 return x.__xor__(y);
             case 0x0204:
-                return y.__xor(new pyjslib['long'](x));
+                return y.__xor(new @{{long}}(x));
             case 0x0402:
-                return x.__xor(new pyjslib['long'](y.__v));
+                return x.__xor(new @{{long}}(y.__v));
             case 0x0404:
                 return x.__xor(y);
         }
@@ -620,9 +620,9 @@ def op_bitor2(x, y):
             case 0x0202:
                 return x.__or__(y);
             case 0x0204:
-                return y.__or(new pyjslib['long'](x));
+                return y.__or(new @{{long}}(x));
             case 0x0402:
-                return x.__or(new pyjslib['long'](y.__v));
+                return x.__or(new @{{long}}(y.__v));
             case 0x0404:
                 return x.__or(y);
         }
@@ -1422,17 +1422,17 @@ def cmp(a,b):
             }
             return 1;
         case 0x0102:
-            return -b.__cmp__(new pyjslib['int'](a));
+            return -b.__cmp__(new @{{int}}(a));
         case 0x0104:
-            return -b.__cmp__(new pyjslib['long'](a));
+            return -b.__cmp__(new @{{long}}(a));
         case 0x0201:
-            return a.__cmp__(new pyjslib['int'](b));
+            return a.__cmp__(new @{{int}}(b));
         case 0x0401:
-            return a.__cmp__(new pyjslib['long'](b));
+            return a.__cmp__(new @{{long}}(b));
         case 0x0204:
-            return -b.__cmp__(new pyjslib['long'](a));
+            return -b.__cmp__(new @{{long}}(a));
         case 0x0402:
-            return a.__cmp__(new pyjslib['long'](b));
+            return a.__cmp__(new @{{long}}(b));
         case 0x0404:
             return a.__cmp__(b);
     }
@@ -1661,7 +1661,7 @@ def float_int(value, radix=None):
 
 JS("""
 (function(){
-    var $int = pyjslib['int'] = function (value, radix) {
+    var $int = @{{int}} = function (value, radix) {
         var v, i;
         if (typeof radix == 'undefined' || radix === null) {
             if (typeof value == 'undefined') {
@@ -1699,7 +1699,7 @@ JS("""
             this.__v = v;
             return this;
         }
-        return new pyjslib['long'](v);
+        return new @{{long}}(v);
     };
     $int.__init__ = function () {};
     $int.__number__ = 0x02;
@@ -1767,7 +1767,7 @@ JS("""
                 return new $int(v);
             }
         }
-        return new pyjslib['long'](this.__v).__lshift__(y);
+        return new @{{long}}(this.__v).__lshift__(y);
     };
 
     $int.__rlshift__ = function (y) {
@@ -1779,7 +1779,7 @@ JS("""
                 return new $int(v);
             }
         }
-        return new pyjslib['long'](y).__lshift__(this.__v);
+        return new @{{long}}(y).__lshift__(this.__v);
     };
 
     $int.__rshift__ = function (y) {
@@ -1859,9 +1859,9 @@ JS("""
             return new $int(v);
         }
         if (-$max_float_int < v && v < $max_float_int) {
-            return new pyjslib['long'](v);
+            return new @{{long}}(v);
         }
-        return new pyjslib['long'](this.__v).__add__(new pyjslib['long'](y));
+        return new @{{long}}(this.__v).__add__(new @{{long}}(y));
     };
 
     $int.__radd__ = $int.__add__;
@@ -1874,9 +1874,9 @@ JS("""
             return new $int(v);
         }
         if (-$max_float_int < v && v < $max_float_int) {
-            return new pyjslib['long'](v);
+            return new @{{long}}(v);
         }
-        return new pyjslib['long'](this.__v).__sub__(new pyjslib['long'](y));
+        return new @{{long}}(this.__v).__sub__(new @{{long}}(y));
     };
 
     $int.__rsub__ = function (y) {
@@ -1887,9 +1887,9 @@ JS("""
             return new $int(v);
         }
         if (-$max_float_int < v && v < $max_float_int) {
-            return new pyjslib['long'](v);
+            return new @{{long}}(v);
         }
-        return new pyjslib['long'](y).__sub__(new pyjslib['long'](this.__v));
+        return new @{{long}}(y).__sub__(new @{{long}}(this.__v));
     };
 
     $int.__floordiv__ = function (y) {
@@ -1928,9 +1928,9 @@ JS("""
             return new $int(v);
         }
         if (-$max_float_int < v && v < $max_float_int) {
-            return new pyjslib['long'](v);
+            return new @{{long}}(v);
         }
-        return new pyjslib['long'](this.__v).__mul__(new pyjslib['long'](y));
+        return new @{{long}}(this.__v).__mul__(new @{{long}}(y));
     };
 
     $int.__rmul__ = $int.__mul__;
@@ -1957,9 +1957,9 @@ JS("""
             return new $int(v);
         }
         if (-$max_float_int < v && v < $max_float_int) {
-            return new pyjslib['long'](v);
+            return new @{{long}}(v);
         }
-        return new pyjslib['long'](this.__v).__pow__(new pyjslib['long'](y));
+        return new @{{long}}(this.__v).__pow__(new @{{long}}(y));
     };
 })();
 """)
@@ -2517,7 +2517,7 @@ JS("""
 
 
 
-    var $long = pyjslib['long'] = function(value, radix) {
+    var $long = @{{long}} = function(value, radix) {
         var v, i;
         if (!radix || radix.valueOf() == 0) {
             if (typeof value == 'undefined') {
@@ -3417,7 +3417,7 @@ JS("""
         var div = new $long(0);
         var mod = new $long(0);
         l_divmod(this, b, div, mod);
-        return pyjslib['tuple']([div, mod]);
+        return @{{tuple}}([div, mod]);
     };
 
     $long.__divmod__ = function (y) {
@@ -3677,7 +3677,7 @@ $enumerate_array.prototype.next = function (noStop, reuseTuple) {
     if (this.tl[0].__number__ == 0x01) {
         this.tl[0] = this.i;
     } else {
-        this.tl[0] = new pyjslib['int'](this.i);
+        this.tl[0] = new @{{int}}(this.i);
     }
     return reuseTuple === true ? this.tuple : pyjslib.tuple(this.tl);
 };
@@ -6334,14 +6334,14 @@ def sprintf(strng, args):
                 subst = pyjslib['str'](param);
                 break;
             case 'o':
-                param = pyjslib['int'](param);
+                param = @{{int}}(param);
                 subst = param.toString(8);
                 if (subst != '0' && flags.indexOf('#') >= 0) {
                     subst = '0' + subst;
                 }
                 break;
             case 'x':
-                param = pyjslib['int'](param);
+                param = @{{int}}(param);
                 subst = param.toString(16);
                 if (flags.indexOf('#') >= 0) {
                     if (left_padding) {
@@ -6351,7 +6351,7 @@ def sprintf(strng, args):
                 }
                 break;
             case 'X':
-                param = pyjslib['int'](param);
+                param = @{{int}}(param);
                 subst = param.toString(16).toUpperCase();
                 if (flags.indexOf('#') >= 0) {
                     if (left_padding) {
@@ -6458,7 +6458,7 @@ def sprintf(strng, args):
         }
     }
     if (constructor != "tuple") {
-        args = pyjslib['tuple']([args]);
+        args = @{{tuple}}([args]);
     }
     nargs = args.__array.length;
     sprintf_list(strng, args);
@@ -6555,30 +6555,30 @@ def divmod(x, y):
             case 0x0401:
                 if (y == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
                 var f = Math.floor(x / y);
-                return pyjslib['tuple']([f, x - f * y]);
+                return @{{tuple}}([f, x - f * y]);
             case 0x0102:
                 if (y.__v == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
                 var f = Math.floor(x / y.__v);
-                return pyjslib['tuple']([f, x - f * y.__v]);
+                return @{{tuple}}([f, x - f * y.__v]);
             case 0x0201:
                 if (y == 0) throw pyjslib['ZeroDivisionError']('float divmod()');
                 var f = Math.floor(x.__v / y);
-                return pyjslib['tuple']([f, x.__v - f * y]);
+                return @{{tuple}}([f, x.__v - f * y]);
             case 0x0202:
                 if (y.__v == 0) throw pyjslib['ZeroDivisionError']('integer division or modulo by zero');
                 var f = Math.floor(x.__v / y.__v);
-                return pyjslib['tuple']([new pyjslib['int'](f), new pyjslib['int'](x.__v - f * y.__v)]);
+                return @{{tuple}}([new @{{int}}(f), new @{{int}}(x.__v - f * y.__v)]);
             case 0x0204:
-                return y.__rdivmod__(new pyjslib['long'](x.__v));
+                return y.__rdivmod__(new @{{long}}(x.__v));
             case 0x0402:
-                return x.__divmod__(new pyjslib['long'](y.__v));
+                return x.__divmod__(new @{{long}}(y.__v));
             case 0x0404:
                 return x.__divmod__(y);
         }
         if (!x.__number__) {
             if (   !y.__number__
                 && x.__mro__.length > y.__mro__.length
-                && pyjslib['isinstance'](x, y)
+                && @{{isinstance}}(x, y)
                 && typeof x['__divmod__'] == 'function')
                 return y.__divmod__(x);
             if (typeof x['__divmod__'] == 'function') return x.__divmod__(y);
@@ -6617,7 +6617,7 @@ __iter_prepare = JS("""function(iter, reuse_tuple) {
 __wrapped_next = JS("""function(it) {
     var iterator = it.$iter;
     it.$nextval = it.$gentype?(it.$gentype > 0?
-        iterator.next(true,it.$reuse_tuple):pyjslib['wrapped_next'](iterator)
+        iterator.next(true,it.$reuse_tuple):@{{wrapped_next}}(iterator)
                               ) : it.$arr[it.$loopvar++];
     return it;
 }""")
@@ -6627,7 +6627,7 @@ wrapped_next = JS("""function (iter) {
     try {
         var res = iter.next();
     } catch (e) {
-        if (e === pyjslib['StopIteration']) {
+        if (e === @{{StopIteration}}) {
             return;
         }
         throw e;

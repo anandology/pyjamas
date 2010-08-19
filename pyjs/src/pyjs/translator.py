@@ -282,6 +282,11 @@ PYJSLIB_BUILTIN_FUNCTIONS=frozenset((
     "wrapped_next",
     "__iter_prepare",
     "__wrapped_next",
+    "printFunc",
+    "debugReport",
+    "_isinstance",
+    "op_add",
+    "op_sub",
     ))
 
 PYJSLIB_BUILTIN_CLASSES=[
