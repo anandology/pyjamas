@@ -77,7 +77,6 @@
 				<components>
 					<component id="txbHTML" name="Label" type="Widget" index="0">
 						<properties name="widget">
-							<property name="tooltip" value="txbHTML in CaptionPanel2" />
 							<property name="label" value="txbHTML" />
 						</properties>
 						<properties name="common">
@@ -95,6 +94,89 @@
 						<properties name="events">
 							<property name="onFocus" value="onInputBoxFocus" />
 						</properties>
+					</component>
+				</components>
+			</component>
+		</components>
+	</component>
+	<component id="AppLogin" name="DialogBox" type="Panel" index="None" left="320" top="324" visible="True">
+		<properties name="widget">
+			<property name="caption" value="Login" />
+		</properties>
+		<properties name="elements">
+		</properties>
+		<properties name="common">
+			<property name="name" value="AppLogin" />
+		</properties>
+		<components>
+			<component id="Grid1" name="Grid" type="Panel" index="0">
+				<properties name="elements">
+				</properties>
+				<properties name="common">
+					<property name="name" value="Grid1" />
+				</properties>
+				<components>
+					<component id="lblLabel1" name="Label" type="Widget" index="(0, 0)">
+						<properties name="widget">
+							<property name="label" value="Username:" />
+						</properties>
+						<properties name="common">
+							<property name="name" value="lblLabel1" />
+						</properties>
+					</component>
+					<component id="username" name="TextBox" type="Widget" index="(0, 1)">
+						<properties name="common">
+							<property name="name" value="username" />
+						</properties>
+					</component>
+					<component id="lblLabel2" name="Label" type="Widget" index="(1, 0)">
+						<properties name="widget">
+							<property name="label" value="Password:" />
+						</properties>
+						<properties name="common">
+							<property name="name" value="lblLabel2" />
+						</properties>
+					</component>
+					<component id="password" name="PasswordTextBox" type="Widget" index="(1, 1)">
+						<properties name="common">
+							<property name="name" value="password" />
+						</properties>
+					</component>
+					<component id="None" index="(3, 0)">
+					</component>
+					<component id="HorizontalPanel1" name="HorizontalPanel" type="Panel" index="(3, 1)">
+						<properties name="elements">
+							<properties name="1">
+								<property name="visible" value="False" />
+								<property name="wordwrap" value="False" />
+								<property name="halign" value="right" />
+							</properties>
+						</properties>
+						<properties name="layout">
+							<property name="spacing" value="0" />
+							<property name="padding" value="0" />
+						</properties>
+						<properties name="common">
+							<property name="name" value="HorizontalPanel1" />
+						</properties>
+						<components>
+							<component id="btnButton1" name="Button" type="Widget" index="0">
+								<properties name="widget">
+									<property name="label" value="Cancel" />
+								</properties>
+								<properties name="common">
+									<property name="name" value="btnButton1" />
+								</properties>
+							</component>
+							<component id="submit" name="Button" type="Widget" index="1">
+								<properties name="widget">
+									<property name="label" value="Login" />
+								</properties>
+								<properties name="common">
+									<property name="name" value="submit" />
+								</properties>
+							</component>
+						</components>
 					</component>
 				</components>
 			</component>

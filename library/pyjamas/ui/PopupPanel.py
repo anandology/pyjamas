@@ -207,6 +207,9 @@ class PopupPanel(SimplePanel):
     def onWindowResized(self, width, height):
         self.setGlassPosition()
 
+    def add(self, widget):
+        self.setWidget(widget)
+
     def show(self):
         if self.showing:
             return

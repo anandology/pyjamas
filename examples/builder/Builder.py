@@ -24,6 +24,9 @@ from pyjamas.ui.RootPanel import RootPanel
 
 class Caption1Events(object):
 
+    def __init__(self, app=None):
+        self.app = app
+
     def onHTMLMouseMoved(self, sender, x, y):
         print "moved", sender, x, y
 
@@ -32,6 +35,18 @@ class Caption1Events(object):
 
     def onHTMLClicked(self, sender):
         print "clicked", sender
+        #left = self.fDialogButton.getAbsoluteLeft() + 10
+        #top = self.fDialogButton.getAbsoluteTop() + 10
+        self.app.login.setWidth("600px")
+        self.app.login.setHeight("400px")
+        self.app.login.setPopupPosition(10, 10)
+        self.app.login.show()
+        for v in dir(self.app.login):
+            print "db", v, getattr(self.app.login, v)
+        print self.app.login.getOffsetWidth()
+        print self.app.login.getOffsetHeight()
+        print self.app.login.getAbsoluteLeft()
+        print self.app.login.getAbsoluteTop()
 
 
 class EventTest(Caption1Events):
@@ -41,8 +56,10 @@ class EventTest(Caption1Events):
 
     def onUILoaded(self, text):
         self.b = Builder(text)
-        self.caption1 = self.b.createInstance("CaptionPanel1", Caption1Events())
+        caption1events = Caption1Events(self)
+        self.caption1 = self.b.createInstance("CaptionPanel1", caption1events)
         self.caption2 = self.b.createInstance("CaptionPanel2", self)
+        self.login = self.b.createInstance("AppLogin", self)
         RootPanel().add(self.caption1)
         RootPanel().add(self.caption2)
 

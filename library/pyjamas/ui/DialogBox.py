@@ -34,6 +34,7 @@ class DialogBox(PopupPanel):
 
         self.caption = HTML()
         self.child = None
+        self.modal = modal
         self.dragging = False
         self.dragStartX = 0
         self.dragStartY = 0
