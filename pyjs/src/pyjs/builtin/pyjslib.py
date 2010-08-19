@@ -4417,8 +4417,16 @@ class dict:
         if args:
             if len(args) > 1:
                 raise TypeError("update expected at most 1 arguments, got %d" % len(args))
-            for k,v in args[0].iteritems():
-                self[k] = v
+            d = args[0]
+            if hasattr(d, "iteritems"):
+                for k,v in d.iteritems():
+                    self[k] = v
+            elif hasattr(d, "keys"):
+                for k in d:
+                    self[k] = d[k]
+            else:
+                for k, v in d:
+                    self[k] = v
         if kwargs:
             for k,v in kwargs.iteritems():
                 self[k] = v

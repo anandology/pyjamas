@@ -394,8 +394,12 @@ class SetTest(TestJointOps):
         self.s |= set(self.otherword)
         #for c in (self.word + self.otherword):
         t = self.word + self.otherword
-        for c in t:
-            self.assert_(c in self.s)
+        if isinstance(self.s,set):
+            for c in t:
+                self.assert_(c in self.s)
+        else:
+            self.fail("|= result not a set")
+              
 
     def test_intersection_update(self):
         retval = self.s.intersection_update(self.otherword)
@@ -426,11 +430,14 @@ class SetTest(TestJointOps):
         self.s &= set(self.otherword)
         #for c in (self.word + self.otherword):
         t = self.word + self.otherword
-        for c in t:
-            if c in self.otherword and c in self.word:
-                self.assert_(c in self.s)
-            else:
-                self.assert_(c not in self.s)
+        if isinstance(self.s,set):
+            for c in t:
+                if c in self.otherword and c in self.word:
+                    self.assert_(c in self.s)
+                else:
+                    self.assert_(c not in self.s)
+        else:
+            self.fail("&= result not a set")
 
     def test_difference_update(self):
         retval = self.s.difference_update(self.otherword)
@@ -499,11 +506,14 @@ class SetTest(TestJointOps):
         self.s ^= set(self.otherword)
         #for c in (self.word + self.otherword):
         t = self.word + self.otherword
-        for c in t:
-            if (c in self.word) ^ (c in self.otherword):
-                self.assert_(c in self.s)
-            else:
-                self.assert_(c not in self.s)
+        if isinstance(self.s,set):
+            for c in t:
+                if (c in self.word) ^ (c in self.otherword):
+                    self.assert_(c in self.s)
+                else:
+                    self.assert_(c not in self.s)
+        else:
+            self.fail("^= result not a set")
 
     def test_inplace_on_self(self):
         return
