@@ -5964,7 +5964,7 @@ def enumerate(seq):
         return @{{seq}}.__enumerate__();
     }
 """)
-    return _enumerate(sequence)
+    return _enumerate(seq)
 
 def _enumerate(sequence):
     nextIndex = 0
