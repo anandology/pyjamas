@@ -201,3 +201,9 @@ class DictTest(UnitTest):
         self.assertEqual(d1.fromkeys(d1, 1), d1)
         self.assertEqual(dict.fromkeys('ab'), d2)
 
+    def testOverrideDict(self):
+        dict = 1
+        self.assertEqual(dict, 1)
+        x = dict
+        self.assertEqual(x, 1)
+
