@@ -87,7 +87,7 @@ def gmtime(t = None):
     tm.tm_sec = date.getUTCSeconds()
     tm.tm_wday = (date.getUTCDay() + 6) % 7
     tm.tm_isdst = 0
-    startOfYear = JS("new Date('Jan 1 '+ @{{tm.tm_year}} +' GMT+0000')")
+    startOfYear = JS("new Date('Jan 1 '+ @{{tm}}.tm_year +' GMT+0000')")
     tm.tm_yday = 1 + int((t - startOfYear.getTime()/1000)/86400)
     return tm
 
@@ -105,9 +105,9 @@ def localtime(t = None):
     tm.tm_sec = date.getSeconds()
     tm.tm_wday = (date.getDay() + 6) % 7
     tm.tm_isdst = 0 if timezone == 60*date.getTimezoneOffset() else 1
-    startOfYear = JS("new Date(@{{tm.tm_year}},0,1)") # local time
+    startOfYear = JS("new Date(@{{tm}}.tm_year,0,1)") # local time
     startOfYearOffset = startOfYear.getTimezoneOffset()
-    startOfDay = JS("new Date(@{{tm.tm_year}},@{{tm.tm_mon}}-1,@{{tm.tm_mday}})")
+    startOfDay = JS("new Date(@{{tm}}.tm_year,@{{tm}}.tm_mon-1,@{{tm}}.tm_mday)")
     dt = (startOfDay.getTime() - startOfYear.getTime())/1000
     dt = dt + 60 * (startOfYearOffset - dateOffset)
     tm.tm_yday = 1 + int(dt/86400.0)
