@@ -265,76 +265,76 @@ def op_sub(x, y):
 
 def op_floordiv(x, y):
     JS("""
-    if (x !== null && y !== null) {
-        switch ((x.__number__ << 8) | y.__number__) {
+    if (@{{x}} !== null && @{{y}} !== null) {
+        switch ((@{{x}}.__number__ << 8) | @{{y}}.__number__) {
             case 0x0101:
             case 0x0104:
             case 0x0401:
-                if (y == 0) throw @{{ZeroDivisionError}}('float divmod()');
-                return Math.floor(x / y);
+                if (@{{y}} == 0) throw @{{ZeroDivisionError}}('float divmod()');
+                return Math.floor(@{{x}} / @{{y}});
             case 0x0102:
-                if (y.__v == 0) throw @{{ZeroDivisionError}}('float divmod()');
-                return Math.floor(x / y.__v);
+                if (@{{y}}.__v == 0) throw @{{ZeroDivisionError}}('float divmod()');
+                return Math.floor(@{{x}} / @{{y}}.__v);
             case 0x0201:
-                if (y == 0) throw @{{ZeroDivisionError}}('float divmod()');
-                return Math.floor(x.__v / y);
+                if (@{{y}} == 0) throw @{{ZeroDivisionError}}('float divmod()');
+                return Math.floor(@{{x}}.__v / @{{y}});
             case 0x0202:
-                if (y.__v == 0) throw @{{ZeroDivisionError}}('integer division or modulo by zero');
-                return new @{{int}}(Math.floor(x.__v / y.__v));
+                if (@{{y}}.__v == 0) throw @{{ZeroDivisionError}}('integer division or modulo by zero');
+                return new @{{int}}(Math.floor(@{{x}}.__v / @{{y}}.__v));
             case 0x0204:
-                return (new @{{long}}(x.__v)).__floordiv(y);
+                return (new @{{long}}(@{{x}}.__v)).__floordiv(@{{y}});
             case 0x0402:
-                return x.__floordiv(new @{{long}}(y.__v));
+                return @{{x}}.__floordiv(new @{{long}}(@{{y}}.__v));
             case 0x0404:
-                return x.__floordiv(y);
+                return @{{x}}.__floordiv(@{{y}});
         }
-        if (!x.__number__) {
-            if (   !y.__number__
-                && x.__mro__.length > y.__mro__.length
-                && @{{isinstance}}(x, y)
-                && typeof x['__floordiv__'] == 'function')
-                return y.__floordiv__(x);
-            if (typeof x['__floordiv__'] == 'function') return x.__floordiv__(y);
+        if (!@{{x}}.__number__) {
+            if (   !@{{y}}.__number__
+                && @{{x}}.__mro__.length > @{{y}}.__mro__.length
+                && @{{isinstance}}(@{{x}}, @{{y}})
+                && typeof @{{x}}['__floordiv__'] == 'function')
+                return @{{y}}.__floordiv__(@{{x}});
+            if (typeof @{{x}}['__floordiv__'] == 'function') return @{{x}}.__floordiv__(@{{y}});
         }
-        if (!y.__number__ && typeof y['__rfloordiv__'] == 'function') return y.__rfloordiv__(x);
+        if (!@{{y}}.__number__ && typeof @{{y}}['__rfloordiv__'] == 'function') return @{{y}}.__rfloordiv__(@{{x}});
     }
 """)
     raise TypeError("unsupported operand type(s) for //: '%r', '%r'" % (x, y))
 
 def op_div(x, y):
     JS("""
-    if (x !== null && y !== null) {
-        switch ((x.__number__ << 8) | y.__number__) {
+    if (@{{x}} !== null && @{{y}} !== null) {
+        switch ((@{{x}}.__number__ << 8) | @{{y}}.__number__) {
             case 0x0101:
             case 0x0104:
             case 0x0401:
-                if (y == 0) throw @{{ZeroDivisionError}}('float divmod()');
-                return x / y;
+                if (@{{y}} == 0) throw @{{ZeroDivisionError}}('float divmod()');
+                return @{{x}} / @{{y}};
             case 0x0102:
-                if (y.__v == 0) throw @{{ZeroDivisionError}}('float divmod()');
-                return x / y.__v;
+                if (@{{y}}.__v == 0) throw @{{ZeroDivisionError}}('float divmod()');
+                return @{{x}} / @{{y}}.__v;
             case 0x0201:
-                if (y == 0) throw @{{ZeroDivisionError}}('float divmod()');
-                return x.__v / y;
+                if (@{{y}} == 0) throw @{{ZeroDivisionError}}('float divmod()');
+                return @{{x}}.__v / @{{y}};
             case 0x0202:
-                if (y.__v == 0) throw @{{ZeroDivisionError}}('float divmod()');
-                return new @{{int}}(x.__v / y.__v);
+                if (@{{y}}.__v == 0) throw @{{ZeroDivisionError}}('float divmod()');
+                return new @{{int}}(@{{x}}.__v / @{{y}}.__v);
             case 0x0204:
-                return (new @{{long}}(x.__v)).__div(y);
+                return (new @{{long}}(@{{x}}.__v)).__div(@{{y}});
             case 0x0402:
-                return x.__div(new @{{long}}(y.__v));
+                return @{{x}}.__div(new @{{long}}(@{{y}}.__v));
             case 0x0404:
-                return x.__div(y);
+                return @{{x}}.__div(@{{y}});
         }
-        if (!x.__number__) {
-            if (   !y.__number__
-                && x.__mro__.length > y.__mro__.length
-                && @{{isinstance}}(x, y)
-                && typeof x['__div__'] == 'function')
-                return y.__div__(x);
-            if (typeof x['__div__'] == 'function') return x.__div__(y);
+        if (!@{{x}}.__number__) {
+            if (   !@{{y}}.__number__
+                && @{{x}}.__mro__.length > @{{y}}.__mro__.length
+                && @{{isinstance}}(@{{x}}, @{{y}})
+                && typeof @{{x}}['__div__'] == 'function')
+                return @{{y}}.__div__(@{{x}});
+            if (typeof @{{x}}['__div__'] == 'function') return @{{x}}.__div__(@{{y}});
         }
-        if (!y.__number__ && typeof y['__rdiv__'] == 'function') return y.__rdiv__(x);
+        if (!@{{y}}.__number__ && typeof @{{y}}['__rdiv__'] == 'function') return @{{y}}.__rdiv__(@{{x}});
     }
 """)
     raise TypeError("unsupported operand type(s) for /: '%r', '%r'" % (x, y))
