@@ -308,6 +308,15 @@ PYJSLIB_BUILTIN_FUNCTIONS=frozenset((
     "op_mul",
     "op_div",
     "op_pow",
+    "op_invert",
+    "op_bitshiftleft",
+    "op_bitshiftright",
+    "op_bitand2",
+    "op_bitand",
+    "op_bitxor",
+    "op_bitxor2",
+    "op_bitor2",
+    "op_bitor",
     "op_floordiv",
     "op_mod",
     "__op_add",
@@ -3700,38 +3709,38 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
     def _invert(self, node, current_klass):
         if not self.operator_funcs or not self.number_classes:
             return "~(%s)" % self.expr(node.expr, current_klass)
-        return "pyjslib['op_invert'](%s)" % self.expr(node.expr, current_klass)
+        return "@{{op_invert}}(%s)" % self.expr(node.expr, current_klass)
 
     def _bitshiftleft(self, node, current_klass):
         if not self.operator_funcs or not self.number_classes:
             return "(%s)<<(%s)"% (self.expr(node.left, current_klass), self.expr(node.right, current_klass))
-        return "pyjslib['op_bitshiftleft'](%s,%s)" % (self.expr(node.left, current_klass), self.expr(node.right, current_klass))
+        return "@{{op_bitshiftleft}}(%s,%s)" % (self.expr(node.left, current_klass), self.expr(node.right, current_klass))
 
     def _bitshiftright(self, node, current_klass):
         if not self.operator_funcs or not self.number_classes:
             return "(%s)>>(%s)" % (self.expr(node.left, current_klass), self.expr(node.right, current_klass))
-        return "pyjslib['op_bitshiftright'](%s,%s)" % (self.expr(node.left, current_klass), self.expr(node.right, current_klass))
+        return "@{{op_bitshiftright}}(%s,%s)" % (self.expr(node.left, current_klass), self.expr(node.right, current_klass))
 
     def _bitand(self, node, current_klass):
         if not self.operator_funcs or not self.number_classes:
             return "(%s)" % ")&(".join([self.expr(child, current_klass) for child in node.nodes])
         if len(node.nodes) == 2:
-            return "pyjslib['op_bitand2'](%s, %s)" % (self.expr(node.nodes[0], current_klass), self.expr(node.nodes[1], current_klass))
-        return "pyjslib['op_bitand']([%s])" % ", ".join([self.expr(child, current_klass) for child in node.nodes])
+            return "@{{op_bitand2}}(%s, %s)" % (self.expr(node.nodes[0], current_klass), self.expr(node.nodes[1], current_klass))
+        return "@{{op_bitand}}([%s])" % ", ".join([self.expr(child, current_klass) for child in node.nodes])
 
     def _bitxor(self,node, current_klass):
         if not self.operator_funcs or not self.number_classes:
             return "(%s)" % ")^(".join([self.expr(child, current_klass) for child in node.nodes])
         if len(node.nodes) == 2:
-            return "pyjslib['op_bitxor2'](%s, %s)" % (self.expr(node.nodes[0], current_klass), self.expr(node.nodes[1], current_klass))
-        return "pyjslib['op_bitxor']([%s])" % ", ".join([self.expr(child, current_klass) for child in node.nodes])
+            return "@{{op_bitxor2}}(%s, %s)" % (self.expr(node.nodes[0], current_klass), self.expr(node.nodes[1], current_klass))
+        return "@{{op_bitxor}}([%s])" % ", ".join([self.expr(child, current_klass) for child in node.nodes])
 
     def _bitor(self, node, current_klass):
         if not self.operator_funcs or not self.number_classes:
             return "(%s)" % ")|(".join([self.expr(child, current_klass) for child in node.nodes])
         if len(node.nodes) == 2:
-            return "pyjslib['op_bitor2'](%s, %s)" % (self.expr(node.nodes[0], current_klass), self.expr(node.nodes[1], current_klass))
-        return "pyjslib['op_bitor']([%s])" % ", ".join([self.expr(child, current_klass) for child in node.nodes])
+            return "@{{op_bitor2}}(%s, %s)" % (self.expr(node.nodes[0], current_klass), self.expr(node.nodes[1], current_klass))
+        return "@{{op_bitor}}([%s])" % ", ".join([self.expr(child, current_klass) for child in node.nodes])
 
     def _subscript(self, node, current_klass):
         if node.flags == "OP_APPLY":
