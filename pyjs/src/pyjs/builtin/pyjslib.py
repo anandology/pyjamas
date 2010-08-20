@@ -5335,31 +5335,31 @@ def xrange(start, stop = None, step = 1):
     if stop is None:
         stop = start
         start = 0
-    if not JS("start !== null && start.__number__ && (start.__number__ != 0x01 || isFinite(start))"):
+    if not JS("@{{start }}!== null && @{{start}}.__number__ && (@{{start}}.__number__ != 0x01 || isFinite(@{{start}}))"):
         raise TypeError("xrange() integer start argument expected, got %s" % start.__class__.__name__)
-    if not JS("stop !== null && stop.__number__ && (stop.__number__ != 0x01 || isFinite(stop))"):
+    if not JS("@{{stop }}!== null && @{{stop}}.__number__ && (@{{stop}}.__number__ != 0x01 || isFinite(@{{stop}}))"):
         raise TypeError("xrange() integer end argument expected, got %s" % stop.__class__.__name__)
-    if not JS("step !== null && step.__number__ && (step.__number__ != 0x01 || isFinite(step))"):
+    if not JS("@{{step }}!== null && @{{step}}.__number__ && (@{{step}}.__number__ != 0x01 || isFinite(@{{step}}))"):
         raise TypeError("xrange() integer step argument expected, got %s" % step.__class__.__name__)
     rval = nval = start
     JS("""
-    var nstep = (stop-start)/step;
+    var nstep = (@{{stop}}-@{{start}})/step;
     nstep = nstep < 0 ? Math.ceil(nstep) : Math.floor(nstep);
-    if ((stop-start) % step) {
+    if ((@{{stop}}-@{{start}}) % step) {
         nstep++;
     }
-    stop = start + nstep * step;
-    if (nstep <= 0) nval = stop;
+    var _stop = @{{start }}+ nstep * @{{step}};
+    if (nstep <= 0) nval = _stop;
     var x = {
         'next': function(noStop) {
-            if (nval == stop) {
+            if (nval == _stop) {
                 if (noStop === true) {
                     return;
                 }
                 throw @{{StopIteration}};
             }
             rval = nval;
-            nval += step;
+            nval += @{{step}};
 """)
     return INT(rval);
     JS("""
@@ -5371,16 +5371,16 @@ def xrange(start, stop = None, step = 1):
             return this;
         },
         '__reversed__': function() {
-            return @{{xrange}}(stop-step, start-step, -step);
+            return @{{xrange}}(_stop-@{{step}}, @{{start}}-@{{step}}, -@{{step}});
         },
         'toString': function() {
             var s = "xrange(";
-            if (start != 0) {
-                s += start + ", ";
+            if (@{{start }}!= 0) {
+                s += @{{start }}+ ", ";
             }
-            s += stop;
-            if (step != 1) {
-                s += ", " + step;
+            s += _stop;
+            if (@{{step }}!= 1) {
+                s += ", " + @{{step}};
             }
             return s + ")";
         },
