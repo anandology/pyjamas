@@ -463,9 +463,9 @@ def walkChildren(elem):
    
 def releaseCapture(elem):
     JS("""
-    if ((@{{DOM}}.sCaptureElem != null) 
-            && @{{DOM}}.compare(@{{elem}}, @{{DOM}}.sCaptureElem))
-        @{{DOM}}.sCaptureElem = null;
+    if ((DOM.sCaptureElem != null) 
+            && @{{DOM}}.compare(@{{elem}}, DOM.sCaptureElem))
+        DOM.sCaptureElem = null;
     """)
 
 def removeEventPreview(preview):
@@ -527,7 +527,7 @@ def setBooleanAttribute(elem, attr, value):
 
 def setCapture(elem):
     JS("""
-    @{{DOM}}.sCaptureElem = @{{elem}};
+    DOM.sCaptureElem = @{{elem}};
     """)
 
 def setEventListener(element, listener):
