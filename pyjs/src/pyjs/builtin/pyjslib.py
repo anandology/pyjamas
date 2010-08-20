@@ -4594,7 +4594,7 @@ class set(object):
         var selfLen = 0,
             otherLen = 0,
             selfObj = @{{self}}.__object,
-            otherObj = other.__object,
+            otherObj = @{{other}}.__object,
             selfMismatch = false,
             otherMismatch = false;
         for (var sVal in selfObj) {
@@ -4627,7 +4627,7 @@ class set(object):
             var h = hashes.join("|");
             return typeof @{{self}}.__object[h] != 'undefined';
 """)
-        JS("""return typeof @{{self}}.__object[@{{hash}}(value)] != 'undefined';""")
+        JS("""return typeof @{{self}}.__object[@{{hash}}(@{{value}})] != 'undefined';""")
 
     def __hash__(self):
         raise TypeError("set objects are unhashable")
@@ -4694,7 +4694,7 @@ class set(object):
         return self.difference(other)
 
     def add(self, value):
-        JS("""@{{self}}.__object[@{{hash}}(value)] = value;""")
+        JS("""@{{self}}.__object[@{{hash}}(@{{value}})] = @{{value}};""")
         return None
 
     def clear(self):
@@ -4704,7 +4704,7 @@ class set(object):
     def copy(self):
         new_set = set()
         JS("""
-        var obj = new_set.__object,
+        var obj = @{{new_set}}.__object,
             selfObj = @{{self}}.__object;
         for (var sVal in selfObj) {
             obj[sVal] = selfObj[sVal];
@@ -4719,9 +4719,9 @@ class set(object):
             other = frozenset(other)
         new_set = set()
         JS("""
-        var obj = new_set.__object,
+        var obj = @{{new_set}}.__object,
             selfObj = @{{self}}.__object,
-            otherObj = other.__object;
+            otherObj = @{{other}}.__object;
         for (var sVal in selfObj) {
             if (typeof otherObj[sVal] == 'undefined') {
                 obj[sVal] = selfObj[sVal];
@@ -4736,7 +4736,7 @@ class set(object):
             other = frozenset(other)
         JS("""
         var selfObj = @{{self}}.__object,
-            otherObj = other.__object;
+            otherObj = @{{other}}.__object;
         for (var sVal in otherObj) {
             if (typeof selfObj[sVal] != 'undefined') {
                 delete selfObj[sVal];
@@ -4748,7 +4748,7 @@ class set(object):
     def discard(self, value):
         if isSet(value) == 1:
             value = frozenset(value)
-        JS("""delete @{{self}}.__object[@{{hash}}(value)];""")
+        JS("""delete @{{self}}.__object[@{{hash}}(@{{value}})];""")
         return None
 
     def intersection(self, other):
@@ -4760,7 +4760,7 @@ class set(object):
         JS("""
         var obj = new_set.__object,
             selfObj = @{{self}}.__object,
-            otherObj = other.__object;
+            otherObj = @{{other}}.__object;
         for (var sVal in selfObj) {
             if (typeof otherObj[sVal] != 'undefined') {
                 obj[sVal] = selfObj[sVal];
@@ -4775,7 +4775,7 @@ class set(object):
             other = frozenset(other)
         JS("""
         var selfObj = @{{self}}.__object,
-            otherObj = other.__object;
+            otherObj = @{{other}}.__object;
         for (var sVal in selfObj) {
             if (typeof otherObj[sVal] == 'undefined') {
                 delete selfObj[sVal];
@@ -4790,7 +4790,7 @@ class set(object):
             other = frozenset(other)
         JS("""
         var selfObj = @{{self}}.__object,
-            otherObj = other.__object;
+            otherObj = @{{other}}.__object;
         for (var sVal in selfObj) {
             if (typeof otherObj[sVal] != 'undefined') {
                 return false;
@@ -4807,12 +4807,12 @@ class set(object):
     def issubset(self, other):
         if not isSet(other):
             other = frozenset(other)
-        return JS("@{{self}}.__cmp__(other) < 0")
+        return JS("@{{self}}.__cmp__(@{{other}}) < 0")
 
     def issuperset(self, other):
         if not isSet(other):
             other = frozenset(other)
-        return JS("(@{{self}}.__cmp__(other)|1) == 1")
+        return JS("(@{{self}}.__cmp__(@{{other}})|1) == 1")
 
     def pop(self):
         JS("""
@@ -4831,10 +4831,11 @@ class set(object):
             val = value
         JS("""
         var h;
-        if (typeof @{{self}}.__object[(h = @{{hash}}(val))] == 'undefined') {
-            throw @{{KeyError}}(value);
+        if (typeof @{{self}}.__object[(h = @{{hash}}(@{{val}}))] == 'undefined') {
+            throw @{{KeyError}}(@{{value}});
         }
-        delete @{{self}}.__object[@{{hash}}(val)];""")
+        delete @{{self}}.__object[@{{hash}}(@{{val}})];
+        """)
 
     def symmetric_difference(self, other):
         # Return the symmetric difference of two sets as a new set.
@@ -4843,9 +4844,9 @@ class set(object):
             other = frozenset(other)
         new_set = set()
         JS("""
-        var obj = new_set.__object,
+        var obj = @{{new_set}}.__object,
             selfObj = @{{self}}.__object,
-            otherObj = other.__object;
+            otherObj = @{{other}}.__object;
         for (var sVal in selfObj) {
             if (typeof otherObj[sVal] == 'undefined') {
                 obj[sVal] = selfObj[sVal];
@@ -4866,7 +4867,7 @@ class set(object):
         JS("""
         var obj = new Object(),
             selfObj = @{{self}}.__object,
-            otherObj = other.__object;
+            otherObj = @{{other}}.__object;
         for (var sVal in selfObj) {
             if (typeof otherObj[sVal] == 'undefined') {
                 obj[sVal] = selfObj[sVal];
@@ -4888,9 +4889,9 @@ class set(object):
         if not isSet(other):
             other = frozenset(other)
         JS("""
-        var obj = new_set.__object,
+        var obj = @{{new_set}}.__object,
             selfObj = @{{self}}.__object,
-            otherObj = other.__object;
+            otherObj = @{{other}}.__object;
         for (var sVal in selfObj) {
             obj[sVal] = selfObj[sVal];
         }
