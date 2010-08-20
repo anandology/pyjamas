@@ -146,7 +146,7 @@ def getChildIndex(parent, child):
     return -1;
     """)
 
-def isOrHasChild(parent, child):
+def isOrHasChild(parent, _child):
     JS("""
     var child = @{{_child}};
     while (child) {
