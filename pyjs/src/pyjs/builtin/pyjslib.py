@@ -3694,43 +3694,43 @@ class list:
     def __init__(self, data=JS("[]")):
         # Basically the same as extend, but to save expensive function calls...
         JS("""
-        if (data === null) {
+        if (@{{data}} === null) {
             throw @{{TypeError}}("'NoneType' is not iterable");
         }
-        if (data.constructor === Array) {
-            self.__array = data.slice();
+        if (@{{data}}.constructor === Array) {
+            self.__array = @{{data}}.slice();
             return null;
         }
-        if (typeof data.__iter__ == 'function') {
-            if (typeof data.__array == 'object') {
-                self.__array = data.__array.slice();
+        if (typeof @{{data}}.__iter__ == 'function') {
+            if (typeof @{{data}}.__array == 'object') {
+                self.__array = @{{data}}.__array.slice();
                 return null;
             }
-            var iter = data.__iter__();
+            var iter = @{{data}}.__iter__();
             if (typeof iter.__array == 'object') {
                 self.__array = iter.__array.slice();
                 return null;
             }
-            data = [];
+            @{{data}} = [];
             var item, i = 0;
             if (typeof iter.$genfunc == 'function') {
                 while (typeof (item=iter.next(true)) != 'undefined') {
-                    data[i++] = item;
+                    @{{data}}[i++] = item;
                 }
             } else {
                 try {
                     while (true) {
-                        data[i++] = iter.next();
+                        @{{data}}[i++] = iter.next();
                     }
                 }
                 catch (e) {
                     if (e.__name__ != 'StopIteration') throw e;
                 }
             }
-            self.__array = data;
+            self.__array = @{{data}};
             return null;
         }
-        throw @{{TypeError}}("'" + @{{repr}}(data) + "' is not iterable");
+        throw @{{TypeError}}("'" + @{{repr}}(@{{data}}) + "' is not iterable");
         """)
 
     def __hash__(self):
@@ -3743,28 +3743,28 @@ class list:
     def extend(self, data):
         # Transform data into an array and append to self.__array
         JS("""
-        if (data === null) {
+        if (@{{data}} === null) {
             throw @{{TypeError}}("'NoneType' is not iterable");
         }
-        if (data.constructor === Array) {
-        } else if (typeof data.__iter__ == 'function') {
-            if (typeof data.__array == 'object') {
-                data = data.__array;
+        if (@{{data}}.constructor === Array) {
+        } else if (typeof @{{data}}.__iter__ == 'function') {
+            if (typeof @{{data}}.__array == 'object') {
+                @{{data}} = @{{data}}.__array;
             } else {
-                var iter = data.__iter__();
+                var iter = @{{data}}.__iter__();
                 if (typeof iter.__array == 'object') {
-                    data = iter.__array;
+                    @{{data}} = iter.__array;
                 }
-                data = [];
+                @{{data}} = [];
                 var item, i = 0;
                 if (typeof iter.$genfunc == 'function') {
                     while (typeof (item=iter.next(true)) != 'undefined') {
-                        data[i++] = item;
+                        @{{data}}[i++] = item;
                     }
                 } else {
                     try {
                         while (true) {
-                            data[i++] = iter.next();
+                            @{{data}}[i++] = iter.next();
                         }
                     }
                     catch (e) {
@@ -3773,13 +3773,13 @@ class list:
                 }
             }
         } else {
-            throw @{{TypeError}}("'" + @{{repr}}(data) + "' is not iterable");
+            throw @{{TypeError}}("'" + @{{repr}}(@{{data}}) + "' is not iterable");
         }
         var l = self.__array;
         var j = self.__array.length;
-        var n = data.length, i = 0;
+        var n = @{{data}}.length, i = 0;
         while (i < n) {
-            l[j++] = data[i++];
+            l[j++] = @{{data}}[i++];
         }
         """)
 
@@ -3996,43 +3996,43 @@ JS("@{{list}}.toString = @{{list}}.__str__;")
 class tuple:
     def __init__(self, data=JS("[]")):
         JS("""
-        if (data === null) {
+        if (@{{data}} === null) {
             throw @{{TypeError}}("'NoneType' is not iterable");
         }
-        if (data.constructor === Array) {
-            self.__array = data.slice();
+        if (@{{data}}.constructor === Array) {
+            self.__array = @{{data}}.slice();
             return null;
         }
-        if (typeof data.__iter__ == 'function') {
-            if (typeof data.__array == 'object') {
-                self.__array = data.__array.slice();
+        if (typeof @{{data}}.__iter__ == 'function') {
+            if (typeof @{{data}}.__array == 'object') {
+                self.__array = @{{data}}.__array.slice();
                 return null;
             }
-            var iter = data.__iter__();
+            var iter = @{{data}}.__iter__();
             if (typeof iter.__array == 'object') {
                 self.__array = iter.__array.slice();
                 return null;
             }
-            data = [];
+            @{{data}} = [];
             var item, i = 0;
             if (typeof iter.$genfunc == 'function') {
                 while (typeof (item=iter.next(true)) != 'undefined') {
-                    data[i++] = item;
+                    @{{data}}[i++] = item;
                 }
             } else {
                 try {
                     while (true) {
-                        data[i++] = iter.next();
+                        @{{data}}[i++] = iter.next();
                     }
                 }
                 catch (e) {
                     if (e.__name__ != 'StopIteration') throw e;
                 }
             }
-            self.__array = data;
+            self.__array = @{{data}};
             return null;
         }
-        throw @{{TypeError}}("'" + @{{repr}}(data) + "' is not iterable");
+        throw @{{TypeError}}("'" + @{{repr}}(@{{data}}) + "' is not iterable");
         """)
 
     def __hash__(self):
@@ -4150,9 +4150,10 @@ class dict:
         self.__object = JS("{}")
         # Transform data into an array with [key,value] and add set self.__object
         # Input data can be Array(key, val), iteratable (key,val) or Object/Function
-        def init(data):
+        def init(_data):
             JS("""
         var item, i, n, sKey;
+        var data = @{{_data}};
         //self.__object = {};
 
         if (data === null) {
@@ -4504,12 +4505,13 @@ def __empty_dict():
 
 
 class set(object):
-    def __init__(self, data=JS("[]")):
+    def __init__(self, _data=JS("[]")):
         # Transform data into an array with [key,value] and add set 
         # self.__object
         # Input data can be Array(key, val), iteratable (key,val) or 
         # Object/Function
-        if isSet(data):
+        JS("var data = @{{_data}};")
+        if isSet(_data):
             JS("""
             self.__object = {};
             var selfObj = self.__object,
@@ -4903,7 +4905,7 @@ class set(object):
             data = frozenset(data)
         JS("""
         var selfObj = self.__object,
-            dataObj = data.__object;
+            dataObj = @{{data}}.__object;
         for (var sVal in dataObj) {
             if (typeof selfObj[sVal] == 'undefined') {
                 selfObj[sVal] = dataObj[sVal];
@@ -4916,12 +4918,13 @@ JS("@{{set}}['__str__'] = @{{set}}['__repr__'];")
 JS("@{{set}}['toString'] = @{{set}}['__repr__'];")
 
 class frozenset(object):
-    def __init__(self, data=JS("[]")):
+    def __init__(self, _data=JS("[]")):
         # Transform data into an array with [key,value] and add set self.__object
         # Input data can be Array(key, val), iteratable (key,val) or Object/Function
         if JS("typeof self.__object != 'undefined'"):
             return None
-        if isSet(data):
+        JS("var data = @{{_data}};")
+        if isSet(_data):
             JS("""
             self.__object = {};
             var selfObj = self.__object,
