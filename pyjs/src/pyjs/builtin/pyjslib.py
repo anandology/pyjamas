@@ -5825,8 +5825,8 @@ def hasattr(obj, name):
       ) {
         return false;
     }
-    if (typeof obj != 'object' && typeof obj != 'function') return false;
-
+    if (typeof @{{obj}}!= 'object' && typeof @{{obj}}!= 'function')
+        return false;
     return true;
     """)
 
