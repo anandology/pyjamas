@@ -27,8 +27,12 @@ class Hidden(Widget):
 
     def __init__(self, name=None, value=None, **kwargs):
 
-        kwargs['Name'] = kwargs.get("Name", name)
-        kwargs['Value'] = kwargs.get("Value", value)
+        name = kwargs.get("Name", name)
+        if name is not None:
+            kwargs['Name'] = name
+        value = kwargs.get("Value", value)
+        if value is not None:
+            kwargs['Value'] = kwargs.get("Value", value)
         element = kwargs.pop('Element', None) or DOM.createElement("input")
         self.setElement(element)
         DOM.setAttribute(element, "type", "hidden")
@@ -53,10 +57,10 @@ class Hidden(Widget):
 
     def setName(self, name):
         if name is None:
-            #throw new NullPointerException("Name cannot be null");
+            raise ValueError("Name cannot be null")
             console.error("Name cannot be null")
         elif len(name) == 0:
-            #throw new IllegalArgumentException("Name cannot be an empty string.");
+            raise ValueError("Name cannot be an empty string.")
             console.error("Name cannot be an empty string.")
         DOM.setAttribute(self.getElement(), "name", name)
 
