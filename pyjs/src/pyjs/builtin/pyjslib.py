@@ -5787,26 +5787,26 @@ def delattr(obj, name):
 
 def setattr(obj, name, value):
     JS("""
-    if (typeof obj == 'undefined') {
+    if (typeof @{{obj }}== 'undefined') {
         throw @{{UndefinedValueError}}("obj");
     }
-    if (typeof name != 'string') {
+    if (typeof @{{name }}!= 'string') {
         throw @{{TypeError}}("attribute name must be string");
     }
-    if (obj.__is_instance__ && typeof obj.__setattr__ == 'function') {
-        obj.__setattr__(name, value)
+    if (@{{obj}}.__is_instance__ && typeof @{{obj}}.__setattr__ == 'function') {
+        @{{obj}}.__setattr__(@{{name}}, @{{value}})
         return;
     }
-    if (attrib_remap.indexOf(name) >= 0) {
-        name = '$$' + name;
+    if (attrib_remap.indexOf(@{{name}}) >= 0) {
+        @{{name }}= '$$' + @{{name}};
     }
-    if (   typeof obj[name] != 'undefined'
-        && obj.__is_instance__
-        && obj[name] !== null
-        && typeof obj[name].__set__ == 'function') {
-        obj[name].__set__(obj, value);
+    if (   typeof @{{obj}}[@{{name}}] != 'undefined'
+        && @{{obj}}.__is_instance__
+        && @{{obj}}[@{{name}}] !== null
+        && typeof @{{obj}}[@{{name}}].__set__ == 'function') {
+        @{{obj}}[@{{name}}].__set__(@{{obj}}, @{{value}});
     } else {
-        obj[name] = value;
+        @{{obj}}[@{{name}}] = @{{value}};
     }
     """)
 
