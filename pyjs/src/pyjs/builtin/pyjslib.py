@@ -5461,21 +5461,21 @@ def __setslice(object, lower, upper, value):
 
 def str(text):
     JS("""
-    if (text === null) {
+    if (@{{text}}=== null) {
         return "None";
     }
-    if (typeof text == 'boolean') {
-        if (text) return "True";
+    if (typeof @{{text}}== 'boolean') {
+        if (@{{text}}) return "True";
         return "False";
     }
-    if (@{{hasattr}}(text,"__str__")) {
-        return text.__str__();
+    if (@{{hasattr}}(@{{text}},"__str__")) {
+        return @{{text}}.__str__();
     }
-    return String(text);
+    return String(@{{text}});
     """)
 
 def ord(x):
-    if(JS("typeof x == 'string'") and len(x) is 1):
+    if(JS("typeof @{{x}}== 'string'") and len(x) is 1):
         return INT(x.charCodeAt(0));
     else:
         JS("""throw @{{TypeError}}("ord() expected string of length 1");""")
@@ -5483,12 +5483,12 @@ def ord(x):
 
 def chr(x):
     JS("""
-        return String.fromCharCode(x);
+        return String.fromCharCode(@{{x}});
     """)
 
 def is_basetype(x):
     JS("""
-       var t = typeof(x);
+       var t = typeof(@{{x}});
        return t == 'boolean' ||
        t == 'function' ||
        t == 'number' ||
@@ -5498,8 +5498,8 @@ def is_basetype(x):
 
 def get_pyjs_classtype(x):
     JS("""
-        if (x !== null && typeof x.__is_instance__ == 'boolean') {
-            var src = x.__name__;
+        if (@{{x}}!== null && typeof @{{x}}.__is_instance__ == 'boolean') {
+            var src = @{{x}}.__name__;
             return src;
         }
         return null;
@@ -5513,32 +5513,32 @@ def repr(x):
             return x.__repr__(x)
         return x.__repr__()
     JS("""
-       if (x === null)
+       if (@{{x}}=== null)
            return "None";
 
-       if (x === undefined)
+       if (@{{x}}=== undefined)
            return "undefined";
 
-       var t = typeof(x);
+       var t = typeof(@{{x}});
 
-        //alert("repr typeof " + t + " : " + x);
+        //alert("repr typeof " + t + " : " + @{{x}});
 
        if (t == "boolean") {
-           if (x) return "True";
+           if (@{{x}}) return "True";
            return "False";
        }
        if (t == "function")
-           return "<function " + x.toString() + ">";
+           return "<function " + @{{x}}.toString() + ">";
 
        if (t == "number")
-           return x.toString();
+           return @{{x}}.toString();
 
        if (t == "string") {
-           if (x.indexOf("'") == -1)
-               return "'" + x + "'";
-           if (x.indexOf('"') == -1)
-               return '"' + x + '"';
-           var s = x.$$replace(new RegExp('"', "g"), '\\\\"');
+           if (@{{x}}.indexOf("'") == -1)
+               return "'" + @{{x}}+ "'";
+           if (@{{x}}.indexOf('"') == -1)
+               return '"' + @{{x}}+ '"';
+           var s = @{{x}}.$$replace(new RegExp('"', "g"), '\\\\"');
            return '"' + s + '"';
        }
 
@@ -5547,20 +5547,21 @@ def repr(x):
 
        // If we get here, x is an object.  See if it's a Pyjamas class.
 
-       if (!@{{hasattr}}(x, "__init__"))
-           return "<" + x.toString() + ">";
+       if (!@{{hasattr}}(@{{x}}, "__init__"))
+           return "<" + @{{x}}.toString() + ">";
 
        // Handle the common Pyjamas data types.
 
        var constructor = "UNKNOWN";
 
-       constructor = @{{get_pyjs_classtype}}(x);
+       constructor = @{{get_pyjs_classtype}}(@{{x}});
 
         //alert("repr constructor: " + constructor);
 
        // If we get here, the class isn't one we know -> return the class name.
        // Note that we replace underscores with dots so that the name will
        // (hopefully!) look like the original Python name.
+       // (XXX this was for pyjamas 0.4 but may come back in an optimised mode)
 
        //var s = constructor.$$replace(new RegExp('_', "g"), '.');
        return "<" + constructor + " object>";
