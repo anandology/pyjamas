@@ -3698,17 +3698,17 @@ class list:
             throw @{{TypeError}}("'NoneType' is not iterable");
         }
         if (@{{data}}.constructor === Array) {
-            self.__array = @{{data}}.slice();
+            @{{self}}.__array = @{{data}}.slice();
             return null;
         }
         if (typeof @{{data}}.__iter__ == 'function') {
             if (typeof @{{data}}.__array == 'object') {
-                self.__array = @{{data}}.__array.slice();
+                @{{self}}.__array = @{{data}}.__array.slice();
                 return null;
             }
             var iter = @{{data}}.__iter__();
             if (typeof iter.__array == 'object') {
-                self.__array = iter.__array.slice();
+                @{{self}}.__array = iter.__array.slice();
                 return null;
             }
             @{{data}} = [];
@@ -3727,7 +3727,7 @@ class list:
                     if (e.__name__ != 'StopIteration') throw e;
                 }
             }
-            self.__array = @{{data}};
+            @{{self}}.__array = @{{data}};
             return null;
         }
         throw @{{TypeError}}("'" + @{{repr}}(@{{data}}) + "' is not iterable");
@@ -3737,7 +3737,7 @@ class list:
         raise TypeError("list objects are unhashable")
 
     def append(self, item):
-        JS("""self.__array[self.__array.length] = item;""")
+        JS("""@{{self}}.__array[@{{self}}.__array.length] = item;""")
 
     # extend in place, just in case there's somewhere a shortcut to self.__array
     def extend(self, data):
@@ -3775,8 +3775,8 @@ class list:
         } else {
             throw @{{TypeError}}("'" + @{{repr}}(@{{data}}) + "' is not iterable");
         }
-        var l = self.__array;
-        var j = self.__array.length;
+        var l = @{{self}}.__array;
+        var j = @{{self}}.__array.length;
         var n = @{{data}}.length, i = 0;
         while (i < n) {
             l[j++] = @{{data}}[i++];
@@ -3785,11 +3785,11 @@ class list:
 
     def remove(self, value):
         JS("""
-        var index=self.index(value);
+        var index=@{{self}}.index(value);
         if (index<0) {
             throw @{{ValueError}}("list.remove(x): x not in list");
         }
-        self.__array.splice(index, 1);
+        @{{self}}.__array.splice(index, 1);
         return true;
         """)
 
@@ -3797,11 +3797,11 @@ class list:
         JS("""
         start = start.valueOf();
         if (typeof value == 'number' || typeof value == 'string') {
-            start = self.__array.indexOf(value, start);
+            start = @{{self}}.__array.indexOf(value, start);
             if (start >= 0)
                 return start;
         } else {
-            var len = self.__array.length >>> 0;
+            var len = @{{self}}.__array.length >>> 0;
 
             start = (start < 0)
                     ? Math.ceil(start)
@@ -3810,8 +3810,8 @@ class list:
                 start += len;
 
             for (; start < len; start++) {
-                if (start in self.__array &&
-                    @{{cmp}}(self.__array[start], value) == 0)
+                if (start in @{{self}}.__array &&
+                    @{{cmp}}(@{{self}}.__array[start], value) == 0)
                     return start;
             }
         }
@@ -3819,20 +3819,20 @@ class list:
         raise ValueError("list.index(x): x not in list")
 
     def insert(self, index, value):
-        JS("""    var a = self.__array; self.__array=a.slice(0, index).concat(value, a.slice(index));""")
+        JS("""    var a = @{{self}}.__array; @{{self}}.__array=a.slice(0, index).concat(value, a.slice(index));""")
 
     def pop(self, index = -1):
         JS("""
         index = index.valueOf();
-        if (index<0) index += self.__array.length;
-        if (index < 0 || index >= self.__array.length) {
-            if (self.__array.length == 0) {
+        if (index<0) index += @{{self}}.__array.length;
+        if (index < 0 || index >= @{{self}}.__array.length) {
+            if (@{{self}}.__array.length == 0) {
                 throw @{{IndexError}}("pop from empty list");
             }
             throw @{{IndexError}}("pop index out of range");
         }
-        var a = self.__array[index];
-        self.__array.splice(index, 1);
+        var a = @{{self}}.__array[index];
+        @{{self}}.__array.splice(index, 1);
         return a;
         """)
 
@@ -3840,9 +3840,9 @@ class list:
         if not isinstance(l, list):
             return -1
         JS("""
-        var n1 = self.__array.length,
+        var n1 = @{{self}}.__array.length,
             n2 = l.__array.length,
-            a1 = self.__array,
+            a1 = @{{self}}.__array,
             a2 = l.__array,
             n, c;
         n = (n1 < n2 ? n1 : n2);
@@ -3856,18 +3856,18 @@ class list:
 
     def __getslice__(self, lower, upper):
         JS("""
-        if (upper==null) return @{{list}}(self.__array.slice(lower));
-        return @{{list}}(self.__array.slice(lower, upper));
+        if (upper==null) return @{{list}}(@{{self}}.__array.slice(lower));
+        return @{{list}}(@{{self}}.__array.slice(lower, upper));
         """)
 
     def __delslice__(self, lower, upper):
         JS("""
         var n = upper - lower;
         if (upper==null) {
-            n =  self.__array.length;
+            n =  @{{self}}.__array.length;
         }
         if (!lower) lower = 0;
-        if (n > 0) self.__array.splice(lower, n);
+        if (n > 0) @{{self}}.__array.splice(lower, n);
         """)
         return None
 
@@ -3882,35 +3882,35 @@ class list:
     def __getitem__(self, index):
         JS("""
         index = index.valueOf();
-        if (index < 0) index += self.__array.length;
-        if (index < 0 || index >= self.__array.length) {
+        if (index < 0) index += @{{self}}.__array.length;
+        if (index < 0 || index >= @{{self}}.__array.length) {
             throw @{{IndexError}}("list index out of range");
         }
-        return self.__array[index];
+        return @{{self}}.__array[index];
         """)
 
     def __setitem__(self, index, value):
         JS("""
         index = index.valueOf();
-        if (index < 0) index += self.__array.length;
-        if (index < 0 || index >= self.__array.length) {
+        if (index < 0) index += @{{self}}.__array.length;
+        if (index < 0 || index >= @{{self}}.__array.length) {
             throw @{{IndexError}}("list assignment index out of range");
         }
-        self.__array[index]=value;
+        @{{self}}.__array[index]=value;
         """)
 
     def __delitem__(self, index):
         JS("""
         index = index.valueOf();
-        if (index < 0) index += self.__array.length;
-        if (index < 0 || index >= self.__array.length) {
+        if (index < 0) index += @{{self}}.__array.length;
+        if (index < 0 || index >= @{{self}}.__array.length) {
             throw @{{IndexError}}("list assignment index out of range");
         }
-        self.__array.splice(index, 1);
+        @{{self}}.__array.splice(index, 1);
         """)
 
     def __len__(self):
-        return INT(JS("""self.__array.length"""))
+        return INT(JS("""@{{self}}.__array.length"""))
 
     def __contains__(self, value):
         try:
@@ -3920,16 +3920,16 @@ class list:
         return True
 
     def __iter__(self):
-        return JS("new $iter_array(self.__array)")
+        return JS("new $iter_array(@{{self}}.__array)")
 
     def __reversed__(self):
-        return JS("new $reversed_iter_array(self.__array)")
+        return JS("new $reversed_iter_array(@{{self}}.__array)")
 
     def __enumerate__(self):
-        return JS("new $enumerate_array(self.__array)")
+        return JS("new $enumerate_array(@{{self}}.__array)")
 
     def reverse(self):
-        JS("""    self.__array.reverse();""")
+        JS("""    @{{self}}.__array.reverse();""")
 
     def sort(self, cmp=None, key=None, reverse=False):
         if cmp is None:
@@ -3964,9 +3964,9 @@ class list:
             return "<type '%s'>" % self.__name__
         JS("""
         var s = "[";
-        for (var i=0; i < self.__array.length; i++) {
-            s += @{{repr}}(self.__array[i]);
-            if (i < self.__array.length - 1)
+        for (var i=0; i < @{{self}}.__array.length; i++) {
+            s += @{{repr}}(@{{self}}.__array[i]);
+            if (i < @{{self}}.__array.length - 1)
                 s += ", ";
         }
         s += "]";
@@ -4000,17 +4000,17 @@ class tuple:
             throw @{{TypeError}}("'NoneType' is not iterable");
         }
         if (@{{data}}.constructor === Array) {
-            self.__array = @{{data}}.slice();
+            @{{self}}.__array = @{{data}}.slice();
             return null;
         }
         if (typeof @{{data}}.__iter__ == 'function') {
             if (typeof @{{data}}.__array == 'object') {
-                self.__array = @{{data}}.__array.slice();
+                @{{self}}.__array = @{{data}}.__array.slice();
                 return null;
             }
             var iter = @{{data}}.__iter__();
             if (typeof iter.__array == 'object') {
-                self.__array = iter.__array.slice();
+                @{{self}}.__array = iter.__array.slice();
                 return null;
             }
             @{{data}} = [];
@@ -4029,7 +4029,7 @@ class tuple:
                     if (e.__name__ != 'StopIteration') throw e;
                 }
             }
-            self.__array = @{{data}};
+            @{{self}}.__array = @{{data}};
             return null;
         }
         throw @{{TypeError}}("'" + @{{repr}}(@{{data}}) + "' is not iterable");
@@ -4042,9 +4042,9 @@ class tuple:
         if not isinstance(l, tuple):
             return 1
         JS("""
-        var n1 = self.__array.length,
+        var n1 = @{{self}}.__array.length,
             n2 = l.__array.length,
-            a1 = self.__array,
+            a1 = @{{self}}.__array,
             a2 = l.__array,
             n, c;
         n = (n1 < n2 ? n1 : n2);
@@ -4058,31 +4058,31 @@ class tuple:
 
     def __getslice__(self, lower, upper):
         JS("""
-        if (upper==null) return @{{tuple}}(self.__array.slice(lower));
-        return @{{tuple}}(self.__array.slice(lower, upper));
+        if (upper==null) return @{{tuple}}(@{{self}}.__array.slice(lower));
+        return @{{tuple}}(@{{self}}.__array.slice(lower, upper));
         """)
 
     def __getitem__(self, index):
         JS("""
         index = index.valueOf();
-        if (index < 0) index += self.__array.length;
-        if (index < 0 || index >= self.__array.length) {
+        if (index < 0) index += @{{self}}.__array.length;
+        if (index < 0 || index >= @{{self}}.__array.length) {
             throw @{{IndexError}}("tuple index out of range");
         }
-        return self.__array[index];
+        return @{{self}}.__array[index];
         """)
 
     def __len__(self):
-        return INT(JS("""self.__array.length"""))
+        return INT(JS("""@{{self}}.__array.length"""))
 
     def __contains__(self, value):
-        return JS('self.__array.indexOf(value)>=0')
+        return JS('@{{self}}.__array.indexOf(value)>=0')
 
     def __iter__(self):
-        return JS("new $iter_array(self.__array)")
+        return JS("new $iter_array(@{{self}}.__array)")
         JS("""
         var i = 0;
-        var l = self.__array;
+        var l = @{{self}}.__array;
         return {
             'next': function() {
                 if (i >= l.length) {
@@ -4097,7 +4097,7 @@ class tuple:
         """)
 
     def __enumerate__(self):
-        return JS("new $enumerate_array(self.__array)")
+        return JS("new $enumerate_array(@{{self}}.__array)")
 
     def getArray(self):
         """
@@ -4114,12 +4114,12 @@ class tuple:
             return "<type '%s'>" % self.__name__
         JS("""
         var s = "(";
-        for (var i=0; i < self.__array.length; i++) {
-            s += @{{repr}}(self.__array[i]);
-            if (i < self.__array.length - 1)
+        for (var i=0; i < @{{self}}.__array.length; i++) {
+            s += @{{repr}}(@{{self}}.__array[i]);
+            if (i < @{{self}}.__array.length - 1)
                 s += ", ";
         }
-        if (self.__array.length == 1)
+        if (@{{self}}.__array.length == 1)
             s += ",";
         s += ")";
         return s;
@@ -4154,7 +4154,7 @@ class dict:
             JS("""
         var item, i, n, sKey;
         var data = @{{_data}};
-        //self.__object = {};
+        //@{{self}}.__object = {};
 
         if (data === null) {
             throw @{{TypeError}}("'NoneType' is not iterable");
@@ -4163,7 +4163,7 @@ class dict:
         } else if (typeof data.__object == 'object') {
             data = data.__object;
             for (sKey in data) {
-                self.__object[sKey] = data[sKey].slice();
+                @{{self}}.__object[sKey] = data[sKey].slice();
             }
             return null;
         } else if (typeof data.__iter__ == 'function') {
@@ -4193,7 +4193,7 @@ class dict:
             }
         } else if (typeof data == 'object' || typeof data == 'function') {
             for (var key in data) {
-                self.__object['$'+key] = [key, data[key]];
+                @{{self}}.__object['$'+key] = [key, data[key]];
             }
             return null;
         } else {
@@ -4209,7 +4209,7 @@ class dict:
                 item = data[i++];
                 key = item[0];
                 sKey = (key===null?null:(typeof key.$H != 'undefined'?key.$H:((typeof key=='string'||key.__number__)?'$'+key:@{{__hash}}(key))));
-                self.__object[sKey] = [key, item[1]];
+                @{{self}}.__object[sKey] = [key, item[1]];
             }
             return null;
         }
@@ -4218,7 +4218,7 @@ class dict:
                 item = data[i++].__array;
                 key = item[0];
                 sKey = (key===null?null:(typeof key.$H != 'undefined'?key.$H:((typeof key=='string'||key.__number__)?'$'+key:@{{__hash}}(key))));
-                self.__object[sKey] = [key, item[1]];
+                @{{self}}.__object[sKey] = [key, item[1]];
             }
             return null;
         }
@@ -4227,7 +4227,7 @@ class dict:
         while (++i < n) {
             key = data[i].__getitem__(0);
             sKey = (key===null?null:(typeof key.$H != 'undefined'?key.$H:((typeof key=='string'||key.__number__)?'$'+key:@{{__hash}}(key))));
-            self.__object[sKey] = [key, data[i].__getitem__(1)];
+            @{{self}}.__object[sKey] = [key, data[i].__getitem__(1)];
         }
         return null;
         """)
@@ -4244,13 +4244,13 @@ class dict:
             throw @{{ValueError}}("Value for key '" + key + "' is undefined");
         }
         var sKey = (key===null?null:(typeof key.$H != 'undefined'?key.$H:((typeof key=='string'||key.__number__)?'$'+key:@{{__hash}}(key))));
-        self.__object[sKey] = [key, value];
+        @{{self}}.__object[sKey] = [key, value];
         """)
 
     def __getitem__(self, key):
         JS("""
         var sKey = (key===null?null:(typeof key.$H != 'undefined'?key.$H:((typeof key=='string'||key.__number__)?'$'+key:@{{__hash}}(key))));
-        var value=self.__object[sKey];
+        var value=@{{self}}.__object[sKey];
         if (typeof value == 'undefined'){
             throw @{{KeyError}}(key);
         }
@@ -4262,7 +4262,7 @@ class dict:
 
     def __nonzero__(self):
         JS("""
-        for (var i in self.__object){
+        for (var i in @{{self}}.__object){
             return true;
         }
         return false;
@@ -4276,7 +4276,7 @@ class dict:
             other_sKeys = new Array(),
             selfLen = 0,
             otherLen = 0,
-            selfObj = self.__object;
+            selfObj = @{{self}}.__object;
             otherObj = other.__object;
         for (sKey in selfObj) {
            self_sKeys[selfLen++] = sKey;
@@ -4308,7 +4308,7 @@ class dict:
     def __len__(self):
         size = 0
         JS("""
-        for (var i in self.__object) size++;
+        for (var i in @{{self}}.__object) size++;
         """)
         return INT(size);
 
@@ -4319,22 +4319,22 @@ class dict:
     def __delitem__(self, key):
         JS("""
         var sKey = (key===null?null:(typeof key.$H != 'undefined'?key.$H:((typeof key=='string'||key.__number__)?'$'+key:@{{__hash}}(key))));
-        delete self.__object[sKey];
+        delete @{{self}}.__object[sKey];
         """)
 
     def __contains__(self, key):
         JS("""
         var sKey = (key===null?null:(typeof key.$H != 'undefined'?key.$H:((typeof key=='string'||key.__number__)?'$'+key:@{{__hash}}(key))));
-        return typeof self.__object[sKey] == 'undefined' ? false : true;
+        return typeof @{{self}}.__object[sKey] == 'undefined' ? false : true;
         """)
 
     def keys(self):
         JS("""
         var keys=@{{list}}(),
-            selfObj = self.__object,
+            selfObj = @{{self}}.__object,
             __array = keys.__array,
             i = 0;
-        for (var sKey in self.__object) {
+        for (var sKey in @{{self}}.__object) {
             __array[i++] = selfObj[sKey][0];
         }
         return keys;
@@ -4351,8 +4351,8 @@ class dict:
         JS("""
         var values=@{{list}}();
         var i = 0;
-        for (var key in self.__object) {
-            values.__array[i++] = self.__object[key][1];
+        for (var key in @{{self}}.__object) {
+            values.__array[i++] = @{{self}}.__object[key][1];
         }
         return values;
         """)
@@ -4361,8 +4361,8 @@ class dict:
         JS("""
         var items = @{{list}}();
         var i = 0;
-        for (var key in self.__object) {
-          var kv = self.__object[key];
+        for (var key in @{{self}}.__object) {
+          var kv = @{{self}}.__object[key];
           items.__array[i++] = @{{list}}(kv);
           }
           return items;
@@ -4372,8 +4372,8 @@ class dict:
         JS("""
         var keys = new Array();
         var i = 0;
-        for (var key in self.__object) {
-            keys[i++] = self.__object[key][0];
+        for (var key in @{{self}}.__object) {
+            keys[i++] = @{{self}}.__object[key][0];
         }
         return new $iter_array(keys);
 """)
@@ -4382,8 +4382,8 @@ class dict:
         JS("""
         var keys = new Array();
         var i = 0;
-        for (var key in self.__object) {
-            keys[i++] = self.__object[key][0];
+        for (var key in @{{self}}.__object) {
+            keys[i++] = @{{self}}.__object[key][0];
         }
         return new $enumerate_array(keys);
 """)
@@ -4401,19 +4401,19 @@ class dict:
     def setdefault(self, key, default_value):
         JS("""
         var sKey = (key===null?null:(typeof key.$H != 'undefined'?key.$H:((typeof key=='string'||key.__number__)?'$'+key:@{{__hash}}(key))));
-        return typeof self.__object[sKey] == 'undefined' ? (self.__object[sKey]=[key, default_value])[1] : self.__object[sKey][1];
+        return typeof @{{self}}.__object[sKey] == 'undefined' ? (@{{self}}.__object[sKey]=[key, default_value])[1] : @{{self}}.__object[sKey][1];
 """)
 
     def get(self, key, default_value=None):
         JS("""
         var empty = true;
-        for (var sKey in self.__object) {
+        for (var sKey in @{{self}}.__object) {
             empty = false;
             break;
         }
         if (empty) return default_value;
         var sKey = (key===null?null:(typeof key.$H != 'undefined'?key.$H:((typeof key=='string'||key.__number__)?'$'+key:@{{__hash}}(key))));
-        return typeof self.__object[sKey] == 'undefined' ? default_value : self.__object[sKey][1];
+        return typeof @{{self}}.__object[sKey] == 'undefined' ? default_value : @{{self}}.__object[sKey][1];
 """)
 
     def update(self, *args, **kwargs):
@@ -4467,12 +4467,12 @@ class dict:
             return "<type '%s'>" % self.__name__
         JS("""
         var keys = new Array();
-        for (var key in self.__object)
+        for (var key in @{{self}}.__object)
             keys.push(key);
 
         var s = "{";
         for (var i=0; i<keys.length; i++) {
-            var v = self.__object[keys[i]];
+            var v = @{{self}}.__object[keys[i]];
             s += @{{repr}}(v[0]) + ": " + @{{repr}}(v[1]);
             if (i < keys.length-1)
                 s += ", ";
@@ -4513,8 +4513,8 @@ class set(object):
         JS("var data = @{{_data}};")
         if isSet(_data):
             JS("""
-            self.__object = {};
-            var selfObj = self.__object,
+            @{{self}}.__object = {};
+            var selfObj = @{{self}}.__object,
                 dataObj = data.__object;
             for (var sVal in dataObj) {
                 selfObj[sVal] = dataObj[sVal];
@@ -4522,7 +4522,7 @@ class set(object):
             return null;""")
         JS("""
         var item, i, n;
-        var selfObj = self.__object = {};
+        var selfObj = @{{self}}.__object = {};
 
         if (data === null) {
             throw @{{TypeError}}("'NoneType' is not iterable");
@@ -4591,7 +4591,7 @@ class set(object):
         JS("""
         var selfLen = 0,
             otherLen = 0,
-            selfObj = self.__object,
+            selfObj = @{{self}}.__object,
             otherObj = other.__object,
             selfMismatch = false,
             otherMismatch = false;
@@ -4617,15 +4617,15 @@ class set(object):
         if isSet(value) == 1: # An instance of set
             # Use frozenset hash
             JS("""
-            var hashes = new Array(), obj = self.__object, i = 0;
+            var hashes = new Array(), obj = @{{self}}.__object, i = 0;
             for (var v in obj) {
                 hashes[i++] = v;
             }
             hashes.sort();
             var h = hashes.join("|");
-            return typeof self.__object[h] != 'undefined';
+            return typeof @{{self}}.__object[h] != 'undefined';
 """)
-        JS("""return typeof self.__object[@{{hash}}(value)] != 'undefined';""")
+        JS("""return typeof @{{self}}.__object[@{{hash}}(value)] != 'undefined';""")
 
     def __hash__(self):
         raise TypeError("set objects are unhashable")
@@ -4634,8 +4634,8 @@ class set(object):
         JS("""
         var items = new Array();
         var i = 0;
-        for (var key in self.__object) {
-            items[i++] = self.__object[key];
+        for (var key in @{{self}}.__object) {
+            items[i++] = @{{self}}.__object[key];
         }
         return new $iter_array(items);
         """)
@@ -4643,7 +4643,7 @@ class set(object):
     def __len__(self):
         size=0.0
         JS("""
-        for (var i in self.__object) size++;
+        for (var i in @{{self}}.__object) size++;
         """)
         return INT(size)
 
@@ -4657,8 +4657,8 @@ class set(object):
         JS("""
         var values = new Array();
         var i = 0,
-            obj = self.__object,
-            s = self.__name__ + "([";
+            obj = @{{self}}.__object,
+            s = @{{self}}.__name__ + "([";
         for (var sVal in obj) {
             values[i++] = @{{repr}}(obj[sVal]);
         }
@@ -4692,18 +4692,18 @@ class set(object):
         return self.difference(other)
 
     def add(self, value):
-        JS("""self.__object[@{{hash}}(value)] = value;""")
+        JS("""@{{self}}.__object[@{{hash}}(value)] = value;""")
         return None
 
     def clear(self):
-        JS("""self.__object = {};""")
+        JS("""@{{self}}.__object = {};""")
         return None
 
     def copy(self):
         new_set = set()
         JS("""
         var obj = new_set.__object,
-            selfObj = self.__object;
+            selfObj = @{{self}}.__object;
         for (var sVal in selfObj) {
             obj[sVal] = selfObj[sVal];
         }
@@ -4718,7 +4718,7 @@ class set(object):
         new_set = set()
         JS("""
         var obj = new_set.__object,
-            selfObj = self.__object,
+            selfObj = @{{self}}.__object,
             otherObj = other.__object;
         for (var sVal in selfObj) {
             if (typeof otherObj[sVal] == 'undefined') {
@@ -4733,7 +4733,7 @@ class set(object):
         if not isSet(other):
             other = frozenset(other)
         JS("""
-        var selfObj = self.__object,
+        var selfObj = @{{self}}.__object,
             otherObj = other.__object;
         for (var sVal in otherObj) {
             if (typeof selfObj[sVal] != 'undefined') {
@@ -4746,7 +4746,7 @@ class set(object):
     def discard(self, value):
         if isSet(value) == 1:
             value = frozenset(value)
-        JS("""delete self.__object[@{{hash}}(value)];""")
+        JS("""delete @{{self}}.__object[@{{hash}}(value)];""")
         return None
 
     def intersection(self, other):
@@ -4757,7 +4757,7 @@ class set(object):
         new_set = set()
         JS("""
         var obj = new_set.__object,
-            selfObj = self.__object,
+            selfObj = @{{self}}.__object,
             otherObj = other.__object;
         for (var sVal in selfObj) {
             if (typeof otherObj[sVal] != 'undefined') {
@@ -4772,7 +4772,7 @@ class set(object):
         if not isSet(other):
             other = frozenset(other)
         JS("""
-        var selfObj = self.__object,
+        var selfObj = @{{self}}.__object,
             otherObj = other.__object;
         for (var sVal in selfObj) {
             if (typeof otherObj[sVal] == 'undefined') {
@@ -4787,7 +4787,7 @@ class set(object):
         if not isSet(other):
             other = frozenset(other)
         JS("""
-        var selfObj = self.__object,
+        var selfObj = @{{self}}.__object,
             otherObj = other.__object;
         for (var sVal in selfObj) {
             if (typeof otherObj[sVal] != 'undefined') {
@@ -4805,18 +4805,18 @@ class set(object):
     def issubset(self, other):
         if not isSet(other):
             other = frozenset(other)
-        return JS("self.__cmp__(other) < 0")
+        return JS("@{{self}}.__cmp__(other) < 0")
 
     def issuperset(self, other):
         if not isSet(other):
             other = frozenset(other)
-        return JS("(self.__cmp__(other)|1) == 1")
+        return JS("(@{{self}}.__cmp__(other)|1) == 1")
 
     def pop(self):
         JS("""
-        for (var sVal in self.__object) {
-            var value = self.__object[sVal];
-            delete self.__object[sVal];
+        for (var sVal in @{{self}}.__object) {
+            var value = @{{self}}.__object[sVal];
+            delete @{{self}}.__object[sVal];
             return value;
         }
         """)
@@ -4829,10 +4829,10 @@ class set(object):
             val = value
         JS("""
         var h;
-        if (typeof self.__object[(h = @{{hash}}(val))] == 'undefined') {
+        if (typeof @{{self}}.__object[(h = @{{hash}}(val))] == 'undefined') {
             throw @{{KeyError}}(value);
         }
-        delete self.__object[@{{hash}}(val)];""")
+        delete @{{self}}.__object[@{{hash}}(val)];""")
 
     def symmetric_difference(self, other):
         # Return the symmetric difference of two sets as a new set.
@@ -4842,7 +4842,7 @@ class set(object):
         new_set = set()
         JS("""
         var obj = new_set.__object,
-            selfObj = self.__object,
+            selfObj = @{{self}}.__object,
             otherObj = other.__object;
         for (var sVal in selfObj) {
             if (typeof otherObj[sVal] == 'undefined') {
@@ -4863,7 +4863,7 @@ class set(object):
             other = frozenset(other)
         JS("""
         var obj = new Object(),
-            selfObj = self.__object,
+            selfObj = @{{self}}.__object,
             otherObj = other.__object;
         for (var sVal in selfObj) {
             if (typeof otherObj[sVal] == 'undefined') {
@@ -4875,7 +4875,7 @@ class set(object):
                 obj[sVal] = otherObj[sVal];
             }
         }
-        self.__object = obj;
+        @{{self}}.__object = obj;
 """)
         return None
 
@@ -4887,7 +4887,7 @@ class set(object):
             other = frozenset(other)
         JS("""
         var obj = new_set.__object,
-            selfObj = self.__object,
+            selfObj = @{{self}}.__object,
             otherObj = other.__object;
         for (var sVal in selfObj) {
             obj[sVal] = selfObj[sVal];
@@ -4904,7 +4904,7 @@ class set(object):
         if not isSet(data):
             data = frozenset(data)
         JS("""
-        var selfObj = self.__object,
+        var selfObj = @{{self}}.__object,
             dataObj = @{{data}}.__object;
         for (var sVal in dataObj) {
             if (typeof selfObj[sVal] == 'undefined') {
@@ -4921,13 +4921,13 @@ class frozenset(object):
     def __init__(self, _data=JS("[]")):
         # Transform data into an array with [key,value] and add set self.__object
         # Input data can be Array(key, val), iteratable (key,val) or Object/Function
-        if JS("typeof self.__object != 'undefined'"):
+        if JS("typeof @{{self}}.__object != 'undefined'"):
             return None
         JS("var data = @{{_data}};")
         if isSet(_data):
             JS("""
-            self.__object = {};
-            var selfObj = self.__object,
+            @{{self}}.__object = {};
+            var selfObj = @{{self}}.__object,
                 dataObj = data.__object;
             for (var sVal in dataObj) {
                 selfObj[sVal] = dataObj[sVal];
@@ -4935,7 +4935,7 @@ class frozenset(object):
             return null;""")
         JS("""
         var item, i, n;
-        var selfObj = self.__object = {};
+        var selfObj = @{{self}}.__object = {};
 
         if (data === null) {
             throw @{{TypeError}}("'NoneType' is not iterable");
@@ -5004,7 +5004,7 @@ class frozenset(object):
         JS("""
         var selfLen = 0,
             otherLen = 0,
-            selfObj = self.__object,
+            selfObj = @{{self}}.__object,
             otherObj = @{{other}}.__object,
             selfMismatch = false,
             otherMismatch = false;
@@ -5030,32 +5030,32 @@ class frozenset(object):
         if isSet(value) == 1: # An instance of set
             # Use frozenset hash
             JS("""
-            var hashes = new Array(), obj = self.__object, i = 0;
+            var hashes = new Array(), obj = @{{self}}.__object, i = 0;
             for (var v in obj) {
                 hashes[i++] = v;
             }
             hashes.sort();
             var h = hashes.join("|");
-            return typeof self.__object[h] != 'undefined';
+            return typeof @{{self}}.__object[h] != 'undefined';
 """)
-        JS("""return typeof self.__object[@{{hash}}(@{{value}})] != 'undefined';""")
+        JS("""return typeof @{{self}}.__object[@{{hash}}(@{{value}})] != 'undefined';""")
 
     def __hash__(self):
         JS("""
-        var hashes = new Array(), obj = self.__object, i = 0;
+        var hashes = new Array(), obj = @{{self}}.__object, i = 0;
         for (var v in obj) {
             hashes[i++] = v;
         }
         hashes.sort();
-        return (self.$H = hashes.join("|"));
+        return (@{{self}}.$H = hashes.join("|"));
 """)
 
     def __iter__(self):
         JS("""
         var items = new Array();
         var i = 0;
-        for (var key in self.__object) {
-            items[i++] = self.__object[key];
+        for (var key in @{{self}}.__object) {
+            items[i++] = @{{self}}.__object[key];
         }
         return new $iter_array(items);
         """)
@@ -5063,7 +5063,7 @@ class frozenset(object):
     def __len__(self):
         size=0.0
         JS("""
-        for (var i in self.__object) size++;
+        for (var i in @{{self}}.__object) size++;
         """)
         return INT(size)
 
@@ -5077,8 +5077,8 @@ class frozenset(object):
         JS("""
         var values = new Array();
         var i = 0,
-            obj = self.__object,
-            s = self.__name__ + "([";
+            obj = @{{self}}.__object,
+            s = @{{self}}.__name__ + "([";
         for (var sVal in obj) {
             values[i++] = @{{repr}}(obj[sVal]);
         }
@@ -5112,14 +5112,14 @@ class frozenset(object):
         return self.difference(other)
 
     def clear(self):
-        JS("""self.__object = {};""")
+        JS("""@{{self}}.__object = {};""")
         return None
 
     def copy(self):
         new_set = set()
         JS("""
         var obj = @{{new_set}}.__object,
-            selfObj = self.__object;
+            selfObj = @{{self}}.__object;
         for (var sVal in selfObj) {
             obj[sVal] = selfObj[sVal];
         }
@@ -5134,7 +5134,7 @@ class frozenset(object):
         new_set = set()
         JS("""
         var obj = @{{new_set}}.__object,
-            selfObj = self.__object,
+            selfObj = @{{self}}.__object,
             otherObj = @{{other}}.__object;
         for (var sVal in selfObj) {
             if (typeof otherObj[sVal] == 'undefined') {
@@ -5152,7 +5152,7 @@ class frozenset(object):
         new_set = set()
         JS("""
         var obj = @{{new_set}}.__object,
-            selfObj = self.__object,
+            selfObj = @{{self}}.__object,
             otherObj = @{{other}}.__object;
         for (var sVal in selfObj) {
             if (typeof otherObj[sVal] != 'undefined') {
@@ -5167,7 +5167,7 @@ class frozenset(object):
         if not isSet(other):
             other = frozenset(other)
         JS("""
-        var selfObj = self.__object,
+        var selfObj = @{{self}}.__object,
             otherObj = @{{other}}.__object;
         for (var sVal in selfObj) {
             if (typeof otherObj[sVal] != 'undefined') {
@@ -5185,18 +5185,18 @@ class frozenset(object):
     def issubset(self, other):
         if not isSet(other):
             other = frozenset(other)
-        return JS("self.__cmp__(@{{other}}) < 0")
+        return JS("@{{self}}.__cmp__(@{{other}}) < 0")
 
     def issuperset(self, other):
         if not isSet(other):
             other = frozenset(other)
-        return JS("(self.__cmp__(@{{other}})|1) == 1")
+        return JS("(@{{self}}.__cmp__(@{{other}})|1) == 1")
 
     def pop(self):
         JS("""
-        for (var sVal in self.__object) {
-            var value = self.__object[sVal];
-            delete self.__object[sVal];
+        for (var sVal in @{{self}}.__object) {
+            var value = @{{self}}.__object[sVal];
+            delete @{{self}}.__object[sVal];
             return value;
         }
         """)
@@ -5210,7 +5210,7 @@ class frozenset(object):
         new_set = set()
         JS("""
         var obj = @{{new_set}}.__object,
-            selfObj = self.__object,
+            selfObj = @{{self}}.__object,
             otherObj = @{{other}}.__object;
         for (var sVal in selfObj) {
             if (typeof otherObj[sVal] == 'undefined') {
@@ -5233,7 +5233,7 @@ class frozenset(object):
             other = frozenset(other)
         JS("""
         var obj = @{{new_set}}.__object,
-            selfObj = self.__object,
+            selfObj = @{{self}}.__object,
             otherObj = @{{other}}.__object;
         for (var sVal in selfObj) {
             obj[sVal] = selfObj[sVal];
