@@ -5755,42 +5755,48 @@ def _del(obj):
 
 def delattr(obj, name):
     JS("""
-    if (typeof obj == 'undefined') {
+    if (typeof @{{obj}}== 'undefined') {
         throw @{{UndefinedValueError}}("obj");
     }
-    if (typeof name != 'string') {
+    if (typeof @{{name}}!= 'string') {
         throw @{{TypeError}}("attribute name must be string");
     }
-    if (obj.__is_instance__ && typeof obj.__delattr__ == 'function') {
-        obj.__delattr__(name);
+    if (@{{obj}}.__is_instance__ && typeof @{{obj}}.__delattr__ == 'function') {
+        @{{obj}}.__delattr__(@{{name}});
         return;
     }
-    var mapped_name = attrib_remap.indexOf(name) < 0 ? name : '$$'+name;
-    if (   obj !== null
-        && (typeof obj == 'object' || typeof obj == 'function')
-        && (typeof(obj[mapped_name]) != "undefined")&&(typeof(obj[mapped_name]) != "function") ){
-        if (obj.__is_instance__ && typeof obj[mapped_name].__delete__ == 'function') {
-            obj[mapped_name].__delete__(obj);
+    var mapped_name = attrib_remap.indexOf(@{{name}}) < 0 ? @{{name}}: 
+                        '$$'+@{{name}};
+    if (   @{{obj}}!== null
+        && (typeof @{{obj}}== 'object' || typeof @{{obj}}== 'function')
+        && (typeof(@{{obj}}[mapped_name]) != "undefined")
+        &&(typeof(@{{obj}}[mapped_name]) != "function") ){
+        if (@{{obj}}.__is_instance__
+            && typeof @{{obj}}[mapped_name].__delete__ == 'function') {
+            @{{obj}}[mapped_name].__delete__(@{{obj}});
         } else {
-            delete obj[mapped_name];
+            delete @{{obj}}[mapped_name];
         }
         return;
     }
-    if (obj === null) {
-        throw @{{AttributeError}}("'NoneType' object has no attribute '"+name+"'");
+    if (@{{obj}}=== null) {
+        throw @{{AttributeError}}("'NoneType' object"+
+                                  "has no attribute '"+name+"'");
     }
-    if (typeof obj != 'object' && typeof obj == 'function') {
-       throw @{{AttributeError}}("'"+typeof(obj)+"' object has no attribute '"+name+"'");
+    if (typeof @{{obj}}!= 'object' && typeof @{{obj}}== 'function') {
+       throw @{{AttributeError}}("'"+typeof(@{{obj}})+
+                                 "' object has no attribute '"+@{{name}}+"'");
     }
-    throw @{{AttributeError}}(obj.__name__+" instance has no attribute '"+ name+"'");
+    throw @{{AttributeError}}(@{{obj}}.__name__+
+                              " instance has no attribute '"+ @{{name}}+"'");
     """)
 
 def setattr(obj, name, value):
     JS("""
-    if (typeof @{{obj }}== 'undefined') {
+    if (typeof @{{obj}}== 'undefined') {
         throw @{{UndefinedValueError}}("obj");
     }
-    if (typeof @{{name }}!= 'string') {
+    if (typeof @{{name}}!= 'string') {
         throw @{{TypeError}}("attribute name must be string");
     }
     if (@{{obj}}.__is_instance__ && typeof @{{obj}}.__setattr__ == 'function') {
@@ -5798,7 +5804,7 @@ def setattr(obj, name, value):
         return;
     }
     if (attrib_remap.indexOf(@{{name}}) >= 0) {
-        @{{name }}= '$$' + @{{name}};
+        @{{name}}= '$$' + @{{name}};
     }
     if (   typeof @{{obj}}[@{{name}}] != 'undefined'
         && @{{obj}}.__is_instance__
