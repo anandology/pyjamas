@@ -5,8 +5,8 @@ def getNextHashId():
 
 def getHashCode(o):
     JS("""
-    return (o == null) ? 0 :
-        (o.$H ? o.$H : (o.$H = pygwt_getNextHashId()));
+    return (@{{o}} == null) ? 0 :
+        (@{{o}}.$H ? @{{o}}.$H : (@{{o}}.$H = @{{getNextHashId}}()));
     """)
 
 def getModuleName():
@@ -16,7 +16,8 @@ def getModuleName():
 
 def getModuleBaseURL():
     JS("""
-    // this is intentionally not using $doc, because we want the module's own url
+    // this is intentionally not using $doc, because we want
+    // the module's own url
     var s = document.location.href;
     
     // Pull off any hash.

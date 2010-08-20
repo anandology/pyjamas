@@ -60,10 +60,10 @@ def newItem(ht):
     return
 
     JS("""
-    if(historyToken == "" || historyToken == null){
-        historyToken = "#";
+    if(@{{historyToken}} == "" || @{{historyToken}} == null){
+        @{{historyToken}} = "#";
     }
-    $wnd.location.hash = encodeURI(historyToken).replace('#','%23');
+    $wnd.location.hash = encodeURI(@{{historyToken}}).replace('#','%23');
     """)
 
 
