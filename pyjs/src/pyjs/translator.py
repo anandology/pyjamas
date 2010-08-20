@@ -313,6 +313,7 @@ PYJSLIB_BUILTIN_FUNCTIONS=frozenset((
     "__op_add",
     "__op_sub",
     "__setslice",
+    "slice",
     "__delslice",
     "___import___",
     "_handle_exception",
@@ -4035,7 +4036,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             attribute_checking = self.attribute_checking and "true" or "false"
             source_tracking = self.source_tracking and "true" or "false"
             attr = """\
-pyjslib['__getattr_check'](%(attr)s, %(attr_left)s, %(attr_right)s,\
+@{{__getattr_check}}(%(attr)s, %(attr_left)s, %(attr_right)s,\
 "%(attrstr)s", %(bound_methods)s, %(descriptors)s, %(attribute_checking)s,\
 %(source_tracking)s)
                 """ % locals()
