@@ -299,8 +299,10 @@ PYJSLIB_BUILTIN_FUNCTIONS=frozenset((
     "_create_class",
     "_del",
     "op_is",
+    "op_eq",
     "__setslice",
     "___import___",
+    "_handle_exception",
     ))
 
 PYJSLIB_BUILTIN_CLASSES=[
@@ -1245,14 +1247,14 @@ class Translator(object):
     (typeof %(v)s.__array != 'undefined' ? %(v)s.__array.length:
         (typeof %(v)s.__len__ == 'function'?%(v)s.__len__():
             (typeof %(v)s.length != 'undefined'?%(v)s.length:
-                pyjslib['len'](%(v)s)))))"""
+                @{{len}}(%(v)s)))))"""
     __inline_len_code_str1 = __inline_len_code_str1.replace("    ", "\t").replace("\n", "\n%(s)s")
 
     __inline_len_code_str2 = """((%(v)s=%(e)s) === null?%(zero)s:
     (typeof %(v)s.__array != 'undefined' ? new pyjslib['int'](%(v)s.__array.length):
         (typeof %(v)s.__len__ == 'function'?%(v)s.__len__():
             (typeof %(v)s.length != 'undefined'? new pyjslib['int'](%(v)s.length):
-                pyjslib['len'](%(v)s)))))"""
+                @{{len}}(%(v)s)))))"""
     __inline_len_code_str2 = __inline_len_code_str2.replace("    ", "\t").replace("\n", "\n%(s)s")
 
     def inline_len_code(self, e):
@@ -1266,7 +1268,7 @@ class Translator(object):
             self.constant_int['0'] = 1
             zero = "$constant_int_0"
             return self.__inline_len_code_str2 % locals()
-        return "pyjslib['len'](%(e)s)" % locals()
+        return "@{{len}}(%(e)s)" % locals()
 
     __inline_eq_code_str = """((%(v1)s=%(e1)s)===(%(v2)s=%(e2)s)&&%(v1)s===null?true:
     (%(v1)s===null?false:(%(v2)s===null?false:
@@ -1283,12 +1285,12 @@ class Translator(object):
             self.add_lookup('variable', v2, v2)
             s = self.spacing()
             return self.__inline_eq_code_str % locals()
-        return "pyjslib['op_eq'](%(e1)s, %(e2)s)" % locals()
+        return "@{{op_eq}}(%(e1)s, %(e2)s)" % locals()
 
     __inline_cmp_code_str = """((%(v1)s=%(e1)s)===(%(v2)s=%(e2)s)?0:
     (typeof %(v1)s==typeof %(v2)s && ((typeof %(v1)s == 'number')||(typeof %(v1)s == 'string')||(typeof %(v1)s == 'boolean'))?
         (%(v1)s == %(v2)s ? 0 : (%(v1)s < %(v2)s ? -1 : 1)):
-        pyjslib['cmp'](%(v1)s, %(v2)s)))"""
+        @{{cmp}}(%(v1)s, %(v2)s)))"""
     __inline_cmp_code_str = __inline_cmp_code_str.replace("    ", "\t").replace("\n", "\n%(s)s")
 
     def inline_cmp_code(self, e1, e2):
@@ -1299,7 +1301,7 @@ class Translator(object):
             self.add_lookup('variable', v2, v2)
             s = self.spacing()
             return self.__inline_cmp_code_str % locals()
-        return "pyjslib['cmp'](%(e1)s, %(e2)s)" % locals()
+        return "@{{cmp}}(%(e1)s, %(e2)s)" % locals()
 
     __inline_getitem_code_str = """(typeof (%(v1)s=%(e)s).__array != 'undefined'?
     ((typeof %(v1)s.__array[%(v2)s=%(i)s]) != 'undefined'?%(v1)s.__array[%(v2)s]:
@@ -1340,7 +1342,7 @@ class Translator(object):
 %(s)sreturn %(call_code)s;
 }finally{$pyjs.in_try_except-=1;}}catch(%(dbg)s_err){\
 if (%(dbg)s_err.__name__ != 'StopIteration')\
-{pyjslib['_handle_exception'](%(dbg)s_err);}\
+{@{{_handle_exception}}(%(dbg)s_err);}\
 throw %(dbg)s_err;
 }})()""" % locals()
         return call_code
@@ -1360,13 +1362,13 @@ $generator['next'] = function (noStop) {
                 $generator_state[0] = -1;
                 return;
             }
-            throw pyjslib.StopIteration;
+            throw @{{StopIteration}};
         }
     } catch (e) {
 %(src2)s
         $is_executing=false;
         $generator_state[0] = -1;
-        if (noStop === true && e === pyjslib['StopIteration']) {
+        if (noStop === true && e === @{{StopIteration}}) {
             return;
         }
         throw e;
@@ -1380,7 +1382,7 @@ $generator['send'] = function ($val) {
     $exc = null;
     try {
         var $res = $generator['$genfunc']();
-        if (typeof $res == 'undefined') throw pyjslib.StopIteration;
+        if (typeof $res == 'undefined') throw @{{StopIteration}};
     } catch (e) {
 %(src2)s
         $generator_state[0] = -1;
@@ -1408,11 +1410,11 @@ $generator['$$throw'] = function ($exc_type, $exc_value) {
 $generator['close'] = function () {
 %(src1)s
     $yield_value = null;
-    $exc=pyjslib['GeneratorExit'];
+    $exc=@{{GeneratorExit}};
     try {
         var $res = $generator['$genfunc']();
         $is_executing=false;
-        if (typeof $res != 'undefined') throw pyjslib.RuntimeError('generator ignored GeneratorExit');
+        if (typeof $res != 'undefined') throw @{{RuntimeError}}('generator ignored GeneratorExit');
     } catch (e) {
 %(src2)s
         $generator_state[0] = -1;
@@ -1424,7 +1426,7 @@ $generator['close'] = function () {
 };
 $generator['$genfunc'] = function () {
     var $yielding = false;
-    if ($is_executing) throw pyjslib.ValueError('generator already executing');
+    if ($is_executing) throw @{{ValueError}}('generator already executing');
     $is_executing = true;
 """
     __generator_code_str = __generator_code_str.replace("    ", "\t").replace("\n", "\n%(s)s")
@@ -1650,7 +1652,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             self.w( """\
 %(s)sif ($pyjs.options.arg_instance_type) {
 %(s)s\tif (%(self)s.prototype.__md5__ !== '%(__md5__)s') {
-%(s)s\t\tif (!pyjslib['_isinstance'](%(self)s, arguments['callee']['__class__'])) {
+%(s)s\t\tif (!@{{_isinstance}}(%(self)s, arguments['callee']['__class__'])) {
 %(s)s\t\t\t$pyjs__exception_func_instance_expected(arguments['callee']['__name__'], arguments['callee']['__class__']['__name__'], %(self)s);
 %(s)s\t\t}
 %(s)s\t}
