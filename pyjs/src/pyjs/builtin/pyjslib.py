@@ -1384,8 +1384,7 @@ class Class:
 def open(fname, mode='r'):
     raise NotImplementedError("open is not implemented in browsers")
 
-def cmp(a,b):
-    JS("""
+cmp = JS("""function(a, b) {
     if (typeof a == typeof b) {
         switch (typeof a) {
             case 'number':
@@ -1456,6 +1455,7 @@ def cmp(a,b):
     if (a == b) return 0;
     if (a > b) return 1;
     return -1;
+};
     """)
 
 # for list.sort()
@@ -1470,18 +1470,18 @@ def bool(v):
     #    return True
     #return False
     JS("""
-    switch (v) {
+    switch (@{{v}}) {
         case null:
         case false:
         case 0:
         case '':
             return false;
     }
-    if (typeof v == 'object') {
-        if (typeof v.__nonzero__ == 'function'){
-            return v.__nonzero__();
-        } else if (typeof v.__len__ == 'function'){
-            return v.__len__() > 0;
+    if (typeof @{{v}} == 'object') {
+        if (typeof @{{v}}.__nonzero__ == 'function'){
+            return @{{v}}.__nonzero__();
+        } else if (typeof @{{v}}.__len__ == 'function'){
+            return @{{v}}.__len__() > 0;
         }
     }
     return true;
@@ -1491,7 +1491,7 @@ class float:
     __number__ = JS("0x01")
     def __new__(self, num):
         JS("""
-        var v = Number(num);
+        var v = Number(@{{num}});
         if (isNaN(v)) {
             throw @{{ValueError}}("invalid literal for float(): " + num);
         }
