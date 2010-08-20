@@ -341,186 +341,186 @@ def op_div(x, y):
 
 def op_mul(x, y):
     JS("""
-    if (@{{x}} !== null && y !== null) {
-        switch ((@{{x}}.__number__ << 8) | y.__number__) {
+    if (@{{x}} !== null && @{{y}} !== null) {
+        switch ((@{{x}}.__number__ << 8) | @{{y}}.__number__) {
             case 0x0101:
             case 0x0104:
             case 0x0401:
-                return @{{x}} * y;
+                return @{{x}} * @{{y}};
             case 0x0102:
-                return @{{x}} * y.__v;
+                return @{{x}} * @{{y}}.__v;
             case 0x0201:
-                return @{{x}}.__v * y;
+                return @{{x}}.__v * @{{y}};
             case 0x0202:
-                return new @{{int}}(@{{x}}.__v * y.__v);
+                return new @{{int}}(@{{x}}.__v * @{{y}}.__v);
             case 0x0204:
-                return (new @{{long}}(@{{x}}.__v)).__mul(y);
+                return (new @{{long}}(@{{x}}.__v)).__mul(@{{y}});
             case 0x0402:
-                return @{{x}}.__mul(new @{{long}}(y.__v));
+                return @{{x}}.__mul(new @{{long}}(@{{y}}.__v));
             case 0x0404:
-                return @{{x}}.__mul(y);
+                return @{{x}}.__mul(@{{y}});
         }
         if (!@{{x}}.__number__) {
-            if (   !y.__number__
-                && @{{x}}.__mro__.length > y.__mro__.length
-                && @{{isinstance}}(@{{x}}, y)
+            if (   !@{{y}}.__number__
+                && @{{x}}.__mro__.length > @{{y}}.__mro__.length
+                && @{{isinstance}}(@{{x}}, @{{y}})
                 && typeof @{{x}}['__mul__'] == 'function')
-                return y.__mul__(@{{x}});
-            if (typeof @{{x}}['__mul__'] == 'function') return @{{x}}.__mul__(y);
+                return @{{y}}.__mul__(@{{x}});
+            if (typeof @{{x}}['__mul__'] == 'function') return @{{x}}.__mul__(@{{y}});
         }
-        if (!y.__number__ && typeof y['__rmul__'] == 'function') return y.__rmul__(@{{x}});
+        if (!@{{y}}.__number__ && typeof @{{y}}['__rmul__'] == 'function') return @{{y}}.__rmul__(@{{x}});
     }
 """)
     raise TypeError("unsupported operand type(s) for *: '%r', '%r'" % (x, y))
 
 def op_mod(x, y):
     JS("""
-    if (@{{x}} !== null && y !== null) {
-        switch ((@{{x}}.__number__ << 8) | y.__number__) {
+    if (@{{x}} !== null && @{{y}} !== null) {
+        switch ((@{{x}}.__number__ << 8) | @{{y}}.__number__) {
             case 0x0101:
             case 0x0104:
             case 0x0401:
-                if (y == 0) throw @{{ZeroDivisionError}}('float divmod()');
-                return @{{x}} % y;
+                if (@{{y}} == 0) throw @{{ZeroDivisionError}}('float divmod()');
+                return @{{x}} % @{{y}};
             case 0x0102:
-                if (y.__v == 0) throw @{{ZeroDivisionError}}('float divmod()');
-                return @{{x}} % y.__v;
+                if (@{{y}}.__v == 0) throw @{{ZeroDivisionError}}('float divmod()');
+                return @{{x}} % @{{y}}.__v;
             case 0x0201:
-                if (y == 0) throw @{{ZeroDivisionError}}('float divmod()');
-                return @{{x}}.__v % y;
+                if (@{{y}} == 0) throw @{{ZeroDivisionError}}('float divmod()');
+                return @{{x}}.__v % @{{y}};
             case 0x0202:
-                if (y.__v == 0) throw @{{ZeroDivisionError}}('integer division or modulo by zero');
-                return new @{{int}}(@{{x}}.__v % y.__v);
+                if (@{{y}}.__v == 0) throw @{{ZeroDivisionError}}('integer division or modulo by zero');
+                return new @{{int}}(@{{x}}.__v % @{{y}}.__v);
             case 0x0204:
-                return (new @{{long}}(@{{x}}.__v)).__mod(y);
+                return (new @{{long}}(@{{x}}.__v)).__mod(@{{y}});
             case 0x0402:
-                return @{{x}}.__mod(new @{{long}}(y.__v));
+                return @{{x}}.__mod(new @{{long}}(@{{y}}.__v));
             case 0x0404:
-                return @{{x}}.__mod(y);
+                return @{{x}}.__mod(@{{y}});
         }
         if (typeof @{{x}} == 'string') {
-            return @{{sprintf}}(@{{x}}, y);
+            return @{{sprintf}}(@{{x}}, @{{y}});
         }
         if (!@{{x}}.__number__) {
-            if (   !y.__number__
-                && @{{x}}.__mro__.length > y.__mro__.length
-                && @{{isinstance}}(@{{x}}, y)
+            if (   !@{{y}}.__number__
+                && @{{x}}.__mro__.length > @{{y}}.__mro__.length
+                && @{{isinstance}}(@{{x}}, @{{y}})
                 && typeof @{{x}}['__mod__'] == 'function')
-                return y.__mod__(@{{x}});
-            if (typeof @{{x}}['__mod__'] == 'function') return @{{x}}.__mod__(y);
+                return @{{y}}.__mod__(@{{x}});
+            if (typeof @{{x}}['__mod__'] == 'function') return @{{x}}.__mod__(@{{y}});
         }
-        if (!y.__number__ && typeof y['__rmod__'] == 'function') return y.__rmod__(@{{x}});
+        if (!@{{y}}.__number__ && typeof @{{y}}['__rmod__'] == 'function') return @{{y}}.__rmod__(@{{x}});
     }
 """)
     raise TypeError("unsupported operand type(s) for %: '%r', '%r'" % (x, y))
 
 def op_pow(x, y):
     JS("""
-    if (@{{x}} !== null && y !== null) {
-        switch ((@{{x}}.__number__ << 8) | y.__number__) {
+    if (@{{x}} !== null && @{{y}} !== null) {
+        switch ((@{{x}}.__number__ << 8) | @{{y}}.__number__) {
             case 0x0101:
             case 0x0104:
             case 0x0401:
-                if (y == 0) throw @{{ZeroDivisionError}}('float divmod()');
-                return Math.pow(@{{x}}, y);
+                if (@{{y}} == 0) throw @{{ZeroDivisionError}}('float divmod()');
+                return Math.pow(@{{x}}, @{{y}});
             case 0x0102:
-                if (y.__v == 0) throw @{{ZeroDivisionError}}('float divmod()');
-                return Math.pow(@{{x}},y.__v);
+                if (@{{y}}.__v == 0) throw @{{ZeroDivisionError}}('float divmod()');
+                return Math.pow(@{{x}},@{{y}}.__v);
             case 0x0201:
-                if (y == 0) throw @{{ZeroDivisionError}}('float divmod()');
-                return Math.pow(@{{x}}.__v,y);
+                if (@{{y}} == 0) throw @{{ZeroDivisionError}}('float divmod()');
+                return Math.pow(@{{x}}.__v,@{{y}});
             case 0x0202:
-                return @{{x}}.__pow__(y);
+                return @{{x}}.__pow__(@{{y}});
             case 0x0204:
-                return (new @{{long}}(@{{x}}.__v)).__pow(y);
+                return (new @{{long}}(@{{x}}.__v)).__pow(@{{y}});
             case 0x0402:
-                return @{{x}}.__pow(new @{{long}}(y.__v));
+                return @{{x}}.__pow(new @{{long}}(@{{y}}.__v));
             case 0x0404:
-                return @{{x}}.__pow(y);
+                return @{{x}}.__pow(@{{y}});
         }
         if (!@{{x}}.__number__) {
-            if (   !y.__number__
-                && @{{x}}.__mro__.length > y.__mro__.length
-                && @{{isinstance}}(@{{x}}, y)
+            if (   !@{{y}}.__number__
+                && @{{x}}.__mro__.length > @{{y}}.__mro__.length
+                && @{{isinstance}}(@{{x}}, @{{y}})
                 && typeof @{{x}}['__pow__'] == 'function')
-                return y.__pow__(@{{x}});
-            if (typeof @{{x}}['__pow__'] == 'function') return @{{x}}.__pow__(y);
+                return @{{y}}.__pow__(@{{x}});
+            if (typeof @{{x}}['__pow__'] == 'function') return @{{x}}.__pow__(@{{y}});
         }
-        if (!y.__number__ && typeof y['__rpow__'] == 'function') return y.__rpow__(@{{x}});
+        if (!@{{y}}.__number__ && typeof @{{y}}['__rpow__'] == 'function') return @{{y}}.__rpow__(@{{x}});
     }
 """)
     raise TypeError("unsupported operand type(s) for %: '%r', '%r'" % (x, y))
 
 def op_invert(v):
     JS("""
-    if (v !== null) {
-        if (typeof v['__invert__'] == 'function') return v.__invert__();
+    if (@{{v}} !== null) {
+        if (typeof @{{v}}['__invert__'] == 'function') return @{{v}}.__invert__();
     }
 """)
     raise TypeError("bad operand type for unary -: '%r'" % v)
 
 def op_bitshiftleft(x, y):
     JS("""
-    if (@{{x}} !== null && y !== null) {
-        switch ((@{{x}}.__number__ << 8) | y.__number__) {
+    if (@{{x}} !== null && @{{y}} !== null) {
+        switch ((@{{x}}.__number__ << 8) | @{{y}}.__number__) {
             case 0x0202:
-                return @{{x}}.__lshift__(y);
+                return @{{x}}.__lshift__(@{{y}});
             case 0x0204:
-                return y.__rlshift__(@{{x}});
+                return @{{y}}.__rlshift__(@{{x}});
             case 0x0402:
-                return @{{x}}.__lshift(y.__v);
+                return @{{x}}.__lshift(@{{y}}.__v);
             case 0x0404:
-                return @{{x}}.__lshift(y.valueOf());
+                return @{{x}}.__lshift(@{{y}}.valueOf());
         }
         if (typeof @{{x}}['__lshift__'] == 'function') {
-            var v = @{{x}}.__lshift__(y);
+            var v = @{{x}}.__lshift__(@{{y}});
             if (v !== @{{NotImplemented}}) return v;
         }
-        if (typeof y['__rlshift__'] != 'undefined') return y.__rlshift__(@{{x}});
+        if (typeof @{{y}}['__rlshift__'] != 'undefined') return @{{y}}.__rlshift__(@{{x}});
     }
 """)
     raise TypeError("unsupported operand type(s) for <<: '%r', '%r'" % (x, y))
 
 def op_bitshiftright(x, y):
     JS("""
-    if (@{{x}} !== null && y !== null) {
-        switch ((@{{x}}.__number__ << 8) | y.__number__) {
+    if (@{{x}} !== null && @{{y}} !== null) {
+        switch ((@{{x}}.__number__ << 8) | @{{y}}.__number__) {
             case 0x0202:
-                return @{{x}}.__rshift__(y);
+                return @{{x}}.__rshift__(@{{y}});
             case 0x0204:
-                return y.__rrshift__(@{{x}});
+                return @{{y}}.__rrshift__(@{{x}});
             case 0x0402:
-                return @{{x}}.__rshift(y.__v);
+                return @{{x}}.__rshift(@{{y}}.__v);
             case 0x0404:
-                return @{{x}}.__rshift(y.valueOf());
+                return @{{x}}.__rshift(@{{y}}.valueOf());
         }
         if (typeof @{{x}}['__rshift__'] == 'function') {
-            var v = @{{x}}.__rshift__(y);
+            var v = @{{x}}.__rshift__(@{{y}});
             if (v !== @{{NotImplemented}}) return v;
         }
-        if (typeof y['__rrshift__'] != 'undefined') return y.__rrshift__(@{{x}});
+        if (typeof @{{y}}['__rrshift__'] != 'undefined') return @{{y}}.__rrshift__(@{{x}});
     }
 """)
     raise TypeError("unsupported operand type(s) for >>: '%r', '%r'" % (x, y))
 
 def op_bitand2(x, y):
     JS("""
-    if (@{{x}} !== null && y !== null) {
-        switch ((@{{x}}.__number__ << 8) | y.__number__) {
+    if (@{{x}} !== null && @{{y}} !== null) {
+        switch ((@{{x}}.__number__ << 8) | @{{y}}.__number__) {
             case 0x0202:
-                return @{{x}}.__and__(y);
+                return @{{x}}.__and__(@{{y}});
             case 0x0204:
-                return y.__and(new @{{long}}(@{{x}}));
+                return @{{y}}.__and(new @{{long}}(@{{x}}));
             case 0x0402:
-                return @{{x}}.__and(new @{{long}}(y.__v));
+                return @{{x}}.__and(new @{{long}}(@{{y}}.__v));
             case 0x0404:
-                return @{{x}}.__and(y);
+                return @{{x}}.__and(@{{y}});
         }
         if (typeof @{{x}}['__and__'] == 'function') {
-            var v = @{{x}}.__and__(y);
+            var v = @{{x}}.__and__(@{{y}});
             if (v !== @{{NotImplemented}}) return v;
         }
-        if (typeof y['__rand__'] != 'undefined') return y.__rand__(@{{x}});
+        if (typeof @{{y}}['__rand__'] != 'undefined') return @{{y}}.__rand__(@{{x}});
     }
 """)
     raise TypeError("unsupported operand type(s) for &: '%r', '%r'" % (x, y))
@@ -560,22 +560,22 @@ JS("""
 
 def op_bitxor2(x, y):
     JS("""
-    if (@{{x}} !== null && y !== null) {
-        switch ((@{{x}}.__number__ << 8) | y.__number__) {
+    if (@{{x}} !== null && @{{y}} !== null) {
+        switch ((@{{x}}.__number__ << 8) | @{{y}}.__number__) {
             case 0x0202:
-                return @{{x}}.__xor__(y);
+                return @{{x}}.__xor__(@{{y}});
             case 0x0204:
-                return y.__xor(new @{{long}}(@{{x}}));
+                return @{{y}}.__xor(new @{{long}}(@{{x}}));
             case 0x0402:
-                return @{{x}}.__xor(new @{{long}}(y.__v));
+                return @{{x}}.__xor(new @{{long}}(@{{y}}.__v));
             case 0x0404:
-                return @{{x}}.__xor(y);
+                return @{{x}}.__xor(@{{y}});
         }
         if (typeof @{{x}}['__xor__'] == 'function') {
-            var v = @{{x}}.__xor__(y);
+            var v = @{{x}}.__xor__(@{{y}});
             if (v !== @{{NotImplemented}}) return v;
         }
-        if (typeof y['__rxor__'] != 'undefined') return y.__rxor__(@{{x}});
+        if (typeof @{{y}}['__rxor__'] != 'undefined') return @{{y}}.__rxor__(@{{x}});
     }
 """)
     raise TypeError("unsupported operand type(s) for &: '%r', '%r'" % (x, y))
