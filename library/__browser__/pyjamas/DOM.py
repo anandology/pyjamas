@@ -18,16 +18,16 @@ def init():
     // Set up capture event dispatchers.
     $wnd.__dispatchCapturedMouseEvent = function(evt) {
         if ($wnd.__dispatchCapturedEvent(evt)) {
-            var cap = DOM.getCaptureElement();
+            var cap = @{{DOM}}.getCaptureElement();
             if (cap && cap.__listener) {
-                DOM.dispatchEvent(evt, cap, cap.__listener);
+                @{{DOM}}.dispatchEvent(evt, cap, cap.__listener);
                 evt.stopPropagation();
             }
         }
     };
 
     $wnd.__dispatchCapturedEvent = function(evt) {
-        if (!DOM.previewEvent(evt)) {
+        if (!@{{DOM}}.previewEvent(evt)) {
             evt.stopPropagation();
             evt.preventDefault();
             return false;
@@ -39,17 +39,17 @@ def init():
     $wnd.addEventListener(
         'mouseout',
         function(evt){
-            var cap = DOM.getCaptureElement();
+            var cap = @{{DOM}}.getCaptureElement();
             if (cap) {
                 if (!evt.relatedTarget) {
                     // When the mouse leaves the window during capture,
                     // release capture and synthesize an 'onlosecapture' event.
-                    DOM.sCaptureElem = null;
+                    @{{DOM}}.sCaptureElem = null;
                     if (cap.__listener) {
                         var lcEvent = $doc.createEvent('UIEvent');
                         lcEvent.initUIEvent('losecapture', false, false,
                                              $wnd, 0);
-                        DOM.dispatchEvent(lcEvent, cap, cap.__listener);
+                        @{{DOM}}.dispatchEvent(lcEvent, cap, cap.__listener);
                     }
                 }
             }
@@ -81,7 +81,7 @@ def init():
         }
     
         if (listener) {
-            DOM.dispatchEvent(evt, curElem, listener);
+            @{{DOM}}.dispatchEvent(evt, curElem, listener);
         }
     };
     """)
@@ -313,7 +313,7 @@ def getInnerText(element):
     var text = '', child = element.firstChild;
     while (child) {
       if (child.nodeType == 1){ // 1 == Element node
-        text += DOM.getInnerText(child);
+        text += @{{DOM}}.getInnerText(child);
       } else if (child.nodeValue) {
         text += child.nodeValue;
       }
@@ -397,7 +397,7 @@ def iterChildren(elem):
                 throw pyjslib.StopIteration;
             }
             lastChild = child;
-            child = DOM.getNextSibling(child);
+            child = @{{DOM}}.getNextSibling(child);
             return lastChild;
         },
         'remove': function() {        
@@ -417,7 +417,7 @@ def walkChildren(elem):
     """
     JS("""
     var parent = elem;
-    var child = DOM.getFirstChild(elem);
+    var child = @{{DOM}}.getFirstChild(elem);
     var lastChild = null;
     var stack = [];
     var parentStack = [];
@@ -427,8 +427,8 @@ def walkChildren(elem):
                 throw pyjslib.StopIteration;
             }
             lastChild = child;
-            var firstChild = DOM.getFirstChild(child);
-            var nextSibling = DOM.getNextSibling(child);
+            var firstChild = @{{DOM}}.getFirstChild(child);
+            var nextSibling = @{{DOM}}.getNextSibling(child);
             if(firstChild != null) {
                if(nextSibling != null) {
                    stack.push(nextSibling);
@@ -457,8 +457,9 @@ def walkChildren(elem):
    
 def releaseCapture(elem):
     JS("""
-    if ((DOM.sCaptureElem != null) && DOM.compare(elem, DOM.sCaptureElem))
-        DOM.sCaptureElem = null;
+    if ((@{{DOM}}.sCaptureElem != null) 
+            && @{{DOM}}.compare(elem, @{{DOM}}.sCaptureElem))
+        @{{DOM}}.sCaptureElem = null;
     """)
 
 def removeEventPreview(preview):
@@ -520,7 +521,7 @@ def setBooleanAttribute(elem, attr, value):
 
 def setCapture(elem):
     JS("""
-    DOM.sCaptureElem = elem;
+    @{{DOM}}.sCaptureElem = elem;
     """)
 
 def setEventListener(element, listener):
