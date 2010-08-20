@@ -5703,44 +5703,44 @@ def __getattr_check(attr, attr_left, attr_right, attrstr,
 
 def getattr(obj, name, default_value=None):
     JS("""
-    if (obj === null || typeof obj == 'undefined') {
-        if (arguments.length != 3 || typeof obj == 'undefined') {
-            throw @{{AttributeError}}("'" + @{{repr}}(obj) + "' has no attribute '" + name + "'");
+    if (@{{obj}}=== null || typeof @{{obj}}== 'undefined') {
+        if (arguments.length != 3 || typeof @{{obj}}== 'undefined') {
+            throw @{{AttributeError}}("'" + @{{repr}}(@{{obj}}) + "' has no attribute '" + @{{name}}+ "'");
         }
-        return default_value;
+        return @{{default_value}};
     }
-    var mapped_name = name;
-    if (typeof obj[name] == 'undefined') {
-        mapped_name = '$$' + name;
-        if (typeof obj[mapped_name] == 'undefined' || attrib_remap.indexOf(name) < 0) {
+    var mapped_name = @{{name}};
+    if (typeof @{{obj}}[@{{name}}] == 'undefined') {
+        mapped_name = '$$' + @{{name}};
+        if (typeof @{{obj}}[mapped_name] == 'undefined' || attrib_remap.indexOf(@{{name}}) < 0) {
             if (arguments.length != 3) {
-                throw @{{AttributeError}}("'" + @{{repr}}(obj) + "' has no attribute '" + name + "'");
+                throw @{{AttributeError}}("'" + @{{repr}}(@{{obj}}) + "' has no attribute '" + @{{name}}+ "'");
             }
-            return default_value;
+            return @{{default_value}};
         }
     }
-    var method = obj[mapped_name];
+    var method = @{{obj}}[mapped_name];
     if (method === null) return method;
 
     if (typeof method.__get__ == 'function') {
-        if (obj.__is_instance__) {
-            return method.__get__(obj, obj.__class__);
+        if (@{{obj}}.__is_instance__) {
+            return method.__get__(@{{obj}}, @{{obj}}.__class__);
         }
-        return method.__get__(null, obj.__class__);
+        return method.__get__(null, @{{obj}}.__class__);
     }
     if (   typeof method != 'function'
-        || obj.__is_instance__ !== true
-        || name == '__class__') {
-        return obj[mapped_name];
+        || @{{obj}}.__is_instance__ !== true
+        || @{{name}}== '__class__') {
+        return @{{obj}}[mapped_name];
     }
 
     var fnwrap = function() {
-        return method.apply(obj,$pyjs_array_slice.call(arguments));
+        return method.apply(@{{obj}},$pyjs_array_slice.call(arguments));
     };
-    fnwrap.__name__ = name;
-    fnwrap.__args__ = obj[mapped_name].__args__;
-    fnwrap.__class__ = obj.__class__;
-    fnwrap.__bind_type__ = obj[mapped_name].__bind_type__;
+    fnwrap.__name__ = @{{name}};
+    fnwrap.__args__ = @{{obj}}[mapped_name].__args__;
+    fnwrap.__class__ = @{{obj}}.__class__;
+    fnwrap.__bind_type__ = @{{obj}}[mapped_name].__bind_type__;
     return fnwrap;
     """)
 
