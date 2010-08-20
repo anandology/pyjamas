@@ -5812,15 +5812,15 @@ def setattr(obj, name, value):
 
 def hasattr(obj, name):
     JS("""
-    if (typeof obj == 'undefined') {
+    if (typeof @{{obj}}== 'undefined') {
         throw @{{UndefinedValueError}}("obj");
     }
     if (typeof name != 'string') {
         throw @{{TypeError}}("attribute name must be string");
     }
-    if (obj === null) return false;
-    if (typeof obj[name] == 'undefined' && (
-            typeof obj['$$'+name] == 'undefined' ||
+    if (@{{obj}}=== null) return false;
+    if (typeof @{{obj}}[name] == 'undefined' && (
+            typeof @{{obj}}['$$'+name] == 'undefined' ||
             attrib_remap.indexOf(name) < 0)
       ) {
         return false;
@@ -5832,11 +5832,11 @@ def hasattr(obj, name):
 
 def dir(obj):
     JS("""
-    if (typeof obj == 'undefined') {
+    if (typeof @{{obj}}== 'undefined') {
         throw @{{UndefinedValueError}}("obj");
     }
     var properties=@{{list}}();
-    for (var property in obj) properties.append(property);
+    for (var property in @{{obj}}) properties.append(property);
     return properties;
     """)
 
@@ -5883,12 +5883,12 @@ def reduce(func, iterable, initializer=JS("(function(){return;})()")):
     emtpy = True
     for value in iterable:
         emtpy = False
-        if JS("typeof initializer == 'undefined'"):
+        if JS("typeof @{{initializer}}== 'undefined'"):
             initializer = value
         else:
             initializer = func(initializer, value)
     if empty:
-        if JS("typeof initializer == 'undefined'"):
+        if JS("typeof @{{initializer}}== 'undefined'"):
             raise TypeError, "reduce() of empty sequence with no initial value"
         return initializer
     return initializer
@@ -5939,10 +5939,10 @@ def _reversed(iterable):
         i -= 1
         yield iterable[i]
 
-def enumerate(sequence):
+def enumerate(seq):
     JS("""
-    if (typeof sequence.__enumerate__ == 'function') {
-        return sequence.__enumerate__();
+    if (typeof @{{seq}}.__enumerate__ == 'function') {
+        return @{{seq}}.__enumerate__();
     }
 """)
     return _enumerate(sequence)
@@ -6117,52 +6117,53 @@ else:
 # type functions from Douglas Crockford's Remedial Javascript: http://www.crockford.com/javascript/remedial.html
 def isObject(a):
     JS("""
-    return (a !== null && (typeof a == 'object')) || typeof a == 'function';
+    return (@{{a}}!== null && (typeof @{{a}}== 'object')) || typeof @{{a}}== 'function';
     """)
 
 def isFunction(a):
     JS("""
-    return typeof a == 'function';
+    return typeof @{{a}}== 'function';
     """)
 
 callable = isFunction
 
 def isString(a):
     JS("""
-    return typeof a == 'string';
+    return typeof @{{a}}== 'string';
     """)
 
 def isNull(a):
     JS("""
-    return typeof a == 'object' && !a;
+    return typeof @{{a}}== 'object' && !@{{a}};
     """)
 
 def isArray(a):
     JS("""
-    return @{{isObject}}(a) && a.constructor === Array;
+    return @{{isObject}}(@{{a}}) && @{{a}}.constructor === Array;
     """)
 
 def isUndefined(a):
     JS("""
-    return typeof a == 'undefined';
+    return typeof @{{a}}== 'undefined';
     """)
 
 def isIteratable(a):
     JS("""
-    if (a === null) return false;
-    return typeof a.__iter__ == 'function';
+    if (@{{a}}=== null) return false;
+    return typeof @{{a}}.__iter__ == 'function';
     """)
 
 def isNumber(a):
     JS("""
-    return a !== null && a.__number__ && (a.__number__ != 0x01 || isFinite(a));
+    return @{{a}}!== null && @{{a}}.__number__ && 
+           (@{{a}}.__number__ != 0x01 || isFinite(@{{a}}));
     """)
 
 def isInteger(a):
     JS("""
-    switch (a.__number__) {
+    switch (@{{a}}.__number__) {
         case 0x01:
-            if (a != Math.floor(a)) break;
+            if (a != Math.floor(@{{a}})) break;
         case 0x02:
         case 0x04:
             return true;
@@ -6172,9 +6173,9 @@ def isInteger(a):
 
 def isSet(a):
     JS("""
-    if (a === null) return false;
-    if (typeof a.__object == 'undefined') return false;
-    switch (a.__mro__[a.__mro__.length-2].__md5__) {
+    if (@{{a}}=== null) return false;
+    if (typeof @{{a}}.__object == 'undefined') return false;
+    switch (@{{a}}.__mro__[@{{a}}.__mro__.length-2].__md5__) {
         case @{{set}}.__md5__:
             return 1;
         case @{{frozenset}}.__md5__:
@@ -6190,8 +6191,8 @@ def toJSObjects(x):
     if isArray(x):
         JS("""
         var result = [];
-        for(var k=0; k < x.length; k++) {
-           var v = x[k];
+        for(var k=0; k < @{{x}}.length; k++) {
+           var v = @{{x}}[k];
            var tv = @{{toJSObjects}}(v);
            result.push(tv);
         }
@@ -6202,7 +6203,7 @@ def toJSObjects(x):
             return x.valueOf()
         elif isinstance(x, dict):
             JS("""
-            var o = x.getObject();
+            var o = @{{x}}.getObject();
             var result = {};
             for (var i in o) {
                result[o[i][0].toString()] = @{{toJSObjects}}(o[i][1]);
@@ -6218,8 +6219,8 @@ def toJSObjects(x):
     if isObject(x):
         JS("""
         var result = {};
-        for(var k in x) {
-            var v = x[k];
+        for(var k in @{{x}}) {
+            var v = @{{x}}[k];
             var tv = @{{toJSObjects}}(v);
             result[k] = tv;
             }
