@@ -18,7 +18,7 @@ from Utils import dictToJs, createListenerMethods
 
 
 def InfoWindow(content):
-    infoWindow = JS("""new $wnd.google.maps.InfoWindow(content)""")
+    infoWindow = JS("""new $wnd.google.maps.InfoWindow(@{{content}})""")
 
     createListenerMethods(infoWindow)
 

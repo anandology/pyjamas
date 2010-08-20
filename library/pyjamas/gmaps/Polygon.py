@@ -16,7 +16,7 @@ from __pyjamas__ import JS
 
 
 def Polygon(options):
-    JS("return new $wnd.google.maps.Polygon(options);")
+    JS("return new $wnd.google.maps.Polygon(@{{options}});")
 
 
 def PolygonOptions():
