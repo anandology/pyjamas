@@ -214,6 +214,10 @@ Files: library/pyjamas/ui/FlashPanel.py addons/FlowPlayer.py addons/SWFUpload.py
 License: Apache
 Copyright: 2009, Tobias Weber <tobi-weber@gmx.de>
 
+Files: library/pyjamas/ui/InlineLabel.py library/pyjamas/ui/InlineHTML.py
+License: Apache
+Copyright: 2010, Daniel Popowich <danielpopowich@gmail.com>
+
 License: PSF
     http://www.python.org/psf/license/
     http://www.python.org/download/releases/2.6.2/license/
