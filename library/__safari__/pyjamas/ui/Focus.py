@@ -6,7 +6,7 @@ def blur(elem):
     // generally be unsuccessful, so we invoke blur() from outside of
     // the callback.
     $wnd.setTimeout(function() {
-                                   elem.firstChild.blur();
+                                   @{{elem}}.firstChild.blur();
                     },
                     0);
     """)
@@ -54,24 +54,24 @@ def focus(elem):
     // generally be unsuccessful, so we invoke focus() from outside of
     // the callback.
     $wnd.setTimeout(function() {
-                                   elem.firstChild.focus();
+                                   @{{elem}}.firstChild.focus();
                     },
                     0);
     """)
 
 def getTabIndex(elem):
     JS("""
-    return elem.firstChild.tabIndex;
+    return @{{elem}}.firstChild.tabIndex;
     """)
 
 def setAccessKey(elem, key):
     JS("""
-    if (elem.firstChild != null) elem.firstChild.accessKey = key;
+    if (@{{elem}}.firstChild != null) @{{elem}}.firstChild.accessKey = @{{key}};
     """)
 
 def setTabIndex(elem, index):
     JS("""
-    if (elem.firstChild != null) elem.firstChild.tabIndex = index;
+    if (@{{elem}}.firstChild != null) @{{elem}}.firstChild.tabIndex = @{{index}};
     """)
 
 
