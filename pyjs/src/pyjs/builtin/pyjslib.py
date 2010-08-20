@@ -3881,7 +3881,7 @@ class list:
         self.extend(tail)
         return None
 
-    def __getitem__(self, index):
+    def __getitem__(self, _index):
         JS("""
         var index = @{{_index}}.valueOf();
         if (index < 0) index += @{{self}}.__array.length;
@@ -3891,19 +3891,19 @@ class list:
         return @{{self}}.__array[index];
         """)
 
-    def __setitem__(self, index, value):
+    def __setitem__(self, _index, value):
         JS("""
-        index = index.valueOf();
+        var index = @{{_index}}.valueOf();
         if (index < 0) index += @{{self}}.__array.length;
         if (index < 0 || index >= @{{self}}.__array.length) {
             throw @{{IndexError}}("list assignment index out of range");
         }
-        @{{self}}.__array[index]=value;
+        @{{self}}.__array[index]=@{{value}};
         """)
 
-    def __delitem__(self, index):
+    def __delitem__(self, _index):
         JS("""
-        index = index.valueOf();
+        var index = @{{_index}}.valueOf();
         if (index < 0) index += @{{self}}.__array.length;
         if (index < 0 || index >= @{{self}}.__array.length) {
             throw @{{IndexError}}("list assignment index out of range");
@@ -3981,7 +3981,7 @@ class list:
         return list(self.__array.concat(y.__array))
 
     def __mul__(self, n):
-        if not JS("n !== null && n.__number__ && (n.__number__ != 0x01 || isFinite(n))"):
+        if not JS("@{{n}} !== null && @{{n}}.__number__ && (@{{n}}.__number__ != 0x01 || isFinite(@{{n}}))"):
             raise TypeError("can't multiply sequence by non-int")
         a = []
         while n:
@@ -4045,9 +4045,9 @@ class tuple:
             return 1
         JS("""
         var n1 = @{{self}}.__array.length,
-            n2 = l.__array.length,
+            n2 = @{{l}}.__array.length,
             a1 = @{{self}}.__array,
-            a2 = l.__array,
+            a2 = @{{l}}.__array,
             n, c;
         n = (n1 < n2 ? n1 : n2);
         for (var i = 0; i < n; i++) {
@@ -4060,13 +4060,13 @@ class tuple:
 
     def __getslice__(self, lower, upper):
         JS("""
-        if (upper==null) return @{{tuple}}(@{{self}}.__array.slice(lower));
-        return @{{tuple}}(@{{self}}.__array.slice(lower, upper));
+        if (@{{upper}}==null) return @{{tuple}}(@{{self}}.__array.slice(@{{lower}}));
+        return @{{tuple}}(@{{self}}.__array.slice(@{{lower}}, @{{upper}}));
         """)
 
-    def __getitem__(self, index):
+    def __getitem__(self, _index):
         JS("""
-        index = index.valueOf();
+        var index = @{{_index}}.valueOf();
         if (index < 0) index += @{{self}}.__array.length;
         if (index < 0 || index >= @{{self}}.__array.length) {
             throw @{{IndexError}}("tuple index out of range");
@@ -4078,7 +4078,7 @@ class tuple:
         return INT(JS("""@{{self}}.__array.length"""))
 
     def __contains__(self, value):
-        return JS('@{{self}}.__array.indexOf(value)>=0')
+        return JS('@{{self}}.__array.indexOf(@{{value}})>=0')
 
     def __iter__(self):
         return JS("new $iter_array(@{{self}}.__array)")
@@ -4133,7 +4133,7 @@ class tuple:
         return tuple(self.__array.concat(y.__array))
 
     def __mul__(self, n):
-        if not JS("n !== null && n.__number__ && (n.__number__ != 0x01 || isFinite(n))"):
+        if not JS("@{{n}} !== null && @{{n}}.__number__ && (@{{n}}.__number__ != 0x01 || isFinite(@{{n}}))"):
             raise TypeError("can't multiply sequence by non-int")
         a = []
         while n:
@@ -4242,19 +4242,19 @@ class dict:
 
     def __setitem__(self, key, value):
         JS("""
-        if (typeof value == 'undefined') {
-            throw @{{ValueError}}("Value for key '" + key + "' is undefined");
+        if (typeof @{{value}} == 'undefined') {
+            throw @{{ValueError}}("Value for key '" + @{{key}} + "' is undefined");
         }
-        var sKey = (key===null?null:(typeof key.$H != 'undefined'?key.$H:((typeof key=='string'||key.__number__)?'$'+key:@{{__hash}}(key))));
-        @{{self}}.__object[sKey] = [key, value];
+        var sKey = (@{{key}}===null?null:(typeof @{{key}}.$H != 'undefined'?@{{key}}.$H:((typeof @{{key}}=='string'||@{{key}}.__number__)?'$'+@{{key}}:@{{__hash}}(@{{key}}))));
+        @{{self}}.__object[sKey] = [@{{key}}, @{{value}}];
         """)
 
     def __getitem__(self, key):
         JS("""
-        var sKey = (key===null?null:(typeof key.$H != 'undefined'?key.$H:((typeof key=='string'||key.__number__)?'$'+key:@{{__hash}}(key))));
+        var sKey = (@{{key}}===null?null:(typeof @{{key}}.$H != 'undefined'?@{{key}}.$H:((typeof @{{key}}=='string'||@{{key}}.__number__)?'$'+@{{key}}:@{{__hash}}(@{{key}}))));
         var value=@{{self}}.__object[sKey];
         if (typeof value == 'undefined'){
-            throw @{{KeyError}}(key);
+            throw @{{KeyError}}(@{{key}});
         }
         return value[1];
         """)
@@ -4279,7 +4279,7 @@ class dict:
             selfLen = 0,
             otherLen = 0,
             selfObj = @{{self}}.__object;
-            otherObj = other.__object;
+            otherObj = @{{other}}.__object;
         for (sKey in selfObj) {
            self_sKeys[selfLen++] = sKey;
         }
@@ -4320,13 +4320,13 @@ class dict:
 
     def __delitem__(self, key):
         JS("""
-        var sKey = (key===null?null:(typeof key.$H != 'undefined'?key.$H:((typeof key=='string'||key.__number__)?'$'+key:@{{__hash}}(key))));
+        var sKey = (@{{key}}===null?null:(typeof @{{key}}.$H != 'undefined'?@{{key}}.$H:((typeof @{{key}}=='string'||@{{key}}.__number__)?'$'+@{{key}}:@{{__hash}}(@{{key}}))));
         delete @{{self}}.__object[sKey];
         """)
 
     def __contains__(self, key):
         JS("""
-        var sKey = (key===null?null:(typeof key.$H != 'undefined'?key.$H:((typeof key=='string'||key.__number__)?'$'+key:@{{__hash}}(key))));
+        var sKey = (@{{key}}===null?null:(typeof @{{key}}.$H != 'undefined'?@{{key}}.$H:((typeof @{{key}}=='string'||@{{key}}.__number__)?'$'+@{{key}}:@{{__hash}}(@{{key}}))));
         return typeof @{{self}}.__object[sKey] == 'undefined' ? false : true;
         """)
 
@@ -4402,8 +4402,8 @@ class dict:
 
     def setdefault(self, key, default_value):
         JS("""
-        var sKey = (key===null?null:(typeof key.$H != 'undefined'?key.$H:((typeof key=='string'||key.__number__)?'$'+key:@{{__hash}}(key))));
-        return typeof @{{self}}.__object[sKey] == 'undefined' ? (@{{self}}.__object[sKey]=[key, default_value])[1] : @{{self}}.__object[sKey][1];
+        var sKey = (@{{key}}===null?null:(typeof @{{key}}.$H != 'undefined'?@{{key}}.$H:((typeof @{{key}}=='string'||@{{key}}.__number__)?'$'+@{{key}}:@{{__hash}}(@{{key}}))));
+        return typeof @{{self}}.__object[sKey] == 'undefined' ? (@{{self}}.__object[sKey]=[@{{key}}, default_value])[1] : @{{self}}.__object[sKey][1];
 """)
 
     def get(self, key, default_value=None):
@@ -4414,7 +4414,7 @@ class dict:
             break;
         }
         if (empty) return default_value;
-        var sKey = (key===null?null:(typeof key.$H != 'undefined'?key.$H:((typeof key=='string'||key.__number__)?'$'+key:@{{__hash}}(key))));
+        var sKey = (@{{key}}===null?null:(typeof @{{key}}.$H != 'undefined'?@{{key}}.$H:((typeof @{{key}}=='string'||@{{key}}.__number__)?'$'+@{{key}}:@{{__hash}}(@{{key}}))));
         return typeof @{{self}}.__object[sKey] == 'undefined' ? default_value : @{{self}}.__object[sKey][1];
 """)
 
