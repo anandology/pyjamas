@@ -5002,7 +5002,7 @@ class frozenset(object):
         var selfLen = 0,
             otherLen = 0,
             selfObj = self.__object,
-            otherObj = other.__object,
+            otherObj = @{{other}}.__object,
             selfMismatch = false,
             otherMismatch = false;
         for (var sVal in selfObj) {
@@ -5035,7 +5035,7 @@ class frozenset(object):
             var h = hashes.join("|");
             return typeof self.__object[h] != 'undefined';
 """)
-        JS("""return typeof self.__object[@{{hash}}(value)] != 'undefined';""")
+        JS("""return typeof self.__object[@{{hash}}(@{{value}})] != 'undefined';""")
 
     def __hash__(self):
         JS("""
@@ -5115,7 +5115,7 @@ class frozenset(object):
     def copy(self):
         new_set = set()
         JS("""
-        var obj = new_set.__object,
+        var obj = @{{new_set}}.__object,
             selfObj = self.__object;
         for (var sVal in selfObj) {
             obj[sVal] = selfObj[sVal];
@@ -5130,9 +5130,9 @@ class frozenset(object):
             other = frozenset(other)
         new_set = set()
         JS("""
-        var obj = new_set.__object,
+        var obj = @{{new_set}}.__object,
             selfObj = self.__object,
-            otherObj = other.__object;
+            otherObj = @{{other}}.__object;
         for (var sVal in selfObj) {
             if (typeof otherObj[sVal] == 'undefined') {
                 obj[sVal] = selfObj[sVal];
@@ -5148,9 +5148,9 @@ class frozenset(object):
             other = frozenset(other)
         new_set = set()
         JS("""
-        var obj = new_set.__object,
+        var obj = @{{new_set}}.__object,
             selfObj = self.__object,
-            otherObj = other.__object;
+            otherObj = @{{other}}.__object;
         for (var sVal in selfObj) {
             if (typeof otherObj[sVal] != 'undefined') {
                 obj[sVal] = selfObj[sVal];
@@ -5165,7 +5165,7 @@ class frozenset(object):
             other = frozenset(other)
         JS("""
         var selfObj = self.__object,
-            otherObj = other.__object;
+            otherObj = @{{other}}.__object;
         for (var sVal in selfObj) {
             if (typeof otherObj[sVal] != 'undefined') {
                 return false;
@@ -5182,12 +5182,12 @@ class frozenset(object):
     def issubset(self, other):
         if not isSet(other):
             other = frozenset(other)
-        return JS("self.__cmp__(other) < 0")
+        return JS("self.__cmp__(@{{other}}) < 0")
 
     def issuperset(self, other):
         if not isSet(other):
             other = frozenset(other)
-        return JS("(self.__cmp__(other)|1) == 1")
+        return JS("(self.__cmp__(@{{other}})|1) == 1")
 
     def pop(self):
         JS("""
@@ -5206,9 +5206,9 @@ class frozenset(object):
             other = frozenset(other)
         new_set = set()
         JS("""
-        var obj = new_set.__object,
+        var obj = @{{new_set}}.__object,
             selfObj = self.__object,
-            otherObj = other.__object;
+            otherObj = @{{other}}.__object;
         for (var sVal in selfObj) {
             if (typeof otherObj[sVal] == 'undefined') {
                 obj[sVal] = selfObj[sVal];
