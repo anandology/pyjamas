@@ -1,15 +1,16 @@
 def eventGetButton(evt):
     JS("""
-    var button = evt.button;
+    var button = @{{evt}}.button;
     if(button == 0){
         return 1;
     } else {
         return button;
     }
     """)
-def getAbsoluteLeft(elem):
+def getAbsoluteLeft(_elem):
     JS("""
     var left = 0;
+    var elem = @{{_elem}};
     var curr = elem.parentNode;
     // This intentionally excludes body
     while (curr && curr != $doc.body) {
@@ -30,9 +31,10 @@ def getAbsoluteLeft(elem):
     return left;
     """)
 
-def getAbsoluteTop(elem):
+def getAbsoluteTop(_elem):
     JS("""
     var top = 0;
+    var elem = @{{_elem}};
 
     // This intentionally excludes body
     var curr = elem.parentNode;
@@ -53,6 +55,6 @@ def getAbsoluteTop(elem):
 
 def eventGetMouseWheelVelocityY(evt):
     JS("""
-    return evt.detail * 4 || 0;
+    return @{{evt}}.detail * 4 || 0;
     """)
 
