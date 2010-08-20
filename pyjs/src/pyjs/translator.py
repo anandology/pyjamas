@@ -318,7 +318,6 @@ PYJSLIB_BUILTIN_CLASSES=[
     "TypeError",
     "ValueError",
     "ZeroDivisionError",
-    "ReferenceError",
 
     "dict",
     "frozenset",
