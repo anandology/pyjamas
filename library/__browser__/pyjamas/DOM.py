@@ -15,22 +15,19 @@
 
 def init():
     JS("""
-    // XXX SPECIAL CASE!  @{{DOM}} cannot be used at this stage in this JS
-    // block because $module['DOM'] has not been set up yet.
-
     // Set up capture event dispatchers.
     $wnd.__dispatchCapturedMouseEvent = function(evt) {
         if ($wnd.__dispatchCapturedEvent(evt)) {
-            var cap = DOM.getCaptureElement();
+            var cap = @{{getCaptureElement}}();
             if (cap && cap.__listener) {
-                DOM.dispatchEvent(evt, cap, cap.__listener);
+                @{{dispatchEvent}}(evt, cap, cap.__listener);
                 evt.stopPropagation();
             }
         }
     };
 
     $wnd.__dispatchCapturedEvent = function(evt) {
-        if (!DOM.previewEvent(evt)) {
+        if (!@{{previewEvent}}(evt)) {
             evt.stopPropagation();
             evt.preventDefault();
             return false;
@@ -42,17 +39,17 @@ def init():
     $wnd.addEventListener(
         'mouseout',
         function(evt){
-            var cap = DOM.getCaptureElement();
+            var cap = @{{getCaptureElement}}();
             if (cap) {
                 if (!evt.relatedTarget) {
                     // When the mouse leaves the window during capture,
                     // release capture and synthesize an 'onlosecapture' event.
-                    DOM.sCaptureElem = null;
+                    @{{sCaptureElem}} = null;
                     if (cap.__listener) {
                         var lcEvent = $doc.createEvent('UIEvent');
                         lcEvent.initUIEvent('losecapture', false, false,
                                              $wnd, 0);
-                        DOM.dispatchEvent(lcEvent, cap, cap.__listener);
+                        @{{dispatchEvent}}(lcEvent, cap, cap.__listener);
                     }
                 }
             }
@@ -84,7 +81,7 @@ def init():
         }
     
         if (listener) {
-            DOM.dispatchEvent(evt, curElem, listener);
+            @{{dispatchEvent}}(evt, curElem, listener);
         }
     };
     """)
@@ -319,7 +316,7 @@ def getInnerText(element):
     var text = '', child = @{{element}}.firstChild;
     while (child) {
       if (child.nodeType == 1){ // 1 == Element node
-        text += @{{DOM}}.getInnerText(child);
+        text += @{{getInnerText}}(child);
       } else if (child.nodeValue) {
         text += child.nodeValue;
       }
@@ -403,7 +400,7 @@ def iterChildren(elem):
                 throw @{{StopIteration}};
             }
             lastChild = child;
-            child = @{{DOM}}.getNextSibling(child);
+            child = @{{getNextSibling}}(child);
             return lastChild;
         },
         'remove': function() {        
@@ -423,7 +420,7 @@ def walkChildren(elem):
     """
     JS("""
     var parent = @{{elem}};
-    var child = @{{DOM}}.getFirstChild(@{{elem}});
+    var child = @{{getFirstChild}}(@{{elem}});
     var lastChild = null;
     var stack = [];
     var parentStack = [];
@@ -433,8 +430,8 @@ def walkChildren(elem):
                 throw @{{StopIteration}};
             }
             lastChild = child;
-            var firstChild = @{{DOM}}.getFirstChild(child);
-            var nextSibling = @{{DOM}}.getNextSibling(child);
+            var firstChild = @{{getFirstChild}}(child);
+            var nextSibling = @{{getNextSibling}}(child);
             if(firstChild != null) {
                if(nextSibling != null) {
                    stack.push(nextSibling);
@@ -463,9 +460,9 @@ def walkChildren(elem):
    
 def releaseCapture(elem):
     JS("""
-    if ((DOM.sCaptureElem != null) 
-            && @{{DOM}}.compare(@{{elem}}, DOM.sCaptureElem))
-        DOM.sCaptureElem = null;
+    if ((@{{sCaptureElem}} != null) 
+            && @{{compare}}(@{{elem}}, @{{sCaptureElem}}))
+        @{{sCaptureElem}} = null;
     """)
 
 def removeEventPreview(preview):
@@ -527,7 +524,7 @@ def setBooleanAttribute(elem, attr, value):
 
 def setCapture(elem):
     JS("""
-    DOM.sCaptureElem = @{{elem}};
+    @{{sCaptureElem}} = @{{elem}};
     """)
 
 def setEventListener(element, listener):
