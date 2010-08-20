@@ -920,7 +920,7 @@ def init():
     # Hence the declaration of 'var message' and the wrapping in try..catch
     JS("""
 @{{_errorMapping}} = function(err) {
-    if (err instanceof(ReferenceError) || err instanceof(TypeError)) {
+    if (err instanceof(@{{ReferenceError}}) || err instanceof(@{{TypeError}})) {
         var message = '';
         try {
             message = err.message;
