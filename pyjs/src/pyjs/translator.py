@@ -899,7 +899,7 @@ class Translator(object):
         self.output = save_output
         if self.source_tracking and self.store_source:
             for l in self.track_lines.keys():
-                self.w( self.spacing() + '''%s.__track_lines__[%d] = "%s";''' % (self.js_module_name, l, self.track_lines[l].replace('"', '\"')))
+                self.w( self.spacing() + '''%s.__track_lines__[%d] = "%s";''' % (self.js_module_name, l, self.track_lines[l].replace('"', '\"')), translate=False)
         self.w( self.local_js_vars_decl([]))
         if captured_output.find("@CONSTANT_DECLARATION@") >= 0:
             captured_output = captured_output.replace("@CONSTANT_DECLARATION@", self.constant_decl())
@@ -924,7 +924,9 @@ class Translator(object):
             self.w( 'PYJS_DEPS: %s' % self.imported_modules)
             self.w( '*/')
 
-    def w(self, txt, newline=True, output=None):
+    def w(self, txt, newline=True, output=None, translate=True):
+        if translate and txt:
+            txt = self.translate_escaped_names(txt, None) # TODO: current_klss
         output = output or self.output
         assert(isinstance(newline, bool))
         if newline:
