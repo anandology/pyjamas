@@ -373,10 +373,10 @@ def getStyleAttribute(elem, attr):
 
 def insertChild(parent, toAdd, index):
     JS("""
-    var count = 0, child = parent.firstChild, before = null;
+    var count = 0, child = @{{parent}}.firstChild, before = null;
     while (child) {
       if (child.nodeType == 1) {
-        if (count == index) {
+        if (count == @{{index}}) {
           before = child;
           break;
         }
@@ -385,7 +385,7 @@ def insertChild(parent, toAdd, index):
       child = child.nextSibling;
     }
 
-    parent.insertBefore(toAdd, before);
+    @{{parent}}.insertBefore(@{{toAdd}}, before);
     """)
 
 def iterChildren(elem):
@@ -394,13 +394,13 @@ def iterChildren(elem):
     DOM node.
     """
     JS("""
-    var parent = elem;
-    var child = elem.firstChild;
+    var parent = @{{elem}};
+    var child = @{{elem}}.firstChild;
     var lastChild = null;
     return {
         'next': function() {
             if (child == null) {
-                throw pyjslib.StopIteration;
+                throw @{{StopIteration}};
             }
             lastChild = child;
             child = @{{DOM}}.getNextSibling(child);
@@ -422,15 +422,15 @@ def walkChildren(elem):
     of all the children of the given element.
     """
     JS("""
-    var parent = elem;
-    var child = @{{DOM}}.getFirstChild(elem);
+    var parent = @{{elem}};
+    var child = @{{DOM}}.getFirstChild(@{{elem}});
     var lastChild = null;
     var stack = [];
     var parentStack = [];
     return {
         'next': function() {
             if (child == null) {
-                throw pyjslib.StopIteration;
+                throw @{{StopIteration}};
             }
             lastChild = child;
             var firstChild = @{{DOM}}.getFirstChild(child);
@@ -464,7 +464,7 @@ def walkChildren(elem):
 def releaseCapture(elem):
     JS("""
     if ((@{{DOM}}.sCaptureElem != null) 
-            && @{{DOM}}.compare(elem, @{{DOM}}.sCaptureElem))
+            && @{{DOM}}.compare(@{{elem}}, @{{DOM}}.sCaptureElem))
         @{{DOM}}.sCaptureElem = null;
     """)
 
