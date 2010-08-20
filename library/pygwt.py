@@ -9,8 +9,8 @@ def getNextHashId():
 
 def getHashCode(o):
     JS("""
-    return (o == null) ? 0 :
-        (o.$H ? o.$H : (o.$H = pygwt_getNextHashId()))
+    return (@{{o}} == null) ? 0 :
+        (@{{o}}.$H ? @{{o}}.$H : (@{{o}}.$H = @{{getNextHashId}}()))
     """)
 
 def getModuleName():
