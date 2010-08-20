@@ -77,7 +77,7 @@ class struct_time(object):
 def gmtime(t = None):
     if t == None:
         t = time()
-    date = JS("new Date(t*1000)")
+    date = JS("new Date(@{{t}}*1000)")
     tm = struct_time()
     tm.tm_year = date.getUTCFullYear()
     tm.tm_mon = date.getUTCMonth() + 1
@@ -87,14 +87,14 @@ def gmtime(t = None):
     tm.tm_sec = date.getUTCSeconds()
     tm.tm_wday = (date.getUTCDay() + 6) % 7
     tm.tm_isdst = 0
-    startOfYear = JS("new Date('Jan 1 '+tm.tm_year+' GMT+0000')")
+    startOfYear = JS("new Date('Jan 1 '+ @{{tm.tm_year}} +' GMT+0000')")
     tm.tm_yday = 1 + int((t - startOfYear.getTime()/1000)/86400)
     return tm
 
 def localtime(t = None):
     if t == None:
         t = time()
-    date = JS("new Date(t*1000)")
+    date = JS("new Date(@{{t}}*1000)")
     dateOffset = date.getTimezoneOffset()
     tm = struct_time()
     tm.tm_year = date.getFullYear()
@@ -105,9 +105,9 @@ def localtime(t = None):
     tm.tm_sec = date.getSeconds()
     tm.tm_wday = (date.getDay() + 6) % 7
     tm.tm_isdst = 0 if timezone == 60*date.getTimezoneOffset() else 1
-    startOfYear = JS("new Date(tm.tm_year,0,1)") # local time
+    startOfYear = JS("new Date(@{{tm.tm_year}},0,1)") # local time
     startOfYearOffset = startOfYear.getTimezoneOffset()
-    startOfDay = JS("new Date(tm.tm_year,tm.tm_mon-1,tm.tm_mday)")
+    startOfDay = JS("new Date(@{{tm.tm_year}},@{{tm.tm_mon}}-1,@{{tm.tm_mday}})")
     dt = (startOfDay.getTime() - startOfYear.getTime())/1000
     dt = dt + 60 * (startOfYearOffset - dateOffset)
     tm.tm_yday = 1 + int(dt/86400.0)
@@ -131,7 +131,7 @@ def mktime(t):
     tm_hour = t[3]
     tm_min = t[4]
     tm_sec = t[5]
-    date = JS("new Date(tm_year, tm_mon, tm_mday, tm_hour, tm_min, tm_sec)") # local time
+    date = JS("new Date(@{{tm_year}}, @{{tm_mon}}, @{{tm_mday}}, @{{tm_hour}}, @{{tm_min}}, @{{tm_sec}})") # local time
     if t[8] == 0:
         return date.getTime()/1000 - 60 * date.getTimezoneOffset()
     #return date.getTime()/1000 - 60 * date.getTimezoneOffset() + (60 * date.getTimezoneOffset() - timezone)
@@ -151,10 +151,10 @@ def strftime(fmt, t = None):
     tm_sec = t[5]
     tm_wday = t[6]
     tm_yday = t[7]
-    date = JS("new Date(tm_year, tm_mon - 1, tm_mday, tm_hour, tm_min, tm_sec)")
-    startOfYear = JS("new Date(tm_year,0,1)")
+    date = JS("new Date(@{{tm_year}}, @{{tm_mon}} - 1, @{{tm_mday}}, @{{tm_hour}}, @{{tm_min}}, @{{tm_sec}})")
+    startOfYear = JS("new Date(@{{tm_year}},0,1)")
     firstMonday = 1 - ((startOfYear.getDay() + 6) % 7) + 7
-    firstWeek = JS("new Date(tm_year,0,firstMonday)")
+    firstWeek = JS("new Date(@{{tm_year}},0,@{{firstMonday}})")
     weekNo = date.getTime() - firstWeek.getTime()
     if weekNo < 0:
         weekNo = 0
@@ -215,16 +215,16 @@ def strftime(fmt, t = None):
     JS("var a, fmtChar;")
     while remainder:
         JS("""
-        a = re_pct.exec(remainder);
+        a = @{{re_pct}}.exec(@{{remainder}});
         if (!a) {
-            result += remainder;
+            result += @{{remainder}};
             remainder = null;
         } else {
             result += a[1];
             fmtChar = a[2];
             remainder = a[3];
             if (typeof fmtChar != 'undefined') {
-                result += format(fmtChar);
+                result += @{{format}}(fmtChar);
             }
         }
         """)
