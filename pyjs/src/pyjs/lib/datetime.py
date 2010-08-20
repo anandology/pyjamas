@@ -12,7 +12,7 @@ __Jan_01_0001 = JS("""(new Date((new Date('Jan 1 1971')).getTime() - 62167132800
 class date:
     def __init__(self, year, month, day, d=None):
         if d is None:
-            d = JS("""new Date(year, month - 1, day, 0, 0, 0, 0)""")
+            d = JS("""new Date(@{{year}}, @{{month}} - 1, @{{day}}, 0, 0, 0, 0)""")
         self._d = d
         self.year = d.getFullYear()
         self.month = d.getMonth() + 1.0
@@ -31,7 +31,7 @@ class date:
     @classmethod
     def fromordinal(self, ordinal):
         t = __Jan_01_0001 + (ordinal-1) * 86400000.0
-        d = JS("""new Date(t)""")
+        d = JS("""new Date(@{{t}})""")
         return date(d=d)
     
     def ctime(self):
@@ -141,9 +141,9 @@ class date:
 class time:
     def __init__(self, hour, minute=0, second=0, microsecond=0, tzinfo=None, d=None):
         if tzinfo != None:
-            raise NontImplementedError("tzinfo")
+            raise NotImplementedError("tzinfo")
         if d is None:
-            d = JS("""new Date(1970, 1, 1, hour, minute, second, 0.5 + microsecond / 1000.0)""")
+            d = JS("""new Date(1970, 1, 1, @{{hour}}, @{{minute}}, @{{second}}, 0.5 + @{{microsecond}} / 1000.0)""")
         self._d = d
         self.hour = d.getHours()
         self.minute = d.getMinutes()
@@ -152,7 +152,7 @@ class time:
         self.tzinfo = None
         
     def dst(self):
-        raise NontImplementedError("dst")
+        raise NotImplementedError("dst")
     
     def isoformat(self):
         t = "%02d:%02d:%02d" % (self.hour, self.minute, self.second)
@@ -162,7 +162,7 @@ class time:
     
     def replace(self, hour=None, minute=None, second=None, microsecond=None, tzinfo=None):
         if tzinfo != None:
-            raise NontImplementedError("tzinfo")
+            raise NotImplementedError("tzinfo")
         if hour is None:
             hour = self.hour
         if minute is None:
@@ -189,7 +189,7 @@ class time:
 class datetime(date, time):
     def __init__(self, year, month, day, hour=0, minute=0, second=0, microsecond=0, tzinfo=None, d=None):
         if d is None:
-            d = JS("""new Date(year, month - 1, day, hour, minute, second, 0.5 + microsecond / 1000.0)""")
+            d = JS("""new Date(@{{year}}, @{{month}} - 1, @{{day}}, @{{hour}}, @{{minute}}, @{{second}}, 0.5 + @{{microsecond}} / 1000.0)""")
         date.__init__(self, d=d)
         time.__init__(self, d=d)
     
@@ -200,7 +200,7 @@ class datetime(date, time):
     @classmethod
     def fromtimestamp(self, timestamp, tz=None):
         if tz != None:
-            raise NontImplementedError("tz")
+            raise NotImplementedError("tz")
         d = JS("""new Date()""")
         d.setTime(timestamp * 1000.0)
         return datetime(d=d)
@@ -214,12 +214,12 @@ class datetime(date, time):
     @classmethod
     def now(self, tz=None):
         if tz != None:
-            raise NontImplementedError("tz")
+            raise NotImplementedError("tz")
         return datetime(d=JS("""new Date()"""))
     
     @classmethod
     def strptime(self, datestring, format):
-        raise NontImplementedError("strptime")
+        raise NotImplementedError("strptime")
     
     @classmethod
     def utcfromtimestamp(self, timestamp):
@@ -235,7 +235,7 @@ class datetime(date, time):
         return localtime(int(self._d.getTime() / 1000.0))
     
     def astimezone(self, tz):
-        raise NontImplementedError("astimezone")
+        raise NotImplementedError("astimezone")
     
     def date(self):
         return date(self.year, self.month, self.day)
@@ -245,7 +245,7 @@ class datetime(date, time):
     
     def replace(self, year=None, month=None, day=None, hour=None, minute=None, second=None, microsecond=None, tzinfo=None):
         if tzinfo != None:
-            raise NontImplementedError("tzinfo")
+            raise NotImplementedError("tzinfo")
         if year is None:
             year = self.year
         if month is None:
@@ -263,7 +263,7 @@ class datetime(date, time):
         return datetime(year, month, day, hour, minute, second, microsecond)
     
     def timetz(self):
-        raise NontImplementedError("timetz")
+        raise NotImplementedError("timetz")
     
     def utctimetuple(self):
         return gmtime(self._d.getTime() / 1000.0)
@@ -276,7 +276,7 @@ class datetime(date, time):
 
     def __add__(self, other):
         if isinstance(other, timedelta):
-            d = JS("""new Date(this.year, this.month, this.day + other.days, this.hour + (other.seconds / 3600.0), this.minute + ((other.seconds / 60.0) % 60), this.second + (other.seconds % 60), this.microsecond + other.microseconds)""")
+            d = JS("""new Date(this.year, this.month, this.day + @{{other.days}}, this.hour + (@{{other.seconds}} / 3600.0), this.minute + ((@{{other.seconds}} / 60.0) % 60), this.second + (@{{other.seconds}} % 60), this.microsecond + @{{other.microseconds}})""")
             return datetime(d=d)
         else:
             raise TypeError("expected timedelta object")
@@ -286,7 +286,7 @@ class datetime(date, time):
             diff = self._d.getTime() - other._d.getTime()
             return timedelta(int(diff / 86400000.0), int(diff / 1000.0) % 86400, milliseconds=(diff % 86400000))
         elif isinstance(other, timedelta):
-            d = JS("""new Date(this.year, this.month, this.day - other.days, this.hour - (other.seconds / 3600.0), this.minute - ((other.seconds / 60.0) % 60), this.second - (other.seconds % 60), this.microsecond - other.microseconds)""")
+            d = JS("""new Date(this.year, this.month, this.day - @{{other.days}}, this.hour - (@{{other.seconds}} / 3600.0), this.minute - ((@{{other.seconds}} / 60.0) % 60), this.second - (@{{other.seconds}} % 60), this.microsecond - @{{other.microseconds}})""")
             return datetime(d=d)
         else:
             raise TypeError("expected date or datetime object")
@@ -319,3 +319,4 @@ datetime.resolution = timedelta(0,0,1)
 timedelta.min = timedelta(-999999999)
 timedelta.max = timedelta(999999999, hours=23, minutes=59, seconds=59, microseconds=999999)
 timedelta.resolution = timedelta(0,0,1)
+
