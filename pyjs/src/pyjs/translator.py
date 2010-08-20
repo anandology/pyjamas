@@ -445,7 +445,8 @@ class __Pyjamas__(object):
                  and isinstance(node.args[0].value, str)
                ):
                 translator.ignore_debug = True
-                converted = func(node.args[0].value, translator, current_klass, is_statement)
+                unescape = lambda content: translator.translate_escaped_names(content, current_klass)
+                converted = func(node.args[0].value, unescape=unescape, translator=translator, current_klass=current_klass, is_statement=is_statement)
                 return converted, re_return.search(converted) is not None
             else:
                 raise TranslationError(
@@ -588,8 +589,8 @@ def native_js_func(func):
     return func
 
 @native_js_func
-def JS(content, translator, current_klass, is_statement):
-    return translator.translate_escaped_names(content, current_klass)
+def JS(content, unescape, **kwargs):
+    return unescape(content)
 
 __pyjamas__ = __Pyjamas__()
 
