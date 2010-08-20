@@ -29,7 +29,7 @@ def setOnError(onError):
         raise TypeError("object is not callable")
     JS("""\
     $wnd.onerror=function(msg, url, linenumber){
-        return onError(msg, url, linenumber);
+        return @{{onError}}(msg, url, linenumber);
     }
     """)
 
@@ -116,13 +116,13 @@ def init():
     JS("""
     $wnd.__pygwt_initHandlers(
         function() {
-            Window.onResize();
+            @{{onResize}}();
         },
         function() {
-            return Window.onClosing();
+            return @{{onClosing}}();
         },
         function() {
-            Window.onClosed();
+            @{{onClosed}}();
             /*$wnd.onresize = null;
             $wnd.onbeforeclose = null;
             $wnd.onclose = null;*/
