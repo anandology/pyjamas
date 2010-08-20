@@ -13,22 +13,22 @@ class Timer:
 
     def clearInterval(self, id):
         JS("""
-        $wnd.clearInterval(id);
+        $wnd.clearInterval(@{{id}});
         """)
 
     def clearTimeout(self, id):
         JS("""
-        $wnd.clearTimeout(id);
+        $wnd.clearTimeout(@{{id}});
         """)
 
     def createInterval(self, timer, period):
         JS("""
-        return $wnd.setInterval(function() { timer.fire(); }, period);
+        return $wnd.setInterval(function() { @{{timer}}.fire(); }, @{{period}});
         """)
 
     def createTimeout(self, timer, delay):
         JS("""
-        return $wnd.setTimeout(function() { timer.fire(); }, delay);
+        return $wnd.setTimeout(function() { @{{timer}}.fire(); }, @{{delay}});
         """)
 
     # TODO - requires Window.addWindowCloseListener

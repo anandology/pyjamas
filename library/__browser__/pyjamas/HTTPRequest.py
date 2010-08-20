@@ -37,7 +37,7 @@ class HTTPRequest:
             global xmlHttp, handler
             if xmlHttp.readyState == 4:
                 # For IE:
-                JS("delete xmlHttp.onreadystatechange;")
+                JS("delete @{{xmlHttp}}.onreadystatechange;")
                 localHandler = handler
                 status = xmlHttp.status
                 if returnxml:
@@ -65,7 +65,7 @@ class HTTPRequest:
             xmlHttp.send(postData)
         except:
             # For IE:
-            JS("delete xmlHttp.onreadystatechange;")
+            JS("delete @{{xmlHttp}}.onreadystatechange;")
             localHandler = handler
             handler = None
             xmlHttp = None
