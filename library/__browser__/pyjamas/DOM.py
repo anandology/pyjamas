@@ -467,15 +467,15 @@ def removeEventPreview(preview):
 
 def scrollIntoView(elem):
     JS("""
-    var left = elem.offsetLeft, top = elem.offsetTop;
-    var width = elem.offsetWidth, height = elem.offsetHeight;
+    var left = @{{elem}}.offsetLeft, top = @{{elem}}.offsetTop;
+    var width = @{{elem}}.offsetWidth, height = @{{elem}}.offsetHeight;
     
-    if (elem.parentNode != elem.offsetParent) {
-        left -= elem.parentNode.offsetLeft;
-        top -= elem.parentNode.offsetTop;
+    if (@{{elem}}.parentNode != @{{elem}}.offsetParent) {
+        left -= @{{elem}}.parentNode.offsetLeft;
+        top -= @{{elem}}.parentNode.offsetTop;
     }
 
-    var cur = elem.parentNode;
+    var cur = @{{elem}}.parentNode;
     while (cur && (cur.nodeType == 1)) {
         if ((cur.style.overflow == 'auto') || (cur.style.overflow == 'scroll')) {
             if (left < cur.scrollLeft) {
