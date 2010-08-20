@@ -435,7 +435,7 @@ class __Pyjamas__(object):
 
     @classmethod
     def register_native_js_func(cls, name, func):
-        def native(self, translator, node):
+        def native(self, translator, node, current_klass, is_statement=False):
             if len(node.args) != 1:
                 raise TranslationError(
                     "%s function requires one argument" % name,
@@ -444,7 +444,7 @@ class __Pyjamas__(object):
                  and isinstance(node.args[0].value, str)
                ):
                 translator.ignore_debug = True
-                converted = func(node.args[0].value)
+                converted = func(node.args[0].value, translator, current_klass, is_statement)
                 return converted, re_return.search(converted) is not None
             else:
                 raise TranslationError(
@@ -454,7 +454,7 @@ class __Pyjamas__(object):
         cls.native_js_funcs.append(name)
         setattr(cls, name, native)
 
-    def wnd(self, translator, node):
+    def wnd(self, translator, node, *args, **kwargs):
         if len(node.args) != 0:
             raise TranslationError(
                 "wnd function doesn't support arguments",
@@ -462,7 +462,7 @@ class __Pyjamas__(object):
         translator.ignore_debug = True
         return '$wnd', False
 
-    def doc(self, translator, node):
+    def doc(self, translator, node, *args, **kwargs):
         if len(node.args) != 0:
             raise TranslationError(
                 "doc function doesn't support arguments",
@@ -470,7 +470,7 @@ class __Pyjamas__(object):
         translator.ignore_debug = True
         return '$doc', False
 
-    def jsinclude(self, translator, node):
+    def jsinclude(self, translator, node, *args, **kwargs):
         if len(node.args) != 1:
             raise TranslationError(
                 "jsinclude function requires one argument",
@@ -490,7 +490,7 @@ class __Pyjamas__(object):
                 "jsinclude function only supports constant strings",
                 node.node)
 
-    def jsimport(self, translator, node):
+    def jsimport(self, translator, node, *args, **kwargs):
         # jsimport(path, mode, location)
         # mode = [default|static|dynamic] (default: depends on build argument -m)
         # location = [early|middle|late] (only relevant for static)
@@ -538,7 +538,7 @@ class __Pyjamas__(object):
         translator.ignore_debug = True
         return '', False
 
-    def debugger(self, translator, node):
+    def debugger(self, translator, node, *args, **kwargs):
         if len(node.args) != 0:
             raise TranslationError(
                 "debugger function doesn't support arguments",
@@ -546,7 +546,7 @@ class __Pyjamas__(object):
         translator.ignore_debug = True
         return 'debugger', False
 
-    def setCompilerOptions(self, translator, node):
+    def setCompilerOptions(self, translator, node, *args, **kwargs):
         global speed_options, pythonic_options
         for arg in node.args:
             if not isinstance(arg, translator.ast.Const) or not isinstance(arg.value, str):
@@ -570,7 +570,7 @@ class __Pyjamas__(object):
         translator.ignore_debug = True
         return '', False
 
-    def INT(self, translator, node):
+    def INT(self, translator, node, *args, **kwargs):
         if len(node.args) != 1:
             raise TranslationError(
                 "INT function requires one argument",
@@ -587,8 +587,8 @@ def native_js_func(func):
     return func
 
 @native_js_func
-def JS(content):
-    return content
+def JS(content, translator, current_klass, is_statement):
+    return translator.translate_escaped_names(content, current_klass)
 
 __pyjamas__ = __Pyjamas__()
 
@@ -2167,7 +2167,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         print >>self.output, self.spacing() + "continue;"
 
 
-    def _callfunc_code(self, v, current_klass):
+    def _callfunc_code(self, v, current_klass, is_statement=False):
 
         self.ignore_debug = False
         method_name = None
@@ -2177,10 +2177,12 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                 try:
                     raw_js = getattr(__pyjamas__, v.node.name)
                     if callable(raw_js):
-                        raw_js, has_js_return = raw_js(self, v)
+                        raw_js, has_js_return = raw_js(self, v, current_klass,
+                                                       is_statement=is_statement)
                         if has_js_return:
                             self.has_js_return = True
-                    raw_js = self.translate_escaped_names(raw_js, current_klass)
+                    else:
+                        raw_js = self.translate_escaped_names(raw_js, current_klass)
                     return raw_js
                 except AttributeError, e:
                     raise TranslationError(
@@ -2290,8 +2292,8 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             call_code = call_name + "(" + ", ".join(call_args) + ")"
         return call_code
 
-    def _callfunc(self, v, current_klass):
-        call_code = self._callfunc_code(v, current_klass)
+    def _callfunc(self, v, current_klass, is_statement=False):
+        call_code = self._callfunc_code(v, current_klass, is_statement=is_statement)
         if not self.ignore_debug:
             call_code = self.track_call(call_code, v.lineno)
         return call_code
@@ -3146,12 +3148,11 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
     def _discard(self, node, current_klass):
         
         if isinstance(node.expr, self.ast.CallFunc):
-            expr = self._callfunc(node.expr, current_klass)
+            expr = self._callfunc(node.expr, current_klass, is_statement=True)
             if isinstance(node.expr.node, self.ast.Name):
                 name_type, pyname, jsname, depth, is_local = self.lookup(node.expr.node.name)
                 if name_type == '__pyjamas__' and \
                    jsname in __pyjamas__.native_js_funcs:
-                    expr = self.translate_escaped_names(expr, current_klass)
                     print >>self.output, expr
                     return
             print >>self.output, self.spacing() + expr + ";"
