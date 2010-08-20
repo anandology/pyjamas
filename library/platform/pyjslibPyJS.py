@@ -20,7 +20,7 @@
 # FIXME: dynamic=1, async=False, init=True are useless here (?)
 def import_module(path, parent_module, module_name, dynamic=1, async=False, init=True):
     JS("""
-    module = $pyjs.modules_hash[module_name];
+    module = $pyjs.modules_hash[@{{module_name}}];
     if (typeof module == 'function' && module.__was_initialized__ == true) {
         return null;
     }
@@ -35,10 +35,10 @@ def import_module(path, parent_module, module_name, dynamic=1, async=False, init
     # Import all modules in the chain (import a.b.c)
     for name in names:
         importName += name
-        JS("""module = $pyjs.modules_hash[importName];""")
+        JS("""@{{module}} = $pyjs.modules_hash[@{{importName}}];""")
         if isUndefined(module):
             raise ImportError("No module named " + importName)
-        if JS("module.__was_initialized__ != true"):
+        if JS("@{{module}}.__was_initialized__ != true"):
             # Module wasn't initialized
             module()
         importName += '.'
@@ -53,22 +53,22 @@ def load_module(path, parent_module, module_name, dynamic=1, async=False):
 
     JS("""
         var cache_file;
-        var module = $pyjs.modules_hash[module_name];
+        var module = $pyjs.modules_hash[@{{module_name}}];
         if (typeof module == 'function') {
             return true;
         }
 
-        if (!dynamic) {
+        if (!@{{dynamic}}) {
             // There's no way we can load a none dynamic module
             return false;
         }
 
-        if (path == null)
+        if (@{{path}} == null)
         {
-            path = './';
+            @{{path}} = './';
         }
 
-        var override_name = sys.platform + "." + module_name;
+        var override_name = sys.platform + "." + @{{module_name}};
         if (((sys.overrides != null) &&
              (sys.overrides.has_key(override_name))))
         {
@@ -79,17 +79,17 @@ def load_module(path, parent_module, module_name, dynamic=1, async=False):
             cache_file =  module_name ;
         }
 
-        cache_file = (path + cache_file + '.cache.js' ) ;
+        cache_file = (@{{path}} + cache_file + '.cache.js' ) ;
 
         //alert("cache " + cache_file + " " + module_name + " " + parent_module);
 
         onload_fn = '';
 
         // this one tacks the script onto the end of the DOM
-        pyjs_load_script(cache_file, onload_fn, async);
+        pyjs_load_script(cache_file, onload_fn, @{{async}});
 
         try {
-            loaded = (typeof $pyjs.modules_hash[module_name] == 'function')
+            loaded = (typeof $pyjs.modules_hash[@{{module_name}}] == 'function')
         } catch ( e ) {
         }
         if (loaded) {
@@ -113,15 +113,15 @@ def load_module_wait(proceed_fn, parent_mod, module_list, dynamic):
     //}
 
     var timeoutperiod = 1;
-    if (dynamic)
+    if (@{{dynamic}})
         var timeoutperiod = 1;
 
     var wait = function() {
         wait_count++;
         //write_dom(".");
         var loaded = true;
-        for (var i in module_list) {
-            if (typeof $pyjs.modules_hash[module_list[i]] != 'function') {
+        for (var i in @{{module_list}}) {
+            if (typeof $pyjs.modules_hash[@{{module_list}}[i]] != 'function') {
                 loaded = false;
                 break;
             }
@@ -129,10 +129,10 @@ def load_module_wait(proceed_fn, parent_mod, module_list, dynamic):
         if (!loaded) {
             setTimeout(wait, timeoutperiod);
         } else {
-            if (proceed_fn.importDone)
-                proceed_fn.importDone(proceed_fn);
+            if (@{{proceed_fn}}.importDone)
+                @{{proceed_fn}}.importDone(@{{proceed_fn}});
             else
-                proceed_fn();
+                @{{proceed_fn}}();
             //$doc.body.removeChild(element);
         }
     }
@@ -196,7 +196,7 @@ class Modload:
 
 def get_module(module_name):
     ev = "__mod = %s;" % module_name
-    JS("pyjs_eval(ev);")
+    JS("pyjs_eval(@{{ev}});")
     return __mod
 
 def preload_app_modules(path, app_modnames, app_imported_fn, dynamic,
@@ -501,38 +501,38 @@ def eq(a,b):
     # So, for speed, do a typeof X / X.__cmp__  on a/b.
     # Checking for the existance of .__cmp__ is expensive...
     JS("""
-    if (a === null) {
-        if (b === null) return true;
+    if (@{{a}} === null) {
+        if (@{{b}} === null) return true;
         return false;
     }
-    if (b === null) {
+    if (@{{b}} === null) {
         return false;
     }
-    if ((typeof a == 'object' || typeof a == 'function') && typeof a.__cmp__ == 'function') {
-        return a.__cmp__(b) == 0;
-    } else if ((typeof b == 'object' || typeof b == 'function') && typeof b.__cmp__ == 'function') {
-        return b.__cmp__(a) == 0;
+    if ((typeof @{{a}} == 'object' || typeof @{{a}} == 'function') && typeof @{{a}}.__cmp__ == 'function') {
+        return @{{a}}.__cmp__(b) == 0;
+    } else if ((typeof @{{b}} == 'object' || typeof @{{b}} == 'function') && typeof @{{b}}.__cmp__ == 'function') {
+        return @{{b}}.__cmp__(@{{a}}) == 0;
     }
-    return a == b;
+    return @{{a}} == @{{b}};
     """)
 
 @noSourceTracking
 def cmp(a,b):
     JS("""
-    if (a === null) {
-        if (b === null) return 0;
+    if (@{{a}} === null) {
+        if (@{{b}} === null) return 0;
         return -1;
     }
-    if (b === null) {
+    if (@{{b}} === null) {
         return 1;
     }
-    if ((typeof a == 'object' || typeof a == 'function') && typeof a.__cmp__ == 'function') {
-        return a.__cmp__(b);
-    } else if ((typeof b == 'object' || typeof b == 'function') && typeof b.__cmp__ == 'function') {
-        return -b.__cmp__(a);
+    if ((typeof @{{a}} == 'object' || typeof @{{a}} == 'function') && typeof @{{a}}.__cmp__ == 'function') {
+        return @{{a}}.__cmp__(@{{b}});
+    } else if ((typeof @{{b}} == 'object' || typeof @{{b}} == 'function') && typeof @{{b}}.__cmp__ == 'function') {
+        return -@{{b}}.__cmp__(@{{a}});
     }
-    if (a > b) return 1;
-    if (b > a) return -1;
+    if (@{{a}} > @{{b}}) return 1;
+    if (@{{b}} > @{{a}}) return -1;
     return 0;
     """)
 
@@ -545,19 +545,19 @@ def bool(v):
     # because this is used by if and while, we need to prevent
     # recursion
     JS("""
-    if (!v) return false;
-    switch(typeof v){
+    if (!@{{v}}) return false;
+    switch(typeof @{{v}}){
     case 'boolean':
-        return v;
+        return @{{v}};
     case 'object':
-        if (v.__nonzero__){
-            return v.__nonzero__();
-        }else if (v.__len__){
-            return v.__len__()>0;
+        if (@{{v}}.__nonzero__){
+            return @{{v}}.__nonzero__();
+        }else if (@{{v}}.__len__){
+            return @{{v}}.__len__()>0;
         }
         return true;
     }
-    return Boolean(v);
+    return Boolean(@{{v}});
     """)
 
 class List:
@@ -565,24 +565,24 @@ class List:
     def __init__(self, data=None):
         JS("""
         this.l = [];
-        this.extend(data);
+        this.extend(@{{data}});
         """)
 
     @noSourceTracking
     def append(self, item):
-        JS("""    this.l[this.l.length] = item;""")
+        JS("""    this.l[this.l.length] = @{{item}};""")
 
     @noSourceTracking
     def extend(self, data):
         JS("""
-        if (pyjslib.isArray(data)) {
+        if (pyjslib.isArray(@{{data}})) {
             n = this.l.length;
-            for (var i=0; i < data.length; i++) {
+            for (var i=0; i < @{{data}}.length; i++) {
                 this.l[n+i]=data[i];
                 }
             }
-        else if (pyjslib.isIteratable(data)) {
-            var iter=data.__iter__();
+        else if (pyjslib.isIteratable(@{{data}})) {
+            var iter=@{{data}}.__iter__();
             var i=this.l.length;
             try {
                 while (true) {
@@ -599,7 +599,7 @@ class List:
     @noSourceTracking
     def remove(self, value):
         JS("""
-        var index=this.index(value);
+        var index=this.index(@{{value}});
         if (index<0) return false;
         this.l.splice(index, 1);
         return true;
@@ -609,8 +609,8 @@ class List:
     def index(self, value, start=0):
         JS("""
         var length=this.l.length;
-        for (var i=start; i<length; i++) {
-            if (this.l[i]==value) {
+        for (var i=@{{start}}; i<length; i++) {
+            if (this.l[i]==@{{value}}) {
                 return i;
                 }
             }
@@ -619,14 +619,14 @@ class List:
 
     @noSourceTracking
     def insert(self, index, value):
-        JS("""    var a = this.l; this.l=a.slice(0, index).concat(value, a.slice(index));""")
+        JS("""    var a = this.l; this.l=a.slice(0, @{{index}}).concat(@{{value}}, a.slice(@{{index}}));""")
 
     @noSourceTracking
     def pop(self, index = -1):
         JS("""
-        if (index<0) index = this.l.length + index;
-        var a = this.l[index];
-        this.l.splice(index, 1);
+        if (@{{index}}<0) @{{index}} = this.l.length + @{{index}};
+        var a = this.l[@{{index}}];
+        this.l.splice(@{{index}}, 1);
         return a;
         """)
 
@@ -646,24 +646,24 @@ class List:
     @noSourceTracking
     def slice(self, lower, upper):
         JS("""
-        if (upper==null) return pyjslib.List(this.l.slice(lower));
-        return pyjslib.List(this.l.slice(lower, upper));
+        if (@{{upper}}==null) return pyjslib.List(this.l.slice(@{{lower}}));
+        return pyjslib.List(this.l.slice(@{{lower}}, @{{upper}}));
         """)
 
     @noSourceTracking
     def __getitem__(self, index):
         JS("""
-        if (index<0) index = this.l.length + index;
-        return this.l[index];
+        if (@{{index}}<0) @{{index}} = this.l.length + @{{index}};
+        return this.l[@{{index}}];
         """)
 
     @noSourceTracking
     def __setitem__(self, index, value):
-        JS("""    this.l[index]=value;""")
+        JS("""    this.l[@{{index}}]=@{{value}};""")
 
     @noSourceTracking
     def __delitem__(self, index):
-        JS("""    this.l.splice(index, 1);""")
+        JS("""    this.l.splice(@{{index}}, 1);""")
 
     @noSourceTracking
     def __len__(self):
@@ -735,9 +735,9 @@ class List:
         #return '[' + ', '.join(r) + ']'
         JS("""
         var s = "[";
-        for (var i=0; i < self.l.length; i++) {
-            s += pyjslib.repr(self.l[i]);
-            if (i < self.l.length - 1)
+        for (var i=0; i < @{{self}}.l.length; i++) {
+            s += pyjslib.repr(@{{self}}.l[i]);
+            if (i < @{{self}}.l.length - 1)
                 s += ", ";
         };
         s += "]"
@@ -749,24 +749,24 @@ class Tuple:
     def __init__(self, data=None):
         JS("""
         this.l = [];
-        this.extend(data);
+        this.extend(@{{data}});
         """)
 
     @noSourceTracking
     def append(self, item):
-        JS("""    this.l[this.l.length] = item;""")
+        JS("""    this.l[this.l.length] = @{{item}};""")
 
     @noSourceTracking
     def extend(self, data):
         JS("""
-        if (pyjslib.isArray(data)) {
+        if (pyjslib.isArray(@{{data}})) {
             n = this.l.length;
-            for (var i=0; i < data.length; i++) {
-                this.l[n+i]=data[i];
+            for (var i=0; i < @{{data}}.length; i++) {
+                this.l[n+i]=@{{data}}[i];
                 }
             }
-        else if (pyjslib.isIteratable(data)) {
-            var iter=data.__iter__();
+        else if (pyjslib.isIteratable(@{{data}})) {
+            var iter=@{{data}}.__iter__();
             var i=this.l.length;
             try {
                 while (true) {
@@ -783,7 +783,7 @@ class Tuple:
     @noSourceTracking
     def remove(self, value):
         JS("""
-        var index=this.index(value);
+        var index=this.index(@{{value}});
         if (index<0) return false;
         this.l.splice(index, 1);
         return true;
@@ -793,8 +793,8 @@ class Tuple:
     def index(self, value, start=0):
         JS("""
         var length=this.l.length;
-        for (var i=start; i<length; i++) {
-            if (this.l[i]==value) {
+        for (var i=@{{start}}; i<length; i++) {
+            if (this.l[i]==@{{value}}) {
                 return i;
                 }
             }
@@ -803,14 +803,14 @@ class Tuple:
 
     @noSourceTracking
     def insert(self, index, value):
-        JS("""    var a = this.l; this.l=a.slice(0, index).concat(value, a.slice(index));""")
+        JS("""    var a = this.l; this.l=a.slice(0, @{{index}}).concat(@{{value}}, a.slice(@{{index}}));""")
 
     @noSourceTracking
     def pop(self, index = -1):
         JS("""
-        if (index<0) index = this.l.length + index;
-        var a = this.l[index];
-        this.l.splice(index, 1);
+        if (@{{index}}<0) @{{index}} = this.l.length + @{{index}};
+        var a = this.l[@{{index}}];
+        this.l.splice(@{{index}}, 1);
         return a;
         """)
 
@@ -830,24 +830,24 @@ class Tuple:
     @noSourceTracking
     def slice(self, lower, upper):
         JS("""
-        if (upper==null) return pyjslib.Tuple(this.l.slice(lower));
-        return pyjslib.Tuple(this.l.slice(lower, upper));
+        if (@{{upper}}==null) return pyjslib.Tuple(this.l.slice(@{{lower}}));
+        return pyjslib.Tuple(this.l.slice(@{{lower}}, @{{upper}}));
         """)
 
     @noSourceTracking
     def __getitem__(self, index):
         JS("""
-        if (index<0) index = this.l.length + index;
-        return this.l[index];
+        if (@{{index}}<0) @{{index}} = this.l.length + @{{index}};
+        return this.l[@{{index}}];
         """)
 
     @noSourceTracking
     def __setitem__(self, index, value):
-        JS("""    this.l[index]=value;""")
+        JS("""    this.l[@{{index}}]=@{{value}};""")
 
     @noSourceTracking
     def __delitem__(self, index):
-        JS("""    this.l.splice(index, 1);""")
+        JS("""    this.l.splice(@{{index}}, 1);""")
 
     @noSourceTracking
     def __len__(self):
@@ -921,12 +921,12 @@ class Tuple:
         #return '(' + ', '.join(r) + ')'
         JS("""
         var s = "(";
-        for (var i=0; i < self.l.length; i++) {
-            s += pyjslib.repr(self.l[i]);
-            if (i < self.l.length - 1)
+        for (var i=0; i < @{{self}}.l.length; i++) {
+            s += pyjslib.repr(@{{self}}.l[i]);
+            if (i < @{{self}}.l.length - 1)
                 s += ", ";
         };
-        if (self.l.length == 1)
+        if (@{{self}}.l.length == 1)
             s += ",";
         s += ")"
         return s;
@@ -938,16 +938,16 @@ class Dict:
         JS("""
         this.d = {};
 
-        if (pyjslib.isArray(data)) {
-            for (var i in data) {
-                var item=data[i];
+        if (pyjslib.isArray(@{{data}})) {
+            for (var i in @{{data}}) {
+                var item=@{{data}}[i];
                 this.__setitem__(item[0], item[1]);
                 //var sKey=pyjslib.hash(item[0]);
                 //this.d[sKey]=item[1];
                 }
             }
-        else if (pyjslib.isIteratable(data)) {
-            var iter=data.__iter__();
+        else if (pyjslib.isIteratable(@{{data}})) {
+            var iter=@{{data}}.__iter__();
             try {
                 while (true) {
                     var item=iter.next();
@@ -958,9 +958,9 @@ class Dict:
                 if (e.__name__ != 'StopIteration') throw e;
                 }
             }
-        else if (pyjslib.isObject(data)) {
-            for (var key in data) {
-                this.__setitem__(key, data[key]);
+        else if (pyjslib.isObject(@{{data}})) {
+            for (var key in @{{data}}) {
+                this.__setitem__(key, @{{data}}[key]);
                 }
             }
         """)
@@ -968,17 +968,17 @@ class Dict:
     @noSourceTracking
     def __setitem__(self, key, value):
         JS("""
-        var sKey = pyjslib.hash(key);
-        this.d[sKey]=[key, value];
+        var sKey = pyjslib.hash(@{{key}});
+        this.d[sKey]=[@{{key}}, @{{value}}];
         """)
 
     @noSourceTracking
     def __getitem__(self, key):
         JS("""
-        var sKey = pyjslib.hash(key);
+        var sKey = pyjslib.hash(@{{key}});
         var value=this.d[sKey];
         if (pyjslib.isUndefined(value)){
-            throw pyjslib.KeyError(key);
+            throw pyjslib.KeyError(@{{key}});
         }
         return value[1];
         """)
@@ -1007,14 +1007,14 @@ class Dict:
     @noSourceTracking
     def __delitem__(self, key):
         JS("""
-        var sKey = pyjslib.hash(key);
+        var sKey = pyjslib.hash(@{{key}});
         delete this.d[sKey];
         """)
 
     @noSourceTracking
     def __contains__(self, key):
         JS("""
-        var sKey = pyjslib.hash(key);
+        var sKey = pyjslib.hash(@{{key}});
         return (pyjslib.isUndefined(this.d[sKey])) ? false : true;
         """)
 
@@ -1107,12 +1107,12 @@ class Dict:
         #return '{' + ', '.join(r) + '}'
         JS("""
         var keys = new Array();
-        for (var key in self.d)
+        for (var key in @{{self}}.d)
             keys.push(key);
 
         var s = "{";
         for (var i=0; i<keys.length; i++) {
-            var v = self.d[keys[i]]
+            var v = @{{self}}.d[keys[i]]
             s += pyjslib.repr(v[0]) + ": " + pyjslib.repr(v[1]);
             if (i < keys.length-1)
                 s += ", "
@@ -1128,10 +1128,10 @@ def _super(type_, object_or_type = None):
     if not _issubtype(object_or_type, type_):
         raise TypeError("super(type, obj): obj must be an instance or subtype of type")
     JS("""
-    var fn = pyjs_type('super', type_.__mro__.slice(1), {})
+    var fn = pyjs_type('super', @{{type_}}.__mro__.slice(1), {})
     fn.__new__ = fn.__mro__[1].__new__;
     fn.__init__ = fn.__mro__[1].__init__;
-    if (object_or_type.__is_instance__ === false) {
+    if (@{{object_or_type}}.__is_instance__ === false) {
         return fn;
     }
     var obj = new Object();
@@ -1141,7 +1141,7 @@ def _super(type_, object_or_type = None):
             for (var i = 0; i < arguments.length; i++) {
               args.push(arguments[i]);
             }
-            return obj[name].apply(object_or_type,args);
+            return obj[name].apply(@{{object_or_type}},args);
         }
         fnwrap.__name__ = name;
         fnwrap.parse_kwargs = obj.parse_kwargs;
@@ -1180,9 +1180,9 @@ def range(start, stop = None, step = 1):
 */
     return {
         'next': function() {
-            if ((step > 0 && start >= stop) || (step < 0 && start <= stop)) throw pyjslib.StopIteration;
-            var rval = start;
-            start += step;
+            if ((@{{step}} > 0 && @{{start}} >= @{{stop}}) || (@{{step}} < 0 && @{{start}} <= @{{stop}})) throw pyjslib.StopIteration;
+            var rval = @{{start}};
+            @{{start}} += @{{step}};
             return rval;
             },
         '__iter__': function() {
@@ -1195,17 +1195,17 @@ def range(start, stop = None, step = 1):
 def slice(object, lower, upper):
     JS("""
     if (pyjslib.isString(object)) {
-        if (lower < 0) {
-           lower = object.length + lower;
+        if (@{{lower}} < 0) {
+           @{{lower}} = object.length + @{{lower}};
         }
-        if (upper < 0) {
-           upper = object.length + upper;
+        if (@{{upper}} < 0) {
+           @{{upper}} = object.length + @{{upper}};
         }
-        if (pyjslib.isNull(upper)) upper=object.length;
-        return object.substring(lower, upper);
+        if (pyjslib.isNull(@{{upper}})) @{{upper}}=object.length;
+        return object.substring(@{{lower}}, @{{upper}});
     }
     if (pyjslib.isObject(object) && object.slice)
-        return object.slice(lower, upper);
+        return object.slice(@{{lower}}, @{{upper}});
 
     return null;
     """)
@@ -1213,17 +1213,17 @@ def slice(object, lower, upper):
 @noSourceTracking
 def str(text):
     JS("""
-    if (pyjslib.hasattr(text,"__str__")) {
-        return text.__str__();
+    if (pyjslib.hasattr(@{{text}},"__str__")) {
+        return @{{text}}.__str__();
     }
-    return String(text);
+    return String(@{{text}});
     """)
 
 @noSourceTracking
 def ord(x):
     if(isString(x) and len(x) is 1):
         JS("""
-            return x.charCodeAt(0);
+            return @{{x}}.charCodeAt(0);
         """)
     else:
         JS("""
@@ -1234,13 +1234,13 @@ def ord(x):
 @noSourceTracking
 def chr(x):
     JS("""
-        return String.fromCharCode(x)
+        return String.fromCharCode(@{{x}})
     """)
 
 @noSourceTracking
 def is_basetype(x):
     JS("""
-       var t = typeof(x);
+       var t = typeof(@{{x}});
        return t == 'boolean' ||
        t == 'function' ||
        t == 'number' ||
@@ -1252,8 +1252,8 @@ def is_basetype(x):
 @noSourceTracking
 def get_pyjs_classtype(x):
     JS("""
-        if (pyjslib.hasattr(x, "__is_instance__")) {
-            var src = x.__name__;
+        if (pyjslib.hasattr(@{{x}}, "__is_instance__")) {
+            var src = @{{x}}.__name__;
             return src;
         }
         return null;
@@ -1266,30 +1266,30 @@ def repr(x):
     if hasattr(x, '__repr__'):
         return x.__repr__()
     JS("""
-       if (x === null)
+       if (@{{x}} === null)
            return "null";
 
-       if (x === undefined)
+       if (@{{x}} === undefined)
            return "undefined";
 
-       var t = typeof(x);
+       var t = typeof(@{{x}});
 
-        //alert("repr typeof " + t + " : " + x);
+        //alert("repr typeof " + t + " : " + @{{x}});
 
        if (t == "boolean")
-           return x.toString();
+           return @{{x}}.toString();
 
        if (t == "function")
-           return "<function " + x.toString() + ">";
+           return "<function " + @{{x}}.toString() + ">";
 
        if (t == "number")
-           return x.toString();
+           return @{{x}}.toString();
 
        if (t == "string") {
-           if (x.indexOf("'") == -1)
-               return "'" + x + "'";
-           if (x.indexOf('"') == -1)
-               return '"' + x + '"';
+           if (@{{x}}.indexOf("'") == -1)
+               return "'" + @{{x}} + "'";
+           if (@{{x}}.indexOf('"') == -1)
+               return '"' + @{{x}} + '"';
            var s = x.replace(new RegExp('"', "g"), '\\\\"');
            return '"' + s + '"';
        };
@@ -1299,14 +1299,14 @@ def repr(x):
 
        // If we get here, x is an object.  See if it's a Pyjamas class.
 
-       if (!pyjslib.hasattr(x, "__init__"))
-           return "<" + x.toString() + ">";
+       if (!pyjslib.hasattr(@{{x}}, "__init__"))
+           return "<" + @{{x}}.toString() + ">";
 
        // Handle the common Pyjamas data types.
 
        var constructor = "UNKNOWN";
 
-       constructor = pyjslib.get_pyjs_classtype(x);
+       constructor = pyjslib.get_pyjs_classtype(@{{x}});
 
         //alert("repr constructor: " + constructor);
 
@@ -1321,13 +1321,13 @@ def repr(x):
 @noSourceTracking
 def float(text):
     JS("""
-    return parseFloat(text);
+    return parseFloat(@{{text}});
     """)
 
 @noSourceTracking
 def int(text, radix=0):
     JS("""
-    var i = parseInt(text, radix);
+    var i = parseInt(@{{text}}, @{{radix}});
     if (!isNaN(i)) {
         return i;
     }
@@ -1348,12 +1348,12 @@ def len(object):
 def isinstance(object_, classinfo):
     if pyjslib.isUndefined(object_):
         return False
-    JS("""if (classinfo.__name__ == 'int') {
-            return pyjslib.isNumber(object_); /* XXX TODO: check rounded? */
+    JS("""if (@{{classinfo}}.__name__ == 'int') {
+            return pyjslib.isNumber(@{{object_}}); /* XXX TODO: check rounded? */
             }
         """)
-    JS("""if (classinfo.__name__ == 'str') {
-            return pyjslib.isString(object_);
+    JS("""if (@{{classinfo}}.__name__ == 'str') {
+            return pyjslib.isString(@{{object_}});
             }
         """)
     if not pyjslib.isObject(object_):
@@ -1369,11 +1369,11 @@ def isinstance(object_, classinfo):
 @noSourceTracking
 def _isinstance(object_, classinfo):
     JS("""
-    if (object_.__is_instance__ !== true) {
+    if (@{{object_}}.__is_instance__ !== true) {
         return false;
     }
-    for (var c in object_.__mro__) {
-        if (object_.__mro__[c].__md5__ == classinfo.prototype.__md5__) return true;
+    for (var c in @{{object_}}.__mro__) {
+        if (@{{object_}}.__mro__[c].__md5__ == @{{classinfo}}.prototype.__md5__) return true;
     }
     return false;
     """)
@@ -1381,11 +1381,11 @@ def _isinstance(object_, classinfo):
 @noSourceTracking
 def _issubtype(object_, classinfo):
     JS("""
-    if (object_.__is_instance__ == null || classinfo.__is_instance__ == null) {
+    if (@{{object_}}.__is_instance__ == null || @{{classinfo}}.__is_instance__ == null) {
         return false;
     }
-    for (var c in object_.__mro__) {
-        if (object_.__mro__[c] == classinfo.prototype) return true;
+    for (var c in @{{object_}}.__mro__) {
+        if (@{{object_}}.__mro__[c] == @{{classinfo}}.prototype) return true;
     }
     return false;
     """)
@@ -1393,23 +1393,23 @@ def _issubtype(object_, classinfo):
 @noSourceTracking
 def getattr(obj, name, default_value=None):
     JS("""
-    if ((!pyjslib.isObject(obj))||(pyjslib.isUndefined(obj[name]))){
+    if ((!pyjslib.isObject(@{{obj}}))||(pyjslib.isUndefined(@{{obj}}[@{{name}}]))){
         if (arguments.length != 3){
-            throw pyjslib.AttributeError(obj, name);
+            throw pyjslib.AttributeError(@{{obj}}, @{{name}});
         }else{
-        return default_value;
+        return @{{default_value}};
         }
     }
-    if (!pyjslib.isFunction(obj[name])) return obj[name];
-    var method = obj[name];
+    if (!pyjslib.isFunction(@{{obj}}[@{{name}}])) return @{{obj}}[@{{name}}];
+    var method = @{{obj}}[@{{name];
     var fnwrap = function() {
         var args = [];
         for (var i = 0; i < arguments.length; i++) {
           args.push(arguments[i]);
         }
-        return method.apply(obj,args);
+        return method.apply(@{{obj}},args);
     }
-    fnwrap.__name__ = name;
+    fnwrap.__name__ = @{{name}};
     fnwrap.parse_kwargs = obj.parse_kwargs;
     return fnwrap;
     """)
@@ -1417,29 +1417,29 @@ def getattr(obj, name, default_value=None):
 @noSourceTracking
 def delattr(obj, name):
     JS("""
-    if (!pyjslib.isObject(obj)) {
-       throw pyjslib.AttributeError("'"+typeof(obj)+"' object has no attribute '"+name+"%s'")
+    if (!pyjslib.isObject(@{{obj}})) {
+       throw pyjslib.AttributeError("'"+typeof(obj)+"' object has no attribute '"+@{{name}}+"%s'")
     }
-    if ((pyjslib.isUndefined(obj[name])) ||(typeof(obj[name]) == "function") ){
-        throw pyjslib.AttributeError(obj.__name__+" instance has no attribute '"+ name+"'");
+    if ((pyjslib.isUndefined(@{{obj}}[@{{name}}])) ||(typeof(@{{obj}}[@{{name}}]) == "function") ){
+        throw pyjslib.AttributeError(@{{obj}}.__name__+" instance has no attribute '"+ @{{name}}+"'");
     }
-    delete obj[name];
+    delete @{{obj}}[@{{name}}];
     """)
 
 @noSourceTracking
 def setattr(obj, name, value):
     JS("""
-    if (!pyjslib.isObject(obj)) return null;
+    if (!pyjslib.isObject(@{{obj}})) return null;
 
-    obj[name] = value;
+    @{{obj}}[@{{name}}] = @{{value}};
 
     """)
 
 @noSourceTracking
 def hasattr(obj, name):
     JS("""
-    if (!pyjslib.isObject(obj)) return false;
-    if (pyjslib.isUndefined(obj[name])) return false;
+    if (!pyjslib.isObject(@{{obj}})) return false;
+    if (pyjslib.isUndefined(@{{obj}}[@{{name}}])) return false;
 
     return true;
     """)
@@ -1448,7 +1448,7 @@ def hasattr(obj, name):
 def dir(obj):
     JS("""
     var properties=new pyjslib.List();
-    for (property in obj) properties.append(property);
+    for (property in @{{obj}}) properties.append(property);
     return properties;
     """)
 
@@ -1525,14 +1525,14 @@ def max(*sequence):
 @noSourceTracking
 def hash(obj):
     JS("""
-    if (obj == null) return null;
+    if (@{{obj}} == null) return null;
 
-    if (obj.$H) return obj.$H;
-    if (obj.__hash__) return obj.__hash__();
-    if (obj.constructor == String || obj.constructor == Number || obj.constructor == Date) return obj;
+    if (@{{obj}}.$H) return @{{obj}}.$H;
+    if (@{{obj}}.__hash__) return @{{obj}}.__hash__();
+    if (@{{obj}}.constructor == String || @{{obj}}.constructor == Number || @{{obj}}.constructor == Date) return @{{obj}};
 
-    obj.$H = ++pyjslib.next_hash_id;
-    return obj.$H;
+    @{{obj}}.$H = ++pyjslib.next_hash_id;
+    return @{{obj}}.$H;
     """)
 
 
@@ -1540,49 +1540,49 @@ def hash(obj):
 @noSourceTracking
 def isObject(a):
     JS("""
-    return (a != null && (typeof a == 'object')) || pyjslib.isFunction(a);
+    return (@{{a}} != null && (typeof @{{a}} == 'object')) || pyjslib.isFunction(@{{a}});
     """)
 
 @noSourceTracking
 def isFunction(a):
     JS("""
-    return typeof a == 'function';
+    return typeof @{{a}} == 'function';
     """)
 
 @noSourceTracking
 def isString(a):
     JS("""
-    return typeof a == 'string';
+    return typeof @{{a}} == 'string';
     """)
 
 @noSourceTracking
 def isNull(a):
     JS("""
-    return typeof a == 'object' && !a;
+    return typeof @{{a}} == 'object' && !@{{a}};
     """)
 
 @noSourceTracking
 def isArray(a):
     JS("""
-    return pyjslib.isObject(a) && a.constructor == Array;
+    return pyjslib.isObject(@{{a}}) && @{{a}}.constructor == Array;
     """)
 
 @noSourceTracking
 def isUndefined(a):
     JS("""
-    return typeof a == 'undefined';
+    return typeof @{{a}} == 'undefined';
     """)
 
 @noSourceTracking
 def isIteratable(a):
     JS("""
-    return pyjslib.isString(a) || (pyjslib.isObject(a) && a.__iter__);
+    return pyjslib.isString(@{{a}}) || (pyjslib.isObject(@{{a}}) && @{{a}}.__iter__);
     """)
 
 @noSourceTracking
 def isNumber(a):
     JS("""
-    return typeof a == 'number' && isFinite(a);
+    return typeof @{{a}} == 'number' && isFinite(@{{a}});
     """)
 
 @noSourceTracking
@@ -1594,8 +1594,8 @@ def toJSObjects(x):
     if isArray(x):
         JS("""
         var result = [];
-        for(var k=0; k < x.length; k++) {
-           var v = x[k];
+        for(var k=0; k < @{{x}}.length; k++) {
+           var v = @{{x}}[k];
            var tv = pyjslib.toJSObjects(v);
            result.push(tv);
         }
@@ -1604,7 +1604,7 @@ def toJSObjects(x):
     if isObject(x):
         if isinstance(x, Dict):
             JS("""
-            var o = x.getObject();
+            var o = @{{x}}.getObject();
             var result = {};
             for (var i in o) {
                result[o[i][0].toString()] = o[i][1];
@@ -1620,8 +1620,8 @@ def toJSObjects(x):
     if isObject(x):
         JS("""
         var result = {};
-        for(var k in x) {
-            var v = x[k];
+        for(var k in @{{x}}) {
+            var v = @{{x}}[k];
             var tv = pyjslib.toJSObjects(v)
             result[k] = tv;
             }
@@ -1677,7 +1677,7 @@ def sprintf(strng, args):
                 if precision is None:
                     precision = 6
                 JS("""
-                subst = re_exp.exec(String(param.toExponential(precision)));
+                subst = re_exp.exec(String(@{{param}}.toExponential(@{{precision}})));
                 if (subst[3].length == 1) {
                     subst = subst[1] + subst[2] + '0' + subst[3];
                 } else {
@@ -1687,7 +1687,7 @@ def sprintf(strng, args):
                 if precision is None:
                     precision = 6
                 JS("""
-                subst = re_exp.exec(String(param.toExponential(precision)).toUpperCase());
+                subst = re_exp.exec(String(@{{param}}.toExponential(@{{precision}})).toUpperCase());
                 if (subst[3].length == 1) {
                     subst = subst[1] + subst[2] + '0' + subst[3];
                 } else {
@@ -1697,32 +1697,32 @@ def sprintf(strng, args):
                 if precision is None:
                     precision = 6
                 JS("""
-                subst = String(parseFloat(param).toFixed(precision));""")
+                subst = String(parseFloat(@{{param}}).toFixed(@{{precision}}));""")
             elif conversion == 'F':
                 if precision is None:
                     precision = 6
                 JS("""
-                subst = String(parseFloat(param).toFixed(precision)).toUpperCase();""")
+                subst = String(parseFloat(@{{param}}).toFixed(@{{precision}})).toUpperCase();""")
             elif conversion == 'g':
                 if flags.find('#') >= 0:
                     if precision is None:
                         precision = 6
                 if param >= 1E6 or param < 1E-5:
                     JS("""
-                    subst = String(precision == null ? param.toExponential() : param.toExponential().toPrecision(precision));""")
+                    subst = String(@{{precision}} == null ? @{{param}}.toExponential() : @{{param}}.toExponential().toPrecision(@{{precision}}));""")
                 else:
                     JS("""
-                    subst = String(precision == null ? parseFloat(param) : parseFloat(param).toPrecision(precision));""")
+                    subst = String(@{{precision}} == null ? parseFloat(@{{param}}) : parseFloat(@{{param}}).toPrecision(@{{precision}}));""")
             elif conversion == 'G':
                 if flags.find('#') >= 0:
                     if precision is None:
                         precision = 6
                 if param >= 1E6 or param < 1E-5:
                     JS("""
-                    subst = String(precision == null ? param.toExponential() : param.toExponential().toPrecision(precision)).toUpperCase();""")
+                    subst = String(@{{precision}} == null ? @{{param}}.toExponential() : @{{param}}.toExponential().toPrecision(@{{precision}})).toUpperCase();""")
                 else:
                     JS("""
-                    subst = String(precision == null ? parseFloat(param) : parseFloat(param).toPrecision(precision)).toUpperCase().toUpperCase();""")
+                    subst = String(@{{precision}} == null ? parseFloat(@{{param}}) : parseFloat(@{{param}}).toPrecision(@{{precision}})).toUpperCase().toUpperCase();""")
             elif conversion == 'r':
                 numeric = False
                 subst = repr(param)
@@ -1732,13 +1732,13 @@ def sprintf(strng, args):
             elif conversion == 'o':
                 param = int(param)
                 JS("""
-                subst = param.toString(8);""")
+                subst = @{{param}}.toString(8);""")
                 if flags.find('#') >= 0 and subst != '0':
                     subst = '0' + subst
             elif conversion == 'x':
                 param = int(param)
                 JS("""
-                subst = param.toString(16);""")
+                subst = @{{param}}.toString(16);""")
                 if flags.find('#') >= 0:
                     if left_padding:
                         subst = subst.rjust(minlen - 2, '0')
@@ -1746,7 +1746,7 @@ def sprintf(strng, args):
             elif conversion == 'X':
                 param = int(param)
                 JS("""
-                subst = param.toString(16).toUpperCase();""")
+                subst = @{{param}}.toString(16).toUpperCase();""")
                 if flags.find('#') >= 0:
                     if left_padding:
                         subst = subst.rjust(minlen - 2, '0')
@@ -1766,7 +1766,7 @@ def sprintf(strng, args):
     def sprintf_list(strng, args):
         while remainder:
             JS("""
-            var a = re_list.exec(remainder);""")
+            var a = re_list.exec(@{{remainder}});""")
             if a is None:
                 result.append(remainder)
                 break;
@@ -1781,7 +1781,7 @@ def sprintf(strng, args):
             result.append(left)
             if minlen == '*':
                 minlen = next_arg()
-                JS("var minlen_type = typeof(minlen);")
+                JS("var minlen_type = typeof(@{{minlen}});")
                 if minlen_type != 'number' or \
                    int(minlen) != minlen:
                     raise TypeError('* wants int')
@@ -1794,7 +1794,7 @@ def sprintf(strng, args):
         argidx += 1
         while remainder:
             JS("""
-            var a = re_dict.exec(remainder);""")
+            var a = re_dict.exec(@{{remainder}});""")
             if a is None:
                 result.append(remainder)
                 break;
@@ -1814,7 +1814,7 @@ def sprintf(strng, args):
             result.append(formatarg(flags, minlen, precision, conversion, param))
 
     JS("""
-    var a = re_dict.exec(strng);
+    var a = re_dict.exec(@{{strng}});
 """)
     if a is None:
         if constructor != "Tuple":
@@ -1834,9 +1834,9 @@ def printFunc(objs, newline):
     JS("""
     if ($wnd.console==undefined)  return;
     var s = "";
-    for(var i=0; i < objs.length; i++) {
+    for(var i=0; i < @{{objs}}.length; i++) {
         if(s != "") s += " ";
-        s += objs[i];
+        s += @{{objs}}[i];
     }
     console.debug(s)
     """)
@@ -1850,15 +1850,15 @@ def type(clsname, bases=None, methods=None):
     if methods:
         for k in methods.keys():
             mth = methods[k]
-            JS(" mths[k] = mth; ")
+            JS(" mths[k] = @{{mth}}; ")
 
     JS(" var bss = null; ")
     if bases:
-        JS("bss = bases.l;")
+        JS("bss = @{{bases}}.l;")
     JS(" return pyjs_type(clsname, bss, mths); ")
 
 def pow(x, y, z = None):
-    JS("p = Math.pow(x, y);")
+    JS("p = Math.pow(@{{x}}, @{{y}});")
     if z is None:
         return float(p)
     return float(p % z)
@@ -1866,24 +1866,24 @@ def pow(x, y, z = None):
 def hex(x):
     if int(x) != x:
         raise TypeError("hex() argument can't be converted to hex")
-    JS("r = '0x'+x.toString(16);")
+    JS("r = '0x'+@{{x}}.toString(16);")
     return str(r)
 
 def oct(x):
     if int(x) != x:
         raise TypeError("oct() argument can't be converted to oct")
-    JS("r = '0'+x.toString(8);")
+    JS("r = '0'+@{{x}.toString(8);")
     return str(r)
 
 def round(x, n = 0):
     n = pow(10, n)
-    JS("r = Math.round(n*x)/n;")
+    JS("r = Math.round(@{{n}}*@{{x}})/@{{n}};")
     return float(r)
 
 def divmod(x, y):
     if int(x) == x and int(y) == y:
         return (int(x / y), int(x % y))
-    JS("f = Math.floor(x / y);")
+    JS("f = Math.floor(@{{x}} / @{{y}});")
     f = float(f)
     return (f, x - f * y)
 
