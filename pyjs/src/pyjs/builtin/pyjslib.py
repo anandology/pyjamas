@@ -5569,13 +5569,17 @@ def repr(x):
 def len(object):
     v = 0
     JS("""
-    if (typeof object == 'undefined') {
+    if (typeof @{{object}}== 'undefined') {
         throw @{{UndefinedValueError}}("obj");
     }
-    if (object === null) return v;
-    else if (typeof object.__array != 'undefined') v = object.__array.length;
-    else if (typeof object.__len__ == 'function') v = object.__len__();
-    else if (typeof object.length != 'undefined') v = object.length;
+    if (@{{object}}=== null) 
+        return v;
+    else if (typeof @{{object}}.__array != 'undefined') 
+        v = @{{object}}.__array.length;
+    else if (typeof @{{object}}.__len__ == 'function') 
+        v = @{{object}}.__len__();
+    else if (typeof @{{object}}.length != 'undefined')
+        v = @{{object}}.length;
     else throw @{{TypeError}}("object has no len()");
     if (v.__number__ & 0x06) return v;
     """)
@@ -5583,29 +5587,32 @@ def len(object):
 
 def isinstance(object_, classinfo):
     JS("""
-    if (typeof object_ == 'undefined') {
+    if (typeof @{{object_}}== 'undefined') {
         return false;
     }
-    if (object_ == null) {
-        if (classinfo == null) {
+    if (@{{object_}}== null) {
+        if (@{{classinfo}}== null) {
             return true;
         }
         return false;
     }
-    switch (classinfo.__name__) {
+    switch (@{{classinfo}}.__name__) {
         case 'float':
-            return typeof object_ == 'number' && object_.__number__ == 0x01 && isFinite(object_);
+            return typeof @{{object_}}== 'number' && @{{object_}}.__number__ == 0x01 && isFinite(@{{object_}});
         case 'int':
         case 'float_int':
-            return object_ !== null && object_.__number__ && (object_.__number__ != 0x01 || isFinite(object_));/* XXX TODO: check rounded? */
+            return @{{object_}}!== null
+                    && @{{object_}}.__number__
+                    && (@{{object_}}.__number__ != 0x01
+                    || isFinite(@{{object_}}));/* XXX TODO: check rounded? */
         case 'str':
-            return typeof object_ == 'string';
+            return typeof @{{object_}}== 'string';
         case 'bool':
-            return typeof object_ == 'boolean';
+            return typeof @{{object_}}== 'boolean';
         case 'long':
-            return object_.__number__ == 0x04;
+            return @{{object_}}.__number__ == 0x04;
     }
-    if (typeof object_ != 'object' && typeof object_ != 'function') {
+    if (typeof @{{object_}}!= 'object' && typeof @{{object_}}!= 'function') {
         return false;
     }
 """)
@@ -5621,20 +5628,22 @@ def isinstance(object_, classinfo):
 
 def _isinstance(object_, classinfo):
     JS("""
-    if (   object_.__is_instance__ !== true 
-        || classinfo.__is_instance__ === null) {
+    if (   @{{object_}}.__is_instance__ !== true 
+        || @{{classinfo}}.__is_instance__ === null) {
         return false;
     }
-    var __mro__ = object_.__mro__;
+    var __mro__ = @{{object_}}.__mro__;
     var n = __mro__.length;
-    if (classinfo.__is_instance__ === false) {
+    if (@{{classinfo}}.__is_instance__ === false) {
         while (--n >= 0) {
-            if (object_.__mro__[n] === classinfo.prototype) return true;
+            if (@{{object_}}.__mro__[n] === @{{classinfo}}.prototype) {
+                return true;
+            }
         }
         return false;
     }
     while (--n >= 0) {
-        if (object_.__mro__[n] === classinfo.__class__) return true;
+        if (@{{object_}}.__mro__[n] === @{{classinfo}}.__class__) return true;
     }
     return false;
     """)
