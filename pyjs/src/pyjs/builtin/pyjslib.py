@@ -3737,7 +3737,7 @@ class list:
         raise TypeError("list objects are unhashable")
 
     def append(self, item):
-        JS("""@{{self}}.__array[@{{self}}.__array.length] = item;""")
+        JS("""@{{self}}.__array[@{{self}}.__array.length] = @{{item}};""")
 
     # extend in place, just in case there's somewhere a shortcut to self.__array
     def extend(self, data):
@@ -3785,7 +3785,7 @@ class list:
 
     def remove(self, value):
         JS("""
-        var index=@{{self}}.index(value);
+        var index=@{{self}}.index(@{{value}});
         if (index<0) {
             throw @{{ValueError}}("list.remove(x): x not in list");
         }
@@ -3793,11 +3793,11 @@ class list:
         return true;
         """)
 
-    def index(self, value, start=0):
+    def index(self, value, _start=0):
         JS("""
-        start = start.valueOf();
-        if (typeof value == 'number' || typeof value == 'string') {
-            start = @{{self}}.__array.indexOf(value, start);
+        var start = @{{_start}}.valueOf();
+        if (typeof @{{value}} == 'number' || typeof @{{value}} == 'string') {
+            start = @{{self}}.__array.indexOf(@{{value}}, start);
             if (start >= 0)
                 return start;
         } else {
@@ -3811,7 +3811,7 @@ class list:
 
             for (; start < len; start++) {
                 if (start in @{{self}}.__array &&
-                    @{{cmp}}(@{{self}}.__array[start], value) == 0)
+                    @{{cmp}}(@{{self}}.__array[start], @{{value}}) == 0)
                     return start;
             }
         }
@@ -3819,11 +3819,11 @@ class list:
         raise ValueError("list.index(x): x not in list")
 
     def insert(self, index, value):
-        JS("""    var a = @{{self}}.__array; @{{self}}.__array=a.slice(0, index).concat(value, a.slice(index));""")
+        JS("""    var a = @{{self}}.__array; @{{self}}.__array=a.slice(0, @{{index}}).concat(@{{value}}, a.slice(@{{index}}));""")
 
-    def pop(self, index = -1):
+    def pop(self, _index = -1):
         JS("""
-        index = index.valueOf();
+        var index = @{{_index}}.valueOf();
         if (index<0) index += @{{self}}.__array.length;
         if (index < 0 || index >= @{{self}}.__array.length) {
             if (@{{self}}.__array.length == 0) {
@@ -3841,9 +3841,9 @@ class list:
             return -1
         JS("""
         var n1 = @{{self}}.__array.length,
-            n2 = l.__array.length,
+            n2 = @{{l}}.__array.length,
             a1 = @{{self}}.__array,
-            a2 = l.__array,
+            a2 = @{{l}}.__array,
             n, c;
         n = (n1 < n2 ? n1 : n2);
         for (var i = 0; i < n; i++) {
@@ -3856,14 +3856,16 @@ class list:
 
     def __getslice__(self, lower, upper):
         JS("""
-        if (upper==null) return @{{list}}(@{{self}}.__array.slice(lower));
-        return @{{list}}(@{{self}}.__array.slice(lower, upper));
+        if (@{{upper}}==null)
+            return @{{list}}(@{{self}}.__array.slice(@{{lower}}));
+        return @{{list}}(@{{self}}.__array.slice(@{{lower}}, @{{upper}}));
         """)
 
-    def __delslice__(self, lower, upper):
+    def __delslice__(self, _lower, upper):
         JS("""
-        var n = upper - lower;
-        if (upper==null) {
+        var lower = @{{_lower}};
+        var n = @{{upper}} - lower;
+        if (@{{upper}}==null) {
             n =  @{{self}}.__array.length;
         }
         if (!lower) lower = 0;
@@ -3881,7 +3883,7 @@ class list:
 
     def __getitem__(self, index):
         JS("""
-        index = index.valueOf();
+        var index = @{{_index}}.valueOf();
         if (index < 0) index += @{{self}}.__array.length;
         if (index < 0 || index >= @{{self}}.__array.length) {
             throw @{{IndexError}}("list index out of range");
