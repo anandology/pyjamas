@@ -5655,20 +5655,22 @@ def issubclass(class_, classinfo):
     
 def _issubtype(object_, classinfo):
     JS("""
-    if (   object_.__is_instance__ === null 
-        || classinfo.__is_instance__ === null) {
+    if (   @{{object_}}.__is_instance__ === null 
+        || @{{classinfo}}.__is_instance__ === null) {
         return false;
     }
-    var __mro__ = object_.__mro__;
+    var __mro__ = @{{object_}}.__mro__;
     var n = __mro__.length;
-    if (classinfo.__is_instance__ === false) {
+    if (@{{classinfo}}.__is_instance__ === false) {
         while (--n >= 0) {
-            if (object_.__mro__[n] === classinfo.prototype) return true;
+            if (@{{object_}}.__mro__[n] === @{{classinfo}}.prototype) {
+                return true;
+            }
         }
         return false;
     }
     while (--n >= 0) {
-        if (object_.__mro__[n] === classinfo.__class__) return true;
+        if (@{{object_}}.__mro__[n] === @{{classinfo}}.__class__) return true;
     }
     return false;
     """)
