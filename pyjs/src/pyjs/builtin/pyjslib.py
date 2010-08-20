@@ -5229,9 +5229,9 @@ class frozenset(object):
         if not isSet(other):
             other = frozenset(other)
         JS("""
-        var obj = new_set.__object,
+        var obj = @{{new_set}}.__object,
             selfObj = self.__object,
-            otherObj = other.__object;
+            otherObj = @{{other}}.__object;
         for (var sVal in selfObj) {
             obj[sVal] = selfObj[sVal];
         }
@@ -5288,33 +5288,35 @@ class property(object):
 def staticmethod(func):
     JS("""
     var fnwrap = function() {
-        return func.apply(null,$pyjs_array_slice.call(arguments));
+        return @{{func}}.apply(null,$pyjs_array_slice.call(arguments));
     };
-    fnwrap.__name__ = func.__name__;
-    fnwrap.__args__ = func.__args__;
+    fnwrap.__name__ = @{{func}}.__name__;
+    fnwrap.__args__ = @{{func}}.__args__;
     fnwrap.__bind_type__ = 3;
     return fnwrap;
     """)
 
-def super(type_, object_or_type = None):
-    # This is a partially implementation: only super(type, object)
-    if not _issubtype(object_or_type, type_):
-        i = _issubtype(object_or_type, type_)
+def super(typ, object_or_type = None):
+    # This is a partial implementation: only super(type, object)
+    if not _issubtype(object_or_type, typ):
+        i = _issubtype(object_or_type, typ)
         raise TypeError("super(type, obj): obj must be an instance or subtype of type")
     JS("""
+    var type_ = @{{typ}}
     if (typeof type_.__mro__ == 'undefined') {
         type_ = type_.__class__;
     }
     var fn = $pyjs_type('super', type_.__mro__.slice(1), {});
     fn.__new__ = fn.__mro__[1].__new__;
     fn.__init__ = fn.__mro__[1].__init__;
-    if (object_or_type.__is_instance__ === false) {
+    if (@{{object_or_type}}.__is_instance__ === false) {
         return fn;
     }
     var obj = new Object();
     function wrapper(obj, name) {
         var fnwrap = function() {
-            return obj[name].apply(object_or_type,$pyjs_array_slice.call(arguments));
+            return obj[name].apply(@{{object_or_type}},
+                                   $pyjs_array_slice.call(arguments));
         };
         fnwrap.__name__ = name;
         fnwrap.__args__ = obj[name].__args__;
@@ -5326,7 +5328,7 @@ def super(type_, object_or_type = None):
             obj[m] = wrapper(fn, m);
         }
     }
-    obj.__is_instance__ = object_or_type.__is_instance__;
+    obj.__is_instance__ = @{{object_or_type}}.__is_instance__;
     return obj;
     """)
 
