@@ -279,6 +279,7 @@ PYJSLIB_BUILTIN_FUNCTIONS=frozenset((
     "zip",
 
     # internal mappings needed
+    "__empty_dict",
     "next_hash_id",
     "__hash",
     "wrapped_next",
@@ -300,7 +301,19 @@ PYJSLIB_BUILTIN_FUNCTIONS=frozenset((
     "_del",
     "op_is",
     "op_eq",
+    "op_or",
+    "op_and",
+    "op_uadd",
+    "op_usub",
+    "op_mul",
+    "op_div",
+    "op_pow",
+    "op_floordiv",
+    "op_mod",
+    "__op_add",
+    "__op_sub",
     "__setslice",
+    "__delslice",
     "___import___",
     "_handle_exception",
     ))
@@ -1766,7 +1779,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             revargs.reverse()
             self.w( """\
 %(s)sif (typeof %(k)s == 'undefined') {
-%(s)s\t%(k)s = pyjslib['__empty_dict']();\
+%(s)s\t%(k)s = @{{__empty_dict}}();\
 """ % {'s': self.spacing(), 'k': kwargname}, output=output)
             for v in revargs:
                 self.w( """\
@@ -3328,7 +3341,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.add_lookup('variable', v, v)
         return  expr.replace('@EXPR@', self.expr(node.nodes[-1], current_klass))
         expr = ",".join([self.expr(child, current_klass) for child in node.nodes])
-        return "pyjslib['op_or']([%s])" % expr
+        return "@{{op_or}}([%s])" % expr
 
     def _and(self, node, current_klass):
         s = self.spacing()
@@ -3342,7 +3355,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.add_lookup('variable', v, v)
         return  expr.replace('@EXPR@', self.expr(node.nodes[-1], current_klass))
         expr = ",".join([self.expr(child, current_klass) for child in node.nodes])
-        return "pyjslib['op_and']([%s])" % expr
+        return "@{{op_and}}([%s])" % expr
 
     def _for(self, node, current_klass):
         save_is_generator = self.is_generator
@@ -3434,14 +3447,14 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 %(s)s\t%(gentype)s = typeof (%(array)s = %(iterator_name)s.__array) != 'undefined'? 0 : (typeof %(iterator_name)s.$genfunc == 'function'? 1 : -1);
 %(s)s}
 %(s)s%(loopvar)s = 0;""" % locals())
-            condition = "typeof (%(nextval)s=(%(gentype)s?(%(gentype)s > 0?%(iterator_name)s.next(true,%(reuse_tuple)s):pyjslib['wrapped_next'](%(iterator_name)s)):%(array)s[%(loopvar)s++])) != 'undefined'" % locals()
+            condition = "typeof (%(nextval)s=(%(gentype)s?(%(gentype)s > 0?%(iterator_name)s.next(true,%(reuse_tuple)s):@{{wrapped_next}}(%(iterator_name)s)):%(array)s[%(loopvar)s++])) != 'undefined'" % locals()
         else:
             self.w( """\
 %(s)s%(iterator_name)s = """ % locals() + self.track_call("%(list_expr)s" % locals(), node.lineno) + ';')
             self.w( """\
-%(s)s%(nextval)s=pyjslib['__iter_prepare'](%(iterator_name)s,%(reuse_tuple)s);\
+%(s)s%(nextval)s=@{{__iter_prepare}}(%(iterator_name)s,%(reuse_tuple)s);\
 """ % locals())
-            condition = "typeof(pyjslib['__wrapped_next'](%(nextval)s).$nextval) != 'undefined'" % locals()
+            condition = "typeof(@{{__wrapped_next}}(%(nextval)s).$nextval) != 'undefined'" % locals()
 
         self.generator_switch_case(increment=True)
 
@@ -3563,7 +3576,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         s = self.spacing()
         return """(typeof (%(v)s=%(e)s)=='number'?
 %(s)s\t%(v)s:
-%(s)s\tpyjslib['op_uadd'](%(v)s))""" % locals()
+%(s)s\t@{{op_uadd}}(%(v)s))""" % locals()
 
     def _unarysub(self, node, current_klass):
         if not self.operator_funcs:
@@ -3573,7 +3586,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         s = self.spacing()
         return """(typeof (%(v)s=%(e)s)=='number'?
 %(s)s\t-%(v)s:
-%(s)s\tpyjslib['op_usub'](%(v)s))""" % locals()
+%(s)s\t@{{op_usub}}(%(v)s))""" % locals()
 
     def _add(self, node, current_klass):
         if not self.operator_funcs:
@@ -3588,8 +3601,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         if self.inline_code:
             return """(typeof (%(v1)s=%(e1)s)==typeof (%(v2)s=%(e2)s) && (typeof %(v1)s=='number'||typeof %(v1)s=='string')?
 %(s)s\t%(v1)s+%(v2)s:
-%(s)s\tpyjslib['op_add'](%(v1)s,%(v2)s))""" % locals()
-        return """pyjslib['__op_add'](%(v1)s=%(e1)s,%(v2)s=%(e2)s)""" % \
+%(s)s\t@{{op_add}}(%(v1)s,%(v2)s))""" % locals()
+        return """@{{__op_add}}(%(v1)s=%(e1)s,%(v2)s=%(e2)s)""" % \
                         locals()
 
     def _sub(self, node, current_klass):
@@ -3605,8 +3618,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         if self.inline_code:
             return """(typeof (%(v1)s=%(e1)s)==typeof (%(v2)s=%(e2)s) && (typeof %(v1)s=='number'||typeof %(v1)s=='string')?
 %(s)s\t%(v1)s-%(v2)s:
-%(s)s\tpyjslib['op_sub'](%(v1)s,%(v2)s))""" % locals()
-        return """pyjslib['__op_sub'](%(v1)s=%(e1)s,%(v2)s=%(e2)s)""" % \
+%(s)s\t@{{op_sub}}(%(v1)s,%(v2)s))""" % locals()
+        return """@{{__op_sub}}(%(v1)s=%(e1)s,%(v2)s=%(e2)s)""" % \
                         locals()
 
     def _floordiv(self, node, current_klass):
@@ -3621,7 +3634,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         s = self.spacing()
         return """(typeof (%(v1)s=%(e1)s)==typeof (%(v2)s=%(e2)s) && typeof %(v1)s=='number' && %(v2)s !== 0?
 %(s)s\tMath.floor(%(v1)s/%(v2)s):
-%(s)s\tpyjslib['op_floordiv'](%(v1)s,%(v2)s))""" % locals()
+%(s)s\t@{{op_floordiv}}(%(v1)s,%(v2)s))""" % locals()
 
     def _div(self, node, current_klass):
         if not self.operator_funcs:
@@ -3635,7 +3648,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         s = self.spacing()
         return """(typeof (%(v1)s=%(e1)s)==typeof (%(v2)s=%(e2)s) && typeof %(v1)s=='number' && %(v2)s !== 0?
 %(s)s\t%(v1)s/%(v2)s:
-%(s)s\tpyjslib['op_div'](%(v1)s,%(v2)s))""" % locals()
+%(s)s\t@{{op_div}}(%(v1)s,%(v2)s))""" % locals()
 
     def _mul(self, node, current_klass):
         if not self.operator_funcs:
@@ -3649,11 +3662,11 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         s = self.spacing()
         return """(typeof (%(v1)s=%(e1)s)==typeof (%(v2)s=%(e2)s) && typeof %(v1)s=='number'?
 %(s)s\t%(v1)s*%(v2)s:
-%(s)s\tpyjslib['op_mul'](%(v1)s,%(v2)s))""" % locals()
+%(s)s\t@{{op_mul}}(%(v1)s,%(v2)s))""" % locals()
 
     def _mod(self, node, current_klass):
         if isinstance(node.left, self.ast.Const) and isinstance(node.left.value, StringType):
-            return self.track_call("pyjslib['sprintf']("+self.expr(node.left, current_klass) + ", " + self.expr(node.right, current_klass)+")", node.lineno)
+            return self.track_call("@{{sprintf}}("+self.expr(node.left, current_klass) + ", " + self.expr(node.right, current_klass)+")", node.lineno)
         e1 = self.expr(node.left, current_klass)
         e2 = self.expr(node.right, current_klass)
         v1 = self.uniqid('$mod')
@@ -3663,11 +3676,11 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         s = self.spacing()
         if not self.operator_funcs:
             return """((%(v1)s=%(e1)s)!=null && (%(v2)s=%(e2)s)!=null && typeof %(v1)s=='string'?
-%(s)s\tpyjslib['sprintf'](%(v1)s,%(v2)s):
+%(s)s\t@{{sprintf}}(%(v1)s,%(v2)s):
 %(s)s\t%(v1)s%%%(v2)s)""" % locals()
         return """(typeof (%(v1)s=%(e1)s)==typeof (%(v2)s=%(e2)s) && typeof %(v1)s=='number'?
 %(s)s\t%(v1)s%%%(v2)s:
-%(s)s\tpyjslib['op_mod'](%(v1)s,%(v2)s))""" % locals()
+%(s)s\t@{{op_mod}}(%(v1)s,%(v2)s))""" % locals()
 
     def _power(self, node, current_klass):
         if not self.operator_funcs:
@@ -3681,7 +3694,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         s = self.spacing()
         return """(typeof (%(v1)s=%(e1)s)==typeof (%(v2)s=%(e2)s) && typeof %(v1)s=='number'?
 %(s)s\tMath.pow(%(v1)s,%(v2)s):
-%(s)s\tpyjslib['op_pow'](%(v1)s,%(v2)s))""" % locals()
+%(s)s\t@{{op_pow}}(%(v1)s,%(v2)s))""" % locals()
 
     def _invert(self, node, current_klass):
         if not self.operator_funcs or not self.number_classes:
@@ -3741,7 +3754,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         attr_name = self.attrib_remap(node.attrname)
         lhs = self._lhsFromAttr(node, current_klass)
         if node.flags == "OP_DELETE":
-            self.w( self.spacing() + "pyjslib['delattr'](%s, '%s');" % (lhs, attr_name))
+            self.w( self.spacing() + "@{{delattr}}(%s, '%s');" % (lhs, attr_name))
         else:
             raise TranslationError(
                 "unsupported flag (in _assign)", v, self.module_name)
@@ -3886,9 +3899,9 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         if node.upper != None:
             upper = self.expr(node.upper, current_klass)
         if node.flags == "OP_APPLY":
-            return  "pyjslib['slice'](" + self.expr(node.expr, current_klass) + ", " + lower + ", " + upper + ")"
+            return  "@{{slice}}(" + self.expr(node.expr, current_klass) + ", " + lower + ", " + upper + ")"
         elif node.flags == "OP_DELETE":
-            return  "pyjslib['__delslice'](" + self.expr(node.expr, current_klass) + ", " + lower + ", " + upper + ");"
+            return  "@{{__delslice}}(" + self.expr(node.expr, current_klass) + ", " + lower + ", " + upper + ");"
         else:
             raise TranslationError(
                 "unsupported flag (in _slice)", node, self.module_name)
@@ -3912,7 +3925,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         return "(" + self.inline_bool_code(test) + "? (%(then)s) : (%(else_)s))" % locals()
 
     def _backquote(self, node, current_klass):
-        return "pyjslib.repr(%s)" % self.expr(node.expr, current_klass)
+        return "@{{repr}}(%s)" % self.expr(node.expr, current_klass)
 
     def expr(self, node, current_klass):
         if isinstance(node, self.ast.Const):
