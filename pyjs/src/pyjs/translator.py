@@ -296,6 +296,11 @@ PYJSLIB_BUILTIN_FUNCTIONS=frozenset((
     "sprintf",
     "get_pyjs_classtype",
     "isUndefined",
+    "_create_class",
+    "_del",
+    "op_is",
+    "__setslice",
+    "___import___",
     ))
 
 PYJSLIB_BUILTIN_CLASSES=[
@@ -810,7 +815,7 @@ class Translator(object):
         self.w( self.indent() + "$pyjs.loaded_modules['%s'] = function (__mod_name__) {" % module_name)
         self.w( self.spacing() + "if($pyjs.loaded_modules['%s'].__was_initialized__) return $pyjs.loaded_modules['%s'];"% (module_name, module_name))
         if self.parent_module_name:
-            self.w( self.spacing() + "if(typeof $pyjs.loaded_modules['%s'] == 'undefined' || !$pyjs.loaded_modules['%s'].__was_initialized__) pyjslib['___import___']('%s', null);"% (self.parent_module_name, self.parent_module_name, self.parent_module_name))
+            self.w( self.spacing() + "if(typeof $pyjs.loaded_modules['%s'] == 'undefined' || !$pyjs.loaded_modules['%s'].__was_initialized__) @{{___import___}}('%s', null);"% (self.parent_module_name, self.parent_module_name, self.parent_module_name))
         parts = self.js_module_name.split('.')
         if len(parts) > 1:
             self.w( self.spacing() + 'var %s = $pyjs.loaded_modules["%s"];' % (parts[0], module_name.split('.')[0]))
@@ -910,7 +915,7 @@ class Translator(object):
         self.w( captured_output, False)
 
         if attribute_checking:
-            self.w( self.dedent() + "} catch ($pyjs_attr_err) {throw pyjslib['_errorMapping']($pyjs_attr_err);};")
+            self.w( self.dedent() + "} catch ($pyjs_attr_err) {throw @{{_errorMapping}}($pyjs_attr_err);};")
 
         self.w( self.spacing() + "return this;")
         self.w( self.dedent() + "}; /* end %s */"  % module_name)
@@ -1036,9 +1041,9 @@ class Translator(object):
 
         self.pop_lookup()
         if code != '%s':
-            code = code % "pyjslib['staticmethod'](%s)"
+            code = code % "@{{staticmethod}}(%s)"
             if staticmethod:
-                code = "pyjslib['staticmethod'](%s)" % code
+                code = "@{{staticmethod}}(%s)" % code
         return (staticmethod, classmethod, code)
 
     # Join an list into a variable with optional attributes
@@ -1905,7 +1910,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                     context = 'null'
                 else:
                     context = self.import_context
-                import_stmt = "pyjslib['___import___']('%s', %s" % (
+                import_stmt = "@{{___import___}}('%s', %s" % (
                                     importName,
                                     context,
                                     )
@@ -2126,7 +2131,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         else:
             fail = ''
         self.w( self.spacing() + "if (!( " + expr + " )) {")
-        self.w( self.spacing() + "   throw pyjslib['AssertionError'](%s);" % fail)
+        self.w( self.spacing() + "   throw @{{AssertionError}}(%s);" % fail)
         self.w( self.spacing() + " }")
 
     def _return(self, node, current_klass):
@@ -2320,7 +2325,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         for ch4 in node.nodes:
             arg = self.expr(ch4, current_klass)
             call_args.append(arg)
-        self.w( self.spacing() + self.track_call("pyjslib['printFunc']([%s], %d)" % (', '.join(call_args), int(isinstance(node, self.ast.Printnl))), node.lineno) + ';')
+        self.w( self.spacing() + self.track_call("@{{printFunc}}([%s], %d)" % (', '.join(call_args), int(isinstance(node, self.ast.Printnl))), node.lineno) + ';')
 
     def _tryFinally(self, node, current_klass):
         body = node.body
@@ -2365,7 +2370,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
 
         self.generator_switch_case(increment=True)
         if hasattr(node, 'else_') and node.else_:
-            self.w( self.spacing() + "throw pyjslib['TryElse'];")
+            self.w( self.spacing() + "throw @{{TryElse}};")
             self.generator_switch_case(increment=True)
 
         self.generator_switch_case(increment=True)
@@ -2400,7 +2405,7 @@ if (%(e)s.__name__ == 'TryElse') {""" % {'e': pyjs_try_err})
             self.w( self.dedent() + """} else {""")
             self.indent()
         if self.attribute_checking:
-            self.w( self.spacing() + """%s = pyjslib['_errorMapping'](%s);""" % (pyjs_try_err, pyjs_try_err))
+            self.w( self.spacing() + """%s = @{{_errorMapping}}(%s);""" % (pyjs_try_err, pyjs_try_err))
         self.w( self.spacing() + """\
 var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__name__ );\
 """ % {'e': pyjs_try_err})
@@ -2435,10 +2440,10 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                     l = []
                     if isinstance(expr, self.ast.Tuple):
                         for x in expr.nodes:
-                            l.append("((%s_name == %s.__name__)||pyjslib['_isinstance'](%s,%s))" % (pyjs_try_err, 
+                            l.append("((%s_name == %s.__name__)||@{{_isinstance}}(%s,%s))" % (pyjs_try_err, 
                                 self.expr(x, current_klass),pyjs_try_err, self.expr(x, current_klass)))
                     else:
-                        l = [ "(%s_name == %s.__name__)||pyjslib['_isinstance'](%s,%s)" % (pyjs_try_err, 
+                        l = [ "(%s_name == %s.__name__)||@{{_isinstance}}(%s,%s)" % (pyjs_try_err, 
                                 self.expr(expr, current_klass),pyjs_try_err, self.expr(expr, current_klass)) ]
                     self.w( "%sif (%s) {" % (else_str, "||".join(l)))
                 self.indent()
@@ -2514,7 +2519,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             if not use_getattr or attr_name == '__class__' or \
                     attr_name == '__name__':
                 return [obj, attr_name]
-            return ["pyjslib['getattr'](%s, '%s')" % (obj, attr_name)]
+            return ["@{{getattr}}(%s, '%s')" % (obj, attr_name)]
         elif isinstance(v.expr, self.ast.Getattr):
             return self._getattr(v.expr, current_klass) + [attr_name]
         elif isinstance(v.expr, self.ast.Subscript):
@@ -2619,7 +2624,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             create_class += """
 %(s)svar $data = pyjslib['dict']();
 %(s)sfor (var $item in %(local_prefix)s) { $data.__setitem__($item, %(local_prefix)s[$item]); }
-%(s)sreturn pyjslib['_create_class']('%(n)s', pyjslib['tuple']($bases), $data);"""
+%(s)sreturn @{{_create_class}}('%(n)s', pyjslib['tuple']($bases), $data);"""
         create_class %= {'n': node.name, 's': self.spacing(), 'local_prefix': local_prefix, 'bases': ",".join(map(lambda x: x[1], base_classes))}
         create_class += """
 %s})();""" % self.dedent()
@@ -2646,7 +2651,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
     %(s)svar $pyjs__raise_expr2 = %(expr2)s;
     %(s)svar $pyjs__raise_expr3 = %(expr3)s;
     %(s)sif ($pyjs__raise_expr2 !== null && $pyjs__raise_expr1.__is_instance__ === true) {
-    %(s)s\tthrow pyjslib['TypeError']('instance exception may not have a separate value');
+    %(s)s\tthrow @{{TypeError}}('instance exception may not have a separate value');
     %(s)s}
     %(s)s\tthrow ($pyjs__raise_expr1.apply($pyjs__raise_expr1, $pyjs__raise_expr2, $pyjs__raise_expr3));
     """ % { 's': self.spacing(),
@@ -2659,9 +2664,9 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 %(s)svar $pyjs__raise_expr1 = %(expr1)s;
 %(s)svar $pyjs__raise_expr2 = %(expr2)s;
 %(s)sif ($pyjs__raise_expr2 !== null && $pyjs__raise_expr1.__is_instance__ === true) {
-%(s)s\tthrow pyjslib['TypeError']('instance exception may not have a separate value');
+%(s)s\tthrow @{{TypeError}}('instance exception may not have a separate value');
 %(s)s}
-%(s)sif (pyjslib['isinstance']($pyjs__raise_expr2, pyjslib['tuple'])) {
+%(s)sif (@{{isinstance}}($pyjs__raise_expr2, pyjslib['tuple'])) {
 %(s)s\tthrow ($pyjs__raise_expr1.apply($pyjs__raise_expr1, $pyjs__raise_expr2.getArray()));
 %(s)s} else {
 %(s)s\tthrow ($pyjs__raise_expr1($pyjs__raise_expr2));
@@ -2681,7 +2686,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             self.w( """\
 %(s)sthrow ($pyjs.__last_exception__?
 %(s)s\t$pyjs.__last_exception__.error:
-%(s)s\tpyjslib['TypeError']('exceptions must be classes, instances, or strings (deprecated), not NoneType'));\
+%(s)s\t@{{TypeError}}('exceptions must be classes, instances, or strings (deprecated), not NoneType'));\
 """ % locals())
         self.generator_switch_case(increment=True)
 
@@ -2828,7 +2833,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                                                                           True, bind_type)
         decorator_code = decorator_code % '$method'
         self.w( self.spacing() + "%s = %s;" % (jsmethod_name, decorator_code))
-        self.add_lookup('method', node.name, "pyjslib['staticmethod'](%s)" % jsmethod_name)
+        self.add_lookup('method', node.name, "@{{staticmethod}}(%s)" % jsmethod_name)
         self.local_prefix = save_local_prefix
         self.is_class_definition = True
         self.top_level = save_top_level
@@ -2908,7 +2913,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             # a separate function
             if node.flags == "OP_DELETE":
                 name = self._lhsFromName(node.name, current_klass)
-                self.w( self.spacing() + "pyjslib['_del'](%s);" % name)
+                self.w( self.spacing() + "@{{_del}}(%s);" % name)
             else:
                 raise TranslationError(
                     "unsupported AssName type (in _stmt)", node, self.module_name)
@@ -3084,7 +3089,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 raise TranslationError(
                     "unsupported flag (in _assign)", v, self.module_name)
             if self.descriptors:
-                self.w( self.spacing() + "pyjslib['setattr'](%s, '%s', %s);" % (lhs, attr_name, rhs))
+                self.w( self.spacing() + "@{{setattr}}(%s, '%s', %s);" % (lhs, attr_name, rhs))
                 return
             lhs += '.' + attr_name
 
@@ -3121,7 +3126,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                     upper = self.expr(v.upper, current_klass)
                 obj = self.expr(v.expr, current_klass)
                 value = self.expr(node.expr, current_klass)
-                self.w( self.spacing() + self.track_call("pyjslib.__setslice(%s, %s, %s, %s)" % (obj, lower, upper, value), v.lineno) + ';')
+                self.w( self.spacing() + self.track_call("@{{__setslice}}(%s, %s, %s, %s)" % (obj, lower, upper, value), v.lineno) + ';')
                 return
             else:
                 raise TranslationError(
@@ -3295,11 +3300,11 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             return "!" + rhs + ".__contains__(" + lhs + ")"
         if op == "is":
             if self.number_classes:
-                return "pyjslib['op_is'](%s, %s)" % (lhs, rhs)
+                return "@{{op_is}}(%s, %s)" % (lhs, rhs)
             op = "==="
         if op == "is not":
             if self.number_classes:
-                return "!pyjslib['op_is'](%s, %s)" % (lhs, rhs)
+                return "!@{{op_is}}(%s, %s)" % (lhs, rhs)
             op = "!=="
 
         return "(" + lhs + " " + op + " " + rhs + ")"
@@ -3971,7 +3976,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                     getattr_condition += """ || (typeof %(v)s['__get__'] == 'function')"""
                 attr_code = """\
 (""" + getattr_condition + """?
-\tpyjslib['getattr'](%(vl)s, '%(attr_right)s'):
+\t@{{getattr}}(%(vl)s, '%(attr_right)s'):
 \t%(attr)s)\
 """
                 attr_code = ('\n'+self.spacing()+"\t\t").join(attr_code.split('\n'))
