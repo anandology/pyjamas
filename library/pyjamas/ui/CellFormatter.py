@@ -18,13 +18,28 @@ from pyjamas.ui import Applier
 
 class CellFormatter(Applier):
 
+    _elem_props = [
+        ("wordwrap", "Word Wrap", "WordWrap", None, True),
+        ("stylename", "Style Name", "StyleName", None, ""),
+        ("height", "Height", "Height", None, None),
+        ("width", "Width", "Width", None, None),
+        ("halign", "Horizontal Alignment", "HorizontalAlignment", str, ""),
+        ("valign", "Vertical Alignment", "VerticalAlignment", str, ""),
+                  ]
+
+    def _getElementProps(self):
+        return self._elem_props
+
     def __init__(self, outer, **kwargs):
         self.outer = outer
         Applier.__init__(self, **kwargs)
 
-    def addStyleName(self, row, column, styleName):
+    def _setStyleName(self, row, column, styleName, add):
         self.outer.prepareCell(row, column)
-        self.outer.setStyleName(self.getElement(row, column), styleName, True)
+        self.outer.setStyleName(self.getElement(row, column), styleName, add)
+
+    def addStyleName(self, row, column, styleName):
+        self._setStyleName(row, column, styleName, True)
 
     def getElement(self, row, column):
         self.outer.checkCellBounds(row, column)
@@ -34,12 +49,16 @@ class CellFormatter(Applier):
         return DOM.getAttribute(self.getElement(row, column), "className")
 
     def isVisible(self, row, column):
+        """ DEPRECATED: please use getVisible
+        """
+        return self.getVisible(row, column)
+
+    def getVisible(self, row, column):
         element = self.getElement(row, column)
         return self.outer.isVisible(element)
 
     def removeStyleName(self, row, column, styleName):
-        self.outer.checkCellBounds(row, column)
-        self.outer.setStyleName(self.getElement(row, column), styleName, False)
+        self._setStyleName(row, column, styleName, False)
 
     def setAlignment(self, row, column, hAlign, vAlign):
         self.setHorizontalAlignment(row, column, hAlign)
@@ -55,13 +74,18 @@ class CellFormatter(Applier):
         element = self.getCellElement(self.outer.bodyElem, row, column)
         DOM.setAttribute(element, "align", align)
 
-    def setStyleName(self, row, column, styleName):
-        self.outer.prepareCell(row, column)
-        self.setAttr(row, column, "className", styleName)
+    def setStyleName(self, row, column, styleName, add=None):
+        if add is None:
+            self.outer.prepareCell(row, column)
+            self.setAttr(row, column, "className", styleName)
+        else:
+            self._setStyleName(row, column, styleName, add)
 
     def setVerticalAlignment(self, row, column, align):
         self.outer.prepareCell(row, column)
-        DOM.setStyleAttribute(self.getCellElement(self.outer.bodyElem, row, column), "verticalAlign", align)
+        DOM.setStyleAttribute(self.getCellElement(self.outer.bodyElem,
+                                                    row, column),
+                                    "verticalAlign", align)
 
     def setVisible(self, row, column, visible):
         element = self.ensureElement(row, column)
@@ -69,7 +93,9 @@ class CellFormatter(Applier):
 
     def setWidth(self, row, column, width):
         self.outer.prepareCell(row, column)
-        DOM.setStyleAttribute(self.getCellElement(self.outer.bodyElem, row, column), "width", width)
+        DOM.setStyleAttribute(self.getCellElement(self.outer.bodyElem,
+                                                  row, column),
+                                    "width", width)
 
     def setWordWrap(self, row, column, wrap):
         self.outer.prepareCell(row, column)
@@ -78,7 +104,8 @@ class CellFormatter(Applier):
         else:
             wrap_str = "nowrap"
 
-        DOM.setStyleAttribute(self.getElement(row, column), "whiteSpace", wrap_str)
+        DOM.setStyleAttribute(self.getElement(row, column),
+                              "whiteSpace", wrap_str)
 
     def getCellElement(self, table, row, col):
         length = table.rows.length
@@ -113,6 +140,5 @@ class CellFormatter(Applier):
     def setAttr(self, row, column, attrName, value):
         elem = self.getElement(row, column)
         DOM.setAttribute(elem, attrName, value)
-
 
 

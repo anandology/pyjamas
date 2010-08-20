@@ -111,5 +111,5 @@ class TooltipListener:
     def setOffsetY(self, offsetY):
         self.offsetY = offsetY
 
-Factory.registerClass('pyjamas.ui.Tooltip', Tooltip)
+Factory.registerClass('pyjamas.ui.Tooltip', 'Tooltip', Tooltip)
 

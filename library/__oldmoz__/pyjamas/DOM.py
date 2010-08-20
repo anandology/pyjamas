@@ -1,19 +1,19 @@
 def compare(elem1, elem2):
     JS("""
-    if (!elem1 && !elem2) {
+    if (!@{{elem1}} && !@{{elem2}}) {
         return true;
-    } else if (!elem1 || !elem2) {
+    } else if (!@{{elem1}} || !@{{elem2}}) {
         return false;
     }
-	if (!elem1.isSameNode) {
-	    return (elem1 == elem2);
+	if (!@{{elem1}}.isSameNode) {
+	    return (@{{elem1}} == @{{elem2}});
 	}
-    return (elem1.isSameNode(elem2));
+    return (@{{elem1}}.isSameNode(@{{elem2}}));
     """)
 
 def eventGetButton(evt):
     JS("""
-    var button = evt.button;
+    var button = @{{evt}}.button;
     if(button == 0) {
         return 1;
     } else if (button == 1) {
@@ -23,9 +23,10 @@ def eventGetButton(evt):
     }
     """)
 
-def getAbsoluteLeft(elem):
+def getAbsoluteLeft(_elem):
     JS("""
     var left = 0;
+    var elem = @{{_elem}};
     var parent = elem;
 
     while (parent) {
@@ -42,9 +43,10 @@ def getAbsoluteLeft(elem):
     return left + $doc.body.scrollLeft + $doc.documentElement.scrollLeft;
     """)
 
-def getAbsoluteTop(elem):
+def getAbsoluteTop(_elem):
     JS("""
     var top = 0;
+    var elem = @{{_elem}};
     var parent = elem;
     while (parent) {
         if (parent.scrollTop > 0) {
@@ -62,14 +64,14 @@ def getAbsoluteTop(elem):
 
 def getChildIndex(parent, child):
     JS("""
-    var count = 0, current = parent.firstChild;
+    var count = 0, current = @{{parent}}.firstChild;
     while (current) {
 		if (! current.isSameNode) {
-			if (current == child) {
+			if (current == @{{child}}) {
 			   return count;
 		   }
 		}
-        else if (current.isSameNode(child)) {
+        else if (current.isSameNode(@{{child}})) {
             return count;
         }
         if (current.nodeType == 1) {
@@ -80,15 +82,16 @@ def getChildIndex(parent, child):
     return -1;
     """)
 
-def isOrHasChild(parent, child):
+def isOrHasChild(parent, _child):
     JS("""
+    var child = @{{_child}};
     while (child) {
-        if ((!parent.isSameNode)) {
-            if (parent == child) {
+        if ((!@{{parent}}.isSameNode)) {
+            if (@{{parent}} == child) {
                 return true;
             }
         }
-        else if (parent.isSameNode(child)) {
+        else if (@{{parent}}.isSameNode(child)) {
             return true;
         }
         try {
@@ -108,8 +111,8 @@ def isOrHasChild(parent, child):
 
 def releaseCapture(elem):
     JS("""
-    if ((DOM.sCaptureElem != null) && DOM.compare(elem, DOM.sCaptureElem))
-        DOM.sCaptureElem = null;
+    if ((@{{sCaptureElem}} != null) && @{{compare}}(elem, @{{sCaptureElem}}))
+        @{{sCaptureElem}} = null;
     
 	if (!elem.isSameNode) {
 		if (elem == $wnd.__captureElem) {

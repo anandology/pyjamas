@@ -29,6 +29,8 @@ from compiler.visitor import ASTVisitor
 
 import pyjs
 
+escaped_subst = re.compile('@{{([ a-zA-Z0-9_\.]*)}}')
+
 if pyjs.pyjspth is None:
     LIBRARY_PATH = os.path.abspath(os.path.dirname(__file__))
 else:
@@ -275,6 +277,25 @@ PYJSLIB_BUILTIN_FUNCTIONS=frozenset((
     "type",
     "xrange",
     "zip",
+
+    # internal mappings needed
+    "next_hash_id",
+    "__hash",
+    "wrapped_next",
+    "__iter_prepare",
+    "__wrapped_next",
+    "printFunc",
+    "debugReport",
+    "_isinstance",
+    "op_add",
+    "op_sub",
+    "isObject",
+    "toJSObjects",
+    "_errorMapping",
+    "TryElse",
+    "sprintf",
+    "get_pyjs_classtype",
+    "isUndefined",
     ))
 
 PYJSLIB_BUILTIN_CLASSES=[
@@ -415,7 +436,7 @@ class __Pyjamas__(object):
 
     @classmethod
     def register_native_js_func(cls, name, func):
-        def native(self, translator, node):
+        def native(self, translator, node, current_klass, is_statement=False):
             if len(node.args) != 1:
                 raise TranslationError(
                     "%s function requires one argument" % name,
@@ -424,7 +445,8 @@ class __Pyjamas__(object):
                  and isinstance(node.args[0].value, str)
                ):
                 translator.ignore_debug = True
-                converted = func(node.args[0].value)
+                unescape = lambda content: translator.translate_escaped_names(content, current_klass)
+                converted = func(node.args[0].value, unescape=unescape, translator=translator, current_klass=current_klass, is_statement=is_statement)
                 return converted, re_return.search(converted) is not None
             else:
                 raise TranslationError(
@@ -434,7 +456,7 @@ class __Pyjamas__(object):
         cls.native_js_funcs.append(name)
         setattr(cls, name, native)
 
-    def wnd(self, translator, node):
+    def wnd(self, translator, node, *args, **kwargs):
         if len(node.args) != 0:
             raise TranslationError(
                 "wnd function doesn't support arguments",
@@ -442,7 +464,7 @@ class __Pyjamas__(object):
         translator.ignore_debug = True
         return '$wnd', False
 
-    def doc(self, translator, node):
+    def doc(self, translator, node, *args, **kwargs):
         if len(node.args) != 0:
             raise TranslationError(
                 "doc function doesn't support arguments",
@@ -450,7 +472,7 @@ class __Pyjamas__(object):
         translator.ignore_debug = True
         return '$doc', False
 
-    def jsinclude(self, translator, node):
+    def jsinclude(self, translator, node, *args, **kwargs):
         if len(node.args) != 1:
             raise TranslationError(
                 "jsinclude function requires one argument",
@@ -470,7 +492,7 @@ class __Pyjamas__(object):
                 "jsinclude function only supports constant strings",
                 node.node)
 
-    def jsimport(self, translator, node):
+    def jsimport(self, translator, node, *args, **kwargs):
         # jsimport(path, mode, location)
         # mode = [default|static|dynamic] (default: depends on build argument -m)
         # location = [early|middle|late] (only relevant for static)
@@ -518,7 +540,7 @@ class __Pyjamas__(object):
         translator.ignore_debug = True
         return '', False
 
-    def debugger(self, translator, node):
+    def debugger(self, translator, node, *args, **kwargs):
         if len(node.args) != 0:
             raise TranslationError(
                 "debugger function doesn't support arguments",
@@ -526,7 +548,7 @@ class __Pyjamas__(object):
         translator.ignore_debug = True
         return 'debugger', False
 
-    def setCompilerOptions(self, translator, node):
+    def setCompilerOptions(self, translator, node, *args, **kwargs):
         global speed_options, pythonic_options
         for arg in node.args:
             if not isinstance(arg, translator.ast.Const) or not isinstance(arg.value, str):
@@ -550,7 +572,7 @@ class __Pyjamas__(object):
         translator.ignore_debug = True
         return '', False
 
-    def INT(self, translator, node):
+    def INT(self, translator, node, *args, **kwargs):
         if len(node.args) != 1:
             raise TranslationError(
                 "INT function requires one argument",
@@ -567,8 +589,8 @@ def native_js_func(func):
     return func
 
 @native_js_func
-def JS(content):
-    return content
+def JS(content, unescape, **kwargs):
+    return unescape(content)
 
 __pyjamas__ = __Pyjamas__()
 
@@ -690,8 +712,6 @@ class Translator(object):
         'OperatorFuncs': [('operator_funcs', True)],
         'noNumberClasses': [('number_classes', False)],
         'NumberClasses': [('number_classes', True)],
-        'noDebugWithRetry': [('debug_with_retry', False)],
-        'DebugWithRetry': [('debug_with_retry', True)],
     }
 
     def __init__(self, compiler,
@@ -709,7 +729,6 @@ class Translator(object):
                  inline_code=True,
                  operator_funcs=True,
                  number_classes=True,
-                 debug_with_retry=False,
                 ):
 
         monkey_patch_broken_transformer(compiler)
@@ -746,11 +765,11 @@ class Translator(object):
         self.inline_eq = inline_code
         self.inline_cmp = inline_code
         self.inline_getitem = inline_code
+        self.inline_code = inline_code
         self.operator_funcs = operator_funcs
         self.number_classes = number_classes
         if self.number_classes:
             self.operator_funcs = True
-        self.debug_with_retry = debug_with_retry
 
         self.imported_modules = []
         self.imported_js = []
@@ -931,7 +950,7 @@ class Translator(object):
             self.attribute_checking, self.bound_methods, self.descriptors,
             self.source_tracking, self.line_tracking, self.store_source,
             self.inline_bool, self.inline_eq, self.inline_len, self.inline_cmp, self.inline_getitem,
-            self.operator_funcs, self.number_classes, self.debug_with_retry,
+            self.operator_funcs, self.number_classes,
         ))
     def pop_options(self):
         (\
@@ -939,7 +958,7 @@ class Translator(object):
             self.attribute_checking, self.bound_methods, self.descriptors,
             self.source_tracking, self.line_tracking, self.store_source,
             self.inline_bool, self.inline_eq, self.inline_len, self.inline_cmp, self.inline_getitem,
-            self.operator_funcs, self.number_classes, self.debug_with_retry,
+            self.operator_funcs, self.number_classes,
         ) = self.option_stack.pop()
 
     def parse_decorators(self, node, funcname, current_class = None, 
@@ -1107,6 +1126,22 @@ class Translator(object):
                 jsname = PYJSLIB_BUILTIN_MAPPING[name]
         return (name_type, pyname, jsname, depth, (name_type is not None) and (max_depth > 0) and (max_depth == depth))
 
+    def translate_escaped_names(self, txt, current_klass):
+        """ escape replace names
+        """
+        l = escaped_subst.split(txt)
+        txt = l[0]
+        for i in xrange(1, len(l)-1, 2):
+            varname = l[i].strip()
+            name_type, pyname, jsname, depth, is_local = self.lookup(varname)
+            if name_type is None:
+                substname = self.scopeName(varname, depth, is_local)
+            else:
+                substname = jsname
+            txt += substname
+            txt += l[i+1]
+        return txt
+        
     def scopeName(self, name, depth, local):
         if local:
             return name
@@ -1281,31 +1316,11 @@ class Translator(object):
         if not self.ignore_debug and self.debug and len(call_code.strip()) > 0:
             dbg = self.uniqid("$pyjs_dbg_")
             mod = self.module_name
-            if self.debug_with_retry:
-                call_code = """\
-(function(){\
-var %(dbg)s_retry = 0;
-try{var %(dbg)s_res=%(call_code)s;}catch(%(dbg)s_err){
-    if (%(dbg)s_err.__name__ != 'StopIteration') {
-        pyjslib['_handle_exception'](%(dbg)s_err);
-        debugger;
-    }
-    switch (%(dbg)s_retry) {
-        case 1:
-            %(dbg)s_res=%(call_code)s;
-            break;
-        case 2:
-            break;
-        default:
-            throw %(dbg)s_err;
-    }
-}return %(dbg)s_res})()""" % locals()
-            else:
-                s = self.spacing()
-                call_code = """\
-(function(){try{
+            s = self.spacing()
+            call_code = """\
+(function(){try{try{$pyjs.in_try_except += 1;
 %(s)sreturn %(call_code)s;
-}catch(%(dbg)s_err){\
+}finally{$pyjs.in_try_except-=1;}}catch(%(dbg)s_err){\
 if (%(dbg)s_err.__name__ != 'StopIteration')\
 {pyjslib['_handle_exception'](%(dbg)s_err);}\
 throw %(dbg)s_err;
@@ -2154,7 +2169,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         print >>self.output, self.spacing() + "continue;"
 
 
-    def _callfunc_code(self, v, current_klass):
+    def _callfunc_code(self, v, current_klass, is_statement=False):
 
         self.ignore_debug = False
         method_name = None
@@ -2164,9 +2179,12 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                 try:
                     raw_js = getattr(__pyjamas__, v.node.name)
                     if callable(raw_js):
-                        raw_js, has_js_return = raw_js(self, v)
+                        raw_js, has_js_return = raw_js(self, v, current_klass,
+                                                       is_statement=is_statement)
                         if has_js_return:
                             self.has_js_return = True
+                    else:
+                        raw_js = self.translate_escaped_names(raw_js, current_klass)
                     return raw_js
                 except AttributeError, e:
                     raise TranslationError(
@@ -2276,8 +2294,8 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             call_code = call_name + "(" + ", ".join(call_args) + ")"
         return call_code
 
-    def _callfunc(self, v, current_klass):
-        call_code = self._callfunc_code(v, current_klass)
+    def _callfunc(self, v, current_klass, is_statement=False):
+        call_code = self._callfunc_code(v, current_klass, is_statement=is_statement)
         if not self.ignore_debug:
             call_code = self.track_call(call_code, v.lineno)
         return call_code
@@ -3132,10 +3150,11 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
     def _discard(self, node, current_klass):
         
         if isinstance(node.expr, self.ast.CallFunc):
-            expr = self._callfunc(node.expr, current_klass)
+            expr = self._callfunc(node.expr, current_klass, is_statement=True)
             if isinstance(node.expr.node, self.ast.Name):
                 name_type, pyname, jsname, depth, is_local = self.lookup(node.expr.node.name)
-                if name_type == '__pyjamas__' and jsname in __pyjamas__.native_js_funcs:
+                if name_type == '__pyjamas__' and \
+                   jsname in __pyjamas__.native_js_funcs:
                     print >>self.output, expr
                     return
             print >>self.output, self.spacing() + expr + ";"
@@ -3342,7 +3361,10 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 child_name = child.name
                 self.add_lookup('variable', child_name, child_name)
                 child_name = self.add_lookup('variable', child_name, child_name)
-                assign_tuple.append("""%(child_name)s %(op)s %(nextval)s.__array[%(i)i];""" % locals())
+                if self.inline_code:
+                    assign_tuple.append("""%(child_name)s %(op)s %(nextval)s.__array[%(i)i];""" % locals())
+                else:
+                    assign_tuple.append("""%(child_name)s %(op)s %(nextval)s.$nextval.__array[%(i)i];""" % locals())
                 i += 1
         else:
             raise TranslationError(
@@ -3381,9 +3403,10 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             self.add_lookup('variable', var_trackstack_size, var_trackstack_size)
             print >>self.output, self.spacing() + "%s=$pyjs.trackstack.length;" % var_trackstack_size
         s = self.spacing()
-        print >>self.output, """\
+        if self.inline_code:
+            print >>self.output, """\
 %(s)s%(iterator_name)s = """ % locals() + self.track_call("%(list_expr)s" % locals(), node.lineno) + ';'
-        print >>self.output, """\
+            print >>self.output, """\
 %(s)sif (typeof (%(array)s = %(iterator_name)s.__array) != 'undefined') {
 %(s)s\t%(gentype)s = 0;
 %(s)s} else {
@@ -3391,7 +3414,14 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 %(s)s\t%(gentype)s = typeof (%(array)s = %(iterator_name)s.__array) != 'undefined'? 0 : (typeof %(iterator_name)s.$genfunc == 'function'? 1 : -1);
 %(s)s}
 %(s)s%(loopvar)s = 0;""" % locals()
-        condition = "typeof (%(nextval)s=(%(gentype)s?(%(gentype)s > 0?%(iterator_name)s.next(true,%(reuse_tuple)s):pyjslib['wrapped_next'](%(iterator_name)s)):%(array)s[%(loopvar)s++])) != 'undefined'" % locals()
+            condition = "typeof (%(nextval)s=(%(gentype)s?(%(gentype)s > 0?%(iterator_name)s.next(true,%(reuse_tuple)s):pyjslib['wrapped_next'](%(iterator_name)s)):%(array)s[%(loopvar)s++])) != 'undefined'" % locals()
+        else:
+            print >>self.output, """\
+%(s)s%(iterator_name)s = """ % locals() + self.track_call("%(list_expr)s" % locals(), node.lineno) + ';'
+            print >>self.output, """\
+%(s)s%(nextval)s=pyjslib['__iter_prepare'](%(iterator_name)s,%(reuse_tuple)s);\
+""" % locals()
+            condition = "typeof(pyjslib['__wrapped_next'](%(nextval)s).$nextval) != 'undefined'" % locals()
 
         self.generator_switch_case(increment=True)
 
@@ -3406,7 +3436,10 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.generator_switch_case(increment=False)
 
         if not assign_tuple:
-            print >>self.output, self.spacing() + """%(assign_name)s %(op)s %(nextval)s;""" % locals()
+            if self.inline_code:
+                print >>self.output, self.spacing() + """%(assign_name)s %(op)s %(nextval)s;""" % locals()
+            else:
+                print >>self.output, self.spacing() + """%(assign_name)s %(op)s %(nextval)s.$nextval;""" % locals()
         else:
             for line in assign_tuple:
                 print >>self.output, self.spacing() + line
@@ -3532,9 +3565,12 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.add_lookup('variable', v1, v1)
         self.add_lookup('variable', v2, v2)
         s = self.spacing()
-        return """(typeof (%(v1)s=%(e1)s)==typeof (%(v2)s=%(e2)s) && (typeof %(v1)s=='number'||typeof %(v1)s=='string')?
+        if self.inline_code:
+            return """(typeof (%(v1)s=%(e1)s)==typeof (%(v2)s=%(e2)s) && (typeof %(v1)s=='number'||typeof %(v1)s=='string')?
 %(s)s\t%(v1)s+%(v2)s:
 %(s)s\tpyjslib['op_add'](%(v1)s,%(v2)s))""" % locals()
+        return """pyjslib['__op_add'](%(v1)s=%(e1)s,%(v2)s=%(e2)s)""" % \
+                        locals()
 
     def _sub(self, node, current_klass):
         if not self.operator_funcs:
@@ -3546,9 +3582,12 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.add_lookup('variable', v1, v1)
         self.add_lookup('variable', v2, v2)
         s = self.spacing()
-        return """(typeof (%(v1)s=%(e1)s)==typeof (%(v2)s=%(e2)s) && (typeof %(v1)s=='number'||typeof %(v1)s=='string')?
+        if self.inline_code:
+            return """(typeof (%(v1)s=%(e1)s)==typeof (%(v2)s=%(e2)s) && (typeof %(v1)s=='number'||typeof %(v1)s=='string')?
 %(s)s\t%(v1)s-%(v2)s:
 %(s)s\tpyjslib['op_sub'](%(v1)s,%(v2)s))""" % locals()
+        return """pyjslib['__op_sub'](%(v1)s=%(e1)s,%(v2)s=%(e2)s)""" % \
+                        locals()
 
     def _floordiv(self, node, current_klass):
         if not self.operator_funcs:
@@ -3908,6 +3947,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             attr = self.attrib_join(attr_)
             attr_left = self.attrib_join(attr_[:-1])
             attr_right = attr_[-1]
+            attrstr = attr
             v = self.uniqid('$attr')
             vl = self.uniqid('$attr')
             self.add_lookup('variable', v, v)
@@ -3926,6 +3966,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 attr_code = "%(attr)s"
             attr_code = attr_code % locals()
             s = self.spacing()
+
+            orig_attr = attr
 
             if not self.attribute_checking:
                 attr = attr_code
@@ -3953,6 +3995,17 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 %(s)s\t\t(function(){throw TypeError(\"%(attrstr)s is undefined");})():
 %(s)s\t\t$pyjs__testval);
 %(s)s})()""" % locals()
+            if True: # not self.attribute_checking or self.inline_code:
+                return attr
+            bound_methods = self.bound_methods and "true" or "false"
+            descriptors = self.descriptors and "true" or "false"
+            attribute_checking = self.attribute_checking and "true" or "false"
+            source_tracking = self.source_tracking and "true" or "false"
+            attr = """\
+pyjslib['__getattr_check'](%(attr)s, %(attr_left)s, %(attr_right)s,\
+"%(attrstr)s", %(bound_methods)s, %(descriptors)s, %(attribute_checking)s,\
+%(source_tracking)s)
+                """ % locals()
             return attr
         elif isinstance(node, self.ast.List):
             return self._list(node, current_klass)
@@ -4000,7 +4053,7 @@ def translate(compiler, sources, output_file, module_name=None,
               inline_code=False,
               operator_funcs=True,
               number_classes=True,
-              debug_with_retry=False,
+              list_imports=False,
              ):
 
     sources = map(os.path.abspath, sources)
@@ -4026,7 +4079,15 @@ def translate(compiler, sources, output_file, module_name=None,
     f = file(sources[0], "r")
     src = f.read()
     f.close()
-    output = file(output_file, 'w')
+    if list_imports:
+        v = ImportVisitor(module_name)
+        compiler.walk(tree, v)
+        return v.imported_modules, []
+
+    if output_file == '-':
+        output = sys.stdout
+    else:
+        output = file(output_file, 'w')
 
     t = Translator(compiler,
                    module_name, sources[0], src, tree, output,
@@ -4042,7 +4103,6 @@ def translate(compiler, sources, output_file, module_name=None,
                    inline_code = inline_code,
                    operator_funcs = operator_funcs,
                    number_classes = number_classes,
-                   debug_with_retry = debug_with_retry,
                   )
     output.close()
     return t.imported_modules, t.imported_js
@@ -4247,6 +4307,64 @@ def dotreplace(fname):
     path, ext = os.path.splitext(fname)
     return path.replace(".", "/") + ext
 
+class ImportVisitor(object):
+
+    def __init__(self, module_name):
+        self.module_name = module_name
+        self.imported_modules = []
+
+    def add_imported_module(self, importName):
+        if not importName in self.imported_modules:
+            self.imported_modules.append(importName)
+
+    def visitModule(self, node):
+        self.visit(node.node)
+
+    def visitImport(self, node):
+        self._doImport(node.names)
+
+    def _doImport(self, names):
+        for importName, importAs in names:
+            if importName == '__pyjamas__':
+                continue
+            if importName.endswith(".js"):
+                imp.add_imported_module(importName)
+                continue
+
+            self.add_imported_module(importName)
+
+    def visitFrom(self, node):
+        if node.modname == '__pyjamas__':
+            return
+        if node.modname == '__javascript__':
+            return
+        # XXX: hack for in-function checking, we should have another
+        # object to check our scope
+        absPath = False
+        modname = node.modname
+        if hasattr(node, 'level') and node.level > 0:
+            absPath = True
+            modname = self.module_name.split('.')
+            level = node.level
+            if len(modname) < level:
+                raise TranslationError(
+                    "Attempted relative import beyond toplevel package",
+                    node, self.module_name)
+            if node.modname != '':
+                level += 1
+            if level > 1:
+                modname = '.'.join(modname[:-(node.level-1)])
+            else:
+                modname = self.module_name
+            if node.modname != '':
+                modname += '.' + node.modname
+                if modname[0] == '.':
+                    modname = modname[1:]
+        for name in node.names:
+            sub = modname + '.' + name[0]
+            ass_name = name[1] or name[0]
+            self._doImport(((sub, ass_name),))
+
 class AppTranslator:
 
     def __init__(self, compiler,
@@ -4264,7 +4382,6 @@ class AppTranslator:
                  inline_code=False,
                  operator_funcs=True,
                  number_classes=True,
-                 debug_with_retry=False,
                 ):
         self.compiler = compiler
         self.extension = ".py"
@@ -4286,7 +4403,6 @@ class AppTranslator:
         self.inline_code = inline_code
         self.operator_funcs = operator_funcs
         self.number_classes = number_classes
-        self.debug_with_retry = debug_with_retry
 
         if not parser:
             self.parser = PlatformParser(self.compiler)
@@ -4346,7 +4462,6 @@ class AppTranslator:
                        inline_code = self.inline_code,
                        operator_funcs = self.operator_funcs,
                        number_classes = self.number_classes,
-                       debug_with_retry = self.debug_with_retry,
                       )
 
         module_str = output.getvalue()
@@ -4558,19 +4673,6 @@ def add_compile_options(parser):
     speed_options['number_classes'] = False
     pythonic_options['number_classes'] = True
 
-    parser.add_option("--no-debug-with-retry",
-                      dest = "debug_with_retry",
-                      action="store_false",
-                      help = "Do not generate retry debug code (default)",
-                     )
-    parser.add_option("--debug-with-retry",
-                      dest = "debug_with_retry",
-                      action="store_true",
-                      help = "Generate retry debug code (not recommended)",
-                     )
-    speed_options['debug_with_retry'] = False
-    pythonic_options['debug_with_retry'] = False
-
     def set_multiple(option, opt_str, value, parser, **kwargs):
         for k in kwargs.keys():
             setattr(parser.values, k, kwargs[k])
@@ -4605,7 +4707,6 @@ def add_compile_options(parser):
                         inline_code = False,
                         operator_funcs = True,
                         number_classes = False,
-                        debug_with_retry = False,
                        )
 
 
@@ -4619,9 +4720,14 @@ def main():
 
     parser = OptionParser(usage = usage)
     parser.add_option("-o", "--output", dest="output",
+                      default="-",
                       help="Place the output into <output>")
     parser.add_option("-m", "--module-name", dest="module_name",
                       help="Module name of output")
+    parser.add_option("-i", "--list-imports", dest="list_imports",
+                      default=False,
+                      action="store_true",
+                      help="List import dependencies (without compiling)")
     add_compile_options(parser)
     (options, args) = parser.parse_args()
 
@@ -4632,7 +4738,8 @@ def main():
 
     if not options.output:
         parser.error("No output file specified")
-    options.output = os.path.abspath(options.output)
+    if options.output == '-':
+        options.output = os.path.abspath(options.output)
 
     file_names = map(os.path.abspath, args)
     for fn in file_names:
@@ -4640,7 +4747,8 @@ def main():
             print >> sys.stderr, "Input file not found %s" % fn
             sys.exit(1)
 
-    translate(compiler, file_names, options.output, options.module_name,
+    imports, js = translate(compiler, file_names, options.output,
+              options.module_name,
               debug = options.debug,
               print_statements = options.print_statements,
               function_argument_checking = options.function_argument_checking,
@@ -4652,8 +4760,10 @@ def main():
               inline_code = options.inline_code,
               operator_funcs = options.operator_funcs,
               number_classes = options.number_classes,
-              debug_with_retry = options.debug_with_retry,
-    ),
+              list_imports = options.list_imports,
+    )
+    if options.list_imports:
+        print '\n'.join(imports)
 
 if __name__ == "__main__":
     main()

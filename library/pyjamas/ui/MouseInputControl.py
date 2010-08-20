@@ -65,4 +65,4 @@ class MouseInputControl(InputControl):
         self.setControlPos(new_value)
         self.setValue(new_value)
 
-Factory.registerClass('pyjamas.ui.MouseInputControl', InputControl)
+Factory.registerClass('pyjamas.ui.MouseInputControl', 'InputControl', InputControl)

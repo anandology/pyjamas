@@ -343,6 +343,11 @@ def build_script():
         help="Include each module via a script-tag instead of writing"
               " the whole code into the main cache.html file")
 
+    parser.add_option("-i", "--list-imports", dest="list_imports",
+                      default=False,
+                      action="store_true",
+                      help="List import dependencies (without compiling)")
+
     parser.add_option(
         "-c", "--cache-buster", action="store_true",
         dest="cache_buster",
@@ -433,7 +438,7 @@ def build_script():
         inline_code = options.inline_code,
         operator_funcs = options.operator_funcs,
         number_classes = options.number_classes,
-        debug_with_retry = options.debug_with_retry,
+        list_imports=options.list_imports,
     )
 
     l = BrowserLinker(args,
@@ -450,6 +455,17 @@ def build_script():
                       bootstrap_file=options.bootstrap_file,
                       public_folder=options.public_folder,
                       runtime_options=runtime_options,
+                      list_imports=options.list_imports,
                      )
     l()
-    print "Built to :", os.path.abspath(options.output)
+    if not options.list_imports:
+        print "Built to :", os.path.abspath(options.output)
+        return
+    print "Dependencies"
+    for f, deps in l.dependencies.items():
+        print "%s\n%s" % (f, '\n'.join(map(lambda x: "\t%s" % x, deps)))
+    print
+    print "Visited Modules"
+    for plat, deps in l.visited_modules.items():
+        print "%s\n%s" % (plat, '\n'.join(map(lambda x: "\t%s" % x, deps)))
+    print

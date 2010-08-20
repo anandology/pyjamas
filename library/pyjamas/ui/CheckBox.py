@@ -23,6 +23,8 @@ _CheckBox_unique_id=0;
 
 class CheckBox(ButtonBase):
 
+    _props = [("name", "Name", "Name", None),
+            ]
     def __init__(self, label=None, asHTML=False, **ka):
         ka['StyleName'] = ka.get('StyleName', "gwt-CheckBox")
         if label:
@@ -32,6 +34,10 @@ class CheckBox(ButtonBase):
                 ka['Text'] = label
         element = ka.pop('Element', None) or DOM.createInputCheck()
         self.initElement(element, **ka)
+
+    @classmethod
+    def _getProps(self):
+        return ButtonBase._getProps() + self._props
 
     def initElement(self, element, **ka):
         self.inputElem = element
@@ -70,6 +76,11 @@ class CheckBox(ButtonBase):
         DOM.setBooleanAttribute(self.inputElem, "defaultChecked", checked)
 
     def isChecked(self):
+        """ XXX this function is deprecated: use getChecked
+        """
+        return self.getChecked()
+    
+    def getChecked(self):
         if self.isAttached():
             propName = "checked"
         else:
@@ -78,6 +89,11 @@ class CheckBox(ButtonBase):
         return DOM.getBooleanAttribute(self.inputElem, propName)
 
     def isEnabled(self):
+        """ XXX this function is deprecated: use getEnabled
+        """
+        return self.getEnabled()
+
+    def getEnabled(self):
         return not DOM.getBooleanAttribute(self.inputElem, "disabled")
 
     def setEnabled(self, enabled):
@@ -105,5 +121,5 @@ class CheckBox(ButtonBase):
         self.setChecked(self.isChecked())
         ButtonBase.onDetach(self)
 
-Factory.registerClass('pyjamas.ui.CheckBox', CheckBox)
+Factory.registerClass('pyjamas.ui.CheckBox', 'CheckBox', CheckBox)
 

@@ -16,23 +16,40 @@ from pyjamas import DOM
 from pyjamas import Factory
 
 from ComplexPanel import ComplexPanel
+from pyjamas.ui import HasHorizontalAlignment
+from pyjamas.ui import HasVerticalAlignment
+
 
 class CellPanel(ComplexPanel):
 
+    _props = [
+            ("horzAlign", "Horizontal alignment", "HorizontalAlignment", None),
+            ("vertAlign", "Vertical alignment", "VerticalAlignment", None),
+            ("border", "Border width", "BorderWidth", int),
+            ("spacing", "Spacing", "Spacing", None),
+            ("padding", "Padding", "Padding", None)
+             ]
+
     def __init__(self, **kwargs):
-        element = None
-        if kwargs.has_key('Element'):
-            element = kwargs.pop('Element')
-        if element is None:
-            element = DOM.createTable()
+
+        kwargs['Spacing'] = kwargs.get('Spacing', 0)
+        kwargs['Padding'] = kwargs.get('Padding', 0)
+        kwargs['HorizontalAlignment'] = kwargs.get('HorizontalAlignment',
+                            HasHorizontalAlignment.ALIGN_LEFT)
+        kwargs['VerticalAlignment'] = kwargs.get('VerticalAlignment',
+                            HasVerticalAlignment.ALIGN_TOP)
+
+        element = kwargs.pop('Element', None) or DOM.createTable()
         self.table = element
         self.setElement(self.table)
         self.body = DOM.createTBody()
-        self.spacing = None
-        self.padding = None
         DOM.appendChild(self.table, self.body)
 
         ComplexPanel.__init__(self, **kwargs)
+
+    @classmethod
+    def _getProps(self):
+        return ComplexPanel._getProps() + self._props
 
     def getTable(self):
         return self.table
@@ -124,5 +141,18 @@ class CellPanel(ComplexPanel):
         else:
             DOM.setAttribute(self.table, "cellPadding", str(padding))
 
-Factory.registerClass('pyjamas.ui.CellPanel', CellPanel)
+    def setHorizontalAlignment(self, align):
+        self.horzAlign = align
+
+    def setVerticalAlignment(self, align):
+        self.vertAlign = align
+
+    def getHorizontalAlignment(self):
+        return self.horzAlign
+
+    def getVerticalAlignment(self):
+        return self.vertAlign
+
+
+Factory.registerClass('pyjamas.ui.CellPanel', 'CellPanel', CellPanel)
 

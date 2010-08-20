@@ -3,6 +3,7 @@
 
 import sys
 from __pyjamas__ import JS, doc
+
 if sys.platform not in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
     from Cookie import SimpleCookie
     import urllib
@@ -43,28 +44,6 @@ def setCookie(name, value, expires, domain=None, path=None, secure=False):
     _doc.cookie = c
 
     return
-    JS("""
-    if (expires instanceof Date) expires = expires.getTime();
-    if (pyjslib_isUndefined(domain)) domain = null;
-    if (pyjslib_isUndefined(path)) path = null;
-    if (pyjslib_isUndefined(secure)) secure = false;
-    
-    var today = new Date();
-    var expiration = new Date();
-    expiration.setTime(today.getTime() + expires)
-
-    var c = encodeURIComponent(name) + '=' + encodeURIComponent(value);
-    c += ';expires=' + expiration.toGMTString();
-
-    if (domain)
-        c += ';domain=' + domain;
-    if (path)
-        c += ';path=' + path;
-    if (secure)
-        c += ';secure';
-
-    $doc.cookie = c;
-    """)
 
 def get_crumbs():
     docCookie = doc().cookie

@@ -72,5 +72,5 @@ class DeckPanel(ComplexPanel):
             # throw new IndexOutOfBoundsException();
             pass
 
-Factory.registerClass('pyjamas.ui.DeckPanel', DeckPanel)
+Factory.registerClass('pyjamas.ui.DeckPanel', 'DeckPanel', DeckPanel)
 

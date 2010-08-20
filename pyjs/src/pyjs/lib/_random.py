@@ -1,8 +1,6 @@
-
 from __pyjamas__ import JS
-import pyjslib
 
-one = pyjslib.long(1)
+one = long(1)
 
 class Random(object):
     seed = None
@@ -11,12 +9,12 @@ class Random(object):
         s = ""
         JS("""
         var table = new Array();
-        for (var i = 0 ; i < k/32; i++) {
+        for (var i = 0 ; i < @{{k}}/32; i++) {
             table[i] = (Math.random() * 4294967296).toString(32);
         }
         s = table.join("");
 """)
-        rand = pyjslib.long(s, 32)
+        rand = long(s, 32)
         mask = one.__lshift__(k).__sub__(one)
         return rand.__and__(mask)
 
@@ -25,7 +23,7 @@ class Random(object):
 
     def jumpahead(self, n):
         JS("""
-        for (var i = 0 ; i < n % 100; i++) Math.random();
+        for (var i = 0 ; i < @{{n}} % 100; i++) Math.random();
 """)
 
     def random(self):
@@ -33,7 +31,7 @@ class Random(object):
             return JS("Math.random()")
         seed = self.seed
         self.seed = None
-        return JS("Math.random(seed)")
+        return JS("Math.random(@{{seed}})")
 
     def seed(self, n = None):
         self.seed = n

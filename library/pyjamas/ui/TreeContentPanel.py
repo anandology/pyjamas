@@ -36,5 +36,5 @@ class TreeContentPanel(SimplePanel):
         SimplePanel.setParent(self, widget)
 
 #TODO: work out if TreeContentPanel is appropriate in Factory
-# Factory.registerClass('pyjamas.ui.TreeContentPanel', TreeContentPanel)
+# Factory.registerClass('pyjamas.ui.TreeContentPanel', 'TreeContentPanel', TreeContentPanel)
 

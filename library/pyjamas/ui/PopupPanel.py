@@ -23,12 +23,17 @@ from pyjamas.ui import MouseListener
 from pyjamas.ui import KeyboardListener
 
 class PopupPanel(SimplePanel):
-    def __init__(self, autoHide=False, modal=True, rootpanel=None, glass=False, **kwargs):
+
+    _props = [("modal", "Modal", "Modal", None),
+            ]
+
+    def __init__(self, autoHide=False, modal=True, rootpanel=None, glass=False,
+                       **kwargs):
 
         self.popupListeners = []
         self.showing = False
         self.autoHide = autoHide
-        self.modal = modal
+        kwargs['Modal'] = kwargs.get('Modal', modal)
 
         self.glass = glass
         if self.glass:
@@ -48,6 +53,10 @@ class PopupPanel(SimplePanel):
         DOM.setStyleAttribute(element, "position", "absolute")
 
         SimplePanel.__init__(self, element, **kwargs)
+
+    @classmethod
+    def _getProps(self):
+        return SimplePanel._getProps() + self._props
 
     def addPopupListener(self, listener):
         self.popupListeners.append(listener)
@@ -78,7 +87,15 @@ class PopupPanel(SimplePanel):
             if hasattr(listener, 'onPopupClosed'): listener.onPopupClosed(self, autoClosed)
             else: listener(self, autoClosed)
 
+    def setModal(self, modal):
+        self.modal = modal
+
+    def getModal(self):
+        return self.isModal()
+
     def isModal(self):
+        """ deprecated - please use getModal
+        """
         return self.modal
 
     def _event_targets_popup(self, event):
@@ -190,6 +207,9 @@ class PopupPanel(SimplePanel):
     def onWindowResized(self, width, height):
         self.setGlassPosition()
 
+    def add(self, widget):
+        self.setWidget(widget)
+
     def show(self):
         if self.showing:
             return
@@ -204,5 +224,5 @@ class PopupPanel(SimplePanel):
         self.rootpanel.add(self)
         self.onShowImpl(self.getElement())
 
-Factory.registerClass('pyjamas.ui.PopupPanel', PopupPanel)
+Factory.registerClass('pyjamas.ui.PopupPanel', 'PopupPanel', PopupPanel)
 

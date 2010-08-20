@@ -36,5 +36,5 @@ class FlowPanel(ComplexPanel):
             index = self.getWidget(index)
         return ComplexPanel.remove(self, index)
 
-Factory.registerClass('pyjamas.ui.FlowPanel', FlowPanel)
+Factory.registerClass('pyjamas.ui.FlowPanel', 'FlowPanel', FlowPanel)
 

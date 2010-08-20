@@ -23,5 +23,17 @@ class ButtonBase(FocusWidget, InnerHTML, InnerText):
     def __init__(self, element, **kwargs):
         FocusWidget.__init__(self, element, **kwargs)
 
-Factory.registerClass('pyjamas.ui.ButtonBase', ButtonBase)
+    def _setWeirdProps(self, props):
+        if props.has_key("label"):
+            props['text'] = props['label']
+            del props['label']
+        if not props.has_key("text"):
+            return
+        txt = props["text"]
+        if props.get("html", False):
+            self.setHTML(txt)
+        else:
+            self.setText(txt)
+
+Factory.registerClass('pyjamas.ui.ButtonBase', 'ButtonBase', ButtonBase)
 

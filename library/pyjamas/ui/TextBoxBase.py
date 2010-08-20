@@ -24,12 +24,20 @@ class TextBoxBase(FocusWidget):
     ALIGN_LEFT = "left"
     ALIGN_RIGHT = "right"
 
+    _props = [("name", "Name", "Name", None),
+             ("align", "Text Alignment", "TextAlign", None),
+            ]
+
     def __init__(self, element, **kwargs):
         self.changeListeners = []
         self.currentEvent = None
 
         FocusWidget.__init__(self, element, **kwargs)
         self.sinkEvents(Event.ONCHANGE)
+
+    @classmethod
+    def _getProps(self):
+        return FocusWidget._getProps() + self._props
 
     def addChangeListener(self, listener):
         self.changeListeners.append(listener)
@@ -120,6 +128,10 @@ class TextBoxBase(FocusWidget):
     def setTextAlignment(self, align):
         DOM.setStyleAttribute(self.getElement(), "textAlign", align)
 
+    def getTextAlignment(self, align):
+        return DOM.getStyleAttribute(self.getElement(), "textAlign")
+
+
 # TODO: work out if TextBoxBase is appropriate to create in Factory.
-# Factory.registerClass('pyjamas.ui.TextBoxBase', TextBoxBase)
+# Factory.registerClass('pyjamas.ui.TextBoxBase', 'TextBoxBase', TextBoxBase)
 

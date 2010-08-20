@@ -19,6 +19,15 @@ from SimplePanel import SimplePanel
 from pyjamas.ui import Event
 
 class ScrollPanel(SimplePanel):
+
+    _props = [("always", "Always show scroll bars",
+                              "AlwaysShowScrollBars", None),
+             ("position", "Vertical Scroll Position",
+                              "ScrollPosition", None),
+             ("horizPos", "Horizontal Scroll Position",
+                              "HorizontalScrollPosition", None),
+            ]
+
     def __init__(self, child=None, **kwargs):
         self.scrollListeners = []
 
@@ -29,6 +38,16 @@ class ScrollPanel(SimplePanel):
 
         SimplePanel.__init__(self, **kwargs)
         self.sinkEvents(Event.ONSCROLL)
+
+    @classmethod
+    def _getProps(self):
+        return SimplePanel._getProps() + self._props
+
+    def getIndex(self, index):
+        return 0
+
+    def getInstanceIndex(self, index):
+        return self.getWidget()
 
     def addScrollListener(self, listener):
         self.scrollListeners.append(listener)
@@ -48,7 +67,8 @@ class ScrollPanel(SimplePanel):
         type = DOM.eventGetType(event)
         if type == "scroll":
             for listener in self.scrollListeners:
-                listener.onScroll(self, self.getHorizontalScrollPosition(), self.getScrollPosition())
+                listener.onScroll(self, self.getHorizontalScrollPosition(),
+                                        self.getScrollPosition())
 
     def removeScrollListener(self, listener):
         self.scrollListeners.remove(listener)
@@ -76,5 +96,5 @@ class ScrollPanel(SimplePanel):
             item = item.offsetParent
         scroll.scrollTop = realOffset - scroll.offsetHeight / 2
 
-Factory.registerClass('pyjamas.ui.ScrollPanel', ScrollPanel)
+Factory.registerClass('pyjamas.ui.ScrollPanel', 'ScrollPanel', ScrollPanel)
 

@@ -46,10 +46,10 @@ class UnitTest:
                 self.start_next_test()
             return
         self.test_idx = 0
-        Timer(1, self)
+        Timer(10, self)
 
     def onTimer(self, tid):
-        for i in range(10):
+        for i in range(4):
             if self.test_idx >= len(self.test_methods):
                 self.displayStats()
                 self.test_idx = 'DONE'
@@ -58,7 +58,7 @@ class UnitTest:
 
             self._run_test(self.test_methods[self.test_idx])
             self.test_idx += 1
-        Timer(1, self)
+        Timer(10, self)
 
     def setUp(self):
         pass

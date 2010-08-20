@@ -16,18 +16,11 @@ from pyjamas import DOM
 from pyjamas import Factory
 
 from CellPanel import CellPanel
-from pyjamas.ui import HasHorizontalAlignment
-from pyjamas.ui import HasVerticalAlignment
+
 
 class HorizontalPanel(CellPanel):
 
     def __init__(self, **kwargs):
-
-        if not kwargs.has_key('Spacing'): kwargs['Spacing'] = 0
-        if not kwargs.has_key('Padding'): kwargs['Padding'] = 0
-
-        self.horzAlign = HasHorizontalAlignment.ALIGN_LEFT
-        self.vertAlign = HasVerticalAlignment.ALIGN_TOP
 
         CellPanel.__init__(self, **kwargs)
 
@@ -36,12 +29,6 @@ class HorizontalPanel(CellPanel):
 
     def add(self, widget):
         self.insert(widget, self.getWidgetCount())
-
-    def getHorizontalAlignment(self):
-        return self.horzAlign
-
-    def getVerticalAlignment(self):
-        return self.vertAlign
 
     def insert(self, widget, beforeIndex):
         widget.removeFromParent()
@@ -67,11 +54,6 @@ class HorizontalPanel(CellPanel):
         CellPanel.remove(self, widget)
         return True
 
-    def setHorizontalAlignment(self, align):
-        self.horzAlign = align
 
-    def setVerticalAlignment(self, align):
-        self.vertAlign = align
-
-Factory.registerClass('pyjamas.ui.HorizontalPanel', HorizontalPanel)
+Factory.registerClass('pyjamas.ui.HorizontalPanel', 'HorizontalPanel', HorizontalPanel)
 

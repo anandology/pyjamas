@@ -41,5 +41,5 @@ class ToggleButton (CustomButton):
         self.toggleDown()
         CustomButton.onClick(self)
     
-Factory.registerClass('pyjamas.ui.ToggleButton', ToggleButton)
+Factory.registerClass('pyjamas.ui.ToggleButton', 'ToggleButton', ToggleButton)
 

@@ -348,5 +348,5 @@ class RootTreeItem(TreeItem):
         item.setParentItem(None)
         self.children.remove(item)
 
-Factory.registerClass('pyjamas.ui.TreeItem', TreeItem)
+Factory.registerClass('pyjamas.ui.TreeItem', 'TreeItem', TreeItem)
 

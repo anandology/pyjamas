@@ -40,7 +40,7 @@ class ClickableHeader(SimplePanel):
             newstate = not self.disclosurePanel.getOpen()
             self.disclosurePanel.setOpen(newstate)
 
-Factory.registerClass('pyjamas.ui.ClickableHeader', ClickableHeader)
+Factory.registerClass('pyjamas.ui.DisclosurePanel', 'ClickableHeader', ClickableHeader)
 
 class DefaultHeader(Widget):
     def __init__(self, text):
@@ -86,7 +86,7 @@ class DefaultHeader(Widget):
 
 # TODO: must be able to pass in DisclosurePanel argument by a means
 # *other* than an actual class instance.
-#Factory.registerClass('pyjamas.ui.DefaultHeader', DefaultHeader)
+#Factory.registerClass('pyjamas.ui.DisclosurePanel', 'DefaultHeader', DefaultHeader)
 
 class DisclosurePanel(Composite):
 
@@ -217,5 +217,5 @@ class DisclosurePanel(Composite):
             self.removeStyleName("open")
         self.contentWrapper.setVisible(self.isOpen)
 
-Factory.registerClass('pyjamas.ui.DisclosurePanel', DisclosurePanel)
+Factory.registerClass('pyjamas.ui.DisclosurePanel', 'DisclosurePanel', DisclosurePanel)
 

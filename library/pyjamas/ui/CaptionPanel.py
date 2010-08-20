@@ -24,6 +24,9 @@ class CaptionPanel(SimplePanel):
     fieldset HTML element.
     """
 
+    _props = [("caption", "Caption", "caption", None),
+            ]
+
     def __init__(self, caption, widget=None, **kwargs):
         if kwargs.has_key('Element'):
             element = kwargs.pop('Element')
@@ -38,6 +41,10 @@ class CaptionPanel(SimplePanel):
             kwargs['StyleName'] = 'gwt-CaptionPanel'
         SimplePanel.__init__(self, element, **kwargs)
 
+    @classmethod
+    def _getProps(self):
+        return SimplePanel._getProps() + self._props
+
     def getCaption(self):
         return self.caption
 
@@ -49,5 +56,5 @@ class CaptionPanel(SimplePanel):
         elif DOM.getParent(self.legend) is not None:
             DOM.removeChild(self.getElement(), self.legend)
 
-Factory.registerClass('pyjamas.ui.CaptionPanel', CaptionPanel)
+Factory.registerClass('pyjamas.ui.CaptionPanel', 'CaptionPanel', CaptionPanel)
 

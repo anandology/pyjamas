@@ -67,6 +67,19 @@ class MenuItem(UIObject, InnerHTML, InnerText):
         UIObject.__init__(self, **kwargs)
         self.sinkEvents(Event.ONCLICK | Event.ONMOUSEOVER | Event.ONMOUSEOUT)
 
+    #def _setWeirdProps(self, props):
+    #    if props.has_key("label"):
+    #        props['text'] = props['label']
+    #        del props['label']
+    #
+    #    if not props.has_key("text"):
+    #        return
+    #    txt = props["text"]
+    #    if props.get("html", False):
+    #        self.setHTML(txt)
+    #    else:
+    #        self.setText(txt)
+
     def getCommand(self):
         return self.command
 
@@ -91,5 +104,5 @@ class MenuItem(UIObject, InnerHTML, InnerText):
         else:
             self.removeStyleName("gwt-MenuItem-selected")
 
-Factory.registerClass('pyjamas.ui.MenuItem', MenuItem)
+Factory.registerClass('pyjamas.ui.MenuItem', 'MenuItem', MenuItem)
 

@@ -21,16 +21,6 @@ from pyjamas.ui import HasVerticalAlignment
 
 class VerticalPanel(CellPanel):
 
-    def __init__(self, **kwargs):
-
-        kwargs['Spacing'] = kwargs.get('Spacing', 0)
-        kwargs['Padding'] = kwargs.get('Padding', 0)
-
-        self.horzAlign = HasHorizontalAlignment.ALIGN_LEFT
-        self.vertAlign = HasVerticalAlignment.ALIGN_TOP
-
-        CellPanel.__init__(self, **kwargs)
-
     def add(self, widget):
         self.insert(widget, self.getWidgetCount())
 
@@ -81,6 +71,6 @@ class VerticalPanel(CellPanel):
     def setVerticalAlignment(self, align):
         self.vertAlign = align
 
-Factory.registerClass('pyjamas.ui.VerticalPanel', VerticalPanel)
+Factory.registerClass('pyjamas.ui.VerticalPanel', 'VerticalPanel', VerticalPanel)
 
 

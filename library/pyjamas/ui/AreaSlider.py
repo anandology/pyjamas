@@ -155,4 +155,4 @@ class AreaSlider(DoubleControl):
         DOM.setStyleAttribute(self.handle, "left", "%dpx" % relative_x) 
         DOM.setStyleAttribute(self.handle, "position", "absolute")
 
-Factory.registerClass('pyjamas.ui.AreaSlider', AreaSlider)
+Factory.registerClass('pyjamas.ui.AreaSlider', 'AreaSlider', AreaSlider)

@@ -21,8 +21,8 @@ from pyjamas import DOM
 from pyjamas.Timer import Timer
 
 from RichTextAreaImpl import RichTextAreaImpl
-from pyjamas.ui import FontSize
-from pyjamas.ui import Justification
+#from pyjamas.ui import FontSize
+#from pyjamas.ui import Justification
 
 elem_focussers = {}
 

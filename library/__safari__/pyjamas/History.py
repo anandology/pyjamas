@@ -34,8 +34,8 @@ def init():
         if (token != $wnd.__historyToken) {
             $wnd.__historyToken = token;
 
-            pyjamas.History.newItem(token);
-            pyjamas.History.onHistoryChanged(token);
+            @{{newItem}}(token);
+            @{{onHistoryChanged}}(token);
         }
 
         $wnd.setTimeout('__checkHistory()', 250);
@@ -56,6 +56,7 @@ def newItem(historyToken):
     // recreating the url, rather than just setting location.hash.
 
     $wnd.location = $wnd.location.href.split('#')[0] + '#' +
-                   encodeURI(historyToken).replace("#", "%23");
+                   encodeURI(@{{historyToken}}).replace("#", "%23");
 
     """)
+

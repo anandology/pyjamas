@@ -71,5 +71,5 @@ class Hyperlink(Widget, ClickHandler):
         self.targetHistoryToken = targetHistoryToken
         DOM.setAttribute(self.anchorElem, "href", "#" + targetHistoryToken)
 
-Factory.registerClass('pyjamas.ui.Hyperlink', Hyperlink)
+Factory.registerClass('pyjamas.ui.Hyperlink', 'Hyperlink', Hyperlink)
 

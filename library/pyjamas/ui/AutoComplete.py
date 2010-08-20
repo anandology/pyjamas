@@ -123,7 +123,7 @@ class AutoCompleteTextBox(TextBox):
         self.choicesPopup.hide()
         self.setFocus(True)
 
-Factory.registerClass('pyjamas.ui.AutoCompleteTextBox', AutoCompleteTextBox)
+Factory.registerClass('pyjamas.ui.AutoComplete', 'AutoCompleteTextBox', AutoCompleteTextBox)
 
 
 class SimpleAutoCompletionItems:

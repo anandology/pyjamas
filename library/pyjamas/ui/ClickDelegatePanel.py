@@ -65,5 +65,5 @@ class ClickDelegatePanel(Composite):
 
 # TODO: sort out how to create or grab an element for
 # Factory.createWidgetOnElement to work
-#Factory.registerClass('pyjamas.ui.ClickDelegatePanel', ClickDelegatePanel)
+#Factory.registerClass('pyjamas.ui.ClickDelegatePanel', 'ClickDelegatePanel', ClickDelegatePanel)
 

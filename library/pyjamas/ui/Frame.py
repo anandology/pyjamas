@@ -18,13 +18,18 @@ from pyjamas import Factory
 from Widget import Widget
 
 class Frame(Widget):
+
+    _props = [("url", "Url", "Url", None),
+            ]
+
     def __init__(self, url="", Element=None, **kwargs):
-        if Element is None: 
-            Element = DOM.createIFrame()
-        if url:
-            kwargs['Url'] = url
-        self.setElement(Element)
+        kwargs['Url'] = kwargs.get('Url', url)
+        self.setElement(Element or DOM.createIFrame())
         Widget.__init__(self, **kwargs)
+
+    @classmethod
+    def _getProps(self):
+        return Widget._getProps() + self._props
 
     def getUrl(self):
         return DOM.getAttribute(self.getElement(), "src")
@@ -32,5 +37,5 @@ class Frame(Widget):
     def setUrl(self, url):
         return DOM.setAttribute(self.getElement(), "src", url)
 
-Factory.registerClass('pyjamas.ui.Frame', Frame)
+Factory.registerClass('pyjamas.ui.Frame', 'Frame', Frame)
 

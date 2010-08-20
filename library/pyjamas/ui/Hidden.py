@@ -19,22 +19,29 @@ from pyjamas import DOM
 from Widget import Widget
 
 class Hidden(Widget):
+
+    _props = [("name", "Name", "Name", None),
+             ("value", "Value", "Value", None),
+             ("defaultValue", "Default Value", "DefaultValue", None),
+            ]
+
     def __init__(self, name=None, value=None, **kwargs):
 
-        if kwargs.has_key('Element'):
-            element = kwargs.pop('Element')
-        else:
-            element = DOM.createElement("input")
+        name = kwargs.get("Name", name)
+        if name is not None:
+            kwargs['Name'] = name
+        value = kwargs.get("Value", value)
+        if value is not None:
+            kwargs['Value'] = kwargs.get("Value", value)
+        element = kwargs.pop('Element', None) or DOM.createElement("input")
         self.setElement(element)
         DOM.setAttribute(element, "type", "hidden")
 
-        if name is not None:
-            kwargs['Name'] = name
-
-        if value is not None:
-            kwargs['Value'] = value
-
         Widget.__init__(self, **kwargs)
+
+    @classmethod
+    def _getProps(self):
+        return Widget._getProps() + self._props
 
     def getDefaultValue(self):
         return DOM.getAttribute(self.getElement(), "defaultValue")
@@ -50,15 +57,15 @@ class Hidden(Widget):
 
     def setName(self, name):
         if name is None:
-            #throw new NullPointerException("Name cannot be null");
+            raise ValueError("Name cannot be null")
             console.error("Name cannot be null")
         elif len(name) == 0:
-            #throw new IllegalArgumentException("Name cannot be an empty string.");
+            raise ValueError("Name cannot be an empty string.")
             console.error("Name cannot be an empty string.")
         DOM.setAttribute(self.getElement(), "name", name)
 
     def setValue(self, value):
         DOM.setAttribute(self.getElement(), "value", value)
 
-Factory.registerClass('pyjamas.ui.Hidden', Hidden)
+Factory.registerClass('pyjamas.ui.Hidden', 'Hidden', Hidden)
 
