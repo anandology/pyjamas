@@ -295,6 +295,7 @@ PYJSLIB_BUILTIN_FUNCTIONS=frozenset((
     "TryElse",
     "sprintf",
     "get_pyjs_classtype",
+    "isUndefined",
     ))
 
 PYJSLIB_BUILTIN_CLASSES=[

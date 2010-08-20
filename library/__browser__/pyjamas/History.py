@@ -42,7 +42,7 @@ def init():
             $wnd.__historyToken = token;
             // TODO - move init back into History
             // this.onHistoryChanged(token);
-            pyjamas.History.onHistoryChanged(token);
+            @{{onHistoryChanged}}(token);
         }
 
         $wnd.setTimeout('__checkHistory()', 250);
@@ -72,8 +72,9 @@ def getToken():
     return $wnd.__historyToken;
     """)
 
-def newItem(historyToken):
+def newItem(_historyToken):
     JS("""
+    var historyToken = @{{_historyToken}};
     if(historyToken == "" || historyToken == null){
         historyToken = "#";
     }
