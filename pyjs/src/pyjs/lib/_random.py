@@ -1,8 +1,6 @@
-
 from __pyjamas__ import JS
-import pyjslib
 
-one = pyjslib.long(1)
+one = long(1)
 
 class Random(object):
     seed = None
@@ -16,7 +14,7 @@ class Random(object):
         }
         s = table.join("");
 """)
-        rand = pyjslib.long(s, 32)
+        rand = long(s, 32)
         mask = one.__lshift__(k).__sub__(one)
         return rand.__and__(mask)
 
