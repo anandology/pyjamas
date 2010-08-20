@@ -1,30 +1,30 @@
 def buttonClick(button):
     JS("""
-        var doc = button.ownerDocument;
+        var doc = @{{button}}.ownerDocument;
         if (doc != null) {
             var evt = doc.createEvent('MouseEvents');
             evt.initMouseEvent('click', true, true, null, 0, 0,
                                 0, 0, 0, false, false, false, false, 0, null);
-            button.dispatchEvent(evt);
+            @{{button}}.dispatchEvent(evt);
         }
     """)
 
 def compare(elem1, elem2):
     JS("""
-    if (!elem1 && !elem2) {
+    if (!@{{elem1}} && !@{{elem2}}) {
         return true;
-    } else if (!elem1 || !elem2) {
+    } else if (!@{{elem1}} || !@{{elem2}}) {
         return false;
     }
-	if (!elem1.isSameNode) {
-		return (elem1 == elem2);
+	if (!@{{elem1}}.isSameNode) {
+		return (@{{elem1}} == @{{elem2}});
 	}
-    return (elem1.isSameNode(elem2));
+    return (@{{elem1}}.isSameNode(@{{elem2}}));
     """)
 
 def eventGetButton(evt):
     JS("""
-    var button = evt.which;
+    var button = @{{evt}}.which;
     if(button == 2) {
         return 4;
     } else if (button == 3) {
@@ -62,15 +62,15 @@ def getAbsoluteLeft(elem):
     // getBoundingClientRect can be float: 73.1 instead of 74, see
     // gwt's workaround at user/src/com/google/gwt/dom/client/DOMImplMozilla.java:47
     // Please note, their implementation has 1px offset.
-    if (   typeof elem.getBoundingClientRect == 'function'  ) {
-        var left = Math.ceil(elem.getBoundingClientRect().left);
+    if (   typeof @{{elem}}.getBoundingClientRect == 'function'  ) {
+        var left = Math.ceil(@{{elem}}.getBoundingClientRect().left);
         
         return left  + $doc.body.scrollLeft + $doc.documentElement.scrollLeft;
     }
     // Older Firefox can use getBoxObjectFor
     else {
-        var left = $doc.getBoxObjectFor(elem).x;
-        var parent = elem.parentNode;
+        var left = $doc.getBoxObjectFor(@{{elem}}).x;
+        var parent = @{{elem}}.parentNode;
         while (parent) {
             if (parent.scrollLeft > 0) {
                 left = left -  parent.scrollLeft;
@@ -107,14 +107,14 @@ def getAbsoluteLeft(elem):
 def getAbsoluteTop(elem):
     JS("""
     // Firefox 3 expects getBoundingClientRect
-    if (   typeof elem.getBoundingClientRect == 'function'  ) {
-        var top = Math.ceil(elem.getBoundingClientRect().top);
+    if (   typeof @{{elem}}.getBoundingClientRect == 'function'  ) {
+        var top = Math.ceil(@{{elem}}.getBoundingClientRect().top);
         return top + $doc.body.scrollTop + $doc.documentElement.scrollTop;
     }
     // Older Firefox can use getBoxObjectFor
     else {
-        var top = $doc.getBoxObjectFor(elem).y;
-        var parent = elem.parentNode;
+        var top = $doc.getBoxObjectFor(@{{elem}}).y;
+        var parent = @{{elem}}.parentNode;
         while (parent) {
             if (parent.scrollTop > 0) {
                 top -= parent.scrollTop;
@@ -128,14 +128,14 @@ def getAbsoluteTop(elem):
 
 def getChildIndex(parent, child):
     JS("""
-    var count = 0, current = parent.firstChild;
+    var count = 0, current = @{{parent}}.firstChild;
     while (current) {
 		if (! current.isSameNode) {
 			if (current == child) {
 			return count;
 			}
 		}
-		else if (current.isSameNode(child)) {
+		else if (current.isSameNode(@{{child}})) {
             return count;
         }
         if (current.nodeType == 1) {
@@ -148,13 +148,14 @@ def getChildIndex(parent, child):
 
 def isOrHasChild(parent, child):
     JS("""
+    var child = @{{_child}};
     while (child) {
-        if ((!parent.isSameNode)) {
-			if (parent == child) {
+        if ((!@{{parent}}.isSameNode)) {
+			if (@{{parent}} == child) {
 				return true;
 			}
 		}
-		else if (parent.isSameNode(child)) {
+		else if (@{{parent}}.isSameNode(child)) {
             return true;
         }
         try {
@@ -174,15 +175,15 @@ def isOrHasChild(parent, child):
 
 def releaseCapture(elem):
     JS("""
-    if ((DOM.sCaptureElem != null) && DOM.compare(elem, DOM.sCaptureElem))
+    if ((DOM.sCaptureElem != null) && DOM.compare(@{{elem}}, DOM.sCaptureElem))
         DOM.sCaptureElem = null;
     
-	if (!elem.isSameNode) {
-		if (elem == $wnd.__captureElem) {
+	if (!@{{elem}}.isSameNode) {
+		if (@{{elem}} == $wnd.__captureElem) {
 			$wnd.__captureElem = null;
 		}
 	}
-	else if (elem.isSameNode($wnd.__captureElem)) {
+	else if (@{{elem}}.isSameNode($wnd.__captureElem)) {
         $wnd.__captureElem = null;
     }
     """)
@@ -196,16 +197,16 @@ def _init_mousewheel():
 
 def eventGetMouseWheelVelocityY(evt):
     JS("""
-    return evt.detail || 0;
+    return @{{evt}}.detail || 0;
     """)
 
 def sinkEventsMozilla(element, bits):
     JS("""
-    if (bits & 0x40000) {
-        element.addEventListener("DOMMouseScroll", $wnd.__dispatchEvent,
+    if (@{{bits}} & 0x40000) {
+        @{{element}}.addEventListener("DOMMouseScroll", $wnd.__dispatchEvent,
                                     false);
     } else {
-        element.removeEventListener("DOMMouseScroll", $wnd.__dispatchEvent,
+        @{{element}}.removeEventListener("DOMMouseScroll", $wnd.__dispatchEvent,
                                     false);
     }
     """)
