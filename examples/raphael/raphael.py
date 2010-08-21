@@ -54,7 +54,7 @@ class Raphael(Widget):
         """ Return the next colour to use in the spectrum.
         """
         JS("""
-           colour = this._canvas.getColor();
+           @{{colour}} = this._canvas.getColor();
         """)
         return colour
 
@@ -135,7 +135,7 @@ class Raphael(Widget):
             We return a RaphaelSetElement representing the set.
         """
         JS("""
-           self._element = this._canvas.set();
+           @{{self}}._element = this._canvas.set();
         """)
         return RaphaelSetElement(self._element)
 
@@ -455,12 +455,13 @@ class RaphaelElement:
             We return a dictionary with 'x', 'y', 'width' and 'height'
             elements.
         """
+	x = y = width = height = 0 #declared
         JS("""
            var bounds = this._element.getBBox();
-           var x = bounds.x;
-           var y = bounds.y;
-           var width = bounds.width;
-           var height = bounds.height;
+           @{{x}} = bounds.x;
+           @{{y}} = bounds.y;
+           @{{width}} = bounds.width;
+           @{{height}} = bounds.height;
         """)
         return {'x'      : x,
                 'y'      : y,

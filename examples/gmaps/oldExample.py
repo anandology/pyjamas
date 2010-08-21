@@ -30,9 +30,9 @@ def jsOpts(options):
     JS("return {};")
 
 def getStart(ui):
-    JS("return ui.values[0]")
+    JS("return @{{ui}}.values[0]")
 def getEnd(ui):
-    JS("return ui.values[1]")
+    JS("return @{{ui}}.values[1]")
 
 class Greed:
     def onModuleLoad(self):
