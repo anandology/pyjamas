@@ -49,7 +49,7 @@ class UnitTest:
         Timer(10, self)
 
     def onTimer(self, tid):
-        for i in range(4):
+        for i in range(1):
             if self.test_idx >= len(self.test_methods):
                 self.displayStats()
                 self.test_idx = 'DONE'
@@ -99,8 +99,23 @@ class UnitTest:
         else:
             msg = str(msg)
 
-        title="<b>" + self.getNameFmt("Test failed") + "</b>"
-        writebr(title + msg)
+        octothorp = msg.find("#")
+        has_bugreport = octothorp >= 0 and msg[octothorp+1].isdigit()
+        if has_bugreport:
+            name_fmt = "Known issue"
+            bg_colour="#ffc000"
+            fg_colour="#000000"
+        else:
+            bg_colour="#ff8080"
+            fg_colour="#000000"
+            name_fmt = "Test failed"
+        output="<table style='padding-left:20px;padding-right:20px;' cellpadding=2 width=100%><tr><td bgcolor='" + bg_colour + "'><font color='" + fg_colour + "'>"
+        write(output)
+        title="<b>" + self.getNameFmt(name_fmt) + "</b>"
+        write(title + msg)
+        output="</font></td></tr></table>"
+        output+= "\n"
+        write(output)
         if sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
             from __pyjamas__ import JS
             JS("""if (typeof console != 'undefined') {
