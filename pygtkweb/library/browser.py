@@ -18,7 +18,7 @@ class Element:
     def __init__(self, tag=None, element=None):
         if tag is not None:
             JS('''
-            this.element = $doc.createElement(tag);
+            this.element = $doc.createElement(@{{tag}});
             ''')
         elif element is not None:
             self.element = element
@@ -30,12 +30,12 @@ class Element:
 
     def append(self, element):
         JS('''
-        this.element.appendChild(element.element);
+        this.element.appendChild(@{{element}}.element);
         ''')
 
     def prepend(self, element):
         JS('''
-        this.element.insertBefore(element.element, self.element.firstChild);
+        this.element.insertBefore(@{{element}}.element, @{{self}}.element.firstChild);
         ''')
 
     def getX(self):
@@ -82,7 +82,7 @@ class Element:
 
     def setStyle(self, property, value):
         JS('''
-        this.element.style[property] = value;
+        this.element.style[@{{property}}] = @{{value}};
         ''')
 
     def setPxStyle(self, property, value):
@@ -93,24 +93,24 @@ class Element:
 
     def getStyle(self, property):
         JS('''
-        return this.element.style[property];
+        return this.element.style[@{{property}}];
         ''')
 
     def setProperty(self, property, value):
         JS('''
-        //this.element.setAttribute(property,value);
-        this.element[property] = value;
+        //this.element.setAttribute(@{{property}},@{{value}});
+        this.element[@{{property}}] = @{{value}};
         ''')
 
     def getProperty(self, property):
         JS('''
-        //return this.element.getAttribute(property);
-        return this.element[property];
+        //return this.element.getAttribute(@{{property}});
+        return this.element[@{{property}}];
         ''')
 
     def setHTML(self, content):
         JS('''
-        this.element.innerHTML = content;
+        this.element.innerHTML = @{{content}};
         ''')
 
     def getHTML(self):
@@ -129,16 +129,16 @@ class Element:
             else if (e.srcElement) targ = e.srcElement;
             if (targ.nodeType == 3) targ = targ.parentNode;
             if (targ.__ref)
-                object.dom_event(e, targ.__ref);
+                @{{object}}.dom_event(e, targ.__ref);
             else
-                object.dom_event(e, null);
+                @{{object}}.dom_event(e, null);
         };
         ''')
         name = name[0]
         self.activeEvents.append((name, object))
         JS('''
-        var old_callback = this.element['on'+name];
-        this.element['on'+name] = function(e){if(old_callback){old_callback(e);}tmp(e);};
+        var old_callback = this.element['on'+@{{name}}];
+        this.element['on'+@{{name}}] = function(e){if(old_callback){old_callback(e);}tmp(e);};
         ''')
 
 class Document:
@@ -153,17 +153,17 @@ class Document:
     @staticmethod
     def append(element):
         JS('''
-        $doc.body.appendChild(element.element);
+        $doc.body.appendChild(@{{element}}.element);
         ''')
 
     @staticmethod
     def setContent(message):
         JS('''
-        $doc.body.innerHTML = message;
+        $doc.body.innerHTML = @{{message}};
         ''')
 
     @staticmethod
     def setTitle(title):
         JS('''
-        $doc.title = title;
+        $doc.title = @{{title}};
         ''')

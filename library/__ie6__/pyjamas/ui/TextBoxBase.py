@@ -33,8 +33,8 @@ class TextBoxBase:
             var elem = this.getElement();
             var tr = elem.createTextRange();
             tr.collapse(true);
-            tr.moveStart('character', pos);
-            tr.moveEnd('character', length);
+            tr.moveStart('character', @{{pos}});
+            tr.moveEnd('character', @{{length}});
             tr.select();
         }
         catch (e) {

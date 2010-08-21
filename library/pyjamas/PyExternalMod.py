@@ -30,17 +30,17 @@ class PyjamasExternalModule:
 
     def __encodeJSON(self, obj):
         JS('''
-        var t = typeof(obj);
-        if(obj==null) {
+        var t = typeof(@{{obj}});
+        if(@{{obj}}==null) {
             return 'null';
         }else if(t=='number') {
-            return ''+obj;
+            return ''+@{{obj}};
         }else if(t=='string'){
-            return '"'+obj+'"'
-        }else if(isinstance([obj,list],{})) {
+            return '"'+@{{obj}}+'"'
+        }else if(isinstance([@{{obj}},list],{})) {
             var parts = [];
-            for(var i=0; i<obj.length; i++) {
-                parts.append([ self.__encodeJSON([obj[i]],{}) ],{});
+            for(var i=0; i<@{{obj}}.length; i++) {
+                parts.append([ @{{self}}.__encodeJSON([@{{obj}}[i]],{}) ],{});
             }
             return "[" + ','.join([parts],{}) + "]";
         }else{
@@ -51,8 +51,8 @@ class PyjamasExternalModule:
     def __parseJSON(self, str):
         JS(r"""
         try {
-            return (/^("(\\.|[^"\\\n\r])*?"|[,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t])+?$/.test(str)) &&
-                eval('(' + str + ')');
+            return (/^("(\\.|[^"\\\n\r])*?"|[,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t])+?$/.test(@{{str}})) &&
+                eval('(' + @{{str}} + ')');
         } catch (e) {
             return false;
         }
@@ -65,5 +65,5 @@ class PyjamasExternalModule:
             res = PyjamasExternalModule.http.syncPost(self.base+'/obj/handler',req)
             return self.__parseJSON(res)['result']
         JS("""
-        self[method] = inner;
+        @{{self}}[@{{method}}] = @{{inner}};
         """) 

@@ -2,10 +2,10 @@ class FormPanel:
     def getTextContents(self, iframe):
         JS("""
         try {
-            if (!iframe.contentWindow.document)
+            if (!@{{iframe}}.contentWindow.document)
                 return null;
         
-            return iframe.contentWindow.document.body.innerText;
+            return @{{iframe}}.contentWindow.document.body.innerText;
         } catch (e) {
             return null;
         }
@@ -13,28 +13,28 @@ class FormPanel:
 
     def hookEvents(self, iframe, form, listener):
         JS("""
-        if (iframe) {
-            iframe.onreadystatechange = function() {
-                if (!iframe.__formAction)
+        if (@{{iframe}}) {
+            @{{iframe}}.onreadystatechange = function() {
+                if (!@{{iframe}}.__formAction)
                     return;
         
-                if (iframe.readyState == 'complete') {
-                    listener.onFrameLoad();
+                if (@{{iframe}}.readyState == 'complete') {
+                    @{{listener}}.onFrameLoad();
                 }
             };
         }
 
-        form.onsubmit = function() {
-            if (iframe)
-                iframe.__formAction = form.action;
-            return listener.onFormSubmit();
+        @{{form}}.onsubmit = function() {
+            if (@{{iframe}})
+                @{{iframe}}.__formAction = @{{form}}.action;
+            return @{{listener}}.onFormSubmit();
         };
         """)
 
     def unhookEvents(self, iframe, form):
         JS("""
-        if (iframe)
-            iframe.onreadystatechange = null;
-        form.onsubmit = null;
+        if (@{{iframe}})
+            @{{iframe}}.onreadystatechange = null;
+        @{{form}}.onsubmit = null;
         """)
 
