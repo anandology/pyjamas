@@ -22,6 +22,7 @@ if __name__ == '__main__':
 
 from pyjamas import DOM
 from pyjamas.ui.Widget import Widget
+from ClickListener import ClickHandler
 
 class _Attribute(object):
     "Attribute definition class with method set and remove"
@@ -55,7 +56,7 @@ class _Attributes(object):
         self.rev = _Attribute(element, 'rev', 'link-types', 'ci')
         self.charset = _Attribute(element, 'charset', 'charset', 'ci')
         
-class Anchor(Widget, _Attributes):
+class Anchor(Widget, ClickHandler, _Attributes):
     """Anchor attribute, use this to create the equivalent of the <a></a> tag.
     The attributes: name, href. hreflang, type, rel, rev, charset are in the
     namespace of the Anchor instance.
@@ -71,6 +72,7 @@ class Anchor(Widget, _Attributes):
         self.setElement(element)
         self.widget = None
         Widget.__init__(self, **kwargs)
+        ClickHandler.__init__(self)
         
     def setWidget(self, widget):
         """ Add child widget
