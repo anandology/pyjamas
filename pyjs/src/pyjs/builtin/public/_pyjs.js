@@ -490,3 +490,91 @@ function $pyjs_type(clsname, bases, methods)
     return $pyjs__class_function(cls_instance, obj, bases);
 }
 
+/* creates local variables as an array based on method parameter specification
+   and the caller's arguments (in args).
+   this function mirrors exactly what Translator._instance_method_init
+   produces (it has to).
+ */
+function $pyjs_instance_create_locals(inst, args, defaults_count,
+                                      has_args, has_kwargs)
+{
+    var $l = {};
+    var start = 0; /* XXX something to do with defaults_count */
+    var end;
+    var callee_args = args.callee.__args__[0];
+    var varargname = callee_args[0]; 
+    var kwargname = callee_args[1]; 
+    var arg_names = callee_args.slice(2); 
+
+    if (inst.__is_instance__ === true) {
+        if (has_kwargs) {
+            end = args.length-1;
+            start = start - 1;
+        } else {
+            end = args.length;
+        }
+        $l.self = inst;
+        if (varargname !== null) { /* if node.varargs: */
+            /* self._varargs_handler(varargname, maxargs1) */
+            $l[varargname] = pyjslib['tuple']($pyjs_array_slice.call(args,
+                                                               maxargs1, end));
+        }
+
+        if (kwargname !== null) { /* if node.kwargs: */
+            $l[kwargname] = args.length >= maxargs1 ? args[args.length-1] :
+                                                      args[args.length];
+            if (typeof $l.kwargs != 'object' ||
+                $l.kwargs.__name__ != 'dict' ||
+                typeof $l.kwargs.$pyjs_is_kwarg == 'undefined') {
+                if (varargname !== null) { /* if node.varargs: */
+                    if (typeof $l.kwargs != 'undefined') {
+                        args.__array.push($l.kwargs);
+                    }
+                }
+                $l.kwargs = args[args.length+1];
+            } else {
+                delete $l.kwargs['$pyjs_is_kwarg'];
+            }
+        }
+        /* TODO: if options.function_argument_checking */
+        /*
+         */
+    } else {
+        /* XXX TODO */
+        $l.self = args[0];
+        $l.arg1 = args[1];
+        $l.arg2 = args[2];
+        $l.args = pyjslib['tuple']($pyjs_array_slice.call(args,3,args.length-1));
+
+        $l.kwargs = args.length >= 4 ? args[args.length-1] : args[args.length];
+        if (typeof $l.kwargs != 'object' || $l.kwargs.__name__ != 'dict' || typeof $l.kwargs.$pyjs_is_kwarg == 'undefined') {
+            if (typeof $l.kwargs != 'undefined') $l.args.__array.push($l.kwargs);
+            $l.kwargs = args[args.length+1];
+        } else {
+            delete $l.kwargs['$pyjs_is_kwarg'];
+        }
+    }
+    if (kwargname !== null && typeof $l.kwargs == 'undefined') {
+        $l.kwargs = pyjslib['__empty_dict']();
+        /* for arg_name in arg_names[1:]: */
+        if (typeof $l.arg2 != 'undefined') {
+            if ($l.arg2 !== null && typeof $l.arg2['$pyjs_is_kwarg'] != 'undefined') {
+                $l.kwargs = $l.arg2;
+                $l.arg2 = args[3];
+            }
+        } else 				if (typeof $l.arg1 != 'undefined') {
+            if ($l.arg1 !== null && typeof $l.arg1['$pyjs_is_kwarg'] != 'undefined') {
+                $l.kwargs = $l.arg1;
+                $l.arg1 = args[3];
+            }
+        } else 				if (typeof $l.self != 'undefined') {
+            if ($l.self !== null && typeof $l.self['$pyjs_is_kwarg'] != 'undefined') {
+                $l.kwargs = $l.self;
+                $l.self = args[3];
+            }
+        } else {
+        }
+    }
+    if (typeof $l.arg2 == 'undefined') $l.arg2=args.callee.__args__[4][1];
+}
+

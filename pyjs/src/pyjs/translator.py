@@ -1629,11 +1629,11 @@ if (this.__is_instance__ === true) {\
 """ % (lpself, kwargname, maxargs1), output=output)
             s = self.spacing()
             self.w( """\
-%(s)sif (typeof %(lp)s%(kwargname)s != 'object' || %(kwargname)s.__name__ != 'dict' || typeof %(kwargname)s.$pyjs_is_kwarg == 'undefined') {\
+%(s)sif (typeof %(lp)s%(kwargname)s != 'object' || %(lp)s%(kwargname)s.__name__ != 'dict' || typeof %(lp)s%(kwargname)s.$pyjs_is_kwarg == 'undefined') {\
 """ % locals(), output=output)
             if node.varargs:
                 self.w( """\
-%(s)s\tif (typeof %(lp)s%(kwargname)s != 'undefined') %(varargname)s.__array.push(%(lp)s%(kwargname)s);\
+%(s)s\tif (typeof %(lp)s%(kwargname)s != 'undefined') %(lp)s%(varargname)s.__array.push(%(lp)s%(kwargname)s);\
 """ % locals(), output=output)
             self.w( """\
 %(s)s\t%(lp)s%(kwargname)s = arguments[arguments.length+1];
@@ -1713,7 +1713,13 @@ if ($pyjs.options.arg_count && %s) $pyjs__exception_func_param(arguments.callee.
         s = self.spacing()
         if self.create_locals:
             lp = "$l."
+            lpdec = ""
             self.w(s + "var $l = {};")
+            arg_idx = 0
+            for arg_name in arg_names:
+                self.w( s + """%s%s = arguments[%d];""" % \
+                    (lp, arg_name, arg_idx), output=output)
+                arg_idx += 1
         else:
             lpdec = "var "
             lp = ""
@@ -1732,7 +1738,7 @@ if ($pyjs.options.arg_count && %s) $pyjs__exception_func_param(arguments.callee.
 """ % (argcount, minargs, maxargsstr), output=output)
 
         if node.varargs:
-            self._varargs_handler(node, varargname, maxargs, lpdec)
+            self._varargs_handler(node, varargname, maxargs, lp)
 
         if node.kwargs:
             self.w( self.spacing() + """\
