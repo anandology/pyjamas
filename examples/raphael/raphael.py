@@ -360,10 +360,10 @@ class RaphaelElement:
                 scale CSV
                 src string (URL)
                 stroke colour
-                stroke-dasharray string [“-”, “.”, “-.”, “-..”, “. ”, “- ”,
-                                         “--”, “- .”, “--.”, “--..”]
-                stroke-linecap string [“butt”, “square”, “round”, “miter”]
-                stroke-linejoin string [“butt”, “square”, “round”, “miter”]
+                stroke-dasharray string ['-', '.', '-.', '-..', '. ', '- ',
+                                         '--', '- .', '--.', '--..']
+                stroke-linecap string ['butt', 'square', 'round', 'miter']
+                stroke-linejoin string ['butt', 'square', 'round', 'miter']
                 stroke-miterlimit number
                 stroke-opacity number
                 stroke-width number
