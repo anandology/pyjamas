@@ -252,15 +252,16 @@ class ClassTest(UnitTest):
         class SubclassedInt(int): pass
         class SubclassedFloat(float): pass
         try:
-            self.assertEqual(str(SubclassedString("string")), "string")
+            self.assertEqual(str(SubclassedString("string")), "string", "#484")
         except:
             self.fail("Could not instantiate subclassed string, bug #484")
         try:
-            self.assertEqual(str(SubclassedInt(1)), "1")
+            v = str(SubclassedInt(1))
+            self.assertEqual(v, "1", "bug #484 - %s != '1'" % v)
         except:
             self.fail("Could not instantiate subclassed int")
         try:
-            self.assertEqual(str(SubclassedFloat(1.1)), "1.1")
+            self.assertEqual(str(SubclassedFloat(1.1)), "1.1", "#484")
         except:
             self.fail("Could not instantiate subclassed float")
 
@@ -327,10 +328,10 @@ class ClassTest(UnitTest):
             m = ExampleClass.oldIdiomStaticMethod("middle")
             self.assertEqual(m,"beforemiddleafter")
         except TypeError:
-            self.fail("Issue 415 - Old idiom for static methods improperly checks first argument type")
+            self.fail("Issue #415 - Old idiom for static methods improperly checks first argument type")
         except:
             exc = sys.exc_info()
-            self.fail("Issue 415?: %s" % exc[1])
+            self.fail("Issue #415?: %s" % exc[1])
             print sys.trackstackstr()
 
     def test__new__Method(self):
@@ -338,7 +339,7 @@ class ClassTest(UnitTest):
         self.assertEqual(c.__class__.__name__, 'ObjectClass')
         self.assertEqual(c.prop, 1)
         c = OtherSubclass1()
-        self.assertEqual(c.__class__.__name__, 'ObjectClass', "Issue 414: __new__ method on superclass not called")
+        self.assertEqual(c.__class__.__name__, 'ObjectClass', "Issue #414: __new__ method on superclass not called")
         c = OtherClass2()
         self.assertEqual(c.__class__.__name__, 'OtherClass2')
         try:
@@ -351,12 +352,12 @@ class ClassTest(UnitTest):
             c = OtherClass3(41, 42)
             self.assertTrue(True)
         except:
-            self.fail("Issue 417: __new__ method fails for lack of arguments")
-        self.assertEqual(c.y if hasattr(c,"y") else 0, 42, "Issue 417: __new__ method not passed constructor arguments.")
+            self.fail("Issue #417: __new__ method fails for lack of arguments")
+        self.assertEqual(c.y if hasattr(c,"y") else 0, 42, "Issue #417: __new__ method not passed constructor arguments.")
 
         try:
             c = OtherClass3()
-            self.fail("Issue 418: __new__ method doesn't fail for lack of arguments")
+            self.fail("Issue #418: __new__ method doesn't fail for lack of arguments")
         except:
             self.assertTrue(True)
         try:
