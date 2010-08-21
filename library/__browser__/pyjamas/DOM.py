@@ -18,16 +18,16 @@ def init():
     // Set up capture event dispatchers.
     $wnd.__dispatchCapturedMouseEvent = function(evt) {
         if ($wnd.__dispatchCapturedEvent(evt)) {
-            var cap = DOM.getCaptureElement();
+            var cap = @{{getCaptureElement}}();
             if (cap && cap.__listener) {
-                DOM.dispatchEvent(evt, cap, cap.__listener);
+                @{{dispatchEvent}}(evt, cap, cap.__listener);
                 evt.stopPropagation();
             }
         }
     };
 
     $wnd.__dispatchCapturedEvent = function(evt) {
-        if (!DOM.previewEvent(evt)) {
+        if (!@{{previewEvent}}(evt)) {
             evt.stopPropagation();
             evt.preventDefault();
             return false;
@@ -39,17 +39,17 @@ def init():
     $wnd.addEventListener(
         'mouseout',
         function(evt){
-            var cap = DOM.getCaptureElement();
+            var cap = @{{getCaptureElement}}();
             if (cap) {
                 if (!evt.relatedTarget) {
                     // When the mouse leaves the window during capture,
                     // release capture and synthesize an 'onlosecapture' event.
-                    DOM.sCaptureElem = null;
+                    @{{sCaptureElem}} = null;
                     if (cap.__listener) {
                         var lcEvent = $doc.createEvent('UIEvent');
                         lcEvent.initUIEvent('losecapture', false, false,
                                              $wnd, 0);
-                        DOM.dispatchEvent(lcEvent, cap, cap.__listener);
+                        @{{dispatchEvent}}(lcEvent, cap, cap.__listener);
                     }
                 }
             }
@@ -81,7 +81,7 @@ def init():
         }
     
         if (listener) {
-            DOM.dispatchEvent(evt, curElem, listener);
+            @{{dispatchEvent}}(evt, curElem, listener);
         }
     };
     """)
@@ -98,23 +98,23 @@ def addEventPreview(preview):
 
 def buttonClick(button):
     JS("""
-    button.click();
+    @{{button}}.click();
     """)
 
 def compare(elem1, elem2):
     JS("""
-    return (elem1 == elem2);
+    return (@{{elem1}} == @{{elem2}});
     """)
 
 def createElement(tag):
     JS("""
-    return $doc.createElement(tag);
+    return $doc.createElement(@{{tag}});
     """)
 
 def createInputElement(elementType):
     JS("""
     var e = $doc.createElement("INPUT");
-    e.type = elementType;
+    e.type = @{{elementType}};
     return e;
     """)
 
@@ -122,33 +122,34 @@ def createInputRadio(group):
     JS("""
     var elem = $doc.createElement("INPUT");
     elem.type = 'radio';
-    elem.name = group;
+    elem.name = @{{group}};
     return elem;
     """)
 
 def eventGetFromElement(evt):
     JS("""
-    return evt.fromElement ? evt.fromElement : null;
+    return @{{evt}}.fromElement ? @{{evt}}.fromElement : null;
     """)
 
 def eventGetKeyCode(evt):
     JS("""
-    return evt.which ? evt.which : (evt.keyCode ? evt.keyCode : 0);
+    return @{{evt}}.which ? @{{evt}}.which :
+            (@{{evt}}.keyCode ? @{{evt}}.keyCode : 0);
     """)
 
 def eventGetTarget(event):
     JS("""
-    return event.target ? event.target : null;
+    return @{{event}}.target ? @{{event}}.target : null;
     """)
 
 def eventGetToElement(evt):
     JS("""
-    return evt.relatedTarget ? evt.relatedTarget : null;
+    return @{{evt}}.relatedTarget ? @{{evt}}.relatedTarget : null;
     """)
 
 def eventGetTypeInt(event):
     JS("""
-    switch (event.type) {
+    switch (@{{event}}.type) {
       case "blur": return 0x01000;
       case "change": return 0x00400;
       case "click": return 0x00001;
@@ -174,11 +175,12 @@ def eventGetTypeInt(event):
 
 def eventToString(evt):
     JS("""
-    return evt.toString();
+    return @{{evt}}.toString();
     """)
 
-def getAbsoluteLeft(elem):
+def getAbsoluteLeft(_elem):
     JS("""
+    var elem = @{{_elem}};
     var left = 0;
     while (elem) {
       left += elem.offsetLeft - elem.scrollLeft;
@@ -187,8 +189,9 @@ def getAbsoluteLeft(elem):
     return left + $doc.body.scrollLeft;
     """)
 
-def getAbsoluteTop(elem):
+def getAbsoluteTop(_elem):
     JS("""
+    var elem = @{{_elem}};
     var top = 0;
     while (elem) {
       top += elem.offsetTop - elem.scrollTop;
@@ -199,7 +202,7 @@ def getAbsoluteTop(elem):
 
 def getAttribute(elem, attr):
     JS("""
-    var ret = elem[attr];
+    var ret = @{{elem}}[@{{attr}}];
     return (ret == null) ? null : String(ret);
     """)
 
@@ -208,7 +211,7 @@ def getElemAttribute(elem, attr):
 
 def getBooleanAttribute(elem, attr):
     JS("""
-    return !!elem[attr];
+    return !!@{{elem}}[@{{attr}}];
     """)
 
 def getCaptureElement():
@@ -219,11 +222,11 @@ def getChild(elem, index):
     Get a child of the DOM element by specifying an index.
     """
     JS("""
-    var count = 0, child = elem.firstChild;
+    var count = 0, child = @{{elem}}.firstChild;
     while (child) {
       var next = child.nextSibling;
       if (child.nodeType == 1) {
-        if (index == count)
+        if (@{{index}} == count)
           return child;
         ++count;
       }
@@ -239,7 +242,7 @@ def getChildCount(elem):
     over all the children of that element and counts them.
     """
     JS("""
-    var count = 0, child = elem.firstChild;
+    var count = 0, child = @{{elem}}.firstChild;
     while (child) {
       if (child.nodeType == 1)
       ++count;
@@ -255,9 +258,9 @@ def getChildIndex(parent, toFind):
     This performs a linear search.
     """
     JS("""
-    var count = 0, child = parent.firstChild;
+    var count = 0, child = @{{parent}}.firstChild;
     while (child) {
-        if (child == toFind)
+        if (child == @{{toFind}})
             return count;
         if (child.nodeType == 1)
             ++count;
@@ -272,7 +275,7 @@ def getElementById(id):
     Return the element in the document's DOM tree with the given id.
     """
     JS("""
-    var elem = $doc.getElementById(id);
+    var elem = $doc.getElementById(@{{id}});
     return elem ? elem : null;
     """)
 
@@ -281,7 +284,7 @@ def getEventListener(element):
     See setEventListener for more information.
     """
     JS("""
-    return element.__listener;
+    return @{{element}}.__listener;
     """)
 
 def getEventsSunk(element):
@@ -290,11 +293,11 @@ def getEventsSunk(element):
     sinkEvents() for more information.
     """
     from __pyjamas__ import INT
-    return INT(JS("""element.__eventBits ? element.__eventBits : 0"""))
+    return INT(JS("@{{element}}.__eventBits ? @{{element}}.__eventBits : 0"))
 
 def getFirstChild(elem):
     JS("""
-    var child = elem.firstChild;
+    var child = @{{elem}}.firstChild;
     while (child && child.nodeType != 1)
       child = child.nextSibling;
     return child ? child : null;
@@ -302,7 +305,7 @@ def getFirstChild(elem):
 
 def getInnerHTML(element):
     JS("""
-    var ret = element.innerHTML;
+    var ret = @{{element}}.innerHTML;
     return (ret == null) ? null : ret;
     """)
 
@@ -310,10 +313,10 @@ def getInnerText(element):
     JS("""
     // To mimic IE's 'innerText' property in the W3C DOM, we need to recursively
     // concatenate all child text nodes (depth first).
-    var text = '', child = element.firstChild;
+    var text = '', child = @{{element}}.firstChild;
     while (child) {
       if (child.nodeType == 1){ // 1 == Element node
-        text += DOM.getInnerText(child);
+        text += @{{getInnerText}}(child);
       } else if (child.nodeValue) {
         text += child.nodeValue;
       }
@@ -324,7 +327,7 @@ def getInnerText(element):
 
 def getIntAttribute(elem, attr):
     JS("""
-    var i = parseInt(elem[attr]);
+    var i = parseInt(@{{elem}}[@{{attr}}]);
     if (!i) {
         return 0;
     }
@@ -333,7 +336,7 @@ def getIntAttribute(elem, attr):
 
 def getIntStyleAttribute(elem, attr):
     JS("""
-    var i = parseInt(elem.style[attr]);
+    var i = parseInt(@{{elem}}.style[@{{attr}}]);
     if (!i) {
         return 0;
     }
@@ -342,7 +345,7 @@ def getIntStyleAttribute(elem, attr):
 
 def getNextSibling(elem):
     JS("""
-    var sib = elem.nextSibling;
+    var sib = @{{elem}}.nextSibling;
     while (sib && sib.nodeType != 1)
       sib = sib.nextSibling;
     return sib ? sib : null;
@@ -350,7 +353,7 @@ def getNextSibling(elem):
 
 def getParent(elem):
     JS("""
-    var parent = elem.parentNode;
+    var parent = @{{elem}}.parentNode;
     if(parent == null) {
         return null;
     }
@@ -361,16 +364,16 @@ def getParent(elem):
 
 def getStyleAttribute(elem, attr):
     JS("""
-    var ret = elem.style[attr];
+    var ret = @{{elem}}.style[@{{attr}}];
     return (ret == null) ? null : ret;
     """)
 
 def insertChild(parent, toAdd, index):
     JS("""
-    var count = 0, child = parent.firstChild, before = null;
+    var count = 0, child = @{{parent}}.firstChild, before = null;
     while (child) {
       if (child.nodeType == 1) {
-        if (count == index) {
+        if (count == @{{index}}) {
           before = child;
           break;
         }
@@ -379,7 +382,7 @@ def insertChild(parent, toAdd, index):
       child = child.nextSibling;
     }
 
-    parent.insertBefore(toAdd, before);
+    @{{parent}}.insertBefore(@{{toAdd}}, before);
     """)
 
 def iterChildren(elem):
@@ -388,16 +391,16 @@ def iterChildren(elem):
     DOM node.
     """
     JS("""
-    var parent = elem;
-    var child = elem.firstChild;
+    var parent = @{{elem}};
+    var child = @{{elem}}.firstChild;
     var lastChild = null;
     return {
         'next': function() {
             if (child == null) {
-                throw pyjslib.StopIteration;
+                throw @{{StopIteration}};
             }
             lastChild = child;
-            child = DOM.getNextSibling(child);
+            child = @{{getNextSibling}}(child);
             return lastChild;
         },
         'remove': function() {        
@@ -416,19 +419,19 @@ def walkChildren(elem):
     of all the children of the given element.
     """
     JS("""
-    var parent = elem;
-    var child = DOM.getFirstChild(elem);
+    var parent = @{{elem}};
+    var child = @{{getFirstChild}}(@{{elem}});
     var lastChild = null;
     var stack = [];
     var parentStack = [];
     return {
         'next': function() {
             if (child == null) {
-                throw pyjslib.StopIteration;
+                throw @{{StopIteration}};
             }
             lastChild = child;
-            var firstChild = DOM.getFirstChild(child);
-            var nextSibling = DOM.getNextSibling(child);
+            var firstChild = @{{getFirstChild}}(child);
+            var nextSibling = @{{getNextSibling}}(child);
             if(firstChild != null) {
                if(nextSibling != null) {
                    stack.push(nextSibling);
@@ -457,8 +460,9 @@ def walkChildren(elem):
    
 def releaseCapture(elem):
     JS("""
-    if ((DOM.sCaptureElem != null) && DOM.compare(elem, DOM.sCaptureElem))
-        DOM.sCaptureElem = null;
+    if ((@{{sCaptureElem}} != null) 
+            && @{{compare}}(@{{elem}}, @{{sCaptureElem}}))
+        @{{sCaptureElem}} = null;
     """)
 
 def removeEventPreview(preview):
@@ -466,15 +470,15 @@ def removeEventPreview(preview):
 
 def scrollIntoView(elem):
     JS("""
-    var left = elem.offsetLeft, top = elem.offsetTop;
-    var width = elem.offsetWidth, height = elem.offsetHeight;
+    var left = @{{elem}}.offsetLeft, top = @{{elem}}.offsetTop;
+    var width = @{{elem}}.offsetWidth, height = @{{elem}}.offsetHeight;
     
-    if (elem.parentNode != elem.offsetParent) {
-        left -= elem.parentNode.offsetLeft;
-        top -= elem.parentNode.offsetTop;
+    if (@{{elem}}.parentNode != @{{elem}}.offsetParent) {
+        left -= @{{elem}}.parentNode.offsetLeft;
+        top -= @{{elem}}.parentNode.offsetTop;
     }
 
-    var cur = elem.parentNode;
+    var cur = @{{elem}}.parentNode;
     while (cur && (cur.nodeType == 1)) {
         if ((cur.style.overflow == 'auto') || (cur.style.overflow == 'scroll')) {
             if (left < cur.scrollLeft) {
@@ -505,22 +509,22 @@ def scrollIntoView(elem):
 
 def removeAttribute(element, attribute):
     JS("""
-    delete element[attribute];
+    delete @{{element}}[@{{attribute}}];
     """)
 
 def setAttribute(element, attribute, value):
     JS("""
-    element[attribute] = value;
+    @{{element}}[@{{attribute}}] = @{{value}};
     """)
 
 def setBooleanAttribute(elem, attr, value):
     JS("""
-    elem[attr] = value;
+    @{{elem}}[@{{attr}}] = @{{value}};
     """)
 
 def setCapture(elem):
     JS("""
-    DOM.sCaptureElem = elem;
+    @{{sCaptureElem}} = @{{elem}};
     """)
 
 def setEventListener(element, listener):
@@ -531,30 +535,30 @@ def setEventListener(element, listener):
     use sinkEvents().
     """
     JS("""
-    element.__listener = listener;
+    @{{element}}.__listener = @{{listener}};
     """)
 
 def setInnerHTML(element, html):
-    JS("""element.innerHTML = html || "";""")
+    JS("""@{{element}}.innerHTML = @{{html}} || "";""")
 
 def setInnerText(elem, text):
     JS("""
     // Remove all children first.
-    while (elem.firstChild) {
-        elem.removeChild(elem.firstChild);
+    while (@{{elem}}.firstChild) {
+        @{{elem}}.removeChild(@{{elem}}.firstChild);
     }
     // Add a new text node.
-    elem.appendChild($doc.createTextNode(text));
+    @{{elem}}.appendChild($doc.createTextNode(@{{text}}));
     """)
 
 def setIntAttribute(elem, attr, value):
     JS("""
-    elem[attr] = value;
+    @{{elem}}[@{{attr}}] = @{{value}};
     """)
 
 def setIntStyleAttribute(elem, attr, value):
     JS("""
-    elem.style[attr] = value;
+    @{{elem}}.style[@{{attr}}] = @{{value}};
     """)
 
 def setOptionText(select, text, index):
@@ -563,7 +567,7 @@ def setOptionText(select, text, index):
 
 def setStyleAttribute(element, attr, value):
     JS("""
-    element.style[attr] = value;
+    @{{element}}.style[@{{attr}}] = @{{value}};
     """)
 
 def sinkEvents(element, bits):
@@ -574,33 +578,33 @@ def sinkEvents(element, bits):
     @param bits: A combination of bits; see ui.Event for bit values
     """
     JS("""
-    element.__eventBits = bits;
-    
-    element.onclick    = (bits & 0x00001) ? $wnd.__dispatchEvent : null;
-    element.ondblclick  = (bits & 0x00002) ? $wnd.__dispatchEvent : null;
-    element.onmousedown   = (bits & 0x00004) ? $wnd.__dispatchEvent : null;
-    element.onmouseup    = (bits & 0x00008) ? $wnd.__dispatchEvent : null;
-    element.onmouseover   = (bits & 0x00010) ? $wnd.__dispatchEvent : null;
-    element.onmouseout  = (bits & 0x00020) ? $wnd.__dispatchEvent : null;
-    element.onmousemove   = (bits & 0x00040) ? $wnd.__dispatchEvent : null;
-    element.onkeydown    = (bits & 0x00080) ? $wnd.__dispatchEvent : null;
-    element.onkeypress  = (bits & 0x00100) ? $wnd.__dispatchEvent : null;
-    element.onkeyup    = (bits & 0x00200) ? $wnd.__dispatchEvent : null;
-    element.onchange      = (bits & 0x00400) ? $wnd.__dispatchEvent : null;
-    element.onfocus    = (bits & 0x00800) ? $wnd.__dispatchEvent : null;
-    element.onblur      = (bits & 0x01000) ? $wnd.__dispatchEvent : null;
-    element.onlosecapture = (bits & 0x02000) ? $wnd.__dispatchEvent : null;
-    element.onscroll      = (bits & 0x04000) ? $wnd.__dispatchEvent : null;
-    element.onload      = (bits & 0x08000) ? $wnd.__dispatchEvent : null;
-    element.onerror    = (bits & 0x10000) ? $wnd.__dispatchEvent : null;
-    element.oncontextmenu = (bits & 0x20000) ? $wnd.__dispatchEvent : null;
-    element.onmousewheel = (bits & 0x40000) ? $wnd.__dispatchEvent : null;
+@{{element}}.__eventBits = @{{bits}};
+
+@{{element}}.onclick    = (@{{bits}} & 0x00001) ? $wnd.__dispatchEvent:null;
+@{{element}}.ondblclick  = (@{{bits}} & 0x00002) ? $wnd.__dispatchEvent:null;
+@{{element}}.onmousedown   = (@{{bits}} & 0x00004) ? $wnd.__dispatchEvent:null;
+@{{element}}.onmouseup    = (@{{bits}} & 0x00008) ? $wnd.__dispatchEvent:null;
+@{{element}}.onmouseover   = (@{{bits}} & 0x00010) ? $wnd.__dispatchEvent:null;
+@{{element}}.onmouseout  = (@{{bits}} & 0x00020) ? $wnd.__dispatchEvent:null;
+@{{element}}.onmousemove   = (@{{bits}} & 0x00040) ? $wnd.__dispatchEvent:null;
+@{{element}}.onkeydown    = (@{{bits}} & 0x00080) ? $wnd.__dispatchEvent:null;
+@{{element}}.onkeypress  = (@{{bits}} & 0x00100) ? $wnd.__dispatchEvent:null;
+@{{element}}.onkeyup    = (@{{bits}} & 0x00200) ? $wnd.__dispatchEvent:null;
+@{{element}}.onchange      = (@{{bits}} & 0x00400) ? $wnd.__dispatchEvent:null;
+@{{element}}.onfocus    = (@{{bits}} & 0x00800) ? $wnd.__dispatchEvent:null;
+@{{element}}.onblur      = (@{{bits}} & 0x01000) ? $wnd.__dispatchEvent:null;
+@{{element}}.onlosecapture = (@{{bits}} & 0x02000) ? $wnd.__dispatchEvent:null;
+@{{element}}.onscroll      = (@{{bits}} & 0x04000) ? $wnd.__dispatchEvent:null;
+@{{element}}.onload      = (@{{bits}} & 0x08000) ? $wnd.__dispatchEvent:null;
+@{{element}}.onerror    = (@{{bits}} & 0x10000) ? $wnd.__dispatchEvent:null;
+@{{element}}.oncontextmenu = (@{{bits}} & 0x20000) ? $wnd.__dispatchEvent:null;
+@{{element}}.onmousewheel = (@{{bits}} & 0x40000) ? $wnd.__dispatchEvent:null;
     """)
     sinkEventsMozilla(element, bits)
 
 def toString(elem):
     JS("""
-    var temp = elem.cloneNode(true);
+    var temp = @{{elem}}.cloneNode(true);
     var tempDiv = $doc.createElement("DIV");
     tempDiv.appendChild(temp);
     outer = tempDiv.innerHTML;

@@ -1,6 +1,7 @@
 def getCookie(cookie_name):
 	JS("""
-	var results = document.cookie.match ( '(^|;) ?' + cookie_name + '=([^;]*)(;|$)' );
+	var results = document.cookie.match ( '(^|;) ?' + 
+                        @{{cookie_name}} + '=([^;]*)(;|$)' );
 
 	if ( results )
 		return ( decodeURIComponent ( results[2] ) );
@@ -12,10 +13,14 @@ def getCookie(cookie_name):
 # expires can be int or Date
 def setCookie(name, value, expires, domain=None, path=None, secure=False):
     JS("""
+    var expires = @{{_expires}};
+    var domain = @{{_domain}};
+    var path = @{{_path}};
+    var secure = @{{_secure}};
     if (expires instanceof Date) expires = expires.getTime();
-    if (pyjslib.isUndefined(domain)) domain = null;
-    if (pyjslib.isUndefined(path)) path = null;
-    if (pyjslib.isUndefined(secure)) secure = false;
+    if (@{{isUndefined}}(domain)) domain = null;
+    if (@{{isUndefined}}(path)) path = null;
+    if (@{{isUndefined}}(secure)) secure = false;
     
     var today = new Date();
     var expiration = new Date();

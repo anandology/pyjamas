@@ -2,7 +2,7 @@
 
 def blur(elem):
     JS("""
-    elem.firstChild.blur();
+    @{{elem}}.firstChild.blur();
     """)
 
 def createFocusable():
@@ -35,20 +35,21 @@ def createFocusable():
 
 def focus(elem):
     JS("""
-    elem.firstChild.focus();
+    @{{elem}}.firstChild.focus();
     """)
 
 def getTabIndex(elem):
     JS("""
-    return elem.firstChild.tabIndex;
+    return @{{elem}}.firstChild.tabIndex;
     """)
 
 def setAccessKey(elem, key):
     JS("""
-    if (elem.firstChild != null) elem.firstChild.accessKey = key;
+    if (@{{elem}}.firstChild != null) @{{elem}}.firstChild.accessKey = @{{key}};
     """)
 
 def setTabIndex(elem, index):
     JS("""
-    if (elem.firstChild != null) elem.firstChild.tabIndex = index;
+    if (@{{elem}}.firstChild != null) @{{elem}}.firstChild.tabIndex = @{{index}};
     """)
+

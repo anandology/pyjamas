@@ -26,7 +26,7 @@ class DirectionsRenderer:
     def __init__(self, options):
         if options:
             self.renderer = \
-                JS("""new $wnd.google.maps.DirectionsRenderer(options);""")
+                JS("""new $wnd.google.maps.DirectionsRenderer(@{{options}});""")
         else:
             self.renderer = \
                 JS("""new $wnd.google.maps.DirectionsRenderer();""")

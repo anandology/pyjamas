@@ -4,7 +4,7 @@ def init():
     $wnd.__dispatchEvent = function() {
         if ($wnd.event.returnValue == null) {
             $wnd.event.returnValue = true;
-            if (!DOM.previewEvent($wnd.event))
+            if (!@{{previewEvent}}($wnd.event))
                 return;
         }
 
@@ -13,7 +13,7 @@ def init():
             curElem = curElem.parentElement;
     
         if (listener)
-            DOM.dispatchEvent($wnd.event, curElem, listener);
+            @{{dispatchEvent}}($wnd.event, curElem, listener);
     };
 
     $wnd.__dispatchDblClickEvent = function() {
@@ -37,16 +37,16 @@ def init():
 
 def compare(elem1, elem2):
     JS("""
-    if (!elem1 && !elem2)
+    if (!@{{elem1}} && !@{{elem2}})
         return true;
-    else if (!elem1 || !elem2)
+    else if (!@{{elem1}} || !@{{elem2}})
         return false;
-    return (elem1.uniqueID == elem2.uniqueID);
+    return (@{{elem1}}.uniqueID == @{{elem2}}.uniqueID);
     """)
 
 def createInputRadio(group):
     JS("""
-    return $doc.createElement("<INPUT type='RADIO' name='" + group + "'>");
+    return $doc.createElement("<INPUT type='RADIO' name='" + @{{group}} + "'>");
     """)
 
 def eventGetCurrentTarget(event):
@@ -54,23 +54,23 @@ def eventGetCurrentTarget(event):
 
 def eventGetTarget(evt):
     JS("""
-    var elem = evt.srcElement;
+    var elem = @{{evt}}.srcElement;
     return elem ? elem : null;
     """)
 
 def eventGetToElement(evt):
     JS("""
-    return evt.toElement ? evt.toElement : null;
+    return @{{evt}}.toElement ? @{{evt}}.toElement : null;
     """)
 
 def eventPreventDefault(evt):
     JS("""
-    evt.returnValue = false;
+    @{{evt}}.returnValue = false;
     """)
 
 def eventToString(evt):
     JS("""
-    if (evt.toString) return evt.toString();
+    if (@{{evt}}.toString) return @{{evt}}.toString();
     return "[object Event]";
     """)
 
@@ -91,7 +91,7 @@ def getAbsoluteLeft(elem):
     var zoomMultiple = $doc.body.parentElement.offsetWidth / 
                        $doc.body.offsetWidth;
     try {
-        return Math.floor((elem.getBoundingClientRect().left / zoomMultiple) +
+        return Math.floor((@{{elem}}.getBoundingClientRect().left / zoomMultiple) +
                             $doc.body.parentElement.scrollLeft );
     } catch (e) {
         return 0;
@@ -107,7 +107,7 @@ def getAbsoluteTop(elem):
     try {
         var scrollTop = $doc.parent ? $doc.parent.body.scrollTop : 0;
         scrollTop += $doc.body.scrollTop;
-        return Math.floor((elem.getBoundingClientRect().top / zoomMultiple) +
+        return Math.floor((@{{elem}}.getBoundingClientRect().top / zoomMultiple) +
                             scrollTop);
     } catch (e) {
         return 0;
@@ -117,20 +117,20 @@ def getAbsoluteTop(elem):
 
 def getChild(elem, index):
     JS("""
-    var child = elem.children[index];
+    var child = @{{elem}}.children[@{{index}}];
     return child ? child : null;
     """)
 
 def getChildCount(elem):
     JS("""
-    return elem.children.length;
+    return @{{elem}}.children.length;
     """)
 
 def getChildIndex(parent, child):
     JS("""
-    var count = parent.children.length;
+    var count = @{{parent}}.children.length;
     for (var i = 0; i < count; ++i) {
-        if (child.uniqueID == parent.children[i].uniqueID)
+        if (@{{child}}.uniqueID == @{{parent}}.children[i].uniqueID)
             return i;
     }
     return -1;
@@ -138,52 +138,53 @@ def getChildIndex(parent, child):
 
 def getFirstChild(elem):
     JS("""
-    var child = elem.firstChild;
+    var child = @{{elem}}.firstChild;
     return child ? child : null;
     """)
 
 def getInnerText(elem):
     JS("""
-    var ret = elem.innerText;
+    var ret = @{{elem}}.innerText;
     return (ret == null) ? null : ret;
     """)
 
 def getNextSibling(elem):
     JS("""
-    var sib = elem.nextSibling;
+    var sib = @{{elem}}.nextSibling;
     return sib ? sib : null;
     """)
 
 def getParent(elem):
     JS("""
-    var parent = elem.parentElement;
+    var parent = @{{elem}}.parentElement;
     return parent ? parent : null;
     """)
 
 def insertChild(parent, child, index):
     JS("""
-    if (index == parent.children.length)
-        parent.appendChild(child);
+    if (index == @{{parent}}.children.length)
+        parent.appendChild(@{{child}});
     else
-        parent.insertBefore(child, parent.children[index]);
+        @{{parent}}.insertBefore(@{{child}}, @{{parent}}.children[@{{index}}]);
     """)
 
 def insertListItem(select, text, value, index):
     JS("""
     var newOption = document.createElement("Option");
     if(index==-1) {
-        select.add(newOption);
+        @{{select}}.add(newOption);
     } else {
-        select.add(newOption,index);
+        @{{select}}.add(newOption,@{{index}});
     }
-    newOption.text=text;
-    newOption.value=value;
+    newOption.text=@{{text}};
+    newOption.value=@{{value}};
     """)
 
-def isOrHasChild(parent, child):
+def isOrHasChild(parent, _child):
     JS("""
+    var child = @{{_child}};
     while (child) {
-        if (parent.uniqueID == child.uniqueID)
+        if (@{{parent}}.uniqueID == child.uniqueID)
             return true;
         child = child.parentElement;
     }
@@ -192,48 +193,49 @@ def isOrHasChild(parent, child):
 
 def releaseCapture(elem):
     JS("""
-    elem.releaseCapture();
+    @{{elem}}.releaseCapture();
     """)
 
 def setCapture(elem):
     JS("""
-    elem.setCapture();
+    @{{elem}}.setCapture();
     """)
 
 def setInnerText(elem, text):
     JS("""
     if (!text)
-        text = '';
-    elem.innerText = text;
+        @{{elem}}.innerText = '';
+    else
+        @{{elem}}.innerText = @{{text}};
     """)
 
 def sinkEvents(elem, bits):
     JS("""
-    elem.__eventBits = bits;
+@{{elem}}.__eventBits = @{{bits}};
 
-    elem.onclick       = (bits & 0x00001) ? $wnd.__dispatchEvent : null;
-    elem.ondblclick    = (bits & 0x00002) ? $wnd.__dispatchDblClickEvent : null;
-    elem.onmousedown   = (bits & 0x00004) ? $wnd.__dispatchEvent : null;
-    elem.onmouseup     = (bits & 0x00008) ? $wnd.__dispatchEvent : null;
-    elem.onmouseover   = (bits & 0x00010) ? $wnd.__dispatchEvent : null;
-    elem.onmouseout    = (bits & 0x00020) ? $wnd.__dispatchEvent : null;
-    elem.onmousemove   = (bits & 0x00040) ? $wnd.__dispatchEvent : null;
-    elem.onkeydown     = (bits & 0x00080) ? $wnd.__dispatchEvent : null;
-    elem.onkeypress    = (bits & 0x00100) ? $wnd.__dispatchEvent : null;
-    elem.onkeyup       = (bits & 0x00200) ? $wnd.__dispatchEvent : null;
-    elem.onchange      = (bits & 0x00400) ? $wnd.__dispatchEvent : null;
-    elem.onfocus       = (bits & 0x00800) ? $wnd.__dispatchEvent : null;
-    elem.onblur        = (bits & 0x01000) ? $wnd.__dispatchEvent : null;
-    elem.onlosecapture = (bits & 0x02000) ? $wnd.__dispatchEvent : null;
-    elem.onscroll      = (bits & 0x04000) ? $wnd.__dispatchEvent : null;
-    elem.onload        = (bits & 0x08000) ? $wnd.__dispatchEvent : null;
-    elem.onerror       = (bits & 0x10000) ? $wnd.__dispatchEvent : null;
-    elem.oncontextmenu = (bits & 0x20000) ? $wnd.__dispatchEvent : null; 
+@{{elem}}.onclick       = (@{{bits}} & 0x00001) ? $wnd.__dispatchEvent:null;
+@{{elem}}.ondblclick=(@{{bits}} & 0x00002) ? $wnd.__dispatchDblClickEvent:null;
+@{{elem}}.onmousedown   = (@{{bits}} & 0x00004) ? $wnd.__dispatchEvent:null;
+@{{elem}}.onmouseup     = (@{{bits}} & 0x00008) ? $wnd.__dispatchEvent:null;
+@{{elem}}.onmouseover   = (@{{bits}} & 0x00010) ? $wnd.__dispatchEvent:null;
+@{{elem}}.onmouseout    = (@{{bits}} & 0x00020) ? $wnd.__dispatchEvent:null;
+@{{elem}}.onmousemove   = (@{{bits}} & 0x00040) ? $wnd.__dispatchEvent:null;
+@{{elem}}.onkeydown     = (@{{bits}} & 0x00080) ? $wnd.__dispatchEvent:null;
+@{{elem}}.onkeypress    = (@{{bits}} & 0x00100) ? $wnd.__dispatchEvent:null;
+@{{elem}}.onkeyup       = (@{{bits}} & 0x00200) ? $wnd.__dispatchEvent:null;
+@{{elem}}.onchange      = (@{{bits}} & 0x00400) ? $wnd.__dispatchEvent:null;
+@{{elem}}.onfocus       = (@{{bits}} & 0x00800) ? $wnd.__dispatchEvent:null;
+@{{elem}}.onblur        = (@{{bits}} & 0x01000) ? $wnd.__dispatchEvent:null;
+@{{elem}}.onlosecapture = (@{{bits}} & 0x02000) ? $wnd.__dispatchEvent:null;
+@{{elem}}.onscroll      = (@{{bits}} & 0x04000) ? $wnd.__dispatchEvent:null;
+@{{elem}}.onload        = (@{{bits}} & 0x08000) ? $wnd.__dispatchEvent:null;
+@{{elem}}.onerror       = (@{{bits}} & 0x10000) ? $wnd.__dispatchEvent:null;
+@{{elem}}.oncontextmenu = (@{{bits}} & 0x20000) ? $wnd.__dispatchEvent:null; 
     """)
 
 def toString(elem):
     JS("""
-    return elem.outerHTML;
+    return @{{elem}}.outerHTML;
     """)
 
 def eventStopPropagation(evt):
@@ -241,6 +243,6 @@ def eventStopPropagation(evt):
 
 def eventGetMouseWheelVelocityY(evt):
     JS("""
-    return Math.round(-evt.wheelDelta / 40) || 0;
+    return Math.round(-@{{evt}}.wheelDelta / 40) || 0;
     """)
 

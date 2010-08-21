@@ -4,7 +4,7 @@ def toString(elem):
     # html. just leave it out so far, don't know what this should do
     # anyways
     JS("""
-    var temp = elem.cloneNode(true);
+    var temp = @{{elem}}.cloneNode(true);
     var tempDiv = $doc.createElement("DIV");
     tempDiv.appendChild(temp);
     outer = tempDiv.innerHTML;
@@ -12,10 +12,11 @@ def toString(elem):
     return outer;
     """)
 
-def getAbsoluteLeft(elem):
+def getAbsoluteLeft(_elem):
     JS("""
     // Unattached elements and elements (or their ancestors) with style
     // 'display: none' have no offsetLeft.
+    var elem = @{{_elem}};
     if (elem.offsetLeft == null) {
       return 0;
     }
@@ -46,10 +47,11 @@ def getAbsoluteLeft(elem):
     return left;
     """)
 
-def getAbsoluteTop(elem):
+def getAbsoluteTop(_elem):
     JS("""
     // Unattached elements and elements (or their ancestors) with style
     // 'display: none' have no offsetTop.
+    var elem = @{{_elem}};
     if (elem.offsetTop == null) {
       return 0;
     }
@@ -82,7 +84,7 @@ def getAbsoluteTop(elem):
 
 def eventGetButton(evt):
     JS("""
-    var button = evt.which;
+    var button = @{{evt}}.which;
     if(button == 2) {
         return 4;
     } else if (button == 3) {
@@ -98,12 +100,12 @@ def buttonClick(elem):
         evt.initMouseEvent('click', true, true, null, 1, 0,
                     0, 0, 0, false, false, false, false, 0, null);
 
-        elem.dispatchEvent(evt);
+        @{{elem}}.dispatchEvent(evt);
     """)
 
 def eventGetMouseWheelVelocityY(evt):
     JS("""
-    return Math.round(-evt.wheelDelta / 40) || 0;
+    return Math.round(-@{{evt}}.wheelDelta / 40) || 0;
     """)
 
 

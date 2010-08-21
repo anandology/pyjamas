@@ -106,7 +106,6 @@ _cache_repl = {}
 _MAXCACHE = 100
 
 def _compile(pat, flags=0):
-    from __pyjamas__ import JS
     cachekey = (pat, flags)
     p = _cache.get(cachekey)
     if p is not None:
@@ -166,7 +165,7 @@ def _compile(pat, flags=0):
         if flags & MULTILINE:
             flgs += 'm'
     spat = r"([\s\S]*?)(" + pat + r")[\s\S]*"
-    p = JS(r"""new RegExp(pat, flgs)"""), JS(r"""new RegExp(spat, flgs)"""), JS(r"""new RegExp(pat, "g"+flgs)""")
+    p = JS(r"""new RegExp(@{{pat}}, @{{flgs}})"""), JS(r"""new RegExp(@{{spat}}, @{{flgs}})"""), JS(r"""new RegExp(@{{pat}}, "g"+@{{flgs}})""")
     if len(_cache) >= _MAXCACHE:
         _cache.clear()
     _cache[cachekey] = p

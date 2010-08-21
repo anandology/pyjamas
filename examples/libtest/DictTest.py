@@ -235,3 +235,10 @@ class DictTest(UnitTest):
             self.assertEqual(d1[3],6)
         except TypeError:
             self.fail("Couldn't dict.update(...) with a tuple of pairs.")
+
+    def testOverrideDict(self):
+        dict = 1
+        self.assertEqual(dict, 1)
+        x = dict
+        self.assertEqual(x, 1)
+

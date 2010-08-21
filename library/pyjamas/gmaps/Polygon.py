@@ -17,7 +17,7 @@ from Utils import dictToJs, createListenerMethods, listToJs
 
 
 def Polygon(options):
-    JS("return new $wnd.google.maps.Polygon(options);")
+    JS("return new $wnd.google.maps.Polygon(@{{options}});")
 
 def PolygonOptions(adict):
     """Accepts a dictionary of options. If necessary, transforms "paths" from
