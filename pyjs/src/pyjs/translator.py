@@ -759,6 +759,7 @@ class Translator(object):
                  inline_code=True,
                  operator_funcs=True,
                  number_classes=True,
+                 create_locals=False,
                 ):
 
         monkey_patch_broken_transformer(compiler)
@@ -796,6 +797,7 @@ class Translator(object):
         self.inline_cmp = inline_code
         self.inline_getitem = inline_code
         self.inline_code = inline_code
+        self.create_locals = create_locals
         self.operator_funcs = operator_funcs
         self.number_classes = number_classes
         if self.number_classes:
@@ -1167,6 +1169,16 @@ class Translator(object):
                 name_type = 'builtin'
                 pyname = name
                 jsname = PYJSLIB_BUILTIN_MAPPING[name]
+        is_local = (name_type is not None) and \
+                    (max_depth > 0) and (max_depth == depth)
+        if self.create_locals:
+            print "lookup", name_type, pyname, jsname, depth, is_local
+        if self.create_locals and is_local and \
+            self.is_local_name(jsname, pyname, name_type, []):
+        #if depth == max_depth and jsname is not None and name_type not in \
+        #       ['builtin', '__pyjamas__', '__javascript__', 'global']:
+            print "name_type", name_type, jsname
+            jsname = "$l." + jsname
         return (name_type, pyname, jsname, depth, (name_type is not None) and (max_depth > 0) and (max_depth == depth))
 
     def translate_escaped_names(self, txt, current_klass):
@@ -1212,16 +1224,18 @@ class Translator(object):
             lines.append("%(s)svar $constant_long_%(name)s = new pyjslib['long'](%(name)s);" % locals())
         return "\n".join(lines)
 
+    def is_local_name(self, jsname, pyname, nametype, ignore_py_vars):
+        return (     not jsname.find('[') >= 0
+             and not pyname in ignore_py_vars
+             and not nametype in ['__pyjamas__', '__javascript__', 'global']
+           )
     def local_js_vars_decl(self, ignore_py_vars):
         names = []
         for name in self.lookup_stack[-1].keys():
             nametype = self.lookup_stack[-1][name][0]
             pyname = self.lookup_stack[-1][name][1]
             jsname = self.lookup_stack[-1][name][2]
-            if (     not jsname.find('[') >= 0
-                 and not pyname in ignore_py_vars
-                 and not nametype in ['__pyjamas__', '__javascript__', 'global']
-               ):
+            if self.is_local_name(jsname, pyname, nametype, ignore_py_vars):
                 names.append(jsname)
         if len(names) > 0:
             return self.spacing() + "var %s;" % ','.join(names)
@@ -1590,33 +1604,41 @@ $generator['$genfunc'] = function () {
         else:
             argcount2 = "(arguments.length < %d || arguments.length > %d)" % (minargs2, maxargs2)
 
+        s = self.spacing()
+        if self.create_locals:
+            lpself = "$l."
+            lp = "$l."
+            self.w(s + "var $l = {};")
+        else:
+            lpself = "var "
+            lp = ""
         self.w(self.indent() + """\
 if (this.__is_instance__ === true) {\
 """, output=output)
         if arg_names:
             self.w( self.spacing() + """\
-var %s = this;\
-""" % arg_names[0], output=output)
+%s%s = this;\
+""" % (lpself, arg_names[0]), output=output)
 
         if node.varargs:
-            self._varargs_handler(node, varargname, maxargs1)
+            self._varargs_handler(node, varargname, maxargs1, lp)
 
         if node.kwargs:
             self.w( self.spacing() + """\
-var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[arguments.length];\
-""" % (kwargname, maxargs1), output=output)
+%s%s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[arguments.length];\
+""" % (lpself, kwargname, maxargs1), output=output)
             s = self.spacing()
             self.w( """\
-%(s)sif (typeof %(kwargname)s != 'object' || %(kwargname)s.__name__ != 'dict' || typeof %(kwargname)s.$pyjs_is_kwarg == 'undefined') {\
+%(s)sif (typeof %(lp)s%(kwargname)s != 'object' || %(kwargname)s.__name__ != 'dict' || typeof %(kwargname)s.$pyjs_is_kwarg == 'undefined') {\
 """ % locals(), output=output)
             if node.varargs:
                 self.w( """\
-%(s)s\tif (typeof %(kwargname)s != 'undefined') %(varargname)s.__array.push(%(kwargname)s);\
+%(s)s\tif (typeof %(lp)s%(kwargname)s != 'undefined') %(varargname)s.__array.push(%(lp)s%(kwargname)s);\
 """ % locals(), output=output)
             self.w( """\
-%(s)s\t%(kwargname)s = arguments[arguments.length+1];
+%(s)s\t%(lp)s%(kwargname)s = arguments[arguments.length+1];
 %(s)s} else {
-%(s)s\tdelete %(kwargname)s['$pyjs_is_kwarg'];
+%(s)s\tdelete %(lp)s%(kwargname)s['$pyjs_is_kwarg'];
 %(s)s}\
 """ % locals(), output=output)
 
@@ -1632,34 +1654,34 @@ if ($pyjs.options.arg_count && %s) $pyjs__exception_func_param(arguments.callee.
 
         if arg_names:
             self.w( self.spacing() + """\
-var %s = arguments[0];\
-""" % arg_names[0], output=output)
+%s%s = arguments[0];\
+""" % (lpself, arg_names[0]), output=output)
         arg_idx = 0
         for arg_name in arg_names[1:]:
             arg_idx += 1
             self.w( self.spacing() + """\
-%s = arguments[%d];\
-""" % (arg_name, arg_idx), output=output)
+%s%s = arguments[%d];\
+""" % (lp, arg_name, arg_idx), output=output)
 
         if node.varargs:
-            self._varargs_handler(node, varargname, maxargs2)
+            self._varargs_handler(node, varargname, maxargs2, lp)
 
         if node.kwargs:
             self.w( self.spacing() + """\
-var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[arguments.length];\
-""" % (kwargname, maxargs2), output=output)
+%s%s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[arguments.length];\
+""" % (lpself, kwargname, maxargs2), output=output)
             s = self.spacing()
             self.w( """\
-%(s)sif (typeof %(kwargname)s != 'object' || %(kwargname)s.__name__ != 'dict' || typeof %(kwargname)s.$pyjs_is_kwarg == 'undefined') {\
+%(s)sif (typeof %(lp)s%(kwargname)s != 'object' || %(lp)s%(kwargname)s.__name__ != 'dict' || typeof %(lp)s%(kwargname)s.$pyjs_is_kwarg == 'undefined') {\
 """ % locals(), output=output)
             if node.varargs:
                 self.w( """\
-%(s)s\tif (typeof %(kwargname)s != 'undefined') %(varargname)s.__array.push(%(kwargname)s);\
+%(s)s\tif (typeof %(lp)s%(kwargname)s != 'undefined') %(lp)s%(varargname)s.__array.push(%(lp)s%(kwargname)s);\
 """ % locals(), output=output)
             self.w( """\
-%(s)s\t%(kwargname)s = arguments[arguments.length+1];
+%(s)s\t%(lp)s%(kwargname)s = arguments[arguments.length+1];
 %(s)s} else {
-%(s)s\tdelete %(kwargname)s['$pyjs_is_kwarg'];
+%(s)s\tdelete %(lp)s%(kwargname)s['$pyjs_is_kwarg'];
 %(s)s}\
 """ % locals(), output=output)
 
@@ -1688,6 +1710,13 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         maxargs = len(arg_names)
         minargs = maxargs - len(node.defaults)
         maxargsstr = "%d" % maxargs
+        s = self.spacing()
+        if self.create_locals:
+            lp = "$l."
+            self.w(s + "var $l = {};")
+        else:
+            lpdec = "var "
+            lp = ""
         if node.kwargs:
             maxargs += 1
         if node.varargs:
@@ -1703,24 +1732,24 @@ if ($pyjs.options.arg_count && %s) $pyjs__exception_func_param(arguments.callee.
 """ % (argcount, minargs, maxargsstr), output=output)
 
         if node.varargs:
-            self._varargs_handler(node, varargname, maxargs)
+            self._varargs_handler(node, varargname, maxargs, lpdec)
 
         if node.kwargs:
             self.w( self.spacing() + """\
-var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[arguments.length];\
-""" % (kwargname, maxargs), output=output)
+%s%s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[arguments.length];\
+""" % (lp, kwargname, maxargs), output=output)
             s = self.spacing()
             self.w( """\
-%(s)sif (typeof %(kwargname)s != 'object' || %(kwargname)s.__name__ != 'dict' || typeof %(kwargname)s.$pyjs_is_kwarg == 'undefined') {\
+%(s)sif (typeof %(lp)s%(kwargname)s != 'object' || %(lp)s%(kwargname)s.__name__ != 'dict' || typeof %(lp)s%(kwargname)s.$pyjs_is_kwarg == 'undefined') {\
 """ % locals(), output=output)
             if node.varargs:
                 self.w( """\
-%(s)s\tif (typeof %(kwargname)s != 'undefined') %(varargname)s.__array.push(%(kwargname)s);\
+%(s)s\tif (typeof %(lp)s%(kwargname)s != 'undefined') %(varargname)s.__array.push(%(lp)s%(kwargname)s);\
 """ % locals(), output=output)
             self.w( """\
-%(s)s\t%(kwargname)s = arguments[arguments.length+1];
+%(s)s\t%(lp)s%(kwargname)s = arguments[arguments.length+1];
 %(s)s} else {
-%(s)s\tdelete %(kwargname)s['$pyjs_is_kwarg'];
+%(s)s\tdelete %(lp)s%(kwargname)s['$pyjs_is_kwarg'];
 %(s)s}\
 """ % locals(), output=output)
 
@@ -1752,7 +1781,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
 """ % (arg_names[0],), output=output)
 
         if node.varargs:
-            self._varargs_handler(node, varargname, maxargs)
+            self._varargs_handler(node, varargname, maxargs, "")
 
         if node.kwargs:
             self.w( self.spacing() + """\
@@ -1772,7 +1801,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
 """ % locals(), output=output)
 
     def _default_args_handler(self, node, arg_names, current_klass, kwargname,
-                              output=None):
+                              lp, output=None):
         output = output or self.output
         if node.kwargs:
             # This is necessary when **kwargs in function definition
@@ -1788,18 +1817,18 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             revargs = arg_names[0:]
             revargs.reverse()
             self.w( """\
-%(s)sif (typeof %(k)s == 'undefined') {
-%(s)s\t%(k)s = @{{__empty_dict}}();\
-""" % {'s': self.spacing(), 'k': kwargname}, output=output)
+%(s)sif (typeof %(lp)s%(k)s == 'undefined') {
+%(s)s\t%(lp)s%(k)s = @{{__empty_dict}}();\
+""" % {'lp': lp, 's': self.spacing(), 'k': kwargname}, output=output)
             for v in revargs:
                 self.w( """\
-%(s)s\tif (typeof %(v)s != 'undefined') {
-%(s)s\t\tif (%(v)s !== null && typeof %(v)s['$pyjs_is_kwarg'] != 'undefined') {
-%(s)s\t\t\t%(k)s = %(v)s;
-%(s)s\t\t\t%(v)s = arguments[%(a)d];
+%(s)s\tif (typeof %(lp)s%(v)s != 'undefined') {
+%(s)s\t\tif (%(lp)s%(v)s !== null && typeof %(lp)s%(v)s['$pyjs_is_kwarg'] != 'undefined') {
+%(s)s\t\t\t%(lp)s%(k)s = %(lp)s%(v)s;
+%(s)s\t\t\t%(lp)s%(v)s = arguments[%(a)d];
 %(s)s\t\t}
 %(s)s\t} else\
-""" % {'s': self.spacing(), 'v': v, 'k': kwargname, 'a': len(arg_names)}, False, output=output)
+""" % {'lp': lp, 's': self.spacing(), 'v': v, 'k': kwargname, 'a': len(arg_names)}, False, output=output)
             self.w( """\
 {
 %(s)s\t}
@@ -1813,17 +1842,17 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                 default_name = arg_names[default_pos]
                 default_pos += 1
                 #self.w( self.spacing() + "if (typeof %s == 'undefined') %s=%s;" % (default_name, default_name, default_value))
-                self.w( self.spacing() + "if (typeof %s == 'undefined') %s=arguments.callee.__args__[%d][1];" % (default_name, default_name, default_pos+1), output=output)
+                self.w( self.spacing() + "if (typeof %s%s == 'undefined') %s%s=arguments.callee.__args__[%d][1];" % (lp, default_name, lp, default_name, default_pos+1), output=output)
 
-    def _varargs_handler(self, node, varargname, start):
+    def _varargs_handler(self, node, varargname, start, lp):
         if node.kwargs:
             end = "arguments.length-1"
             start -= 1
         else:
             end = "arguments.length"
         self.w( """\
-%(s)svar %(v)s = pyjslib['tuple']($pyjs_array_slice.call(arguments,%(b)d,%(e)s));
-""" % {'s': self.spacing(), 'v': varargname, 'b': start, 'e': end})
+%(s)s%(lp)s%(v)s = pyjslib['tuple']($pyjs_array_slice.call(arguments,%(b)d,%(e)s));
+""" % {'s': self.spacing(), 'v': varargname, 'b': start, 'e': end, 'lp': lp})
 
     def _kwargs_parser(self, node, function_name, arg_names, current_klass, method_ = False):
         default_pos = len(arg_names) - len(node.defaults)
@@ -2070,7 +2099,8 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         function_args = "(" + ", ".join(declared_arg_names) + ")"
         self.w( self.indent() + "%s = function%s {" % (function_name, function_args))
         self._static_method_init(node, declared_arg_names, varargname, kwargname, None)
-        self._default_args_handler(node, declared_arg_names, None, kwargname)
+        lp = self.create_locals and "$l." or ""
+        self._default_args_handler(node, declared_arg_names, None, kwargname, lp)
 
         local_arg_names = normal_arg_names + declared_arg_names
 
@@ -2776,7 +2806,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             self._instance_method_init(node, declared_arg_names, varargname, kwargname, current_klass)
 
         # default arguments
-        self._default_args_handler(node, declared_arg_names, current_klass, kwargname)
+        lp = self.create_locals and "$l." or ""
+        self._default_args_handler(node, declared_arg_names, current_klass, kwargname, lp)
 
         local_arg_names = normal_arg_names + declared_arg_names
 
@@ -3075,7 +3106,16 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 lhs = vname
         else:
             vname = self.add_lookup(set_name_type, name, name)
-            lhs = vname
+            if self.create_locals:
+                # hmmm...
+                name_type, pyname, jsname, depth, is_local = self.lookup(name)
+                if is_local:
+                    lhs = jsname
+                    self.add_lookup(set_name_type, name, jsname)
+                else:
+                    lhs = vname
+            else:
+                lhs = vname
         return lhs
 
     def _lhsFromAttr(self, v, current_klass):
