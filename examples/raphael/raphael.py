@@ -28,7 +28,7 @@ class Raphael(Widget):
         self.setElement(element)
         self.setPixelSize(width, height)
         JS("""
-           this._canvas = $wnd.Raphael(element, width, height);
+           this._canvas = $wnd.Raphael(@{{element}}, @{{width}}, @{{height}});
         """)
 
 
@@ -46,7 +46,7 @@ class Raphael(Widget):
         """ Change the dimensions of the canvas.
         """
         JS("""
-           this._canvas.setSize(width, height);
+           this._canvas.setSize(@{{width}}, @{{height}});
         """)
 
 
@@ -76,7 +76,7 @@ class Raphael(Widget):
             We return a RaphaelElement object representing the circle.
         """
         JS("""
-           this._element = this._canvas.circle(x, y, radius);
+           this._element = this._canvas.circle(@{{x}}, @{{y}}, @{{radius}});
         """)
         return RaphaelElement(self._element)
 
@@ -91,8 +91,8 @@ class Raphael(Widget):
             We return a RaphaelElement object representing the rectangle.
         """
         JS("""
-           this._element = this._canvas.rect(x, y, width, height,
-                                             cornerRadius);
+           this._element = this._canvas.rect(@{{x}}, @{{y}}, @{{width}}, @{{height}},
+                                             @{{cornerRadius}});
         """)
         return RaphaelElement(self._element)
 
@@ -106,7 +106,7 @@ class Raphael(Widget):
             We return a RaphaelElement object representing the ellipse.
         """
         JS("""
-           this._element = this._canvas.ellipse(x, y, xRadius, yRadius);
+           this._element = this._canvas.ellipse(@{{x}}, @{{y}}, @{{xRadius}}, @{{yRadius}});
         """)
         return RaphaelElement(self._element)
 
@@ -121,7 +121,7 @@ class Raphael(Widget):
             We return a RaphaelElement object representing the image.
         """
         JS("""
-           this._element = this._canvas.image(src, x, y, width, height);
+           this._element = this._canvas.image(@{{src}}, @{{x}}, @{{y}}, @{{width}}, @{{height}});
         """)
         return RaphaelElement(self._element)
 
@@ -150,7 +150,7 @@ class Raphael(Widget):
             We return a RaphaelElement representing the text.
         """
         JS("""
-           this._element = this._canvas.text(x, y, text);
+           this._element = this._canvas.text(@{{x}}, @{{y}}, @{{text}});
         """)
         return RaphaelElement(self._element)
 
@@ -171,14 +171,14 @@ class Raphael(Widget):
             """)
         else:
             JS("""
-               this._element = this._canvas.path({}, data);
+               this._element = this._canvas.path({}, @{{data}});
             """)
 
         if attrs != None:
             for attr in attrs.keys():
                 value = attrs[attr]
                 JS("""
-                    this._element.attr(attr, value);
+                    this._element.attr(@{{attr}}, @{{value}});
                 """)
 
         return RaphaelPathElement(self._element)
@@ -213,12 +213,12 @@ class RaphaelElement:
         onMouseLeave = getattr(self, "_onMouseLeave")
 
         JS("""
-           this._element.node.onclick      = onClick;
-           this._element.node.onmousedown  = onMouseDown;
-           this._element.node.onmouseup    = onMouseUp;
-           this._element.node.onmousemove  = onMouseMove;
-           this._element.node.onmouseenter = onMouseEnter;
-           this._element.node.onmouseleave = onMouseLeave;
+           this._element.node.onclick      = @{{onClick}};
+           this._element.node.onmousedown  = @{{onMouseDown}};
+           this._element.node.onmouseup    = @{{onMouseUp}};
+           this._element.node.onmousemove  = @{{onMouseMove}};
+           this._element.node.onmouseenter = @{{onMouseEnter}};
+           this._element.node.onmouseleave = @{{onMouseLeave}};
         """)
 
 
@@ -311,11 +311,11 @@ class RaphaelElement:
         if cy == None:
             isAbsolute = cx
             JS("""
-               this._element.rotate(angle, isAbsolute);
+               this._element.rotate(@{{angle}}, @{{isAbsolute}});
             """)
         else:
             JS("""
-               this._element.rotate(angle, cx, cy);
+               this._element.rotate(@{{angle}}, @{{cx}}, @{{cy}});
             """)
 
 
@@ -323,7 +323,7 @@ class RaphaelElement:
         """ Move the element around the canvas by the given number of pixels.
         """
         JS("""
-           this._element.translate(dx, dy);
+           this._element.translate(@{{dx}}, @{{dy}});
         """)
 
 
@@ -331,7 +331,7 @@ class RaphaelElement:
         """ Resize the element by the given horizontal and vertical multiplier.
         """
         JS("""
-           this._element.scale(xtimes, ytimes);
+           this._element.scale(@{{xtimes}}, @{{ytimes}});
         """)
 
 
@@ -376,7 +376,7 @@ class RaphaelElement:
             attributes and how to use them.
         """
         JS("""
-           this._element.attr(attr, value);
+           this._element.attr(@{{attr}}, @{{value}});
         """)
 
 
@@ -390,7 +390,7 @@ class RaphaelElement:
         """
         for attr,value in attrs.items():
             JS("""
-               this._element.attr(attr, value);
+               this._element.attr(@{{attr}}, @{{value}});
             """)
 
 
@@ -398,7 +398,7 @@ class RaphaelElement:
         """ Return the current value for the given attribute.
         """
         JS("""
-           var value = this._element.attr(attr);
+           var value = this._element.attr(@{{attr}});
         """)
         return value
 
@@ -441,11 +441,11 @@ class RaphaelElement:
         """)
         for attr,value in attrs.items():
             JS("""
-               jsAttrs[attr] = value;
+               jsAttrs[@{{attr}}] = @{{value}};
             """)
 
         JS("""
-           this._element.animate(jsAttrs, duration);
+           this._element.animate(jsAttrs, @{{duration}});
         """)
 
 
@@ -492,7 +492,7 @@ class RaphaelElement:
         """
         otherElement = element.getElement()
         JS("""
-           this._element.insertBefore(otherElement);
+           this._element.insertBefore(@{{otherElement}});
         """)
 
 
@@ -501,7 +501,7 @@ class RaphaelElement:
         """
         otherElement = element.getElement()
         JS("""
-           this._element.insertAfter(otherElement);
+           this._element.insertAfter(@{{otherElement}});
         """)
 
     # =====================
@@ -565,7 +565,7 @@ class RaphaelSetElement(RaphaelElement):
         """
         otherElement = element.getElement()
         JS("""
-           this._element.push(otherElement);
+           this._element.push(@{{otherElement}});
         """)
 
 #############################################################################
@@ -603,7 +603,7 @@ class RaphaelPathElement(RaphaelElement):
         """ Move the drawing point to the given coordinates.
         """
         JS("""
-            this._element.moveTo(x, y);
+            this._element.moveTo(@{{x}}, @{{y}});
         """)
         return self
 
@@ -612,7 +612,7 @@ class RaphaelPathElement(RaphaelElement):
         """ Draw a straight line to the given coordinates.
         """
         JS("""
-            this._element.lineTo(x, y);
+            this._element.lineTo(@{{x}}, @{{y}});
         """)
         return self
 
@@ -626,11 +626,11 @@ class RaphaelPathElement(RaphaelElement):
         """
         if width != None:
             JS("""
-               this._element.cplineTo(x, y, width);
+               this._element.cplineTo(@{{x}}, @{{y}}, @{{width}});
             """)
         else:
             JS("""
-               this._element.cplineTo(x, y);
+               this._element.cplineTo(@{{x}}, @{{y}});
             """)
         return self
 
@@ -639,7 +639,7 @@ class RaphaelPathElement(RaphaelElement):
         """ Draw a bicubic curve to the given coordinates.
         """
         JS("""
-            this._element.curveTo(x1, y1, x, y2, x3, y3);
+            this._element.curveTo(@{{x1}}, @{{y1}}, @{{x}}, @{{y2}}, @{{x3}}, @{{y3}});
         """)
         return self
 
@@ -648,7 +648,7 @@ class RaphaelPathElement(RaphaelElement):
         """ Draw a quadratic curve to the given coordinates.
         """
         JS("""
-            this._element.qcurveTo(x1, y1, x2, y2);
+            this._element.qcurveTo(@{{x1}}, @{{y1}}, @{{x2}}, @{{y2}});
         """)
         return self
 
@@ -669,7 +669,7 @@ class RaphaelPathElement(RaphaelElement):
                 "dl"   Down left.
         """
         JS("""
-            this._element.addRoundedCorner(radius, direction);
+            this._element.addRoundedCorner(@{{radius}}, @{{direction}});
         """)
         return self
 

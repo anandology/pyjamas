@@ -246,6 +246,23 @@ class ClassTest(UnitTest):
         self.assertEqual(ExampleChildConstructor.z, expected_result3, "Did not inherit class var from grandparent")
         self.assertEqual(ExampleChildNoConstructor.z, expected_result3, "Did not inherit class var from grandparent")
         self.assertEqual(ExampleChildExplicitConstructor.z, expected_result3, "Did not inherit class var from grandparent")
+        
+    def testInheritFromType(self):
+        class SubclassedString(str): pass
+        class SubclassedInt(int): pass
+        class SubclassedFloat(float): pass
+        try:
+            self.assertEqual(str(SubclassedString("string")), "string")
+        except:
+            self.fail("Could not instantiate subclassed string, bug #484")
+        try:
+            self.assertEqual(str(SubclassedInt(1)), "1")
+        except:
+            self.fail("Could not instantiate subclassed int")
+        try:
+            self.assertEqual(str(SubclassedFloat(1.1)), "1.1")
+        except:
+            self.fail("Could not instantiate subclassed float")
 
     def testClassMethods(self):
         results = ExampleClass.sampleClassMethod("a")

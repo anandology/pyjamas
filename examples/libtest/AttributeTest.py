@@ -33,6 +33,9 @@ class AttributeTest(UnitTest):
     def testHasattr(self):
         self.assertEqual(hasattr(self, "getName"), True, "AttrTest should have method 'getName'")
         self.assertEqual(hasattr(self, "blah"), False, "AttrTest has no method 'getName'")
+        self.assertEqual(hasattr("", "find"), True, "str should have method 'find', bug #483")
+        self.assertEqual(hasattr(1.0, "real"), True, "float should have attribute 'real', bug #483")
+        self.assertEqual(hasattr(1, "real"), True, "int should have attribute 'real', bug #483") 
 
     def testGetattr(self):
         func = getattr(self, "getName")
