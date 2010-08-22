@@ -500,12 +500,6 @@ function $pyjs_varargs_handler(args, start, has_kwargs)
     } else {
         end = args.length;
     }
-    if (has_kwargs) {
-        end = args.length-1;
-        start = start - 1;
-    } else {
-        end = args.length;
-    }
     pyjslib['tuple']($pyjs_array_slice.call(args, start, end));
 }
 
@@ -606,6 +600,11 @@ function $pyjs_instance_method_get(inst, args,
 
         $pyjs_get_vararg_and_kwarg($l, args, kwargname, varargname, argcount1,
                                    maxargs1, minargs2, maxargs2check);
+        for (i = 1; i < arg_names.length; i++)
+        {
+            var arg_name = arg_names[i][0];
+            $l[arg_name] = args[i-1];
+        }
     } else {
 
         if (arg_names.length > 0)
@@ -620,16 +619,15 @@ function $pyjs_instance_method_get(inst, args,
 
         $pyjs_get_vararg_and_kwarg($l, args, kwargname, varargname, argcount1,
                                    maxargs2, minargs2, maxargs2check);
-    }
-
-    for (i = 1; i < arg_names.length; i++)
-    {
-        var arg_name = arg_names[i][0];
-        $l[arg_name] = args[i-1];
+        for (i = 1; i < arg_names.length; i++)
+        {
+            var arg_name = arg_names[i][0];
+            $l[arg_name] = args[i];
+        }
     }
 
     var res = '';
-    for (i = 1; i < arg_names.length; i++)
+    for (i = 0; i < arg_names.length; i++)
     {
         var arg_name = arg_names[i][0];
         res = res + arg_name + " ";
@@ -707,7 +705,7 @@ function $pyjs_default_args_handler($l, args, defaults_count,
                 if($l[arg_name] !== null
                    && typeof $l[arg_name].$pyjs_is_kwarg != 'undefined')
                 {
-                    $l[kwargname] = $l[argname];
+                    $l[kwargname] = $l[arg_name];
                     $l[arg_name] = args[i];
                     break;
                 }
