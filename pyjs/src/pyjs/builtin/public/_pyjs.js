@@ -571,10 +571,10 @@ function $pyjs_instance_create_locals(inst, args,
         maxargs2 = maxargs2 + 1;
     }
     /* for __instance__ === false */
-    if has_varargs) {
+    if (has_varargs) {
         argcount1 = args.length < minargs1;
         maxargs1check = null;
-    } else if minargs1 == maxargs1 {
+    } else if (minargs1 == maxargs1) {
         argcount1 = args.length != minargs1;
     } else {
         argcount1 = args.length < minargs1 || args.length > maxargs1;
@@ -583,7 +583,7 @@ function $pyjs_instance_create_locals(inst, args,
     if (has_varargs) {
         argcount2 = args.length < minargs2;
         maxargs2check = null;
-    } else if minargs2 == maxargs2 {
+    } else if (minargs2 == maxargs2) {
         argcount2 = args.length != minargs2;
     } else {
         argcount2 = args.length < minargs2 || args.length > maxargs2;
