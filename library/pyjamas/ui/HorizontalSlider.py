@@ -24,7 +24,7 @@ class HorizontalSlider(VerticalSlider):
                        **kwargs):
 
         VerticalSlider.__init__(self, min_value, max_value, start_value,
-                                    **kwargs)
+                                step, **kwargs)
         self.setHandleStyle(None, "10px", "100%", None)
 
     def moveControl(self, mouse_x, mouse_y, first_move=False):
