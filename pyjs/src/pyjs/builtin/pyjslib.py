@@ -1663,7 +1663,7 @@ def float_int(value, radix=None):
 
 JS("""
 (function(){
-    var $int = @{{int}} = function (value, radix) {
+    var $int = pyjslib['int'] = function (value, radix) {
         var v, i;
         if (typeof radix == 'undefined' || radix === null) {
             if (typeof value == 'undefined') {
@@ -1701,7 +1701,7 @@ JS("""
             this.__v = v;
             return this;
         }
-        return new @{{long}}(v);
+        return new pyjslib['long'](v);
     };
     $int.__init__ = function () {};
     $int.__number__ = 0x02;
