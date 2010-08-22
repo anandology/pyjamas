@@ -559,7 +559,7 @@ function $pyjs_instance_method_get(inst, args,
     var kwargname = callee_args[1]; 
     var arg_names = callee_args.slice(2); 
 
-    console.debug(inst.__name__ + "isinst " + inst.__is_instance__ + " hva " + has_varargs + " hkwa " + has_kwargs + " va " + varargname + " kw " + kwargname + " al " + arg_names.length);
+    console.debug(inst.__name__ + " " + args.callee.__name__ + " isinst " + inst.__is_instance__ + " hva " + has_varargs + " hkwa " + has_kwargs + " va " + varargname + " kw " + kwargname + " al " + arg_names.length);
 
     var $l = {};
     var end;
@@ -608,14 +608,9 @@ function $pyjs_instance_method_get(inst, args,
                                    maxargs1, minargs2, maxargs2check);
     } else {
 
-        for (i = 0; i < arg_names.length; i++)
+        if (arg_names.length > 0)
         {
-            if (i == 0) {
-                $l['self'] = args[i];
-            } else {
-                var arg_name = arg_names[i][0];
-                $l[arg_name] = args[i];
-            }
+            $l['self'] = args[0];
         }
 
         if (varargname !== null) { /* if node.varargs: */
@@ -626,6 +621,21 @@ function $pyjs_instance_method_get(inst, args,
         $pyjs_get_vararg_and_kwarg($l, args, kwargname, varargname, argcount1,
                                    maxargs2, minargs2, maxargs2check);
     }
+
+    for (i = 1; i < arg_names.length; i++)
+    {
+        var arg_name = arg_names[i][0];
+        $l[arg_name] = args[i-1];
+    }
+
+    var res = '';
+    for (i = 1; i < arg_names.length; i++)
+    {
+        var arg_name = arg_names[i][0];
+        res = res + arg_name + " ";
+    }
+
+    console.debug("arg names " + res);
 
     /* TODO: function arg checking */
     /*
@@ -648,8 +658,17 @@ if ($pyjs.options.arg_instance_type) {
     for (var k in $l) {
         res = res + k + " ";
     }
-
+    console.debug("arg keys " + res);
     return $l;
+}
+
+function $pyjsdf(arg, alternate)
+{
+    //console.debug("pyjsdf " + arg + " default " + alternate);
+    if (typeof arg == 'undefined') {
+        return alternate;
+    }
+    return arg;
 }
 
 /* this function mirrors _default_args_handler
@@ -696,7 +715,7 @@ function $pyjs_default_args_handler($l, args, defaults_count,
         }
     }
     var default_pos = arg_names.length - defaults_count;
-    console.debug("default_pos " + default_pos);
+    console.debug("default_pos " + default_pos + " count " + defaults_count);
     for (var i = 0; i < defaults_count; i++)
     {
         var default_name = arg_names[default_pos][0];

@@ -4236,8 +4236,6 @@ class dict:
         init(seq)
         if kwargs:
             init(kwargs)
-        #JS("""alert("kwargs init post");""")
-        #JS("err;")
 
     def __hash__(self):
         raise TypeError("dict objects are unhashable")

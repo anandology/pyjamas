@@ -1618,11 +1618,28 @@ $generator['$genfunc'] = function () {
                 args.append("%(varargname)s = $l.%(varargname)s" % locals())
             if node.kwargs:
                 args.append("%(kwargname)s = $l.%(kwargname)s" % locals())
+            args = ", ".join(args)
+            if args:
+                self.w( s + "var %s;" % args)
             if arg_names:
-                for an in arg_names:
+                an = arg_names[0]
+                self.w( s + "var %s = $l.%s;" % (an, an))
+                args = []
+                for an in arg_names[1:]:
                     args.append("%s = $l.%s" % (an, an))
-                args = ", ".join(args)
-                self.w( self.spacing() + "var %s;" % args)
+                if args:
+                    args = ", ".join(args)
+                    self.w( s + "%s;" % args)
+            if False: #arg_names:
+                an = arg_names[0]
+                self.w( s + "if (this.__is_instance__ === true) {")
+                self.w( s + "\tvar %s = this;" % an)
+                self.w( s + "} else {")
+                self.w( s + "\t%s = $l.%s;" % (an, an))
+                self.w( s + "}")
+                for an in arg_names[1:]:
+                    an = (an, an, an)
+                    self.w(s + "%s = $pyjsdf(%s, $l.%s);" % an)
             return
 
         lpself = "var "
