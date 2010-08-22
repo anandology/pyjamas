@@ -1,5 +1,6 @@
 from UnitTest import IN_BROWSER, IN_JS, IN_BROWSER
 from LoopTest import LoopTest
+from NoInlineCodeTest import NoInlineCodeTest
 from StringTest import StringTest
 from ListTest import ListTest
 from TupleTest import TupleTest
@@ -53,6 +54,7 @@ def main():
 
     t = RunTests()
     t.add(LoopTest)
+    t.add(NoInlineCodeTest)
     t.add(BoolTest)
     t.add(ListTest)
     t.add(TupleTest)
