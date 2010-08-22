@@ -1171,14 +1171,14 @@ class Translator(object):
                 jsname = PYJSLIB_BUILTIN_MAPPING[name]
         is_local = (name_type is not None) and \
                     (max_depth > 0) and (max_depth == depth)
-        if self.create_locals:
-            print "lookup", name_type, pyname, jsname, depth, is_local
-        if self.create_locals and is_local and \
-            self.is_local_name(jsname, pyname, name_type, []):
+        #if self.create_locals:
+        #    print "lookup", name_type, pyname, jsname, depth, is_local
+        #if self.create_locals and is_local and \
+        #    self.is_local_name(jsname, pyname, name_type, []):
         #if depth == max_depth and jsname is not None and name_type not in \
         #       ['builtin', '__pyjamas__', '__javascript__', 'global']:
-            print "name_type", name_type, jsname
-            jsname = "$l." + jsname
+        #    print "name_type", name_type, jsname
+        #    jsname = "$l." + jsname
         return (name_type, pyname, jsname, depth, (name_type is not None) and (max_depth > 0) and (max_depth == depth))
 
     def translate_escaped_names(self, txt, current_klass):
@@ -1606,12 +1606,27 @@ $generator['$genfunc'] = function () {
 
         s = self.spacing()
         if self.create_locals:
-            lpself = "$l."
-            lp = "$l."
-            self.w(s + "var $l = {};")
-        else:
-            lpself = "var "
-            lp = ""
+            args = ["this", "arguments"]
+            args.append("%d" % len(node.defaults))
+            args.append(bool(node.varargs) and "true" or "false")
+            args.append(bool(node.kwargs) and "true" or "false")
+            args = ", ".join(args)
+            self.w(s + "var $l = $pyjs_instance_method_get(%s);" % args)
+
+            args = []
+            if node.varargs:
+                args.append("%(varargname)s = $l.%(varargname)s" % locals())
+            if node.kwargs:
+                args.append("%(kwargname)s = $l.%(kwargname)s" % locals())
+            if arg_names:
+                for an in arg_names:
+                    args.append("%s = $l.%s" % (an, an))
+                args = ", ".join(args)
+                self.w( self.spacing() + "var %s;" % args)
+            return
+
+        lpself = "var "
+        lp = ""
         self.w(self.indent() + """\
 if (this.__is_instance__ === true) {\
 """, output=output)
@@ -1711,7 +1726,7 @@ if ($pyjs.options.arg_count && %s) $pyjs__exception_func_param(arguments.callee.
         minargs = maxargs - len(node.defaults)
         maxargsstr = "%d" % maxargs
         s = self.spacing()
-        if self.create_locals:
+        if False: # self.create_locals:
             lp = "$l."
             lpdec = ""
             self.w(s + "var $l = {};")
@@ -1844,7 +1859,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         if len(node.defaults):
             default_pos = len(arg_names) - len(node.defaults)
             for default_node in node.defaults:
-                default_value = self.expr(default_node, current_klass)
+                #default_value = self.expr(default_node, current_klass)
                 default_name = arg_names[default_pos]
                 default_pos += 1
                 #self.w( self.spacing() + "if (typeof %s == 'undefined') %s=%s;" % (default_name, default_name, default_value))
@@ -2105,8 +2120,8 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         function_args = "(" + ", ".join(declared_arg_names) + ")"
         self.w( self.indent() + "%s = function%s {" % (function_name, function_args))
         self._static_method_init(node, declared_arg_names, varargname, kwargname, None)
-        lp = self.create_locals and "$l." or ""
-        self._default_args_handler(node, declared_arg_names, None, kwargname, lp)
+        #lp = self.create_locals and "$l." or ""
+        self._default_args_handler(node, declared_arg_names, None, kwargname, "")
 
         local_arg_names = normal_arg_names + declared_arg_names
 
@@ -2804,16 +2819,19 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             function_args = "(" + ", ".join(declared_arg_names[1:]) + ")"
 
         self.w( self.indent() + "$method = $pyjs__bind_method2('"+method_name+"', function" + function_args + " {")
+        defaults_done_by_inline = False
         if staticmethod:
             self._static_method_init(node, declared_arg_names, varargname, kwargname, current_klass)
         elif classmethod:
             self._class_method_init(node, declared_arg_names, varargname, kwargname, current_klass)
         else:
+            if self.create_locals:
+                defaults_done_by_inline = True
             self._instance_method_init(node, declared_arg_names, varargname, kwargname, current_klass)
 
         # default arguments
-        lp = self.create_locals and "$l." or ""
-        self._default_args_handler(node, declared_arg_names, current_klass, kwargname, lp)
+        if not defaults_done_by_inline:
+            self._default_args_handler(node, declared_arg_names, current_klass, kwargname, "")
 
         local_arg_names = normal_arg_names + declared_arg_names
 

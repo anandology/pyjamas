@@ -545,19 +545,24 @@ function $pyjs_get_vararg_and_kwarg($l, args, kwargname, varargname,
 
    when generating code to call this function, defaults_count is passed in
    because otherwise it is necessary to count the callee __args__ list
-   items [['arg1'], ['arg2', 'a default value']] and that would be a pain.
-    
+   items [['arg1'], ['arg2', 'a default value']] and that would be a pain,
+   repeated tons of times.
+
  */
-function $pyjs_instance_create_locals(inst, args,
-            defaults_count, /* convenience: you have to count them otherwise */
-          has_varargs, has_kwargs)
+function $pyjs_instance_method_get(inst, args,
+                                    defaults_count, /* convenience */
+                                    has_varargs, has_kwargs)
 {
-    var $l = {};
-    var end;
-    var callee_args = args.callee.__args__[0];
+    /* TODO: pass these in, to save time */
+    var callee_args = args.callee.__args__;
     var varargname = callee_args[0]; 
     var kwargname = callee_args[1]; 
     var arg_names = callee_args.slice(2); 
+
+    console.debug(inst.__name__ + "isinst " + inst.__is_instance__ + " hva " + has_varargs + " hkwa " + has_kwargs + " va " + varargname + " kw " + kwargname + " al " + arg_names.length);
+
+    var $l = {};
+    var end;
     var maxargs1 = arg_names.length - 1; /* for __is_instance__ === false */
     var maxargs2 = arg_names.length; /* for __is_instance__ === true */
     var maxargs1check = maxargs1;
@@ -566,6 +571,7 @@ function $pyjs_instance_create_locals(inst, args,
     var minargs2 = maxargs2 - defaults_count;
     var argcount1;
     var argcount2;
+
     if (has_kwargs) {
         maxargs1 = maxargs1 + 1;
         maxargs2 = maxargs2 + 1;
@@ -591,7 +597,7 @@ function $pyjs_instance_create_locals(inst, args,
 
     if (inst.__is_instance__ === true) {
 
-        $l.self = inst;
+        $l['self'] = inst;
 
         if (varargname !== null) { /* if node.varargs: */
             /* self._varargs_handler(varargname, maxargs1) */
@@ -605,9 +611,9 @@ function $pyjs_instance_create_locals(inst, args,
         for (i = 0; i < arg_names.length; i++)
         {
             if (i == 0) {
-                $l.self = args[i];
+                $l['self'] = args[i];
             } else {
-                var arg_name = arg_names[i];
+                var arg_name = arg_names[i][0];
                 $l[arg_name] = args[i];
             }
         }
@@ -621,27 +627,85 @@ function $pyjs_instance_create_locals(inst, args,
                                    maxargs2, minargs2, maxargs2check);
     }
 
-    if (kwargname !== null && typeof $l.kwargs == 'undefined') {
-        $l.kwargs = pyjslib['__empty_dict']();
-        /* for arg_name in arg_names[1:]: */
-        if (typeof $l.arg2 != 'undefined') {
-            if ($l.arg2 !== null && typeof $l.arg2['$pyjs_is_kwarg'] != 'undefined') {
-                $l.kwargs = $l.arg2;
-                $l.arg2 = args[3];
+    /* TODO: function arg checking */
+    /*
+        if arg_names and self.function_argument_checking:
+            self.w( """\
+if ($pyjs.options.arg_instance_type) {
+\tif (%(self)s.prototype.__md5__ !== '%(__md5__)s') {
+\t\tif (!@{{_isinstance}}(%(self)s, arguments['callee']['__class__'])) {
+\t\t\t$pyjs__exception_func_instance_expected(arguments['callee']['__name__'], arguments['callee']['__class__']['__name__'], %(self)s);
+\t\t}
+\t}
+}\
+""" % {'self': arg_names[0], '__md5__': current_klass.__md5__}, output=output)
+    */
+    $pyjs_default_args_handler($l, args, defaults_count, 
+                                    has_varargs, has_kwargs);
+
+    var i = 0;
+    var res = '';
+    for (var k in $l) {
+        res = res + k + " ";
+    }
+
+    return $l;
+}
+
+/* this function mirrors _default_args_handler
+ */
+function $pyjs_default_args_handler($l, args, defaults_count, 
+                                    has_varargs, has_kwargs)
+{
+    /* TODO: pass these in, to save time */
+    var callee_args = args.callee.__args__;
+    var varargname = callee_args[0]; 
+    var kwargname = callee_args[1]; 
+    var arg_names = callee_args.slice(2); 
+
+    if (has_kwargs
+        && kwargname !== null
+        && typeof $l[kwargname] == 'undefined')
+    {
+        /*
+            # This is necessary when **kwargs in function definition
+            # and the call didn't pass the pyjs_kwargs_call().
+            # See libtest testKwArgsInherit
+            # This is not completely safe: if the last element in arguments 
+            # is an dict and the corresponding argument shoud be a dict and 
+            # the kwargs should be empty, the kwargs gets incorrectly the 
+            # dict and the argument becomes undefined.
+            # E.g.
+            # def fn(a = {}, **kwargs): pass
+            # fn({'a':1}) -> a gets undefined and kwargs gets {'a':1}
+        */
+        $l[kwargname] = pyjslib['__empty_dict']();
+        for (var i = arg_names.length-1; i >= 0; --i)
+        {
+            var arg_name = arg_names[i][0];
+            if (typeof $l[arg_name] != 'undefined')
+            {
+                if($l[arg_name] !== null
+                   && typeof $l[arg_name].$pyjs_is_kwarg != 'undefined')
+                {
+                    $l[kwargname] = $l[argname];
+                    $l[arg_name] = args[i];
+                    break;
+                }
             }
-        } else 				if (typeof $l.arg1 != 'undefined') {
-            if ($l.arg1 !== null && typeof $l.arg1['$pyjs_is_kwarg'] != 'undefined') {
-                $l.kwargs = $l.arg1;
-                $l.arg1 = args[3];
-            }
-        } else 				if (typeof $l.self != 'undefined') {
-            if ($l.self !== null && typeof $l.self['$pyjs_is_kwarg'] != 'undefined') {
-                $l.kwargs = $l.self;
-                $l.self = args[3];
-            }
-        } else {
         }
     }
-    if (typeof $l.arg2 == 'undefined') $l.arg2=args.callee.__args__[4][1];
+    var default_pos = arg_names.length - defaults_count;
+    console.debug("default_pos " + default_pos);
+    for (var i = 0; i < defaults_count; i++)
+    {
+        var default_name = arg_names[default_pos][0];
+        console.debug("default_name " + default_name);
+        default_pos++;
+        if (typeof $l[default_name] == 'undefined')
+        {
+            $l[default_name] = callee_args[default_pos+1][1];
+        }
+    }
 }
 
