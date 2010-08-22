@@ -57,6 +57,7 @@ Easy to implement:
     reversed
     sorted
     zip
+    str.find
 
 Require work to implement:
     buffer (deprecated, irrelevant)
