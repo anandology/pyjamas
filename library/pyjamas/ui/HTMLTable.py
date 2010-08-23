@@ -129,7 +129,7 @@ class HTMLTable(Panel):
         return self.getWidget(index[0], index[1])
 
     def add(self, item, row, col):
-        self.addIndexedItem(index, (row, col))
+        self.addIndexedItem((row, col), item)
 
     def addIndexedItem(self, index, item):
         row, col = index

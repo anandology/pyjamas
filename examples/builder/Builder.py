@@ -56,9 +56,18 @@ class BuilderEvents(object):
 
     def onAddClicked(self, sender):
         print "add", sender
+        grid = self.app.bp.getPanel()
+        row = grid.getRowCount() + 1
+        grid.resize(row, 1)
+        self.app.bp.add("builderrow", row, 0)
+        print "counts", grid.getRowCount(), grid.getColumnCount()
 
     def onRemoveClicked(self, sender):
-        print "remoev", sender
+        print "remove", sender
+        widget = sender.getParent() # bit of a cheat
+        grid = self.app.bp.getPanel()
+        (row, col) = grid.getIndex(widget) # find widget row,col
+        grid.removeRow(row)
 
 
 class EventTest(Caption1Events):
@@ -75,7 +84,7 @@ class EventTest(Caption1Events):
         self.login = self.b.createInstance("AppLogin", self)
         self.bp = BuilderPanel(PanelInstanceName="Grid1",
                                InstanceName="builderpanel",
-                               Builder=b,
+                               Builder=self.b,
                                EventReceiver=builderevents)
         RootPanel().add(self.caption1)
         RootPanel().add(self.caption2)

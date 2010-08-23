@@ -136,6 +136,8 @@ class Applier(object):
                      val = convert_to_type(val) if val else None
             else:
                 val = p[ELPROP_DFLT]
+                if val is None:
+                    continue
             args[p[ELPROP_FNAM]] = (context, val,)
 
         self.applyValues(**args) 

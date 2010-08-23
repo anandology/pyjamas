@@ -186,8 +186,6 @@
 		<properties name="elements">
 		</properties>
 		<properties name="layout">
-			<property name="width" value="100%" />
-			<property name="height" value="500px" />
 		</properties>
 		<properties name="common">
 			<property name="name" value="builderpanel" />
@@ -217,10 +215,6 @@
 							<property name="name" value="Grid1" />
 						</properties>
 						<components>
-							<component id="None" index="(0, 0)">
-							</component>
-							<component id="None" index="(1, 0)">
-							</component>
 						</components>
 					</component>
 					<component id="addbutton" name="Button" type="Widget" index="(1, 'south')">

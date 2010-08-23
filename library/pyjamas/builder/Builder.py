@@ -117,6 +117,9 @@ class Builder(object):
                     continue
                 childitem = addItem(child[0], child[1], child[2], item,
                                     eventTarget)
+                if not childitem:
+                    continue
+                print "childitem", childitem
                 item.addIndexedItem(child[0]["index"], childitem)
                 if not "elements" in props:
                     props["elements"] = {}
@@ -124,7 +127,8 @@ class Builder(object):
                     props["elements"][index] = {}
 
                 elemprops = props['elements'][index]
-                childitem.setElementProperties(item, elemprops)
+                print "elemprops", childitem, item, elemprops
+                item.setElementProperties(childitem, elemprops)
 
                 # add child (by name) to item
                 cname = child[0]["id"] 

@@ -92,7 +92,7 @@ class BuilderWidget(Composite):
             and the order in which the setXXX functions will be called
             cannot be determined or guaranteed (kwargs is a dictionary).
         """
-        if self.b:
+        if self.b and self.text:
             self.b.setText(self.text)
         if not self.b or not self.instance_name or not self.event_receiver:
             return

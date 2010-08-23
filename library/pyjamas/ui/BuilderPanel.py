@@ -39,12 +39,12 @@ class BuilderPanel(BuilderWidget):
             CaptionPanel.add(widget)
             ScrollPanel.add(widget)
         """
-        widget = self.b.createInstance(child_instance_name)
-        self.widget.add(widget, *args, **kwargs)
+        widget = self.b.createInstance(child_instance_name, self.event_receiver)
+        self.getPanel().add(widget, *args, **kwargs)
 
     def insert(self, child_instance_name, *args, **kwargs):
-        widget = self.b.createInstance(child_instance_name)
-        self.widget.insert(widget, *args, **kwargs)
+        widget = self.b.createInstance(child_instance_name, self.event_receiver)
+        self.getPanel().insert(widget, *args, **kwargs)
 
     def remove(self, widget, *args, **kwargs):
         """ versatile removing-function, copes with:
@@ -61,7 +61,7 @@ class BuilderPanel(BuilderWidget):
             AbsolutePanel.remove(item)
             FlowPanel.add(widget)
         """
-        self.widget.remove(widget, *args, **kwargs)
+        self.getPanel().remove(widget, *args, **kwargs)
 
     def __iter__(self):
         return self.b.__iter__()
@@ -79,24 +79,24 @@ class BuilderPanel(BuilderWidget):
         return wids[self.panel_instance_name]
 
     def addIndexedItem(self, index, instance_name):
-        widget = self.b.createInstance(child_instance_name)
-        self.widget.addIndexedItem(index, widget)
+        widget = self.b.createInstance(child_instance_name, self.event_receiver)
+        self.getPanel().addIndexedItem(index, widget)
 
     def getIndex(self, *args):
-        return self.widget.getIndex(*args)
+        return self.getPanel().getIndex(*args)
 
     def getIndexedChild(self, *args):
-        return self.widget.getIndexedChild(*args)
+        return self.getPanel().getIndexedChild(*args)
 
     def getWidget(self, *args):
-        return self.widget.getWidget(*args)
+        return self.getPanel().getWidget(*args)
 
     def getWidgetCount(self):
-        return self.widget.getWidgetCount()
+        return self.getPanel().getWidgetCount()
 
     def getWidgetIndex(self, *args):
-        return self.widget.getWidgetIndex(*args)
+        return self.getPanel().getWidgetIndex(*args)
 
     def setWidgetPosition(self, *args):
-        return self.widget.setWidgetPosition(*args)
+        return self.getPanel().setWidgetPosition(*args)
 
