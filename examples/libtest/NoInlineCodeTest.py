@@ -12,11 +12,11 @@ class NoInlineCodeTest(UnitTest.UnitTest):
     def test_bool(self):
         i1 = bool(1)
         def fn():
-            i2 = 1
+            i2 = True
             bool = test
             i3 = bool(1)
-            i4 = 1
-            self.assertEqual(i1, 1)
+            i4 = True
+            self.assertEqual(i1, True)
             self.assertEqual(i1, i2)
             self.assertNotEqual(i1, i3)
             self.assertEqual(i1, i4)
@@ -43,6 +43,19 @@ class NoInlineCodeTest(UnitTest.UnitTest):
             i3 = int(0x1)
             i4 = 0x1
             self.assertEqual(i1, 1)
+            self.assertEqual(i1, i2)
+            self.assertNotEqual(i1, i3)
+            self.assertEqual(i1, i4)
+        fn()
+
+    def test_long(self):
+        i1 = long(1)
+        def fn():
+            i2 = 1L
+            long = test
+            i3 = long(1)
+            i4 = 1L
+            self.assertEqual(i1, 1L)
             self.assertEqual(i1, i2)
             self.assertNotEqual(i1, i3)
             self.assertEqual(i1, i4)
@@ -98,4 +111,28 @@ class NoInlineCodeTest(UnitTest.UnitTest):
             self.assertEqual(i1, i2)
             self.assertNotEqual(i1, i3)
             self.assertEqual(i1, i4)
+        fn()
+
+    def test_set(self):
+        i1 = set([1])
+        _set = set
+        def fn():
+            set = test
+            i3 = set([1])
+            i4 = _set([1])
+            self.assertNotEqual(i1, i3)
+            self.assertEqual(i1, i4)
+        fn()
+
+    def test_ArithmeticError(self):
+        e1 = ArithmeticError
+        def fn():
+            ArithmeticError = bool
+            try:
+                a = 1/0
+            except e1, e:
+                self.assertTrue(isinstance(e, e1))
+                self.assertFalse(isinstance(e, ArithmeticError))
+            else:
+                self.fail("Failed to raise ArithmeticError")
         fn()
