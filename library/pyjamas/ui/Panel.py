@@ -18,25 +18,65 @@ from pyjamas import DOM
 
 from Widget import Widget
 
-class Panel(Widget):
-    def __init__(self, **kwargs):
-        self.children = []
-        Widget.__init__(self, **kwargs)
+class PanelBase(object):
 
     def add(self):
-        console.error("This panel does not support no-arg add()")
+        raise Exception("This panel does not support no-arg add()")
 
     def addIndexedItem(self, index, child):
         self.add(child)
 
+    def remove(self, widget):
+        pass
+
     def clear(self):
-        # use this method, due to list changing as it's being iterated.
+        """ use this method, due to list changing as it's being iterated.
+            also, it's possible to use this method even
+        """
         children = []
-        for child in self.children:
+        for child in self.__iter__():
             children.append(child)
+
+        print "clear children", children
 
         for child in children:
             self.remove(child)
+
+    def doAttachChildren(self):
+        for child in self:
+            child.onAttach()
+
+    def doDetachChildren(self):
+        for child in self:
+            child.onDetach()
+
+    def getWidgetCount(self):
+        return len(self.getChildren())
+
+    def getWidget(self, index):
+        return self.getChildren()[index]
+
+    def getWidgetIndex(self, child):
+        return self.getChildren().index(child)
+
+    def getChildren(self):
+        return self.children # assumes self.children: override if needed.
+
+    def __iter__(self):
+        return self.getChildren().__iter__()
+
+    def setWidget(self, index, widget):
+        """ Replace the widget at the given index with a new one
+        """
+        existing = self.getWidget(index)
+        if existing:
+            self.remove(existing)
+        self.insert(widget, index)
+
+class Panel(PanelBase, Widget):
+    def __init__(self, **kwargs):
+        self.children = []
+        Widget.__init__(self, **kwargs)
 
     def disown(self, widget):
         if widget.getParent() != self:
@@ -54,19 +94,6 @@ class Panel(Widget):
             DOM.appendChild(container, widget.getElement())
         widget.setParent(self)
 
-    def remove(self, widget):
-        pass
-
-    def doAttachChildren(self):
-        for child in self:
-            child.onAttach()
-
-    def doDetachChildren(self):
-        for child in self:
-            child.onDetach()
-
-    def __iter__(self):
-        return self.children.__iter__()
 
 Factory.registerClass('pyjamas.ui.Panel', 'Panel', Panel)
 

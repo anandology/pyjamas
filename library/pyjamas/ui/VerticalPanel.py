@@ -21,22 +21,6 @@ from pyjamas.ui import HasVerticalAlignment
 
 class VerticalPanel(CellPanel):
 
-    def add(self, widget):
-        self.insert(widget, self.getWidgetCount())
-
-    def getHorizontalAlignment(self):
-        return self.horzAlign
-
-    def getVerticalAlignment(self):
-        return self.vertAlign
-
-    def setWidget(self, index, widget):
-        """Replace the widget at the given index with a new one"""
-        existing = self.getWidget(index)
-        if existing:
-            self.remove(existing)
-        self.insert(widget, index)
-
     def insert(self, widget, beforeIndex):
         widget.removeFromParent()
 
@@ -65,11 +49,6 @@ class VerticalPanel(CellPanel):
         CellPanel.remove(self, widget)
         return True
 
-    def setHorizontalAlignment(self, align):
-        self.horzAlign = align
-
-    def setVerticalAlignment(self, align):
-        self.vertAlign = align
 
 Factory.registerClass('pyjamas.ui.VerticalPanel', 'VerticalPanel', VerticalPanel)
 

@@ -31,10 +31,6 @@ class FlowPanel(ComplexPanel):
     def add(self, w):
         ComplexPanel.add(self, w, self.getElement())
 
-    def remove(self, index):
-        if isinstance(index, int):
-            index = self.getWidget(index)
-        return ComplexPanel.remove(self, index)
 
 Factory.registerClass('pyjamas.ui.FlowPanel', 'FlowPanel', FlowPanel)
 

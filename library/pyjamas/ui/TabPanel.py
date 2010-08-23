@@ -19,9 +19,10 @@ from __pyjamas__ import console
 from Composite import Composite
 from DeckPanel import DeckPanel
 from VerticalPanel import VerticalPanel
+from ComplexPanel import ComplexPanelBase
 from TabBar import TabBar
 
-class TabPanel(Composite):
+class TabPanel(Composite, ComplexPanelBase):
     def __init__(self, tabBar=None, **kwargs):
         self.tab_children = [] # TODO: can self.children be used instead?
         self.tab_names = {} 
@@ -63,24 +64,14 @@ class TabPanel(Composite):
     def addTabListener(self, listener):
         self.tabListeners.append(listener)
 
-    def clear(self):
-        while self.getWidgetCount() > 0:
-            self.remove(self.getWidget(0))
-
     def getDeckPanel(self):
         return self.deck
 
     def getTabBar(self):
         return self.tabBar
 
-    def getWidget(self, index):
-        return self.tab_children[index]
-
-    def getWidgetCount(self):
-        return len(self.tab_children)
-
-    def getWidgetIndex(self, child):
-        return self.tab_children.index(child)
+    def getChildren(self):
+        return self.tab_children
 
     def insert(self, widget, tabText, asHTML=False, beforeIndex=None,
                                       name=None):
@@ -93,9 +84,6 @@ class TabPanel(Composite):
             self.tab_names[name] = widget
         self.tabBar.insertTab(tabText, asHTML, beforeIndex)
         self.deck.insert(widget, beforeIndex)
-
-    def __iter__(self):
-        return self.tab_children.__iter__()
 
     def onBeforeTabSelected(self, sender, tabIndex):
         for listener in self.tabListeners:

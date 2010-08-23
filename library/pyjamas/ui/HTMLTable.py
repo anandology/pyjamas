@@ -69,6 +69,8 @@ class HTMLTable(Panel):
                 child = self.getWidget(row, col)
                 if child is not None:
                     self.removeWidget(child)
+                else:
+                    self.clearCell(row, col)
         # assert len(self.widgetMap) == 0
 
     def clearCell(self, row, column):
@@ -126,6 +128,9 @@ class HTMLTable(Panel):
     def getIndexedChild(self, index):
         return self.getWidget(index[0], index[1])
 
+    def add(self, item, row, col):
+        self.addIndexedItem(index, (row, col))
+
     def addIndexedItem(self, index, item):
         row, col = index
         while row >= self.getDOMRowCount():
@@ -145,6 +150,8 @@ class HTMLTable(Panel):
         return True
 
     def __iter__(self):
+        """ only gets widgets: does not obtain HTML or Text cells!
+        """
         return self.widgetMap.itervalues()
 
     def onBrowserEvent(self, event):
