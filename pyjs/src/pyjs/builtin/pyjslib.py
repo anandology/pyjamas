@@ -80,6 +80,11 @@ def type(clsname, bases=None, methods=None):
 class object:
     pass
 
+
+class basestring(object):
+    pass
+
+
 def op_is(a,b):
     JS("""
     if (@{{a}} === @{{b}}) return true;
@@ -1303,6 +1308,7 @@ String.prototype.__repr__ = function () {
     if (typeof this == 'string') return "'" + this.toString() + "'";
     return "<type 'str'>";
 };
+String.prototype.__mro__ = [@{{basestring}}];
 
 """)
 
@@ -5490,11 +5496,6 @@ def str(text):
     }
     return String(@{{text}});
     """)
-basestring = str
-# NOTE: A better implementation of basestring is possibly:
-# class basestring(object):
-#    pass
-# Add __mro__ to String, which contains basestring
 
 def ord(x):
     if(JS("typeof @{{x}}== 'string'") and len(x) is 1):
@@ -5628,6 +5629,7 @@ def isinstance(object_, classinfo):
                     && @{{object_}}.__number__
                     && (@{{object_}}.__number__ != 0x01
                     || isFinite(@{{object_}}));/* XXX TODO: check rounded? */
+        case 'basestring':
         case 'str':
             return typeof @{{object_}}== 'string';
         case 'bool':
