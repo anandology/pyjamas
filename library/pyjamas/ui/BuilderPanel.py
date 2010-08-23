@@ -18,7 +18,11 @@ from pyjamas.ui.BuilderWidget import BuilderWidget
 
 class BuilderPanel(BuilderWidget):
 
-    def add(self, child_instance_name, **args, **kwargs):
+    def __init__(self, **kwargs):
+        self.panel_instance_name = None
+        BuilderWidget.__init__(self, **kwargs)
+
+    def add(self, child_instance_name, *args, **kwargs):
         """ versatile adding-function, copes with:
             HTMLPanel.add(widget, id)
             HTMLTable.add(item, row, col)
@@ -38,7 +42,7 @@ class BuilderPanel(BuilderWidget):
         widget = self.b.createInstance(child_instance_name)
         self.widget.add(widget, *args, **kwargs)
 
-    def insert(self, child_instance_name, **args, **kwargs):
+    def insert(self, child_instance_name, *args, **kwargs):
         widget = self.b.createInstance(child_instance_name)
         self.widget.insert(widget, *args, **kwargs)
 
@@ -64,6 +68,15 @@ class BuilderPanel(BuilderWidget):
 
     def getChildren(self):
         return self.b.getChildren()
+
+    def setPanelInstanceName(self, panel_instance_name):
+        self.panel_instance_name = panel_instance_name
+
+    def getPanel(self):
+        if self.panel_instance_name is None:
+            return self.widget
+        wids = self.b.widget_instances[self.instance_name]
+        return wids[self.panel_instance_name]
 
     def addIndexedItem(self, index, instance_name):
         widget = self.b.createInstance(child_instance_name)

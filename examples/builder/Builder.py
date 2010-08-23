@@ -20,6 +20,7 @@ and automatically links listeners to the widgets that get created.
 import pyjd # this is dummy in pyjs.
 from pyjamas.builder.Builder import Builder, HTTPUILoader
 from pyjamas.ui.RootPanel import RootPanel
+from pyjamas.ui.BuilderPanel import BuilderPanel
 
 
 class Caption1Events(object):
@@ -48,6 +49,17 @@ class Caption1Events(object):
         print self.app.login.getAbsoluteLeft()
         print self.app.login.getAbsoluteTop()
 
+class BuilderEvents(object):
+
+    def __init__(self, app=None):
+        self.app = app
+
+    def onAddClicked(self, sender):
+        print "add", sender
+
+    def onRemoveClicked(self, sender):
+        print "remoev", sender
+
 
 class EventTest(Caption1Events):
 
@@ -57,11 +69,17 @@ class EventTest(Caption1Events):
     def onUILoaded(self, text):
         self.b = Builder(text)
         caption1events = Caption1Events(self)
+        builderevents = BuilderEvents(self)
         self.caption1 = self.b.createInstance("CaptionPanel1", caption1events)
         self.caption2 = self.b.createInstance("CaptionPanel2", self)
         self.login = self.b.createInstance("AppLogin", self)
+        self.bp = BuilderPanel(PanelInstanceName="Grid1",
+                               InstanceName="builderpanel",
+                               Builder=b,
+                               EventReceiver=builderevents)
         RootPanel().add(self.caption1)
         RootPanel().add(self.caption2)
+        RootPanel().add(self.bp)
 
     def onUILoadingTimeout(self, text, code):
         print "timeout loading UI", text, code
