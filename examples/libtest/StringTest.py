@@ -4,6 +4,11 @@ import write
 
 class StringTest(UnitTest):
 
+    def testBasestring(self):
+        s = 'A string'
+        self.assertTrue(isinstance(s, str), "isinstance(s, str)")
+        self.assertTrue(isinstance(s, basestring), "isinstance(s, basestring)")
+
     def testToString(self):
         # TODO: this fails on IE, because we can not override toString
         # in the normal way

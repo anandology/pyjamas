@@ -5490,6 +5490,11 @@ def str(text):
     }
     return String(@{{text}});
     """)
+basestring = str
+# NOTE: A better implementation of basestring is possibly:
+# class basestring(object):
+#    pass
+# Add __mro__ to String, which contains basestring
 
 def ord(x):
     if(JS("typeof @{{x}}== 'string'") and len(x) is 1):
