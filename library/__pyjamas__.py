@@ -81,3 +81,5 @@ class console:
 def debugger():
     pass
 
+def INT(i):
+    return int(i)
