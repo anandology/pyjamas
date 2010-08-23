@@ -136,3 +136,207 @@ class NoInlineCodeTest(UnitTest.UnitTest):
             else:
                 self.fail("Failed to raise ArithmeticError")
         fn()
+
+    def test_AttributeError(self):
+        e1 = AttributeError
+        def fn():
+            AttributeError = bool
+            try:
+                a = e1.noooo
+            except e1, e:
+                self.assertTrue(isinstance(e, e1))
+                self.assertFalse(isinstance(e, AttributeError))
+            else:
+                self.fail("Failed to raise AttributeError")
+        fn()
+
+    def test_BaseException(self):
+        e1 = BaseException
+        def fn():
+            BaseException = bool
+            try:
+                a = 1/0
+            except e1, e:
+                self.assertTrue(isinstance(e, e1))
+                self.assertFalse(isinstance(e, BaseException))
+            else:
+                self.fail("Failed to raise BaseException")
+        fn()
+
+    def test_Exception(self):
+        e1 = Exception
+        def fn():
+            Exception = bool
+            try:
+                a = 1/0
+            except e1, e:
+                self.assertTrue(isinstance(e, e1))
+                self.assertFalse(isinstance(e, Exception))
+            else:
+                self.fail("Failed to raise Exception")
+        fn()
+
+    def _test_GeneratorExit(self):
+        e1 = GeneratorExit
+        def fn():
+            GeneratorExit = bool
+            try:
+                a = 1/0
+            except e1, e:
+                self.assertTrue(isinstance(e, e1))
+                self.assertFalse(isinstance(e, GeneratorExit))
+            else:
+                self.fail("Failed to raise GeneratorExit")
+        fn()
+
+    def test_ImportError(self):
+        e1 = ImportError
+        def fn():
+            ImportError = bool
+            try:
+                import nosuchmodule
+            except e1, e:
+                self.assertTrue(isinstance(e, e1))
+                self.assertFalse(isinstance(e, ImportError))
+            else:
+                self.fail("Failed to raise ImportError")
+        fn()
+
+    def test_IndexError(self):
+        e1 = IndexError
+        def fn():
+            IndexError = bool
+            try:
+                a = [0][1]
+            except e1, e:
+                self.assertTrue(isinstance(e, e1))
+                self.assertFalse(isinstance(e, IndexError))
+            else:
+                self.fail("Failed to raise IndexError")
+        fn()
+
+    def test_KeyError(self):
+        e1 = KeyError
+        def fn():
+            KeyError = bool
+            try:
+                a = dict(a=1)['b']
+            except e1, e:
+                self.assertTrue(isinstance(e, e1))
+                self.assertFalse(isinstance(e, KeyError))
+            else:
+                self.fail("Failed to raise KeyError")
+        fn()
+
+    def test_LookupError(self):
+        e1 = LookupError
+        def fn():
+            LookupError = bool
+            try:
+                a = set([1]).remove(2)
+            except e1, e:
+                self.assertTrue(isinstance(e, e1))
+                self.assertFalse(isinstance(e, LookupError))
+            else:
+                self.fail("Failed to raise LookupError")
+        fn()
+
+    def _test_NameError(self):
+        # This fails anyway
+        e1 = NameError
+        def fn():
+            NameError = bool
+            try:
+                a = nosuchname
+            except e1, e:
+                self.assertTrue(isinstance(e, e1))
+                self.assertFalse(isinstance(e, NameError))
+            else:
+                self.fail("Failed to raise NameError")
+        fn()
+
+    def _test_RuntimeError(self):
+        # This fails anyway...
+        e1 = RuntimeError
+        def fn():
+            RuntimeError = bool
+            try:
+                a = dict(a=1,b=2,c=3)
+                for k, v in a.iteritems():
+                    a['_%s' % k] = v
+            except e1, e:
+                self.assertTrue(isinstance(e, e1))
+                self.assertFalse(isinstance(e, RuntimeError))
+            else:
+                self.fail("Failed to raise RuntimeError")
+        fn()
+
+    def test_StandardError(self):
+        e1 = StandardError
+        def fn():
+            StandardError = bool
+            try:
+                a = 1/0
+            except e1, e:
+                self.assertTrue(isinstance(e, e1))
+                self.assertFalse(isinstance(e, StandardError))
+            else:
+                self.fail("Failed to raise StandardError")
+        fn()
+
+    def _test_StopIteration(self):
+        #This fails anyway...
+        e1 = StopIteration
+        def fn():
+            def g():
+                yield None
+            StopIteration = bool
+            try:
+                a = g()
+                a.next()
+                a.next()
+            except e1, e:
+                self.assertTrue(isinstance(e, e1))
+                self.assertFalse(isinstance(e, StopIteration))
+            else:
+                self.fail("Failed to raise StopIteration")
+        fn()
+
+    def test_TypeError(self):
+        e1 = TypeError
+        def fn():
+            TypeError = bool
+            try:
+                a = 1 + 'a'
+            except e1, e:
+                self.assertTrue(isinstance(e, e1))
+                self.assertFalse(isinstance(e, TypeError))
+            else:
+                self.fail("Failed to raise TypeError")
+        fn()
+
+    def test_ValueError(self):
+        e1 = ValueError
+        def fn():
+            ValueError = bool
+            try:
+                a = list([1]).index(2)
+            except e1, e:
+                self.assertTrue(isinstance(e, e1))
+                self.assertFalse(isinstance(e, ValueError))
+            else:
+                self.fail("Failed to raise ValueError")
+        fn()
+
+    def test_ZeroDivisionError(self):
+        e1 = ZeroDivisionError
+        def fn():
+            ZeroDivisionError = bool
+            try:
+                a = 1/0
+            except e1, e:
+                self.assertTrue(isinstance(e, e1))
+                self.assertFalse(isinstance(e, ZeroDivisionError))
+            else:
+                self.fail("Failed to raise ZeroDivisionError")
+        fn()
