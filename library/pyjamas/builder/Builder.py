@@ -36,13 +36,32 @@ eventListeners = dict(
 
 class Builder(object):
 
-    def __init__(self, text):
-        xmlFile = XMLFile(str(text)) # XMLFile only accepts str not unicode!
+    def __init__(self, text=None):
+        self.builder_text = None
+        self.setText(text)
+
+    def setText(self, text):
+        if text is None:
+            self.widgets_by_name = {}
+            self.widget_instances = {}
+            self.widget_order = {}
+            self.widgets_by_class = {}
+            self.properties = None
+            self.components = None
+            self.builder_text = None
+            return
+
+        text = str(text) # XMLFile only accepts str not unicode!
+        if text == self.builder_text: # don't redo the xml file if same
+            return
+
+        self.builder_text = text
+
         self.widgets_by_name = {}
         self.widget_instances = {}
         self.widget_order = {}
         self.widgets_by_class = {}
-        self.properties, self.components = xmlFile.parse()
+        self.properties, self.components = XMLFile(text).parse()
 
     def createInstance(self, instancename,
                        eventTarget=None, targetItem=None, index=None):
