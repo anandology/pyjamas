@@ -32,6 +32,8 @@ class BuilderPanel(BuilderWidget):
             StackPanel.add(widget, stackText, asHTML)
             AbsolutePanel.add(widget, left, top)
             FlowPanel.add(widget)
+            CaptionPanel.add(widget)
+            ScrollPanel.add(widget)
         """
         widget = self.b.createInstance(child_instance_name)
         self.widget.add(widget, *args, **kwargs)
