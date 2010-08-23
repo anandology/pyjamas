@@ -76,6 +76,7 @@ class PanelBase(object):
 class Panel(PanelBase, Widget):
     def __init__(self, **kwargs):
         self.children = []
+        PanelBase.__init__(self)
         Widget.__init__(self, **kwargs)
 
     def disown(self, widget):

@@ -55,7 +55,9 @@ class ComplexPanelBase(PanelBase):
 
 
 class ComplexPanel(ComplexPanelBase, Panel):
-    pass
+    def __init__(self, **kwargs):
+        Panel.__init__(self, **kwargs)
+        ComplexPanelBase.__init__(self)
 
 Factory.registerClass('pyjamas.ui.ComplexPanel', 'ComplexPanel', ComplexPanel)
 
