@@ -1002,8 +1002,9 @@ def previewEvent(evt):
         return True
 
     #print "previewEvent, cancel, prevent default"
-    eventCancelBubble(evt, True)
-    eventPreventDefault(evt)
+    if evt:
+        eventCancelBubble(evt, True)
+        eventPreventDefault(evt)
 
     return ret
 
