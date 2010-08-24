@@ -78,24 +78,23 @@ class BuilderPanel(BuilderWidget):
         wids = self.b.widget_instances[self.instance_name]
         return wids[self.panel_instance_name]
 
+    # these next three functions are part of the standard Builder API
+    # and are required for panels to be manageable by PyJsGlade.
     def addIndexedItem(self, index, instance_name):
         widget = self.b.createInstance(child_instance_name, self.event_receiver)
         self.getPanel().addIndexedItem(index, widget)
 
-    def getIndex(self, *args):
-        return self.getPanel().getIndex(*args)
+    def getIndexedChild(self, index):
+        return self.getPanel().getIndexedChild(index)
 
-    def getIndexedChild(self, *args):
-        return self.getPanel().getIndexedChild(*args)
+    def getWidgetIndex(self, widget):
+        return self.getPanel().getWidgetIndex(widget)
 
     def getWidget(self, *args):
         return self.getPanel().getWidget(*args)
 
     def getWidgetCount(self):
         return self.getPanel().getWidgetCount()
-
-    def getWidgetIndex(self, *args):
-        return self.getPanel().getWidgetIndex(*args)
 
     def setWidgetPosition(self, *args):
         return self.getPanel().setWidgetPosition(*args)

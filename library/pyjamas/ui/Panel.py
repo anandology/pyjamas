@@ -23,9 +23,6 @@ class PanelBase(object):
     def add(self):
         raise Exception("This panel does not support no-arg add()")
 
-    def addIndexedItem(self, index, child):
-        self.add(child)
-
     def remove(self, widget):
         pass
 
@@ -56,6 +53,12 @@ class PanelBase(object):
     def getWidget(self, index):
         return self.getChildren()[index]
 
+    def getIndexedChild(self, index):
+        return self.getWidget(index)
+
+    def addIndexedItem(self, index, child):
+        self.add(child)
+
     def getWidgetIndex(self, child):
         return self.getChildren().index(child)
 
@@ -66,12 +69,14 @@ class PanelBase(object):
         return self.getChildren().__iter__()
 
     def setWidget(self, index, widget):
-        """ Replace the widget at the given index with a new one
+        """ Insert (or optionally replace) the widget at the given index
+            with a new one
         """
         existing = self.getWidget(index)
         if existing:
             self.remove(existing)
         self.insert(widget, index)
+
 
 class Panel(PanelBase, Widget):
     def __init__(self, **kwargs):

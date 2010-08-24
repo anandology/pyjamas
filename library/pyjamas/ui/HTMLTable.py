@@ -116,6 +116,7 @@ class HTMLTable(Panel):
             return None
         return self.widgetMap[key]
 
+    # next three functions are part of the standard Builder API for panels
     def getIndex(self, widget):
         """ given a widget, return its index.
         """
@@ -128,9 +129,6 @@ class HTMLTable(Panel):
     def getIndexedChild(self, index):
         return self.getWidget(index[0], index[1])
 
-    def add(self, item, row, col):
-        self.addIndexedItem((row, col), item)
-
     def addIndexedItem(self, index, item):
         row, col = index
         while row >= self.getDOMRowCount():
@@ -139,6 +137,9 @@ class HTMLTable(Panel):
             self.insertCells(row, self.getDOMCellCount(row), 1)
         self.setWidget(row, col, item)
         
+    def add(self, item, row, col):
+        self.addIndexedItem((row, col), item)
+
     def isCellPresent(self, row, column):
         # GWT uses "and", possibly a bug
         if row >= self.getRowCount() or row < 0:
