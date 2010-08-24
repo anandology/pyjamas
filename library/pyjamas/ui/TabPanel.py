@@ -19,12 +19,12 @@ from __pyjamas__ import console
 from Composite import Composite
 from DeckPanel import DeckPanel
 from VerticalPanel import VerticalPanel
-from ComplexPanel import ComplexPanelBase
+from Panel import PanelBase
 from TabBar import TabBar
 
-class TabPanel(Composite, ComplexPanelBase):
+class TabPanel(PanelBase, Composite):
     def __init__(self, tabBar=None, **kwargs):
-        self.tab_children = [] # TODO: can self.children be used instead?
+        self.children = [] # TODO: can self.children be used instead?
         self.tab_names = {} 
         self.deck = kwargs.pop('Deck', None)
         if self.deck is None:
@@ -49,6 +49,7 @@ class TabPanel(Composite, ComplexPanelBase):
 
         kwargs['StyleName'] = kwargs.get('StyleName', "gwt-TabPanel")
 
+        PanelBase.__init__(self)
         Composite.__init__(self, panel, **kwargs)
 
     def add(self, widget, tabText=None, asHTML=False, name=None):
@@ -70,16 +71,13 @@ class TabPanel(Composite, ComplexPanelBase):
     def getTabBar(self):
         return self.tabBar
 
-    def getChildren(self):
-        return self.tab_children
-
     def insert(self, widget, tabText, asHTML=False, beforeIndex=None,
                                       name=None):
         if beforeIndex is None:
             beforeIndex = asHTML
             asHTML = False
 
-        self.tab_children.insert(beforeIndex, widget)
+        self.children.insert(beforeIndex, widget)
         if name is not None:
             self.tab_names[name] = widget
         self.tabBar.insertTab(tabText, asHTML, beforeIndex)
@@ -115,7 +113,7 @@ class TabPanel(Composite, ComplexPanelBase):
         if index == -1:
             return False
 
-        self.tab_children.remove(widget)
+        self.children.remove(widget)
         self.tabBar.removeTab(index)
         self.deck.remove(widget)
         return True

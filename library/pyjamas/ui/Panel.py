@@ -20,12 +20,6 @@ from Widget import Widget
 
 class PanelBase(object):
 
-    def add(self):
-        raise Exception("This panel does not support no-arg add()")
-
-    def remove(self, widget):
-        pass
-
     def clear(self):
         """ use this method, due to list changing as it's being iterated.
             also, it's possible to use this method even

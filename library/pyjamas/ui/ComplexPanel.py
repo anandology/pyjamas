@@ -15,9 +15,9 @@
 from pyjamas import DOM
 from pyjamas import Factory
 
-from Panel import Panel, PanelBase
+from Panel import Panel
 
-class ComplexPanelBase(PanelBase):
+class ComplexPanel(Panel):
     """
         Superclass for widgets with multiple children.
     """
@@ -45,19 +45,6 @@ class ComplexPanelBase(PanelBase):
 
         return True
 
-    def setWidget(self, index, widget):
-        """ Replace the widget at the given index with a new one
-        """
-        existing = self.getWidget(index)
-        if existing:
-            self.remove(existing)
-        self.insert(widget, index)
-
-
-class ComplexPanel(ComplexPanelBase, Panel):
-    def __init__(self, **kwargs):
-        Panel.__init__(self, **kwargs)
-        ComplexPanelBase.__init__(self)
 
 Factory.registerClass('pyjamas.ui.ComplexPanel', 'ComplexPanel', ComplexPanel)
 

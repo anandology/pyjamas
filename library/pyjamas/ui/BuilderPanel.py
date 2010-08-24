@@ -14,6 +14,7 @@ addIndexedItem, getIndex and getIndexedChild.
 
 """
 
+from pyjamas import log
 from pyjamas.ui.BuilderWidget import BuilderWidget
 
 class BuilderPanel(BuilderWidget):
@@ -39,8 +40,13 @@ class BuilderPanel(BuilderWidget):
             CaptionPanel.add(widget)
             ScrollPanel.add(widget)
         """
+        log.writebr("panel args pre-mess " + repr(args) + " " + repr(kwargs))
+        pargs = list(args)
         widget = self.b.createInstance(child_instance_name, self.event_receiver)
-        self.getPanel().add(widget, *args, **kwargs)
+        log.writebr("panel " + self.getPanel().__class__.__name__)
+        log.writebr("panel add fn " + self.getPanel().add.__class__.__name__)
+        log.writebr("panel args " + repr(pargs) + " " + repr(kwargs))
+        self.getPanel().add(widget, *pargs, **kwargs)
 
     def insert(self, child_instance_name, *args, **kwargs):
         widget = self.b.createInstance(child_instance_name, self.event_receiver)
