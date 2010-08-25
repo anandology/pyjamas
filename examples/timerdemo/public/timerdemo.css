@@ -1,0 +1,61 @@
+body {
+  color: black;
+  background: white;
+  font-family: verdana, helvetica, arial, sans-serif;
+  font-size: large;
+  padding: 50px;
+  margin: 10px;
+}
+
+div#demo {
+    border: solid black 1px;
+}
+
+.oddrow {
+    background: lightyellow;
+}
+
+.desc {
+    margin: 5px;
+    border: solid black 1px;
+    padding: 5px;
+    background: lightgreen;
+}
+
+.gwt-DialogBox {
+  border: 2px outset;
+  background-color: #90ee90;
+}
+
+.gwt-DialogBox .Caption {
+  background-color: #C3D9FF;
+  padding: 3px;
+  margin: 2px;
+  font-weight: bold;
+  cursor: default;
+}
+
+.clock {
+    font-size: large;
+}
+
+.left {
+    width:  300px;
+}
+
+.popupbox {
+    border: solid black 2px;
+    height: 200px;
+    width:  200px;
+}
+
+.slider {
+    height: 20px;
+    width: 100px;
+    border: solid black 1px;
+}
+
+.colorpanel {
+    height: 100px;
+    width: 200px;
+}
