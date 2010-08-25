@@ -47,6 +47,19 @@ def setStyleName(element, style, add):
 
 class UIObject(Applier):
 
+    _props = [ ("visible", "Visibility", "Visible", None),
+              ("stylename", "Style name", "StyleName", None),
+              ("width", "Width", "Width", None),
+              ("height", "Height", "Height", None),
+              ("size", "Size", "Size", None),
+              ("title", "Title", "Title", None),
+              ("zindex", "Z Index", "zIndex", None),
+             ]
+
+    @classmethod
+    def _getProps(self):
+        return Applier._getProps() + self._props
+
     def __init__(self, **kwargs):
         # do not initialise element, here, to None, whatever you do.
         # there are circumstances where UIObject.__init__ is the last
@@ -177,6 +190,11 @@ class UIObject(Applier):
         DOM.setIntStyleAttribute(self.element, "zIndex", index)
 
     def isVisible(self, element=None):
+        """ XXX DEPRECATED - use getVisible
+        """
+        return self.getVisible(element)
+
+    def getVisible(self, element=None):
         """Determine whether this element is currently visible, by checking
             the CSS property 'display'
         """
