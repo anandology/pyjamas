@@ -1669,7 +1669,7 @@ if (this.__is_instance__ === true) {\
 %(s)s\tif (typeof %(lp)s%(kwargname)s != 'undefined') %(lp)s%(varargname)s.__array.push(%(lp)s%(kwargname)s);\
 """ % locals(), output=output)
             self.w( """\
-%(s)s\t%(lp)s%(kwargname)s = arguments[arguments.length+1];
+%(s)s\t%(lpself)s%(kwargname)s = arguments[arguments.length+1];
 %(s)s} else {
 %(s)s\tdelete %(lp)s%(kwargname)s['$pyjs_is_kwarg'];
 %(s)s}\
@@ -1776,7 +1776,7 @@ if ($pyjs.options.arg_count && %s) $pyjs__exception_func_param(arguments.callee.
         if node.kwargs:
             self.w( self.spacing() + """\
 %s%s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[arguments.length];\
-""" % (lp, kwargname, maxargs), output=output)
+""" % (lpdec, kwargname, maxargs), output=output)
             s = self.spacing()
             self.w( """\
 %(s)sif (typeof %(lp)s%(kwargname)s != 'object' || %(lp)s%(kwargname)s.__name__ != 'dict' || typeof %(lp)s%(kwargname)s.$pyjs_is_kwarg == 'undefined') {\
