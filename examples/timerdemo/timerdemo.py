@@ -19,7 +19,7 @@ from pyjamas import DOM
 from random import random
 from datetime import datetime
 
-# The new proposed Timer impl
+# Timer class
 from pyjamas.Timer import Timer
 
 ######################################################################
