@@ -340,3 +340,22 @@ class NoInlineCodeTest(UnitTest.UnitTest):
             else:
                 self.fail("Failed to raise ZeroDivisionError")
         fn()
+
+    def test_ArgsScoping(self):
+        collection = []
+        def fn(i, *args, **kwargs):
+            if i < 2:
+                fn(i+1)
+            collection.append((i, args, kwargs))
+        args = (2,3)
+        kwargs = dict(a='a', b='b')
+        collection.append((0, args, kwargs))
+        fn(1, *args, **kwargs)
+        self.assertEqual(
+            collection, 
+            [
+                (0, (2, 3), {'a': 'a', 'b': 'b'}), 
+                (2, (), {}), 
+                (1, (2, 3), {'a': 'a', 'b': 'b'}),
+            ],
+        )

@@ -1889,6 +1889,8 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             start -= 1
         else:
             end = "arguments.length"
+        if not lp:
+            lp = 'var '
         self.w( """\
 %(s)s%(lp)s%(v)s = pyjslib['tuple']($pyjs_array_slice.call(arguments,%(b)d,%(e)s));
 """ % {'s': self.spacing(), 'v': varargname, 'b': start, 'e': end, 'lp': lp})
