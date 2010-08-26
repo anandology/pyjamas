@@ -49,6 +49,15 @@ class Caption1Events(object):
         print self.app.login.getAbsoluteLeft()
         print self.app.login.getAbsoluteTop()
 
+    def onMenuItem2(self):
+        print "Menu 2 selected"
+
+    def onMenuItem3(self):
+        print "Menu 3 selected"
+
+    def onMenuItem5(self):
+        print "Menu 5 selected"
+
 class BuilderEvents(object):
 
     def __init__(self, app=None):

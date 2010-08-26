@@ -33,6 +33,10 @@ eventListeners = dict(
     onTreeItemSelected = ("addTreeListener", "sender"),
         )
 
+class BuilderState(object):
+    def __init__(self, builder, eventTarget):
+        self.builder = builder
+        self.eventTarget = eventTarget
 
 class Builder(object):
 
@@ -95,7 +99,7 @@ class Builder(object):
             # which can't fit into the name value structure
             item = kls(**args)
             if hasattr(item, "_setWeirdProps"):
-                item._setWeirdProps(wprops)
+                item._setWeirdProps(wprops, BuilderState(self, eventTarget))
 
             tooltip = wprops.get('tooltip')
             if tooltip is not None:
@@ -135,7 +139,7 @@ class Builder(object):
                 setattr(item, cname, childitem)
 
             # make the event target the recipient of all events
-            if eventTarget and props.has_key("events"):
+            if eventTarget is not None and props.has_key("events"):
                 added_already = []
                 #print props["events"]
                 for listener_name, listener_fn in props["events"].items():

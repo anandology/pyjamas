@@ -21,6 +21,8 @@ from Widget import Widget
 from MenuItem import MenuItem
 from MenuBarPopupPanel import MenuBarPopupPanel
 from pyjamas.ui import Event
+from pyjamas.ui.MultiListener import MultiListener
+
 
 class MenuBar(Widget):
 
@@ -60,6 +62,44 @@ class MenuBar(Widget):
     @classmethod
     def _getProps(self):
         return Widget._getProps() + self._props
+
+    def _setWeirdProps(self, props, builderstate):
+        """ covers creating the sub-menus and linking the event handlers.
+        """
+        self.clearItems() # really tricky to update, so just blow away.
+
+        items = {}
+        for (k, v) in props.items():
+            if not isinstance(k, int):
+                continue
+            items[int(k)] = v
+        items = items.items()
+        items.sort()
+
+        last_level = 0
+        menu = self
+        menus = [menu]
+        for prop in items:
+            print prop
+            level, name, label, handler = prop[1]
+            if level < last_level:
+                menus = menus[:level+1]
+                menu = menus[level]
+            elif level > last_level:
+                menu = MenuBar(vertical=True)
+                lastitem = menus[-1].items[-1]
+                lastitem.setSubMenu(menu)
+                setattr(lastitem, name, menu)
+                menus.append(menu)
+            item = menu.addItem(label)
+            if handler and builderstate is not None and \
+                           builderstate.eventTarget is not None:
+                # add a menu listener callback
+                menuItemListener = MultiListener(builderstate.eventTarget,
+                                                 execute=handler)
+                item.setCommand(menuItemListener)
+
+            last_level = level
 
     def setVertical(self, vertical):
         self.vertical = vertical

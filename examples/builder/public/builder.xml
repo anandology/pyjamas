@@ -8,7 +8,7 @@
 	<property name="codefile" value="builder.py" />
 </properties>
 <components>
-	<component id="AppLogin" name="DialogBox" type="Panel" index="None" left="320" top="324" visible="True">
+	<component id="AppLogin" name="DialogBox" type="Panel" index="None" left="336" top="491" visible="True">
 		<properties name="widget">
 			<property name="caption" value="Login" />
 		</properties>
@@ -91,7 +91,7 @@
 			</component>
 		</components>
 	</component>
-	<component id="CaptionPanel1" name="CaptionPanel" type="Panel" index="None" left="372" top="211" visible="True">
+	<component id="CaptionPanel1" name="CaptionPanel" type="Panel" index="None" left="190" top="323" visible="True">
 		<properties name="widget">
 			<property name="caption" value="CaptionPanel1" />
 		</properties>
@@ -112,7 +112,15 @@
 					<property name="name" value="VerticalPanel1" />
 				</properties>
 				<components>
-					<component id="txbHTML" name="Label" type="Widget" index="0">
+					<component id="txbTextBoxSurname" name="TextBox" type="Widget" index="2">
+						<properties name="common">
+							<property name="name" value="txbTextBoxSurname" />
+						</properties>
+						<properties name="events">
+							<property name="onFocus" value="onInputBoxFocus" />
+						</properties>
+					</component>
+					<component id="txbHTML" name="Label" type="Widget" index="1">
 						<properties name="widget">
 							<property name="tooltip" value="txbHTML in CaptionPanel1" />
 							<property name="label" value="txbHTML" />
@@ -125,19 +133,26 @@
 							<property name="onClick" value="onHTMLClicked" />
 						</properties>
 					</component>
-					<component id="txbTextBoxSurname" name="TextBox" type="Widget" index="1">
-						<properties name="common">
-							<property name="name" value="txbTextBoxSurname" />
+					<component id="None" index="3">
+					</component>
+					<component id="MenuBar1" name="MenuBar" type="Widget" index="0">
+						<properties name="widget">
+							<property name="0" value="(0, u'MenuItem1', u'Menu1', '')" />
+							<property name="1" value="(1, u'MenuItem2', u'Menu2', u'onMenuItem2')" />
+							<property name="2" value="(1, u'MenuItem3', u'Menu3', u'onMenuItem3')" />
+							<property name="3" value="(0, u'MenuItem4', u'Menu4', '')" />
+							<property name="4" value="(1, u'MenuItem5', u'Menu5', u'onMenuItem5')" />
+							<property name="vertical" value="False" />
 						</properties>
-						<properties name="events">
-							<property name="onFocus" value="onInputBoxFocus" />
+						<properties name="common">
+							<property name="name" value="MenuBar1" />
 						</properties>
 					</component>
 				</components>
 			</component>
 		</components>
 	</component>
-	<component id="CaptionPanel2" name="CaptionPanel" type="Panel" index="None" left="449" top="476" visible="True">
+	<component id="CaptionPanel2" name="CaptionPanel" type="Panel" index="None" left="507" top="374" visible="False">
 		<properties name="widget">
 			<property name="caption" value="CaptionPanel2" />
 		</properties>
@@ -182,10 +197,8 @@
 			</component>
 		</components>
 	</component>
-	<component id="builderpanel" name="ScrollPanel" type="Panel" index="None" left="248" top="220" visible="True">
+	<component id="builderpanel" name="ScrollPanel" type="Panel" index="None" left="248" top="220" visible="False">
 		<properties name="elements">
-		</properties>
-		<properties name="layout">
 		</properties>
 		<properties name="common">
 			<property name="name" value="builderpanel" />
@@ -204,19 +217,6 @@
 				<components>
 					<component id="None" index="(0, 'north')">
 					</component>
-					<component id="None" index="(2, 'west')">
-					</component>
-					<component id="None" index="(3, 'east')">
-					</component>
-					<component id="Grid1" name="Grid" type="Panel" index="(4, 'center')">
-						<properties name="elements">
-						</properties>
-						<properties name="common">
-							<property name="name" value="Grid1" />
-						</properties>
-						<components>
-						</components>
-					</component>
 					<component id="addbutton" name="Button" type="Widget" index="(1, 'south')">
 						<properties name="widget">
 							<property name="label" value="add" />
@@ -228,11 +228,20 @@
 							<property name="onClick" value="onAddClicked" />
 						</properties>
 					</component>
+					<component id="None" index="(2, 'west')">
+					</component>
+					<component id="None" index="(3, 'east')">
+					</component>
+					<component id="Grid1" name="Grid" type="Panel" index="(4, 'center')">
+						<properties name="common">
+							<property name="name" value="Grid1" />
+						</properties>
+					</component>
 				</components>
 			</component>
 		</components>
 	</component>
-	<component id="builderrow" name="HorizontalPanel" type="Panel" index="None" left="195" top="324" visible="True">
+	<component id="builderrow" name="HorizontalPanel" type="Panel" index="None" left="195" top="324" visible="False">
 		<properties name="elements">
 		</properties>
 		<properties name="layout">
