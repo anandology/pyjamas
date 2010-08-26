@@ -47,10 +47,12 @@ class BuilderPanel(BuilderWidget):
         log.writebr("panel add fn " + self.getPanel().add.__class__.__name__)
         log.writebr("panel args " + repr(pargs) + " " + repr(kwargs))
         self.getPanel().add(widget, *pargs, **kwargs)
+        return widget
 
     def insert(self, child_instance_name, *args, **kwargs):
         widget = self.b.createInstance(child_instance_name, self.event_receiver)
         self.getPanel().insert(widget, *args, **kwargs)
+        return widget
 
     def remove(self, widget, *args, **kwargs):
         """ versatile removing-function, copes with:
