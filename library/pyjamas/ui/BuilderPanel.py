@@ -40,13 +40,8 @@ class BuilderPanel(BuilderWidget):
             CaptionPanel.add(widget)
             ScrollPanel.add(widget)
         """
-        log.writebr("panel args pre-mess " + repr(args) + " " + repr(kwargs))
-        pargs = list(args)
         widget = self.b.createInstance(child_instance_name, self.event_receiver)
-        log.writebr("panel " + self.getPanel().__class__.__name__)
-        log.writebr("panel add fn " + self.getPanel().add.__class__.__name__)
-        log.writebr("panel args " + repr(pargs) + " " + repr(kwargs))
-        self.getPanel().add(widget, *pargs, **kwargs)
+        self.getPanel().add(widget, *args, **kwargs)
         return widget
 
     def insert(self, child_instance_name, *args, **kwargs):
