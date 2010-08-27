@@ -1,6 +1,9 @@
                     Changes made to Pyjamas since 0.7
                     ---------------------------------
 
+ * Add auto-build (file monitoring) option to pyjsbuild, contributed
+   by Suzan Shakya.
+
  * Add pyjscompressor.py from Sujan Shakya to contrib: depends on java
    and google java compressor tool.
 
