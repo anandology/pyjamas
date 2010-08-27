@@ -58,10 +58,13 @@ class Timer:
     def __init__(self, delayMillis=0, notify=None):
 
         '''Called with no arguments, create a timer that will call its
-        run() method when it is scheduled and fired.  This is GWT's
-        interface and behaviour.  There are two enhancements to
-        pyjamas' implementation when specified with special keyword
-        arguments:
+        run() method when it is scheduled and fired.  This usage
+        requires subclassing to implement the run() method.  This is
+        GWT's interface and behaviour.
+
+        There are two enhancements to pyjamas' implementation when
+        specified with special keyword arguments, one of which
+        obviates the need for subclassing.
 
             timer = Timer(delayMillis=ms)
 
@@ -73,23 +76,41 @@ class Timer:
         and:
 
             timer = Timer(notify=object_or_func)
-
+            
         is the same as:
 
             timer = Timer()
             run = getattr(object_or_func, 'onTimer', object_or_func)
             if not callable(run): raise ValueError, msg
-            timer.run = run
 
         i.e., the value passed to notify is checked to see if it has
-        an onTimer attribute; if so, it is used as run(), if not the
-        object itself is used as run()
+        an onTimer attribute; if so, it is used as the callable, if
+        not, the object itself is used as the callable.
 
-        NOTE: there are no positional arguments!
+        NOTE: when notify is specified, the function or method will be
+        called with one argument: the instance of the timer.  So, this
+        would be proper usage:
+
+            def timer_cb(timer):
+               ...
+
+            timer = Timer(notify=timer_cb)
+
+        or:
+
+            class myclass:
+
+                def __init__(self):
+                    ...
+                    self.timer = Timer(notify=self)
+
+                def onTimer(self, timer):
+                    ...
         '''
 
         # initialize a few house keeping vars
-        self.tid = None
+        self.__tid = None
+        self.__onTimer = lambda: self.run()
         Window.addWindowCloseListener(Timer.__WindowCloseListener())
 
         # check notify
@@ -97,7 +118,7 @@ class Timer:
             run = getattr(notify, 'onTimer', notify)
             if not callable(run):
                 raise ValueError, 'Programming error: notify must be callable'
-            self.run = run
+            self.__onTimer = lambda: run(self)
 
         # schedule?
         if delayMillis != 0:
@@ -106,15 +127,15 @@ class Timer:
     def cancel(self):
         'Cancel the timer.'
 
-        if self.tid is None:
+        if self.__tid is None:
             return
 
-        if self.is_repeating:
-            self.__clearInterval(self.tid)
+        if self.__is_repeating:
+            self.__clearInterval(self.__tid)
         else:
-            self.__clearTimeout(self.tid)
+            self.__clearTimeout(self.__tid)
 
-        self.tid = None
+        self.__tid = None
         Timer.__timers.discard(self)
     
     def run(self):
@@ -132,8 +153,8 @@ class Timer:
             raise ValueError, 'delay must be positive'
         
         self.cancel()
-        self.is_repeating = False
-        self.tid = self.__setTimeout(delayMillis)
+        self.__is_repeating = False
+        self.__tid = self.__setTimeout(delayMillis)
         Timer.__timers.add(self)
         
 
@@ -146,16 +167,16 @@ class Timer:
             raise ValueError, 'period must be positive'
         
         self.cancel()
-        self.is_repeating = True
-        self.tid = self.__setInterval(periodMillis)
+        self.__is_repeating = True
+        self.__tid = self.__setInterval(periodMillis)
         Timer.__timers.add(self)
 
     # fire the timer
     def __fire(self):
         # if not repeating, remove it from the list of active timers
-        if not self.is_repeating:
+        if not self.__is_repeating:
             Timer.__timers.discard(self)
-        self.run()
+        self.__onTimer()
 
     ######################################################################
     # Platforms need to implement the following four methods

@@ -82,9 +82,8 @@ class Clock:
             self.button.stop = True
             self.timer.scheduleRepeating(1000)
             self.button.setText(self.stop_txt)
-            self.updateclock()
 
-    def updateclock(self):
+    def updateclock(self, timer):
 
         # the callable attached to the timer with notify
         dt = datetime.now().replace(microsecond=0)
@@ -211,7 +210,7 @@ class RandomColor:
         self.slider.setValue(self.value)
         self.slider.setControlPos(self.value)
 
-    def onTimer(self):
+    def onTimer(self, timer):
 
         # when the timer fires we randomize the color and (maybe)
         # reschedule ourselves.
@@ -234,7 +233,7 @@ class RandomColor:
         else:
             # no it's being reset
             self.__label.setText(str(new) + ' sec')
-            self.onTimer()
+            self.onTimer(self.timer)
             
     def randomcolor(self):
 
