@@ -42,7 +42,7 @@ class EventSimple(SimplePanel):
         print "zoom to " + str(self.map.getZoom())
         Timer(1500, self.moveToDarwin)
 
-    def moveToDarwin(self):
+    def moveToDarwin(self, timer):
         darwin = LatLng(-12.461334, 130.841904)
         self.map.setCenter(darwin)
 

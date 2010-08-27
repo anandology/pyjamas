@@ -142,7 +142,7 @@ class Chapter(Sink):
 
         Timer(1, self)
 
-    def onTimer(self, sender):
+    def onTimer(self, timer):
 
         count = 0
         while count < 10:
@@ -155,7 +155,7 @@ class Chapter(Sink):
             self.up_to = idx+1
 
         if self.text:
-            Timer(1, self)
+            timer.schedule(1)
 
 
     def process_line(self, line):

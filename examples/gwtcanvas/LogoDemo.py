@@ -130,10 +130,10 @@ class LogoDemo(SimpleCanvasDemo):
 
         #log.writebr(str(self.rotation))
 
-    def onTimer(self, tid):
+    def onTimer(self, timer):
         if not self.run:
             return
         self.renderingLoop()
-        Timer(10, self)
+        timer.schedule(10)
 
 
