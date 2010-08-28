@@ -6,6 +6,7 @@ var $wnd = parent;
 var $doc = $wnd.document;
 var $moduleName = "%(app_name)s";
 var $pyjs = new Object();
+var $p = null;
 $pyjs.global_namespace = this;
 $pyjs.__modules__ = {};
 $pyjs.loaded_modules = {};
@@ -80,8 +81,9 @@ var onExecutionError = function (exception, name) {
 };
 
 function app_imported() {
-    $pyjs.loaded_modules['pyjslib']('pyjslib');
-    $pyjs.__modules__.pyjslib = $pyjs.loaded_modules['pyjslib']
+    $p = $pyjs.loaded_modules['pyjslib'];
+    $p('pyjslib');
+    $pyjs.__modules__.pyjslib = $p['pyjslib']
     pyjslib.___import___(
                '%(app_name)s',
                null,

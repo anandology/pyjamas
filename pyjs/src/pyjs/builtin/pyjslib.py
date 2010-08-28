@@ -36,7 +36,7 @@ $min_int = -0x80000000;
 """)
 
 JS("""
-$module['_handle_exception'] = function(err) {
+$m['_handle_exception'] = function(err) {
     $pyjs.loaded_modules['sys'].save_exception_stack();
 
     if (!$pyjs.in_try_except) {
