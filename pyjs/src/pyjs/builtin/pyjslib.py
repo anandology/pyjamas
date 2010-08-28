@@ -4934,129 +4934,11 @@ class set(object):
 JS("@{{set}}['__str__'] = @{{set}}['__repr__'];")
 JS("@{{set}}['toString'] = @{{set}}['__repr__'];")
 
-class frozenset(object):
+class frozenset(set):
     def __init__(self, _data=JS("[]")):
-        # Transform data into an array with [key,value] and add set self.__object
-        # Input data can be Array(key, val), iteratable (key,val) or Object/Function
-        if JS("typeof @{{self}}.__object != 'undefined'"):
-            return None
-        JS("var data = @{{_data}};")
-        if isSet(_data):
-            JS("""
-            @{{self}}.__object = {};
-            var selfObj = @{{self}}.__object,
-                dataObj = data.__object;
-            for (var sVal in dataObj) {
-                selfObj[sVal] = dataObj[sVal];
-            }
-            return null;""")
-        JS("""
-        var item, i, n;
-        var selfObj = @{{self}}.__object = {};
-
-        if (data === null) {
-            throw @{{TypeError}}("'NoneType' is not iterable");
-        }
-        if (data.constructor === Array) {
-        } else if (typeof data.__object == 'object') {
-            data = data.__object;
-            for (var sKey in data) {
-                selfObj[sKey] = data[sKey][0];
-            }
-            return null;
-        } else if (typeof data.__iter__ == 'function') {
-            if (typeof data.__array == 'object') {
-                data = data.__array;
-            } else {
-                var iter = data.__iter__();
-                if (typeof iter.__array == 'object') {
-                    data = iter.__array;
-                }
-                data = [];
-                var item, i = 0;
-                if (typeof iter.$genfunc == 'function') {
-                    while (typeof (item=iter.next(true)) != 'undefined') {
-                        data[i++] = item;
-                    }
-                } else {
-                    try {
-                        while (true) {
-                            data[i++] = iter.next();
-                        }
-                    }
-                    catch (e) {
-                        if (e.__name__ != 'StopIteration') throw e;
-                    }
-                }
-            }
-        } else if (typeof data == 'object' || typeof data == 'function') {
-            for (var key in data) {
-                selfObj[@{{hash}}(key)] = key;
-            }
-            return null;
-        } else {
-            throw @{{TypeError}}("'" + @{{repr}}(data) + "' is not iterable");
-        }
-        // Assume uniform array content...
-        if ((n = data.length) == 0) {
-            return null;
-        }
-        i = 0;
-        while (i < n) {
-            item = data[i++];
-            selfObj[@{{hash}}(item)] = item;
-        }
-        return null;
-        """)
-
-    def __cmp__(self, other):
-        # We (mis)use cmp here for the missing __gt__/__ge__/...
-        # if self == other : return 0
-        # if self is subset of other: return -1
-        # if self is superset of other: return 1
-        # else return 2
-        if not isSet(other):
-            return 2
-            #other = frozenset(other)
-        JS("""
-        var selfLen = 0,
-            otherLen = 0,
-            selfObj = @{{self}}.__object,
-            otherObj = @{{other}}.__object,
-            selfMismatch = false,
-            otherMismatch = false;
-        for (var sVal in selfObj) {
-            if (!selfMismatch && typeof otherObj[sVal] == 'undefined') {
-                selfMismatch = true;
-            }
-            selfLen++;
-        }
-        for (var sVal in otherObj) {
-            if (!otherMismatch && typeof selfObj[sVal] == 'undefined') {
-                otherMismatch = true;
-            }
-            otherLen++;
-        }
-        if (selfMismatch && otherMismatch) return 2;
-        if (selfMismatch) return 1;
-        if (otherMismatch) return -1;
-        return 0;
-""")
-
-    def __contains__(self, value):
-        if isSet(value) == 1: # An instance of set
-            # Use frozenset hash
-            JS("""
-            var hashes = new Array(), obj = @{{self}}.__object, i = 0;
-            for (var v in obj) {
-                hashes[i++] = v;
-            }
-            hashes.sort();
-            var h = hashes.join("|");
-            return typeof @{{self}}.__object[h] != 'undefined';
-""")
-        JS("""return typeof @{{self}}.__object[@{{hash}}(@{{value}})] != 'undefined';""")
-
+        if JS(""" typeof(@{{self}}.__object) == 'undefined'"""):
+            super(frozenset, self).__init__(_data)
+        
     def __hash__(self):
         JS("""
         var hashes = new Array(), obj = @{{self}}.__object, i = 0;
@@ -5067,201 +4949,26 @@ class frozenset(object):
         return (@{{self}}.$H = hashes.join("|"));
 """)
 
-    def __iter__(self):
-        JS("""
-        var items = new Array();
-        var i = 0;
-        for (var key in @{{self}}.__object) {
-            items[i++] = @{{self}}.__object[key];
-        }
-        return new $iter_array(items);
-        """)
-
-    def __len__(self):
-        size=0.0
-        JS("""
-        for (var i in @{{self}}.__object) size++;
-        """)
-        return INT(size)
-
-    #def __str__(self):
-    #    return self.__repr__()
-    #See monkey patch at the end of the set class definition
-
-    def __repr__(self):
-        if callable(self):
-            return "<type '%s'>" % self.__name__
-        JS("""
-        var values = new Array();
-        var i = 0,
-            obj = @{{self}}.__object,
-            s = @{{self}}.__name__ + "([";
-        for (var sVal in obj) {
-            values[i++] = @{{repr}}(obj[sVal]);
-        }
-        s += values.join(", ");
-        s += "])";
-        return s;
-        """)
-
-    def __and__(self, other):
-        # Return the intersection of two sets as a new set
-        if not isSet(other):
-            return NotImplemented
-        return self.intersection(other)
-
-    def __or__(self, other):
-        # Return the union of two sets as a new set.
-        if not isSet(other):
-            return NotImplemented
-        return self.union(other)
-
-    def __xor__(self, other):
-        # Return the symmetric difference of two sets as a new set.
-        if not isSet(other):
-            return NotImplemented
-        return self.symmetric_difference(other)
-
-    def  __sub__(self, other):
-        # Return the difference of two sets as a new Set.
-        if not isSet(other):
-            return NotImplemented
-        return self.difference(other)
+    def add(self, value):
+        raise AttributeError('frozenset is immutable')
 
     def clear(self):
-        JS("""@{{self}}.__object = {};""")
-        return None
+        raise AttributeError('frozenset is immutable')
 
-    def copy(self):
-        new_set = set()
-        JS("""
-        var obj = @{{new_set}}.__object,
-            selfObj = @{{self}}.__object;
-        for (var sVal in selfObj) {
-            obj[sVal] = selfObj[sVal];
-        }
-""")
-        return new_set
+    def difference_update(self, other):
+        raise AttributeError('frozenset is immutable')
 
-    def difference(self, other):
-        # Return the difference of two sets as a new set.
-        # (i.e. all elements that are in this set but not the other.)
-        if not isSet(other):
-            other = frozenset(other)
-        new_set = set()
-        JS("""
-        var obj = @{{new_set}}.__object,
-            selfObj = @{{self}}.__object,
-            otherObj = @{{other}}.__object;
-        for (var sVal in selfObj) {
-            if (typeof otherObj[sVal] == 'undefined') {
-                obj[sVal] = selfObj[sVal];
-            }
-        }
-""")
-        return new_set
-
-    def intersection(self, other):
-        # Return the intersection of two sets as a new set.
-        # (i.e. all elements that are in both sets.)
-        if not isSet(other):
-            other = frozenset(other)
-        new_set = set()
-        JS("""
-        var obj = @{{new_set}}.__object,
-            selfObj = @{{self}}.__object,
-            otherObj = @{{other}}.__object;
-        for (var sVal in selfObj) {
-            if (typeof otherObj[sVal] != 'undefined') {
-                obj[sVal] = selfObj[sVal];
-            }
-        }
-""")
-        return new_set
-
-    def isdisjoint(self, other):
-        # Return True if two sets have a null intersection.
-        if not isSet(other):
-            other = frozenset(other)
-        JS("""
-        var selfObj = @{{self}}.__object,
-            otherObj = @{{other}}.__object;
-        for (var sVal in selfObj) {
-            if (typeof otherObj[sVal] != 'undefined') {
-                return false;
-            }
-        }
-        for (var sVal in otherObj) {
-            if (typeof selfObj[sVal] != 'undefined') {
-                return false;
-            }
-        }
-""")
-        return True
-
-    def issubset(self, other):
-        if not isSet(other):
-            other = frozenset(other)
-        return JS("@{{self}}.__cmp__(@{{other}}) < 0")
-
-    def issuperset(self, other):
-        if not isSet(other):
-            other = frozenset(other)
-        return JS("(@{{self}}.__cmp__(@{{other}})|1) == 1")
+    def discard(self, value):
+        raise AttributeError('frozenset is immutable')
+        
+    def intersection_update(self, other):
+        raise AttributeError('frozenset is immutable')
 
     def pop(self):
-        JS("""
-        for (var sVal in @{{self}}.__object) {
-            var value = @{{self}}.__object[sVal];
-            delete @{{self}}.__object[sVal];
-            return value;
-        }
-        """)
-        raise KeyError("pop from an empty set")
+        raise AttributeError('frozenset is immutable')
 
-    def symmetric_difference(self, other):
-        # Return the symmetric difference of two sets as a new set.
-        # (i.e. all elements that are in exactly one of the sets.)
-        if not isSet(other):
-            other = frozenset(other)
-        new_set = set()
-        JS("""
-        var obj = @{{new_set}}.__object,
-            selfObj = @{{self}}.__object,
-            otherObj = @{{other}}.__object;
-        for (var sVal in selfObj) {
-            if (typeof otherObj[sVal] == 'undefined') {
-                obj[sVal] = selfObj[sVal];
-            }
-        }
-        for (var sVal in otherObj) {
-            if (typeof selfObj[sVal] == 'undefined') {
-                obj[sVal] = otherObj[sVal];
-            }
-        }
-""")
-        return new_set
-
-    def union(self, other):
-        # Return the union of two sets as a new set.
-        # (i.e. all elements that are in either set.)
-        new_set = set()
-        if not isSet(other):
-            other = frozenset(other)
-        JS("""
-        var obj = @{{new_set}}.__object,
-            selfObj = @{{self}}.__object,
-            otherObj = @{{other}}.__object;
-        for (var sVal in selfObj) {
-            obj[sVal] = selfObj[sVal];
-        }
-        for (var sVal in otherObj) {
-            if (typeof selfObj[sVal] == 'undefined') {
-                obj[sVal] = otherObj[sVal];
-            }
-        }
-""")
-        return new_set
+    def symmetric_difference_update(self, other):
+        raise AttributeError('frozenset is immutable')
 
 JS("@{{frozenset}}['__str__'] = @{{frozenset}}['__repr__'];")
 JS("@{{frozenset}}['toString'] = @{{frozenset}}['__repr__'];")
