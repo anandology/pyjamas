@@ -410,6 +410,9 @@ for a in ECMAScipt_Reserved_Words:
     pyjs_attrib_remap[a] = '$$' + a
 
 
+def bracket_fn(s):
+    return s # "(%s)" % s
+
 # pass in the compiler module (lib2to3 pgen or "standard" python one)
 # and patch transformer. see http://bugs.python.org/issue6978
 def monkey_patch_broken_transformer(compiler):
@@ -755,6 +758,7 @@ class Translator(object):
                  bound_methods=True,
                  descriptors=True,
                  source_tracking=True,
+                 stupid_mode=False,
                  line_tracking=True,
                  store_source=True,
                  inline_code=True,
@@ -790,6 +794,7 @@ class Translator(object):
         self.bound_methods = bound_methods
         self.descriptors = descriptors
         self.source_tracking = source_tracking
+        self.stupid_mode = stupid_mode
         self.line_tracking = line_tracking
         self.store_source = store_source
         self.inline_bool = inline_code
@@ -1274,6 +1279,8 @@ class Translator(object):
     __inline_bool_code_str = __inline_bool_code_str.replace("    ", "\t").replace("\n", "\n%(s)s")
 
     def inline_bool_code(self, e):
+        if self.stupid_mode:
+            return bracket_fn(e)
         if self.inline_bool:
             v = self.uniqid('$bool')
             self.add_lookup('variable', v, v)
@@ -3392,17 +3399,23 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
     def compare_code(self, op, lhs, rhs):
         if op == "==":
-            return self.inline_eq_code(lhs, rhs)
+            if not self.stupid_mode:
+                return self.inline_eq_code(lhs, rhs)
         if op == "!=":
-            return "!"+self.inline_eq_code(lhs, rhs)
+            if not self.stupid_mode:
+                return "!"+self.inline_eq_code(lhs, rhs)
         if op == "<":
-            return "(%s == -1)" % self.inline_cmp_code(lhs, rhs)
+            if not self.stupid_mode:
+                return "(%s == -1)" % self.inline_cmp_code(lhs, rhs)
         if op == "<=":
-            return "(%s < 1)" % self.inline_cmp_code(lhs, rhs)
+            if not self.stupid_mode:
+                return "(%s < 1)" % self.inline_cmp_code(lhs, rhs)
         if op == ">":
-            return "(%s == 1)" % self.inline_cmp_code(lhs, rhs)
+            if not self.stupid_mode:
+                return "(%s == 1)" % self.inline_cmp_code(lhs, rhs)
         if op == ">=":
-            return "(((%s)|1) == 1)" % self.inline_cmp_code(lhs, rhs)
+            if not self.stupid_mode:
+                return "(((%s)|1) == 1)" % self.inline_cmp_code(lhs, rhs)
         if op == "in":
             return rhs + ".__contains__(" + lhs + ")"
         elif op == "not in":
@@ -3421,9 +3434,13 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
     def _not(self, node, current_klass):
         expr = self.expr(node.expr, current_klass)
+        if self.stupid_mode:
+            return "(!(%s))" % expr
         return "!" + self.inline_bool_code(expr)
 
     def _or(self, node, current_klass):
+        if self.stupid_mode:
+            return " || ".join(map(bracket_fn, [self.expr(child, current_klass) for child in node.nodes]))
         s = self.spacing()
         expr = "@EXPR@"
         for e in [self.expr(child, current_klass) for child in node.nodes[:-1]]:
@@ -3438,6 +3455,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         return "@{{op_or}}([%s])" % expr
 
     def _and(self, node, current_klass):
+        if self.stupid_mode:
+            return " && ".join(map(bracket_fn, [self.expr(child, current_klass) for child in node.nodes]))
         s = self.spacing()
         expr = "@EXPR@"
         for e in [self.expr(child, current_klass) for child in node.nodes[:-1]]:
@@ -3763,6 +3782,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             return self.track_call("@{{sprintf}}("+self.expr(node.left, current_klass) + ", " + self.expr(node.right, current_klass)+")", node.lineno)
         e1 = self.expr(node.left, current_klass)
         e2 = self.expr(node.right, current_klass)
+        if self.stupid_mode:
+            return "(%(e1)s) %% (%(e2)s)" % locals()
         v1 = self.uniqid('$mod')
         v2 = self.uniqid('$mod')
         self.add_lookup('variable', v1, v1)
@@ -4175,6 +4196,7 @@ def translate(compiler, sources, output_file, module_name=None,
               bound_methods=True,
               descriptors=True,
               source_tracking=True,
+              stupid_mode=False,
               line_tracking=True,
               store_source=True,
               inline_code=False,
@@ -4225,6 +4247,7 @@ def translate(compiler, sources, output_file, module_name=None,
                    bound_methods = bound_methods,
                    descriptors = descriptors,
                    source_tracking = source_tracking,
+                   stupid_mode = stupid_mode,
                    line_tracking = line_tracking,
                    store_source = store_source,
                    inline_code = inline_code,
@@ -4800,6 +4823,17 @@ def add_compile_options(parser):
     speed_options['number_classes'] = False
     pythonic_options['number_classes'] = True
 
+    parser.add_option("--not-stupid-mode",
+                      dest = "stupid_mode",
+                      action="store_false",
+                      help = "Doesn't rely on javascriptisms",
+                     )
+    parser.add_option("--stupid-mode",
+                      dest = "stupid_mode",
+                      action="store_true",
+                      help = "Creates minimalist code, relying on javascript",
+                     )
+
     def set_multiple(option, opt_str, value, parser, **kwargs):
         for k in kwargs.keys():
             setattr(parser.values, k, kwargs[k])
@@ -4829,6 +4863,7 @@ def add_compile_options(parser):
                         bound_methods = True,
                         descriptors = False,
                         source_tracking = False,
+                        stupid_mode = False,
                         line_tracking = False,
                         store_source = False,
                         inline_code = False,
@@ -4883,6 +4918,7 @@ def main():
               bound_methods = options.bound_methods,
               source_tracking = options.source_tracking,
               line_tracking = options.line_tracking,
+              stupid_mode = options.stupid_mode,
               store_source = options.store_source,
               inline_code = options.inline_code,
               operator_funcs = options.operator_funcs,
