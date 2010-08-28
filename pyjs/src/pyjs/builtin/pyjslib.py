@@ -4522,10 +4522,11 @@ def __empty_dict():
 
 class set(object):
     def __init__(self, _data=JS("[]")):
-        # Transform data into an array with [key,value] and add set 
-        # self.__object
-        # Input data can be Array(key, val), iteratable (key,val) or 
-        # Object/Function
+        """ Transform data into an array with [key,value] and add set 
+            self.__object
+            Input data can be Array(key, val), iteratable (key,val) or 
+            Object/Function
+        """
         JS("var data = @{{_data}};")
         if isSet(_data):
             JS("""
@@ -4684,25 +4685,33 @@ class set(object):
         """)
 
     def __and__(self, other):
-        # Return the intersection of two sets as a new set
+        """ Return the intersection of two sets as a new set.
+            only available under --number-classes
+        """
         if not isSet(other):
             return NotImplemented
         return self.intersection(other)
 
     def __or__(self, other):
-        # Return the union of two sets as a new set.
+        """ Return the union of two sets as a new set..
+            only available under --number-classes
+        """
         if not isSet(other):
             return NotImplemented
         return self.union(other)
 
     def __xor__(self, other):
-        # Return the symmetric difference of two sets as a new set.
+        """ Return the symmetric difference of two sets as a new set..
+            only available under --number-classes
+        """
         if not isSet(other):
             return NotImplemented
         return self.symmetric_difference(other)
 
     def  __sub__(self, other):
-        # Return the difference of two sets as a new Set.
+        """ Return the difference of two sets as a new Set..
+            only available under --number-classes
+        """
         if not isSet(other):
             return NotImplemented
         return self.difference(other)
@@ -4727,8 +4736,9 @@ class set(object):
         return new_set
 
     def difference(self, other):
-        # Return the difference of two sets as a new set.
-        # (i.e. all elements that are in this set but not the other.)
+        """ Return the difference of two sets as a new set.
+            (i.e. all elements that are in this set but not the other.)
+        """
         if not isSet(other):
             other = frozenset(other)
         new_set = set()
@@ -4745,7 +4755,8 @@ class set(object):
         return new_set
 
     def difference_update(self, other):
-        # Remove all elements of another set from this set.
+        """ Remove all elements of another set from this set.
+        """
         if not isSet(other):
             other = frozenset(other)
         JS("""
@@ -4766,8 +4777,9 @@ class set(object):
         return None
 
     def intersection(self, other):
-        # Return the intersection of two sets as a new set.
-        # (i.e. all elements that are in both sets.)
+        """ Return the intersection of two sets as a new set.
+            (i.e. all elements that are in both sets.)
+        """
         if not isSet(other):
             other = frozenset(other)
         new_set = set()
@@ -4784,7 +4796,8 @@ class set(object):
         return new_set
 
     def intersection_update(self, other):
-        # Update a set with the intersection of itself and another.
+        """ Update a set with the intersection of itself and another.
+        """
         if not isSet(other):
             other = frozenset(other)
         JS("""
@@ -4799,7 +4812,8 @@ class set(object):
         return None
 
     def isdisjoint(self, other):
-        # Return True if two sets have a null intersection.
+        """ Return True if two sets have a null intersection.
+        """
         if not isSet(other):
             other = frozenset(other)
         JS("""
@@ -4852,8 +4866,9 @@ class set(object):
         """)
 
     def symmetric_difference(self, other):
-        # Return the symmetric difference of two sets as a new set.
-        # (i.e. all elements that are in exactly one of the sets.)
+        """ Return the symmetric difference of two sets as a new set.
+            (i.e. all elements that are in exactly one of the sets.)
+        """
         if not isSet(other):
             other = frozenset(other)
         new_set = set()
@@ -4875,7 +4890,8 @@ class set(object):
         return new_set
 
     def symmetric_difference_update(self, other):
-        # Update a set with the symmetric difference of itself and another.
+        """ Update a set with the symmetric difference of itself and another.
+        """
         if not isSet(other):
             other = frozenset(other)
         JS("""
@@ -4897,8 +4913,9 @@ class set(object):
         return None
 
     def union(self, other):
-        # Return the union of two sets as a new set.
-        # (i.e. all elements that are in either set.)
+        """ Return the union of two sets as a new set.
+            (i.e. all elements that are in either set.)
+        """
         new_set = set()
         if not isSet(other):
             other = frozenset(other)
