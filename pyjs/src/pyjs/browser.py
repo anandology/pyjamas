@@ -2,6 +2,7 @@
 # Copyright (C) 2010, Sujan Shakya <suzan.shakya@gmail.com>
 
 import os
+import sys
 import time
 import shutil
 from pyjs import linker
