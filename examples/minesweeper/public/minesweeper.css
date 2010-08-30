@@ -1,0 +1,275 @@
+table, td {
+  padding: 0;
+  margin: 0;
+  border-spacing: 0;
+  font-family: Arial, "Times New Roman", Verdana;
+  font-size: 13px;
+  color: #444;
+}
+body {
+  background-color: #bdbdbd;
+  margin: 5px;
+  color: #444;
+  text-align: center;
+  font-size: 13px;
+  font-family: Arial, "Times New Roman", Verdana;
+  width: 0;
+}
+#container {
+  position: absolute;  
+  min-height: 96%;
+  min-width: 96%;
+}
+#content {
+  margin-bottom: 2em;
+}
+.game {
+  float: left;
+  padding: 6px;
+  margin: 10px;
+  background-color: #bdbdbd;
+  border: 2px solid;
+  border-color:#fff #7b7b7b #7b7b7b #fff;
+  cursor: default;
+}
+.gwt-MenuBar-horizontal {
+  border: 2px solid;
+  border-color: #7b7b7b #fff #fff #7b7b7b;
+}
+.gwt-MenuBar-vertical {
+  background-color: #bdbdbd;
+  border: 1px solid;
+  border-color: #ddd #7b7b7b #7b7b7b #ddd;
+  text-align: left;
+}
+.gwt-MenuItem {
+  color: #444;
+  text-shadow: 0px 1px 0px #ddd;
+  padding: 1px 4px 1px 4px;
+  cursor: default;
+  line-height: 1.3em;
+}
+.gwt-MenuItem-selected {
+  background-color: #cfcfcf;
+}
+.gwt-MenuBar-vertical .gwt-MenuItem {
+  padding-left: 15px;
+}
+#Beginner .Beginner, #Intermediate .Intermediate, #Expert .Expert, #Custom .Custom {
+  position: absolute;
+  left: 3px;
+  margin-top: 3px;
+  width: 10px;
+  height: 10px;
+  background: url('minesweeper.png') no-repeat;
+  background-position: 0px -155px;
+}
+.custom-dialog, .about{
+  background-color: #bdbdbd;
+  border: 2px solid;
+  border-color: #ddd #7b7b7b #7b7b7b #ddd;
+}
+.custom-dialog .Caption {
+  background-color: #cfcfcf;
+  cursor: default;
+  padding: 4px 10px;
+  margin: 1px;
+  font-weight: bold;
+  font-size: 14px;
+  text-align: left;
+}
+.custom-dialog td {
+  text-align: right;
+}
+.custom-dialog .contents {
+  padding: 20px 40px;
+}
+.custom-dialog .contents table {
+ width: 100%;
+}
+.custom-dialog .gwt-Label {
+  text-align: left;
+}
+.custom-dialog .gwt-TextBox {
+  width: 30px;
+}
+.about .contents {
+  padding: 20px;
+}
+a:link {color:#00f;}
+a:visited {color:#00f;}
+a:hover {color:#00f;}
+a:active {color:#00f;}
+.about .contents .comments {
+  color: #555;
+}
+.about .contents .pyjamas {
+}
+.score-board {
+  width: 100%;
+  border: 2px solid;
+  border-color: #7b7b7b #fff #fff #7b7b7b;
+  margin: 6px 0;
+}
+.grid-panel {
+  display: table;
+  margin: auto;
+  border: 2px solid;
+  border-color: #7b7b7b #fff #fff #7b7b7b;
+}
+.grid {
+  border-collapse: collapse;
+  background-color: #bdbdbd;
+}
+.grid td {
+  border: 1px solid #7b7b7b;
+  width: 16px;
+  height: 16px;
+}
+.blank {
+  background: url('minesweeper.png') no-repeat;
+  background-position: 0px 0px;
+}
+.opened {
+}
+.blank.pressed {
+  background-position: 0px 1px;
+}
+.number {
+  position: absolute;
+  margin-top: -12px;
+  margin-left: 3px;
+  font-family: "Georgia";
+  font-size: 18px;
+  font-weight: bold;
+  cursor: default;
+}
+.bombdeath {
+  background: url('minesweeper.png') no-repeat;
+  background-position: 0px -26px;
+}
+.bombflagged {
+  background: url('minesweeper.png') no-repeat;
+  background-position: 0px -52px;
+}
+.bombflagged.pressed {
+  background-position: 0px -51px;
+}
+.bombmisflagged {
+  background: url('minesweeper.png') no-repeat;
+  background-position: 0px -77px;
+}
+.bombquestion {
+  background: url('minesweeper.png') no-repeat;
+  background-position: 0px -103px;
+}
+.bombquestion.pressed {
+  background-position: 0px -102px;
+}
+.bombrevealed {
+  background: url('minesweeper.png') no-repeat;
+  background-position: 0px -129px;
+}
+.digit {
+  display: inline;
+  font-size: 20px;
+  padding: 0 2px;
+  text-align: right;
+  color: #f00;
+  font-weight: bold;
+  background-color: #000;
+  cursor: default;
+}
+.counter {
+}
+.counter-blue {
+  color: #00ffff;
+}
+.timer {
+  float: right;
+}
+.faceclock, .facedead, .faceooh, .facesmile, .facewin {
+  width: 26px;
+  height: 26px;
+  margin: auto;
+  outline: none;
+}
+.faceclock {
+  background: url('minesweeper.png') no-repeat;
+  background-position: 0px -175px;
+}
+.facedead {
+  background: url('minesweeper.png') no-repeat;
+  background-position: 0px -211px;
+}
+.faceooh {
+  background: url('minesweeper.png') no-repeat;
+  background-position: 0px -247px;
+}
+.facesmile {
+  background: url('minesweeper.png') no-repeat;
+  background-position: 0px -319px;
+}
+.facewin {
+  background: url('minesweeper.png') no-repeat;
+  background-position: 0px -355px;
+}
+.debug {
+  font-size: 2px;
+}
+.scores {
+  margin-left: 600px;
+  display: table;
+}
+.scores p {
+  font-style: italic;
+  margin: 5px 0 10px;
+  padding: 0;
+}
+.scores_table {
+  font-style: italic;
+  color: #666;
+}
+.scores_table th {
+}
+.scores_table td {
+  vertical-align: top;
+}
+.individual_table {
+  margin: 5px 10px;
+  color: #333;
+  border: 1px solid;
+  border-color: #ddd #7b7b7b #7b7b7b #ddd;
+font-style: italic;
+}
+.individual_table th, .individual_table td {
+  padding: 3px 8px;
+}
+.individual_table .name {
+  text-align: left;
+}
+.individual_table .time {
+}
+.individual_table th {
+  font-weight: normal;
+  background-color: #cfcfcf;
+}
+.individual_table td {
+  background-color: #c2c2c2;
+  border-top: 1px solid #808080;
+}
+.log {
+  clear: both;
+  display: table;
+  margin: auto;
+  background: #aaa;
+}
+#footer {
+  padding: 3px 10px;
+  color: #777;
+  text-shadow: 0px 1px 0px #eee;
+  font-size: 12px;
+  border-top: 2px double #aaa;
+  position: absolute;
+  bottom: 0em;
+}
