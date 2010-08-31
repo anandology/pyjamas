@@ -12,14 +12,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import sys
 from __pyjamas__ import JS
-from pyjamas import Factory
-if sys.platform not in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
+from pyjamas import Factory, DOM
+import pyjd
+if pyjd.is_desktop:
     from __pyjamas__ import get_main_frame
-
-from pyjamas import DOM
-from __pyjamas__ import JS
 
 from SimplePanel import SimplePanel
 from pyjamas.ui import Event

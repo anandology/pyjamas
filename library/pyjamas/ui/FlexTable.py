@@ -12,8 +12,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import sys
-if sys.platform not in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
+import pyjd
+if pyjd.is_desktop:
     from __pyjamas__ import doc
 from pyjamas import Factory
 

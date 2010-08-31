@@ -1,7 +1,6 @@
 # This is the gtk-dependent Timer module.
 # For the pyjamas/javascript version, see platform/TimerPyJS.py
 
-import sys
 from __pyjamas__ import JS
 
 global timeout_add
@@ -9,10 +8,7 @@ global timeout_end
 timeout_add = None
 timeout_end = None
 
-# the following is needed because we are currently not able to override things
-# except functions and classes
-if sys.platform not in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
-    import pyjd
+import pyjd
 
 global timers
 timers = None
