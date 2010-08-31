@@ -41,7 +41,8 @@ class Control(FocusWidget, MouseHandler, MouseWheelHandler):
         self.dragging = False
         self.drag_enabled = False
 
-        if not kwargs.has_key("TabIndex"): kwargs['TabIndex'] = 0
+        kwargs['TabIndex'] = kwargs.get("TabIndex", 0)
+
         FocusWidget.__init__(self, element, **kwargs)
         MouseHandler.__init__(self)
         MouseWheelHandler.__init__(self, True)
