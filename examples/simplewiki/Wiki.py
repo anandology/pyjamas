@@ -1,6 +1,5 @@
 import pyjd
 import sys
-IN_BROWSER = sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']
 from pyjamas.ui.RootPanel import RootPanel
 from pyjamas.ui.HTML import HTML
 from pyjamas.ui.HTMLLinkPanel import HTMLLinkPanel
@@ -70,8 +69,7 @@ class DataService(JSONProxy):
         JSONProxy.__init__(self, '/json', ['find_one','insert'])
 
 if __name__ == '__main__':
-    if not IN_BROWSER:
-        pyjd.setup("http://127.0.0.1:8080/Wiki.html")
+    pyjd.setup("http://127.0.0.1:8080/Wiki.html")
     Wiki()
     pyjd.run()
 

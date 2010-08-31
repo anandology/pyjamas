@@ -16,8 +16,9 @@
     and management of the DOM model of the PyWebkitGtk window.
 """
 
-import sys
-if sys.platform not in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
+import pyjd
+
+if pyjd.is_desktop:
     from pyjamas.Window import onResize, onClosing, onClosed
     from __pyjamas__ import JS, doc, get_main_frame, wnd
 
@@ -1058,5 +1059,5 @@ def eventGetMouseWheelVelocityY(evt):
     pass
 
 
-if sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
+if not pyjd.is_desktop:
     init()

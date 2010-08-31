@@ -1,9 +1,9 @@
 # This is the gtk-dependent History module.
 # For the pyjamas/javascript version, see platform/HistoryPyJS.py
 
-import sys
 from __pyjamas__ import JS, doc, wnd
-if sys.platform not in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
+import pyjd
+if pyjd.is_desktop:
     from __pyjamas__ import get_main_frame
 
 global historyToken
