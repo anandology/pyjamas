@@ -120,9 +120,19 @@ class Timer:
                 raise ValueError, 'Programming error: notify must be callable'
             self.__onTimer = lambda: run(self)
 
+        # ugly, ugly, ugly, but there's no other way to get
+        # implementation-specific initialization (without subclassing,
+        # which the override system doesn't do).  The default is a
+        # no-op.  We do it here, so the instance can be init'd before
+        # the possible scheduling of the timer.
+        self.__impl_init_hook()
+            
         # schedule?
         if delayMillis != 0:
             self.schedule(delayMillis)
+
+    def __impl_init_hook(self):
+        pass
 
     def cancel(self):
         'Cancel the timer.'
