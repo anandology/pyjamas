@@ -29,7 +29,7 @@ from compiler.visitor import ASTVisitor
 
 import pyjs
 
-escaped_subst = re.compile('@{{([ a-zA-Z0-9_\.]*)}}')
+escaped_subst = re.compile('@{{(!?[ a-zA-Z0-9_\.]*)}}')
 
 if pyjs.pyjspth is None:
     LIBRARY_PATH = os.path.abspath(os.path.dirname(__file__))
@@ -1194,12 +1194,15 @@ class Translator(object):
         txt = l[0]
         for i in xrange(1, len(l)-1, 2):
             varname = l[i].strip()
-            name_type, pyname, jsname, depth, is_local = self.lookup(varname)
-            if name_type is None:
-                substname = self.scopeName(varname, depth, is_local)
+            if varname.startswith('!'):
+                    txt += varname[1:]
             else:
-                substname = jsname
-            txt += substname
+                name_type, pyname, jsname, depth, is_local = self.lookup(varname)
+                if name_type is None:
+                    substname = self.scopeName(varname, depth, is_local)
+                else:
+                    substname = jsname
+                txt += substname
             txt += l[i+1]
         return txt
         
