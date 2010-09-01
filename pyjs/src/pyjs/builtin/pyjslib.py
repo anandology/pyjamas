@@ -3802,11 +3802,11 @@ class list:
     def index(self, value, _start=0):
         JS("""
         var start = @{{_start}}.valueOf();
-        if (typeof @{{value}} == 'number' || typeof @{{value}} == 'string') {
+        /* if (typeof @{{value}} == 'number' || typeof @{{value}} == 'string') {
             start = @{{self}}.__array.indexOf(@{{value}}, start);
             if (start >= 0)
                 return start;
-        } else {
+        } else */ {
             var len = @{{self}}.__array.length >>> 0;
 
             start = (start < 0)
@@ -3816,7 +3816,7 @@ class list:
                 start += len;
 
             for (; start < len; start++) {
-                if (start in @{{self}}.__array &&
+                if ( /*start in @{{self}}.__array && */
                     @{{cmp}}(@{{self}}.__array[start], @{{value}}) == 0)
                     return start;
             }
