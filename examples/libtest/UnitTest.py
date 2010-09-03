@@ -80,9 +80,13 @@ class UnitTest:
             if msg:
                 msg=" " + str(msg)
             if self.current_test_name:
-                msg += " (%s) " % self.current_test_name
-            return self.getName() + msg + ": "
+                msg += " (%s) " % self.getCurrentTestID()
+            return self.getName() + msg + ": " 
         return ""
+
+    def getCurrentTestID(self):
+        return "%s/%i" % (self.current_test_name,self.tests_completed)
+        
 
     def getTestMethods(self):
         self.test_methods=[]
