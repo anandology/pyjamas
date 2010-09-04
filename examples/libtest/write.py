@@ -1,7 +1,7 @@
 import sys
 import re
 
-tag_re = re.compile("<.*>")
+tag_re = re.compile("<.*?>")
 
 def write(text):
     pass
