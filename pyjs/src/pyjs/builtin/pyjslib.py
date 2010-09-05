@@ -70,12 +70,12 @@ def type(clsname, bases=None, methods=None):
     if methods:
         for k in methods.keys():
             mth = methods[k]
-            JS(" mths[k] = @{{mth}}; ")
+            JS(" @{{!mths}}[@{{!k}}] = @{{mth}}; ")
 
     JS(" var bss = null; ")
     if bases:
-        JS("bss = @{{bases}}.__array;")
-    JS(" return $pyjs_type(@{{clsname}}, bss, mths); ")
+        JS("@{{!bss}} = @{{bases}}.__array;")
+    JS(" return $pyjs_type(@{{clsname}}, @{{!bss}}, @{{!mths}}); ")
 
 class object:
     pass
@@ -1232,9 +1232,9 @@ String.prototype.center = function(width, fillchar) {
         throw @{{TypeError}}("center() argument 2 must be char, not " + typeof(fillchar));
     }
     if (this.length >= width) return this;
-    padlen = width - this.length;
-    right = Math.ceil(padlen / 2);
-    left = padlen - right;
+    var padlen = width - this.length;
+    var right = Math.ceil(padlen / 2);
+    var left = padlen - right;
     return new Array(left+1).join(fillchar) + this + new Array(right+1).join(fillchar);
 };
 
@@ -1499,7 +1499,7 @@ class float:
         JS("""
         var v = Number(@{{num}});
         if (isNaN(v)) {
-            throw @{{ValueError}}("invalid literal for float(): " + num);
+            throw @{{ValueError}}("invalid literal for float(): " + @{{!num}});
         }
         return v;
 """)
@@ -1662,7 +1662,7 @@ def float_int(value, radix=None):
         throw @{{TypeError}}("TypeError: int() argument must be a string or a number");
     }
     if (isNaN(v) || !isFinite(v)) {
-        throw @{{ValueError}}("invalid literal for int() with base " + radix + ": '" + value + "'");
+        throw @{{ValueError}}("invalid literal for int() with base " + @{{!radix}} + ": '" + @{{!value}} + "'");
     }
     return v;
 """)
@@ -1701,7 +1701,7 @@ JS("""
             throw @{{TypeError}}("TypeError: int() argument must be a string or a number");
         }
         if (isNaN(v) || !isFinite(v)) {
-            throw @{{ValueError}}("invalid literal for int() with base " + radix + ": '" + value + "'");
+            throw @{{ValueError}}("invalid literal for int() with base " + @{{!radix}} + ": '" + @{{!value}} + "'");
         }
         if ($min_int <= v && v <= $max_int) {
             this.__v = v;
@@ -2274,7 +2274,7 @@ JS("""
                 prem = long_normalize(prem);
         }
         else {
-                z = x_divrem(a, b, prem);
+                z = @{{!x_divrem}}(a, b, prem);
         }
         if (z === null) {
             pdiv.ob_size = 0;
@@ -2569,7 +2569,7 @@ JS("""
                     neg = true;
                 }
                 // Count the number of Python digits.
-                t = v;
+                var t = v;
                 while (t) {
                     this.ob_digit[ndig] = t & PyLong_MASK;
                     t >>>= PyLong_SHIFT;
@@ -2621,7 +2621,7 @@ JS("""
                 this.ob_size = neg ? -ndig : ndig;
                 return this;
             }
-            throw @{{ValueError}}('cannot convert ' + @{{repr}}(value) + 'to integer');
+            throw @{{ValueError}}('cannot convert ' + @{{repr}}(@{{value}}) + 'to integer');
         } else if (typeof v == 'string') {
             var nchars;
             var text = value.lstrip();
@@ -2727,7 +2727,7 @@ JS("""
 
                 if ($log_base_PyLong_BASE[radix] == 0.0) {
                     var i = 1;
-                    convmax = radix;
+                    var convmax = radix;
                     $log_base_PyLong_BASE[radix] = Math.log(radix) / Math.log(PyLong_BASE);
                     while (1) {
                         var next = convmax * radix;
@@ -2784,12 +2784,12 @@ JS("""
                 return this;
             }
             throw @{{ValueError}}("invalid literal for long() with base " +
-                                     radix + ": " + value);
+                                     @{{!radix}} + ": " + @{{!value}});
         } else {
             throw @{{TypeError}}("TypeError: long() argument must be a string or a number");
         }
         if (isNaN(v) || !isFinite(v)) {
-            throw @{{ValueError}}("invalid literal for long() with base " + radix + ": '" + v + "'");
+            throw @{{ValueError}}("invalid literal for long() with base " + @{{!radix}} + ": '" + @{{!v}} + "'");
         }
         return this;
     };
@@ -4284,7 +4284,7 @@ class dict:
             other_sKeys = new Array(),
             selfLen = 0,
             otherLen = 0,
-            selfObj = @{{self}}.__object;
+            selfObj = @{{self}}.__object,
             otherObj = @{{other}}.__object;
         for (sKey in selfObj) {
            self_sKeys[selfLen++] = sKey;
@@ -4532,7 +4532,7 @@ class set(object):
             JS("""
             @{{self}}.__object = {};
             var selfObj = @{{self}}.__object,
-                dataObj = data.__object;
+                dataObj = @{{!data}}.__object;
             for (var sVal in dataObj) {
                 selfObj[sVal] = dataObj[sVal];
             }
@@ -4541,34 +4541,34 @@ class set(object):
         var item, i, n;
         var selfObj = @{{self}}.__object = {};
 
-        if (data === null) {
+        if (@{{!data}} === null) {
             throw @{{TypeError}}("'NoneType' is not iterable");
         }
-        if (data.constructor === Array) {
-        } else if (typeof data.__object == 'object') {
-            data = data.__object;
-            for (var sKey in data) {
-                selfObj[sKey] = data[sKey][0];
+        if (@{{!data}}.constructor === Array) {
+        } else if (typeof @{{!data}}.__object == 'object') {
+            @{{!data}} = @{{!data}}.__object;
+            for (var sKey in @{{!data}}) {
+                selfObj[sKey] = @{{!data}}[sKey][0];
             }
             return null;
-        } else if (typeof data.__iter__ == 'function') {
-            if (typeof data.__array == 'object') {
-                data = data.__array;
+        } else if (typeof @{{!data}}.__iter__ == 'function') {
+            if (typeof @{{!data}}.__array == 'object') {
+                @{{!data}} = @{{!data}}.__array;
             } else {
-                var iter = data.__iter__();
+                var iter = @{{!data}}.__iter__();
                 if (typeof iter.__array == 'object') {
-                    data = iter.__array;
+                    @{{!data}} = iter.__array;
                 }
-                data = [];
+                @{{!data}} = [];
                 var item, i = 0;
                 if (typeof iter.$genfunc == 'function') {
                     while (typeof (item=iter.next(true)) != 'undefined') {
-                        data[i++] = item;
+                        @{{!data}}[i++] = item;
                     }
                 } else {
                     try {
                         while (true) {
-                            data[i++] = iter.next();
+                            @{{!data}}[i++] = iter.next();
                         }
                     }
                     catch (e) {
@@ -4576,21 +4576,21 @@ class set(object):
                     }
                 }
             }
-        } else if (typeof data == 'object' || typeof data == 'function') {
-            for (var key in data) {
+        } else if (typeof @{{!data}} == 'object' || typeof @{{!data}} == 'function') {
+            for (var key in @{{!data}}) {
                 selfObj[@{{hash}}(key)] = key;
             }
             return null;
         } else {
-            throw @{{TypeError}}("'" + @{{repr}}(data) + "' is not iterable");
+            throw @{{TypeError}}("'" + @{{repr}}(@{{!data}}) + "' is not iterable");
         }
         // Assume uniform array content...
-        if ((n = data.length) == 0) {
+        if ((n = @{{!data}}.length) == 0) {
             return null;
         }
         i = 0;
         while (i < n) {
-            item = data[i++];
+            item = @{{!data}}[i++];
             selfObj[@{{hash}}(item)] = item;
         }
         return null;
@@ -5081,11 +5081,11 @@ def xrange(start, stop = None, step = 1):
     if stop is None:
         stop = start
         start = 0
-    if not JS("@{{start }}!== null && @{{start}}.__number__ && (@{{start}}.__number__ != 0x01 || isFinite(@{{start}}))"):
+    if not JS("@{{start}}!== null && @{{start}}.__number__ && (@{{start}}.__number__ != 0x01 || isFinite(@{{start}}))"):
         raise TypeError("xrange() integer start argument expected, got %s" % start.__class__.__name__)
-    if not JS("@{{stop }}!== null && @{{stop}}.__number__ && (@{{stop}}.__number__ != 0x01 || isFinite(@{{stop}}))"):
+    if not JS("@{{stop}}!== null && @{{stop}}.__number__ && (@{{stop}}.__number__ != 0x01 || isFinite(@{{stop}}))"):
         raise TypeError("xrange() integer end argument expected, got %s" % stop.__class__.__name__)
-    if not JS("@{{step }}!== null && @{{step}}.__number__ && (@{{step}}.__number__ != 0x01 || isFinite(@{{step}}))"):
+    if not JS("@{{step}}!== null && @{{step}}.__number__ && (@{{step}}.__number__ != 0x01 || isFinite(@{{step}}))"):
         raise TypeError("xrange() integer step argument expected, got %s" % step.__class__.__name__)
     rval = nval = start
     JS("""
@@ -5094,7 +5094,7 @@ def xrange(start, stop = None, step = 1):
     if ((@{{stop}}-@{{start}}) % step) {
         nstep++;
     }
-    var _stop = @{{start }}+ nstep * @{{step}};
+    var _stop = @{{start}}+ nstep * @{{step}};
     if (nstep <= 0) nval = _stop;
     var x = {
         'next': function(noStop) {
@@ -5121,11 +5121,11 @@ def xrange(start, stop = None, step = 1):
         },
         'toString': function() {
             var s = "xrange(";
-            if (@{{start }}!= 0) {
-                s += @{{start }}+ ", ";
+            if (@{{start}}!= 0) {
+                s += @{{start}}+ ", ";
             }
             s += _stop;
-            if (@{{step }}!= 1) {
+            if (@{{step}}!= 1) {
                 s += ", " + @{{step}};
             }
             return s + ")";

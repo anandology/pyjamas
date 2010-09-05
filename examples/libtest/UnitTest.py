@@ -32,7 +32,13 @@ class UnitTest:
         test_method=getattr(self, test_method_name)
         self.current_test_name = test_method_name
         self.setUp()
-        test_method()
+        try:        
+            try:
+                test_method()
+            except Exception,e:
+                self.fail("uncought exception:" + str(e))
+        except:
+            self.fail("uncought javascript exception")
         self.tearDown()
         self.current_test_name = None
 
