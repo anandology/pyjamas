@@ -121,7 +121,7 @@ class Builder(object):
                     continue
                 childitem = addItem(child[0], child[1], child[2], item,
                                     eventTarget)
-                if not childitem:
+                if childitem is None:
                     continue
                 print "childitem", childitem
                 item.addIndexedItem(child[0]["index"], childitem)
