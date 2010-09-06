@@ -12,6 +12,7 @@ from cStringIO import StringIO
 from optparse import OptionParser
 import pyjs
 import re
+import traceback
 try:
     from hashlib import md5
 except:
@@ -539,8 +540,11 @@ def build_script():
                     if os.path.splitext(filename)[1] in ('.py',):
                         file_path = os.path.join(root, filename)
                         if is_modified(file_path) and not first_loop:
-                            build(top_module, pyjs, compiler, options,
-                                  app_platforms, runtime_options, args)
+                            try:
+                              build(top_module, pyjs, compiler, options,
+                                    app_platforms, runtime_options, args)
+                            except Exception:
+                              traceback.print_exception(*sys.exc_info())
                             break
         first_loop = False
         time.sleep(1)
