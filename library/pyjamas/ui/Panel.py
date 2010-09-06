@@ -64,7 +64,7 @@ class PanelBase(object):
             with a new one
         """
         existing = self.getWidget(index)
-        if existing:
+        if existing is not None:
             self.remove(existing)
         self.insert(widget, index)
 
