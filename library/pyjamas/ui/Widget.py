@@ -52,7 +52,7 @@ class Widget(UIObject):
 
     def setContextMenu(self, menu):
         self.contextMenu = menu
-        if menu:
+        if menu is not None:
             self.sinkEvents(Event.ONCONTEXTMENU)
         else:
             self.unsinkEvents(Event.ONCONTEXTMENU)
