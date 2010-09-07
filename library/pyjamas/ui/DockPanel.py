@@ -56,7 +56,7 @@ class DockPanel(CellPanel):
     def __init__(self, **kwargs):
 
         self.center = None
-        self.dock_children = [] # TODO: can self.children be used instead?
+        self.dock_children = [] # cannot use self.children
 
         CellPanel.__init__(self, **kwargs)
 
@@ -91,6 +91,12 @@ class DockPanel(CellPanel):
         if widget.getParent() != self:
             return None
         return widget.getLayoutData().direction
+
+    def __len__(self):
+        return len(self.dock_children)
+
+    def __iter__(self):
+        return self.dock_children.__iter__()
 
     def remove(self, widget):
         if widget == self.center:
