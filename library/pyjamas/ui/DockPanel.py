@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from __pyjamas__ import console
 from pyjamas import Factory
 from pyjamas import DOM
 
@@ -63,7 +62,7 @@ class DockPanel(CellPanel):
     def add(self, widget, direction):
         if direction == self.CENTER:
             if self.center is not None:
-                console.error("Only one CENTER widget may be added")
+                raise Exception("Only one CENTER widget may be added")
             self.center = widget
 
         layout = LayoutData(direction)
