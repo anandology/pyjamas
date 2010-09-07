@@ -21,12 +21,12 @@
 def import_module(path, parent_module, module_name, dynamic=1, async=False, init=True):
     module = None
     JS("""
-    module = $pyjs.modules_hash[@{{module_name}}];
-    if (typeof module == 'function' && module.__was_initialized__ == true) {
+    @{{module}} = $pyjs.modules_hash[@{{module_name}}];
+    if (typeof @{{module}} == 'function' && @{{module}}.__was_initialized__ == true) {
         return null;
     }
-    if (module_name == 'sys' || module_name == 'pyjslib') {
-        module();
+    if (@{{module_name}} == 'sys' || @{{module_name}} == 'pyjslib') {
+        @{{module}}();
         return null;
     }
     """)
@@ -68,31 +68,31 @@ def load_module(path, parent_module, module_name, dynamic=1, async=False):
             @{{path}} = './';
         }
 
-        var override_name = sys.platform + "." + @{{module_name}};
-        if (((sys.overrides != null) &&
-             (sys.overrides.has_key(override_name))))
+        var override_name = @{{sys}}.platform + "." + @{{module_name}};
+        if (((@{{sys}}.overrides != null) &&
+             (@{{sys}}.overrides.has_key(override_name))))
         {
-            cache_file =  sys.overrides.__getitem__(override_name) ;
+            cache_file =  @{{sys}}.overrides.__getitem__(override_name) ;
         }
         else
         {
-            cache_file =  module_name ;
+            cache_file =  @{{module_name}} ;
         }
 
         cache_file = (@{{path}} + cache_file + '.cache.js' ) ;
 
         //alert("cache " + cache_file + " " + module_name + " " + parent_module);
 
-        onload_fn = '';
+        @{{onload_fn}} = '';
 
         // this one tacks the script onto the end of the DOM
-        pyjs_load_script(cache_file, onload_fn, @{{async}});
+        @{{pyjs_load_script}}(cache_file, @{{onload_fn}}, @{{async}});
 
         try {
-            loaded = (typeof $pyjs.modules_hash[@{{module_name}}] == 'function')
+            @{{loaded}} = (typeof $pyjs.modules_hash[@{{module_name}}] == 'function')
         } catch ( e ) {
         }
-        if (loaded) {
+        if (@{{loaded}}) {
             return true;
         }
         return false;
