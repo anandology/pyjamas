@@ -16,7 +16,7 @@ from __pyjamas__ import JS
 
 def createFCK(name):
     JS("""
-       return new @{{!FCKeditor}}(name);
+       return new @{{!FCKeditor}}(@{{name}});
     """)
 
 JS("""
@@ -150,4 +150,3 @@ class RichTextEditor(Widget):
 
     def getWindow(self):
         return self.fck.EditorWindow()
-
