@@ -7,7 +7,7 @@ def toString(elem):
     var temp = @{{elem}}.cloneNode(true);
     var tempDiv = $doc.createElement("DIV");
     tempDiv.appendChild(temp);
-    outer = tempDiv.innerHTML;
+    var outer = tempDiv.innerHTML;
     //temp.innerHTML = " ";
     return outer;
     """)
