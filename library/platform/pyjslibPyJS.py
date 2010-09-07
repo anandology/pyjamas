@@ -576,7 +576,7 @@ class List:
     def extend(self, data):
         JS("""
         if (pyjslib.isArray(@{{data}})) {
-            n = this.l.length;
+            var n = this.l.length;
             for (var i=0; i < @{{data}}.length; i++) {
                 this.l[n+i]=data[i];
                 }
