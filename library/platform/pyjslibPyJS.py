@@ -1798,9 +1798,9 @@ def sprintf(strng, args):
                 result.append(remainder)
                 break;
             JS("""
-            var left = a[1], key = a[2], flags = a[3];
-            var minlen = a[4], precision = a[5], conversion = a[6];
-            remainder = a[7];
+            var left = @{{a}}[1], key = @{{a}}[2], flags = @{{a}}[3];
+            var minlen = @{{a}}[4], precision = @{{a}}[5], conversion = @{{a}}[6];
+            @{{remainder}} = @{{a}}[7];
             if (typeof minlen == 'undefined') minlen = null;
             if (typeof precision == 'undefined') precision = null;
             if (typeof conversion == 'undefined') conversion = null;
