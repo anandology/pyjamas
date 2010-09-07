@@ -1676,11 +1676,11 @@ def sprintf(strng, args):
                 if precision is None:
                     precision = 6
                 JS("""
-                subst = @{{!re_exp}}.exec(String(@{{param}}.toExponential(@{{precision}})));
-                if (subst[3].length == 1) {
-                    subst = subst[1] + subst[2] + '0' + subst[3];
+                @{{subst}} = @{{!re_exp}}.exec(String(@{{param}}.toExponential(@{{precision}})));
+                if (@{{subst}}[3].length == 1) {
+                    @{{subst}} = @{{subst}}[1] + @{{subst}}[2] + '0' + @{{subst}}[3];
                 } else {
-                    subst = subst[1] + subst[2] + subst[3];
+                    @{{subst}} = @{{subst}}[1] + @{{subst}}[2] + @{{subst}}[3];
                 }""")
             elif conversion == 'E':
                 if precision is None:
