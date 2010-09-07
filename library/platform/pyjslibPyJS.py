@@ -1338,9 +1338,9 @@ def int(text, radix=0):
 @noSourceTracking
 def len(object):
     JS("""
-    if (object==null) return 0;
-    if (pyjslib.isObject(object) && object.__len__) return object.__len__();
-    return object.length;
+    if (@{{object}}==null) return 0;
+    if (pyjslib.isObject(@{{object}}) && @{{object}}.__len__) return @{{object}}.__len__();
+    return @{{object}}.length;
     """)
 
 @noSourceTracking
