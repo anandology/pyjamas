@@ -26,7 +26,7 @@ def eventGetButton(evt):
 def getAbsoluteLeft(elem):
     JS("""
     var left = 0;
-    var parent = elem;
+    var parent = @{{elem}};
 
     while (parent) {
         if (parent.scrollLeft > 0) {
@@ -34,9 +34,9 @@ def getAbsoluteLeft(elem):
         }
         parent = parent.parentNode;
     }
-    while (elem) {
-        left = left + elem.offsetLeft;
-        elem = elem.offsetParent;
+    while (@{{elem}}) {
+        left = left + @{{elem}}.offsetLeft;
+        @{{elem}} = @{{elem}}.offsetParent;
     }
 
     return left + $doc.body.scrollLeft + $doc.documentElement.scrollLeft;
