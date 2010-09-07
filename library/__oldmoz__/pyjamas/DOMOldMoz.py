@@ -82,18 +82,18 @@ def getChildIndex(parent, child):
 
 def isOrHasChild(parent, child):
     JS("""
-    while (child) {
-		if ((!parent.isSameNode)) {
-			if (parent == child) {
+    while (@{{child}}) {
+		if ((!@{{parent}}.isSameNode)) {
+			if (@{{parent}} == @{{child}}) {
 			   return true;
 			}
 		}
-		else if (parent.isSameNode(child)) {
+		else if (@{{parent}}.isSameNode(@{{child}})) {
             return true;
         }
-        child = child.parentNode;
-        if (child && child.nodeType != 1) {
-            child = null;
+        @{{child}} = @{{child}}.parentNode;
+        if (@{{child}} && @{{child}}.nodeType != 1) {
+            @{{child}} = null;
         }
     }
     return false;
