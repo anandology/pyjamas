@@ -1193,18 +1193,18 @@ def range(start, stop = None, step = 1):
 @noSourceTracking
 def slice(object, lower, upper):
     JS("""
-    if (pyjslib.isString(object)) {
+    if (pyjslib.isString(@{{object}})) {
         if (@{{lower}} < 0) {
-           @{{lower}} = object.length + @{{lower}};
+           @{{lower}} = @{{object}}.length + @{{lower}};
         }
         if (@{{upper}} < 0) {
-           @{{upper}} = object.length + @{{upper}};
+           @{{upper}} = @{{object}}.length + @{{upper}};
         }
-        if (pyjslib.isNull(@{{upper}})) @{{upper}}=object.length;
-        return object.substring(@{{lower}}, @{{upper}});
+        if (pyjslib.isNull(@{{upper}})) @{{upper}}=@{{object}}.length;
+        return @{{object}}.substring(@{{lower}}, @{{upper}});
     }
-    if (pyjslib.isObject(object) && object.slice)
-        return object.slice(@{{lower}}, @{{upper}});
+    if (pyjslib.isObject(@{{object}}) && @{{object}}.slice)
+        return @{{object}}.slice(@{{lower}}, @{{upper}});
 
     return null;
     """)
