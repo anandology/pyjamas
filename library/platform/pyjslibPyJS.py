@@ -1677,7 +1677,7 @@ def sprintf(strng, args):
                 if precision is None:
                     precision = 6
                 JS("""
-                subst = re_exp.exec(String(@{{param}}.toExponential(@{{precision}})));
+                subst = @{{!re_exp}}.exec(String(@{{param}}.toExponential(@{{precision}})));
                 if (subst[3].length == 1) {
                     subst = subst[1] + subst[2] + '0' + subst[3];
                 } else {
@@ -1687,7 +1687,7 @@ def sprintf(strng, args):
                 if precision is None:
                     precision = 6
                 JS("""
-                subst = re_exp.exec(String(@{{param}}.toExponential(@{{precision}})).toUpperCase());
+                subst = @{{!re_exp}}.exec(String(@{{param}}.toExponential(@{{precision}})).toUpperCase());
                 if (subst[3].length == 1) {
                     subst = subst[1] + subst[2] + '0' + subst[3];
                 } else {
@@ -1766,7 +1766,7 @@ def sprintf(strng, args):
     def sprintf_list(strng, args):
         while remainder:
             JS("""
-            var a = re_list.exec(@{{remainder}});""")
+            var a = @{{!re_list}}.exec(@{{remainder}});""")
             if a is None:
                 result.append(remainder)
                 break;
@@ -1794,7 +1794,7 @@ def sprintf(strng, args):
         argidx += 1
         while remainder:
             JS("""
-            var a = re_dict.exec(@{{remainder}});""")
+            var a = @{{!re_dict}}.exec(@{{remainder}});""")
             if a is None:
                 result.append(remainder)
                 break;
@@ -1814,7 +1814,7 @@ def sprintf(strng, args):
             result.append(formatarg(flags, minlen, precision, conversion, param))
 
     JS("""
-    var a = re_dict.exec(@{{strng}});
+    var a = @{{!re_dict}}.exec(@{{strng}});
 """)
     if a is None:
         if constructor != "Tuple":
