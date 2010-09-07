@@ -26,7 +26,7 @@ def setCookie(name, value, expires, domain=None, path=None, secure=False):
     var expiration = new Date();
 	expiration.setTime(today.getTime() + expires)
 
-    var c = encodeURIComponent(name) + '=' + encodeURIComponent(value);
+    var c = encodeURIComponent(@{{name}}) + '=' + encodeURIComponent(@{{value}});
     c += ';expires=' + expiration.toGMTString();
 
     if (domain)
@@ -69,4 +69,3 @@ def loadCookies():
 
     return cookies;
     """)
-
