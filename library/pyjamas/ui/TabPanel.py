@@ -122,6 +122,16 @@ class TabPanel(PanelBase, Composite):
         self.tabListeners.remove(listener)
 
     def selectTab(self, index):
+        """ manual tab selection. tab can be selected:
+             * by index,
+             * by tab name (matching TabPanel.insert name arg if given)
+             * or by widget.
+        """
+        if isinstance(index, str):
+            index = self.tab_names[index]
+        if not isinstance(index, int):
+            index = self.getWidgetIndex(index)
+
         self.tabBar.selectTab(index)
 
 Factory.registerClass('pyjamas.ui.TabPanel', 'TabPanel', TabPanel)

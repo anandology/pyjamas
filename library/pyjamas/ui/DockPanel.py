@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from __pyjamas__ import console
 from pyjamas import Factory
 from pyjamas import DOM
 
@@ -63,7 +62,7 @@ class DockPanel(CellPanel):
     def add(self, widget, direction):
         if direction == self.CENTER:
             if self.center is not None:
-                console.error("Only one CENTER widget may be added")
+                raise Exception("Only one CENTER widget may be added")
             self.center = widget
 
         layout = LayoutData(direction)
@@ -71,7 +70,6 @@ class DockPanel(CellPanel):
         self.setCellHorizontalAlignment(widget, self.horzAlign)
         self.setCellVerticalAlignment(widget, self.vertAlign)
 
-        self.children.append(widget)
         self.realizeTable(widget)
 
     # next three functions are part of the standard Builder API for panels
@@ -134,11 +132,12 @@ class DockPanel(CellPanel):
 
         rowCount = 1
         colCount = 1
-        for child in self:
-            dir = child.getLayoutData().direction
-            if dir == self.NORTH or dir == self.SOUTH:
+        children = self.children + [beingAdded]
+        for child in children:
+            direction = child.getLayoutData().direction
+            if direction == self.NORTH or direction == self.SOUTH:
                 rowCount += 1
-            elif dir == self.EAST or dir == self.WEST:
+            elif direction == self.EAST or direction == self.WEST:
                 colCount += 1
 
         rows = []
@@ -153,7 +152,7 @@ class DockPanel(CellPanel):
         southRow = rowCount - 1
         centerTd = None
 
-        for child in self:
+        for child in children:
             layout = child.getLayoutData()
 
             td = DOM.createTD()
