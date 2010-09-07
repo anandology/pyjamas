@@ -3677,7 +3677,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             v = node.value
             if isinstance(node.value, unicode):
                 v = v.encode('utf-8')
-            return  "String('%s')" % escapejs(v)
+            return  "'%s'" % escapejs(v)
         elif node.value is None:
             return "null"
         else:

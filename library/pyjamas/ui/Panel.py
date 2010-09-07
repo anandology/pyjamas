@@ -59,17 +59,29 @@ class PanelBase(object):
     def getChildren(self):
         return self.children # assumes self.children: override if needed.
 
-    def __iter__(self):
-        return self.getChildren().__iter__()
-
     def setWidget(self, index, widget):
         """ Insert (or optionally replace) the widget at the given index
             with a new one
         """
         existing = self.getWidget(index)
-        if existing:
+        if existing is not None:
             self.remove(existing)
         self.insert(widget, index)
+
+    def append(self, widget):
+        return self.add(widget)
+
+    def __setitem__(self, index):
+        return self.setWidget(index, widget)
+
+    def __getitem__(self, index):
+        return self.getWidget(index)
+
+    def __len__(self):
+        return len(self.getChildren())
+
+    def __iter__(self):
+        return self.getChildren().__iter__()
 
 
 class Panel(PanelBase, Widget):
