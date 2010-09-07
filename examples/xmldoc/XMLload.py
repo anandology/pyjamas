@@ -18,11 +18,11 @@ def create_xml_doc(text):
     try { //Internet Explorer
         xmlDoc=new ActiveXObject("Microsoft.XMLDOM");
         xmlDoc.async="false";
-        xmlDoc.loadXML(text);
+        xmlDoc.loadXML(@{{text}});
     } catch(e) {
         try { //Firefox, Mozilla, Opera, etc.
             var parser=new DOMParser();
-            xmlDoc=parser.parseFromString(text,"text/xml");
+            xmlDoc=parser.parseFromString(@{{text}},"text/xml");
         } catch(e) {
             return null;
         }
