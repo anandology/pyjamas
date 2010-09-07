@@ -56,7 +56,6 @@ class DockPanel(CellPanel):
     def __init__(self, **kwargs):
 
         self.center = None
-        self.dock_children = [] # cannot use self.children
 
         CellPanel.__init__(self, **kwargs)
 
@@ -71,7 +70,6 @@ class DockPanel(CellPanel):
         self.setCellHorizontalAlignment(widget, self.horzAlign)
         self.setCellVerticalAlignment(widget, self.vertAlign)
 
-        self.dock_children.append(widget)
         self.realizeTable(widget)
 
     # next three functions are part of the standard Builder API for panels
@@ -79,24 +77,18 @@ class DockPanel(CellPanel):
         self.add(item, index[1])
 
     def getWidgetIndex(self, widget):
-        index = self.dock_children.index(widget)
+        index = self.children.index(widget)
         direction = self.getWidgetDirection(widget)
         return (index, direction)
 
     def getIndexedChild(self, index):
         index, direction = index
-        return self.dock_children[index]
+        return self.children[index]
 
     def getWidgetDirection(self, widget):
         if widget.getParent() != self:
             return None
         return widget.getLayoutData().direction
-
-    def __len__(self):
-        return len(self.dock_children)
-
-    def __iter__(self):
-        return self.dock_children.__iter__()
 
     def remove(self, widget):
         if widget == self.center:
@@ -104,7 +96,7 @@ class DockPanel(CellPanel):
 
         ret = CellPanel.remove(self, widget)
         if ret:
-            self.dock_children.remove(widget)
+            self.children.remove(widget)
             self.realizeTable(None)
         return ret
 
@@ -140,11 +132,12 @@ class DockPanel(CellPanel):
 
         rowCount = 1
         colCount = 1
-        for child in self.dock_children:
-            dir = child.getLayoutData().direction
-            if dir == self.NORTH or dir == self.SOUTH:
+        children = self.children + [beingAdded]
+        for child in children:
+            direction = child.getLayoutData().direction
+            if direction == self.NORTH or direction == self.SOUTH:
                 rowCount += 1
-            elif dir == self.EAST or dir == self.WEST:
+            elif direction == self.EAST or direction == self.WEST:
                 colCount += 1
 
         rows = []
@@ -159,7 +152,7 @@ class DockPanel(CellPanel):
         southRow = rowCount - 1
         centerTd = None
 
-        for child in self.dock_children:
+        for child in children:
             layout = child.getLayoutData()
 
             td = DOM.createTD()
