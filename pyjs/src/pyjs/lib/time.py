@@ -215,16 +215,16 @@ def strftime(fmt, t = None):
     JS("var a, fmtChar;")
     while remainder:
         JS("""
-        a = @{{re_pct}}.exec(@{{remainder}});
-        if (!a) {
-            result += @{{remainder}};
-            remainder = null;
+        @{{a}} = @{{re_pct}}.exec(@{{remainder}});
+        if (!@{{a}}) {
+            @{{result}} += @{{remainder}};
+            @{{remainder}} = null;
         } else {
-            result += a[1];
-            fmtChar = a[2];
-            remainder = a[3];
-            if (typeof fmtChar != 'undefined') {
-                result += @{{format}}(fmtChar);
+            @{{result}} += @{{a}}[1];
+            @{{fmtChar}} = @{{a}}[2];
+            @{{remainder}} = @{{a}}[3];
+            if (typeof @{{fmtChar}} != 'undefined') {
+                @{{result}} += @{{format}}(@{{fmtChar}});
             }
         }
         """)
