@@ -19,6 +19,7 @@
 
 # FIXME: dynamic=1, async=False, init=True are useless here (?)
 def import_module(path, parent_module, module_name, dynamic=1, async=False, init=True):
+    module = None
     JS("""
     module = $pyjs.modules_hash[@{{module_name}}];
     if (typeof module == 'function' && module.__was_initialized__ == true) {
@@ -29,7 +30,6 @@ def import_module(path, parent_module, module_name, dynamic=1, async=False, init
         return null;
     }
     """)
-    module = None
     names = module_name.split(".")
     importName = ''
     # Import all modules in the chain (import a.b.c)
