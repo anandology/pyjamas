@@ -1409,7 +1409,7 @@ def getattr(obj, name, default_value=None):
         return method.apply(@{{obj}},args);
     }
     fnwrap.__name__ = @{{name}};
-    fnwrap.parse_kwargs = obj.parse_kwargs;
+    fnwrap.parse_kwargs = @{{obj}}.parse_kwargs;
     return fnwrap;
     """)
 
