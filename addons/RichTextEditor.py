@@ -16,13 +16,13 @@ from __pyjamas__ import JS
 
 def createFCK(name):
     JS("""
-       return new FCKeditor(name);
+       return new @{{!FCKeditor}}(name);
     """)
 
 JS("""
    $wnd.FCKeditor_OnComplete = function(editorInstance )
    {
-       pyjsObject = $doc.getElementById(editorInstance.Name.substr(3)).__listener;
+       var pyjsObject = $doc.getElementById(editorInstance.Name.substr(3)).__listener;
        if(pyjsObject)
            pyjsObject.onFCKLoaded(editorInstance);
    }
