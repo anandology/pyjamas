@@ -221,7 +221,7 @@ def strftime(fmt, t = None):
             @{{remainder}} = null;
         } else {
             @{{result}} += @{{!a}}[1];
-            @{{!fmtChar}} = @{!a}}[2];
+            @{{!fmtChar}} = @{{!a}}[2];
             @{{remainder}} = @{{!a}}[3];
             if (typeof @{{!fmtChar}} != 'undefined') {
                 @{{result}} += @{{format}}(@{{!fmtChar}});
