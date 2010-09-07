@@ -1,14 +1,14 @@
 def compare(elem1, elem2):
     JS("""
-    if (!elem1 && !elem2) {
+    if (!@{{elem1}} && !@{{elem2}}) {
         return true;
-    } else if (!elem1 || !elem2) {
+    } else if (!@{{elem1}} || !@{{elem2}}) {
         return false;
     }
-	if (!elem1.isSameNode) {
-	    return (elem1 == elem2);
+	if (!@{{elem1}}.isSameNode) {
+	    return (@{{elem1}} == @{{elem2}});
 	}
-    return (elem1.isSameNode(elem2));
+    return (@{{elem1}}.isSameNode(@{{elem2}}));
     """)
 
 def eventGetButton(evt):
@@ -113,6 +113,3 @@ def releaseCapture(elem):
         $wnd.__captureElem = null;
     }
     """)
-
-
-
