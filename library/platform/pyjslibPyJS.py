@@ -1770,9 +1770,9 @@ def sprintf(strng, args):
                 result.append(remainder)
                 break;
             JS("""
-            var left = a[1], flags = a[2];
-            var minlen = a[3], precision = a[5], conversion = a[6];
-            remainder = a[7];
+            var left = @{{a}}[1], flags = @{{a}}[2];
+            var minlen = @{{a}}[3], precision = @{{a}}[5], conversion = @{{a}}[6];
+            @{{remainder}} = @{{a}}[7];
             if (typeof minlen == 'undefined') minlen = null;
             if (typeof precision == 'undefined') precision = null;
             if (typeof conversion == 'undefined') conversion = null;
