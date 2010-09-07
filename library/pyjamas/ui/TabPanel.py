@@ -129,7 +129,7 @@ class TabPanel(PanelBase, Composite):
         """
         if isinstance(index, str):
             index = self.tab_names[index]
-        elif not isinstance(index, int):
+        if not isinstance(index, int):
             index = self.getWidgetIndex(index)
 
         self.tabBar.selectTab(index)
