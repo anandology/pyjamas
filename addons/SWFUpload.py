@@ -1004,7 +1004,7 @@ class File:
         ### Workaround - otherwise name is undefined ###
         name = None
         JS("""
-        name = file.name;
+        @{{name}} = @{{file}}.name;
         """)
         #################################################
         
