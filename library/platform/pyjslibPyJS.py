@@ -1865,7 +1865,7 @@ def pow(x, y, z = None):
 def hex(x):
     if int(x) != x:
         raise TypeError("hex() argument can't be converted to hex")
-    JS("r = '0x'+@{{x}}.toString(16);")
+    JS("@{{r}} = '0x'+@{{x}}.toString(16);")
     return str(r)
 
 def oct(x):
