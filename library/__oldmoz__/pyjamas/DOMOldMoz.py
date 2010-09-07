@@ -45,7 +45,7 @@ def getAbsoluteLeft(elem):
 def getAbsoluteTop(elem):
     JS("""
     var top = 0;
-    var parent = elem;
+    var parent = @{{elem}};
     while (parent) {
         if (parent.scrollTop > 0) {
             top -= parent.scrollTop;
@@ -53,9 +53,9 @@ def getAbsoluteTop(elem):
         parent = parent.parentNode;
     }
 
-    while (elem) {
-        top += elem.offsetTop;
-        elem = elem.offsetParent;
+    while (@{{elem}}) {
+        top += @{{elem}}.offsetTop;
+        @{{elem}} = @{{elem}}.offsetParent;
     }
     return top + $doc.body.scrollTop + $doc.documentElement.scrollTop;
     """)
