@@ -62,14 +62,14 @@ def getAbsoluteTop(elem):
 
 def getChildIndex(parent, child):
     JS("""
-    var count = 0, current = parent.firstChild;
+    var count = 0, current = @{{parent}}.firstChild;
     while (current) {
 		if (! current.isSameNode) {
-			if (current == child) {
+			if (current == @{{child}}) {
 			   return count;
 		   }
 		}
-        else if (current.isSameNode(child)) {
+        else if (current.isSameNode(@{{child}})) {
             return count;
         }
         if (current.nodeType == 1) {
