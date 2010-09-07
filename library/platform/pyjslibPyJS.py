@@ -478,7 +478,7 @@ pyjslib.String_center = function(width, fillchar) {
         throw (pyjslib.TypeError("center() argument 2 must be char, not " + typeof(fillchar)));
     }
     if (this.length >= width) return this;
-    var padlen = width - this.length
+    var padlen = width - this.length;
     var right = Math.ceil(padlen / 2);
     var left = padlen - right;
     return new Array(left+1).join(fillchar) + this + new Array(right+1).join(fillchar);
