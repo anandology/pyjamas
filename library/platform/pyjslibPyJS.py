@@ -1718,7 +1718,7 @@ def sprintf(strng, args):
                         precision = 6
                 if param >= 1E6 or param < 1E-5:
                     JS("""
-                    subst = String(@{{precision}} == null ? @{{param}}.toExponential() : @{{param}}.toExponential().toPrecision(@{{precision}})).toUpperCase();""")
+                    @{{subst}} = String(@{{precision}} == null ? @{{param}}.toExponential() : @{{param}}.toExponential().toPrecision(@{{precision}})).toUpperCase();""")
                 else:
                     JS("""
                     subst = String(@{{precision}} == null ? parseFloat(@{{param}}) : parseFloat(@{{param}}).toPrecision(@{{precision}})).toUpperCase().toUpperCase();""")
