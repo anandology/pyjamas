@@ -21,7 +21,7 @@ def create_xml_doc(text):
         xmlDoc.loadXML(text);
     } catch(e) {
         try { //Firefox, Mozilla, Opera, etc.
-            parser=new DOMParser();
+            var parser=new DOMParser();
             xmlDoc=parser.parseFromString(text,"text/xml");
         } catch(e) {
             return null;
