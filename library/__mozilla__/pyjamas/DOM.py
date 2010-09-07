@@ -131,7 +131,7 @@ def getChildIndex(parent, child):
     var count = 0, current = @{{parent}}.firstChild;
     while (current) {
 		if (! current.isSameNode) {
-			if (current == child) {
+			if (current == @{{child}}) {
 			return count;
 			}
 		}
@@ -210,4 +210,3 @@ def sinkEventsMozilla(element, bits):
                                     false);
     }
     """)
-
