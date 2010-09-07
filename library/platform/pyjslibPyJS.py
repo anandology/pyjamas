@@ -1857,7 +1857,7 @@ def type(clsname, bases=None, methods=None):
     JS(" return @{{pyjs_type}}(@{{clsname}}, @{{bss}}, @{{mths}}); ")
 
 def pow(x, y, z = None):
-    JS("p = Math.pow(@{{x}}, @{{y}});")
+    JS("@{{p}} = Math.pow(@{{x}}, @{{y}});")
     if z is None:
         return float(p)
     return float(p % z)
