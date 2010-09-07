@@ -111,18 +111,15 @@ def isOrHasChild(parent, _child):
 
 def releaseCapture(elem):
     JS("""
-    if ((@{{sCaptureElem}} != null) && @{{compare}}(elem, @{{sCaptureElem}}))
+    if ((@{{sCaptureElem}} != null) && @{{compare}}(@{{elem}}, @{{sCaptureElem}}))
         @{{sCaptureElem}} = null;
     
-	if (!elem.isSameNode) {
-		if (elem == $wnd.__captureElem) {
+	if (!@{{elem}}.isSameNode) {
+		if (@{{elem}} == $wnd.__captureElem) {
 			$wnd.__captureElem = null;
 		}
 	}
-	else if (elem.isSameNode($wnd.__captureElem)) {
+	else if (@{{elem}}.isSameNode($wnd.__captureElem)) {
         $wnd.__captureElem = null;
     }
     """)
-
-
-
