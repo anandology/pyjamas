@@ -196,7 +196,7 @@ class Modload:
 
 def get_module(module_name):
     ev = "__mod = %s;" % module_name
-    JS("pyjs_eval(@{{ev}});")
+    JS("@{{pyjs_eval}}(@{{ev}});")
     return __mod
 
 def preload_app_modules(path, app_modnames, app_imported_fn, dynamic,
