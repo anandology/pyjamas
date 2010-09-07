@@ -218,9 +218,9 @@ class UnitTest:
         writebr(title + msg)
         if sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
             from __pyjamas__ import JS
-            JS("""if (typeof @{{console}} != 'undefined') {
-                if (typeof @{{console}}.error == 'function') @{{console}}.error(@{{msg}});
-                if (typeof @{{console}}.trace == 'function') @{{console}}.trace();
+            JS("""if (typeof @{{!console}} != 'undefined') {
+                if (typeof @{{!console}}.error == 'function') @{{!console}}.error(@{{msg}});
+                if (typeof @{{!console}}.trace == 'function') @{{!console}}.trace();
             }""")
         return False
 
