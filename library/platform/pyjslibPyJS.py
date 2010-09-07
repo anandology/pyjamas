@@ -1745,7 +1745,7 @@ def sprintf(strng, args):
             elif conversion == 'X':
                 param = int(param)
                 JS("""
-                subst = @{{param}}.toString(16).toUpperCase();""")
+                @{{subst}} = @{{param}}.toString(16).toUpperCase();""")
                 if flags.find('#') >= 0:
                     if left_padding:
                         subst = subst.rjust(minlen - 2, '0')
