@@ -1,4 +1,4 @@
-# encoding: latin1
+# encoding: utf8
 
 from pyjamas.ui.ListBox import ListBox
 
@@ -7,7 +7,7 @@ class CountryListBox(ListBox):
     country_list = [
       ['', ''],
       ['Afghanistan', 'AF'],
-      ['Åfland Islands', 'AX'],
+      ['Ã…fland Islands', 'AX'],
       ['Albania', 'AL'],
       ['Algeria', 'DZ'],
       ['American Samoa', 'AS'],
