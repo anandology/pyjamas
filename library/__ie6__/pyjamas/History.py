@@ -36,7 +36,7 @@ def init():
             $wnd.location.hash = encodeURI(token).replace('#','%23');
             // TODO - move init back into History
             // this.onHistoryChanged(token);
-            pyjamas.History.onHistoryChanged(token);
+            @{{pyjamas}}.History.onHistoryChanged(token);
         }
     };
 
@@ -64,5 +64,5 @@ def init():
 def newItem(historyToken):
     JS("""
     var iframe = $doc.getElementById('__pygwt_historyFrame');
-    iframe.contentWindow.location.href = 'history.html?' + historyToken;
+    iframe.contentWindow.location.href = 'history.html?' + @{{historyToken}};
     """)
