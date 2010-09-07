@@ -1721,7 +1721,7 @@ def sprintf(strng, args):
                     @{{subst}} = String(@{{precision}} == null ? @{{param}}.toExponential() : @{{param}}.toExponential().toPrecision(@{{precision}})).toUpperCase();""")
                 else:
                     JS("""
-                    subst = String(@{{precision}} == null ? parseFloat(@{{param}}) : parseFloat(@{{param}}).toPrecision(@{{precision}})).toUpperCase().toUpperCase();""")
+                    @{{subst}} = String(@{{precision}} == null ? parseFloat(@{{param}}) : parseFloat(@{{param}}).toPrecision(@{{precision}})).toUpperCase().toUpperCase();""")
             elif conversion == 'r':
                 numeric = False
                 subst = repr(param)
