@@ -1401,7 +1401,7 @@ def getattr(obj, name, default_value=None):
         }
     }
     if (!pyjslib.isFunction(@{{obj}}[@{{name}}])) return @{{obj}}[@{{name}}];
-    var method = @{{obj}}[@{{name];
+    var method = @{{obj}}[@{{name}}];
     var fnwrap = function() {
         var args = [];
         for (var i = 0; i < arguments.length; i++) {
