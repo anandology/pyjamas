@@ -1837,7 +1837,7 @@ def printFunc(objs, newline):
         if(s != "") s += " ";
         s += @{{objs}}[i];
     }
-    console.debug(s)
+    @{{console}}.debug(s)
     """)
 
 @noSourceTracking
