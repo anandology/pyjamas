@@ -577,7 +577,7 @@ class List:
         if (pyjslib.isArray(@{{data}})) {
             var n = this.l.length;
             for (var i=0; i < @{{data}}.length; i++) {
-                this.l[n+i]=data[i];
+                this.l[n+i]=@{{data}}[i];
                 }
             }
         else if (pyjslib.isIteratable(@{{data}})) {
