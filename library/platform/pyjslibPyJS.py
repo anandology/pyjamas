@@ -1273,7 +1273,7 @@ def repr(x):
 
        var t = typeof(@{{x}});
 
-        //alert("repr typeof " + t + " : " + @{{x}});
+        //alert("repr typeof " + t + " : " + xXXX);
 
        if (t == "boolean")
            return @{{x}}.toString();
@@ -1289,7 +1289,7 @@ def repr(x):
                return "'" + @{{x}} + "'";
            if (@{{x}}.indexOf('"') == -1)
                return '"' + @{{x}} + '"';
-           var s = x.replace(new RegExp('"', "g"), '\\\\"');
+           var s = @{{x}}.replace(new RegExp('"', "g"), '\\\\"');
            return '"' + s + '"';
        };
 
