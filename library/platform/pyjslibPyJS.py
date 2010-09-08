@@ -1701,7 +1701,7 @@ def sprintf(strng, args):
                 if precision is None:
                     precision = 6
                 JS("""
-                subst = String(parseFloat(@{{param}}).toFixed(@{{precision}})).toUpperCase();""")
+                @{{subst}} = String(parseFloat(@{{param}}).toFixed(@{{precision}})).toUpperCase();""")
             elif conversion == 'g':
                 if flags.find('#') >= 0:
                     if precision is None:
