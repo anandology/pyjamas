@@ -1853,7 +1853,7 @@ def type(clsname, bases=None, methods=None):
 
     JS(" var bss = null; ")
     if bases:
-        JS("bss = @{{bases}}.l;")
+        JS("@{{bss}} = @{{bases}}.l;")
     JS(" return pyjs_type(clsname, bss, mths); ")
 
 def pow(x, y, z = None):
