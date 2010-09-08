@@ -83,13 +83,13 @@ def load_module(path, parent_module, module_name, dynamic=1, async=False):
 
         //alert("cache " + cache_file + " " + module_name + " " + parent_module);
 
-        onload_fn = '';
+        var onload_fn = '';
 
         // this one tacks the script onto the end of the DOM
         pyjs_load_script(cache_file, onload_fn, @{{async}});
 
         try {
-            loaded = (typeof $pyjs.modules_hash[@{{module_name}}] == 'function')
+            var loaded = (typeof $pyjs.modules_hash[@{{module_name}}] == 'function')
         } catch ( e ) {
         }
         if (loaded) {
