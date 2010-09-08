@@ -122,7 +122,7 @@ class MenuBar(Widget):
 
     def setStyleName(self, StyleName, **kwargs):
         if not StyleName or StyleName == 'gwt-MenuBar':
-            StyleName = self.getDefaultStyleName(self.vertical)
+            StyleName = self.getDefaultStyleName()
         super(MenuBar, self).setStyleName(StyleName, **kwargs)
 
     # also callable as:
