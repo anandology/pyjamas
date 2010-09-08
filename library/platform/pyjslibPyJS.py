@@ -1711,7 +1711,7 @@ def sprintf(strng, args):
                     @{{subst}} = String(@{{precision}} == null ? @{{param}}.toExponential() : @{{param}}.toExponential().toPrecision(@{{precision}}));""")
                 else:
                     JS("""
-                    subst = String(@{{precision}} == null ? parseFloat(@{{param}}) : parseFloat(@{{param}}).toPrecision(@{{precision}}));""")
+                    @{{subst}} = String(@{{precision}} == null ? parseFloat(@{{param}}) : parseFloat(@{{param}}).toPrecision(@{{precision}}));""")
             elif conversion == 'G':
                 if flags.find('#') >= 0:
                     if precision is None:
