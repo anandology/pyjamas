@@ -1696,7 +1696,7 @@ def sprintf(strng, args):
                 if precision is None:
                     precision = 6
                 JS("""
-                subst = String(parseFloat(@{{param}}).toFixed(@{{precision}}));""")
+                @{{subst}} = String(parseFloat(@{{param}}).toFixed(@{{precision}}));""")
             elif conversion == 'F':
                 if precision is None:
                     precision = 6
