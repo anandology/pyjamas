@@ -1417,7 +1417,7 @@ def getattr(obj, name, default_value=None):
 def delattr(obj, name):
     JS("""
     if (!pyjslib.isObject(@{{obj}})) {
-       throw pyjslib.AttributeError("'"+typeof(obj)+"' object has no attribute '"+@{{name}}+"%s'")
+       throw pyjslib.AttributeError("'"+typeof(@{{obj}})+"' object has no attribute '"+@{{name}}+"%s'")
     }
     if ((pyjslib.isUndefined(@{{obj}}[@{{name}}])) ||(typeof(@{{obj}}[@{{name}}]) == "function") ){
         throw pyjslib.AttributeError(@{{obj}}.__name__+" instance has no attribute '"+ @{{name}}+"'");
