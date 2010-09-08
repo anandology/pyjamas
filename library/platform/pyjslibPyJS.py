@@ -1849,7 +1849,7 @@ def type(clsname, bases=None, methods=None):
     if methods:
         for k in methods.keys():
             mth = methods[k]
-            JS(" mths[k] = @{{mth}}; ")
+            JS(" @{{mths}}[@{{k}}] = @{{mth}}; ")
 
     JS(" var bss = null; ")
     if bases:
