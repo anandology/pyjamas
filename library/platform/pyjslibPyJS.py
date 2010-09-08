@@ -1731,7 +1731,7 @@ def sprintf(strng, args):
             elif conversion == 'o':
                 param = int(param)
                 JS("""
-                subst = @{{param}}.toString(8);""")
+                @{{subst}} = @{{param}}.toString(8);""")
                 if flags.find('#') >= 0 and subst != '0':
                     subst = '0' + subst
             elif conversion == 'x':
