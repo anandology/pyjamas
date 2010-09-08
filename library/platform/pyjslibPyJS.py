@@ -1871,7 +1871,7 @@ def hex(x):
 def oct(x):
     if int(x) != x:
         raise TypeError("oct() argument can't be converted to oct")
-    JS("r = '0'+@{{x}.toString(8);")
+    JS("@{{r}} = '0'+@{{@{{x}}}.toString(8);")
     return str(r)
 
 def round(x, n = 0):
