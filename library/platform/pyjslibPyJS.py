@@ -485,7 +485,6 @@ pyjslib.String_center = function(width, fillchar) {
 }
 
 pyjslib.abs = Math.abs;
-
 """)
 
 class Class:
@@ -509,7 +508,7 @@ def eq(a,b):
         return false;
     }
     if ((typeof @{{a}} == 'object' || typeof @{{a}} == 'function') && typeof @{{a}}.__cmp__ == 'function') {
-        return @{{a}}.__cmp__(b) == 0;
+        return @{{a}}.__cmp__(@{{b}}) == 0;
     } else if ((typeof @{{b}} == 'object' || typeof @{{b}} == 'function') && typeof @{{b}}.__cmp__ == 'function') {
         return @{{b}}.__cmp__(@{{a}}) == 0;
     }
