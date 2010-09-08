@@ -21,12 +21,12 @@
 def import_module(path, parent_module, module_name, dynamic=1, async=False, init=True):
     module = None
     JS("""
-    module = $pyjs.modules_hash[@{{module_name}}];
-    if (typeof module == 'function' && module.__was_initialized__ == true) {
+    @{{module}} = $pyjs.modules_hash[@{{module_name}}];
+    if (typeof @{{module}} == 'function' && @{{module}}.__was_initialized__ == true) {
         return null;
     }
-    if (module_name == 'sys' || module_name == 'pyjslib') {
-        module();
+    if (@{{module_name}} == 'sys' || @{{module_name}} == 'pyjslib') {
+        @{{module}}();
         return null;
     }
     """)
@@ -1771,7 +1771,7 @@ def sprintf(strng, args):
                 result.append(remainder)
                 break;
             JS("""
-            var left = a[1], flags = a[2];
+            var left = @{{!a}}[1], flags = a[2];
             var minlen = a[3], precision = a[5], conversion = a[6];
             remainder = a[7];
             if (typeof minlen == 'undefined') minlen = null;
@@ -1799,7 +1799,7 @@ def sprintf(strng, args):
                 result.append(remainder)
                 break;
             JS("""
-            var left = a[1], key = a[2], flags = a[3];
+            var left = @{{!a}}[1], key = a[2], flags = a[3];
             var minlen = a[4], precision = a[5], conversion = a[6];
             remainder = a[7];
             if (typeof minlen == 'undefined') minlen = null;
