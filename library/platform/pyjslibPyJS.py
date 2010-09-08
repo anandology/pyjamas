@@ -1882,7 +1882,7 @@ def round(x, n = 0):
 def divmod(x, y):
     if int(x) == x and int(y) == y:
         return (int(x / y), int(x % y))
-    JS("f = Math.floor(@{{x}} / @{{y}});")
+    JS("@{{f}} = Math.floor(@{{x}} / @{{y}});")
     f = float(f)
     return (f, x - f * y)
 
