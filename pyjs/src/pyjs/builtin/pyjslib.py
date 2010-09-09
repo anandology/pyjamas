@@ -6235,7 +6235,7 @@ def sprintf(strng, args):
 
 def debugReport(msg):
     JS("""
-    alert(msg);
+    alert(@{{msg}});
     """)
 
 JS("""
