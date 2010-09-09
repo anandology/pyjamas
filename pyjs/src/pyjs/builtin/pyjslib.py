@@ -5149,7 +5149,7 @@ def range(start, stop = None, step = 1):
     JS("""
     var nstep = (@{{stop}}-@{{start}})/@{{step}};
     nstep = nstep < 0 ? Math.ceil(nstep) : Math.floor(nstep);
-    if ((@{{stop}}-@{{start}}) % step) {
+    if ((@{{stop}}-@{{start}}) % @{{step}}) {
         nstep++;
     }
     var _stop = @{{start}}+ nstep * @{{step}};
