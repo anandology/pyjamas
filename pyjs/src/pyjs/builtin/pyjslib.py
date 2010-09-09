@@ -6290,16 +6290,16 @@ def hex(x):
 
 def oct(x):
     JS("""
-    if (typeof x == 'number') {
-        if (Math.floor(x) == x) {
-            return x == 0 ? '0': '0' + x.toString(8);
+    if (typeof @{{x}} == 'number') {
+        if (Math.floor(@{{x}}) == @{{x}}) {
+            return @{{x}} == 0 ? '0': '0' + @{{x}}.toString(8);
         }
     } else {
-        switch (x.__number__) {
+        switch (@{{x}}.__number__) {
             case 0x02:
-                return x.__v == 0 ? '0': '0' + x.__v.toString(8);
+                return @{{x}}.__v == 0 ? '0': '0' + @{{x}}.__v.toString(8);
             case 0x04:
-                return x.__oct__();
+                return @{{x}}.__oct__();
         }
     }
 """)
