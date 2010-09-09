@@ -5394,7 +5394,7 @@ def _isinstance(object_, classinfo):
     """)
 
 def issubclass(class_, classinfo):
-    if JS(""" typeof class_ == 'undefined' || class_ === null || class_.__is_instance__ !== false """):
+    if JS(""" typeof @{{class_}} == 'undefined' || @{{class_}} === null || @{{class_}}.__is_instance__ !== false """):
         raise TypeError("arg 1 must be a class")
         
     if isinstance(classinfo, tuple):
