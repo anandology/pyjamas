@@ -5403,7 +5403,7 @@ def issubclass(class_, classinfo):
                 return True
         return False
     else:
-        if JS(""" typeof classinfo == 'undefined' || classinfo.__is_instance__ !== false """):
+        if JS(""" typeof @{{classinfo}} == 'undefined' || @{{classinfo}}.__is_instance__ !== false """):
             raise TypeError("arg 2 must be a class or tuple of classes")
         return _issubtype(class_, classinfo)
     
