@@ -126,10 +126,10 @@ class GearsDatabase:
 
     def execute_args(self, sqlStatement, args):
         JS("""
-        if (typeof args == 'undefined') {
-            return this.db.execute(sqlStatement);
+        if (typeof @{{args}} == 'undefined') {
+            return this.db.execute(@{{sqlStatement}});
         } else {
-            return this.db.execute(sqlStatement, args.l);
+            return this.db.execute(@{{sqlStatement}}, @{{args}}.l);
         }
         """)
 
