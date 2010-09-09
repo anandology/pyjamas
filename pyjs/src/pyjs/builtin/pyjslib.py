@@ -6308,7 +6308,7 @@ def oct(x):
 def round(x, n = 0):
     n = pow(10, n)
     r = None
-    JS("r = Math.round(n*x)/n;")
+    JS("@{{r}} = Math.round(@{{n}}*@{{x}})/@{{n}};")
     return float(r)
 
 def divmod(x, y):
