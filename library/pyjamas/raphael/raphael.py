@@ -445,7 +445,7 @@ class RaphaelElement:
             """)
 
         JS("""
-           this._element.animate(jsAttrs, @{{duration}});
+           this._element.animate(@{{jsAttrs}}, @{{duration}});
         """)
 
 
