@@ -121,7 +121,7 @@ class GearsDatabase:
         if name is None:
             JS(" this.db.open(); ")
         else:
-            JS(" this.db.open(name); ")
+            JS(" this.db.open(@{{name}}); ")
 
 
     def execute_args(self, sqlStatement, args):
@@ -138,5 +138,3 @@ class GearsDatabase:
         JS("""
         this.db.close();
         """)
-
-
