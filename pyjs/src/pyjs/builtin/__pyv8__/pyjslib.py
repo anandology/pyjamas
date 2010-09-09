@@ -13,7 +13,7 @@ def printFunc(objs, newline):
 def __dynamic_load__(importName):
     setCompilerOptions("noDebug")
     module = JS("""$pyjs.loaded_modules[@{{importName}}]""")
-    if JS("""typeof module == 'undefined'"""):
+    if JS("""typeof @{{module}} == 'undefined'"""):
         try:
             dynamic.ajax_import("lib/" + importName + ".__" + platform + "__.js")
             module = JS("""$pyjs.loaded_modules[importName]""")
