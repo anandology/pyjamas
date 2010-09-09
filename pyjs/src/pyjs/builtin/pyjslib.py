@@ -5537,7 +5537,7 @@ def delattr(obj, name):
     }
     if (@{{obj}}=== null) {
         throw @{{AttributeError}}("'NoneType' object"+
-                                  "has no attribute '"+name+"'");
+                                  "has no attribute '"+@{{name}}+"'");
     }
     if (typeof @{{obj}}!= 'object' && typeof @{{obj}}== 'function') {
        throw @{{AttributeError}}("'"+typeof(@{{obj}})+
