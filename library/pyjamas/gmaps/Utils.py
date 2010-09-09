@@ -34,7 +34,7 @@ from __pyjamas__ import JS
 
 def translateGmapsObject(obj, fieldName, fields, pyToJs):
     JS("""
-    //console.log("translateGmapsObject " + @{{fieldName}}+"("+pyToJs+")")
+    //console.log("translateGmapsObject " + fieldNameXXX+"("+pyToJs+")")
 
     if (! (@{{fieldName}} in @{{fields}}))
     {
@@ -42,10 +42,10 @@ def translateGmapsObject(obj, fieldName, fields, pyToJs):
       return @{{obj}};
     }
     else{
-        action = @{{fields}}[@{{fieldName}}]
+        @{{action}} = @{{fields}}[@{{fieldName}}]
         //console.log("action=" + action)
 
-        if (action == 'd')
+        if (@{{action}} == 'd')
         {
           //console.log("is dict")
           // this newobj can be used in js and also in python, 
@@ -53,17 +53,17 @@ def translateGmapsObject(obj, fieldName, fields, pyToJs):
           var newobj = {}
           for (var i in @{{obj}})
              // vai ficar disponivel como uma propriedade, no python!
-             newobj[i] = Utils.translateGmapsObject(@{{obj}}[i], i, @{{fields}}, @{{pyToJs}});
+             newobj[i] = @{{Utils}}.translateGmapsObject(@{{obj}}[i], i, @{{fields}}, @{{pyToJs}});
           return newobj
 
         }
-        else if (action == 'l')
+        else if (@{{action}} == 'l')
         {
           if (@{{pyToJs}}) {
-              var newobj = Utils.listToJs(@{{obj}})
+              var newobj = @{{Utils}}.listToJs(@{{obj}})
               //console.log("is list py->js")
               for (var i in newobj){
-                 newobj[i]=Utils.translateGmapsObject(
+                 newobj[i]=@{{Utils}}.translateGmapsObject(
                     newobj[i], @{{fieldName}} + "[]", @{{fields}},@{{pyToJs}} ) ;
               }
               return newobj
@@ -71,7 +71,7 @@ def translateGmapsObject(obj, fieldName, fields, pyToJs):
               //console.log("is list js->py")
               var newobj = @{{list}}([])
               for (var i in @{{obj}})
-                 newobj.append(Utils.translateGmapsObject(
+                 newobj.append(@{{Utils}}.translateGmapsObject(
                      @{{obj}}[i], @{{fieldName}} + "[]", @{{fields}},@{{pyToJs}} ));
               return newobj
           }
@@ -79,7 +79,7 @@ def translateGmapsObject(obj, fieldName, fields, pyToJs):
         else
         {
           //console.log("is special")
-          return action(@{{obj}})
+          return @{{action}}(@{{obj}})
         }
     }
     """)
