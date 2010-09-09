@@ -74,7 +74,7 @@ class JSONParser:
             return new pyjslib.dict(@{{obj}});
             }
         
-        return obj;
+        return @{{obj}};
         """)
     
     def jsObjectToPyObject(self, obj):
@@ -218,5 +218,3 @@ class JSONParser:
     
         
         
-
-
