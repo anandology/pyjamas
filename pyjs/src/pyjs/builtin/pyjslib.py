@@ -5577,13 +5577,13 @@ def hasattr(obj, name):
     if (typeof @{{obj}}== 'undefined') {
         throw @{{UndefinedValueError}}("obj");
     }
-    if (typeof name != 'string') {
+    if (typeof @{{name}} != 'string') {
         throw @{{TypeError}}("attribute name must be string");
     }
     if (@{{obj}}=== null) return false;
-    if (typeof @{{obj}}[name] == 'undefined' && (
-            typeof @{{obj}}['$$'+name] == 'undefined' ||
-            attrib_remap.indexOf(name) < 0)
+    if (typeof @{{obj}}[@{{name}}] == 'undefined' && (
+            typeof @{{obj}}['$$'+@{{name}}] == 'undefined' ||
+            attrib_remap.indexOf(@{{name}}) < 0)
       ) {
         return false;
     }
