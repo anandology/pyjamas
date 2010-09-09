@@ -5264,7 +5264,7 @@ def repr(x):
 
        var t = typeof(@{{x}});
 
-        //alert("repr typeof " + t + " : " + @{{x}});
+        //alert("repr typeof " + t + " : " + xXXX);
 
        if (t == "boolean") {
            if (@{{x}}) return "True";
@@ -5317,15 +5317,15 @@ def len(object):
         throw @{{UndefinedValueError}}("obj");
     }
     if (@{{object}}=== null) 
-        return v;
+        return @{{v}};
     else if (typeof @{{object}}.__array != 'undefined') 
-        v = @{{object}}.__array.length;
+        @{{v}} = @{{object}}.__array.length;
     else if (typeof @{{object}}.__len__ == 'function') 
-        v = @{{object}}.__len__();
+        @{{v}} = @{{object}}.__len__();
     else if (typeof @{{object}}.length != 'undefined')
-        v = @{{object}}.length;
+        @{{v}} = @{{object}}.length;
     else throw @{{TypeError}}("object has no len()");
-    if (v.__number__ & 0x06) return v;
+    if (@{{v}}.__number__ & 0x06) return @{{v}};
     """)
     return INT(v)
 
