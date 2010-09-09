@@ -1309,7 +1309,6 @@ String.prototype.__repr__ = function () {
     return "<type 'str'>";
 };
 String.prototype.__mro__ = [@{{basestring}}];
-
 """)
 
     # Patching of the standard javascript Boolean object
@@ -1335,7 +1334,6 @@ Boolean.prototype.__or__ = function (y) {
 Boolean.prototype.__xor__ = function (y) {
     return this ^ y.valueOf();
 };
-
 """)
 
     # Patching of the standard javascript Array object
@@ -1629,35 +1627,34 @@ Number.prototype.__pow__ = function (y, z) {
     if (!z.__number__ || isNaN(z = z.valueOf())) return @{{NotImplemented}};
     return Math.pow(this, y) % z;
 };
-
 """)
 
 def float_int(value, radix=None):
     JS("""
     var v;
-    if (value.__number__) {
-        if (radix !== null) {
+    if (@{{value}}.__number__) {
+        if (@{{radix}} !== null) {
             throw @{{TypeError}}("int() can't convert non-string with explicit base");
         }
-        v = value.valueOf();
+        v = @{{value}}.valueOf();
         if (v > 0) {
             v = Math.floor(v);
         } else {
             v = Math.ceil(v);
         }
-    } else if (typeof value == 'string') {
-        if (radix === null) {
-            radix = 10;
+    } else if (typeof @{{value}} == 'string') {
+        if (@{{radix}} === null) {
+            @{{radix}} = 10;
         }
-        switch (value[value.length-1]) {
+        switch (@{{value}}[@{{value}}.length-1]) {
             case 'l':
             case 'L':
-                v = value.slice(0, value.length-2);
+                v = @{{value}}.slice(0, @{{value}}.length-2);
                 break;
             default:
-                v = value;
+                v = @{{value}};
         }
-        v = parseInt(v, radix);
+        v = parseInt(v, @{{radix}});
     } else {
         throw @{{TypeError}}("TypeError: int() argument must be a string or a number");
     }
