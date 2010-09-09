@@ -6273,16 +6273,16 @@ def pow(x, y, z = None):
 
 def hex(x):
     JS("""
-    if (typeof x == 'number') {
-        if (Math.floor(x) == x) {
-            return '0x' + x.toString(16);
+    if (typeof @{{x}} == 'number') {
+        if (Math.floor(@{{x}}) == @{{x}}) {
+            return '0x' + @{{x}}.toString(16);
         }
     } else {
-        switch (x.__number__) {
+        switch (@{{x}}.__number__) {
             case 0x02:
-                return '0x' + x.__v.toString(16);
+                return '0x' + @{{x}}.__v.toString(16);
             case 0x04:
-                return x.__hex__();
+                return @{{x}}.__hex__();
         }
     }
 """)
