@@ -6313,42 +6313,42 @@ def round(x, n = 0):
 
 def divmod(x, y):
     JS("""
-    if (x !== null && y !== null) {
-        switch ((x.__number__ << 8) | y.__number__) {
+    if (@{{x}} !== null && @{{y}} !== null) {
+        switch ((@{{x}}.__number__ << 8) | @{{y}}.__number__) {
             case 0x0101:
             case 0x0104:
             case 0x0401:
-                if (y == 0) throw @{{ZeroDivisionError}}('float divmod()');
-                var f = Math.floor(x / y);
-                return @{{tuple}}([f, x - f * y]);
+                if (@{{y}} == 0) throw @{{ZeroDivisionError}}('float divmod()');
+                var f = Math.floor(@{{x}} / @{{y}});
+                return @{{tuple}}([f, @{{x}} - f * @{{y}}]);
             case 0x0102:
-                if (y.__v == 0) throw @{{ZeroDivisionError}}('float divmod()');
-                var f = Math.floor(x / y.__v);
-                return @{{tuple}}([f, x - f * y.__v]);
+                if (@{{y}}.__v == 0) throw @{{ZeroDivisionError}}('float divmod()');
+                var f = Math.floor(@{{x}} / @{{y}}.__v);
+                return @{{tuple}}([f, @{{x}} - f * @{{y}}.__v]);
             case 0x0201:
-                if (y == 0) throw @{{ZeroDivisionError}}('float divmod()');
-                var f = Math.floor(x.__v / y);
-                return @{{tuple}}([f, x.__v - f * y]);
+                if (@{{y}} == 0) throw @{{ZeroDivisionError}}('float divmod()');
+                var f = Math.floor(@{{x}}.__v / @{{y}});
+                return @{{tuple}}([f, @{{x}}.__v - f * @{{y}}]);
             case 0x0202:
-                if (y.__v == 0) throw @{{ZeroDivisionError}}('integer division or modulo by zero');
-                var f = Math.floor(x.__v / y.__v);
-                return @{{tuple}}([new @{{int}}(f), new @{{int}}(x.__v - f * y.__v)]);
+                if (@{{y}}.__v == 0) throw @{{ZeroDivisionError}}('integer division or modulo by zero');
+                var f = Math.floor(@{{x}}.__v / @{{y}}.__v);
+                return @{{tuple}}([new @{{int}}(f), new @{{int}}(@{{x}}.__v - f * @{{y}}.__v)]);
             case 0x0204:
-                return y.__rdivmod__(new @{{long}}(x.__v));
+                return @{{y}}.__rdivmod__(new @{{long}}(@{{x}}.__v));
             case 0x0402:
-                return x.__divmod__(new @{{long}}(y.__v));
+                return @{{x}}.__divmod__(new @{{long}}(@{{y}}.__v));
             case 0x0404:
-                return x.__divmod__(y);
+                return @{{x}}.__divmod__(@{{y}});
         }
-        if (!x.__number__) {
-            if (   !y.__number__
-                && x.__mro__.length > y.__mro__.length
-                && @{{isinstance}}(x, y)
-                && typeof x['__divmod__'] == 'function')
-                return y.__divmod__(x);
-            if (typeof x['__divmod__'] == 'function') return x.__divmod__(y);
+        if (!@{{x}}.__number__) {
+            if (   !@{{y}}.__number__
+                && @{{x}}.__mro__.length > @{{y}}.__mro__.length
+                && @{{isinstance}}(@{{x}}, @{{y}})
+                && typeof @{{x}}['__divmod__'] == 'function')
+                return @{{y}}.__divmod__(@{{x}});
+            if (typeof @{{x}}['__divmod__'] == 'function') return @{{x}}.__divmod__(@{{y}});
         }
-        if (!y.__number__ && typeof y['__rdivmod__'] == 'function') return y.__rdivmod__(x);
+        if (!@{{y}}.__number__ && typeof @{{y}}['__rdivmod__'] == 'function') return @{{y}}.__rdivmod__(@{{x}});
     }
 """)
     raise TypeError("unsupported operand type(s) for divmod(): '%r', '%r'" % (x, y))
