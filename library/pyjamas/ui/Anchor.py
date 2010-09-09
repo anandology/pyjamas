@@ -55,6 +55,7 @@ class _Attributes(object):
         self.rel = _Attribute(element, 'rel', 'link-types' ,'ci')
         self.rev = _Attribute(element, 'rev', 'link-types', 'ci')
         self.charset = _Attribute(element, 'charset', 'charset', 'ci')
+        self.target = _Attribute(element, 'target', 'target', 'ci')
         
 class Anchor(Widget, ClickHandler, _Attributes):
     """Anchor attribute, use this to create the equivalent of the <a></a> tag.
