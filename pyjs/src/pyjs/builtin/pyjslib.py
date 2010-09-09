@@ -6257,9 +6257,9 @@ def printFunc(objs, newline):
     JS("""
     if ($printFunc === null) return null;
     var s = "";
-    for(var i=0; i < objs.length; i++) {
+    for(var i=0; i < @{{objs}}.length; i++) {
         if(s != "") s += " ";
-        s += objs[i];
+        s += @{{objs}}[i];
     }
     $printFunc(s);
     """)
