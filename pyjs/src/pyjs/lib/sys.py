@@ -40,7 +40,7 @@ def exc_clear():
     JS('$pyjs.__last_exception_stack__ = $pyjs.__last_exception__ = null;')
 
 # save_exception_stack is totally javascript, to prevent trackstack pollution
-JS("""@{{sys}}.save_exception_stack = function () {
+JS("""@{{!sys}}.save_exception_stack = function () {
     var save_stack = [];
     if ($pyjs.__active_exception_stack__) {
         return $pyjs.__active_exception_stack__;
