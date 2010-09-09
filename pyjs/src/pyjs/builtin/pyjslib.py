@@ -5502,10 +5502,10 @@ def getattr(obj, name, default_value=None):
 
 def _del(obj):
     JS("""
-    if (typeof obj.__delete__ == 'function') {
-        obj.__delete__(obj);
+    if (typeof @{{obj}}.__delete__ == 'function') {
+        @{{obj}}.__delete__(@{{obj}});
     } else {
-        delete obj;
+        delete @{{obj}};
     }
     """)
 
