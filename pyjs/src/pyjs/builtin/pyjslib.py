@@ -4656,7 +4656,7 @@ class set(object):
     def __len__(self):
         size=0.0
         JS("""
-        for (var i in @{{self}}.__object) size++;
+        for (var i in @{{self}}.__object) @{{size}}++;
         """)
         return INT(size)
 
