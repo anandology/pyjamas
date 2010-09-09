@@ -5117,7 +5117,7 @@ def xrange(start, stop = None, step = 1):
             return this;
         },
         '__reversed__': function() {
-            return @{{xrange}}(_stop-@{{step}}, @{{start}}-@{{step}}, -@{{step}});
+            return @{{xrange}}(@{{!_stop}}-@{{step}}, @{{start}}-@{{step}}, -@{{step}});
         },
         'toString': function() {
             var s = "xrange(";
