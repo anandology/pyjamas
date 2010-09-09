@@ -715,7 +715,7 @@ def ___import___(path, context, module_name=None, get_base=True):
         # Check if we already have imported this module in this context
         if depth > 1 and sys.modules.has_key(inContextParentName):
             module = sys.modules[inContextParentName]
-            if JS("typeof @{{module}}[objName] != 'undefined'"):
+            if JS("typeof @{{module}}[@{{objName}}] != 'undefined'"):
                 if get_base:
                     return JS("$pyjs.loaded_modules[@{{inContextTopName}}]")
                 return JS("@{{module}}[objName]")
