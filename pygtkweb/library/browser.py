@@ -12,7 +12,7 @@ def set_listener(item, listener):
     pass
 
 def round_val(val, digits):
-    return JS('val.toFixed(digits);')
+    return JS('@{{val}}.toFixed(@{{digits}});')
 
 class Element:
     def __init__(self, tag=None, element=None):
