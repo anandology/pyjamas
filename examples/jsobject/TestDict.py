@@ -11,7 +11,7 @@ class WrapperDict:
         d = {'hello': 'world',
              'goodbye': 2}
         JS("""
-           @{{self}}.dict = new dictobj();
+           @{{self}}.dict = new @{{!dictobj}}();
            """)
         self.dict.init(d)
 

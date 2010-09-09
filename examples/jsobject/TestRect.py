@@ -6,7 +6,7 @@ from __pyjamas__ import JS
 
 class Rect:
     def __init__(self, x, y):
-        JS("""@{{self}}.rect = new rectobj();""")
+        JS("""@{{self}}.rect = new @{{!rectobj}}();""")
         self.rect.init(x, y)
 
     def add(self, r):
