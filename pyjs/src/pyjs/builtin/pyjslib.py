@@ -689,7 +689,7 @@ def ___import___(path, context, module_name=None, get_base=True):
     if JS("@{{sys}}.__was_initialized__ != true"):
         module = JS("$pyjs.loaded_modules[@{{path}}]")
         module()
-        JS("$pyjs.track.module = save_track_module;")
+        JS("$pyjs.track.module = @{{save_track_module}};")
         if path == 'sys':
             module.modules = dict({'pyjslib': pyjslib, 'sys': module})
         return module
