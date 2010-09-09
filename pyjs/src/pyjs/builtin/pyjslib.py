@@ -5085,23 +5085,23 @@ def xrange(start, stop = None, step = 1):
         raise TypeError("xrange() integer step argument expected, got %s" % step.__class__.__name__)
     rval = nval = start
     JS("""
-    var nstep = (@{{stop}}-@{{start}})/step;
+    var nstep = (@{{stop}}-@{{start}})/@{{step}};
     nstep = nstep < 0 ? Math.ceil(nstep) : Math.floor(nstep);
-    if ((@{{stop}}-@{{start}}) % step) {
+    if ((@{{stop}}-@{{start}}) % @{{step}}) {
         nstep++;
     }
     var _stop = @{{start}}+ nstep * @{{step}};
-    if (nstep <= 0) nval = _stop;
+    if (nstep <= 0) @{{nval}} = _stop;
     var x = {
         'next': function(noStop) {
-            if (nval == _stop) {
+            if (@{{nval}} == _stop) {
                 if (noStop === true) {
                     return;
                 }
                 throw @{{StopIteration}};
             }
-            rval = nval;
-            nval += @{{step}};
+            @{{rval}} = @{{nval}};
+            @{{nval}} += @{{step}};
 """)
     return INT(rval);
     JS("""
