@@ -1,0 +1,484 @@
+From b82fcb3c2d8cd0fccc694c8af36c3466e95e3265 Mon Sep 17 00:00:00 2001
+From: Jameson.Quinn <Jameson.Quinn+pyjamas@gmail.com>
+Date: Fri, 20 Aug 2010 22:33:40 -0500
+Subject: [PATCH] doing JS() feature/rule-change and pyjslib cleanup on these files
+
+---
+ examples/gmaps/oldExample.py    |    4 +-
+ examples/jsobject/TestDict.py   |    2 +-
+ examples/jsobject/TestRect.py   |    2 +-
+ examples/raphael/raphael.py     |   13 ++--
+ library/platform/pyjslibPyV8.py |  152 +++++++++++++++++++-------------------
+ 5 files changed, 87 insertions(+), 86 deletions(-)
+
+diff --git a/examples/gmaps/oldExample.py b/examples/gmaps/oldExample.py
+index 7dbaf0c..9174dcf 100644
+--- a/examples/gmaps/oldExample.py
++++ b/examples/gmaps/oldExample.py
+@@ -30,9 +30,9 @@ def jsOpts(options):
+     JS("return {};")
+ 
+ def getStart(ui):
+-    JS("return ui.values[0]")
++    JS("return @{{ui}}.values[0]")
+ def getEnd(ui):
+-    JS("return ui.values[1]")
++    JS("return @{{ui}}.values[1]")
+ 
+ class Greed:
+     def onModuleLoad(self):
+diff --git a/examples/jsobject/TestDict.py b/examples/jsobject/TestDict.py
+index bc30f92..268d453 100644
+--- a/examples/jsobject/TestDict.py
++++ b/examples/jsobject/TestDict.py
+@@ -11,7 +11,7 @@ class WrapperDict:
+         d = {'hello': 'world',
+              'goodbye': 2}
+         JS("""
+-           self.dict = new dictobj();
++           @{{self}}.dict = new dictobj();
+            """)
+         self.dict.init(d)
+ 
+diff --git a/examples/jsobject/TestRect.py b/examples/jsobject/TestRect.py
+index 98d5122..1a9e50e 100644
+--- a/examples/jsobject/TestRect.py
++++ b/examples/jsobject/TestRect.py
+@@ -6,7 +6,7 @@ from __pyjamas__ import JS
+ 
+ class Rect:
+     def __init__(self, x, y):
+-        JS("""self.rect = new rectobj();""")
++        JS("""@{{self}}.rect = new rectobj();""")
+         self.rect.init(x, y)
+ 
+     def add(self, r):
+diff --git a/examples/raphael/raphael.py b/examples/raphael/raphael.py
+index 5df049e..d31d841 100644
+--- a/examples/raphael/raphael.py
++++ b/examples/raphael/raphael.py
+@@ -54,7 +54,7 @@ class Raphael(Widget):
+         """ Return the next colour to use in the spectrum.
+         """
+         JS("""
+-           colour = this._canvas.getColor();
++           @{{colour}} = this._canvas.getColor();
+         """)
+         return colour
+ 
+@@ -135,7 +135,7 @@ class Raphael(Widget):
+             We return a RaphaelSetElement representing the set.
+         """
+         JS("""
+-           self._element = this._canvas.set();
++           @{{self}}._element = this._canvas.set();
+         """)
+         return RaphaelSetElement(self._element)
+ 
+@@ -455,12 +455,13 @@ class RaphaelElement:
+             We return a dictionary with 'x', 'y', 'width' and 'height'
+             elements.
+         """
++	x = y = width = height = 0 #declared
+         JS("""
+            var bounds = this._element.getBBox();
+-           var x = bounds.x;
+-           var y = bounds.y;
+-           var width = bounds.width;
+-           var height = bounds.height;
++           @{{x}} = bounds.x;
++           @{{y}} = bounds.y;
++           @{{width}} = bounds.width;
++           @{{height}} = bounds.height;
+         """)
+         return {'x'      : x,
+                 'y'      : y,
+diff --git a/library/platform/pyjslibPyV8.py b/library/platform/pyjslibPyV8.py
+index 7320e0f..54b6ae6 100644
+--- a/library/platform/pyjslibPyV8.py
++++ b/library/platform/pyjslibPyV8.py
+@@ -2,23 +2,23 @@
+ def printFunc(objs, newline):
+     JS("""
+         var s = "";
+-        for(var i=0; i < objs.length; i++) {
++        for(var i=0; i < @{{objs}}.length; i++) {
+             if(s != "") s += " ";
+-                s += objs[i];
++                s += @{{objs}}[i];
+         }
+ 
+-        pyv8_print_fn(s);
++        @{{pyv8_print_fn}}(s);
+     """)
+ 
+ # pyv8_import_module is actually in pyv8run.py and has been added to Globals.
+ def import_module(syspath, parent_name, module_name, dynamic_load, async, init):
+     JS("""
+-    module = $pyjs.modules_hash[module_name];
+-    if (typeof module == 'function' && module.__was_initialized__ == true) {
++    @{{module}} = $pyjs.modules_hash[@{{module_name}}];
++    if (typeof @{{module}} == 'function' && @{{module}}.__was_initialized__ == true) {
+         return null;
+     }
+-    if (module_name == 'sys' || module_name == 'pyjslib') {
+-        module();
++    if (@{{module_name}} == 'sys' || @{{module_name}} == 'pyjslib') {
++        @{{module}}();
+         return null;
+     }
+     """)
+@@ -27,7 +27,7 @@ def import_module(syspath, parent_name, module_name, dynamic_load, async, init):
+     # Import all modules in the chain (import a.b.c)
+     for name in names:
+         importName += name
+-        JS("""module = $pyjs.modules_hash[importName];""")
++        JS("""@{{module}} = $pyjs.modules_hash[importName];""")
+         if not isUndefined(module):
+             # Not initialized, but present. Must be pyjs module.
+             if JS("module.__was_initialized__ != true"):
+@@ -37,17 +37,17 @@ def import_module(syspath, parent_name, module_name, dynamic_load, async, init):
+             # Get a pytjon module from PyV8
+             initialized = False
+             try:
+-                JS("initialized = (module.__was_initialized__ != true)")
++                JS("@{{initialized}} = (@{{module}}.__was_initialized__ != true)")
+             except:
+                 pass
+             if not initialized:
+                 # Module wasn't initialized
+                 module = pyv8_import_module(parent_name, module_name)
+                 module.__was_initialized__ = True
+-                JS("""$pyjs.modules_hash[importName] = module""")
++                JS("""$pyjs.modules_hash[@{{importName}}] = @{{module}}""")
+         importName += '.'
+     name = names[0]
+-    JS("""$pyjs.modules[name] = $pyjs.modules_hash[name];""")
++    JS("""$pyjs.modules[@{{name}}] = $pyjs.modules_hash[@{{name}}];""")
+     return None
+ 
+ # FIXME: dynamic=1, async=False are useless here (?). Only dynamic modules
+@@ -59,22 +59,22 @@ def load_module(path, parent_module, module_name, dynamic=1, async=False):
+ 
+     JS("""
+         var cache_file;
+-        var module = $pyjs.modules_hash[module_name];
++        var module = $pyjs.modules_hash[@{{module_name}}];
+         if (typeof module == 'function') {
+             return true;
+         }
+ 
+-        if (!dynamic) {
++        if (!@{{dynamic}}) {
+             // There's no way we can load a none dynamic module
+             return false;
+         }
+ 
+-        if (path == null)
++        if (@{{path}} == null)
+         {
+-            path = './';
++            @{{path}} = './';
+         }
+ 
+-        var override_name = sys.platform + "." + module_name;
++        var override_name = sys.platform + "." + @{{module_name}};
+         if (((sys.overrides != null) &&
+              (sys.overrides.has_key(override_name))))
+         {
+@@ -82,20 +82,20 @@ def load_module(path, parent_module, module_name, dynamic=1, async=False):
+         }
+         else
+         {
+-            cache_file =  module_name ;
++            cache_file =  @{{module_name}} ;
+         }
+ 
+-        cache_file = (path + cache_file + '.cache.js' ) ;
++        cache_file = (@{{path}} + cache_file + '.cache.js' ) ;
+ 
+-        //alert("cache " + cache_file + " " + module_name + " " + parent_module);
++        //alert("cache " + cache_file + " " + @{{module_name}} + " " + @{{parent_module}});
+ 
+         onload_fn = '';
+ 
+         // this one tacks the script onto the end of the DOM
+-        pyjs_load_script(cache_file, onload_fn, async);
++        @{{pyjs_load_script}}(cache_file, onload_fn, @{{async}});
+ 
+         try {
+-            loaded = (typeof $pyjs.modules_hash[module_name] == 'function')
++            loaded = (typeof $pyjs.modules_hash[@{{module_name}}] == 'function')
+         } catch ( e ) {
+         }
+         if (loaded) {
+@@ -119,15 +119,15 @@ def load_module_wait(proceed_fn, parent_mod, module_list, dynamic):
+     //}
+ 
+     var timeoutperiod = 1;
+-    if (dynamic)
++    if (@{{dynamic}})
+         var timeoutperiod = 1;
+ 
+     var wait = function() {
+         wait_count++;
+         //write_dom(".");
+         var loaded = true;
+-        for (var i in module_list) {
+-            if (typeof $pyjs.modules_hash[module_list[i]] != 'function') {
++        for (var i in @{{module_list}}) {
++            if (typeof $pyjs.modules_hash[@{{module_list}}[i]] != 'function') {
+                 loaded = false;
+                 break;
+             }
+@@ -135,10 +135,10 @@ def load_module_wait(proceed_fn, parent_mod, module_list, dynamic):
+         if (!loaded) {
+             setTimeout(wait, timeoutperiod);
+         } else {
+-            if (proceed_fn.importDone)
+-                proceed_fn.importDone(proceed_fn);
++            if (@{{proceed_fn}}.importDone)
++                @{{proceed_fn}}.importDone(@{{proceed_fn}});
+             else
+-                proceed_fn();
++                @{{proceed_fn}}();
+             //$doc.body.removeChild(element);
+         }
+     }
+@@ -151,43 +151,43 @@ def load_module_wait(proceed_fn, parent_mod, module_list, dynamic):
+ # Hence the declaration of 'var message' and the wrapping in try..catch
+ def init():
+     JS("""
+-pyjslib._errorMapping = function(err) {
++@{{_errorMapping}} = function(err) {
+     if (err instanceof(ReferenceError) || err instanceof(TypeError)) {
+         var message = ''
+         try {
+             message = err.message;
+         } catch ( e) {
+         }
+-        return pyjslib.AttributeError(message);
++        return @{{AttributeError}}(message);
+     }
+     return err
+ }
+ 
+-pyjslib.TryElse = function () { };
+-pyjslib.TryElse.prototype = new Error();
+-pyjslib.TryElse.__name__ = 'TryElse';
+-pyjslib.TryElse.message = 'TryElse';
++@{{TryElse}} = function () { };
++@{{TryElse}}.prototype = new Error();
++@{{TryElse}}.__name__ = 'TryElse';
++@{{TryElse}}.message = 'TryElse';
+ 
+-pyjslib.StopIteration = function () { };
+-pyjslib.StopIteration.prototype = new Error();
+-pyjslib.StopIteration.__name__ = 'StopIteration';
+-pyjslib.StopIteration.message = 'StopIteration';
++@{{StopIteration}} = function () { };
++@{{StopIteration}}.prototype = new Error();
++@{{StopIteration}}.__name__ = 'StopIteration';
++@{{StopIteration}}.message = 'StopIteration';
+ 
+-pyjslib.String_find = function(sub, start, end) {
++@{{String_find}} = function(sub, start, end) {
+     var pos=this.indexOf(sub, start);
+-    if (pyjslib.isUndefined(end)) return pos;
++    if (@{{isUndefined}}(end)) return pos;
+ 
+     if (pos + sub.length>end) return -1;
+     return pos;
+ }
+ 
+-pyjslib.String_join = function(data) {
++@{{String_join}} = function(data) {
+     var text="";
+ 
+-    if (pyjslib.isArray(data)) {
++    if (@{{isArray}}(data)) {
+         return data.join(this);
+     }
+-    else if (pyjslib.isIteratable(data)) {
++    else if (@{{isIteratable}}(data)) {
+         var iter=data.__iter__();
+         try {
+             text+=iter.next();
+@@ -204,18 +204,18 @@ pyjslib.String_join = function(data) {
+     return text;
+ }
+ 
+-pyjslib.String_isdigit = function() {
++@{{String_isdigit}} = function() {
+     return (this.match(/^\d+$/g) != null);
+ }
+ 
+-pyjslib.String_replace = function(old, replace, count) {
++@{{String_replace}} = function(old, replace, count) {
+     var do_max=false;
+     var start=0;
+     var new_str="";
+     var pos=0;
+ 
+-    if (!pyjslib.isString(old)) return this.__replace(old, replace);
+-    if (!pyjslib.isUndefined(count)) do_max=true;
++    if (!@{{isString}}(old)) return this.__replace(old, replace);
++    if (!@{{isUndefined}}(count)) do_max=true;
+ 
+     while (start<this.length) {
+         if (do_max && !count--) break;
+@@ -231,19 +231,19 @@ pyjslib.String_replace = function(old, replace, count) {
+     return new_str;
+ }
+ 
+-pyjslib.String_split = function(sep, maxsplit) {
+-    var items=new pyjslib.List();
++@{{String_split}} = function(sep, maxsplit) {
++    var items=new @{{List}}();
+     var do_max=false;
+     var subject=this;
+     var start=0;
+     var pos=0;
+ 
+-    if (pyjslib.isUndefined(sep) || pyjslib.isNull(sep)) {
++    if (@{{isUndefined}}(sep) || @{{isNull}}(sep)) {
+         sep=" ";
+         subject=subject.strip();
+         subject=subject.replace(/\s+/g, sep);
+     }
+-    else if (!pyjslib.isUndefined(maxsplit)) do_max=true;
++    else if (!@{{isUndefined}}(maxsplit)) do_max=true;
+ 
+     if (subject.length == 0) {
+         return items;
+@@ -263,13 +263,13 @@ pyjslib.String_split = function(sep, maxsplit) {
+     return items;
+ }
+ 
+-pyjslib.String___iter__ = function() {
++@{{String___iter__}} = function() {
+     var i = 0;
+     var s = this;
+     return {
+         'next': function() {
+             if (i >= s.length) {
+-                throw pyjslib.StopIteration;
++                throw @{{StopIteration}};
+             }
+             return s.substring(i++, i, 1);
+         },
+@@ -279,79 +279,79 @@ pyjslib.String___iter__ = function() {
+     };
+ }
+ 
+-pyjslib.String_strip = function(chars) {
++@{{String_strip}} = function(chars) {
+     return this.lstrip(chars).rstrip(chars);
+ }
+ 
+-pyjslib.String_lstrip = function(chars) {
+-    if (pyjslib.isUndefined(chars)) return this.replace(/^\s+/, "");
++@{{String_lstrip}} = function(chars) {
++    if (@{{isUndefined}}(chars)) return this.replace(/^\s+/, "");
+ 
+     return this.replace(new RegExp("^[" + chars + "]+"), "");
+ }
+ 
+-pyjslib.String_rstrip = function(chars) {
+-    if (pyjslib.isUndefined(chars)) return this.replace(/\s+$/, "");
++@{{String_rstrip}} = function(chars) {
++    if (@{{isUndefined}}(chars)) return this.replace(/\s+$/, "");
+ 
+     return this.replace(new RegExp("[" + chars + "]+$"), "");
+ }
+ 
+-pyjslib.String_startswith = function(prefix, start, end) {
++@{{String_startswith}} = function(prefix, start, end) {
+     // FIXME: accept tuples as suffix (since 2.5)
+-    if (pyjslib.isUndefined(start)) start = 0;
+-    if (pyjslib.isUndefined(end)) end = this.length;
++    if (@{{isUndefined}}(start)) start = 0;
++    if (@{{isUndefined}}(end)) end = this.length;
+ 
+     if ((end - start) < prefix.length) return false
+     if (this.substr(start, prefix.length) == prefix) return true;
+     return false;
+ }
+ 
+-pyjslib.String_endswith = function(suffix, start, end) {
++@{{String_endswith}} = function(suffix, start, end) {
+     // FIXME: accept tuples as suffix (since 2.5)
+-    if (pyjslib.isUndefined(start)) start = 0;
+-    if (pyjslib.isUndefined(end)) end = this.length;
++    if (@{{isUndefined}}(start)) start = 0;
++    if (@{{isUndefined}}(end)) end = this.length;
+ 
+     if ((end - start) < suffix.length) return false
+     if (this.substr(end - suffix.length, suffix.length) == suffix) return true;
+     return false;
+ }
+ 
+-pyjslib.String_ljust = function(width, fillchar) {
++@{{String_ljust}} = function(width, fillchar) {
+     if (typeof(width) != 'number' ||
+         parseInt(width) != width) {
+-        throw (pyjslib.TypeError("an integer is required"));
++        throw (@{{TypeError}}("an integer is required"));
+     }
+-    if (pyjslib.isUndefined(fillchar)) fillchar = ' ';
++    if (@{{isUndefined}}(fillchar)) fillchar = ' ';
+     if (typeof(fillchar) != 'string' ||
+         fillchar.length != 1) {
+-        throw (pyjslib.TypeError("ljust() argument 2 must be char, not " + typeof(fillchar)));
++        throw (@{{TypeError}}("ljust() argument 2 must be char, not " + typeof(fillchar)));
+     }
+     if (this.length >= width) return this;
+     return this + new Array(width+1 - this.length).join(fillchar);
+ }
+ 
+-pyjslib.String_rjust = function(width, fillchar) {
++@{{String_rjust}} = function(width, fillchar) {
+     if (typeof(width) != 'number' ||
+         parseInt(width) != width) {
+-        throw (pyjslib.TypeError("an integer is required"));
++        throw (@{{TypeError}}("an integer is required"));
+     }
+-    if (pyjslib.isUndefined(fillchar)) fillchar = ' ';
++    if (@{{isUndefined}}(fillchar)) fillchar = ' ';
+     if (typeof(fillchar) != 'string' ||
+         fillchar.length != 1) {
+-        throw (pyjslib.TypeError("rjust() argument 2 must be char, not " + typeof(fillchar)));
++        throw (@{{TypeError}}("rjust() argument 2 must be char, not " + typeof(fillchar)));
+     }
+     if (this.length >= width) return this;
+     return new Array(width + 1 - this.length).join(fillchar) + this;
+ }
+ 
+-pyjslib.String_center = function(width, fillchar) {
++@{{String_center}} = function(width, fillchar) {
+     if (typeof(width) != 'number' ||
+         parseInt(width) != width) {
+-        throw (pyjslib.TypeError("an integer is required"));
++        throw (@{{TypeError}}("an integer is required"));
+     }
+-    if (pyjslib.isUndefined(fillchar)) fillchar = ' ';
++    if (@{{isUndefined}}(fillchar)) fillchar = ' ';
+     if (typeof(fillchar) != 'string' ||
+         fillchar.length != 1) {
+-        throw (pyjslib.TypeError("center() argument 2 must be char, not " + typeof(fillchar)));
++        throw (@{{TypeError}}("center() argument 2 must be char, not " + typeof(fillchar)));
+     }
+     if (this.length >= width) return this;
+     padlen = width - this.length
+@@ -360,7 +360,7 @@ pyjslib.String_center = function(width, fillchar) {
+     return new Array(left+1).join(fillchar) + this + new Array(right+1).join(fillchar);
+ }
+ 
+-pyjslib.abs = Math.abs;
++@{{abs}} = Math.abs;
+ 
+ """)
+ 
+-- 
+1.6.3.3
+
