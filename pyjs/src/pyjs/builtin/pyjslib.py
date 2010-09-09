@@ -718,7 +718,7 @@ def ___import___(path, context, module_name=None, get_base=True):
             if JS("typeof @{{module}}[@{{objName}}] != 'undefined'"):
                 if get_base:
                     return JS("$pyjs.loaded_modules[@{{inContextTopName}}]")
-                return JS("@{{module}}[objName]")
+                return JS("@{{module}}[@{{objName}}]")
         elif sys.modules.has_key(inContextImportName):
             if get_base:
                 return JS("$pyjs.loaded_modules[@{{inContextTopName}}]")
