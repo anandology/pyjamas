@@ -74,11 +74,11 @@ def load_module(path, parent_module, module_name, dynamic=1, async=False):
             @{{path}} = './';
         }
 
-        var override_name = sys.platform + "." + @{{module_name}};
-        if (((sys.overrides != null) &&
-             (sys.overrides.has_key(override_name))))
+        var override_name = @{{sys}}.platform + "." + @{{module_name}};
+        if (((@{{sys}}.overrides != null) &&
+             (@{{sys}}.overrides.has_key(override_name))))
         {
-            cache_file =  sys.overrides.__getitem__(override_name) ;
+            cache_file =  @{{sys}}.overrides.__getitem__(override_name) ;
         }
         else
         {
@@ -87,7 +87,7 @@ def load_module(path, parent_module, module_name, dynamic=1, async=False):
 
         cache_file = (@{{path}} + cache_file + '.cache.js' ) ;
 
-        //alert("cache " + cache_file + " " + @{{module_name}} + " " + @{{parent_module}});
+        //alert("cache " + cache_file + " " + module_nameXXX + " " + parent_moduleXXX);
 
         var onload_fn = '';
 
