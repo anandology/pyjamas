@@ -5,5 +5,5 @@ def printFunc(objs, newline):
 
 def debugReport(msg):
     JS("""
-    print(msg);
+    @{{print}}(@{{msg}});
     """)
