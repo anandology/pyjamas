@@ -5925,7 +5925,7 @@ def isInteger(a):
     JS("""
     switch (@{{a}}.__number__) {
         case 0x01:
-            if (a != Math.floor(@{{a}})) break;
+            if (@{{a}} != Math.floor(@{{a}})) break;
         case 0x02:
         case 0x04:
             return true;
