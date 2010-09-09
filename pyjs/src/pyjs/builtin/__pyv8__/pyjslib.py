@@ -19,7 +19,7 @@ def __dynamic_load__(importName):
             module = JS("""$pyjs.loaded_modules[@{{importName}}]""")
         except:
             pass
-    if JS("""typeof module == 'undefined'"""):
+    if JS("""typeof @{{module}} == 'undefined'"""):
         try:
             dynamic.ajax_import("lib/" + importName + ".js")
             module = JS("""$pyjs.loaded_modules[importName]""")
