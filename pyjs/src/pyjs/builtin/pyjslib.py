@@ -145,8 +145,8 @@ def op_eq(a,b):
         }
         return false;
     } else if ((typeof @{{b}} == 'object' || typeof @{{b}} == 'function') && typeof @{{b}}.__cmp__ == 'function') {
-        // typeof @{{b}}.__cmp__ != 'function'
-        // @{{a}}.__cmp__ !== @{{b}}.__cmp__
+        // typeof bXXX.__cmp__ != 'function'
+        // aXXX.__cmp__ !== bXXX.__cmp__
         if (@{{_isinstance}}(@{{a}}, @{{b}})) {
             return @{{b}}.__cmp__(@{{a}}) == 0;
         }
@@ -228,10 +228,10 @@ def op_add(x, y):
 
 def __op_sub(x, y):
     JS("""
-        return (typeof (@{{x}})==typeof (y) && 
+        return (typeof (@{{x}})==typeof (@{{y}}) && 
                 (typeof @{{x}}=='number'||typeof @{{x}}=='string')?
-                @{{x}}-y:
-                @{{op_sub}}(@{{x}},y));
+                @{{x}}-@{{y}}:
+                @{{op_sub}}(@{{x}},@{{y}}));
     """)
 
 def op_sub(x, y):
