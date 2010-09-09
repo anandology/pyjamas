@@ -3613,7 +3613,6 @@ JS("""
         $pow_temp_c = new $long(0),
         $pow_temp_z = new $long(0);
 })();
-
 """)
 
 
@@ -3799,8 +3798,8 @@ class list:
     def index(self, value, _start=0):
         JS("""
         var start = @{{_start}}.valueOf();
-        /* if (typeof @{{value}} == 'number' || typeof @{{value}} == 'string') {
-            start = @{{self}}.__array.indexOf(@{{value}}, start);
+        /* if (typeof valueXXX == 'number' || typeof valueXXX == 'string') {
+            start = selfXXX.__array.indexOf(valueXXX, start);
             if (start >= 0)
                 return start;
         } else */ {
@@ -3813,7 +3812,7 @@ class list:
                 start += len;
 
             for (; start < len; start++) {
-                if ( /*start in @{{self}}.__array && */
+                if ( /*start in selfXXX.__array && */
                     @{{cmp}}(@{{self}}.__array[start], @{{value}}) == 0)
                     return start;
             }
@@ -4159,7 +4158,7 @@ class dict:
             JS("""
         var item, i, n, sKey;
         var data = @{{_data}};
-        //@{{self}}.__object = {};
+        //selfXXX.__object = {};
 
         if (data === null) {
             throw @{{TypeError}}("'NoneType' is not iterable");
@@ -4313,7 +4312,7 @@ class dict:
     def __len__(self):
         size = 0
         JS("""
-        for (var i in @{{self}}.__object) size++;
+        for (var i in @{{self}}.__object) @{{size}}++;
         """)
         return INT(size);
 
