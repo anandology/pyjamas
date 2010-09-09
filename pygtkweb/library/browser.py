@@ -124,6 +124,7 @@ class Element:
     def catchEvents(self, name, object):
         JS('''
         var tmp = function(e) {
+            var targ;
             if (!e) var e = $wnd.event;
             if (e.target) targ = e.target;
             else if (e.srcElement) targ = e.srcElement;
@@ -136,9 +137,10 @@ class Element:
         ''')
         name = name[0]
         self.activeEvents.append((name, object))
+
         JS('''
         var old_callback = this.element['on'+@{{name}}];
-        this.element['on'+@{{name}}] = function(e){if(old_callback){old_callback(e);}tmp(e);};
+        this.element['on'+@{{name}}] = function(e){if(old_callback){old_callback(e);}@{{!tmp}}(e);};
         ''')
 
 class Document:
