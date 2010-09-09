@@ -6002,7 +6002,7 @@ def sprintf(strng, args):
     var argidx = 0;
     var nargs = 0;
     var result = [];
-    var remainder = strng;
+    var remainder = @{{strng}};
 
     function formatarg(flags, minlen, precision, conversion, param) {
         var subst = '';
@@ -6126,7 +6126,7 @@ def sprintf(strng, args):
                 }
                 break;
             default:
-                throw @{{ValueError}}("unsupported format character '" + conversion + "' ("+@{{hex}}(conversion.charCodeAt(0))+") at index " + (strng.length - remainder.length - 1));
+                throw @{{ValueError}}("unsupported format character '" + conversion + "' ("+@{{hex}}(conversion.charCodeAt(0))+") at index " + (@{{strng}}.length - remainder.length - 1));
         }
         if (minlen && subst.length < minlen) {
             if (numeric && left_padding && flags.indexOf('0') >= 0) {
