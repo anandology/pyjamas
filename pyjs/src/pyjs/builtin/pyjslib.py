@@ -6266,7 +6266,7 @@ def printFunc(objs, newline):
 
 def pow(x, y, z = None):
     p = None
-    JS("p = Math.pow(x, y);")
+    JS("@{{p}} = Math.pow(@{{x}}, @{{y}});")
     if z is None:
         return float(p)
     return float(p % z)
