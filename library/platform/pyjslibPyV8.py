@@ -27,7 +27,7 @@ def import_module(syspath, parent_name, module_name, dynamic_load, async, init):
     # Import all modules in the chain (import a.b.c)
     for name in names:
         importName += name
-        JS("""@{{module}} = $pyjs.modules_hash[importName];""")
+        JS("""@{{module}} = $pyjs.modules_hash[@{{importName}}];""")
         if not isUndefined(module):
             # Not initialized, but present. Must be pyjs module.
             if JS("module.__was_initialized__ != true"):
@@ -363,4 +363,3 @@ def init():
 @{{abs}} = Math.abs;
 
 """)
-
