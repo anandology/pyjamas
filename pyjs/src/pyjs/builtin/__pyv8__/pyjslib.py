@@ -31,7 +31,7 @@ def __dynamic_load__(importName):
 
 def debugReport(msg):
     JS("""
-    pyv8_print_fn(msg);
+    pyv8_print_fn(@{{msg}});
     """)
 
 def open(fname, mode='r'):
