@@ -5124,7 +5124,7 @@ def xrange(start, stop = None, step = 1):
             if (@{{start}}!= 0) {
                 s += @{{start}}+ ", ";
             }
-            s += _stop;
+            s += {{!_stop}};
             if (@{{step}}!= 1) {
                 s += ", " + @{{step}};
             }
