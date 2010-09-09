@@ -4780,7 +4780,7 @@ class set(object):
             other = frozenset(other)
         new_set = set()
         JS("""
-        var obj = new_set.__object,
+        var obj = @{{new_set}}.__object,
             selfObj = @{{self}}.__object,
             otherObj = @{{other}}.__object;
         for (var sVal in selfObj) {
