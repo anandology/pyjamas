@@ -2,9 +2,9 @@
 def printFunc(objs, newline):
     JS("""
         var s = "";
-        for(var i=0; i < objs.length; i++) {
+        for(var i=0; i < @{{objs}}.length; i++) {
             if(s != "") s += " ";
-                s += objs[i];
+                s += @{{objs}}[i];
         }
 
         pyv8_print_fn(s);
@@ -36,5 +36,3 @@ def debugReport(msg):
 
 def open(fname, mode='r'):
     return JS("pyv8_open(fname, mode);")
-
-
