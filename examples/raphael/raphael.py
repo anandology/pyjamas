@@ -441,7 +441,7 @@ class RaphaelElement:
         """)
         for attr,value in attrs.items():
             JS("""
-               jsAttrs[@{{attr}}] = @{{value}};
+               {{!jsAttrs}}[@{{attr}}] = @{{value}};
             """)
 
         JS("""
