@@ -4415,9 +4415,9 @@ class dict:
             empty = false;
             break;
         }
-        if (empty) return default_value;
+        if (empty) return @{{default_value}};
         var sKey = (@{{key}}===null?null:(typeof @{{key}}.$H != 'undefined'?@{{key}}.$H:((typeof @{{key}}=='string'||@{{key}}.__number__)?'$'+@{{key}}:@{{__hash}}(@{{key}}))));
-        return typeof @{{self}}.__object[sKey] == 'undefined' ? default_value : @{{self}}.__object[sKey][1];
+        return typeof @{{self}}.__object[sKey] == 'undefined' ? @{{default_value}} : @{{self}}.__object[sKey][1];
 """)
 
     def update(self, *args, **kwargs):
