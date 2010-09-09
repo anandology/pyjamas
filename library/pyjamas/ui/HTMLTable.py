@@ -158,7 +158,7 @@ class HTMLTable(Panel):
     def onBrowserEvent(self, event):
         if DOM.eventGetType(event) == "click":
             td = self.getEventTargetCell(event)
-            if not td:
+            if td is None:
                 return
 
             tr = DOM.getParent(td)
