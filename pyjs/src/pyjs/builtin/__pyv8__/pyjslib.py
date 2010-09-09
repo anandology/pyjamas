@@ -35,4 +35,4 @@ def debugReport(msg):
     """)
 
 def open(fname, mode='r'):
-    return JS("pyv8_open(fname, mode);")
+    return JS("pyv8_open(@{{fname}}, @{{mode}});")
