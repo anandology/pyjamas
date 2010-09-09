@@ -30,7 +30,7 @@ def import_module(syspath, parent_name, module_name, dynamic_load, async, init):
         JS("""@{{module}} = $pyjs.modules_hash[@{{importName}}];""")
         if not isUndefined(module):
             # Not initialized, but present. Must be pyjs module.
-            if JS("module.__was_initialized__ != true"):
+            if JS("@{{module}}.__was_initialized__ != true"):
                 # Module wasn't initialized
                 module()
         else:
