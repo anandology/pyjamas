@@ -441,7 +441,7 @@ class RaphaelElement:
         """)
         for attr,value in attrs.items():
             JS("""
-               jsAttrs[@{{attr}}] = @{{value}};
+               {{!@{{jsAttrs}}}}[@{{attr}}] = @{{value}};
             """)
 
         JS("""
@@ -681,4 +681,3 @@ class RaphaelPathElement(RaphaelElement):
             this._element.andClose();
         """)
         return self
-

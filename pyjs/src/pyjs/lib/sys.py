@@ -1,4 +1,3 @@
-
 from __pyjamas__ import JS
 
 # a dictionary of module override names (platform-specific)
@@ -41,7 +40,7 @@ def exc_clear():
     JS('$pyjs.__last_exception_stack__ = $pyjs.__last_exception__ = null;')
 
 # save_exception_stack is totally javascript, to prevent trackstack pollution
-JS("""sys.save_exception_stack = function () {
+JS("""@{{!sys}}.save_exception_stack = function () {
     var save_stack = [];
     if ($pyjs.__active_exception_stack__) {
         return $pyjs.__active_exception_stack__;
@@ -65,7 +64,7 @@ def trackstackstr(stack=None):
     stackstrings = []
     msg = ''
     for s in list(stack):
-        JS("msg = eval(@{{s}}.module + '.__track_lines__[' + @{{s}}.lineno + ']');")
+        JS("@{{msg}} = eval(@{{s}}.module + '.__track_lines__[' + @{{s}}.lineno + ']');")
         if msg:
             stackstrings.append(msg)
         else:

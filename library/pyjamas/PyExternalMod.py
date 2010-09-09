@@ -37,7 +37,7 @@ class PyjamasExternalModule:
             return ''+@{{obj}};
         }else if(t=='string'){
             return '"'+@{{obj}}+'"'
-        }else if(isinstance([@{{obj}},list],{})) {
+        }else if(@{{isinstance}}([@{{obj}},@{{list}}],{})) {
             var parts = [];
             for(var i=0; i<@{{obj}}.length; i++) {
                 parts.append([ @{{self}}.__encodeJSON([@{{obj}}[i]],{}) ],{});

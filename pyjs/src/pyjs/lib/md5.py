@@ -377,7 +377,6 @@ this.getdigestBits = function() {
 };
 
 /* End of the MD5 algorithm */
-
 """)
 
 def hexstr(s):
@@ -393,7 +392,7 @@ class md5:
     def __init__(self, s=''):
         self.finished = False
         JS("""
-            this.md5 = new _md5();
+            this.md5 = new @{{_md5}}();
             """)
         self.md5.init()
         self.update(s)
@@ -417,4 +416,3 @@ class md5:
         return self.md5.getdigestBits()
 
 new = md5
-

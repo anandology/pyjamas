@@ -2,9 +2,9 @@
 def printFunc(objs, newline):
     JS("""
         var s = "";
-        for(var i=0; i < objs.length; i++) {
+        for(var i=0; i < @{{objs}}.length; i++) {
             if(s != "") s += " ";
-                s += objs[i];
+                s += @{{objs}}[i];
         }
 
         pyv8_print_fn(s);
@@ -12,17 +12,17 @@ def printFunc(objs, newline):
 
 def __dynamic_load__(importName):
     setCompilerOptions("noDebug")
-    module = JS("""$pyjs.loaded_modules[importName]""")
-    if JS("""typeof module == 'undefined'"""):
+    module = JS("""$pyjs.loaded_modules[@{{importName}}]""")
+    if JS("""typeof @{{module}} == 'undefined'"""):
         try:
             dynamic.ajax_import("lib/" + importName + ".__" + platform + "__.js")
-            module = JS("""$pyjs.loaded_modules[importName]""")
+            module = JS("""$pyjs.loaded_modules[@{{importName}}]""")
         except:
             pass
-    if JS("""typeof module == 'undefined'"""):
+    if JS("""typeof @{{module}} == 'undefined'"""):
         try:
             dynamic.ajax_import("lib/" + importName + ".js")
-            module = JS("""$pyjs.loaded_modules[importName]""")
+            module = JS("""$pyjs.loaded_modules[@{{importName}}]""")
         except:
             pass
     #if JS("""typeof module == 'undefined'"""):
@@ -31,10 +31,8 @@ def __dynamic_load__(importName):
 
 def debugReport(msg):
     JS("""
-    pyv8_print_fn(msg);
+    pyv8_print_fn(@{{msg}});
     """)
 
 def open(fname, mode='r'):
-    return JS("pyv8_open(fname, mode);")
-
-
+    return JS("pyv8_open(@{{fname}}, @{{mode}});")

@@ -114,7 +114,7 @@ def init():
             $wnd.__historyToken = token;
             // TODO - move init back into History
             // this.onHistoryChanged(token);
-            var h = new __History_History();
+            var h = new {{!@{{__History_History}}}}();
             h.onHistoryChanged(token);
         }
 

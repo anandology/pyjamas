@@ -55,25 +55,25 @@ class date:
             var day = this._d.getDate();
             var wday = this._d.getDay();
             
-            isoweekday = ((wday + 6) % 7) + 1;
-            isoyear = year;
+            @{{isoweekday}} = ((wday + 6) % 7) + 1;
+            @{{isoyear}} = year;
 
             var d0 = gregdaynumber(year, 1, 0);
             var weekday0 = ((d0 + 4) % 7) + 1;
 
             var d = gregdaynumber(year, month + 1, day);
-            isoweeknr = Math.floor((d - d0 + weekday0 + 6) / 7) - Math.floor((weekday0 + 3) / 7);
+            @{{isoweeknr}} = Math.floor((d - d0 + weekday0 + 6) / 7) - Math.floor((weekday0 + 3) / 7);
 
-            if ((month == 11) && ((day - isoweekday) > 27)) {
-                isoweeknr = 1;
-                isoyear = isoyear + 1;
+            if ((month == 11) && ((day - @{{isoweekday}}) > 27)) {
+                @{{isoweeknr}} = 1;
+                @{{isoyear}} = @{{isoyear}} + 1;
             }
 
-            if ((month == 0) && ((isoweekday - day) > 3)) {
+            if ((month == 0) && ((@{{isoweekday}} - day) > 3)) {
                 d0 = gregdaynumber(year - 1, 1, 0);
                 weekday0 = ((d0 + 4) % 7) + 1;
-                isoweeknr = Math.floor((d - d0 + weekday0 + 6) / 7) - Math.floor((weekday0 + 3) / 7);
-                isoyear--;
+                @{{isoweeknr}} = Math.floor((d - d0 + weekday0 + 6) / 7) - Math.floor((weekday0 + 3) / 7);
+                @{{isoyear}}--;
             }
         """)
         return (isoyear, isoweeknr, isoweekday)
@@ -319,4 +319,3 @@ datetime.resolution = timedelta(0,0,1)
 timedelta.min = timedelta(-999999999)
 timedelta.max = timedelta(999999999, hours=23, minutes=59, seconds=59, microseconds=999999)
 timedelta.resolution = timedelta(0,0,1)
-

@@ -83,16 +83,16 @@ def load_module(path, parent_module, module_name, dynamic=1, async=False):
 
         //alert("cache " + cache_file + " " + module_name + " " + parent_module);
 
-        @{{onload_fn}} = '';
+        var onload_fn = '';
 
         // this one tacks the script onto the end of the DOM
-        @{{pyjs_load_script}}(cache_file, @{{onload_fn}}, @{{async}});
+        pyjs_load_script(cache_file, onload_fn, @{{async}});
 
         try {
-            @{{loaded}} = (typeof $pyjs.modules_hash[@{{module_name}}] == 'function')
+            var loaded = (typeof $pyjs.modules_hash[@{{module_name}}] == 'function')
         } catch ( e ) {
         }
-        if (@{{loaded}}) {
+        if (loaded) {
             return true;
         }
         return false;
@@ -196,7 +196,7 @@ class Modload:
 
 def get_module(module_name):
     ev = "__mod = %s;" % module_name
-    JS("@{{pyjs_eval}}(@{{ev}});")
+    JS("pyjs_eval(@{{ev}});")
     return __mod
 
 def preload_app_modules(path, app_modnames, app_imported_fn, dynamic,
@@ -1127,7 +1127,7 @@ def _super(type_, object_or_type = None):
     if not _issubtype(object_or_type, type_):
         raise TypeError("super(type, obj): obj must be an instance or subtype of type")
     JS("""
-    var fn = @{{pyjs_type}}('super', @{{type_}}.__mro__.slice(1), {})
+    var fn = pyjs_type('super', @{{type_}}.__mro__.slice(1), {})
     fn.__new__ = fn.__mro__[1].__new__;
     fn.__init__ = fn.__mro__[1].__init__;
     if (@{{object_or_type}}.__is_instance__ === false) {
@@ -1193,18 +1193,18 @@ def range(start, stop = None, step = 1):
 @noSourceTracking
 def slice(object, lower, upper):
     JS("""
-    if (pyjslib.isString(@{{object}})) {
+    if (pyjslib.isString(object)) {
         if (@{{lower}} < 0) {
-           @{{lower}} = @{{object}}.length + @{{lower}};
+           @{{lower}} = object.length + @{{lower}};
         }
         if (@{{upper}} < 0) {
-           @{{upper}} = @{{object}}.length + @{{upper}};
+           @{{upper}} = object.length + @{{upper}};
         }
-        if (pyjslib.isNull(@{{upper}})) @{{upper}}=@{{object}}.length;
-        return @{{object}}.substring(@{{lower}}, @{{upper}});
+        if (pyjslib.isNull(@{{upper}})) @{{upper}}=object.length;
+        return object.substring(@{{lower}}, @{{upper}});
     }
-    if (pyjslib.isObject(@{{object}}) && @{{object}}.slice)
-        return @{{object}}.slice(@{{lower}}, @{{upper}});
+    if (pyjslib.isObject(object) && object.slice)
+        return object.slice(@{{lower}}, @{{upper}});
 
     return null;
     """)
@@ -1338,9 +1338,9 @@ def int(text, radix=0):
 @noSourceTracking
 def len(object):
     JS("""
-    if (@{{object}}==null) return 0;
-    if (pyjslib.isObject(@{{object}}) && @{{object}}.__len__) return @{{object}}.__len__();
-    return @{{object}}.length;
+    if (object==null) return 0;
+    if (pyjslib.isObject(object) && object.__len__) return object.__len__();
+    return object.length;
     """)
 
 @noSourceTracking
@@ -1770,9 +1770,9 @@ def sprintf(strng, args):
                 result.append(remainder)
                 break;
             JS("""
-            var left = @{{a}}[1], flags = @{{a}}[2];
-            var minlen = @{{a}}[3], precision = @{{a}}[5], conversion = @{{a}}[6];
-            @{{remainder}} = @{{a}}[7];
+            var left = @{{!a}}[1], flags = @{{!a}}[2];
+            var minlen = @{{!a}}[3], precision = @{{!a}}[5], conversion = @{{!a}}[6];
+            @{{remainder}} = @{{!a}}[7];
             if (typeof minlen == 'undefined') minlen = null;
             if (typeof precision == 'undefined') precision = null;
             if (typeof conversion == 'undefined') conversion = null;
@@ -1798,9 +1798,9 @@ def sprintf(strng, args):
                 result.append(remainder)
                 break;
             JS("""
-            var left = @{{a}}[1], key = @{{a}}[2], flags = @{{a}}[3];
-            var minlen = @{{a}}[4], precision = @{{a}}[5], conversion = @{{a}}[6];
-            @{{remainder}} = @{{a}}[7];
+            var left = @{{!a}}[1], key = @{{!a}}[2], flags = @{{!a}}[3];
+            var minlen = @{{!a}}[4], precision = @{{!a}}[5], conversion = @{{!a}}[6];
+            @{{remainder}} = @{{!a}}[7];
             if (typeof minlen == 'undefined') minlen = null;
             if (typeof precision == 'undefined') precision = null;
             if (typeof conversion == 'undefined') conversion = null;
@@ -1837,7 +1837,7 @@ def printFunc(objs, newline):
         if(s != "") s += " ";
         s += @{{objs}}[i];
     }
-    @{{console}}.debug(s)
+    console.debug(s)
     """)
 
 @noSourceTracking
@@ -1854,7 +1854,7 @@ def type(clsname, bases=None, methods=None):
     JS(" var bss = null; ")
     if bases:
         JS("@{{bss}} = @{{bases}}.l;")
-    JS(" return @{{pyjs_type}}(@{{clsname}}, @{{bss}}, @{{mths}}); ")
+    JS(" return pyjs_type(@{{clsname}}, @{{bss}}, @{{mths}}); ")
 
 def pow(x, y, z = None):
     JS("@{{p}} = Math.pow(@{{x}}, @{{y}});")

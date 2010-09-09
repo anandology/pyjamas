@@ -201,8 +201,8 @@ class JSONParser:
             }
         };
 
-        @{{typ}} = typeof @{{obj}};
-        f=s[@{{typ}}];
+        var typ = typeof @{{obj}};
+        f=s[typ];
         return f(@{{obj}});
         """)
 
