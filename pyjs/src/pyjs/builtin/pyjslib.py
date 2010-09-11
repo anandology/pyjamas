@@ -5130,8 +5130,8 @@ def xrange(start, stop = None, step = 1):
             return "'" + this.toString() + "'";
         }
     };
-    @{{x}}['__str__'] = @{{x}}.toString;
-    return @{{x}};
+    @{{!x}}['__str__'] = @{{!x}}.toString;
+    return @{{!x}};
     """)
 
 def range(start, stop = None, step = 1):
