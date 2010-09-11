@@ -262,7 +262,7 @@ class RichTextAreaImplStandard (RichTextAreaImpl):
             pass
 
         listener = DOM.get_listener(self.elem)
-        if listener:
+        if listener is not None:
             listener.onBrowserEvent(evt);
 
     def __gwt_focus_handler(self, view, evt, from_window):

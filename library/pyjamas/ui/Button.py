@@ -36,7 +36,7 @@ class Button(ButtonBase):
             element = DOM.createButton()
         ButtonBase.__init__(self, element, **kwargs)
         self.adjustType(self.getElement())
-        if listener:
+        if listener is not None:
             self.addClickListener(listener)
 
     def adjustType(self, button):

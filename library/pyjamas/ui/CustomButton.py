@@ -245,7 +245,8 @@ class CustomButton (ButtonBase):
     
         self.sinkEvents(Event.ONCLICK | Event.MOUSEEVENTS | Event.FOCUSEVENTS
                         | Event.KEYEVENTS)
-        if listener: self.addClickListener(listener)
+        if listener is not None:
+            self.addClickListener(listener)
     
     def updateButtonFace(self):
         if self.curFace is not None and \
