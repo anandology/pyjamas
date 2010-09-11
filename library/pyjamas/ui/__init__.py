@@ -81,7 +81,7 @@ class Applier(object):
         for (prop, args) in kwargs.items():
             fn = getattr(self, "set%s" % prop, None)
             if not fn:
-                return
+                continue
             args = kwargs[prop]
             if isinstance(args, tuple):
                 fn(*args)
