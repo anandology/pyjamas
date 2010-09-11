@@ -2,6 +2,9 @@
 pyjdversion = r'%s'
 pyjdinitpth = r'%s'
 
+# Flag indicating we're in desktop
+is_desktop = True
+
 import os
 import sys
 import ConfigParser

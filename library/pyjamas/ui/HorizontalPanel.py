@@ -27,9 +27,6 @@ class HorizontalPanel(CellPanel):
         self.tableRow = DOM.createTR()
         DOM.appendChild(self.getBody(), self.tableRow)
 
-    def add(self, widget):
-        self.insert(widget, self.getWidgetCount())
-
     def insert(self, widget, beforeIndex):
         widget.removeFromParent()
 

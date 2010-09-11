@@ -1,3 +1,5 @@
+# Modifications to allow execution under pyjd on Windows (mshtml) 2010-09-08
+# See Issue 481 - Copyright (c) Phil Charlesworth 2010 
 import pyjd
 
 from pyjamas.ui.Button import Button
@@ -10,25 +12,8 @@ from pyjamas.ui.VerticalPanel import VerticalPanel
 from pyjamas.ui.ScrollPanel import ScrollPanel
 from pyjamas import Window
 from pyjamas.HTTPRequest import HTTPRequest
-from __pyjamas__ import JS
+from pyjamas.XMLDoc import create_xml_doc
 
-def create_xml_doc(text):
-    JS("""
-    var xmlDoc;
-    try { //Internet Explorer
-        xmlDoc=new ActiveXObject("Microsoft.XMLDOM");
-        xmlDoc.async="false";
-        xmlDoc.loadXML(text);
-    } catch(e) {
-        try { //Firefox, Mozilla, Opera, etc.
-            parser=new DOMParser();
-            xmlDoc=parser.parseFromString(text,"text/xml");
-        } catch(e) {
-            return null;
-        }
-    }
-    return xmlDoc;
-  """)
 
 class XMLloader:
     def __init__(self, panel):

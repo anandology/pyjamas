@@ -33,16 +33,39 @@ eventListeners = dict(
     onTreeItemSelected = ("addTreeListener", "sender"),
         )
 
+class BuilderState(object):
+    def __init__(self, builder, eventTarget):
+        self.builder = builder
+        self.eventTarget = eventTarget
 
 class Builder(object):
 
-    def __init__(self, text):
-        xmlFile = XMLFile(str(text)) # XMLFile only accepts str not unicode!
+    def __init__(self, text=None):
+        self.builder_text = None
+        self.setText(text)
+
+    def setText(self, text):
+        if text is None:
+            self.widgets_by_name = {}
+            self.widget_instances = {}
+            self.widget_order = {}
+            self.widgets_by_class = {}
+            self.properties = None
+            self.components = None
+            self.builder_text = None
+            return
+
+        text = str(text) # XMLFile only accepts str not unicode!
+        if text == self.builder_text: # don't redo the xml file if same
+            return
+
+        self.builder_text = text
+
         self.widgets_by_name = {}
         self.widget_instances = {}
         self.widget_order = {}
         self.widgets_by_class = {}
-        self.properties, self.components = xmlFile.parse()
+        self.properties, self.components = XMLFile(text).parse()
 
     def createInstance(self, instancename,
                        eventTarget=None, targetItem=None, index=None):
@@ -76,7 +99,7 @@ class Builder(object):
             # which can't fit into the name value structure
             item = kls(**args)
             if hasattr(item, "_setWeirdProps"):
-                item._setWeirdProps(wprops)
+                item._setWeirdProps(wprops, BuilderState(self, eventTarget))
 
             tooltip = wprops.get('tooltip')
             if tooltip is not None:
@@ -98,6 +121,9 @@ class Builder(object):
                     continue
                 childitem = addItem(child[0], child[1], child[2], item,
                                     eventTarget)
+                if childitem is None:
+                    continue
+                print "childitem", childitem
                 item.addIndexedItem(child[0]["index"], childitem)
                 if not "elements" in props:
                     props["elements"] = {}
@@ -105,14 +131,15 @@ class Builder(object):
                     props["elements"][index] = {}
 
                 elemprops = props['elements'][index]
-                childitem.setElementProperties(item, elemprops)
+                print "elemprops", childitem, item, elemprops
+                item.setElementProperties(childitem, elemprops)
 
                 # add child (by name) to item
                 cname = child[0]["id"] 
                 setattr(item, cname, childitem)
 
             # make the event target the recipient of all events
-            if eventTarget and props.has_key("events"):
+            if eventTarget is not None and props.has_key("events"):
                 added_already = []
                 #print props["events"]
                 for listener_name, listener_fn in props["events"].items():

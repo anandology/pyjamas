@@ -27,10 +27,10 @@ def import_module(syspath, parent_name, module_name, dynamic_load, async, init):
     # Import all modules in the chain (import a.b.c)
     for name in names:
         importName += name
-        JS("""@{{module}} = $pyjs.modules_hash[importName];""")
+        JS("""@{{module}} = $pyjs.modules_hash[@{{importName}}];""")
         if not isUndefined(module):
             # Not initialized, but present. Must be pyjs module.
-            if JS("module.__was_initialized__ != true"):
+            if JS("@{{module}}.__was_initialized__ != true"):
                 # Module wasn't initialized
                 module()
         else:
@@ -74,11 +74,11 @@ def load_module(path, parent_module, module_name, dynamic=1, async=False):
             @{{path}} = './';
         }
 
-        var override_name = sys.platform + "." + @{{module_name}};
-        if (((sys.overrides != null) &&
-             (sys.overrides.has_key(override_name))))
+        var override_name = @{{sys}}.platform + "." + @{{module_name}};
+        if (((@{{sys}}.overrides != null) &&
+             (@{{sys}}.overrides.has_key(override_name))))
         {
-            cache_file =  sys.overrides.__getitem__(override_name) ;
+            cache_file =  @{{sys}}.overrides.__getitem__(override_name) ;
         }
         else
         {
@@ -87,15 +87,15 @@ def load_module(path, parent_module, module_name, dynamic=1, async=False):
 
         cache_file = (@{{path}} + cache_file + '.cache.js' ) ;
 
-        //alert("cache " + cache_file + " " + @{{module_name}} + " " + @{{parent_module}});
+        //alert("cache " + cache_file + " " + module_nameXXX + " " + parent_moduleXXX);
 
-        onload_fn = '';
+        var onload_fn = '';
 
         // this one tacks the script onto the end of the DOM
         @{{pyjs_load_script}}(cache_file, onload_fn, @{{async}});
 
         try {
-            loaded = (typeof $pyjs.modules_hash[@{{module_name}}] == 'function')
+            var loaded = (typeof $pyjs.modules_hash[@{{module_name}}] == 'function')
         } catch ( e ) {
         }
         if (loaded) {
@@ -354,13 +354,12 @@ def init():
         throw (@{{TypeError}}("center() argument 2 must be char, not " + typeof(fillchar)));
     }
     if (this.length >= width) return this;
-    padlen = width - this.length
-    right = Math.ceil(padlen / 2);
-    left = padlen - right;
+    var padlen = width - this.length;
+    var right = Math.ceil(padlen / 2);
+    var left = padlen - right;
     return new Array(left+1).join(fillchar) + this + new Array(right+1).join(fillchar);
 }
 
 @{{abs}} = Math.abs;
 
 """)
-

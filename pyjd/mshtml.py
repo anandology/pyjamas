@@ -1,3 +1,13 @@
+# MSHTML implementation of pyjd runtime.  Uses ctypes and comtypes to
+# create a Win32 GDI window, embed an IWebBrowser2 OCX and allow access
+# to the DOM functions using Python-DCOM.
+#
+# Copyright (C) 2009, 2010 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
+#
+# get_xml_doc added 2010-09-08,
+# copyright (C) Phil Charlesworth 2010, see Issue 481
+#
+
 #import win32traceutil
 
 import traceback
@@ -356,6 +366,10 @@ class Browser(EventSink):
         #print "getXMLHttpRequest", o
         return Dispatch(o)
         
+    def getDOMParser(self):
+        o = comtypes.client.CreateObject('MSXML.DOMDocument')
+        return Dispatch(o)
+    
     def getUri(self):
         return self.application
 

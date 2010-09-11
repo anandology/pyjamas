@@ -29,7 +29,7 @@ from compiler.visitor import ASTVisitor
 
 import pyjs
 
-escaped_subst = re.compile('@{{([ a-zA-Z0-9_\.]*)}}')
+escaped_subst = re.compile('@{{(!?[ a-zA-Z0-9_\.]*)}}')
 
 if pyjs.pyjspth is None:
     LIBRARY_PATH = os.path.abspath(os.path.dirname(__file__))
@@ -349,6 +349,7 @@ PYJSLIB_BUILTIN_CLASSES=[
     "ValueError",
     "ZeroDivisionError",
 
+    "basestring",
     "dict",
     "frozenset",
     "int",
@@ -408,6 +409,9 @@ for a in JavaScript_Reserved_Words:
 for a in ECMAScipt_Reserved_Words:
     pyjs_attrib_remap[a] = '$$' + a
 
+
+def bracket_fn(s):
+    return s # "(%s)" % s
 
 # pass in the compiler module (lib2to3 pgen or "standard" python one)
 # and patch transformer. see http://bugs.python.org/issue6978
@@ -610,7 +614,7 @@ class __Pyjamas__(object):
         expr = translator.expr(node.args[0], None)
         opt_var = translator.decorator_compiler_options['NumberClasses'][0][0]
         if  getattr(translator, opt_var):
-            return "new pyjslib['int'](%s)" % expr, False
+            return "new $p['int'](%s)" % expr, False
         return expr, False
 
 
@@ -754,6 +758,7 @@ class Translator(object):
                  bound_methods=True,
                  descriptors=True,
                  source_tracking=True,
+                 stupid_mode=False,
                  line_tracking=True,
                  store_source=True,
                  inline_code=True,
@@ -768,7 +773,7 @@ class Translator(object):
         self.ast = compiler.ast
         self.js_module_name = self.jsname("variable", module_name)
         if module_name:
-            self.module_prefix = "$module."
+            self.module_prefix = "$m."
         else:
             self.module_prefix = ""
         self.module_name = module_name
@@ -789,6 +794,7 @@ class Translator(object):
         self.bound_methods = bound_methods
         self.descriptors = descriptors
         self.source_tracking = source_tracking
+        self.stupid_mode = stupid_mode
         self.line_tracking = line_tracking
         self.store_source = store_source
         self.inline_bool = inline_code
@@ -846,7 +852,7 @@ class Translator(object):
         parts = self.js_module_name.split('.')
         if len(parts) > 1:
             self.w( self.spacing() + 'var %s = $pyjs.loaded_modules["%s"];' % (parts[0], module_name.split('.')[0]))
-        self.w( self.spacing() + 'var $module = %s = $pyjs.loaded_modules["%s"];' % (self.js_module_name, module_name))
+        self.w( self.spacing() + 'var $m = %s = $pyjs.loaded_modules["%s"];' % (self.js_module_name, module_name))
 
         self.w( self.spacing() + self.js_module_name+".__was_initialized__ = true;")
         self.w( self.spacing() + "if ((__mod_name__ === null) || (typeof __mod_name__ == 'undefined')) __mod_name__ = '%s';" % (module_name))
@@ -1157,28 +1163,28 @@ class Translator(object):
             if name in PYJSLIB_BUILTIN_FUNCTIONS:
                 name_type = 'builtin'
                 pyname = name
-                jsname = self.jsname("variable", "pyjslib['%s']" % self.attrib_remap(name))
+                jsname = self.jsname("variable", "$p['%s']" % self.attrib_remap(name))
             elif name in PYJSLIB_BUILTIN_CLASSES:
                 name_type = 'builtin'
                 pyname = name
                 if not self.number_classes:
                     if pyname in ['int', 'long']:
                         name = 'float_int'
-                jsname = self.jsname("variable", "pyjslib['%s']" % self.attrib_remap(name))
+                jsname = self.jsname("variable", "$p['%s']" % self.attrib_remap(name))
             elif PYJSLIB_BUILTIN_MAPPING.has_key(name):
                 name_type = 'builtin'
                 pyname = name
                 jsname = PYJSLIB_BUILTIN_MAPPING[name]
         is_local = (name_type is not None) and \
                     (max_depth > 0) and (max_depth == depth)
-        if self.create_locals:
-            print "lookup", name_type, pyname, jsname, depth, is_local
-        if self.create_locals and is_local and \
-            self.is_local_name(jsname, pyname, name_type, []):
+        #if self.create_locals:
+        #    print "lookup", name_type, pyname, jsname, depth, is_local
+        #if self.create_locals and is_local and \
+        #    self.is_local_name(jsname, pyname, name_type, []):
         #if depth == max_depth and jsname is not None and name_type not in \
         #       ['builtin', '__pyjamas__', '__javascript__', 'global']:
-            print "name_type", name_type, jsname
-            jsname = "$l." + jsname
+        #    print "name_type", name_type, jsname
+        #    jsname = "$l." + jsname
         return (name_type, pyname, jsname, depth, (name_type is not None) and (max_depth > 0) and (max_depth == depth))
 
     def translate_escaped_names(self, txt, current_klass):
@@ -1188,12 +1194,15 @@ class Translator(object):
         txt = l[0]
         for i in xrange(1, len(l)-1, 2):
             varname = l[i].strip()
-            name_type, pyname, jsname, depth, is_local = self.lookup(varname)
-            if name_type is None:
-                substname = self.scopeName(varname, depth, is_local)
+            if varname.startswith('!'):
+                    txt += varname[1:]
             else:
-                substname = jsname
-            txt += substname
+                name_type, pyname, jsname, depth, is_local = self.lookup(varname)
+                if name_type is None:
+                    substname = self.scopeName(varname, depth, is_local)
+                else:
+                    substname = jsname
+                txt += substname
             txt += l[i+1]
         return txt
         
@@ -1219,9 +1228,9 @@ class Translator(object):
         s = self.spacing()
         lines = []
         for name in self.constant_int:
-            lines.append("%(s)svar $constant_int_%(name)s = new pyjslib['int'](%(name)s);" % locals())
+            lines.append("%(s)svar $constant_int_%(name)s = new $p['int'](%(name)s);" % locals())
         for name in self.constant_long:
-            lines.append("%(s)svar $constant_long_%(name)s = new pyjslib['long'](%(name)s);" % locals())
+            lines.append("%(s)svar $constant_long_%(name)s = new $p['long'](%(name)s);" % locals())
         return "\n".join(lines)
 
     def is_local_name(self, jsname, pyname, nametype, ignore_py_vars):
@@ -1273,12 +1282,14 @@ class Translator(object):
     __inline_bool_code_str = __inline_bool_code_str.replace("    ", "\t").replace("\n", "\n%(s)s")
 
     def inline_bool_code(self, e):
+        if self.stupid_mode:
+            return bracket_fn(e)
         if self.inline_bool:
             v = self.uniqid('$bool')
             self.add_lookup('variable', v, v)
             s = self.spacing()
             return self.__inline_bool_code_str % locals()
-        return "pyjslib['bool'](%(e)s)" % locals()
+        return "$p['bool'](%(e)s)" % locals()
 
     __inline_len_code_str1 = """((%(v)s=%(e)s) === null?%(zero)s:
     (typeof %(v)s.__array != 'undefined' ? %(v)s.__array.length:
@@ -1288,9 +1299,9 @@ class Translator(object):
     __inline_len_code_str1 = __inline_len_code_str1.replace("    ", "\t").replace("\n", "\n%(s)s")
 
     __inline_len_code_str2 = """((%(v)s=%(e)s) === null?%(zero)s:
-    (typeof %(v)s.__array != 'undefined' ? new pyjslib['int'](%(v)s.__array.length):
+    (typeof %(v)s.__array != 'undefined' ? new $p['int'](%(v)s.__array.length):
         (typeof %(v)s.__len__ == 'function'?%(v)s.__len__():
-            (typeof %(v)s.length != 'undefined'? new pyjslib['int'](%(v)s.length):
+            (typeof %(v)s.length != 'undefined'? new $p['int'](%(v)s.length):
                 @{{len}}(%(v)s)))))"""
     __inline_len_code_str2 = __inline_len_code_str2.replace("    ", "\t").replace("\n", "\n%(s)s")
 
@@ -1606,12 +1617,44 @@ $generator['$genfunc'] = function () {
 
         s = self.spacing()
         if self.create_locals:
-            lpself = "$l."
-            lp = "$l."
-            self.w(s + "var $l = {};")
-        else:
-            lpself = "var "
-            lp = ""
+            args = ["this", "arguments"]
+            args.append("%d" % len(node.defaults))
+            args.append(bool(node.varargs) and "true" or "false")
+            args.append(bool(node.kwargs) and "true" or "false")
+            args = ", ".join(args)
+            self.w(s + "var $l = $pyjs_instance_method_get(%s);" % args)
+
+            args = []
+            if node.varargs:
+                args.append("%(varargname)s = $l.%(varargname)s" % locals())
+            if node.kwargs:
+                args.append("%(kwargname)s = $l.%(kwargname)s" % locals())
+            args = ", ".join(args)
+            if args:
+                self.w( s + "var %s;" % args)
+            if arg_names:
+                an = arg_names[0]
+                self.w( s + "var %s = $l.%s;" % (an, an))
+                args = []
+                for an in arg_names[1:]:
+                    args.append("%s = $l.%s" % (an, an))
+                if args:
+                    args = ", ".join(args)
+                    self.w( s + "%s;" % args)
+            if False: #arg_names:
+                an = arg_names[0]
+                self.w( s + "if (this.__is_instance__ === true) {")
+                self.w( s + "\tvar %s = this;" % an)
+                self.w( s + "} else {")
+                self.w( s + "\t%s = $l.%s;" % (an, an))
+                self.w( s + "}")
+                for an in arg_names[1:]:
+                    an = (an, an, an)
+                    self.w(s + "%s = $pyjsdf(%s, $l.%s);" % an)
+            return
+
+        lpself = "var "
+        lp = ""
         self.w(self.indent() + """\
 if (this.__is_instance__ === true) {\
 """, output=output)
@@ -1629,14 +1672,14 @@ if (this.__is_instance__ === true) {\
 """ % (lpself, kwargname, maxargs1), output=output)
             s = self.spacing()
             self.w( """\
-%(s)sif (typeof %(lp)s%(kwargname)s != 'object' || %(kwargname)s.__name__ != 'dict' || typeof %(kwargname)s.$pyjs_is_kwarg == 'undefined') {\
+%(s)sif (typeof %(lp)s%(kwargname)s != 'object' || %(lp)s%(kwargname)s.__name__ != 'dict' || typeof %(lp)s%(kwargname)s.$pyjs_is_kwarg == 'undefined') {\
 """ % locals(), output=output)
             if node.varargs:
                 self.w( """\
-%(s)s\tif (typeof %(lp)s%(kwargname)s != 'undefined') %(varargname)s.__array.push(%(lp)s%(kwargname)s);\
+%(s)s\tif (typeof %(lp)s%(kwargname)s != 'undefined') %(lp)s%(varargname)s.__array.push(%(lp)s%(kwargname)s);\
 """ % locals(), output=output)
             self.w( """\
-%(s)s\t%(lp)s%(kwargname)s = arguments[arguments.length+1];
+%(s)s\t%(lpself)s%(kwargname)s = arguments[arguments.length+1];
 %(s)s} else {
 %(s)s\tdelete %(lp)s%(kwargname)s['$pyjs_is_kwarg'];
 %(s)s}\
@@ -1711,9 +1754,15 @@ if ($pyjs.options.arg_count && %s) $pyjs__exception_func_param(arguments.callee.
         minargs = maxargs - len(node.defaults)
         maxargsstr = "%d" % maxargs
         s = self.spacing()
-        if self.create_locals:
+        if False: # self.create_locals:
             lp = "$l."
+            lpdec = ""
             self.w(s + "var $l = {};")
+            arg_idx = 0
+            for arg_name in arg_names:
+                self.w( s + """%s%s = arguments[%d];""" % \
+                    (lp, arg_name, arg_idx), output=output)
+                arg_idx += 1
         else:
             lpdec = "var "
             lp = ""
@@ -1732,12 +1781,12 @@ if ($pyjs.options.arg_count && %s) $pyjs__exception_func_param(arguments.callee.
 """ % (argcount, minargs, maxargsstr), output=output)
 
         if node.varargs:
-            self._varargs_handler(node, varargname, maxargs, lpdec)
+            self._varargs_handler(node, varargname, maxargs, lp)
 
         if node.kwargs:
             self.w( self.spacing() + """\
 %s%s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[arguments.length];\
-""" % (lp, kwargname, maxargs), output=output)
+""" % (lpdec, kwargname, maxargs), output=output)
             s = self.spacing()
             self.w( """\
 %(s)sif (typeof %(lp)s%(kwargname)s != 'object' || %(lp)s%(kwargname)s.__name__ != 'dict' || typeof %(lp)s%(kwargname)s.$pyjs_is_kwarg == 'undefined') {\
@@ -1838,7 +1887,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         if len(node.defaults):
             default_pos = len(arg_names) - len(node.defaults)
             for default_node in node.defaults:
-                default_value = self.expr(default_node, current_klass)
+                #default_value = self.expr(default_node, current_klass)
                 default_name = arg_names[default_pos]
                 default_pos += 1
                 #self.w( self.spacing() + "if (typeof %s == 'undefined') %s=%s;" % (default_name, default_name, default_value))
@@ -1850,8 +1899,10 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             start -= 1
         else:
             end = "arguments.length"
+        if not lp:
+            lp = 'var '
         self.w( """\
-%(s)s%(lp)s%(v)s = pyjslib['tuple']($pyjs_array_slice.call(arguments,%(b)d,%(e)s));
+%(s)s%(lp)s%(v)s = $p['tuple']($pyjs_array_slice.call(arguments,%(b)d,%(e)s));
 """ % {'s': self.spacing(), 'v': varargname, 'b': start, 'e': end, 'lp': lp})
 
     def _kwargs_parser(self, node, function_name, arg_names, current_klass, method_ = False):
@@ -1908,7 +1959,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
 %(s)s}
 """ % {'s': self.spacing()})
         if node.kwargs:
-            self.w( self.spacing() + "__r.push(pyjslib['dict'](__kwargs));")
+            self.w( self.spacing() + "__r.push($p['dict'](__kwargs));")
         self.w( self.spacing() + "return __r;")
         if not method_:
             self.w( self.dedent() + "};")
@@ -2099,8 +2150,8 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         function_args = "(" + ", ".join(declared_arg_names) + ")"
         self.w( self.indent() + "%s = function%s {" % (function_name, function_args))
         self._static_method_init(node, declared_arg_names, varargname, kwargname, None)
-        lp = self.create_locals and "$l." or ""
-        self._default_args_handler(node, declared_arg_names, None, kwargname, lp)
+        #lp = self.create_locals and "$l." or ""
+        self._default_args_handler(node, declared_arg_names, None, kwargname, "")
 
         local_arg_names = normal_arg_names + declared_arg_names
 
@@ -2266,7 +2317,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                 except TranslationError, e:
                     raise TranslationError(e.msg, v, self.module_name)
             elif v.node.name == 'locals':
-                return """pyjslib.dict({%s})""" % (",".join(["'%s': %s" % (pyname, self.lookup_stack[-1][pyname][2]) for pyname in self.lookup_stack[-1] if self.lookup_stack[-1][pyname][0] not in ['__pyjamas__', 'global']]))
+                return """$p.dict({%s})""" % (",".join(["'%s': %s" % (pyname, self.lookup_stack[-1][pyname][2]) for pyname in self.lookup_stack[-1] if self.lookup_stack[-1][pyname][0] not in ['__pyjamas__', 'global']]))
             elif v.node.name == 'len' and depth == -1 and len(v.args) == 1:
                 expr = self.expr(v.args[0], current_klass)
                 return self.inline_len_code(expr)
@@ -2677,9 +2728,9 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 %(s)sreturn $pyjs_type('%(n)s', $bases, %(local_prefix)s);"""
         else:
             create_class += """
-%(s)svar $data = pyjslib['dict']();
+%(s)svar $data = $p['dict']();
 %(s)sfor (var $item in %(local_prefix)s) { $data.__setitem__($item, %(local_prefix)s[$item]); }
-%(s)sreturn @{{_create_class}}('%(n)s', pyjslib['tuple']($bases), $data);"""
+%(s)sreturn @{{_create_class}}('%(n)s', $p['tuple']($bases), $data);"""
         create_class %= {'n': node.name, 's': self.spacing(), 'local_prefix': local_prefix, 'bases': ",".join(map(lambda x: x[1], base_classes))}
         create_class += """
 %s})();""" % self.dedent()
@@ -2721,7 +2772,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 %(s)sif ($pyjs__raise_expr2 !== null && $pyjs__raise_expr1.__is_instance__ === true) {
 %(s)s\tthrow @{{TypeError}}('instance exception may not have a separate value');
 %(s)s}
-%(s)sif (@{{isinstance}}($pyjs__raise_expr2, pyjslib['tuple'])) {
+%(s)sif (@{{isinstance}}($pyjs__raise_expr2, $p['tuple'])) {
 %(s)s\tthrow ($pyjs__raise_expr1.apply($pyjs__raise_expr1, $pyjs__raise_expr2.getArray()));
 %(s)s} else {
 %(s)s\tthrow ($pyjs__raise_expr1($pyjs__raise_expr2));
@@ -2798,16 +2849,19 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             function_args = "(" + ", ".join(declared_arg_names[1:]) + ")"
 
         self.w( self.indent() + "$method = $pyjs__bind_method2('"+method_name+"', function" + function_args + " {")
+        defaults_done_by_inline = False
         if staticmethod:
             self._static_method_init(node, declared_arg_names, varargname, kwargname, current_klass)
         elif classmethod:
             self._class_method_init(node, declared_arg_names, varargname, kwargname, current_klass)
         else:
+            if self.create_locals:
+                defaults_done_by_inline = True
             self._instance_method_init(node, declared_arg_names, varargname, kwargname, current_klass)
 
         # default arguments
-        lp = self.create_locals and "$l." or ""
-        self._default_args_handler(node, declared_arg_names, current_klass, kwargname, lp)
+        if not defaults_done_by_inline:
+            self._default_args_handler(node, declared_arg_names, current_klass, kwargname, "")
 
         local_arg_names = normal_arg_names + declared_arg_names
 
@@ -3348,17 +3402,23 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
     def compare_code(self, op, lhs, rhs):
         if op == "==":
-            return self.inline_eq_code(lhs, rhs)
+            if not self.stupid_mode:
+                return self.inline_eq_code(lhs, rhs)
         if op == "!=":
-            return "!"+self.inline_eq_code(lhs, rhs)
+            if not self.stupid_mode:
+                return "!"+self.inline_eq_code(lhs, rhs)
         if op == "<":
-            return "(%s == -1)" % self.inline_cmp_code(lhs, rhs)
+            if not self.stupid_mode:
+                return "(%s == -1)" % self.inline_cmp_code(lhs, rhs)
         if op == "<=":
-            return "(%s < 1)" % self.inline_cmp_code(lhs, rhs)
+            if not self.stupid_mode:
+                return "(%s < 1)" % self.inline_cmp_code(lhs, rhs)
         if op == ">":
-            return "(%s == 1)" % self.inline_cmp_code(lhs, rhs)
+            if not self.stupid_mode:
+                return "(%s == 1)" % self.inline_cmp_code(lhs, rhs)
         if op == ">=":
-            return "(((%s)|1) == 1)" % self.inline_cmp_code(lhs, rhs)
+            if not self.stupid_mode:
+                return "(((%s)|1) == 1)" % self.inline_cmp_code(lhs, rhs)
         if op == "in":
             return rhs + ".__contains__(" + lhs + ")"
         elif op == "not in":
@@ -3377,9 +3437,13 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 
     def _not(self, node, current_klass):
         expr = self.expr(node.expr, current_klass)
+        if self.stupid_mode:
+            return "(!(%s))" % expr
         return "!" + self.inline_bool_code(expr)
 
     def _or(self, node, current_klass):
+        if self.stupid_mode:
+            return " || ".join(map(bracket_fn, [self.expr(child, current_klass) for child in node.nodes]))
         s = self.spacing()
         expr = "@EXPR@"
         for e in [self.expr(child, current_klass) for child in node.nodes[:-1]]:
@@ -3394,6 +3458,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         return "@{{op_or}}([%s])" % expr
 
     def _and(self, node, current_klass):
+        if self.stupid_mode:
+            return " && ".join(map(bracket_fn, [self.expr(child, current_klass) for child in node.nodes]))
         s = self.spacing()
         expr = "@EXPR@"
         for e in [self.expr(child, current_klass) for child in node.nodes[:-1]]:
@@ -3611,7 +3677,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             v = node.value
             if isinstance(node.value, unicode):
                 v = v.encode('utf-8')
-            return  "String('%s')" % escapejs(v)
+            return  "'%s'" % escapejs(v)
         elif node.value is None:
             return "null"
         else:
@@ -3719,6 +3785,8 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             return self.track_call("@{{sprintf}}("+self.expr(node.left, current_klass) + ", " + self.expr(node.right, current_klass)+")", node.lineno)
         e1 = self.expr(node.left, current_klass)
         e2 = self.expr(node.right, current_klass)
+        if self.stupid_mode:
+            return "(%(e1)s) %% (%(e2)s)" % locals()
         v1 = self.uniqid('$mod')
         v2 = self.uniqid('$mod')
         self.add_lookup('variable', v1, v1)
@@ -3818,7 +3886,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 "unsupported flag (in _assign)", v, self.module_name)
 
     def _list(self, node, current_klass):
-        return self.track_call("pyjslib['list']([" + ", ".join([self.expr(x, current_klass) for x in node.nodes]) + "])", node.lineno)
+        return self.track_call("$p['list']([" + ", ".join([self.expr(x, current_klass) for x in node.nodes]) + "])", node.lineno)
 
     def _dict(self, node, current_klass):
         items = []
@@ -3826,10 +3894,10 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             key = self.expr(x[0], current_klass)
             value = self.expr(x[1], current_klass)
             items.append("[" + key + ", " + value + "]")
-        return self.track_call("pyjslib['dict']([" + ", ".join(items) + "])")
+        return self.track_call("$p['dict']([" + ", ".join(items) + "])")
 
     def _tuple(self, node, current_klass):
-        return self.track_call("pyjslib['tuple']([" + ", ".join([self.expr(x, current_klass) for x in node.nodes]) + "])", node.lineno)
+        return self.track_call("$p['tuple']([" + ", ".join([self.expr(x, current_klass) for x in node.nodes]) + "])", node.lineno)
 
     def _lambda(self, node, current_klass):
         save_local_prefix, self.local_prefix = self.local_prefix, None
@@ -3856,7 +3924,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         save_output = self.output
         self.output = StringIO()
         self.w( "function(){")
-        self.w( "var %s = pyjslib['list']();" % resultlist)
+        self.w( "var %s = $p['list']();" % resultlist)
 
         tnode = self.ast.Discard(self.ast.CallFunc(self.ast.Getattr(self.ast.Name(resultlist), 'append'), [node.expr], None, None))
         for qual in node.quals[::-1]:
@@ -4131,6 +4199,7 @@ def translate(compiler, sources, output_file, module_name=None,
               bound_methods=True,
               descriptors=True,
               source_tracking=True,
+              stupid_mode=False,
               line_tracking=True,
               store_source=True,
               inline_code=False,
@@ -4181,6 +4250,7 @@ def translate(compiler, sources, output_file, module_name=None,
                    bound_methods = bound_methods,
                    descriptors = descriptors,
                    source_tracking = source_tracking,
+                   stupid_mode = stupid_mode,
                    line_tracking = line_tracking,
                    store_source = store_source,
                    inline_code = inline_code,
@@ -4756,6 +4826,17 @@ def add_compile_options(parser):
     speed_options['number_classes'] = False
     pythonic_options['number_classes'] = True
 
+    parser.add_option("--not-stupid-mode",
+                      dest = "stupid_mode",
+                      action="store_false",
+                      help = "Doesn't rely on javascriptisms",
+                     )
+    parser.add_option("--stupid-mode",
+                      dest = "stupid_mode",
+                      action="store_true",
+                      help = "Creates minimalist code, relying on javascript",
+                     )
+
     def set_multiple(option, opt_str, value, parser, **kwargs):
         for k in kwargs.keys():
             setattr(parser.values, k, kwargs[k])
@@ -4785,6 +4866,7 @@ def add_compile_options(parser):
                         bound_methods = True,
                         descriptors = False,
                         source_tracking = False,
+                        stupid_mode = False,
                         line_tracking = False,
                         store_source = False,
                         inline_code = False,
@@ -4839,6 +4921,7 @@ def main():
               bound_methods = options.bound_methods,
               source_tracking = options.source_tracking,
               line_tracking = options.line_tracking,
+              stupid_mode = options.stupid_mode,
               store_source = options.store_source,
               inline_code = options.inline_code,
               operator_funcs = options.operator_funcs,

@@ -1,13 +1,12 @@
 # This is the gtk-dependent HTTPRequest module.
 # For the pyjamas/javascript version, see platform/HTTPRequestPyJS.py
 
-import sys
+import pyjd
 import pygwt
 from __pyjamas__ import JS
-if sys.platform not in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
+if pyjd.is_desktop:
     from __pyjamas__ import get_main_frame
-    import pyjd
-
+import sys # needed by __browser__/pyjamas/HTTPRequest.py
 handlers = {}
 
 class XULrunnerHackCallback:

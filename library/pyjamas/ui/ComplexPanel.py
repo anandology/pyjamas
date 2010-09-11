@@ -21,20 +21,11 @@ class ComplexPanel(Panel):
     """
         Superclass for widgets with multiple children.
     """
-    def add(self, widget, container):
-        self.insert(widget, container, len(self.children))
-
-    def getWidgetCount(self):
-        return len(self.children)
-
-    def getWidget(self, index):
-        return self.children[index]
-
-    def getWidgetIndex(self, child):
-        return self.children.index(child)
-
-    def getChildren(self):
-        return self.children
+    def add(self, widget, container=None):
+        if container is not None:
+            self.insert(widget, container, self.getWidgetCount())
+        else:
+            self.insert(widget, self.getWidgetCount())
 
     def insert(self, widget, container, beforeIndex):
         if widget.getParent() == self:
@@ -43,21 +34,17 @@ class ComplexPanel(Panel):
         self.adopt(widget, container)
         self.children.insert(beforeIndex, widget)
 
-        # this code introduces an obscure IE6 bug that corrupts its DOM tree!
-        #widget.removeFromParent()
-        #self.children.insert(beforeIndex, widget)
-        #DOM.insertChild(container, widget.getElement(), beforeIndex)
-        #self.adopt(widget, container)
-
     def remove(self, widget):
-        if widget not in self.children:
+        if isinstance(widget, int):
+            widget = self.getWidget(widget)
+        if widget not in self.getChildren():
             return False
 
         self.disown(widget)
-        #elem = self.getElement()
-        #DOM.removeChild(DOM.getParent(elem), elem)
-        self.children.remove(widget)
+        self.getChildren().remove(widget)
+
         return True
+
 
 Factory.registerClass('pyjamas.ui.ComplexPanel', 'ComplexPanel', ComplexPanel)
 

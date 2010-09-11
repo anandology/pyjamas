@@ -32,7 +32,13 @@ class UnitTest:
         test_method=getattr(self, test_method_name)
         self.current_test_name = test_method_name
         self.setUp()
-        test_method()
+        try:        
+            try:
+                test_method()
+            except Exception,e:
+                self.fail("uncought exception:" + str(e))
+        except:
+            self.fail("uncought javascript exception")
         self.tearDown()
         self.current_test_name = None
 
@@ -48,7 +54,7 @@ class UnitTest:
         self.test_idx = 0
         Timer(10, self)
 
-    def onTimer(self, tid):
+    def onTimer(self, timer):
         for i in range(1):
             if self.test_idx >= len(self.test_methods):
                 self.displayStats()
@@ -58,7 +64,7 @@ class UnitTest:
 
             self._run_test(self.test_methods[self.test_idx])
             self.test_idx += 1
-        Timer(10, self)
+        timer.schedule(10)
 
     def setUp(self):
         pass
@@ -74,9 +80,13 @@ class UnitTest:
             if msg:
                 msg=" " + str(msg)
             if self.current_test_name:
-                msg += " (%s) " % self.current_test_name
-            return self.getName() + msg + ": "
+                msg += " (%s) " % self.getCurrentTestID()
+            return self.getName() + msg + ": " 
         return ""
+
+    def getCurrentTestID(self):
+        return "%s/%i" % (self.current_test_name,self.tests_completed)
+        
 
     def getTestMethods(self):
         self.test_methods=[]
@@ -118,9 +128,9 @@ class UnitTest:
         write(output)
         if sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
             from __pyjamas__ import JS
-            JS("""if (typeof console != 'undefined') {
-                if (typeof console.error == 'function') console.error(msg);
-                if (typeof console.trace == 'function') console.trace();
+            JS("""if (typeof @{{!console}} != 'undefined') {
+                if (typeof @{{!console}}.error == 'function') @{{!console}}.error(@{{msg}});
+                if (typeof @{{!console}}.trace == 'function') @{{!console}}.trace();
             }""")
         return False
 
@@ -222,4 +232,3 @@ class UnitTest:
             output+= "\n"
 
         write(output)
-

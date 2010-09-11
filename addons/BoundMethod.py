@@ -13,6 +13,6 @@ def BoundMethod(obj, method):
     """
     JS("""
         return function() {
-            return method.apply(obj, arguments);
+            return @{{method}}.apply(@{{obj}}, arguments);
         };
     """)

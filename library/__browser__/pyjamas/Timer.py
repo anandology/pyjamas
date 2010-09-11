@@ -1,81 +1,38 @@
-#Timer().hookWindowClosing()
+# Copyright (C) 2010, Daniel Popowich <danielpopowich@gmail.com>
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Timer implementation for browswers using standard JS timers
 
 class Timer:
-    MIN_PERIOD = 1
 
-    def __init__(self, delay = 0, listener = None):
-        self.isRepeating = False
-        self.timerId = 0
-
-        self.listener = listener
-        if delay >= Timer.MIN_PERIOD:
-            self.schedule(delay)
-
-    def clearInterval(self, id):
+    def __setTimeout(self, delayMillis):
         JS("""
-        $wnd.clearInterval(@{{id}});
+        return $wnd.setTimeout(function() { @{{self}}.__fire(); }, @{{delayMillis}});
         """)
 
-    def clearTimeout(self, id):
+    def __clearTimeout(self,tid):
         JS("""
-        $wnd.clearTimeout(@{{id}});
+        $wnd.clearTimeout(@{{tid}});
         """)
 
-    def createInterval(self, timer, period):
+    def __setInterval(self, periodMillis):
         JS("""
-        return $wnd.setInterval(function() { @{{timer}}.fire(); }, @{{period}});
+        return $wnd.setInterval(function() { @{{self}}.__fire(); }, @{{periodMillis}});
         """)
 
-    def createTimeout(self, timer, delay):
+    def __clearInterval(self,tid):
         JS("""
-        return $wnd.setTimeout(function() { @{{timer}}.fire(); }, @{{delay}});
+        $wnd.clearInterval(@{{tid}});
         """)
-
-    # TODO - requires Window.addWindowCloseListener
-    def hookWindowClosing(self):
-        pass
-
-    def cancel(self):
-        if self.isRepeating:
-            self.clearInterval(self.timerId)
-        else:
-            self.clearTimeout(self.timerId)
-        if self in timers:
-            timers.remove(self)
-
-    def run(self):
-        if hasattr(self.listener, "onTimer"):
-            self.listener.onTimer(self.timerId)
-        else:
-            self.listener(self.timerId)
-
-    def schedule(self, delayMillis):
-        if delayMillis < Timer.MIN_PERIOD:
-            alert("Timer delay must be positive")
-        if self in timers:
-            self.cancel()
-        self.isRepeating = False
-        self.timerId = self.createTimeout(self, delayMillis)
-        timers.append(self)
-
-    def scheduleRepeating(self, periodMillis):
-        if periodMillis < Timer.MIN_PERIOD:
-            alert("Timer period must be positive")
-        if self in timers:
-            self.cancel()
-        self.isRepeating = True
-        self.timerId = self.createInterval(self, periodMillis)
-        timers.append(self)
-
-    # TODO: UncaughtExceptionHandler, fireAndCatch
-    def fire(self):
-        self.fireImpl()
-
-    def fireImpl(self):
-        if not self.isRepeating and self in timers:
-            timers.remove(self)
-        self.run()
-
-    def getID(self):
-        return self.timerId
 

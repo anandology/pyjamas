@@ -19,17 +19,17 @@
 
 # FIXME: dynamic=1, async=False, init=True are useless here (?)
 def import_module(path, parent_module, module_name, dynamic=1, async=False, init=True):
+    module = None
     JS("""
-    module = $pyjs.modules_hash[@{{module_name}}];
-    if (typeof module == 'function' && module.__was_initialized__ == true) {
+    @{{module}} = $pyjs.modules_hash[@{{module_name}}];
+    if (typeof @{{module}} == 'function' && @{{module}}.__was_initialized__ == true) {
         return null;
     }
-    if (module_name == 'sys' || module_name == 'pyjslib') {
-        module();
+    if (@{{module_name}} == 'sys' || @{{module_name}} == 'pyjslib') {
+        @{{module}}();
         return null;
     }
     """)
-    module = None
     names = module_name.split(".")
     importName = ''
     # Import all modules in the chain (import a.b.c)
@@ -68,28 +68,28 @@ def load_module(path, parent_module, module_name, dynamic=1, async=False):
             @{{path}} = './';
         }
 
-        var override_name = sys.platform + "." + @{{module_name}};
-        if (((sys.overrides != null) &&
-             (sys.overrides.has_key(override_name))))
+        var override_name = @{{sys}}.platform + "." + @{{module_name}};
+        if (((@{{sys}}.overrides != null) &&
+             (@{{sys}}.overrides.has_key(override_name))))
         {
-            cache_file =  sys.overrides.__getitem__(override_name) ;
+            cache_file =  @{{sys}}.overrides.__getitem__(override_name) ;
         }
         else
         {
-            cache_file =  module_name ;
+            cache_file =  @{{module_name}} ;
         }
 
         cache_file = (@{{path}} + cache_file + '.cache.js' ) ;
 
         //alert("cache " + cache_file + " " + module_name + " " + parent_module);
 
-        onload_fn = '';
+        var onload_fn = '';
 
         // this one tacks the script onto the end of the DOM
         pyjs_load_script(cache_file, onload_fn, @{{async}});
 
         try {
-            loaded = (typeof $pyjs.modules_hash[@{{module_name}}] == 'function')
+            var loaded = (typeof $pyjs.modules_hash[@{{module_name}}] == 'function')
         } catch ( e ) {
         }
         if (loaded) {
@@ -478,14 +478,13 @@ pyjslib.String_center = function(width, fillchar) {
         throw (pyjslib.TypeError("center() argument 2 must be char, not " + typeof(fillchar)));
     }
     if (this.length >= width) return this;
-    padlen = width - this.length
-    right = Math.ceil(padlen / 2);
-    left = padlen - right;
+    var padlen = width - this.length;
+    var right = Math.ceil(padlen / 2);
+    var left = padlen - right;
     return new Array(left+1).join(fillchar) + this + new Array(right+1).join(fillchar);
 }
 
 pyjslib.abs = Math.abs;
-
 """)
 
 class Class:
@@ -509,7 +508,7 @@ def eq(a,b):
         return false;
     }
     if ((typeof @{{a}} == 'object' || typeof @{{a}} == 'function') && typeof @{{a}}.__cmp__ == 'function') {
-        return @{{a}}.__cmp__(b) == 0;
+        return @{{a}}.__cmp__(@{{b}}) == 0;
     } else if ((typeof @{{b}} == 'object' || typeof @{{b}} == 'function') && typeof @{{b}}.__cmp__ == 'function') {
         return @{{b}}.__cmp__(@{{a}}) == 0;
     }
@@ -576,9 +575,9 @@ class List:
     def extend(self, data):
         JS("""
         if (pyjslib.isArray(@{{data}})) {
-            n = this.l.length;
+            var n = this.l.length;
             for (var i=0; i < @{{data}}.length; i++) {
-                this.l[n+i]=data[i];
+                this.l[n+i]=@{{data}}[i];
                 }
             }
         else if (pyjslib.isIteratable(@{{data}})) {
@@ -760,7 +759,7 @@ class Tuple:
     def extend(self, data):
         JS("""
         if (pyjslib.isArray(@{{data}})) {
-            n = this.l.length;
+            var n = this.l.length;
             for (var i=0; i < @{{data}}.length; i++) {
                 this.l[n+i]=@{{data}}[i];
                 }
@@ -1274,7 +1273,7 @@ def repr(x):
 
        var t = typeof(@{{x}});
 
-        //alert("repr typeof " + t + " : " + @{{x}});
+        //alert("repr typeof " + t + " : " + xXXX);
 
        if (t == "boolean")
            return @{{x}}.toString();
@@ -1290,7 +1289,7 @@ def repr(x):
                return "'" + @{{x}} + "'";
            if (@{{x}}.indexOf('"') == -1)
                return '"' + @{{x}} + '"';
-           var s = x.replace(new RegExp('"', "g"), '\\\\"');
+           var s = @{{x}}.replace(new RegExp('"', "g"), '\\\\"');
            return '"' + s + '"';
        };
 
@@ -1401,7 +1400,7 @@ def getattr(obj, name, default_value=None):
         }
     }
     if (!pyjslib.isFunction(@{{obj}}[@{{name}}])) return @{{obj}}[@{{name}}];
-    var method = @{{obj}}[@{{name];
+    var method = @{{obj}}[@{{name}}];
     var fnwrap = function() {
         var args = [];
         for (var i = 0; i < arguments.length; i++) {
@@ -1410,7 +1409,7 @@ def getattr(obj, name, default_value=None):
         return method.apply(@{{obj}},args);
     }
     fnwrap.__name__ = @{{name}};
-    fnwrap.parse_kwargs = obj.parse_kwargs;
+    fnwrap.parse_kwargs = @{{obj}}.parse_kwargs;
     return fnwrap;
     """)
 
@@ -1418,7 +1417,7 @@ def getattr(obj, name, default_value=None):
 def delattr(obj, name):
     JS("""
     if (!pyjslib.isObject(@{{obj}})) {
-       throw pyjslib.AttributeError("'"+typeof(obj)+"' object has no attribute '"+@{{name}}+"%s'")
+       throw pyjslib.AttributeError("'"+typeof(@{{obj}})+"' object has no attribute '"+@{{name}}+"%s'")
     }
     if ((pyjslib.isUndefined(@{{obj}}[@{{name}}])) ||(typeof(@{{obj}}[@{{name}}]) == "function") ){
         throw pyjslib.AttributeError(@{{obj}}.__name__+" instance has no attribute '"+ @{{name}}+"'");
@@ -1677,52 +1676,52 @@ def sprintf(strng, args):
                 if precision is None:
                     precision = 6
                 JS("""
-                subst = re_exp.exec(String(@{{param}}.toExponential(@{{precision}})));
-                if (subst[3].length == 1) {
-                    subst = subst[1] + subst[2] + '0' + subst[3];
+                @{{subst}} = @{{!re_exp}}.exec(String(@{{param}}.toExponential(@{{precision}})));
+                if (@{{subst}}[3].length == 1) {
+                    @{{subst}} = @{{subst}}[1] + @{{subst}}[2] + '0' + @{{subst}}[3];
                 } else {
-                    subst = subst[1] + subst[2] + subst[3];
+                    @{{subst}} = @{{subst}}[1] + @{{subst}}[2] + @{{subst}}[3];
                 }""")
             elif conversion == 'E':
                 if precision is None:
                     precision = 6
                 JS("""
-                subst = re_exp.exec(String(@{{param}}.toExponential(@{{precision}})).toUpperCase());
-                if (subst[3].length == 1) {
-                    subst = subst[1] + subst[2] + '0' + subst[3];
+                @{{subst}} = @{{!re_exp}}.exec(String(@{{param}}.toExponential(@{{precision}})).toUpperCase());
+                if (@{{subst}}[3].length == 1) {
+                    @{{subst}} = @{{subst}}[1] + @{{subst}}[2] + '0' + @{{subst}}[3];
                 } else {
-                    subst = subst[1] + subst[2] + subst[3];
+                    @{{subst}} = @{{subst}}[1] + @{{subst}}[2] + @{{subst}}[3];
                 }""")
             elif conversion == 'f':
                 if precision is None:
                     precision = 6
                 JS("""
-                subst = String(parseFloat(@{{param}}).toFixed(@{{precision}}));""")
+                @{{subst}} = String(parseFloat(@{{param}}).toFixed(@{{precision}}));""")
             elif conversion == 'F':
                 if precision is None:
                     precision = 6
                 JS("""
-                subst = String(parseFloat(@{{param}}).toFixed(@{{precision}})).toUpperCase();""")
+                @{{subst}} = String(parseFloat(@{{param}}).toFixed(@{{precision}})).toUpperCase();""")
             elif conversion == 'g':
                 if flags.find('#') >= 0:
                     if precision is None:
                         precision = 6
                 if param >= 1E6 or param < 1E-5:
                     JS("""
-                    subst = String(@{{precision}} == null ? @{{param}}.toExponential() : @{{param}}.toExponential().toPrecision(@{{precision}}));""")
+                    @{{subst}} = String(@{{precision}} == null ? @{{param}}.toExponential() : @{{param}}.toExponential().toPrecision(@{{precision}}));""")
                 else:
                     JS("""
-                    subst = String(@{{precision}} == null ? parseFloat(@{{param}}) : parseFloat(@{{param}}).toPrecision(@{{precision}}));""")
+                    @{{subst}} = String(@{{precision}} == null ? parseFloat(@{{param}}) : parseFloat(@{{param}}).toPrecision(@{{precision}}));""")
             elif conversion == 'G':
                 if flags.find('#') >= 0:
                     if precision is None:
                         precision = 6
                 if param >= 1E6 or param < 1E-5:
                     JS("""
-                    subst = String(@{{precision}} == null ? @{{param}}.toExponential() : @{{param}}.toExponential().toPrecision(@{{precision}})).toUpperCase();""")
+                    @{{subst}} = String(@{{precision}} == null ? @{{param}}.toExponential() : @{{param}}.toExponential().toPrecision(@{{precision}})).toUpperCase();""")
                 else:
                     JS("""
-                    subst = String(@{{precision}} == null ? parseFloat(@{{param}}) : parseFloat(@{{param}}).toPrecision(@{{precision}})).toUpperCase().toUpperCase();""")
+                    @{{subst}} = String(@{{precision}} == null ? parseFloat(@{{param}}) : parseFloat(@{{param}}).toPrecision(@{{precision}})).toUpperCase().toUpperCase();""")
             elif conversion == 'r':
                 numeric = False
                 subst = repr(param)
@@ -1732,13 +1731,13 @@ def sprintf(strng, args):
             elif conversion == 'o':
                 param = int(param)
                 JS("""
-                subst = @{{param}}.toString(8);""")
+                @{{subst}} = @{{param}}.toString(8);""")
                 if flags.find('#') >= 0 and subst != '0':
                     subst = '0' + subst
             elif conversion == 'x':
                 param = int(param)
                 JS("""
-                subst = @{{param}}.toString(16);""")
+                @{{subst}} = @{{param}}.toString(16);""")
                 if flags.find('#') >= 0:
                     if left_padding:
                         subst = subst.rjust(minlen - 2, '0')
@@ -1746,7 +1745,7 @@ def sprintf(strng, args):
             elif conversion == 'X':
                 param = int(param)
                 JS("""
-                subst = @{{param}}.toString(16).toUpperCase();""")
+                @{{subst}} = @{{param}}.toString(16).toUpperCase();""")
                 if flags.find('#') >= 0:
                     if left_padding:
                         subst = subst.rjust(minlen - 2, '0')
@@ -1766,14 +1765,14 @@ def sprintf(strng, args):
     def sprintf_list(strng, args):
         while remainder:
             JS("""
-            var a = re_list.exec(@{{remainder}});""")
+            var a = @{{!re_list}}.exec(@{{remainder}});""")
             if a is None:
                 result.append(remainder)
                 break;
             JS("""
-            var left = a[1], flags = a[2];
-            var minlen = a[3], precision = a[5], conversion = a[6];
-            remainder = a[7];
+            var left = @{{!a}}[1], flags = @{{!a}}[2];
+            var minlen = @{{!a}}[3], precision = @{{!a}}[5], conversion = @{{!a}}[6];
+            @{{remainder}} = @{{!a}}[7];
             if (typeof minlen == 'undefined') minlen = null;
             if (typeof precision == 'undefined') precision = null;
             if (typeof conversion == 'undefined') conversion = null;
@@ -1794,14 +1793,14 @@ def sprintf(strng, args):
         argidx += 1
         while remainder:
             JS("""
-            var a = re_dict.exec(@{{remainder}});""")
+            var a = @{{!re_dict}}.exec(@{{remainder}});""")
             if a is None:
                 result.append(remainder)
                 break;
             JS("""
-            var left = a[1], key = a[2], flags = a[3];
-            var minlen = a[4], precision = a[5], conversion = a[6];
-            remainder = a[7];
+            var left = @{{!a}}[1], key = @{{!a}}[2], flags = @{{!a}}[3];
+            var minlen = @{{!a}}[4], precision = @{{!a}}[5], conversion = @{{!a}}[6];
+            @{{remainder}} = @{{!a}}[7];
             if (typeof minlen == 'undefined') minlen = null;
             if (typeof precision == 'undefined') precision = null;
             if (typeof conversion == 'undefined') conversion = null;
@@ -1814,7 +1813,7 @@ def sprintf(strng, args):
             result.append(formatarg(flags, minlen, precision, conversion, param))
 
     JS("""
-    var a = re_dict.exec(@{{strng}});
+    var a = @{{!re_dict}}.exec(@{{strng}});
 """)
     if a is None:
         if constructor != "Tuple":
@@ -1850,15 +1849,15 @@ def type(clsname, bases=None, methods=None):
     if methods:
         for k in methods.keys():
             mth = methods[k]
-            JS(" mths[k] = @{{mth}}; ")
+            JS(" @{{mths}}[@{{k}}] = @{{mth}}; ")
 
     JS(" var bss = null; ")
     if bases:
-        JS("bss = @{{bases}}.l;")
-    JS(" return pyjs_type(clsname, bss, mths); ")
+        JS("@{{bss}} = @{{bases}}.l;")
+    JS(" return pyjs_type(@{{clsname}}, @{{bss}}, @{{mths}}); ")
 
 def pow(x, y, z = None):
-    JS("p = Math.pow(@{{x}}, @{{y}});")
+    JS("@{{p}} = Math.pow(@{{x}}, @{{y}});")
     if z is None:
         return float(p)
     return float(p % z)
@@ -1866,24 +1865,24 @@ def pow(x, y, z = None):
 def hex(x):
     if int(x) != x:
         raise TypeError("hex() argument can't be converted to hex")
-    JS("r = '0x'+@{{x}}.toString(16);")
+    JS("@{{r}} = '0x'+@{{x}}.toString(16);")
     return str(r)
 
 def oct(x):
     if int(x) != x:
         raise TypeError("oct() argument can't be converted to oct")
-    JS("r = '0'+@{{x}.toString(8);")
+    JS("@{{r}} = '0'+@{{x}}.toString(8);")
     return str(r)
 
 def round(x, n = 0):
     n = pow(10, n)
-    JS("r = Math.round(@{{n}}*@{{x}})/@{{n}};")
+    JS("@{{r}} = Math.round(@{{n}}*@{{x}})/@{{n}};")
     return float(r)
 
 def divmod(x, y):
     if int(x) == x and int(y) == y:
         return (int(x / y), int(x % y))
-    JS("f = Math.floor(@{{x}} / @{{y}});")
+    JS("@{{f}} = Math.floor(@{{x}} / @{{y}});")
     f = float(f)
     return (f, x - f * y)
 

@@ -32,7 +32,7 @@ JS("""
 // issues. Applications that use the code below will continue to work seamlessly
 // when that happens.
 
-init_gears = function() {
+@{{!init_gears}} = function() {
   // We are already defined. Hooray!
   if ($wnd.google && $wnd.google.gears) {
     return;
@@ -41,8 +41,8 @@ init_gears = function() {
   var factory = null;
 
   // Firefox
-  if (typeof GearsFactory != 'undefined') {
-    factory = new GearsFactory();
+  if (typeof @{{!GearsFactory}} != 'undefined') {
+    factory = new @{{!GearsFactory}}();
   } else {
     // IE
     try {
@@ -87,7 +87,7 @@ init_gears = function() {
 """
 def getInstance():
     JS("""
-    init_gears();
+    @{{!init_gears}}();
     return $wnd.google && $wnd.google.gears && $wnd.google.gears.factory;
     """)
 

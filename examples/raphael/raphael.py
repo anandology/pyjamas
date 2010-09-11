@@ -360,10 +360,10 @@ class RaphaelElement:
                 scale CSV
                 src string (URL)
                 stroke colour
-                stroke-dasharray string [“-”, “.”, “-.”, “-..”, “. ”, “- ”,
-                                         “--”, “- .”, “--.”, “--..”]
-                stroke-linecap string [“butt”, “square”, “round”, “miter”]
-                stroke-linejoin string [“butt”, “square”, “round”, “miter”]
+                stroke-dasharray string ['-', '.', '-.', '-..', '. ', '- ',
+                                         '--', '- .', '--.', '--..']
+                stroke-linecap string ['butt', 'square', 'round', 'miter']
+                stroke-linejoin string ['butt', 'square', 'round', 'miter']
                 stroke-miterlimit number
                 stroke-opacity number
                 stroke-width number
@@ -441,11 +441,11 @@ class RaphaelElement:
         """)
         for attr,value in attrs.items():
             JS("""
-               jsAttrs[@{{attr}}] = @{{value}};
+               @{{!jsAttrs}}[@{{attr}}] = @{{value}};
             """)
 
         JS("""
-           this._element.animate(jsAttrs, @{{duration}});
+           this._element.animate(@{{!jsAttrs}}, @{{duration}});
         """)
 
 
@@ -681,4 +681,3 @@ class RaphaelPathElement(RaphaelElement):
             this._element.andClose();
         """)
         return self
-

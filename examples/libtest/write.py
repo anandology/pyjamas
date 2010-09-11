@@ -1,5 +1,7 @@
 import sys
+import re
 
+tag_re = re.compile("<.*?>")
 
 def write(text):
     pass
@@ -14,20 +16,22 @@ def write_web(text):
     global data
     from __pyjamas__ import JS
     data += text
-    JS(" write.element.innerHTML = write.data; ")
+    JS(" @{{!write}}.element.innerHTML = @{{!write}}.data; ")
 
 def writebr_web(text):
     write(text + "<br />\n")
 
 def init_web():
     from __pyjamas__ import JS
-    JS(""" write.element = $doc.createElement("div");
-           $doc.body.appendChild(write. element); """)
+    JS(""" @{{!write}}.element = $doc.createElement("div");
+           $doc.body.appendChild(@{{!write}}. element); """)
 
 def write_std(text):
+    text = tag_re.sub("",text)
     print text,
 
 def writebr_std(text):
+    text = tag_re.sub("",text)
     print text
 
 if sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
@@ -37,4 +41,3 @@ if sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
 else:
     write = write_std
     writebr = writebr_std
-

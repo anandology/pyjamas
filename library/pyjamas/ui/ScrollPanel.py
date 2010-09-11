@@ -43,10 +43,14 @@ class ScrollPanel(SimplePanel):
     def _getProps(self):
         return SimplePanel._getProps() + self._props
 
-    def getIndex(self, index):
+    # next three functions are part of the standard Builder API for panels
+    def addIndexedItem(self, index, item):
+        self.setWidget(item)
+    
+    def getWidgetIndex(self, index):
         return 0
 
-    def getInstanceIndex(self, index):
+    def getIndexedChild(self, index):
         return self.getWidget()
 
     def addScrollListener(self, listener):

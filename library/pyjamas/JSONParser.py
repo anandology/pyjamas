@@ -74,7 +74,7 @@ class JSONParser:
             return new pyjslib.dict(@{{obj}});
             }
         
-        return obj;
+        return @{{obj}};
         """)
     
     def jsObjectToPyObject(self, obj):
@@ -82,7 +82,7 @@ class JSONParser:
         if (pyjslib.isArray(@{{obj}})) {
             for (var i in @{{obj}})
                 @{{obj}}[i] = this.jsObjectToPyObject(@{{obj}}[i]);
-            obj=new pyjslib.list(@{{obj}});
+            @{{obj}}=new pyjslib.list(@{{obj}});
             }
         else if (pyjslib.isObject(@{{obj}})) {
             if (@{{obj}}["__jsonclass__"]) {
@@ -100,7 +100,7 @@ class JSONParser:
                 }       
             }
         
-        return obj;
+        return @{{obj}};
         """)
     
     # modified to detect pyjslib.list & pyjslib.dict
@@ -201,7 +201,7 @@ class JSONParser:
             }
         };
 
-        typ = typeof @{{obj}};
+        var typ = typeof @{{obj}};
         f=s[typ];
         return f(@{{obj}});
         """)
@@ -218,5 +218,3 @@ class JSONParser:
     
         
         
-
-

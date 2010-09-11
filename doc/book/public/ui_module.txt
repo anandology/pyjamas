@@ -470,9 +470,9 @@ class GridDemo(SimplePanel):
 
         for row in range(1, 5):
             for col in range(1, 5):
-                grid.setText(row, col, "%d*%d=%d" % (row, col row*col))
+                grid.setText(row, col, "%d*%d=%d" % (row, col, row*col))
 
-        grid.setWidget(4, 4, Button("Peekaboo")
+        grid.setWidget(4, 4, Button("Peekaboo"))
 
         self.add(grid)
 }}
@@ -939,7 +939,7 @@ class ButtonDemo(SimplePanel):
         self.add(btn)
 
         self.btn2 = Button("Tickle me!", self)
-        self.add(btn2)
+        self.add(self.btn2)
 
     def onButtonClick(self):
         Window.alert("Ouch!")
@@ -991,7 +991,7 @@ class CheckBoxDemo(SimplePanel):
         self.add(self.box)
 
     def onClick(self):
-        Window.alert("checkbox status: " + self.box.isChecked())
+        Window.alert("checkbox status: " + str(self.box.isChecked()))
 }}
 
 == ui.FileUpload ==
@@ -1189,7 +1189,7 @@ from pyjamas.ui.VerticalPanel import VerticalPanel
 from pyjamas.ui.HorizontalPanel import HorizontalPanel
 from pyjamas.ui.Hyperlink import Hyperlink
 from pyjamas.ui.Label import Label
-from History import History
+from pyjamas import History
 
 
 class HyperlinkDemo(SimplePanel):

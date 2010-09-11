@@ -158,7 +158,7 @@ class ClassTest(UnitTest):
         if IN_BROWSER:
             from __pyjamas__ import JS
             x = ExampleClass().fail_a()
-            self.assertTrue(JS('pyjslib.isUndefined(x)'))
+            self.assertTrue(JS('pyjslib.isUndefined(@{{x}})'))
 
     # test Class().x
     def testInheritedProperties(self):
@@ -1298,4 +1298,3 @@ class DecoratedMethods(object):
     @mdeco_class
     def mtd_class2(cls, x):
         return x
-

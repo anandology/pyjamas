@@ -6,6 +6,7 @@ from __pyjamas__ import doc
 
 from UnitTest import IN_BROWSER, IN_JS, IN_BROWSER
 
+from DockPanelTest import DockPanelTest 
 from LabelTest import LabelTest
 from DOMTest import DOMTest
 from EventTest import EventTest
@@ -51,6 +52,7 @@ def main(test_gen_out):
 
     pyjd.setup("public/uitest.html")
     t = RunTests(test_gen_out)
+    t.add(DockPanelTest)
     t.add(LabelTest)
     t.add(EventTest)
     t.add(DOMTest)

@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from __pyjamas__ import console
 from pyjamas import Factory
 from pyjamas import DOM
 
@@ -57,14 +56,14 @@ class DockPanel(CellPanel):
     def __init__(self, **kwargs):
 
         self.center = None
-        self.dock_children = [] # TODO: can self.children be used instead?
+        self.dock_children = [] # cannot use self.children
 
         CellPanel.__init__(self, **kwargs)
 
     def add(self, widget, direction):
         if direction == self.CENTER:
             if self.center is not None:
-                console.error("Only one CENTER widget may be added")
+                raise Exception("Only one CENTER widget may be added")
             self.center = widget
 
         layout = LayoutData(direction)
@@ -75,10 +74,11 @@ class DockPanel(CellPanel):
         self.dock_children.append(widget)
         self.realizeTable(widget)
 
+    # next three functions are part of the standard Builder API for panels
     def addIndexedItem(self, index, item):
         self.add(item, index[1])
 
-    def getIndex(self, widget):
+    def getWidgetIndex(self, widget):
         index = self.dock_children.index(widget)
         direction = self.getWidgetDirection(widget)
         return (index, direction)
@@ -91,6 +91,12 @@ class DockPanel(CellPanel):
         if widget.getParent() != self:
             return None
         return widget.getLayoutData().direction
+
+    def __len__(self):
+        return len(self.dock_children)
+
+    def __iter__(self):
+        return self.dock_children.__iter__()
 
     def remove(self, widget):
         if widget == self.center:

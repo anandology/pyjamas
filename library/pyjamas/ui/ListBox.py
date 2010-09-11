@@ -39,7 +39,7 @@ class ListBox(FocusWidget):
     def _getProps(self):
         return FocusWidget._getProps() + self._props
 
-    def _setWeirdProps(self, props):
+    def _setWeirdProps(self, props, builderstate):
         items = {}
         for (k, v) in props.items():
             if not isinstance(k, int):

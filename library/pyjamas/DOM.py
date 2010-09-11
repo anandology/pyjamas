@@ -16,8 +16,9 @@
     and management of the DOM model of the PyWebkitGtk window.
 """
 
-import sys
-if sys.platform not in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
+import pyjd
+
+if pyjd.is_desktop:
     from pyjamas.Window import onResize, onClosing, onClosed
     from __pyjamas__ import JS, doc, get_main_frame, wnd
 
@@ -121,20 +122,20 @@ def _dispatchEvent(sender, evt, useCap):
     #print "_dispatchEvent", sender, evt, evt.type
     cap = getCaptureElement()
     listener = get_listener(cap)
-    if cap and listener:
+    if cap and (listener is not None):
         #print "capture _dispatchEvent", cap, listener
         dispatchEvent(evt, cap, listener)
         evt.stopPropagation()
         return
 
-    while curElem and not get_listener(curElem):
+    while curElem and (get_listener(curElem) is None):
         #print "no parent listener", curElem, getParent(curElem)
         curElem = getParent(curElem)
     if curElem and getNodeType(curElem) != 1:
         curElem = None
 
     listener = get_listener(curElem)
-    if listener:
+    if listener is not None:
         dispatchEvent(evt, curElem, listener)
 
 
@@ -145,7 +146,7 @@ def _dispatchCapturedMouseEvent(evt):
         return
     cap = getCaptureElement()
     listener = get_listener(cap)
-    if cap and listener:
+    if cap and (listener is not None):
         dispatchEvent(evt, cap, listener)
         #print "dcmsev, stop propagation"
         evt.stopPropagation()
@@ -1002,8 +1003,9 @@ def previewEvent(evt):
         return True
 
     #print "previewEvent, cancel, prevent default"
-    eventCancelBubble(evt, True)
-    eventPreventDefault(evt)
+    if evt:
+        eventCancelBubble(evt, True)
+        eventPreventDefault(evt)
 
     return ret
 
@@ -1020,7 +1022,7 @@ def dispatchEventImpl(event, element, listener):
     global currentEvent
     if element == sCaptureElem:
         if eventGetType(event) == "losecapture":
-            # print "lose capture"
+            #print "lose capture"
             sCaptureElem = None
     #print "dispatchEventImpl", listener, eventGetType(event)
     prevCurrentEvent = currentEvent
@@ -1057,5 +1059,5 @@ def eventGetMouseWheelVelocityY(evt):
     pass
 
 
-if sys.platform in ['mozilla', 'ie6', 'opera', 'oldmoz', 'safari']:
+if not pyjd.is_desktop:
     init()

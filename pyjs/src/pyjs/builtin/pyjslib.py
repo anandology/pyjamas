@@ -36,7 +36,7 @@ $min_int = -0x80000000;
 """)
 
 JS("""
-$module['_handle_exception'] = function(err) {
+$m['_handle_exception'] = function(err) {
     $pyjs.loaded_modules['sys'].save_exception_stack();
 
     if (!$pyjs.in_try_except) {
@@ -70,15 +70,20 @@ def type(clsname, bases=None, methods=None):
     if methods:
         for k in methods.keys():
             mth = methods[k]
-            JS(" mths[k] = @{{mth}}; ")
+            JS(" @{{!mths}}[@{{!k}}] = @{{mth}}; ")
 
     JS(" var bss = null; ")
     if bases:
-        JS("bss = @{{bases}}.__array;")
-    JS(" return $pyjs_type(@{{clsname}}, bss, mths); ")
+        JS("@{{!bss}} = @{{bases}}.__array;")
+    JS(" return $pyjs_type(@{{clsname}}, @{{!bss}}, @{{!mths}}); ")
 
 class object:
     pass
+
+
+class basestring(object):
+    pass
+
 
 def op_is(a,b):
     JS("""
@@ -140,8 +145,8 @@ def op_eq(a,b):
         }
         return false;
     } else if ((typeof @{{b}} == 'object' || typeof @{{b}} == 'function') && typeof @{{b}}.__cmp__ == 'function') {
-        // typeof @{{b}}.__cmp__ != 'function'
-        // @{{a}}.__cmp__ !== @{{b}}.__cmp__
+        // typeof bXXX.__cmp__ != 'function'
+        // aXXX.__cmp__ !== bXXX.__cmp__
         if (@{{_isinstance}}(@{{a}}, @{{b}})) {
             return @{{b}}.__cmp__(@{{a}}) == 0;
         }
@@ -223,10 +228,10 @@ def op_add(x, y):
 
 def __op_sub(x, y):
     JS("""
-        return (typeof (@{{x}})==typeof (y) && 
+        return (typeof (@{{x}})==typeof (@{{y}}) && 
                 (typeof @{{x}}=='number'||typeof @{{x}}=='string')?
-                @{{x}}-y:
-                @{{op_sub}}(@{{x}},y));
+                @{{x}}-@{{y}}:
+                @{{op_sub}}(@{{x}},@{{y}}));
     """)
 
 def op_sub(x, y):
@@ -684,7 +689,7 @@ def ___import___(path, context, module_name=None, get_base=True):
     if JS("@{{sys}}.__was_initialized__ != true"):
         module = JS("$pyjs.loaded_modules[@{{path}}]")
         module()
-        JS("$pyjs.track.module = save_track_module;")
+        JS("$pyjs.track.module = @{{save_track_module}};")
         if path == 'sys':
             module.modules = dict({'pyjslib': pyjslib, 'sys': module})
         return module
@@ -710,10 +715,10 @@ def ___import___(path, context, module_name=None, get_base=True):
         # Check if we already have imported this module in this context
         if depth > 1 and sys.modules.has_key(inContextParentName):
             module = sys.modules[inContextParentName]
-            if JS("typeof @{{module}}[objName] != 'undefined'"):
+            if JS("typeof @{{module}}[@{{objName}}] != 'undefined'"):
                 if get_base:
                     return JS("$pyjs.loaded_modules[@{{inContextTopName}}]")
-                return JS("@{{module}}[objName]")
+                return JS("@{{module}}[@{{objName}}]")
         elif sys.modules.has_key(inContextImportName):
             if get_base:
                 return JS("$pyjs.loaded_modules[@{{inContextTopName}}]")
@@ -1227,9 +1232,9 @@ String.prototype.center = function(width, fillchar) {
         throw @{{TypeError}}("center() argument 2 must be char, not " + typeof(fillchar));
     }
     if (this.length >= width) return this;
-    padlen = width - this.length;
-    right = Math.ceil(padlen / 2);
-    left = padlen - right;
+    var padlen = width - this.length;
+    var right = Math.ceil(padlen / 2);
+    var left = padlen - right;
     return new Array(left+1).join(fillchar) + this + new Array(right+1).join(fillchar);
 };
 
@@ -1303,7 +1308,7 @@ String.prototype.__repr__ = function () {
     if (typeof this == 'string') return "'" + this.toString() + "'";
     return "<type 'str'>";
 };
-
+String.prototype.__mro__ = [@{{basestring}}];
 """)
 
     # Patching of the standard javascript Boolean object
@@ -1329,7 +1334,6 @@ Boolean.prototype.__or__ = function (y) {
 Boolean.prototype.__xor__ = function (y) {
     return this ^ y.valueOf();
 };
-
 """)
 
     # Patching of the standard javascript Array object
@@ -1493,7 +1497,7 @@ class float:
         JS("""
         var v = Number(@{{num}});
         if (isNaN(v)) {
-            throw @{{ValueError}}("invalid literal for float(): " + num);
+            throw @{{ValueError}}("invalid literal for float(): " + @{{!num}});
         }
         return v;
 """)
@@ -1623,47 +1627,46 @@ Number.prototype.__pow__ = function (y, z) {
     if (!z.__number__ || isNaN(z = z.valueOf())) return @{{NotImplemented}};
     return Math.pow(this, y) % z;
 };
-
 """)
 
 def float_int(value, radix=None):
     JS("""
     var v;
-    if (value.__number__) {
-        if (radix !== null) {
+    if (@{{value}}.__number__) {
+        if (@{{radix}} !== null) {
             throw @{{TypeError}}("int() can't convert non-string with explicit base");
         }
-        v = value.valueOf();
+        v = @{{value}}.valueOf();
         if (v > 0) {
             v = Math.floor(v);
         } else {
             v = Math.ceil(v);
         }
-    } else if (typeof value == 'string') {
-        if (radix === null) {
-            radix = 10;
+    } else if (typeof @{{value}} == 'string') {
+        if (@{{radix}} === null) {
+            @{{radix}} = 10;
         }
-        switch (value[value.length-1]) {
+        switch (@{{value}}[@{{value}}.length-1]) {
             case 'l':
             case 'L':
-                v = value.slice(0, value.length-2);
+                v = @{{value}}.slice(0, @{{value}}.length-2);
                 break;
             default:
-                v = value;
+                v = @{{value}};
         }
-        v = parseInt(v, radix);
+        v = parseInt(v, @{{radix}});
     } else {
         throw @{{TypeError}}("TypeError: int() argument must be a string or a number");
     }
     if (isNaN(v) || !isFinite(v)) {
-        throw @{{ValueError}}("invalid literal for int() with base " + radix + ": '" + value + "'");
+        throw @{{ValueError}}("invalid literal for int() with base " + @{{!radix}} + ": '" + @{{!value}} + "'");
     }
     return v;
 """)
 
 JS("""
 (function(){
-    var $int = @{{int}} = function (value, radix) {
+    var $int = pyjslib['int'] = function (value, radix) {
         var v, i;
         if (typeof radix == 'undefined' || radix === null) {
             if (typeof value == 'undefined') {
@@ -1695,13 +1698,13 @@ JS("""
             throw @{{TypeError}}("TypeError: int() argument must be a string or a number");
         }
         if (isNaN(v) || !isFinite(v)) {
-            throw @{{ValueError}}("invalid literal for int() with base " + radix + ": '" + value + "'");
+            throw @{{ValueError}}("invalid literal for int() with base " + @{{!radix}} + ": '" + @{{!value}} + "'");
         }
         if ($min_int <= v && v <= $max_int) {
             this.__v = v;
             return this;
         }
-        return new @{{long}}(v);
+        return new pyjslib['long'](v);
     };
     $int.__init__ = function () {};
     $int.__number__ = 0x02;
@@ -2268,7 +2271,7 @@ JS("""
                 prem = long_normalize(prem);
         }
         else {
-                z = x_divrem(a, b, prem);
+                z = @{{!x_divrem}}(a, b, prem);
         }
         if (z === null) {
             pdiv.ob_size = 0;
@@ -2563,7 +2566,7 @@ JS("""
                     neg = true;
                 }
                 // Count the number of Python digits.
-                t = v;
+                var t = v;
                 while (t) {
                     this.ob_digit[ndig] = t & PyLong_MASK;
                     t >>>= PyLong_SHIFT;
@@ -2615,7 +2618,7 @@ JS("""
                 this.ob_size = neg ? -ndig : ndig;
                 return this;
             }
-            throw @{{ValueError}}('cannot convert ' + @{{repr}}(value) + 'to integer');
+            throw @{{ValueError}}('cannot convert ' + @{{repr}}(@{{value}}) + 'to integer');
         } else if (typeof v == 'string') {
             var nchars;
             var text = value.lstrip();
@@ -2721,7 +2724,7 @@ JS("""
 
                 if ($log_base_PyLong_BASE[radix] == 0.0) {
                     var i = 1;
-                    convmax = radix;
+                    var convmax = radix;
                     $log_base_PyLong_BASE[radix] = Math.log(radix) / Math.log(PyLong_BASE);
                     while (1) {
                         var next = convmax * radix;
@@ -2778,12 +2781,12 @@ JS("""
                 return this;
             }
             throw @{{ValueError}}("invalid literal for long() with base " +
-                                     radix + ": " + value);
+                                     @{{!radix}} + ": " + @{{!value}});
         } else {
             throw @{{TypeError}}("TypeError: long() argument must be a string or a number");
         }
         if (isNaN(v) || !isFinite(v)) {
-            throw @{{ValueError}}("invalid literal for long() with base " + radix + ": '" + v + "'");
+            throw @{{ValueError}}("invalid literal for long() with base " + @{{!radix}} + ": '" + @{{!v}} + "'");
         }
         return this;
     };
@@ -3610,7 +3613,6 @@ JS("""
         $pow_temp_c = new $long(0),
         $pow_temp_z = new $long(0);
 })();
-
 """)
 
 
@@ -3796,11 +3798,11 @@ class list:
     def index(self, value, _start=0):
         JS("""
         var start = @{{_start}}.valueOf();
-        if (typeof @{{value}} == 'number' || typeof @{{value}} == 'string') {
-            start = @{{self}}.__array.indexOf(@{{value}}, start);
+        /* if (typeof valueXXX == 'number' || typeof valueXXX == 'string') {
+            start = selfXXX.__array.indexOf(valueXXX, start);
             if (start >= 0)
                 return start;
-        } else {
+        } else */ {
             var len = @{{self}}.__array.length >>> 0;
 
             start = (start < 0)
@@ -3810,7 +3812,7 @@ class list:
                 start += len;
 
             for (; start < len; start++) {
-                if (start in @{{self}}.__array &&
+                if ( /*start in selfXXX.__array && */
                     @{{cmp}}(@{{self}}.__array[start], @{{value}}) == 0)
                     return start;
             }
@@ -4156,7 +4158,7 @@ class dict:
             JS("""
         var item, i, n, sKey;
         var data = @{{_data}};
-        //@{{self}}.__object = {};
+        //selfXXX.__object = {};
 
         if (data === null) {
             throw @{{TypeError}}("'NoneType' is not iterable");
@@ -4278,7 +4280,7 @@ class dict:
             other_sKeys = new Array(),
             selfLen = 0,
             otherLen = 0,
-            selfObj = @{{self}}.__object;
+            selfObj = @{{self}}.__object,
             otherObj = @{{other}}.__object;
         for (sKey in selfObj) {
            self_sKeys[selfLen++] = sKey;
@@ -4310,7 +4312,7 @@ class dict:
     def __len__(self):
         size = 0
         JS("""
-        for (var i in @{{self}}.__object) size++;
+        for (var i in @{{self}}.__object) @{{size}}++;
         """)
         return INT(size);
 
@@ -4403,7 +4405,7 @@ class dict:
     def setdefault(self, key, default_value):
         JS("""
         var sKey = (@{{key}}===null?null:(typeof @{{key}}.$H != 'undefined'?@{{key}}.$H:((typeof @{{key}}=='string'||@{{key}}.__number__)?'$'+@{{key}}:@{{__hash}}(@{{key}}))));
-        return typeof @{{self}}.__object[sKey] == 'undefined' ? (@{{self}}.__object[sKey]=[@{{key}}, default_value])[1] : @{{self}}.__object[sKey][1];
+        return typeof @{{self}}.__object[sKey] == 'undefined' ? (@{{self}}.__object[sKey]=[@{{key}}, @{{default_value}}])[1] : @{{self}}.__object[sKey][1];
 """)
 
     def get(self, key, default_value=None):
@@ -4413,9 +4415,9 @@ class dict:
             empty = false;
             break;
         }
-        if (empty) return default_value;
+        if (empty) return @{{default_value}};
         var sKey = (@{{key}}===null?null:(typeof @{{key}}.$H != 'undefined'?@{{key}}.$H:((typeof @{{key}}=='string'||@{{key}}.__number__)?'$'+@{{key}}:@{{__hash}}(@{{key}}))));
-        return typeof @{{self}}.__object[sKey] == 'undefined' ? default_value : @{{self}}.__object[sKey][1];
+        return typeof @{{self}}.__object[sKey] == 'undefined' ? @{{default_value}} : @{{self}}.__object[sKey][1];
 """)
 
     def update(self, *args, **kwargs):
@@ -4516,16 +4518,17 @@ def __empty_dict():
 
 class set(object):
     def __init__(self, _data=JS("[]")):
-        # Transform data into an array with [key,value] and add set 
-        # self.__object
-        # Input data can be Array(key, val), iteratable (key,val) or 
-        # Object/Function
+        """ Transform data into an array with [key,value] and add set 
+            self.__object
+            Input data can be Array(key, val), iteratable (key,val) or 
+            Object/Function
+        """
         JS("var data = @{{_data}};")
         if isSet(_data):
             JS("""
             @{{self}}.__object = {};
             var selfObj = @{{self}}.__object,
-                dataObj = data.__object;
+                dataObj = @{{!data}}.__object;
             for (var sVal in dataObj) {
                 selfObj[sVal] = dataObj[sVal];
             }
@@ -4534,34 +4537,34 @@ class set(object):
         var item, i, n;
         var selfObj = @{{self}}.__object = {};
 
-        if (data === null) {
+        if (@{{!data}} === null) {
             throw @{{TypeError}}("'NoneType' is not iterable");
         }
-        if (data.constructor === Array) {
-        } else if (typeof data.__object == 'object') {
-            data = data.__object;
-            for (var sKey in data) {
-                selfObj[sKey] = data[sKey][0];
+        if (@{{!data}}.constructor === Array) {
+        } else if (typeof @{{!data}}.__object == 'object') {
+            @{{!data}} = @{{!data}}.__object;
+            for (var sKey in @{{!data}}) {
+                selfObj[sKey] = @{{!data}}[sKey][0];
             }
             return null;
-        } else if (typeof data.__iter__ == 'function') {
-            if (typeof data.__array == 'object') {
-                data = data.__array;
+        } else if (typeof @{{!data}}.__iter__ == 'function') {
+            if (typeof @{{!data}}.__array == 'object') {
+                @{{!data}} = @{{!data}}.__array;
             } else {
-                var iter = data.__iter__();
+                var iter = @{{!data}}.__iter__();
                 if (typeof iter.__array == 'object') {
-                    data = iter.__array;
+                    @{{!data}} = iter.__array;
                 }
-                data = [];
+                @{{!data}} = [];
                 var item, i = 0;
                 if (typeof iter.$genfunc == 'function') {
                     while (typeof (item=iter.next(true)) != 'undefined') {
-                        data[i++] = item;
+                        @{{!data}}[i++] = item;
                     }
                 } else {
                     try {
                         while (true) {
-                            data[i++] = iter.next();
+                            @{{!data}}[i++] = iter.next();
                         }
                     }
                     catch (e) {
@@ -4569,21 +4572,21 @@ class set(object):
                     }
                 }
             }
-        } else if (typeof data == 'object' || typeof data == 'function') {
-            for (var key in data) {
+        } else if (typeof @{{!data}} == 'object' || typeof @{{!data}} == 'function') {
+            for (var key in @{{!data}}) {
                 selfObj[@{{hash}}(key)] = key;
             }
             return null;
         } else {
-            throw @{{TypeError}}("'" + @{{repr}}(data) + "' is not iterable");
+            throw @{{TypeError}}("'" + @{{repr}}(@{{!data}}) + "' is not iterable");
         }
         // Assume uniform array content...
-        if ((n = data.length) == 0) {
+        if ((n = @{{!data}}.length) == 0) {
             return null;
         }
         i = 0;
         while (i < n) {
-            item = data[i++];
+            item = @{{!data}}[i++];
             selfObj[@{{hash}}(item)] = item;
         }
         return null;
@@ -4653,7 +4656,7 @@ class set(object):
     def __len__(self):
         size=0.0
         JS("""
-        for (var i in @{{self}}.__object) size++;
+        for (var i in @{{self}}.__object) @{{size}}++;
         """)
         return INT(size)
 
@@ -4678,25 +4681,33 @@ class set(object):
         """)
 
     def __and__(self, other):
-        # Return the intersection of two sets as a new set
+        """ Return the intersection of two sets as a new set.
+            only available under --number-classes
+        """
         if not isSet(other):
             return NotImplemented
         return self.intersection(other)
 
     def __or__(self, other):
-        # Return the union of two sets as a new set.
+        """ Return the union of two sets as a new set..
+            only available under --number-classes
+        """
         if not isSet(other):
             return NotImplemented
         return self.union(other)
 
     def __xor__(self, other):
-        # Return the symmetric difference of two sets as a new set.
+        """ Return the symmetric difference of two sets as a new set..
+            only available under --number-classes
+        """
         if not isSet(other):
             return NotImplemented
         return self.symmetric_difference(other)
 
     def  __sub__(self, other):
-        # Return the difference of two sets as a new Set.
+        """ Return the difference of two sets as a new Set..
+            only available under --number-classes
+        """
         if not isSet(other):
             return NotImplemented
         return self.difference(other)
@@ -4721,8 +4732,9 @@ class set(object):
         return new_set
 
     def difference(self, other):
-        # Return the difference of two sets as a new set.
-        # (i.e. all elements that are in this set but not the other.)
+        """ Return the difference of two sets as a new set.
+            (i.e. all elements that are in this set but not the other.)
+        """
         if not isSet(other):
             other = frozenset(other)
         new_set = set()
@@ -4739,7 +4751,8 @@ class set(object):
         return new_set
 
     def difference_update(self, other):
-        # Remove all elements of another set from this set.
+        """ Remove all elements of another set from this set.
+        """
         if not isSet(other):
             other = frozenset(other)
         JS("""
@@ -4760,13 +4773,14 @@ class set(object):
         return None
 
     def intersection(self, other):
-        # Return the intersection of two sets as a new set.
-        # (i.e. all elements that are in both sets.)
+        """ Return the intersection of two sets as a new set.
+            (i.e. all elements that are in both sets.)
+        """
         if not isSet(other):
             other = frozenset(other)
         new_set = set()
         JS("""
-        var obj = new_set.__object,
+        var obj = @{{new_set}}.__object,
             selfObj = @{{self}}.__object,
             otherObj = @{{other}}.__object;
         for (var sVal in selfObj) {
@@ -4778,7 +4792,8 @@ class set(object):
         return new_set
 
     def intersection_update(self, other):
-        # Update a set with the intersection of itself and another.
+        """ Update a set with the intersection of itself and another.
+        """
         if not isSet(other):
             other = frozenset(other)
         JS("""
@@ -4793,7 +4808,8 @@ class set(object):
         return None
 
     def isdisjoint(self, other):
-        # Return True if two sets have a null intersection.
+        """ Return True if two sets have a null intersection.
+        """
         if not isSet(other):
             other = frozenset(other)
         JS("""
@@ -4846,8 +4862,9 @@ class set(object):
         """)
 
     def symmetric_difference(self, other):
-        # Return the symmetric difference of two sets as a new set.
-        # (i.e. all elements that are in exactly one of the sets.)
+        """ Return the symmetric difference of two sets as a new set.
+            (i.e. all elements that are in exactly one of the sets.)
+        """
         if not isSet(other):
             other = frozenset(other)
         new_set = set()
@@ -4869,7 +4886,8 @@ class set(object):
         return new_set
 
     def symmetric_difference_update(self, other):
-        # Update a set with the symmetric difference of itself and another.
+        """ Update a set with the symmetric difference of itself and another.
+        """
         if not isSet(other):
             other = frozenset(other)
         JS("""
@@ -4891,8 +4909,9 @@ class set(object):
         return None
 
     def union(self, other):
-        # Return the union of two sets as a new set.
-        # (i.e. all elements that are in either set.)
+        """ Return the union of two sets as a new set.
+            (i.e. all elements that are in either set.)
+        """
         new_set = set()
         if not isSet(other):
             other = frozenset(other)
@@ -4928,129 +4947,11 @@ class set(object):
 JS("@{{set}}['__str__'] = @{{set}}['__repr__'];")
 JS("@{{set}}['toString'] = @{{set}}['__repr__'];")
 
-class frozenset(object):
+class frozenset(set):
     def __init__(self, _data=JS("[]")):
-        # Transform data into an array with [key,value] and add set self.__object
-        # Input data can be Array(key, val), iteratable (key,val) or Object/Function
-        if JS("typeof @{{self}}.__object != 'undefined'"):
-            return None
-        JS("var data = @{{_data}};")
-        if isSet(_data):
-            JS("""
-            @{{self}}.__object = {};
-            var selfObj = @{{self}}.__object,
-                dataObj = data.__object;
-            for (var sVal in dataObj) {
-                selfObj[sVal] = dataObj[sVal];
-            }
-            return null;""")
-        JS("""
-        var item, i, n;
-        var selfObj = @{{self}}.__object = {};
-
-        if (data === null) {
-            throw @{{TypeError}}("'NoneType' is not iterable");
-        }
-        if (data.constructor === Array) {
-        } else if (typeof data.__object == 'object') {
-            data = data.__object;
-            for (var sKey in data) {
-                selfObj[sKey] = data[sKey][0];
-            }
-            return null;
-        } else if (typeof data.__iter__ == 'function') {
-            if (typeof data.__array == 'object') {
-                data = data.__array;
-            } else {
-                var iter = data.__iter__();
-                if (typeof iter.__array == 'object') {
-                    data = iter.__array;
-                }
-                data = [];
-                var item, i = 0;
-                if (typeof iter.$genfunc == 'function') {
-                    while (typeof (item=iter.next(true)) != 'undefined') {
-                        data[i++] = item;
-                    }
-                } else {
-                    try {
-                        while (true) {
-                            data[i++] = iter.next();
-                        }
-                    }
-                    catch (e) {
-                        if (e.__name__ != 'StopIteration') throw e;
-                    }
-                }
-            }
-        } else if (typeof data == 'object' || typeof data == 'function') {
-            for (var key in data) {
-                selfObj[@{{hash}}(key)] = key;
-            }
-            return null;
-        } else {
-            throw @{{TypeError}}("'" + @{{repr}}(data) + "' is not iterable");
-        }
-        // Assume uniform array content...
-        if ((n = data.length) == 0) {
-            return null;
-        }
-        i = 0;
-        while (i < n) {
-            item = data[i++];
-            selfObj[@{{hash}}(item)] = item;
-        }
-        return null;
-        """)
-
-    def __cmp__(self, other):
-        # We (mis)use cmp here for the missing __gt__/__ge__/...
-        # if self == other : return 0
-        # if self is subset of other: return -1
-        # if self is superset of other: return 1
-        # else return 2
-        if not isSet(other):
-            return 2
-            #other = frozenset(other)
-        JS("""
-        var selfLen = 0,
-            otherLen = 0,
-            selfObj = @{{self}}.__object,
-            otherObj = @{{other}}.__object,
-            selfMismatch = false,
-            otherMismatch = false;
-        for (var sVal in selfObj) {
-            if (!selfMismatch && typeof otherObj[sVal] == 'undefined') {
-                selfMismatch = true;
-            }
-            selfLen++;
-        }
-        for (var sVal in otherObj) {
-            if (!otherMismatch && typeof selfObj[sVal] == 'undefined') {
-                otherMismatch = true;
-            }
-            otherLen++;
-        }
-        if (selfMismatch && otherMismatch) return 2;
-        if (selfMismatch) return 1;
-        if (otherMismatch) return -1;
-        return 0;
-""")
-
-    def __contains__(self, value):
-        if isSet(value) == 1: # An instance of set
-            # Use frozenset hash
-            JS("""
-            var hashes = new Array(), obj = @{{self}}.__object, i = 0;
-            for (var v in obj) {
-                hashes[i++] = v;
-            }
-            hashes.sort();
-            var h = hashes.join("|");
-            return typeof @{{self}}.__object[h] != 'undefined';
-""")
-        JS("""return typeof @{{self}}.__object[@{{hash}}(@{{value}})] != 'undefined';""")
-
+        if JS(""" typeof(@{{self}}.__object) == 'undefined'"""):
+            super(frozenset, self).__init__(_data)
+        
     def __hash__(self):
         JS("""
         var hashes = new Array(), obj = @{{self}}.__object, i = 0;
@@ -5061,201 +4962,26 @@ class frozenset(object):
         return (@{{self}}.$H = hashes.join("|"));
 """)
 
-    def __iter__(self):
-        JS("""
-        var items = new Array();
-        var i = 0;
-        for (var key in @{{self}}.__object) {
-            items[i++] = @{{self}}.__object[key];
-        }
-        return new $iter_array(items);
-        """)
-
-    def __len__(self):
-        size=0.0
-        JS("""
-        for (var i in @{{self}}.__object) size++;
-        """)
-        return INT(size)
-
-    #def __str__(self):
-    #    return self.__repr__()
-    #See monkey patch at the end of the set class definition
-
-    def __repr__(self):
-        if callable(self):
-            return "<type '%s'>" % self.__name__
-        JS("""
-        var values = new Array();
-        var i = 0,
-            obj = @{{self}}.__object,
-            s = @{{self}}.__name__ + "([";
-        for (var sVal in obj) {
-            values[i++] = @{{repr}}(obj[sVal]);
-        }
-        s += values.join(", ");
-        s += "])";
-        return s;
-        """)
-
-    def __and__(self, other):
-        # Return the intersection of two sets as a new set
-        if not isSet(other):
-            return NotImplemented
-        return self.intersection(other)
-
-    def __or__(self, other):
-        # Return the union of two sets as a new set.
-        if not isSet(other):
-            return NotImplemented
-        return self.union(other)
-
-    def __xor__(self, other):
-        # Return the symmetric difference of two sets as a new set.
-        if not isSet(other):
-            return NotImplemented
-        return self.symmetric_difference(other)
-
-    def  __sub__(self, other):
-        # Return the difference of two sets as a new Set.
-        if not isSet(other):
-            return NotImplemented
-        return self.difference(other)
+    def add(self, value):
+        raise AttributeError('frozenset is immutable')
 
     def clear(self):
-        JS("""@{{self}}.__object = {};""")
-        return None
+        raise AttributeError('frozenset is immutable')
 
-    def copy(self):
-        new_set = set()
-        JS("""
-        var obj = @{{new_set}}.__object,
-            selfObj = @{{self}}.__object;
-        for (var sVal in selfObj) {
-            obj[sVal] = selfObj[sVal];
-        }
-""")
-        return new_set
+    def difference_update(self, other):
+        raise AttributeError('frozenset is immutable')
 
-    def difference(self, other):
-        # Return the difference of two sets as a new set.
-        # (i.e. all elements that are in this set but not the other.)
-        if not isSet(other):
-            other = frozenset(other)
-        new_set = set()
-        JS("""
-        var obj = @{{new_set}}.__object,
-            selfObj = @{{self}}.__object,
-            otherObj = @{{other}}.__object;
-        for (var sVal in selfObj) {
-            if (typeof otherObj[sVal] == 'undefined') {
-                obj[sVal] = selfObj[sVal];
-            }
-        }
-""")
-        return new_set
-
-    def intersection(self, other):
-        # Return the intersection of two sets as a new set.
-        # (i.e. all elements that are in both sets.)
-        if not isSet(other):
-            other = frozenset(other)
-        new_set = set()
-        JS("""
-        var obj = @{{new_set}}.__object,
-            selfObj = @{{self}}.__object,
-            otherObj = @{{other}}.__object;
-        for (var sVal in selfObj) {
-            if (typeof otherObj[sVal] != 'undefined') {
-                obj[sVal] = selfObj[sVal];
-            }
-        }
-""")
-        return new_set
-
-    def isdisjoint(self, other):
-        # Return True if two sets have a null intersection.
-        if not isSet(other):
-            other = frozenset(other)
-        JS("""
-        var selfObj = @{{self}}.__object,
-            otherObj = @{{other}}.__object;
-        for (var sVal in selfObj) {
-            if (typeof otherObj[sVal] != 'undefined') {
-                return false;
-            }
-        }
-        for (var sVal in otherObj) {
-            if (typeof selfObj[sVal] != 'undefined') {
-                return false;
-            }
-        }
-""")
-        return True
-
-    def issubset(self, other):
-        if not isSet(other):
-            other = frozenset(other)
-        return JS("@{{self}}.__cmp__(@{{other}}) < 0")
-
-    def issuperset(self, other):
-        if not isSet(other):
-            other = frozenset(other)
-        return JS("(@{{self}}.__cmp__(@{{other}})|1) == 1")
+    def discard(self, value):
+        raise AttributeError('frozenset is immutable')
+        
+    def intersection_update(self, other):
+        raise AttributeError('frozenset is immutable')
 
     def pop(self):
-        JS("""
-        for (var sVal in @{{self}}.__object) {
-            var value = @{{self}}.__object[sVal];
-            delete @{{self}}.__object[sVal];
-            return value;
-        }
-        """)
-        raise KeyError("pop from an empty set")
+        raise AttributeError('frozenset is immutable')
 
-    def symmetric_difference(self, other):
-        # Return the symmetric difference of two sets as a new set.
-        # (i.e. all elements that are in exactly one of the sets.)
-        if not isSet(other):
-            other = frozenset(other)
-        new_set = set()
-        JS("""
-        var obj = @{{new_set}}.__object,
-            selfObj = @{{self}}.__object,
-            otherObj = @{{other}}.__object;
-        for (var sVal in selfObj) {
-            if (typeof otherObj[sVal] == 'undefined') {
-                obj[sVal] = selfObj[sVal];
-            }
-        }
-        for (var sVal in otherObj) {
-            if (typeof selfObj[sVal] == 'undefined') {
-                obj[sVal] = otherObj[sVal];
-            }
-        }
-""")
-        return new_set
-
-    def union(self, other):
-        # Return the union of two sets as a new set.
-        # (i.e. all elements that are in either set.)
-        new_set = set()
-        if not isSet(other):
-            other = frozenset(other)
-        JS("""
-        var obj = @{{new_set}}.__object,
-            selfObj = @{{self}}.__object,
-            otherObj = @{{other}}.__object;
-        for (var sVal in selfObj) {
-            obj[sVal] = selfObj[sVal];
-        }
-        for (var sVal in otherObj) {
-            if (typeof selfObj[sVal] == 'undefined') {
-                obj[sVal] = otherObj[sVal];
-            }
-        }
-""")
-        return new_set
+    def symmetric_difference_update(self, other):
+        raise AttributeError('frozenset is immutable')
 
 JS("@{{frozenset}}['__str__'] = @{{frozenset}}['__repr__'];")
 JS("@{{frozenset}}['toString'] = @{{frozenset}}['__repr__'];")
@@ -5351,31 +5077,31 @@ def xrange(start, stop = None, step = 1):
     if stop is None:
         stop = start
         start = 0
-    if not JS("@{{start }}!== null && @{{start}}.__number__ && (@{{start}}.__number__ != 0x01 || isFinite(@{{start}}))"):
+    if not JS("@{{start}}!== null && @{{start}}.__number__ && (@{{start}}.__number__ != 0x01 || isFinite(@{{start}}))"):
         raise TypeError("xrange() integer start argument expected, got %s" % start.__class__.__name__)
-    if not JS("@{{stop }}!== null && @{{stop}}.__number__ && (@{{stop}}.__number__ != 0x01 || isFinite(@{{stop}}))"):
+    if not JS("@{{stop}}!== null && @{{stop}}.__number__ && (@{{stop}}.__number__ != 0x01 || isFinite(@{{stop}}))"):
         raise TypeError("xrange() integer end argument expected, got %s" % stop.__class__.__name__)
-    if not JS("@{{step }}!== null && @{{step}}.__number__ && (@{{step}}.__number__ != 0x01 || isFinite(@{{step}}))"):
+    if not JS("@{{step}}!== null && @{{step}}.__number__ && (@{{step}}.__number__ != 0x01 || isFinite(@{{step}}))"):
         raise TypeError("xrange() integer step argument expected, got %s" % step.__class__.__name__)
     rval = nval = start
     JS("""
-    var nstep = (@{{stop}}-@{{start}})/step;
+    var nstep = (@{{stop}}-@{{start}})/@{{step}};
     nstep = nstep < 0 ? Math.ceil(nstep) : Math.floor(nstep);
-    if ((@{{stop}}-@{{start}}) % step) {
+    if ((@{{stop}}-@{{start}}) % @{{step}}) {
         nstep++;
     }
-    var _stop = @{{start }}+ nstep * @{{step}};
-    if (nstep <= 0) nval = _stop;
+    var _stop = @{{start}}+ nstep * @{{step}};
+    if (nstep <= 0) @{{nval}} = _stop;
     var x = {
         'next': function(noStop) {
-            if (nval == _stop) {
+            if (@{{nval}} == _stop) {
                 if (noStop === true) {
                     return;
                 }
                 throw @{{StopIteration}};
             }
-            rval = nval;
-            nval += @{{step}};
+            @{{rval}} = @{{nval}};
+            @{{nval}} += @{{step}};
 """)
     return INT(rval);
     JS("""
@@ -5387,15 +5113,15 @@ def xrange(start, stop = None, step = 1):
             return this;
         },
         '__reversed__': function() {
-            return @{{xrange}}(_stop-@{{step}}, @{{start}}-@{{step}}, -@{{step}});
+            return @{{xrange}}(@{{!_stop}}-@{{step}}, @{{start}}-@{{step}}, -@{{step}});
         },
         'toString': function() {
             var s = "xrange(";
-            if (@{{start }}!= 0) {
-                s += @{{start }}+ ", ";
+            if (@{{start}}!= 0) {
+                s += @{{start}}+ ", ";
             }
-            s += _stop;
-            if (@{{step }}!= 1) {
+            s += @{{!_stop}};
+            if (@{{step}}!= 1) {
                 s += ", " + @{{step}};
             }
             return s + ")";
@@ -5404,8 +5130,8 @@ def xrange(start, stop = None, step = 1):
             return "'" + this.toString() + "'";
         }
     };
-    x['__str__'] = x.toString;
-    return x;
+    @{{!x}}['__str__'] = @{{!x}}.toString;
+    return @{{!x}};
     """)
 
 def range(start, stop = None, step = 1):
@@ -5423,7 +5149,7 @@ def range(start, stop = None, step = 1):
     JS("""
     var nstep = (@{{stop}}-@{{start}})/@{{step}};
     nstep = nstep < 0 ? Math.ceil(nstep) : Math.floor(nstep);
-    if ((@{{stop}}-@{{start}}) % step) {
+    if ((@{{stop}}-@{{start}}) % @{{step}}) {
         nstep++;
     }
     var _stop = @{{start}}+ nstep * @{{step}};
@@ -5538,7 +5264,7 @@ def repr(x):
 
        var t = typeof(@{{x}});
 
-        //alert("repr typeof " + t + " : " + @{{x}});
+        //alert("repr typeof " + t + " : " + xXXX);
 
        if (t == "boolean") {
            if (@{{x}}) return "True";
@@ -5591,15 +5317,15 @@ def len(object):
         throw @{{UndefinedValueError}}("obj");
     }
     if (@{{object}}=== null) 
-        return v;
+        return @{{v}};
     else if (typeof @{{object}}.__array != 'undefined') 
-        v = @{{object}}.__array.length;
+        @{{v}} = @{{object}}.__array.length;
     else if (typeof @{{object}}.__len__ == 'function') 
-        v = @{{object}}.__len__();
+        @{{v}} = @{{object}}.__len__();
     else if (typeof @{{object}}.length != 'undefined')
-        v = @{{object}}.length;
+        @{{v}} = @{{object}}.length;
     else throw @{{TypeError}}("object has no len()");
-    if (v.__number__ & 0x06) return v;
+    if (@{{v}}.__number__ & 0x06) return @{{v}};
     """)
     return INT(v)
 
@@ -5623,6 +5349,7 @@ def isinstance(object_, classinfo):
                     && @{{object_}}.__number__
                     && (@{{object_}}.__number__ != 0x01
                     || isFinite(@{{object_}}));/* XXX TODO: check rounded? */
+        case 'basestring':
         case 'str':
             return typeof @{{object_}}== 'string';
         case 'bool':
@@ -5667,7 +5394,7 @@ def _isinstance(object_, classinfo):
     """)
 
 def issubclass(class_, classinfo):
-    if JS(""" typeof class_ == 'undefined' || class_ === null || class_.__is_instance__ !== false """):
+    if JS(""" typeof @{{class_}} == 'undefined' || @{{class_}} === null || @{{class_}}.__is_instance__ !== false """):
         raise TypeError("arg 1 must be a class")
         
     if isinstance(classinfo, tuple):
@@ -5676,7 +5403,7 @@ def issubclass(class_, classinfo):
                 return True
         return False
     else:
-        if JS(""" typeof classinfo == 'undefined' || classinfo.__is_instance__ !== false """):
+        if JS(""" typeof @{{classinfo}} == 'undefined' || @{{classinfo}}.__is_instance__ !== false """):
             raise TypeError("arg 2 must be a class or tuple of classes")
         return _issubtype(class_, classinfo)
     
@@ -5775,10 +5502,10 @@ def getattr(obj, name, default_value=None):
 
 def _del(obj):
     JS("""
-    if (typeof obj.__delete__ == 'function') {
-        obj.__delete__(obj);
+    if (typeof @{{obj}}.__delete__ == 'function') {
+        @{{obj}}.__delete__(@{{obj}});
     } else {
-        delete obj;
+        delete @{{obj}};
     }
     """)
 
@@ -5810,7 +5537,7 @@ def delattr(obj, name):
     }
     if (@{{obj}}=== null) {
         throw @{{AttributeError}}("'NoneType' object"+
-                                  "has no attribute '"+name+"'");
+                                  "has no attribute '"+@{{name}}+"'");
     }
     if (typeof @{{obj}}!= 'object' && typeof @{{obj}}== 'function') {
        throw @{{AttributeError}}("'"+typeof(@{{obj}})+
@@ -5850,13 +5577,13 @@ def hasattr(obj, name):
     if (typeof @{{obj}}== 'undefined') {
         throw @{{UndefinedValueError}}("obj");
     }
-    if (typeof name != 'string') {
+    if (typeof @{{name}} != 'string') {
         throw @{{TypeError}}("attribute name must be string");
     }
     if (@{{obj}}=== null) return false;
-    if (typeof @{{obj}}[name] == 'undefined' && (
-            typeof @{{obj}}['$$'+name] == 'undefined' ||
-            attrib_remap.indexOf(name) < 0)
+    if (typeof @{{obj}}[@{{name}}] == 'undefined' && (
+            typeof @{{obj}}['$$'+@{{name}}] == 'undefined' ||
+            attrib_remap.indexOf(@{{name}}) < 0)
       ) {
         return false;
     }
@@ -6198,7 +5925,7 @@ def isInteger(a):
     JS("""
     switch (@{{a}}.__number__) {
         case 0x01:
-            if (a != Math.floor(@{{a}})) break;
+            if (@{{a}} != Math.floor(@{{a}})) break;
         case 0x02:
         case 0x04:
             return true;
@@ -6275,7 +6002,7 @@ def sprintf(strng, args):
     var argidx = 0;
     var nargs = 0;
     var result = [];
-    var remainder = strng;
+    var remainder = @{{strng}};
 
     function formatarg(flags, minlen, precision, conversion, param) {
         var subst = '';
@@ -6399,7 +6126,7 @@ def sprintf(strng, args):
                 }
                 break;
             default:
-                throw @{{ValueError}}("unsupported format character '" + conversion + "' ("+@{{hex}}(conversion.charCodeAt(0))+") at index " + (strng.length - remainder.length - 1));
+                throw @{{ValueError}}("unsupported format character '" + conversion + "' ("+@{{hex}}(conversion.charCodeAt(0))+") at index " + (@{{strng}}.length - remainder.length - 1));
         }
         if (minlen && subst.length < minlen) {
             if (numeric && left_padding && flags.indexOf('0') >= 0) {
@@ -6508,7 +6235,7 @@ def sprintf(strng, args):
 
 def debugReport(msg):
     JS("""
-    alert(msg);
+    alert(@{{msg}});
     """)
 
 JS("""
@@ -6530,32 +6257,32 @@ def printFunc(objs, newline):
     JS("""
     if ($printFunc === null) return null;
     var s = "";
-    for(var i=0; i < objs.length; i++) {
+    for(var i=0; i < @{{objs}}.length; i++) {
         if(s != "") s += " ";
-        s += objs[i];
+        s += @{{objs}}[i];
     }
     $printFunc(s);
     """)
 
 def pow(x, y, z = None):
     p = None
-    JS("p = Math.pow(x, y);")
+    JS("@{{p}} = Math.pow(@{{x}}, @{{y}});")
     if z is None:
         return float(p)
     return float(p % z)
 
 def hex(x):
     JS("""
-    if (typeof x == 'number') {
-        if (Math.floor(x) == x) {
-            return '0x' + x.toString(16);
+    if (typeof @{{x}} == 'number') {
+        if (Math.floor(@{{x}}) == @{{x}}) {
+            return '0x' + @{{x}}.toString(16);
         }
     } else {
-        switch (x.__number__) {
+        switch (@{{x}}.__number__) {
             case 0x02:
-                return '0x' + x.__v.toString(16);
+                return '0x' + @{{x}}.__v.toString(16);
             case 0x04:
-                return x.__hex__();
+                return @{{x}}.__hex__();
         }
     }
 """)
@@ -6563,16 +6290,16 @@ def hex(x):
 
 def oct(x):
     JS("""
-    if (typeof x == 'number') {
-        if (Math.floor(x) == x) {
-            return x == 0 ? '0': '0' + x.toString(8);
+    if (typeof @{{x}} == 'number') {
+        if (Math.floor(@{{x}}) == @{{x}}) {
+            return @{{x}} == 0 ? '0': '0' + @{{x}}.toString(8);
         }
     } else {
-        switch (x.__number__) {
+        switch (@{{x}}.__number__) {
             case 0x02:
-                return x.__v == 0 ? '0': '0' + x.__v.toString(8);
+                return @{{x}}.__v == 0 ? '0': '0' + @{{x}}.__v.toString(8);
             case 0x04:
-                return x.__oct__();
+                return @{{x}}.__oct__();
         }
     }
 """)
@@ -6581,47 +6308,47 @@ def oct(x):
 def round(x, n = 0):
     n = pow(10, n)
     r = None
-    JS("r = Math.round(n*x)/n;")
+    JS("@{{r}} = Math.round(@{{n}}*@{{x}})/@{{n}};")
     return float(r)
 
 def divmod(x, y):
     JS("""
-    if (x !== null && y !== null) {
-        switch ((x.__number__ << 8) | y.__number__) {
+    if (@{{x}} !== null && @{{y}} !== null) {
+        switch ((@{{x}}.__number__ << 8) | @{{y}}.__number__) {
             case 0x0101:
             case 0x0104:
             case 0x0401:
-                if (y == 0) throw @{{ZeroDivisionError}}('float divmod()');
-                var f = Math.floor(x / y);
-                return @{{tuple}}([f, x - f * y]);
+                if (@{{y}} == 0) throw @{{ZeroDivisionError}}('float divmod()');
+                var f = Math.floor(@{{x}} / @{{y}});
+                return @{{tuple}}([f, @{{x}} - f * @{{y}}]);
             case 0x0102:
-                if (y.__v == 0) throw @{{ZeroDivisionError}}('float divmod()');
-                var f = Math.floor(x / y.__v);
-                return @{{tuple}}([f, x - f * y.__v]);
+                if (@{{y}}.__v == 0) throw @{{ZeroDivisionError}}('float divmod()');
+                var f = Math.floor(@{{x}} / @{{y}}.__v);
+                return @{{tuple}}([f, @{{x}} - f * @{{y}}.__v]);
             case 0x0201:
-                if (y == 0) throw @{{ZeroDivisionError}}('float divmod()');
-                var f = Math.floor(x.__v / y);
-                return @{{tuple}}([f, x.__v - f * y]);
+                if (@{{y}} == 0) throw @{{ZeroDivisionError}}('float divmod()');
+                var f = Math.floor(@{{x}}.__v / @{{y}});
+                return @{{tuple}}([f, @{{x}}.__v - f * @{{y}}]);
             case 0x0202:
-                if (y.__v == 0) throw @{{ZeroDivisionError}}('integer division or modulo by zero');
-                var f = Math.floor(x.__v / y.__v);
-                return @{{tuple}}([new @{{int}}(f), new @{{int}}(x.__v - f * y.__v)]);
+                if (@{{y}}.__v == 0) throw @{{ZeroDivisionError}}('integer division or modulo by zero');
+                var f = Math.floor(@{{x}}.__v / @{{y}}.__v);
+                return @{{tuple}}([new @{{int}}(f), new @{{int}}(@{{x}}.__v - f * @{{y}}.__v)]);
             case 0x0204:
-                return y.__rdivmod__(new @{{long}}(x.__v));
+                return @{{y}}.__rdivmod__(new @{{long}}(@{{x}}.__v));
             case 0x0402:
-                return x.__divmod__(new @{{long}}(y.__v));
+                return @{{x}}.__divmod__(new @{{long}}(@{{y}}.__v));
             case 0x0404:
-                return x.__divmod__(y);
+                return @{{x}}.__divmod__(@{{y}});
         }
-        if (!x.__number__) {
-            if (   !y.__number__
-                && x.__mro__.length > y.__mro__.length
-                && @{{isinstance}}(x, y)
-                && typeof x['__divmod__'] == 'function')
-                return y.__divmod__(x);
-            if (typeof x['__divmod__'] == 'function') return x.__divmod__(y);
+        if (!@{{x}}.__number__) {
+            if (   !@{{y}}.__number__
+                && @{{x}}.__mro__.length > @{{y}}.__mro__.length
+                && @{{isinstance}}(@{{x}}, @{{y}})
+                && typeof @{{x}}['__divmod__'] == 'function')
+                return @{{y}}.__divmod__(@{{x}});
+            if (typeof @{{x}}['__divmod__'] == 'function') return @{{x}}.__divmod__(@{{y}});
         }
-        if (!y.__number__ && typeof y['__rdivmod__'] == 'function') return y.__rdivmod__(x);
+        if (!@{{y}}.__number__ && typeof @{{y}}['__rdivmod__'] == 'function') return @{{y}}.__rdivmod__(@{{x}});
     }
 """)
     raise TypeError("unsupported operand type(s) for divmod(): '%r', '%r'" % (x, y))

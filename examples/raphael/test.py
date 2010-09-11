@@ -53,13 +53,13 @@ class TestPanel(SimplePanel):
 
         period = 1000/self.numSectors
 
-        self._timer = Timer(listener=self)
+        self._timer = Timer(notify=self)
         self._timer.scheduleRepeating(period)
 
         self.add(self.canvas)
 
 
-    def onTimer(self, timerID):
+    def onTimer(self, timer):
         """ Respond to our timer firing.
         """
         self.opacity.insert(0, self.opacity.pop())

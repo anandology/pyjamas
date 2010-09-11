@@ -43,7 +43,7 @@ Copyright: 2009 Catalin Patulea <cronos586@gmail.com>
 Copyright: 2009 JJ Kunce (http://code.google.com/u/jjkunce)
 Copyright: 2008 Alexei Sokolov
 Copyright: 2009 Carl Roach <carl.roach@gmail.com>
-Copyright: 2009 Sujan Shakya
+Copyright: 2009 Sujan Shakya <suzan.shakya@gmail.com>
 Copyright: 2009 Klavdij Voncina <voncina.klavdij@siol.net>
 Copyright: 2009 Scott Koranda <skoranda@gmail.com>
 Copyright: 2009 Rich Newpol (http://code.google.com/u/rich.newpol/)
@@ -71,6 +71,8 @@ Copyright: 2010 legith.fairplay@gmail.com
 Copyright: 2010 Jordan Wii <jordonwii@gmail.com>
 Copyright: 2010 Scott Scites <scott.scites@railcar88.com>
 Copyright: 2010 Daniel Kluev <dan.kluev@gmail.com>
+Copyright: 2010 Mickael Kerbrat <mickael.kerbrat@gmail.com>
+Copyright: 2010 Phil Charlesworth <phil.charlesworth@physics.org>
 
 Files: contrib/pyjscompressor.py
 Copyright: 2010 Sujan Shakya, suzan.shakya@gmail.com
@@ -221,6 +223,10 @@ License: Apache
 Copyright: 2009, Tobias Weber <tobi-weber@gmx.de>
 
 Files: library/pyjamas/ui/InlineLabel.py library/pyjamas/ui/InlineHTML.py
+License: Apache
+Copyright: 2010, Daniel Popowich <danielpopowich@gmail.com>
+
+Files: library/pyjamas/Timer.py examples/timerdemo/*
 License: Apache
 Copyright: 2010, Daniel Popowich <danielpopowich@gmail.com>
 

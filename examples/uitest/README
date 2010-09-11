@@ -3,9 +3,10 @@ ok i've created the beginnings of a uitest.
 * run with pyjd to 'create' the tests (once):
    python uitest.py public
 
-* do an svn diff to make sure that test output already committed hasn't changed (unless it was a bug!)
+* do a git diff to make sure that test output already committed
+  hasn't changed (unless it was a bug!)
 
-* do svn add public/*.txt
+* do git add public/*.txt
 
 * commit
 

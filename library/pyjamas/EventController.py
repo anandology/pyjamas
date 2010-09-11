@@ -68,11 +68,13 @@ class EventListener():
 # original Handler event class (unrelated to EventGenerator)
 class Handler(object):
 
-    def __init__(self, parent, event_type):
+    def __init__(self, parent, event_type, *args, **kwargs):
         self.parent = parent
         self.event_type = event_type
         self.listeners = {}
         self.callback_fnname = "on%s" % event_type
+        self.extra_args = args
+        self.extra_kwargs = kwargs
 
         # monkey-patch the parent with the callbacks
         add_listener_fnname = "add%sListener" % event_type
@@ -87,6 +89,8 @@ class Handler(object):
     def addListener(self, listener, *args, **kwargs):
         args = args or ()
         kwargs = kwargs or {}
+        args = self.extra_args + args 
+        kwargs.update(self.extra_kwargs)
         self.listeners[listener] = (args, kwargs)
 
     def removeListener(self, listener):
@@ -96,6 +100,6 @@ class Handler(object):
         for listener, args in self.listeners.items():
             fn = getattr(listener, self.callback_fnname, listener)
             (args, kwargs) = args
-            args = (sender,) + eventargs + args
+            args = (sender,) + args + eventargs
             fn(*args, **kwargs)
 

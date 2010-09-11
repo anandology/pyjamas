@@ -9,15 +9,15 @@ from __pyjamas__ import JS
 ### GOOGLE MAPS WRAPPERS ###
 def GMap2(el, options):
     if options:
-        JS("""return new $wnd.GMap2(el,options);""")
+        JS("""return new $wnd.GMap2(@{{el}},@{{options}});""")
     else:
-        JS("""return new $wnd.GMap2(el);""")
+        JS("""return new $wnd.GMap2(@{{el}});""")
 
 def GLatLng(lat,long):
-    JS("return new $wnd.GLatLng(lat,long);")
+    JS("return new $wnd.GLatLng(@{{lat}},long);")
 
 def GPolyline(points,color,width):
-    JS("return new $wnd.GPolyline(points,color,width);")
+    JS("return new $wnd.GPolyline(@{{points}},@{{color}},@{{width}});")
 
 def jsList():
     JS("return [];")

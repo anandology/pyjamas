@@ -1,4 +1,10 @@
+# Copyright (C) 2009, 2010, Luke Kenneth Casson Leighton <lkcl@lkcl.net>
+# Copyright (C) 2010, Sujan Shakya <suzan.shakya@gmail.com>
+
 import os
+import sys
+import time
+import shutil
 from pyjs import linker
 from pyjs import translator
 from pyjs import util
@@ -6,6 +12,7 @@ from cStringIO import StringIO
 from optparse import OptionParser
 import pyjs
 import re
+import traceback
 try:
     from hashlib import md5
 except:
@@ -317,6 +324,73 @@ class BrowserLinker(linker.BaseLinker):
         fh.close  ()
         return 1
 
+MODIFIED_TIME = {}
+
+def is_modified(path):
+    current_mtime = os.path.getmtime(path)
+    if current_mtime == MODIFIED_TIME.get(path):
+        return False
+    else:
+        MODIFIED_TIME[path] = current_mtime
+        print('mtime changed for %s.' % path)
+        return True
+
+def serve(path):
+    print("\nMonitoring file modifications in %s ..." % \
+           os.path.abspath(os.curdir))
+
+def build(top_module, pyjs, compiler, options, app_platforms,
+          runtime_options, args):
+    print "Building:", top_module
+    print "PYJSPATH:", pyjs.path
+    translator_arguments=dict(
+        debug=options.debug,
+        print_statements = options.print_statements,
+        function_argument_checking=options.function_argument_checking,
+        attribute_checking=options.attribute_checking,
+        bound_methods=options.bound_methods,
+        descriptors=options.descriptors,
+        source_tracking=options.source_tracking,
+        stupid_mode=options.stupid_mode,
+        line_tracking=options.line_tracking,
+        store_source=options.store_source,
+        inline_code = options.inline_code,
+        operator_funcs = options.operator_funcs,
+        number_classes = options.number_classes,
+        list_imports=options.list_imports,
+    )
+
+    l = BrowserLinker(args,
+                      compiler=compiler,
+                      output=options.output,
+                      platforms=app_platforms,
+                      path=pyjs.path,
+                      js_libs=options.js_includes,
+                      unlinked_modules=options.unlinked_modules,
+                      keep_lib_files=options.keep_lib_files,
+                      translator_arguments=translator_arguments,
+                      multi_file=options.multi_file,
+                      cache_buster=options.cache_buster,
+                      bootstrap_file=options.bootstrap_file,
+                      public_folder=options.public_folder,
+                      runtime_options=runtime_options,
+                      list_imports=options.list_imports,
+                     )
+    l()
+
+    if not options.list_imports:
+        print "Built to :", os.path.abspath(options.output)
+        return
+    print "Dependencies"
+    for f, deps in l.dependencies.items():
+        print "%s\n%s" % (f, '\n'.join(map(lambda x: "\t%s" % x, deps)))
+    print
+    print "Visited Modules"
+    for plat, deps in l.visited_modules.items():
+        print "%s\n%s" % (plat, '\n'.join(map(lambda x: "\t%s" % x, deps)))
+    print
+
+
 def build_script():
     usage = """
     usage: %prog [options] <application module name>
@@ -342,6 +416,11 @@ def build_script():
         action="store_true",
         help="Include each module via a script-tag instead of writing"
               " the whole code into the main cache.html file")
+
+    parser.add_option("-A", "--auto-build", dest="auto_build",
+                      default=False,
+                      action="store_true",
+                      help="Runs continuous re-builds on file changes")
 
     parser.add_option("-i", "--list-imports", dest="list_imports",
                       default=False,
@@ -412,8 +491,6 @@ def build_script():
 
     if options.platforms:
        app_platforms = options.platforms.lower().split(',')
-    print "Building:", top_module
-    print "PYJSPATH:", pyjs.path
 
     runtime_options = []
     runtime_options.append(("arg_ignore", options.function_argument_checking))
@@ -425,47 +502,50 @@ def build_script():
     runtime_options.append(("arg_kwarg_multiple_values", options.function_argument_checking))
     runtime_options.append(("dynamic_loading", (len(options.unlinked_modules)>0)))
 
-    translator_arguments=dict(
-        debug=options.debug,
-        print_statements = options.print_statements,
-        function_argument_checking=options.function_argument_checking,
-        attribute_checking=options.attribute_checking,
-        bound_methods=options.bound_methods,
-        descriptors=options.descriptors,
-        source_tracking=options.source_tracking,
-        line_tracking=options.line_tracking,
-        store_source=options.store_source,
-        inline_code = options.inline_code,
-        operator_funcs = options.operator_funcs,
-        number_classes = options.number_classes,
-        list_imports=options.list_imports,
-    )
+    build(top_module, pyjs, compiler, options, app_platforms,
+          runtime_options, args)
 
-    l = BrowserLinker(args,
-                      compiler=compiler,
-                      output=options.output,
-                      platforms=app_platforms,
-                      path=pyjs.path,
-                      js_libs=options.js_includes,
-                      unlinked_modules=options.unlinked_modules,
-                      keep_lib_files=options.keep_lib_files,
-                      translator_arguments=translator_arguments,
-                      multi_file=options.multi_file,
-                      cache_buster=options.cache_buster,
-                      bootstrap_file=options.bootstrap_file,
-                      public_folder=options.public_folder,
-                      runtime_options=runtime_options,
-                      list_imports=options.list_imports,
-                     )
-    l()
-    if not options.list_imports:
-        print "Built to :", os.path.abspath(options.output)
-        return
-    print "Dependencies"
-    for f, deps in l.dependencies.items():
-        print "%s\n%s" % (f, '\n'.join(map(lambda x: "\t%s" % x, deps)))
-    print
-    print "Visited Modules"
-    for plat, deps in l.visited_modules.items():
-        print "%s\n%s" % (plat, '\n'.join(map(lambda x: "\t%s" % x, deps)))
-    print
+    if not options.auto_build:
+        sys.exit(0)
+
+    # autobuild starts here: loops round the current directory file structure
+    # looking for file modifications.  extra files in the public folder are
+    # copied to output, verbatim (without a recompile) but changes to python
+    # files result in a recompile with the exact same compile options.
+
+    first_loop = True
+
+    public_dir = options.public_folder
+    output_dir = options.output
+
+    serve(top_module)
+
+    while True:
+        for root, dirs, files in os.walk('.'):
+            if root[2:].startswith(output_dir):
+                continue
+            if root[2:].startswith(public_dir):
+                for filename in files:
+                    file_path = os.path.join(root, filename)
+                    if is_modified(file_path) and not first_loop:
+                        dest_path = output_dir
+                        dest_path += file_path.split(public_dir, 1)[1]
+                        dest_dir = os.path.dirname(dest_path)
+                        if not os.path.exists(dest_dir):
+                            os.makedirs(dest_dir)
+                        print('Copying %s to %s' % (file_path, dest_path))
+                        shutil.copy(file_path, dest_path)
+            else:
+                for filename in files:
+                    if os.path.splitext(filename)[1] in ('.py',):
+                        file_path = os.path.join(root, filename)
+                        if is_modified(file_path) and not first_loop:
+                            try:
+                              build(top_module, pyjs, compiler, options,
+                                    app_platforms, runtime_options, args)
+                            except Exception:
+                              traceback.print_exception(*sys.exc_info())
+                            break
+        first_loop = False
+        time.sleep(1)
+

@@ -36,9 +36,9 @@ def decodePoly(poly):
     """Quickly decodes a gmaps api v2 encoded polyline... deprecated by google but still 
     a good over-the-wire compression format"""
     JS("""
-    var i=-1,j=-1,k,l,q=poly.match(/[\_-\~]*[\?-\^]/g),w=0,x=0,y=0,z=1e-5;
+    var i=-1,j=-1,k,l,q=@{{poly}}.match(/[\_-\~]*[\?-\^]/g),w=0,x=0,y=0,z=1e-5;
 
-    poly=[];
+    @{{poly}}=[];
 
     if (q) for (;;)
     {
@@ -48,7 +48,7 @@ def decodePoly(poly):
         if (!q[++i]) break;
         for (k=q[i].length,l=63,w=0;k--;l=95) w=(w<<5)+q[i].charCodeAt(k)-l;
         x+=(w<<31>>31)^(w>>1);
-        poly[++j]=new $wnd.google.maps.LatLng(y*z,x*z);
+        @{{poly}}[++j]=new $wnd.google.maps.LatLng(y*z,x*z);
     }
-    return poly;
+    return @{{poly}};
 """)

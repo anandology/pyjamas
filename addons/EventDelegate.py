@@ -17,8 +17,7 @@ class EventDelegate:
         self.obj = obj
         self.method = method
         self.args = args
-        JS("this[eventMethodName] = this.onEvent;")
+        JS("this[@{{eventMethodName}}] = this.onEvent;")
 
     def onEvent(self, *args):
         self.method.apply(self.obj, self.args.l.concat(args.l))
-

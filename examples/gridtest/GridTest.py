@@ -6,7 +6,7 @@ from pyjamas.ui.Label import Label
 from pyjamas.ui.Grid import Grid
 from pyjamas.ui.CellFormatter import CellFormatter
 from pyjamas.ui.RowFormatter import RowFormatter
-from pyjamas.ui.HTMLTable import HTMLTable
+from pyjamas.ui.HTML import HTML
 from pyjamas.ui.CheckBox import CheckBox
 from pyjamas.ui.AbsolutePanel import AbsolutePanel
 from pyjamas import Window
@@ -22,10 +22,11 @@ class GridWidget(AbsolutePanel):
         
         self.addb=Button("Next >", self)
         self.subb=Button("< Prev", self)
+        self.clearb=Button("Clear", self)
         
         self.g=Grid()
         self.g.resize(5, 5)
-        self.g.setHTML(0, 0, "<b>Grid Test</b>")
+        self.g.setWidget(0, 0, HTML("<b>Grid Test</b>"))
         self.g.setBorderWidth(2)
         self.g.setCellPadding(4)
         self.g.setCellSpacing(1)
@@ -34,11 +35,15 @@ class GridWidget(AbsolutePanel):
 
         self.add(self.subb)
         self.add(self.addb)
+        self.add(self.clearb)
         self.add(self.g)
 
     def onClick(self, sender):
-        print sender
-        if sender==self.addb:
+        if sender == self.clearb:
+            print "clear"
+            self.g.clear()
+            return
+        elif sender==self.addb:
             self.page+=1
         elif sender==self.subb:
             self.page-=1

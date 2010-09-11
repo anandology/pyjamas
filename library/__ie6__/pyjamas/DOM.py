@@ -162,8 +162,8 @@ def getParent(elem):
 
 def insertChild(parent, child, index):
     JS("""
-    if (index == @{{parent}}.children.length)
-        parent.appendChild(@{{child}});
+    if (@{{index}} == @{{parent}}.children.length)
+        @{{parent}}.appendChild(@{{child}});
     else
         @{{parent}}.insertBefore(@{{child}}, @{{parent}}.children[@{{index}}]);
     """)
@@ -171,7 +171,7 @@ def insertChild(parent, child, index):
 def insertListItem(select, text, value, index):
     JS("""
     var newOption = document.createElement("Option");
-    if(index==-1) {
+    if(@{{index}}==-1) {
         @{{select}}.add(newOption);
     } else {
         @{{select}}.add(newOption,@{{index}});
@@ -203,7 +203,7 @@ def setCapture(elem):
 
 def setInnerText(elem, text):
     JS("""
-    if (!text)
+    if (!@{{text}})
         @{{elem}}.innerText = '';
     else
         @{{elem}}.innerText = @{{text}};
@@ -245,4 +245,3 @@ def eventGetMouseWheelVelocityY(evt):
     JS("""
     return Math.round(-@{{evt}}.wheelDelta / 40) || 0;
     """)
-

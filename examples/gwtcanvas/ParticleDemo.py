@@ -173,11 +173,11 @@ class ParticleDemo (SimpleCanvasDemo):
         self.run = True
         Timer(10, self)
 
-    def onTimer(self, tid):
+    def onTimer(self, timer):
         if not self.run:
             return
         self.renderingLoop()
-        Timer(10, self)
+        timer.schedule(10)
 
     def renderingLoop(self):
         self.canvas.clear()

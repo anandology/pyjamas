@@ -100,6 +100,7 @@ $wnd.document = new Object();
 var $doc = $wnd.document;
 var $moduleName = "%(app_name)s";
 var $pyjs = new Object();
+var $p = null;
 $pyjs.__modules__ = {};
 $pyjs.modules = {};
 $pyjs.modules_hash = {};
@@ -139,7 +140,9 @@ pyv8_load(%(js_lib_files)s);
 
 
 //try {
-    $pyjs.loaded_modules['pyjslib']('pyjslib');
+    $p = $pyjs.loaded_modules['pyjslib'];
+    $p('pyjslib');
+    $pyjs.__modules__.pyjslib = $p['pyjslib']
     $pyjs.loaded_modules['pyjslib'].___import___('%(app_name)s', '%(app_name)s', '__main__');
 //} catch(exception)
 //{

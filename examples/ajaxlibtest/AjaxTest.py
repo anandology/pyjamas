@@ -10,7 +10,7 @@ import dynamic
 def greet(sender):
 
     JS("""
-       test_fn();
+       @{{!test_fn}}();
     """)
 
 class AjaxTest:

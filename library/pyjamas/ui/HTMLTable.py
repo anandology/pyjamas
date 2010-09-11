@@ -69,6 +69,8 @@ class HTMLTable(Panel):
                 child = self.getWidget(row, col)
                 if child is not None:
                     self.removeWidget(child)
+                else:
+                    self.clearCell(row, col)
         # assert len(self.widgetMap) == 0
 
     def clearCell(self, row, column):
@@ -114,6 +116,7 @@ class HTMLTable(Panel):
             return None
         return self.widgetMap[key]
 
+    # next three functions are part of the standard Builder API for panels
     def getIndex(self, widget):
         """ given a widget, return its index.
         """
@@ -134,6 +137,9 @@ class HTMLTable(Panel):
             self.insertCells(row, self.getDOMCellCount(row), 1)
         self.setWidget(row, col, item)
         
+    def add(self, item, row, col):
+        self.addIndexedItem((row, col), item)
+
     def isCellPresent(self, row, column):
         # GWT uses "and", possibly a bug
         if row >= self.getRowCount() or row < 0:
@@ -145,12 +151,14 @@ class HTMLTable(Panel):
         return True
 
     def __iter__(self):
+        """ only gets widgets: does not obtain HTML or Text cells!
+        """
         return self.widgetMap.itervalues()
 
     def onBrowserEvent(self, event):
         if DOM.eventGetType(event) == "click":
             td = self.getEventTargetCell(event)
-            if not td:
+            if td is None:
                 return
 
             tr = DOM.getParent(td)

@@ -49,4 +49,5 @@ fi
 (cd toggle; ./build.sh $options)
 (cd gcharttestapp; ./build.sh $options)
 (cd gwtcanvas; ./build.sh $options)
+(cd timerdemo; ./build.sh $options)
 
