@@ -40,9 +40,13 @@ class CellPanel(ComplexPanel):
                             HasVerticalAlignment.ALIGN_TOP)
 
         element = kwargs.pop('Element', None) or DOM.createTable()
+        fc = DOM.getFirstChild(element)
+        if fc:
+            self.body = fc
+        else:
+            self.body = DOM.createTBody()
         self.table = element
         self.setElement(self.table)
-        self.body = DOM.createTBody()
         DOM.appendChild(self.table, self.body)
 
         ComplexPanel.__init__(self, **kwargs)

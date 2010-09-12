@@ -1,5 +1,5 @@
 # Copyright 2006 James Tauber and contributors
-# Copyright (C) 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
+# Copyright (C) 2009, 2010 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,39 +16,20 @@
 from pyjamas import DOM
 from pyjamas import Factory
 
-from ComplexPanel import ComplexPanel
+from CellPanel import CellPanel
 from pyjamas.ui import Event
 
-class StackPanel(ComplexPanel):
+class StackPanel(CellPanel):
 
     def __init__(self, **kwargs):
-        self.body = None
         self.visibleStack = -1
         self.indices = {}
         self.stackListeners = []
 
-        if kwargs.has_key('Element'):
-            table = kwargs.pop('Element')
-            fc = DOM.getFirstChild(table)
-            if fc:
-                self.body = fc
-            else:
-                self.body = DOM.createTBody()
-                DOM.appendChild(table, self.body)
-        else:
-            table = DOM.createTable()
-            self.body = DOM.createTBody()
-            DOM.appendChild(table, self.body)
-
-        self.setElement(table)
-
-        kwargs['Spacing'] = kwargs.get('Spacing', 0)
-        kwargs['Padding'] = kwargs.get('Padding', 0)
         kwargs['StyleName'] = kwargs.get('StyleName', "gwt-StackPanel")
 
-        DOM.sinkEvents(table, Event.ONCLICK)
-
-        ComplexPanel.__init__(self, **kwargs)
+        CellPanel.__init__(self, **kwargs)
+        DOM.sinkEvents(self.getElement(), Event.ONCLICK)
 
     def addStackChangeListener(self, listener):
         self.stackListeners.append(listener)
@@ -72,7 +53,7 @@ class StackPanel(ComplexPanel):
         DOM.setAttribute(td, "height", "100%")
         DOM.setAttribute(td, "vAlign", "top")
 
-        ComplexPanel.add(self, widget, td)
+        CellPanel.add(self, widget, td)
 
         self.setStackVisible(index, False)
         if self.visibleStack == -1:
@@ -109,7 +90,7 @@ class StackPanel(ComplexPanel):
         DOM.removeChild(self.body, tr)
         tr = DOM.getChild(self.body, rowIndex)
         DOM.removeChild(self.body, tr)
-        ComplexPanel.remove(self, child)
+        CellPanel.remove(self, child)
         rows = self.getWidgetCount() * 2
 
         #for (int i = rowIndex; i < rows; i = i + 2) {
