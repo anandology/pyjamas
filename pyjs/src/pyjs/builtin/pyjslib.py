@@ -583,7 +583,7 @@ def op_bitxor2(x, y):
         if (typeof @{{y}}['__rxor__'] != 'undefined') return @{{y}}.__rxor__(@{{x}});
     }
 """)
-    raise TypeError("unsupported operand type(s) for &: '%r', '%r'" % (x, y))
+    raise TypeError("unsupported operand type(s) for ^: '%r', '%r'" % (x, y))
 
 op_bitxor = JS("""function (args) {
     var a;
@@ -640,7 +640,7 @@ def op_bitor2(x, y):
         }
     }
 """)
-    raise TypeError("unsupported operand type(s) for &: '%r', '%r'" % (x, y))
+    raise TypeError("unsupported operand type(s) for |: '%r', '%r'" % (x, y))
 
 op_bitor = JS("""function (args) {
     var a;
@@ -4518,13 +4518,17 @@ def __empty_dict():
 
 
 class set(object):
-    def __init__(self, _data=JS("[]")):
+    def __init__(self, _data=None):
         """ Transform data into an array with [key,value] and add set 
             self.__object
             Input data can be Array(key, val), iteratable (key,val) or 
             Object/Function
         """
-        JS("var data = @{{_data}};")
+        if _data is None:
+            JS("var data = [];")
+        else:
+            JS("var data = @{{_data}};")
+        
         if isSet(_data):
             JS("""
             @{{self}}.__object = {};
@@ -4535,34 +4539,48 @@ class set(object):
             }
             return null;""")
         JS("""
-        var item, i, n;
-        var selfObj = @{{self}}.__object = {};
+        var item, 
+            i, 
+            n,
+            selfObj = @{{self}}.__object = {};
 
-        if (@{{!data}} === null) {
-            throw @{{TypeError}}("'NoneType' is not iterable");
-        }
-        if (@{{!data}}.constructor === Array) {
-        } else if (typeof @{{!data}}.__object == 'object') {
-            @{{!data}} = @{{!data}}.__object;
-            for (var sKey in @{{!data}}) {
-                selfObj[sKey] = @{{!data}}[sKey][0];
+        if (@{{!data}}.constructor === Array) { 
+        // data is already an Array.
+        // We deal with the Array of data after this if block.
+          } 
+          
+          // We may have some other set-like thing with __object
+          else if (typeof @{{!data}}.__object == 'object') {
+            var dataObj = @{{!data}}.__object;
+            for (var sKey in dataObj) {
+                selfObj[sKey] = dataObj[sKey];
             }
             return null;
-        } else if (typeof @{{!data}}.__iter__ == 'function') {
+          } 
+          
+          // Something with an __iter__ method
+          else if (typeof @{{!data}}.__iter__ == 'function') {
+          
+            // It has an __array member to iterate over. Make that our data.
             if (typeof @{{!data}}.__array == 'object') {
-                @{{!data}} = @{{!data}}.__array;
-            } else {
+                data = @{{!data}}.__array;
+                } 
+            else {
+                // Several ways to deal with the __iter__ method
                 var iter = @{{!data}}.__iter__();
+                // iter has an __array member that's an array. Use that.
                 if (typeof iter.__array == 'object') {
-                    @{{!data}} = iter.__array;
+                    data = iter.__array;
                 }
-                @{{!data}} = [];
+                var data = [];
                 var item, i = 0;
+                // iter has a .$genfunc
                 if (typeof iter.$genfunc == 'function') {
                     while (typeof (item=iter.next(true)) != 'undefined') {
                         @{{!data}}[i++] = item;
                     }
                 } else {
+                // actually use the object's __iter__ method
                     try {
                         while (true) {
                             @{{!data}}[i++] = iter.next();
@@ -4573,9 +4591,11 @@ class set(object):
                     }
                 }
             }
-        } else if (typeof @{{!data}} == 'object' || typeof @{{!data}} == 'function') {
-            for (var key in @{{!data}}) {
-                selfObj[@{{hash}}(key)] = key;
+          // Check undefined first so isIteratable can do check for __iter__.
+        } else if (!(@{{isUndefined}}(@{{data}})) && @{{isIteratable}}(@{{data}}))
+            {
+            for (var item in @{{data}}) {
+                selfObj[@{{__hash}}(item)] = item;
             }
             return null;
         } else {
@@ -4585,11 +4605,12 @@ class set(object):
         if ((n = @{{!data}}.length) == 0) {
             return null;
         }
-        i = 0;
-        while (i < n) {
-            item = @{{!data}}[i++];
-            selfObj[@{{hash}}(item)] = item;
+        i = n-1;
+        do {
+            item = @{{!data}}[i];
+            selfObj[@{{__hash}}(item)] = item;
         }
+        while (i--);
         return null;
         """)
 
@@ -4603,23 +4624,24 @@ class set(object):
             return 2
             #other = frozenset(other)
         JS("""
-        var selfLen = 0,
-            otherLen = 0,
-            selfObj = @{{self}}.__object,
+        var selfObj = @{{self}}.__object,
             otherObj = @{{other}}.__object,
             selfMismatch = false,
             otherMismatch = false;
-        for (var sVal in selfObj) {
-            if (!selfMismatch && typeof otherObj[sVal] == 'undefined') {
-                selfMismatch = true;
+        if (selfObj === otherObj) {
+            throw @{{TypeError}}("Set operations must use two sets.");
             }
-            selfLen++;
+        for (var sVal in selfObj) {
+            if (!(sVal in otherObj)) {
+                selfMismatch = true;
+                break;
+            }
         }
         for (var sVal in otherObj) {
-            if (!otherMismatch && typeof selfObj[sVal] == 'undefined') {
+            if (!(sVal in selfObj)) {
                 otherMismatch = true;
+                break;
             }
-            otherLen++;
         }
         if (selfMismatch && otherMismatch) return 2;
         if (selfMismatch) return 1;
@@ -4631,25 +4653,28 @@ class set(object):
         if isSet(value) == 1: # An instance of set
             # Use frozenset hash
             JS("""
-            var hashes = new Array(), obj = @{{self}}.__object, i = 0;
+            var hashes = new Array(), 
+                obj = @{{self}}.__object, 
+                i = 0;
             for (var v in obj) {
                 hashes[i++] = v;
             }
             hashes.sort();
             var h = hashes.join("|");
-            return typeof @{{self}}.__object[h] != 'undefined';
+            return (h in obj);
 """)
-        JS("""return typeof @{{self}}.__object[@{{hash}}(@{{value}})] != 'undefined';""")
+        JS("""return @{{__hash}}(@{{value}}) in @{{self}}.__object;""")
 
     def __hash__(self):
         raise TypeError("set objects are unhashable")
 
     def __iter__(self):
         JS("""
-        var items = new Array();
-        var i = 0;
-        for (var key in @{{self}}.__object) {
-            items[i++] = @{{self}}.__object[key];
+        var items = new Array(),
+            i = 0, 
+            obj = @{{self}}.__object;
+        for (var key in obj) {
+            items[i++] = obj[key];
         }
         return new $iter_array(items);
         """)
@@ -4744,7 +4769,7 @@ class set(object):
             selfObj = @{{self}}.__object,
             otherObj = @{{other}}.__object;
         for (var sVal in selfObj) {
-            if (typeof otherObj[sVal] == 'undefined') {
+            if (!(sVal in otherObj)) {
                 obj[sVal] = selfObj[sVal];
             }
         }
@@ -4760,7 +4785,7 @@ class set(object):
         var selfObj = @{{self}}.__object,
             otherObj = @{{other}}.__object;
         for (var sVal in otherObj) {
-            if (typeof selfObj[sVal] != 'undefined') {
+            if (sVal in selfObj) {
                 delete selfObj[sVal];
             }
         }
@@ -4785,7 +4810,7 @@ class set(object):
             selfObj = @{{self}}.__object,
             otherObj = @{{other}}.__object;
         for (var sVal in selfObj) {
-            if (typeof otherObj[sVal] != 'undefined') {
+            if (sVal in otherObj) {
                 obj[sVal] = selfObj[sVal];
             }
         }
@@ -4801,7 +4826,7 @@ class set(object):
         var selfObj = @{{self}}.__object,
             otherObj = @{{other}}.__object;
         for (var sVal in selfObj) {
-            if (typeof otherObj[sVal] == 'undefined') {
+            if (!(sVal in otherObj)) {
                 delete selfObj[sVal];
             }
         }
@@ -4855,11 +4880,11 @@ class set(object):
         else:
             val = value
         JS("""
-        var h;
-        if (typeof @{{self}}.__object[(h = @{{hash}}(@{{val}}))] == 'undefined') {
+        var h = @{{hash}}(@{{val}});
+        if (!(h in @{{self}}.__object)) {
             throw @{{KeyError}}(@{{value}});
         }
-        delete @{{self}}.__object[@{{hash}}(@{{val}})];
+        delete @{{self}}.__object[h];
         """)
 
     def symmetric_difference(self, other):
@@ -4924,7 +4949,7 @@ class set(object):
             obj[sVal] = selfObj[sVal];
         }
         for (var sVal in otherObj) {
-            if (typeof selfObj[sVal] == 'undefined') {
+            if (!(sVal in selfObj)) {
                 obj[sVal] = otherObj[sVal];
             }
         }
@@ -4938,7 +4963,7 @@ class set(object):
         var selfObj = @{{self}}.__object,
             dataObj = @{{data}}.__object;
         for (var sVal in dataObj) {
-            if (typeof selfObj[sVal] == 'undefined') {
+            if (!(sVal in selfObj)) {
                 selfObj[sVal] = dataObj[sVal];
             }
         }
@@ -4949,9 +4974,9 @@ JS("@{{set}}['__str__'] = @{{set}}['__repr__'];")
 JS("@{{set}}['toString'] = @{{set}}['__repr__'];")
 
 class frozenset(set):
-    def __init__(self, _data=JS("[]")):
-        if JS(""" typeof(@{{self}}.__object) == 'undefined'"""):
-            super(frozenset, self).__init__(_data)
+    def __init__(self, _data=None):
+        if JS("(!('__object' in @{{self}}))"):
+            set.__init__(self, _data)
         
     def __hash__(self):
         JS("""
@@ -5858,7 +5883,7 @@ else:
     };
         """)
 
-    #def hash(obj):
+   #def hash(obj):
     JS("""@{{hash}} = function(obj) {
         if (obj === null) return null;
 
@@ -5938,7 +5963,8 @@ def isSet(a):
     JS("""
     if (@{{a}}=== null) return false;
     if (typeof @{{a}}.__object == 'undefined') return false;
-    switch (@{{a}}.__mro__[@{{a}}.__mro__.length-2].__md5__) {
+    var a_mro = @{{a}}.__mro__;
+    switch (a_mro[a_mro.length-2].__md5__) {
         case @{{set}}.__md5__:
             return 1;
         case @{{frozenset}}.__md5__:
