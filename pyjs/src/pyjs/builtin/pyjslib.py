@@ -1666,6 +1666,7 @@ def float_int(value, radix=None):
 
 JS("""
 (function(){
+    /* XXX do not convert to @{{int}} - this is correct */
     var $int = pyjslib['int'] = function (value, radix) {
         var v, i;
         if (typeof radix == 'undefined' || radix === null) {
@@ -2521,8 +2522,8 @@ JS("""
 
 
 
-
-    var $long = @{{long}} = function(value, radix) {
+    /* XXX do not convert to @{{long}} - this is correct */
+    var $long = pyjslib['long'] = function(value, radix) {
         var v, i;
         if (!radix || radix.valueOf() == 0) {
             if (typeof value == 'undefined') {
