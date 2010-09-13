@@ -97,11 +97,11 @@ class Panel(PanelBase, Widget):
             element = widget.getElement()
             widget.setParent(None)
             parentElement = DOM.getParent(element)
-            if parentElement:
+            if parentElement is not None:
                 DOM.removeChild(parentElement, element)
 
     def adopt(self, widget, container):
-        if container:
+        if container is not None:
             widget.removeFromParent()
             DOM.appendChild(container, widget.getElement())
         widget.setParent(self)

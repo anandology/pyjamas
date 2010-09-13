@@ -111,25 +111,25 @@ class DockPanel(CellPanel):
     def setCellHeight(self, widget, height):
         data = widget.getLayoutData()
         data.height = height
-        if data.td:
+        if data.td is not None:
             DOM.setStyleAttribute(data.td, "height", data.height)
 
     def setCellHorizontalAlignment(self, widget, align):
         data = widget.getLayoutData()
         data.hAlign = align
-        if data.td:
+        if data.td is not None:
             DOM.setAttribute(data.td, "align", data.hAlign)
 
     def setCellVerticalAlignment(self, widget, align):
         data = widget.getLayoutData()
         data.vAlign = align
-        if data.td:
+        if data.td is not None:
             DOM.setStyleAttribute(data.td, "verticalAlign", data.vAlign)
 
     def setCellWidth(self, widget, width):
         data = widget.getLayoutData()
         data.width = width
-        if data.td:
+        if data.td is not None:
             DOM.setStyleAttribute(data.td, "width", data.width)
 
     def realizeTable(self, beingAdded):

@@ -128,7 +128,7 @@ class FormPanel(SimplePanel):
         except:
             pass
 
-        if self.iframe:
+        if self.iframe is not None:
             self.__formAction = form.action
         return self._listener.onFormSubmit()
 
@@ -136,7 +136,7 @@ class FormPanel(SimplePanel):
     def hookEvents(self, iframe, form, listener):
         # TODO: might have to fix this, use DOM.set_listener()
         self._listener = listener
-        if iframe:
+        if iframe is not None:
             wf = mf = get_main_frame()
             self._onload_listener = mf.addEventListener(iframe, "load",
                                                         self._onload)

@@ -53,7 +53,7 @@ class SplitPanel(Panel):
         self.thumb_image = ti
 
     def getThumbImageHTML(self):
-        if self.thumb_image:
+        if self.thumb_image is not None:
              return '<img src="%s" />' % self.thumb_image
         return ""
 

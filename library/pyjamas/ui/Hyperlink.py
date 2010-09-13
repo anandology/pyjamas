@@ -27,7 +27,7 @@ class Hyperlink(Widget, ClickHandler):
 
         self.targetHistoryToken = ""
 
-        if not Element:
+        if Element is None:
             Element = DOM.createDiv()
         self.anchorElem = DOM.createAnchor()
         self.setElement(Element)

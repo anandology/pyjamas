@@ -18,7 +18,7 @@ class HTMLLinkPanel(HTMLPanel):
             hl = self.hyperlinks.pop()
             el = hl.getElement()
             parent = DOM.getParent(el)
-            if parent:
+            if parent is not None:
                 parent.removeChild(el)
             hl.setParent(None)
 
