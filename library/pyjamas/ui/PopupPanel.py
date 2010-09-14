@@ -207,6 +207,21 @@ class PopupPanel(SimplePanel):
     def onWindowResized(self, width, height):
         self.setGlassPosition()
 
+    def centerBox(self):
+        self_width = self.getOffsetWidth()
+        self_height = self.getOffsetHeight()
+
+        height = Window.getClientHeight()
+        width = Window.getClientWidth()
+
+        center_x = int(width) / 2
+        center_y = int(height) / 2
+
+        self_top  = center_y - (int(self_height) / 2)
+        self_left = center_x - (int(self_width)  / 2)
+
+        self.setPopupPosition(self_left, self_top)
+
     def add(self, widget):
         self.setWidget(widget)
 

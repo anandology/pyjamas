@@ -1,5 +1,5 @@
 # Copyright 2006 James Tauber and contributors
-# Copyright (C) 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
+# Copyright (C) 2009, 2010 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ from pyjamas.ui import HasVerticalAlignment
 from pyjamas.ui.Image import Image
 from pyjamas.ui import GlassWidget
 
-from pyjamas import Window
 
 class DialogBox(PopupPanel):
     _props = [( "caption", "Caption", "Caption", None),
@@ -169,21 +168,6 @@ class DialogBox(PopupPanel):
             self.panel.setWidget(1, 0, widget)
 
         self.child = widget
-
-    def centerBox(self):
-        self_width = self.getOffsetWidth()
-        self_height = self.getOffsetHeight()
-
-        height = Window.getClientHeight()
-        width = Window.getClientWidth()
-
-        center_x = int(width) / 2
-        center_y = int(height) / 2
-
-        self_top  = center_y - (int(self_height) / 2)
-        self_left = center_x - (int(self_width)  / 2)
-
-        self.setPopupPosition(self_left, self_top)
 
     def onWindowResized(self, width, height):
         super(DialogBox, self).onWindowResized(width, height)
