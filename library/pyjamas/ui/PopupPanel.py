@@ -1,5 +1,5 @@
 # Copyright 2006 James Tauber and contributors
-# Copyright (C) 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
+# Copyright (C) 2009, 2010 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
 # Copyright (C) 2010 Serge Tarkovski <serge.tarkovski@gmail.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,6 +21,7 @@ from SimplePanel import SimplePanel
 from RootPanel import RootPanel
 from pyjamas.ui import MouseListener
 from pyjamas.ui import KeyboardListener
+
 
 class PopupPanel(SimplePanel):
 
@@ -84,8 +85,10 @@ class PopupPanel(SimplePanel):
         self.rootpanel.remove(self)
         self.onHideImpl(self.getElement())
         for listener in self.popupListeners:
-            if hasattr(listener, 'onPopupClosed'): listener.onPopupClosed(self, autoClosed)
-            else: listener(self, autoClosed)
+            if hasattr(listener, 'onPopupClosed'):
+                listener.onPopupClosed(self, autoClosed)
+            else:
+                listener(self, autoClosed)
 
     def setModal(self, modal):
         self.modal = modal
@@ -103,39 +106,39 @@ class PopupPanel(SimplePanel):
         return target and DOM.isOrHasChild(self.getElement(), target)
 
     def onEventPreview(self, event):
-        type = DOM.eventGetType(event)
-        if type == "keydown":
+        etype = DOM.eventGetType(event)
+        if etype == "keydown":
             return (    self.onKeyDownPreview(
                             DOM.eventGetKeyCode(event),
                             KeyboardListener.getKeyboardModifiers(event)
                             )
                     and (not self.modal or self._event_targets_popup(event))
                    )
-        elif type == "keyup":
+        elif etype == "keyup":
             return (    self.onKeyUpPreview(
                             DOM.eventGetKeyCode(event),
                             KeyboardListener.getKeyboardModifiers(event)
                             )
                     and (not self.modal or self._event_targets_popup(event))
                    )
-        elif type == "keypress":
+        elif etype == "keypress":
             return (    self.onKeyPressPreview(
                             DOM.eventGetKeyCode(event),
                             KeyboardListener.getKeyboardModifiers(event)
                             )
                     and (not self.modal or self._event_targets_popup(event))
                    )
-        elif (   type == "mousedown"
-              or type == "blur"
+        elif (   etype == "mousedown"
+              or etype == "blur"
              ):
             if DOM.getCaptureElement() is not None:
                 return True
             if self.autoHide and not self._event_targets_popup(event):
                 self.hide(True)
                 return True
-        elif (   type == "mouseup"
-              or type == "click"
-              or type == "mousemove"
+        elif (   etype == "mouseup"
+              or etype == "click"
+              or etype == "mousemove"
               or type == "dblclick"
              ):
             if DOM.getCaptureElement() is not None:
@@ -163,10 +166,8 @@ class PopupPanel(SimplePanel):
         self.popupListeners.remove(listener)
 
     def setPopupPosition(self, left, top):
-        if left < 0:
-            left = 0
-        if top < 0:
-            top = 0
+        left = max(left, 0)
+        top = max(top, 0)
 
         # Account for the difference between absolute position and the
         # body's positioning context.
@@ -188,8 +189,10 @@ class PopupPanel(SimplePanel):
         width = Window.getClientWidth()
 
         DOM.setStyleAttribute(self.glass, "position", "absolute")
-        DOM.setStyleAttribute(self.glass, "left", "%s" % left if left == 0 else "%spx" % left)
-        DOM.setStyleAttribute(self.glass, "top", "%s" % top if top == 0 else "%spx" % top)
+        DOM.setStyleAttribute(self.glass, "left", "%s" % \
+                              left if left == 0 else "%spx" % left)
+        DOM.setStyleAttribute(self.glass, "top", "%s" % \
+                              top if top == 0 else "%spx" % top)
         DOM.setStyleAttribute(self.glass, "height", "%spx" % (top + height))
         DOM.setStyleAttribute(self.glass, "width", "%spx" % (left + width))
 
