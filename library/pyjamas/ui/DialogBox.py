@@ -25,7 +25,7 @@ from pyjamas.ui import GlassWidget
 
 
 class DialogBox(PopupPanel):
-    _props = [( "caption", "Caption", "Caption", None),
+    _props = [( "caption", "Caption", "HTML", None),
             ]
 
     def __init__(self, autoHide=None, modal=True, centered=False,
