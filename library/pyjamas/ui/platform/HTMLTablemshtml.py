@@ -7,27 +7,19 @@
 
 class HTMLTable(Panel):
 
-    def setWidget(self, row, column, widget):
-        self.prepareCell(row, column)
-        if widget is None:
-            return
+    def computeKeyForElement(self, widgetElement):
+        if hasattr(widgetElement,'uniqueID'):
+            return widgethash.get(widgetElement.uniqueID)
 
-        widget.removeFromParent()
-        td = self.cleanCell(row, column)
+    def _mapWidget(self, widget):
         widget_hash = widget
         element = widget.getElement()
-        widgethash[key] = element.uniqueID
+        widgethash[element.uniqueID] = widget_hash
         self.widgetMap[widget_hash] = widget
-        self.adopt(widget, td)
 
-    def removeWidget(self, widget):
-        self.disown(widget)
+    def _unmapWidget(self, widget):
         element = widget.getElement()
-        key = widgetElement.uniqueID
+        key = element.uniqueID
         del self.widgetMap[widgethash.get(key)]
         del widgethash[key]
-        return True
-
-    def computeKeyForElement(self, widgetElement):
-        return widgethash.get(widgetElement.uniqueID)
 

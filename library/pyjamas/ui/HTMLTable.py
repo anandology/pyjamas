@@ -12,6 +12,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+# setWidget recoded to call _mapWidget - makes support for mshtml simpler
+# added by Phil Charlesworth 2010-09-16
+#
+# removeWidget recoded to call _unmapWidget - makes support for mshtml simpler
+# added by Phil Charlesworth 2010-09-16
+#
+
 from pyjamas import DOM
 from pyjamas import Factory
 
@@ -210,11 +218,14 @@ class HTMLTable(Panel):
 
         widget.removeFromParent()
         td = self.cleanCell(row, column)
+        self._mapWidget(widget)
+        self.adopt(widget, td)
+
+    def _mapWidget(self, widget):
         widget_hash = widget
         element = widget.getElement()
         widgethash[element] = widget_hash
         self.widgetMap[widget_hash] = widget
-        self.adopt(widget, td)
 
     def cleanCell(self, row, column):
         td = self.cellFormatter.getRawElement(row, column)
@@ -234,11 +245,14 @@ class HTMLTable(Panel):
 
     def removeWidget(self, widget):
         self.disown(widget)
+        self._unmapWidget(widget)
+        return True
+
+    def _unmapWidget(self, widget):
         element = widget.getElement()
         del self.widgetMap[self.computeKeyForElement(element)]
         del widgethash[element]
-        return True
-
+    
     def checkCellBounds(self, row, column):
         self.checkRowBounds(row)
         #if column<0: raise IndexError, "Column " + column + " must be non-negative: " + column
