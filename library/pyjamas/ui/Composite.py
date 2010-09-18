@@ -25,7 +25,7 @@ class Composite(Widget):
         # have **kwargs applied afterwards.
         self.widget = None
         self.attached = None
-        if widget:
+        if widget is not None:
             self.initWidget(widget)
         Widget.__init__(self, **kwargs)
 
@@ -40,7 +40,7 @@ class Composite(Widget):
         widget.setParent(self)
 
     def isAttached(self):
-        if self.widget:
+        if self.widget is not None:
             return self.widget.isAttached()
         return False
 
