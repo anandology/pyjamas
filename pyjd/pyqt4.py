@@ -11,7 +11,54 @@ from PyQt4.QtGui import QApplication, QMainWindow
 from PyQt4.QtWebKit import QWebView, QWebElement, QWebElementCollection
 
 
+class _CellsProxy:
 
+    def __init__(self, element, idx):
+        self._element = element
+        self._idx = idx
+
+
+    @property
+    def length(self):
+        l = self._element._js("rows.item(%d).cells.length" % self._idx)
+        print "cells %d length" % self._idx, self._element, l
+        if l is None:
+            return 0
+        return l
+
+    def item(self, idx):
+        i = self._element._js("rows.item(%d).cells.item(%d)" % (self._idx, idx))
+        print "cells %d,%d item" % (self._idx, idx), self._element, i
+        return _ElementProxy(i)
+
+
+class _RowProxy:
+
+    def __init__(self, element, idx):
+        self._element = element
+        self._idx = idx
+
+    @property
+    def cells(self):
+        return _CellsProxy(self._element, self._idx)
+
+class _RowElementProxy:
+
+    def __init__(self, element):
+        self._element = element
+
+    @property
+    def length(self):
+        l = self._element._js("rows.length")
+        print "length", self._element, l
+        if l is None:
+            return 0
+        return l
+
+    def item(self, idx):
+        i = self._element._js("rows.item(%d)" % idx)
+        print "item", self._element, i
+        return _RowProxy(self._element, idx)
 
 
 class _ElementBase(object):
@@ -54,15 +101,17 @@ class _ElementBase(object):
 
     
     @property
+    def firstChild(self):
+        return int(self.getAttribute("firstChild") or None)
+
+    @property
     def scrollLeft(self):
         return int(self.getAttribute("scrollLeft") or "0")
 
 
     @property
     def rows(self):
-        rows = self._js("rows")
-        print "rows", repr(rows)
-        return _ElementProxy(rows)
+        return _RowElementProxy(self)
     
 
     def setInnerText(self, text):
@@ -86,7 +135,7 @@ class _ElementBase(object):
     
     
     def _js(self, cmd):
-        self._element.evaluateJavaScript("this.%s" % cmd)
+        return self._element.evaluateJavaScript("this.%s" % cmd)
         
     
     def cloneNode(self, arg):
