@@ -27,6 +27,13 @@ class ColourThing(object):
              return (self.r, self.g, self.b)
          return property(**locals()) 
 
+from pyjamas import log
+
+class C(object):
+    @property
+    def x(self):
+        return [1,2,3]
+
 class Foo:
     pass
 
@@ -49,6 +56,21 @@ class BuiltinTest(UnitTest):
         self.assertEqual(min([1,2,3,4]), 1)
         self.assertTrue(max([5,3,4],[6,1,2]) == [6,1,2] , "max([5,3,4],[6,1,2])")
         self.assertTrue(min([5,3,4],[6,1,2]) == [5,3,4] , "min([5,3,4],[6,1,2])")
+
+    def testIterProperty(self):
+        o = C()
+        tst = []
+        for y in iter(o.x):
+            tst.append(y)
+        self.assertTrue(tst, [1,2,3])
+        tst = []
+        try:
+            for y in o.x:
+                tst.append(y)
+            self.assertTrue(tst, [1,2,3])
+        except:
+            self.fail("#490 - no function iter.__iter__ not a function")
+
 
     def testInt(self):
         self.assertEqual(int("5"), 5)
