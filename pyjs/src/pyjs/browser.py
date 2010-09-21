@@ -339,7 +339,7 @@ def serve(path):
     print("\nMonitoring file modifications in %s ..." % \
            os.path.abspath(os.curdir))
 
-def build(top_module, pyjs, compiler, options, app_platforms,
+def build(top_module, pyjs, options, app_platforms,
           runtime_options, args):
     print "Building:", top_module
     print "PYJSPATH:", pyjs.path
@@ -360,8 +360,10 @@ def build(top_module, pyjs, compiler, options, app_platforms,
         list_imports=options.list_imports,
     )
 
+    if options.internal_ast:
+        translator_arguments['internal_ast'] = True
+
     l = BrowserLinker(args,
-                      compiler=compiler,
                       output=options.output,
                       platforms=app_platforms,
                       path=pyjs.path,
@@ -477,8 +479,6 @@ def build_script():
         else:
             args.append(a)
 
-    compiler = translator.import_compiler(options.internal_ast)
-
     if options.log_level is not None:
         import logging
         logging.basicConfig(level=options.log_level)
@@ -502,7 +502,7 @@ def build_script():
     runtime_options.append(("arg_kwarg_multiple_values", options.function_argument_checking))
     runtime_options.append(("dynamic_loading", (len(options.unlinked_modules)>0)))
 
-    build(top_module, pyjs, compiler, options, app_platforms,
+    build(top_module, pyjs, options, app_platforms,
           runtime_options, args)
 
     if not options.auto_build:
@@ -541,7 +541,7 @@ def build_script():
                         file_path = os.path.join(root, filename)
                         if is_modified(file_path) and not first_loop:
                             try:
-                              build(top_module, pyjs, compiler, options,
+                              build(top_module, pyjs, options,
                                     app_platforms, runtime_options, args)
                             except Exception:
                               traceback.print_exception(*sys.exc_info())

@@ -4,6 +4,7 @@ import sys
 import util
 import logging
 import pyjs
+import subprocess
 
 
 if pyjs.pyjspth is None:
@@ -17,6 +18,82 @@ else:
     BUILTIN_PATH = os.path.join(pyjs.pyjspth, "pyjs", "src", "pyjs", "builtin")
     PYJAMASLIB_PATH = os.path.join(pyjs.pyjspth, "library")
 
+
+translator_opts = [ 'debug', 
+        'print_statements', 
+        'internal_ast', 
+        'function_argument_checking', 
+        'attribute_checking', 
+        'bound_methods', 
+        'descriptors', 
+        'source_tracking', 
+        'stupid_mode', 
+        'line_tracking', 
+        'store_source', 
+        'inline_code', 
+        'operator_funcs ', 
+        'number_classes', 
+        'list_imports',
+    ]
+
+def get_translator_opts(args):
+    opts = []
+    for k in translator_opts:
+        if args.has_key(k):
+            nk = k.replace("_", "-")
+            if args[k]:
+                opts.append("--%s" % nk)
+            elif k != 'list_imports':
+                opts.append("--no-%s" % nk)
+    return opts
+
+def parse_outfile(out_file):
+    deps = []
+    jslibs = []
+
+    f = open(out_file)
+    spos = os.path.getsize(out_file)
+    while True:
+        f.seek(spos)
+        txt = f.read()
+        if txt.startswith("/* end module:"):
+            break
+        spos -= 1
+    for l in txt.split("\n"):
+        if l.startswith("PYJS_DEPS:"):
+            deps = eval(l[10:])
+
+    for l in txt.split("\n"):
+        if l.startswith("PYJS_JS:"):
+            jslibs = eval(l[8:])
+
+    f.close()
+
+    return deps, jslibs
+
+def out_translate(file_names, out_file, module_name, translator_args):
+    file_names = map(lambda x: x.replace(" ", r"\ "), file_names)
+    opts = ["--module-name", module_name,
+            "-o", out_file.replace(" ", r"\ "),
+           ] + get_translator_opts(translator_args) + file_names
+    opts = ['pyjscompile'] + opts
+    pyjscompile_cmd = ' '.join(opts)
+    print pyjscompile_cmd
+    proc = subprocess.Popen(pyjscompile_cmd,
+                       stdin=subprocess.PIPE,
+                       stdout=subprocess.PIPE,
+                       stderr=subprocess.PIPE,
+                       shell=True,
+                       )
+    stdout_value, stderr_value = proc.communicate('')
+    if stderr_value:
+        raise translator.TranslationError(stderr_value, None)
+
+    deps, js_libs = parse_outfile(out_file)
+    print "translate", out_file, deps, js_libs, stdout_value
+
+    return deps, js_libs
+    
 _path_cache= {}
 def module_path(name, path):
     global _path_cache
@@ -211,11 +288,15 @@ class BaseLinker(object):
             else:
                 logging.info('Translating module:%s platform:%s out:%r' % (
                     module_name, platform or '-', out_file))
-                deps, js_libs = translator.translate(self.compiler,
-                                            [file_path] +  overrides,
+                deps, js_libs = out_translate( [file_path] +  overrides,
                                             out_file,
-                                            module_name=module_name,
-                                            **self.translator_arguments)
+                                            module_name,
+                                            self.translator_arguments)
+                #deps, js_libs = translator.translate(self.compiler,
+                #                            [file_path] +  overrides,
+                #                            out_file,
+                #                            module_name=module_name,
+                #                            **self.translator_arguments)
                 self.dependencies[out_file] = deps
                 for path, mode, location in js_libs:
                     if mode == 'default':

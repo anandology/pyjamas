@@ -962,6 +962,12 @@ class Translator(object):
             self.w( 'PYJS_DEPS: %s' % self.imported_modules)
             self.w( '*/')
 
+        # print out the imported js
+        if self.imported_js:
+            self.w( '/*')
+            self.w( 'PYJS_JS: %s' % repr(self.imported_js))
+            self.w( '*/')
+
     def w(self, txt, newline=True, output=None, translate=True):
         if translate and txt:
             txt = self.translate_escaped_names(txt, None) # TODO: current_klss
@@ -4826,7 +4832,7 @@ def add_compile_options(parser):
     speed_options['number_classes'] = False
     pythonic_options['number_classes'] = True
 
-    parser.add_option("--not-stupid-mode",
+    parser.add_option("--no-stupid-mode",
                       dest = "stupid_mode",
                       action="store_false",
                       help = "Doesn't rely on javascriptisms",
