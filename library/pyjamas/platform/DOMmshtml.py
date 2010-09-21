@@ -9,7 +9,7 @@ def set_listener(item, listener):
 
 
 def _dispatchEvent(sender, event, useCap):
-    if not event:
+    if event is not None:
         evt = wnd().event
     else:
         evt = event
@@ -35,46 +35,11 @@ def _dispatchEvent(sender, event, useCap):
     if listener is not None:
         dispatchEvent(evt, curElem, listener)
 
+
 def buttonClick(elem):
     newEvent = doc().createEventObject()
     elem.fireEvent('onclick', newEvent)
 
-#def TODOinit():
-#    JS("""
-#    // Set up event dispatchers.
-#    $wnd.__dispatchEvent = function() {
-#        if ($wnd.event.returnValue == null) {
-#            $wnd.event.returnValue = True
-#            if (!DOM.previewEvent($wnd.event))
-#                return
-#        }
-#
-#        var listener, curElem = this
-#        while (curElem and !(listener = curElem.__listener))
-#            curElem = curElem.parentElement
-#    
-#        if (listener)
-#            DOM.dispatchEvent($wnd.event, curElem, listener)
-#    }
-#
-#    $wnd.__dispatchDblClickEvent = function() {
-#        var newEvent = doc().createEventObject()
-#        this.fireEvent('onclick', newEvent)
-#        if (this.__eventBits & 2)
-#            $wnd.__dispatchEvent.call(this)
-#    }
-#
-#    doc().body.onclick       =
-#    doc().body.onmousedown   =
-#    doc().body.onmouseup     =
-#    doc().body.onmousemove   =
-#    doc().body.onkeydown     =
-#    doc().body.onkeypress    =
-#    doc().body.onkeyup       =
-#    doc().body.onfocus       =
-#    doc().body.onblur        =
-#    doc().body.ondblclick    = $wnd.__dispatchEvent
-#    """)
 
 def init():
     
@@ -115,9 +80,11 @@ def _init_mousewheel():
     mf.addEventListener(body, "mousewheel", _dispatchEvent)
     
 def compare(elem1, elem2):
-    if not elem1 and not elem2:
+    e1 = elem1 is not None
+    e2 = elem2 is not None
+    if not e1 and not r2:
         return True
-    elif not elem1 or not elem2:
+    elif not e1 or not e2:
         return False
     return elem1.uniqueID == elem2.uniqueID
 
@@ -128,7 +95,7 @@ def eventGetTarget(evt):
     return evt.srcElement
 
 def eventGetToElement(evt):
-    return hasattr(evt, "toElement") and evt.toElement or None
+    return hasattr(evt, "toElement") and (evt.toElement is not None) or None
 
 def eventPreventDefault(evt):
     evt.returnValue = False
@@ -185,17 +152,17 @@ def insertChild(parent, child, index):
 
 def insertListItem(select, text, value, index):
     newOption = doc().createElement("Option")
-    if index==-1:
+    if index == -1:
         select.add(newOption)
     else:
         select.add(newOption,index)
-    newOption.text=text
-    newOption.value=value
+    newOption.text = text
+    newOption.value = value
 
 def isOrHasChild(parent, child):
-    if not parent:
+    if parent is None:
         return False
-    while child:
+    while child is not None:
         if parent.uniqueID == child.uniqueID:
             return True
         child = child.parentElement
@@ -216,30 +183,6 @@ def setInnerText(elem, text):
     if not text:
         text = ''
     elem.innerText = text
-
-#def TODOsinkEvents(elem, bits):
-#    JS("""
-#    elem.__eventBits = bits
-#
-#    elem.onclick       = (bits & 0x00001) ? $wnd.__dispatchEvent : null
-#    elem.ondblclick    = (bits & 0x00002) ? $wnd.__dispatchDblClickEvent : null
-#    elem.onmousedown   = (bits & 0x00004) ? $wnd.__dispatchEvent : null
-#    elem.onmouseup     = (bits & 0x00008) ? $wnd.__dispatchEvent : null
-#    elem.onmouseover   = (bits & 0x00010) ? $wnd.__dispatchEvent : null
-#    elem.onmouseout    = (bits & 0x00020) ? $wnd.__dispatchEvent : null
-#    elem.onmousemove   = (bits & 0x00040) ? $wnd.__dispatchEvent : null
-#    elem.onkeydown     = (bits & 0x00080) ? $wnd.__dispatchEvent : null
-#    elem.onkeypress    = (bits & 0x00100) ? $wnd.__dispatchEvent : null
-#    elem.onkeyup       = (bits & 0x00200) ? $wnd.__dispatchEvent : null
-#    elem.onchange      = (bits & 0x00400) ? $wnd.__dispatchEvent : null
-#    elem.onfocus       = (bits & 0x00800) ? $wnd.__dispatchEvent : null
-#    elem.onblur        = (bits & 0x01000) ? $wnd.__dispatchEvent : null
-#    elem.onlosecapture = (bits & 0x02000) ? $wnd.__dispatchEvent : null
-#    elem.onscroll      = (bits & 0x04000) ? $wnd.__dispatchEvent : null
-#    elem.onload        = (bits & 0x08000) ? $wnd.__dispatchEvent : null
-#    elem.onerror       = (bits & 0x10000) ? $wnd.__dispatchEvent : null
-#    elem.oncontextmenu = (bits & 0x20000) ? $wnd.__dispatchEvent : null; 
-#    """)
 
 def toString(elem):
     return elem.outerHTML
