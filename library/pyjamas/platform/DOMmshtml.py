@@ -22,17 +22,17 @@ def _dispatchEvent(sender, event, useCap):
 
     cap = getCaptureElement()
     listener = get_listener(cap)
-    if cap and listener:
+    if cap and (listener is not None):
         #print "_dispatchEvent capture", cap, listener
         dispatchEvent(evt, cap, listener)
         return
 
     curElem = sender
-    while curElem and not get_listener(curElem):
+    while curElem and (get_listener(curElem) is None):
         curElem = curElem.parentElement
     
     listener = get_listener(curElem)
-    if listener:
+    if listener is not None:
         dispatchEvent(evt, curElem, listener)
 
 def buttonClick(elem):
