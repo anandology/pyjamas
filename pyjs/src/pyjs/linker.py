@@ -81,7 +81,7 @@ def out_translate(file_names, out_file, module_name, translator_args):
            ] + get_translator_opts(translator_args) + file_names
     opts = ['python'] + ['translator.py'] + opts
     pyjscompile_cmd = ' '.join(opts)
-    print pyjscompile_cmd
+    #print pyjscompile_cmd - use this to create Makefile code-fragment
     proc = subprocess.Popen(pyjscompile_cmd,
                        stdin=subprocess.PIPE,
                        stdout=subprocess.PIPE,
@@ -95,7 +95,8 @@ def out_translate(file_names, out_file, module_name, translator_args):
         raise translator.TranslationError(stderr_value, None)
 
     deps, js_libs = parse_outfile(out_file)
-    print "translate", out_file, deps, js_libs, stdout_value
+    # use this to create dependencies for Makefiles.  maybe.
+    #print "translate", out_file, deps, js_libs, stdout_value
 
     return deps, js_libs
     
