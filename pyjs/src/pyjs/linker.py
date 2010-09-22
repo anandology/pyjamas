@@ -72,11 +72,14 @@ def parse_outfile(out_file):
     return deps, jslibs
 
 def out_translate(file_names, out_file, module_name, translator_args):
+    pydir = os.path.abspath(os.path.dirname(__file__))
+    if not os.environ.has_key('PYJS_SYSPATH'):
+        os.environ['PYJS_SYSPATH'] = sys.path[0]
     file_names = map(lambda x: x.replace(" ", r"\ "), file_names)
     opts = ["--module-name", module_name,
             "-o", out_file.replace(" ", r"\ "),
            ] + get_translator_opts(translator_args) + file_names
-    opts = ['pyjscompile'] + opts
+    opts = ['python'] + ['translator.py'] + opts
     pyjscompile_cmd = ' '.join(opts)
     print pyjscompile_cmd
     proc = subprocess.Popen(pyjscompile_cmd,
@@ -84,6 +87,8 @@ def out_translate(file_names, out_file, module_name, translator_args):
                        stdout=subprocess.PIPE,
                        stderr=subprocess.PIPE,
                        shell=True,
+                       cwd=pydir,
+                       env=os.environ
                        )
     stdout_value, stderr_value = proc.communicate('')
     if stderr_value:

@@ -27,6 +27,9 @@ import logging
 import compiler
 from compiler.visitor import ASTVisitor
 
+if os.environ.has_key('PYJS_SYSPATH'):
+    sys.path[0:0] = [os.environ['PYJS_SYSPATH']]
+
 import pyjs
 
 escaped_subst = re.compile('@{{(!?[ a-zA-Z0-9_\.]*)}}')
