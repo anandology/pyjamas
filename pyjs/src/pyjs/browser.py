@@ -465,6 +465,18 @@ def build_script():
         )
 
     parser.add_option(
+        "--no-compile-inplace", dest="compile_inplace",
+        action="store_false",
+        help="Store all js compiled files in output/lib"
+        )
+
+    parser.add_option(
+        "--no-keep-lib-files", dest="keep_lib_files",
+        action="store_false",
+        help="Deletes the js compiled files after linking"
+        )
+
+    parser.add_option(
         "--compile-inplace", dest="compile_inplace",
         default=True,
         action="store_true",
