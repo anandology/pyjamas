@@ -85,7 +85,15 @@ class BrowserLinker(linker.BaseLinker):
                     f.close()
                     name, ext = os.path.splitext(p)
                     new_p = name + '.' + md5sum + ext
-                    os.rename(p, new_p)
+                    # if we are keeping all intermediate files
+                    if self.keep_lib_files:
+                        # copy the file to it's hashed equivalent
+                        shutil.copyfile(p, new_p)
+                    else:   # keep new file only
+                        # clean out any previous version of the hashed file
+                        if os.access(new_p, os.F_OK):
+                            os.unlink(new_p)
+                        os.rename(p, new_p)
                     self.renamed_libs[p] = new_p
                 renamed.append(new_p)
             self.done[platform] = renamed
@@ -370,6 +378,7 @@ def build(top_module, pyjs, options, app_platforms,
                       js_libs=options.js_includes,
                       unlinked_modules=options.unlinked_modules,
                       keep_lib_files=options.keep_lib_files,
+                      compile_inplace=options.compile_inplace,
                       translator_arguments=translator_arguments,
                       multi_file=options.multi_file,
                       cache_buster=options.cache_buster,
@@ -456,10 +465,17 @@ def build_script():
         )
 
     parser.add_option(
-        "--keep-lib-files", dest="keep_lib_files",
-        default=False,
+        "--compile-inplace", dest="compile_inplace",
+        default=True,
         action="store_true",
-        help="Keep the files generated in the lib directory"
+        help="Store js compiled files in the same place as the python source"
+        )
+
+    parser.add_option(
+        "--keep-lib-files", dest="keep_lib_files",
+        default=True,
+        action="store_true",
+        help="Keep the js compiled files"
         )
 
     parser.set_defaults(output="output",

@@ -36,6 +36,17 @@ translator_opts = [ 'debug',
         'list_imports',
     ]
 
+def is_modified(in_file,out_file):
+    modified = False
+    in_mtime = os.path.getmtime(in_file)
+    try:
+        out_mtime = os.path.getmtime(out_file)
+        if in_mtime > out_mtime:
+            modified = True
+    except:
+        modified = True
+    return modified
+
 def get_translator_opts(args):
     opts = []
     for k in translator_opts:
@@ -71,28 +82,38 @@ def parse_outfile(out_file):
 
     return deps, jslibs
 
-def out_translate(file_names, out_file, module_name, translator_args):
-    pydir = os.path.abspath(os.path.dirname(__file__))
-    if not os.environ.has_key('PYJS_SYSPATH'):
-        os.environ['PYJS_SYSPATH'] = sys.path[0]
-    file_names = map(lambda x: x.replace(" ", r"\ "), file_names)
-    opts = ["--module-name", module_name,
-            "-o", out_file.replace(" ", r"\ "),
-           ] + get_translator_opts(translator_args) + file_names
-    opts = ['python'] + ['translator.py'] + opts
-    pyjscompile_cmd = ' '.join(opts)
-    #print pyjscompile_cmd - use this to create Makefile code-fragment
-    proc = subprocess.Popen(pyjscompile_cmd,
-                       stdin=subprocess.PIPE,
-                       stdout=subprocess.PIPE,
-                       stderr=subprocess.PIPE,
-                       shell=True,
-                       cwd=pydir,
-                       env=os.environ
-                       )
-    stdout_value, stderr_value = proc.communicate('')
-    if stderr_value:
-        raise translator.TranslationError(stderr_value, None)
+def out_translate(file_names, out_file, module_name, translator_args, incremental):
+    do_translate = False    # flag for incremental translate mode
+    # see if we can skip this module
+    if incremental:    # if we are in incremental translate mode
+        # check for any files that need built
+        for file_name in file_names:
+            if is_modified(file_name,out_file):
+                print "COMPILING:",file_name
+                do_translate = True
+                break
+    if not incremental or do_translate:
+        pydir = os.path.abspath(os.path.dirname(__file__))
+        if not os.environ.has_key('PYJS_SYSPATH'):
+            os.environ['PYJS_SYSPATH'] = sys.path[0]
+        file_names = map(lambda x: x.replace(" ", r"\ "), file_names)
+        opts = ["--module-name", module_name,
+                "-o", out_file.replace(" ", r"\ "),
+               ] + get_translator_opts(translator_args) + file_names
+        opts = ['python'] + ['translator.py'] + opts
+        pyjscompile_cmd = ' '.join(opts)
+        #print pyjscompile_cmd - use this to create Makefile code-fragment
+        proc = subprocess.Popen(pyjscompile_cmd,
+                           stdin=subprocess.PIPE,
+                           stdout=subprocess.PIPE,
+                           stderr=subprocess.PIPE,
+                           shell=True,
+                           cwd=pydir,
+                           env=os.environ
+                           )
+        stdout_value, stderr_value = proc.communicate('')
+        if stderr_value:
+            raise translator.TranslationError(stderr_value, None)
 
     deps, js_libs = parse_outfile(out_file)
     # use this to create dependencies for Makefiles.  maybe.
@@ -297,7 +318,8 @@ class BaseLinker(object):
                 deps, js_libs = out_translate( [file_path] +  overrides,
                                             out_file,
                                             module_name,
-                                            self.translator_arguments)
+                                            self.translator_arguments,
+                                            self.keep_lib_files)
                 #deps, js_libs = translator.translate(self.compiler,
                 #                            [file_path] +  overrides,
                 #                            out_file,
