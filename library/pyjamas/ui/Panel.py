@@ -28,8 +28,6 @@ class PanelBase(object):
         for child in self.__iter__():
             children.append(child)
 
-        print "clear children", children
-
         for child in children:
             self.remove(child)
 
