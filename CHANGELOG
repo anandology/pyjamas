@@ -1,6 +1,11 @@
                     Changes made to Pyjamas since 0.7
                     ---------------------------------
  
+ * Make pyjsbuild call out to translator.py using subprocess.Popen,
+   with a view to adding "build generators" that will create Makefiles,
+   scons build files etc.  pyjsbuild should not be doing the job of make,
+   and... it's doing the job of make.
+
  * Fix getWidget problem with HTMLTable under pyjd on Windows (mshtml,
    fixes Issue 493, contributed by Phil Charlesworth
    
