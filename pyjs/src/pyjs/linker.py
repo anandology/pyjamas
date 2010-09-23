@@ -82,14 +82,19 @@ def parse_outfile(out_file):
 
     return deps, jslibs
 
-def out_translate(file_names, out_file, module_name, translator_args, incremental):
+def out_translate(platform, file_names, out_file, module_name,
+                   translator_args, incremental):
     do_translate = False    # flag for incremental translate mode
     # see if we can skip this module
     if incremental:    # if we are in incremental translate mode
         # check for any files that need built
         for file_name in file_names:
             if is_modified(file_name,out_file):
-                print "COMPILING:",file_name
+                if platform is not None:
+                    platform = "[%s]" % platform
+                else:
+                    platform = ''
+                print "Compiling %s:" % platform, file_name
                 do_translate = True
                 break
     if not incremental or do_translate:
@@ -315,7 +320,8 @@ class BaseLinker(object):
             else:
                 logging.info('Translating module:%s platform:%s out:%r' % (
                     module_name, platform or '-', out_file))
-                deps, js_libs = out_translate( [file_path] +  overrides,
+                deps, js_libs = out_translate( platform,
+                                            [file_path] +  overrides,
                                             out_file,
                                             module_name,
                                             self.translator_arguments,
