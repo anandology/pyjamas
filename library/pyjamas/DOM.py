@@ -490,7 +490,6 @@ def getAbsoluteTop(elem):
 
 
 def getAttribute(elem, attr):
-    mf = get_main_frame()
     return str(getattr(elem, attr))
 
 
@@ -618,7 +617,6 @@ def getInnerText(element):
 
 
 def getIntAttribute(elem, attr):
-    mf = get_main_frame()
     return int(getattr(elem, attr))
 
 
