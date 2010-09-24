@@ -86,7 +86,7 @@ class Anchor(Widget, ClickHandler, _Attributes):
     def removeWidget(self):
         """ remove child widget
         """
-        widget.removeFromParent()
+        self.widget.removeFromParent()
         DOM.removeChild(self.getElement(), self.widget.getElement())
         self.widget = None
 

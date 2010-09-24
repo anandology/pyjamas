@@ -85,8 +85,10 @@ def parse_outfile(out_file):
 def out_translate(platform, file_names, out_file, module_name,
                    translator_args, incremental):
     do_translate = False    # flag for incremental translate mode
+    if translator_args.get('list_imports', None):
+        do_translate = True
     # see if we can skip this module
-    if incremental:    # if we are in incremental translate mode
+    elif incremental:    # if we are in incremental translate mode
         # check for any files that need built
         for file_name in file_names:
             if is_modified(file_name,out_file):
@@ -119,6 +121,11 @@ def out_translate(platform, file_names, out_file, module_name,
         stdout_value, stderr_value = proc.communicate('')
         if stderr_value:
             raise translator.TranslationError(stderr_value, None)
+
+    if translator_args.get('list_imports', None):
+        print "List Imports %s:" % platform, file_names
+        print stdout_value
+        return [], []
 
     deps, js_libs = parse_outfile(out_file)
     # use this to create dependencies for Makefiles.  maybe.

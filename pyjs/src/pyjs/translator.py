@@ -4243,7 +4243,7 @@ def translate(compiler, sources, output_file, module_name=None,
     if list_imports:
         v = ImportVisitor(module_name)
         compiler.walk(tree, v)
-        return v.imported_modules, []
+        return v.imported_modules, v.imported_js
 
     if output_file == '-':
         output = sys.stdout
@@ -4474,6 +4474,7 @@ class ImportVisitor(object):
     def __init__(self, module_name):
         self.module_name = module_name
         self.imported_modules = []
+        self.imported_js = []
 
     def add_imported_module(self, importName):
         if not importName in self.imported_modules:
@@ -4490,7 +4491,8 @@ class ImportVisitor(object):
             if importName == '__pyjamas__':
                 continue
             if importName.endswith(".js"):
-                imp.add_imported_module(importName)
+                continue
+                imp.add_imported_js(importName)
                 continue
 
             self.add_imported_module(importName)
@@ -4938,7 +4940,15 @@ def main():
               list_imports = options.list_imports,
     )
     if options.list_imports:
-        print '\n'.join(imports)
+        if imports:
+            print '/*'
+            print 'PYJS_DEPS: %s' % imports
+            print '*/'
+
+        if js:
+            print '/*'
+            print 'PYJS_JS: %s' % repr(js)
+            print '*/'
 
 if __name__ == "__main__":
     main()
