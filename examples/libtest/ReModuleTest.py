@@ -129,3 +129,12 @@ class ReModuleTest(UnitTest.UnitTest):
         g = m.groups("")
         self.assertEqual(g, ("", "1"))
 
+    def testBackReferences(self):
+        B_re = re.compile(r'\*\*(.*?)\*\*', re.DOTALL)
+        EM_re = re.compile(r'\*(.*?)\*', re.DOTALL)
+        s = '''Text between *single asterisks* is emphasized.<br>Text between **double asterisks** is bolded.<br>You **can *even* embed** them!'''
+        expected = '''Text between <EM>single asterisks</EM> is emphasized.<br>Text between <STRONG>double asterisks</STRONG> is bolded.<br>You <STRONG>can <EM>even</EM> embed</STRONG> them!'''
+
+        s = B_re.sub(r'<STRONG>\1</STRONG>', s)
+        s = EM_re.sub(r'<EM>\1</EM>', s)
+        self.assertEqual(s, expected, 'Bug #495')
