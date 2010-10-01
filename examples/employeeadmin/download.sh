@@ -26,7 +26,7 @@ get_puremvc ( ) {
 		exit 1
 	fi
 }
-if [ ! -f PureMVC_Python_1_1/src/puremvc/__init__.py ] ; then
+if [ ! -f PureMVC_Python_1_2/src/puremvc/__init__.py ] ; then
 	if prompt_download ; then
 		get_puremvc
 	else
@@ -37,7 +37,7 @@ if [ ! -f PureMVC_Python_1_1/src/puremvc/__init__.py ] ; then
 		echo "Cannot unzip PureMVC_Python.zip" >&2
 		exit 1
 	fi
-	if [ ! -f PureMVC_Python_1_1/src/puremvc/__init__.py ] ; then
+	if [ ! -f PureMVC_Python_1_2/src/puremvc/__init__.py ] ; then
 		echo "Something went wrong...."
 		exit 1
 	fi

@@ -15,5 +15,5 @@ if [ -z "$DOWNLOADS" ] ; then
 fi
 
 if ./download.sh ; then
-	../../bin/pyjsbuild --library_dir "`pwd`/PureMVC_Python_1_1/src" $options --bound-methods EmployeeAdmin
+	../../bin/pyjsbuild --library_dir "`pwd`/PureMVC_Python_1_2/src" $options --bound-methods EmployeeAdmin
 fi

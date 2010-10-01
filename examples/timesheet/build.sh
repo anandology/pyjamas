@@ -15,5 +15,5 @@ if [ -z "$DOWNLOADS" ] ; then
 fi
 
 if (cd ../employeeadmin;./download.sh) ; then
-../../bin/pyjsbuild --library_dir "`pwd`/../employeeadmin/PureMVC_Python_1_1/src" $options --bound-methods TimeSheet
+../../bin/pyjsbuild --library_dir "`pwd`/../employeeadmin/PureMVC_Python_1_2/src" $options --bound-methods TimeSheet
 fi
