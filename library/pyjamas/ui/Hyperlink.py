@@ -22,10 +22,10 @@ from ClickListener import ClickHandler
 
 class Hyperlink(Widget, ClickHandler):
 
-    def __init__(self, text="", asHTML=False, targetHistoryToken="",
+    def __init__(self, text="", asHTML=False, targetHistoryToken=None,
                        Element=None, **kwargs):
 
-        self.targetHistoryToken = ""
+        self.targetHistoryToken = targetHistoryToken
 
         if Element is None:
             Element = DOM.createDiv()
@@ -39,7 +39,7 @@ class Hyperlink(Widget, ClickHandler):
                 kwargs['HTML'] = text
             else:
                 kwargs['Text'] = text
-        if targetHistoryToken:
+        if not kwargs.has_key('TargetHistoryToken'):
             kwargs['TargetHistoryToken'] = targetHistoryToken
 
         Widget.__init__(self, **kwargs)
@@ -50,7 +50,8 @@ class Hyperlink(Widget, ClickHandler):
         event_type = DOM.eventGetType(event)
         if event_type == "click":
             DOM.eventPreventDefault(event)
-            History.newItem(self.targetHistoryToken)
+            if self.targetHistoryToken is not None:
+                History.newItem(self.targetHistoryToken)
 
     def getHTML(self):
         return DOM.getInnerHTML(self.anchorElem)
@@ -69,6 +70,8 @@ class Hyperlink(Widget, ClickHandler):
 
     def setTargetHistoryToken(self, targetHistoryToken):
         self.targetHistoryToken = targetHistoryToken
+        if targetHistoryToken is None:
+            targetHistoryToken = ''
         DOM.setAttribute(self.anchorElem, "href", "#" + targetHistoryToken)
 
 Factory.registerClass('pyjamas.ui.Hyperlink', 'Hyperlink', Hyperlink)
