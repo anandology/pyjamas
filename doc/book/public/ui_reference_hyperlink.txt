@@ -4,6 +4,8 @@ A widget that serves as an "internal" hyperlink. That is, it is a
 link to another state of the running application. When clicked,
 it will create a new history frame using
 History.newItem(targetHistoryToken), but without reloading the page.
+However, if targetHistoryToken has not been set (is None), the link
+will not invoke History.newItem().
 
 Being a true hyperlink, it is also possible for the user to
 "right-click, open link in new window", which will cause the
@@ -17,7 +19,7 @@ Method resolution order:
 
 == Methods defined: ==
 
- * __init__(self, text='', asHTML=False, targetHistoryToken='')
+ * __init__(self, text='', asHTML=False, TargetHistoryToken=None)
 
  * addClickListener(self, listener)
 

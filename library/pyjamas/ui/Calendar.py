@@ -18,7 +18,6 @@ from TextBox import TextBox
 from Image import Image
 from pyjamas.ui import HasAlignment
 from pyjamas import DOM
-from pyjamas import History
 
 import time
 
@@ -155,13 +154,13 @@ class Calendar(FocusPanel):
         tp.addStyleName("calendar-top-panel")
         tp.setSpacing(5)
 
-        h1 = Hyperlink('<<', targetHistoryToken=History.getToken())
+        h1 = Hyperlink('<<')
         h1.addClickListener(getattr(self, 'onPreviousYear'))
-        h2 = Hyperlink('<', targetHistoryToken=History.getToken())
+        h2 = Hyperlink('<')
         h2.addClickListener(getattr(self, 'onPreviousMonth'))
-        h4 = Hyperlink('>', targetHistoryToken=History.getToken())
+        h4 = Hyperlink('>')
         h4.addClickListener(getattr(self, 'onNextMonth'))
-        h5 = Hyperlink('>>', targetHistoryToken=History.getToken())
+        h5 = Hyperlink('>>')
         h5.addClickListener(getattr(self, 'onNextYear'))
 
         tp.add(h1)
@@ -194,13 +193,13 @@ class Calendar(FocusPanel):
         #
         # some links & handlers
         #
-        bh1 = Hyperlink(self.yesterday, targetHistoryToken=History.getToken())
+        bh1 = Hyperlink(self.yesterday)
         bh1.addClickListener(getattr(self, 'onYesterday'))
-        bh2 = Hyperlink(self.today, targetHistoryToken=History.getToken())
+        bh2 = Hyperlink(self.today)
         bh2.addClickListener(getattr(self, 'onToday'))
-        bh3 = Hyperlink(self.tomorrow, targetHistoryToken=History.getToken())
+        bh3 = Hyperlink(self.tomorrow)
         bh3.addClickListener(getattr(self, 'onTomorrow'))
-        bh4 = Hyperlink(self.cancel, targetHistoryToken=History.getToken())
+        bh4 = Hyperlink(self.cancel)
         bh4.addClickListener(getattr(self, 'onCancel'))
         #
         # add code to test another way of doing the layout
@@ -404,10 +403,8 @@ class DateField(Composite):
         self.calendar = Calendar()
         self.img = Image(self.icon_img)
         self.img.addStyleName(self.icon_style)
-        self.calendarLink = HyperlinkImage(self.img, 
-                                       targetHistoryToken=History.getToken())
-        self.todayLink = Hyperlink(self.today_text, 
-                                       targetHistoryToken=History.getToken())
+        self.calendarLink = HyperlinkImage(self.img)
+        self.todayLink = Hyperlink(self.today_text)
         self.todayLink.addStyleName(self.today_style)
         #
         # lay it out
