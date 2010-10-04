@@ -22,10 +22,7 @@ from ClickListener import ClickHandler
 
 class Hyperlink(Widget, ClickHandler):
 
-    def __init__(self, text="", asHTML=False, targetHistoryToken=None,
-                       Element=None, **kwargs):
-
-        self.targetHistoryToken = targetHistoryToken
+    def __init__(self, text="", asHTML=False, Element=None, **kwargs):
 
         if Element is None:
             Element = DOM.createDiv()
@@ -40,7 +37,7 @@ class Hyperlink(Widget, ClickHandler):
             else:
                 kwargs['Text'] = text
         if not kwargs.has_key('TargetHistoryToken'):
-            kwargs['TargetHistoryToken'] = targetHistoryToken
+            kwargs['TargetHistoryToken'] = None
 
         Widget.__init__(self, **kwargs)
         ClickHandler.__init__(self)
