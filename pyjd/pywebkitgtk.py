@@ -101,7 +101,7 @@ from traceback import print_stack
 
 import gtk
 import gobject
-import webkit
+import pywebkit
 
 def module_load(m):
     minst = None
@@ -270,30 +270,30 @@ def _alert(self, msg):
     wv._alert(msg)
 
 def getDomDocument(self):
-    return self.getWebkitDocument()
+    return self.get_dom_document()
 
 def addWindowEventListener(self, event_name, cb):
     #print self, event_name, cb
-    if cb not in self._callbacks:
-        self.connect("browser-event", cb)
-        self._callbacks.append(cb)
-    return self.addWindowEventListener(event_name, True)
+    #if cb not in self._callbacks:
+        #self.connect("browser-event", cb)
+        #self._callbacks.append(cb)
+    return self.get_dom_window().addEventListener(event_name, cb, True)
 
 def addXMLHttpRequestEventListener(element, event_name, cb):
-    if not hasattr(element, "_callbacks"):
-        element._callbacks = []
-    if cb not in element._callbacks:
-        element.connect("browser-event", cb)
-        element._callbacks.append(cb)
-    return element.addEventListener(event_name)
+    #if not hasattr(element, "_callbacks"):
+        #element._callbacks = []
+    #if cb not in element._callbacks:
+    #    element.connect("browser-event", cb)
+    #    element._callbacks.append(cb)
+    return element.addEventListener(event_name, cb, False)
 
 def addEventListener(element, event_name, cb):
-    if not hasattr(element, "_callbacks"):
-        element._callbacks = []
-    if cb not in element._callbacks:
-        element.connect("browser-event", cb)
-        element._callbacks.append(cb)
-    return element.addEventListener(event_name, True)
+    #if not hasattr(element, "_callbacks"):
+    #    element._callbacks = []
+    #if cb not in element._callbacks:
+    #    element.connect("browser-event", cb)
+    #    element._callbacks.append(cb)
+    return element.addEventListener(event_name, cb, False)
 
 class Browser(gtk.Window):
     def __init__(self, application, appdir=None, width=800, height=600):
@@ -305,7 +305,7 @@ class Browser(gtk.Window):
         logging.debug("initializing web browser window")
 
         self._loading = False
-        self._browser= webkit.WebView()
+        self._browser= pywebkit.WebView()
         #self._browser.connect('load-started', self._loading_start_cb)
         #self._browser.connect('load-progress-changed', self._loading_progress_cb)
         self._browser.connect('load-finished', self._loading_stop_cb)
@@ -427,9 +427,9 @@ class Browser(gtk.Window):
         from __pyjamas__ import set_gtk_module
         set_gtk_module(gtk)
 
-        main_frame = self._browser.getMainFrame()
+        main_frame = self._browser.get_main_frame()
         main_frame._callbacks = []
-        main_frame.gobject_wrap = webkit.gobject_wrap
+        #main_frame.gobject_wrap = pywebkit.gobject_wrap
         main_frame.platform = 'webkit'
         main_frame.addEventListener = addEventListener
         main_frame.getUri = self.getUri

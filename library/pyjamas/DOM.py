@@ -882,7 +882,7 @@ def setInnerHTML(element, html):
 
 def setInnerText(elem, text):
     #Remove all children first.
-    while elem.firstChild:
+    while elem.firstChild is not None:
         elem.removeChild(elem.firstChild)
     elem.appendChild(createTextNode(text or ''))
 
