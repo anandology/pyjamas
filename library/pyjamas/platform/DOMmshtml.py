@@ -199,7 +199,7 @@ def eventGetKeyCode(evt):
     return 0
 
 def eventStopPropagation(evt):
-    eventCancelBubble(evt)
+    eventCancelBubble(evt,True)
 
 def eventGetMouseWheelVelocityY(evt):
     return round(-evt.wheelDelta / 40.0) or 0.0
