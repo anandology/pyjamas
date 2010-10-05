@@ -117,63 +117,6 @@ class WebToolbar(gtk.Toolbar):
 
         self._browser = browser
 
-        # navigational buttons
-        self._back = gtk.ToolButton(gtk.STOCK_GO_BACK)
-        self._back.set_tooltip(gtk.Tooltips(),_('Back'))
-        self._back.props.sensitive = False
-        self._back.connect('clicked', self._go_back_cb)
-        self.insert(self._back, -1)
-
-        self._forward = gtk.ToolButton(gtk.STOCK_GO_FORWARD)
-        self._forward.set_tooltip(gtk.Tooltips(),_('Forward'))
-        self._forward.props.sensitive = False
-        self._forward.connect('clicked', self._go_forward_cb)
-        self.insert(self._forward, -1)
-        self._forward.show()
-
-        self._stop_and_reload = gtk.ToolButton(gtk.STOCK_REFRESH)
-        self._stop_and_reload.set_tooltip(gtk.Tooltips(),_('Stop and reload current page'))
-        self._stop_and_reload.connect('clicked', self._stop_and_reload_cb)
-        self.insert(self._stop_and_reload, -1)
-        self._stop_and_reload.show()
-        self._loading = False
-
-        self.insert(gtk.SeparatorToolItem(), -1)
-
-        # zoom buttons
-        self._zoom_in = gtk.ToolButton(gtk.STOCK_ZOOM_IN)
-        self._zoom_in.set_tooltip(gtk.Tooltips(), _('Zoom in'))
-        self._zoom_in.connect('clicked', self._zoom_in_cb)
-        self.insert(self._zoom_in, -1)
-        self._zoom_in.show()
-
-        self._zoom_out = gtk.ToolButton(gtk.STOCK_ZOOM_OUT)
-        self._zoom_out.set_tooltip(gtk.Tooltips(), _('Zoom out'))
-        self._zoom_out.connect('clicked', self._zoom_out_cb)
-        self.insert(self._zoom_out, -1)
-        self._zoom_out.show()
-
-        self._zoom_hundred = gtk.ToolButton(gtk.STOCK_ZOOM_100)
-        self._zoom_hundred.set_tooltip(gtk.Tooltips(), _('100% zoom'))
-        self._zoom_hundred.connect('clicked', self._zoom_hundred_cb)
-        self.insert(self._zoom_hundred, -1)
-        self._zoom_hundred.show()
-
-        self.insert(gtk.SeparatorToolItem(), -1)
-
-        # location entry
-        self._entry = gtk.Entry()
-        self._entry.connect('activate', self._entry_activate_cb)
-        self._current_uri = None
-
-        entry_item = gtk.ToolItem()
-        entry_item.set_expand(True)
-        entry_item.add(self._entry)
-        self._entry.show()
-
-        self.insert(entry_item, -1)
-        entry_item.show()
-
         # scale other content besides from text as well
         self._browser.set_full_content_zoom(True)
 
@@ -182,24 +125,8 @@ class WebToolbar(gtk.Toolbar):
     def set_loading(self, loading):
         self._loading = loading
 
-        if self._loading:
-            self._show_stop_icon()
-            self._stop_and_reload.set_tooltip(gtk.Tooltips(),_('Stop'))
-        else:
-            self._show_reload_icon()
-            self._stop_and_reload.set_tooltip(gtk.Tooltips(),_('Reload'))
-        self._update_navigation_buttons()
-
     def _set_address(self, address):
-        self._entry.props.text = address
         self._current_uri = address
-
-    def _update_navigation_buttons(self):
-        can_go_back = self._browser.can_go_back()
-        self._back.props.sensitive = can_go_back
-
-        can_go_forward = self._browser.can_go_forward()
-        self._forward.props.sensitive = can_go_forward
 
     def _entry_activate_cb(self, entry):
         self._browser.open(entry.props.text)
@@ -218,12 +145,6 @@ class WebToolbar(gtk.Toolbar):
             self._browser.stop_loading()
         else:
             self._browser.reload()
-
-    def _show_stop_icon(self):
-        self._stop_and_reload.set_stock_id(gtk.STOCK_CANCEL)
-
-    def _show_reload_icon(self):
-        self._stop_and_reload.set_stock_id(gtk.STOCK_REFRESH)
 
     def _zoom_in_cb (self, widget):
         """Zoom into the page"""
@@ -310,8 +231,6 @@ class Browser(gtk.Window):
         #self._browser.connect('load-progress-changed', self._loading_progress_cb)
         self._browser.connect('load-finished', self._loading_stop_cb)
         self._browser.connect("title-changed", self._title_changed_cb)
-        self._browser.connect("hovering-over-link", self._hover_link_cb)
-        self._browser.connect("status-bar-text-changed", self._statusbar_text_changed_cb)
         self._browser.connect("icon-loaded", self._icon_loaded_cb)
         self._browser.connect("selection-changed", self._selection_changed_cb)
         self._browser.connect("set-scroll-adjustments", self._set_scroll_adjustments_cb)
@@ -333,14 +252,8 @@ class Browser(gtk.Window):
         self._scrolled_window.add(self._browser)
         self._scrolled_window.show_all()
 
-        self._toolbar = WebToolbar(self._browser)
-
-        self._statusbar = WebStatusBar()
-
-        vbox = gtk.VBox(spacing=4)
-        vbox.pack_start(self._toolbar, expand=False, fill=False)
+        vbox = gtk.VBox(spacing=0)
         vbox.pack_start(self._scrolled_window)
-        vbox.pack_end(self._statusbar, expand=False, fill=False)
 
         self.add(vbox)
         self.set_default_size(600, 480)
@@ -452,36 +365,19 @@ class Browser(gtk.Window):
     def _loading_start_cb(self, view, frame):
         main_frame = self._browser.get_main_frame()
         if frame is main_frame:
-            self._set_title(_("Loading %s - %s") % (frame.get_title(), frame.get_uri()))
-        self._toolbar.set_loading(True)
+            self._set_title(_("Loading %s - %s") % (frame.get_title(),
+                                                    frame.get_uri()))
 
     def _loading_stop_cb(self, view, frame):
         # FIXME: another frame may still be loading?
-        self._toolbar.set_loading(False)
 
         if self.already_initialised:
             return
         self.already_initialised = True
         self.init_app()
 
-    def _loading_progress_cb(self, view, progress):
-        self._set_progress(_("%s%s loaded") % (progress, '%'))
-
-    def _set_progress(self, progress):
-        self._statusbar.display(progress)
-
     def _title_changed_cb(self, widget, frame, title):
         self._set_title(_("%s") % title)
-
-    def _hover_link_cb(self, view, title, url):
-        if view and url:
-           self._statusbar.display(url)
-        else:
-           self._statusbar.display('')
-
-    def _statusbar_text_changed_cb(self, view, text):
-        #if text:
-        self._statusbar.display(text)
 
     def _icon_loaded_cb(self):
         print "icon loaded"
