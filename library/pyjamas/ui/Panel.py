@@ -89,14 +89,14 @@ class Panel(PanelBase, Widget):
         Widget.__init__(self, **kwargs)
 
     def disown(self, widget):
-        if widget.getParent() != self:
-            console.error("widget %o is not a child of this panel %o", widget, self)
-        else:
-            element = widget.getElement()
-            widget.setParent(None)
-            parentElement = DOM.getParent(element)
-            if parentElement is not None:
-                DOM.removeChild(parentElement, element)
+        if widget.getParent() is not self:
+            raise Exception("widget %s is not a child of this panel %s" % \
+                             (str(widget), str(self)))
+        element = widget.getElement()
+        widget.setParent(None)
+        parentElement = DOM.getParent(element)
+        if parentElement is not None:
+            DOM.removeChild(parentElement, element)
 
     def adopt(self, widget, container):
         if container is not None:

@@ -64,6 +64,8 @@ def get_listener(item):
 def set_listener(item, listener):
     if hasattr(item, "__instance__"):
         listeners[item.__instance__] = listener
+    elif listener is None:
+        listeners.pop(hash(item))
     else:
         listeners[hash(item)] = listener
 
@@ -220,6 +222,14 @@ def appendChild(parent, child):
     #print "appendChild", parent, child
     parent.appendChild(child)
 
+def removeChild(parent, child):
+    #print "removeChild", parent, child
+    parent.removeChild(child)
+    #print "after removeChild", parent, child
+
+def replaceChild(parent, newChild, oldChild):
+    parent.replaceChild(newChild, oldChild)
+
 
 def buttonClick(element):
     evt = doc().createEvent('MouseEvents')
@@ -275,7 +285,7 @@ def createInputCheck():
 
 
 def createInputElement(elementType):
-    e = createElement("INPUT")
+    e = createElement("input")
     e.type = elementType
     return e
 
@@ -769,13 +779,6 @@ def releaseCapture(elem):
         sCaptureElem = None
     return
 
-
-def removeChild(parent, child):
-    parent.removeChild(child)
-
-
-def replaceChild(parent, newChild, oldChild):
-    parent.replaceChild(newChild, oldChild)
 
 
 def removeEventPreview(preview):

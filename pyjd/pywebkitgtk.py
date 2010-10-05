@@ -97,7 +97,7 @@ import sys
 import logging
 import time
 from gettext import gettext as _
-from traceback import print_stack
+from traceback import print_stack, print_exc
 
 import gtk
 import gobject
@@ -257,13 +257,7 @@ class WebStatusBar(gtk.Statusbar):
         self.iconbox.hide()
 
 def mash_attrib(name, joiner='-'):
-    res = ''
-    for c in name:
-        if c.isupper():
-            res += joiner + c.lower()
-        else:
-            res += c
-    return res
+    return name
 
 def _alert(self, msg):
     global wv
@@ -281,8 +275,11 @@ class Callback:
         self.cb = cb
         self.boolparam = boolparam
     def _callback(self, event):
-        print "callback"
-        return self.cb(self.sender, event, self.boolparam)
+        try:
+            return self.cb(self.sender, event, self.boolparam)
+        except:
+            print_exc()
+            return None
 
 def addWindowEventListener(self, event_name, cb):
     cb = Callback(self, cb, True)
@@ -295,7 +292,7 @@ def addXMLHttpRequestEventListener(element, event_name, cb):
 def addEventListener(element, event_name, cb):
     #    element._callbacks.append(cb)
     cb = Callback(element, cb, True)
-    print "addEventListener", element, event_name, cb
+    #print "addEventListener", element, event_name, cb
     setattr(element, "on%s" % event_name, cb._callback)
 
 class Browser(gtk.Window):

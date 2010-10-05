@@ -74,10 +74,10 @@ class KitchenSink:
         if info == self.curInfo: return
         self.curInfo = info
 
-        #Logger.write("showing " + info.getName())
-        if self.curSink <> None:
+        #log.writebr("showing " + info.getName())
+        if self.curSink is not None:
+            #log.writebr("removing " + str(self.curSink))
             self.curSink.onHide()
-            #Logger.write("removing " + self.curSink)
             self.sinkContainer.remove(self.curSink)
 
         self.curSink = info.getInstance()

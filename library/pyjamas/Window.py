@@ -86,7 +86,7 @@ def open(url, name, features):
     wnd().open(url, name, features)
 
 def setMargin(size):
-    doc().body.style.margin = size;
+    doc().body.style.margin = size
 
 def setTitle(title):
     d = doc()

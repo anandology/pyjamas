@@ -27,8 +27,8 @@ class SinkInfo:
         return self.description
 
     def getInstance(self):
-        if self.instance==None:
-            self.instance=self.createInstance()
+        if self.instance is None:
+            self.instance = self.createInstance()
         return self.instance
     
     def getName(self):
