@@ -1,10 +1,15 @@
+class Timer:
 
-def kill_timer(timer):
-    timer.cancel()
+    def __setTimeout(self, delayMillis):
 
-def init():
-    global timeout_add
-    global timeout_end
-    timeout_add = pyjd.gobject.timeout_add
-    timeout_end = kill_timer
+        return pyjd.gobject.timeout_add(delayMillis)
+
+    def __clearTimeout(self,timer):
+        timer.cancel()
+
+    def __setInterval(self, periodMillis):
+        mf = get_main_frame()
+        return mf.nsITimer(self.__fire, periodMillis, True)
+
+    __clearInterval = __clearTimeout
 

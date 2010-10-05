@@ -272,28 +272,31 @@ def _alert(self, msg):
 def getDomDocument(self):
     return self.get_dom_document()
 
+def getXmlHttpRequest(self):
+    return self.get_xml_http_request()
+
+class Callback:
+    def __init__(self, sender, cb, boolparam):
+        self.sender = sender
+        self.cb = cb
+        self.boolparam = boolparam
+    def _callback(self, event):
+        print "callback"
+        return self.cb(self.sender, event, self.boolparam)
+
 def addWindowEventListener(self, event_name, cb):
-    #print self, event_name, cb
-    #if cb not in self._callbacks:
-        #self.connect("browser-event", cb)
-        #self._callbacks.append(cb)
-    return self.get_dom_window().addEventListener(event_name, cb, True)
+    cb = Callback(self, cb, True)
+    setattr(self.get_dom_window(), "on%s" % event_name, cb._callback)
 
 def addXMLHttpRequestEventListener(element, event_name, cb):
-    #if not hasattr(element, "_callbacks"):
-        #element._callbacks = []
-    #if cb not in element._callbacks:
-    #    element.connect("browser-event", cb)
-    #    element._callbacks.append(cb)
-    return element.addEventListener(event_name, cb, False)
+    cb = Callback(element, cb, True)
+    return element.addEventListener(event_name, cb._callback, True)
 
 def addEventListener(element, event_name, cb):
-    #if not hasattr(element, "_callbacks"):
-    #    element._callbacks = []
-    #if cb not in element._callbacks:
-    #    element.connect("browser-event", cb)
     #    element._callbacks.append(cb)
-    return element.addEventListener(event_name, cb, False)
+    cb = Callback(element, cb, True)
+    print "addEventListener", element, event_name, cb
+    setattr(element, "on%s" % event_name, cb._callback)
 
 class Browser(gtk.Window):
     def __init__(self, application, appdir=None, width=800, height=600):
@@ -431,9 +434,11 @@ class Browser(gtk.Window):
         main_frame._callbacks = []
         #main_frame.gobject_wrap = pywebkit.gobject_wrap
         main_frame.platform = 'webkit'
-        main_frame.addEventListener = addEventListener
+        main_frame._addEventListener = addEventListener
         main_frame.getUri = self.getUri
+
         main_frame.getDomDocument = new.instancemethod(getDomDocument, main_frame)
+        main_frame.getXmlHttpRequest = new.instancemethod(getXmlHttpRequest, main_frame)
         main_frame._addXMLHttpRequestEventListener = addXMLHttpRequestEventListener
         main_frame._addWindowEventListener = new.instancemethod(addWindowEventListener, main_frame)
         main_frame._alert = new.instancemethod(_alert, main_frame)

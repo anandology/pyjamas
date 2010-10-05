@@ -931,45 +931,49 @@ def sinkEvents(element, bits):
 
     if not bits:
         return
+    mf = get_main_frame()
+    if hasattr(mf, "_addEventListener"):
+        aev = mf._addEventListener
+    else:
+        aev = mf.addEventListener
     #cb = lambda x,y,z: _dispatchEvent(y)
     cb = _dispatchEvent
-    mf = get_main_frame()
     if (bits & 0x00001):
-        mf.addEventListener(element, "click", cb)
+        aev(element, "click", cb)
     if (bits & 0x00002):
-        mf.addEventListener(element, "dblclick", cb)
+        aev(element, "dblclick", cb)
     if (bits & 0x00004):
-        mf.addEventListener(element, "mousedown", cb)
+        aev(element, "mousedown", cb)
     if (bits & 0x00008):
-        mf.addEventListener(element, "mouseup", cb)
+        aev(element, "mouseup", cb)
     if (bits & 0x00010):
-        mf.addEventListener(element, "mouseover", cb)
+        aev(element, "mouseover", cb)
     if (bits & 0x00020):
-        mf.addEventListener(element, "mouseout", cb)
+        aev(element, "mouseout", cb)
     if (bits & 0x00040):
-        mf.addEventListener(element, "mousemove", cb)
+        aev(element, "mousemove", cb)
     if (bits & 0x00080):
-        mf.addEventListener(element, "keydown", cb)
+        aev(element, "keydown", cb)
     if (bits & 0x00100):
-        mf.addEventListener(element, "keypress", cb)
+        aev(element, "keypress", cb)
     if (bits & 0x00200):
-        mf.addEventListener(element, "keyup", cb)
+        aev(element, "keyup", cb)
     if (bits & 0x00400):
-        mf.addEventListener(element, "change", cb)
+        aev(element, "change", cb)
     if (bits & 0x00800):
-        mf.addEventListener(element, "focus", cb)
+        aev(element, "focus", cb)
     if (bits & 0x01000):
-        mf.addEventListener(element, "blur", cb)
+        aev(element, "blur", cb)
     if (bits & 0x02000):
-        mf.addEventListener(element, "losecapture", cb)
+        aev(element, "losecapture", cb)
     if (bits & 0x04000):
-        mf.addEventListener(element, "scroll", cb)
+        aev(element, "scroll", cb)
     if (bits & 0x08000):
-        mf.addEventListener(element, "load", cb)
+        aev(element, "load", cb)
     if (bits & 0x10000):
-        mf.addEventListener(element, "error", cb)
+        aev(element, "error", cb)
     if (bits & 0x20000):
-        mf.addEventListener(element, "contextmenu", cb)
+        aev(element, "contextmenu", cb)
 
     # mozilla stupidly has DOMMouseScroll...
     sinkEventsMozilla(element, bits)

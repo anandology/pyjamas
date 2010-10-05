@@ -30,7 +30,7 @@ class KitchenSink:
     def onHistoryChanged(self, token):
         log.writebr("onHistoryChanged: %s" % token)
         info = self.sink_list.find(token)
-        if info:
+        if info is not None:
             self.show(info, False)
         else:
             self.showInfo()
