@@ -175,6 +175,7 @@ class UIObject(Applier):
         # emulate setStyleName(self, style)
         if style is not None:
             setStyleName(element, style, add)
+            return
         style = element
         DOM.setAttribute(self.element, "className", style)
 
