@@ -173,11 +173,10 @@ class UIObject(Applier):
            for addStyleName and removeStyleName.
         """
         # emulate setStyleName(self, style)
-        if style is None:
-            style = element
-            DOM.setAttribute(self.element, "className", style)
-            return
-        setStyleName(element, style, add)
+        if style is not None:
+            setStyleName(element, style, add)
+        style = element
+        DOM.setAttribute(self.element, "className", style)
 
     def setStyleAttribute(self, attribute, value=None):
         """ can be called with two forms:
