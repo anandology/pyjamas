@@ -91,19 +91,21 @@ class UIObject(Applier):
         fullClassName = self.getStyleName()
         if fullClassName: return fullClassName.split()[0]
 
-    # can be called with two forms:
-    # getStyleAttribute(self, attr) - returns value
-    # getStyleAttribute(self, (attr1,attr2,...)) - returns dictionary of attr:value pairs
     def getStyleAttribute(self, attribute):
-        # if attribute is not a string, assume it is an iterable using the the multi-attribute form
+        """ can be called with two forms:
+            getStyleAttribute(self, attr) - returns value
+            getStyleAttribute(self, (attr1,attr2,...)) - returns dictionary
+                                                         of attr:value pairs
+        """
         if isinstance(attribute, str):
-            return DOM.getStyleAttribute(self.getElement(),attribute)
-        else:   # iterate over attributes
-            el = self.getElement()
-            result = {}
-            for attr in attribute:
-                result[attr] = DOM.getStyleAttribute(el,attr)
-            return result
+            return DOM.getStyleAttribute(self.getElement(), attribute)
+        # if attribute is not a string, assume it is iterable,
+        # and return the multi-attribute form
+        el = self.getElement()
+        result = {}
+        for attr in attribute:
+            result[attr] = DOM.getStyleAttribute(el,attr)
+        return result
 
     def getTitle(self):
         return DOM.getAttribute(self.element, "title")
@@ -177,16 +179,18 @@ class UIObject(Applier):
             return
         setStyleName(element, style, add)
 
-    # can be called with two forms:
-    # single attr:  setStyleAttribute(self, attr, value)
-    # multi  attr:  setStyleAttribute(self, {attr1:val1, attr2:val2, ...})
     def setStyleAttribute(self, attribute, value=None):
+        """ can be called with two forms:
+            single attr:  setStyleAttribute(self, attr, value)
+            multi  attr:  setStyleAttribute(self, {attr1:val1, attr2:val2, ...})
+        """
         if value is not None:   # assume single attr form
             DOM.setStyleAttribute(self.getElement(), attribute, value)
-        else:   # assume multi value form
-            el = self.getElement()
-            for attr,val in attribute.items():
-                DOM.setStyleAttribute(el,attr,val)
+            return
+        # assume multi value form
+        el = self.getElement()
+        for attr, val in attribute.items():
+            DOM.setStyleAttribute(el, attr, val)
 
     def setTitle(self, title):
         DOM.setAttribute(self.element, "title", title)
