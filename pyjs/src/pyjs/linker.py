@@ -299,10 +299,10 @@ class BaseLinker(object):
             plat_suffix = ''
         if self.compile_inplace:
             mod_part, extension = os.path.splitext(file_path)
-            out_file = '%s%s.jsc' % (mod_part, plat_suffix)
+            out_file = '%s%s.js' % (mod_part, plat_suffix)
         else:
             out_file = os.path.join(self.output, 'lib',
-                                    '%s%s.jsc' % (module_name, plat_suffix))
+                                    '%s%s.js' % (module_name, plat_suffix))
         if out_file in self.done.get(platform, []):
             return
         
