@@ -7,4 +7,5 @@ examples/showcase/src/demoInfo.py
 output
 *.pyc
 *.pyo
+*.js[co]
 .*.sw?
