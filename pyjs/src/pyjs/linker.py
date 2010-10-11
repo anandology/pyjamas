@@ -319,8 +319,8 @@ class BaseLinker(object):
                     fp = open(out_file, 'w')
                     fp.write("/* start javascript include: %s */\n" % file_name)
                     fp.write(open(file_path, 'r').read())
-                    fp.write("$pyjs.loaded_modules['%s'] = ")
-                    fp.write("function ( ) {return null;};\n" % file_name)
+                    fp.write("$pyjs.loaded_modules['%s'] = " % file_name)
+                    fp.write("function ( ) {return null;};\n")
                     fp.write("/* end %s */\n" % file_name)
                 deps = []
                 self.dependencies[out_file] = deps
