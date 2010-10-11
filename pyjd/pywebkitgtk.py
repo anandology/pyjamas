@@ -101,7 +101,7 @@ from traceback import print_stack, print_exc
 
 import gtk
 import gobject
-import pywebkit
+import webkit as pywebkit
 
 def module_load(m):
     minst = None
@@ -196,6 +196,7 @@ class Callback:
         self.cb = cb
         self.boolparam = boolparam
     def _callback(self, event):
+        #print "callback", self.sender, self.cb
         try:
             return self.cb(self.sender, event, self.boolparam)
         except:
@@ -207,8 +208,10 @@ def addWindowEventListener(self, event_name, cb):
     setattr(self.get_dom_window(), "on%s" % event_name, cb._callback)
 
 def addXMLHttpRequestEventListener(element, event_name, cb):
+    #print "add XMLHttpRequest", element, event_name, cb
     cb = Callback(element, cb, True)
-    return element.addEventListener(event_name, cb._callback, True)
+    setattr(element, "on%s" % event_name, cb._callback)
+    #return element.addEventListener(event_name, cb._callback, True)
 
 def addEventListener(element, event_name, cb):
     #    element._callbacks.append(cb)
@@ -393,7 +396,8 @@ class Browser(gtk.Window):
         return 1
 
     def _javascript_console_message_cb(self, view, message, line, sourceid):
-        self._statusbar.show_javascript_info()
+        #self._statusbar.show_javascript_info()
+        pass
 
     def _javascript_script_alert_cb(self, view, frame, message):
 

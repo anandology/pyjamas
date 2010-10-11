@@ -129,8 +129,10 @@ class HTTPRequest:
             import base64
             headers["Authorization"] = 'Basic %s' % (base64.b64encode('%s:%s' % (user, pwd)))
 
-        if postData is not None and not "Content-Length" in headers:
-            headers["Content-Length"] = str(len(postData))
+        mf = get_main_frame()
+        if mf.platform != 'webkit':
+            if postData is not None and not "Content-Length" in headers:
+                headers["Content-Length"] = str(len(postData))
         if content_type is not None:
             headers["Content-Type"] = content_type
         if not "Content-Type" in headers:
@@ -143,9 +145,16 @@ class HTTPRequest:
         #    xmlHttp.setRequestHeader("Set-Cookie", c)
         #    print "setting cookie", c
 
-        mf = get_main_frame()
         xmlHttp = self.doCreateXmlHTTPRequest()
         url = self._convertUrlToAbsolute(url)
+
+        if mf.platform == 'webkit' or mf.platform == 'mshtml':
+            mf._addXMLHttpRequestEventListener(xmlHttp, "readystatechange",
+                                         self.onReadyStateChange)
+        else:
+            mf._addXMLHttpRequestEventListener(xmlHttp, "load",
+                                         self.onLoad)
+
         print "xmlHttp", method, user, pwd, url, postData, handler, dir(xmlHttp)
         #try :
         if mf.platform == 'webkit' or mf.platform == 'mshtml':
@@ -166,14 +175,8 @@ class HTTPRequest:
         #    headers["Set-Cookie"].append(c)
         #    print "setting cookie", c
 
-        if mf.platform == 'webkit' or mf.platform == 'mshtml':
-            mf._addXMLHttpRequestEventListener(xmlHttp, "onreadystatechange",
-                                         self.onReadyStateChange)
-        else:
-            mf._addXMLHttpRequestEventListener(xmlHttp, "load",
-                                         self.onLoad)
         handlers[xmlHttp] = handler
-        xmlHttp.send(postData)
+        xmlHttp.send(postData or '')
 
         return True
 
