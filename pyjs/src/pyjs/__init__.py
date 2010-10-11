@@ -12,3 +12,4 @@ if os.environ.has_key('PYJSPATH'):
         if os.path.isdir(p):
             path.append(p)
 
+MOD_SUFFIX = '.js'

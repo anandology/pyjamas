@@ -299,10 +299,10 @@ class BaseLinker(object):
             plat_suffix = ''
         if self.compile_inplace:
             mod_part, extension = os.path.splitext(file_path)
-            out_file = '%s%s.jsc' % (mod_part, plat_suffix)
+            out_file = mod_part + plat_suffix + pyjs.MOD_SUFFIX
         else:
             out_file = os.path.join(self.output, 'lib',
-                                    '%s%s.jsc' % (module_name, plat_suffix))
+                                    module_name + plat_suffix + pyjs.MOD_SUFFIX)
         if out_file in self.done.get(platform, []):
             return
         
@@ -319,8 +319,8 @@ class BaseLinker(object):
                     fp = open(out_file, 'w')
                     fp.write("/* start javascript include: %s */\n" % file_name)
                     fp.write(open(file_path, 'r').read())
-                    fp.write("$pyjs.loaded_modules['%s'] = ")
-                    fp.write("function ( ) {return null;};\n" % file_name)
+                    fp.write("$pyjs.loaded_modules['%s'] = " % file_name)
+                    fp.write("function ( ) {return null;};\n")
                     fp.write("/* end %s */\n" % file_name)
                 deps = []
                 self.dependencies[out_file] = deps

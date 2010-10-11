@@ -138,7 +138,7 @@ class SpidermonkeyLinker(linker.BaseLinker):
         available_modules = self.visited_modules[PLATFORM]
 
         out_file = open(
-            os.path.join(self.output, self.top_module + '.jsc'), 'w')
+            os.path.join(self.output, self.top_module + pyjs.MOD_SUFFIX), 'w')
         out_file.write(APP_TEMPLATE % locals())
         out_file.close()
 
