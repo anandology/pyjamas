@@ -49,6 +49,12 @@ def createInputRadio(group):
     return $doc.createElement("<INPUT type='RADIO' name='" + @{{group}} + "'>");
     """)
 
+def eventGetType(event):
+    etype = event.type
+    if etype == 'propertychange':
+        return 'input'
+    return etype
+
 def eventGetCurrentTarget(event):
     return event.currentEventTarget
 

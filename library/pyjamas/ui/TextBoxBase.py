@@ -92,7 +92,7 @@ class TextBoxBase(FocusWidget):
             for listener in self.changeListeners:
                 if hasattr(listener, 'onChange'): listener.onChange(self)
                 else: listener(self)
-        if type == "input" or type == "propertychange":
+        if type == "input":
             for listener in self.inputListeners:
                 if hasattr(listener, 'onInput'): listener.onInput(self)
                 else: listener(self)

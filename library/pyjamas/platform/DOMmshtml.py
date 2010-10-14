@@ -92,6 +92,12 @@ def compare(elem1, elem2):
 def createInputRadio(group):
     return doc().createElement("<INPUT type='RADIO' name='" + group + "'>")
 
+def eventGetType(event):
+    etype = event.type
+    if etype == 'propertychange':
+        return 'input'
+    return etype
+
 def eventGetTarget(evt):
     return evt.srcElement
 

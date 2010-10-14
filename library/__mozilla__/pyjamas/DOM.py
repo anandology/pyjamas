@@ -22,6 +22,12 @@ def compare(elem1, elem2):
     return (@{{elem1}}.isSameNode(@{{elem2}}));
     """)
 
+def eventGetType(event):
+    etype = event.type
+    if etype == 'DOMMouseScroll':
+        return 'mousewheel'
+    return etype
+
 def eventGetButton(evt):
     JS("""
     var button = @{{evt}}.which;
