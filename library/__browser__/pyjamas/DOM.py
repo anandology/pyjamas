@@ -170,6 +170,8 @@ def eventGetTypeInt(event):
       case "contextmenu": return 0x20000;
       case "mousewheel": return 0x40000;
       case "DOMMouseScroll": return 0x40000;
+      case "input": return 0x80000;
+      case "propertychange": return 0x80000;
     }
     """)
 
@@ -599,6 +601,7 @@ def sinkEvents(element, bits):
 @{{element}}.onerror    = (@{{bits}} & 0x10000) ? $wnd.__dispatchEvent:null;
 @{{element}}.oncontextmenu = (@{{bits}} & 0x20000) ? $wnd.__dispatchEvent:null;
 @{{element}}.onmousewheel = (@{{bits}} & 0x40000) ? $wnd.__dispatchEvent:null;
+@{{element}}.oninput    = (@{{bits}} & 0x80000) ? $wnd.__dispatchEvent:null;
     """)
     sinkEventsMozilla(element, bits)
 

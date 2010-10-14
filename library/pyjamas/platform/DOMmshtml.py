@@ -69,6 +69,7 @@ def init():
     mf.addEventListener(body, "focus", _dispatchEvent)
     mf.addEventListener(body, "blur", _dispatchEvent)
     mf.addEventListener(body, "dblclick", _dispatchEvent)
+    mf.addEventListener(body, "propertychange", _dispatchEvent)
 
     _init_mousewheel()
 

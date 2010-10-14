@@ -30,10 +30,11 @@ class TextBoxBase(FocusWidget):
 
     def __init__(self, element, **kwargs):
         self.changeListeners = []
+        self.inputListeners = []
         self.currentEvent = None
 
         FocusWidget.__init__(self, element, **kwargs)
-        self.sinkEvents(Event.ONCHANGE)
+        self.sinkEvents(Event.ONCHANGE | Event.ONINPUT)
 
     @classmethod
     def _getProps(self):
@@ -91,6 +92,16 @@ class TextBoxBase(FocusWidget):
             for listener in self.changeListeners:
                 if hasattr(listener, 'onChange'): listener.onChange(self)
                 else: listener(self)
+        if type == "input" or type == "propertychange":
+            for listener in self.inputListeners:
+                if hasattr(listener, 'onInput'): listener.onInput(self)
+                else: listener(self)
+                
+    def addInputListener(self, listener):
+        self.inputListeners.append(listener)
+        
+    def removeInputListener(self, listener):
+        self.inputListeners.remove(listener)
 
     def removeChangeListener(self, listener):
         self.changeListeners.remove(listener)

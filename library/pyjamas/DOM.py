@@ -47,7 +47,8 @@ from pyjamas.ui.Event import (
     ONMOUSEOUT,
     ONMOUSEOVER,
     ONMOUSEUP,
-    ONSCROLL
+    ONSCROLL,
+    ONINPUT
 )
 
 
@@ -444,6 +445,8 @@ eventmap = {
       "contextmenu": 0x20000,
       "mousewheel": 0x40000,
       "DOMMouseScroll": 0x40000,
+      "input": 0x80000,
+      "propertychange": 0x80000,
       }
 
 
@@ -977,6 +980,8 @@ def sinkEvents(element, bits):
         aev(element, "error", cb)
     if (bits & 0x20000):
         aev(element, "contextmenu", cb)
+    if (bits & 0x80000):
+        aev(element, "input", cb)
 
     # mozilla stupidly has DOMMouseScroll...
     sinkEventsMozilla(element, bits)

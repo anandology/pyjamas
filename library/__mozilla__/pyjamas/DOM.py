@@ -209,4 +209,11 @@ def sinkEventsMozilla(element, bits):
         @{{element}}.removeEventListener("DOMMouseScroll", $wnd.__dispatchEvent,
                                     false);
     }
+    if (@{{bits}} & 0x80000) {
+        @{{element}}.addEventListener("input", $wnd.__dispatchEvent,
+                                    false);
+    } else {
+        @{{element}}.removeEventListener("input", $wnd.__dispatchEvent,
+                                    false);
+    }
     """)
