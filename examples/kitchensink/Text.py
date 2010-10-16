@@ -24,10 +24,31 @@ class Text(Sink):
         panel.add(self.createTextThing(self.fPasswordText))
         panel.add(HTML("Text area:"))
         panel.add(self.createTextThing(self.fTextArea))
+        
+        panel.add(HTML("""Textarea below demos oninput event. oninput allows
+to detect when the content of an element has changed. This is different
+from examples above, where changes are detected only if they are made with
+keyboard. oninput occurs when the content is changed through any user
+interface(keyboard, mouse, etc.). For example, at first type few chars, but
+then paste some text to the text areas above and below by selecting 'Paste'
+command from context menu or by dragging&dropping and see the difference.
+oninput is similar to onchange event, but onchange event fires only when a
+text-entry widget loses focus."""))
+        vp = VerticalPanel()
+        self.echo = HTML()
+        textArea = TextArea()
+        vp.add(textArea)
+        vp.add(self.echo)
+        textArea.addInputListener(self)
+        panel.add(vp)
+        
         self.initWidget(panel)
 
     def onShow(self):
         pass
+    
+    def onInput(self, sender):
+        self.echo.setText(sender.getText())
 
     def createTextThing(self, textBox):
         p = HorizontalPanel()
