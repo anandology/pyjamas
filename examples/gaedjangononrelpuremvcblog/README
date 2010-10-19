@@ -1,0 +1,19 @@
+This project combines concepts from django-nonrel, puremvc and google app engine.
+
+This application is inspired by: http://trac.puremvc.org/Demo_Python_GoogleAppEngine_Blog  by Nathan Levesque.
+
+Dependencies:
+django-nonrel (http://www.allbuttonspressed.com/projects/django-nonrel)
+puremvc (http://puremvc.org/)
+google app engine sdk (http://code.google.com/appengine/downloads.html)
+
+Assumptions:
+Your pyjamas source code is at /home/<username>/code/pyjamas/
+you have run python bootstrap.py from pyjamas root (/home/<username>/code/pyjamas/)
+this project is located at /home/<username>/<project directory>/gae_django_nonrel_puremvc_blog/
+
+follow the google app engine installation instructions 
+follow the django-nonrel installation instructions:place django-nonrel directories into application root (gae_django_nonrel_puremvc_blog directory)
+from application root/media run build.sh
+from application root run python manage.py runserver
+open browser and go to: http://localhost:8000/
