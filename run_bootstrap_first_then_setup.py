@@ -74,14 +74,14 @@ import distutils.core
 
 if __name__ == '__main__':
 
-    print >> sys.stderr, """
+    sys.stderr.write("""
     Have you run bootstrap.py to create bin/pyjsbuild
     and bin/pyjscompile?
 
     e.g. on Unix systems:
 
         python bootstrap.py /usr/share/pyjamas /usr
-    """
+    """)
 
     setup(name = "Pyjamas",
         version = "0.7",

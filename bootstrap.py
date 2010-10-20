@@ -105,7 +105,7 @@ def make_cmd(prefix, pth, pyjsversion, pyjspth, cmdname, txt):
     if os.path.exists(cmd):
         if     sys.platform == 'win32' \
            and hasattr(os, "chmod"):
-            os.chmod(cmd, 0755)
+            os.chmod(cmd, 0x1ed)
         os.unlink(cmd)
     f = open(cmd, "w")
     f.write(txt % {'exec': sys.executable, 
@@ -115,7 +115,7 @@ def make_cmd(prefix, pth, pyjsversion, pyjspth, cmdname, txt):
     f.close()
 
     if hasattr(os, "chmod"):
-        os.chmod(cmd, 0555)
+        os.chmod(cmd, 0x16d)
 
     if sys.platform == 'win32':
         cmd = os.path.join("bin", cmdname)
