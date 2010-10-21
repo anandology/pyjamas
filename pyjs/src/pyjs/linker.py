@@ -107,10 +107,7 @@ def out_translate(platform, file_names, out_file, module_name,
         opts = ["--module-name", module_name,
                 "-o", out_file.replace(" ", r"\ "),
                ] + get_translator_opts(translator_args) + file_names
-        exe = os.path.realpath(sys.executable) if sys.executable else None
-        if exe is None or not os.access(exe, os.X_OK):
-            exe = 'python'
-        opts = [exe] + ['translator.py'] + opts
+        opts = [pyjs.PYTHON] + ['translator.py'] + opts
         pyjscompile_cmd = ' '.join(opts)
         #print pyjscompile_cmd - use this to create Makefile code-fragment
         proc = subprocess.Popen(pyjscompile_cmd,
