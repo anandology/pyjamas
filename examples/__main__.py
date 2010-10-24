@@ -6,7 +6,7 @@ import os
 import sys
 import subprocess
 
-import _util
+from _assets import util
 
 
 head = os.path.dirname(__file__)
@@ -18,13 +18,31 @@ examples = [
 ]
 
 env = os.environ.copy()
-env.setdefault('PYJS_BIN_PYTHON', _util._find_python())
-env.setdefault('PYJS_BIN_PYJSBUILD', _util._find_pyjsbuild(head))
+# Not ready yet
+#env['PYJS_OPT_PROXYINSTALL'] = '1'
+if 'PYJS_BIN_PYTHON' not in env:
+    env['PYJS_BIN_PYTHON'] = util._find_python()
+if 'PYJS_DIR_PYJAMAS' not in env:
+    env.update(dict([
+        ('PYJS_' + k, v)
+        for k, v in util._process_pyjamas(head).items()
+    ]))
 
 for example in examples:
-    header = ''.ljust(10, '-') + ' Building {0} '
-    header = header.format(example.upper()).ljust(69, '-') + '\n'
+    header = ''.ljust(10, '-') + '( Building {0} )'
+    header = '\n' + header.format(example.upper()).ljust(69, '-') + '\n\n'
     sys.stdout.write(header)
     sys.stdout.flush()
     e = subprocess.Popen([env['PYJS_BIN_PYTHON'], os.path.join(head, example)] + sys.argv[1:], env=env)
     e.wait()
+
+complete = [
+    '\n' + '( Pyjs )'.center(69, '-') + '\n',
+    '  Complete! View examples via:',
+    '  # cd {0}'.format(head),
+    '  # {0} -m SimpleHTTPServer'.format(env['PYJS_BIN_PYTHON']),
+    '  http://localhost:8000',
+    '\n' + '( Pyjs )'.center(69, '-') + '\n\n',
+]
+
+sys.stdout.write('\n'.join(complete))
