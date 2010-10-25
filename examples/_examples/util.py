@@ -70,7 +70,7 @@ class _e(object):
 
 
 def _find_python():
-    if sys.version_info.major == 2 and sys.executable and os.path.isfile(sys.executable):
+    if sys.version_info[0] == 2 and sys.executable and os.path.isfile(sys.executable):
         return sys.executable
     for python in ('python2', 'python2.7', 'python2.6'):
         try:
