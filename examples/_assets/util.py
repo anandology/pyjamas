@@ -196,19 +196,32 @@ def install(package=None, **packages):
     if not packages:
         raise TypeError('Nothing to install.')
     index = os.path.join(ENV['DIR_EXAMPLES'], 'index.html')
-    if os.path.isfile(index):
-        idx_out_fd = open(index, 'r+')
-        tpl = idx_out_fd.read()
-        idx_out_fd.seek(0)
-        idx_out_fd.truncate()
+    try:
+        if os.path.isfile(index):
+            idx_out_fd = open(index, 'r+')
+            index_orig = tpl = idx_out_fd.read()
+            idx_out_fd.seek(0)
+            idx_out_fd.truncate()
+        else:
+            idx_out_fd = open(index, 'w')
+            index_orig = tpl = None
+        if tpl is None or '<style>' in tpl:
+            examples = ''.join([
+                INDEX['example'].format(name=example)
+                for example in _list_examples()
+            ])
+            index_tpl = os.path.join(ENV['DIR_EXAMPLES'], '_assets', 'template', 'index.html.tpl')
+            with open(index_tpl, 'r') as idx_in_fd:
+                tpl = idx_in_fd.read().format(examples)
+        index_new = tpl.format(example=_e(packages))
+    except:
+        if index_orig is None:
+            idx_out_fd.close()
+            os.unlink(index)
+        else:
+            idx_out_fd.write(index_orig)
+        raise
     else:
-        idx_out_fd = open(index, 'w')
-        examples = ''.join([
-            INDEX['example'].format(name=example)
-            for example in _list_examples()
-        ])
-        index_ = os.path.join(ENV['DIR_EXAMPLES'], '_assets', 'template', 'index.html.tpl')
-        with open(index_, 'r') as idx_in_fd:
-            tpl = idx_in_fd.read().format(examples)
-    idx_out_fd.write(tpl.format(example=_e(packages)))
-    idx_out_fd.close()
+        idx_out_fd.write(index_new)
+    finally:
+        idx_out_fd.close()
