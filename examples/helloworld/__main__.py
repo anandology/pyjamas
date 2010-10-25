@@ -39,7 +39,7 @@ import os
 
 head = os.path.dirname(__file__)
 sys.path.insert(0, os.path.join(head, '..'))
-from _assets import util
+from _examples import util
 sys.path.pop(0)
 
 util.init(head)

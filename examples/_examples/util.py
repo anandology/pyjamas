@@ -210,7 +210,7 @@ def install(package=None, **packages):
                 INDEX['example'].format(name=example)
                 for example in _list_examples()
             ])
-            index_tpl = os.path.join(ENV['DIR_EXAMPLES'], '_assets', 'template', 'index.html.tpl')
+            index_tpl = os.path.join(ENV['DIR_EXAMPLES'], '_examples', 'template', 'index.html.tpl')
             with open(index_tpl, 'r') as idx_in_fd:
                 tpl = idx_in_fd.read().format(examples)
         index_new = tpl.format(example=_e(packages))

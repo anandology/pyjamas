@@ -6,7 +6,7 @@ import os
 import sys
 import subprocess
 
-from _assets import util
+from _examples import util
 
 
 head = os.path.dirname(__file__)
@@ -29,8 +29,7 @@ if 'PYJS_DIR_PYJAMAS' not in env:
     ]))
 
 for example in examples:
-    header = ''.ljust(10, '-') + '( Building {0} )'
-    header = '\n' + header.format(example.upper()).ljust(69, '-') + '\n\n'
+    header = '\n' + '( Building {0} )'.format(example.upper()).center(69, '-') + '\n\n'
     sys.stdout.write(header)
     sys.stdout.flush()
     e = subprocess.Popen([env['PYJS_BIN_PYTHON'], os.path.join(head, example)] + sys.argv[1:], env=env)
