@@ -744,7 +744,7 @@ class ArgsTest(UnitTest):
             self.assertEquals(values[0], 1)
             self.assertEquals(values[1], 2)
             self.assertEquals(values[2], 3)
-        except:
+        except TypeError:
             self.fail('foo() takes exactly 4 arguments (5 given), bug #503')
 
 

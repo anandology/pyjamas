@@ -5523,6 +5523,11 @@ def getattr(obj, name, default_value=None):
     fnwrap.__args__ = @{{obj}}[mapped_name].__args__;
     fnwrap.__class__ = @{{obj}}.__class__;
     fnwrap.__bind_type__ = @{{obj}}[mapped_name].__bind_type__;
+    if (typeof @{{obj}}[mapped_name].__is_instance__ != 'undefined') {
+        fnwrap.__is_instance__ = @{{obj}}[mapped_name].__is_instance__;
+    } else {
+        fnwrap.__is_instance__ = false;
+    }
     return fnwrap;
     """)
 
