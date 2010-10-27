@@ -1,7 +1,3 @@
-""" test.py
-
-    Simple testing framework for the raphael wrapper.
-"""
 from pyjamas.ui.HTML        import HTML
 from pyjamas.ui.RootPanel   import RootPanel
 from pyjamas.ui.SimplePanel import SimplePanel
@@ -19,7 +15,7 @@ import pyjd
 class Spinner(SimplePanel):
     """ Our testing panel.
     """
-    def __init__(self):
+    def __init__(self,width=600,height=300):
         """ Standard initialiser.
         """
         SimplePanel.__init__(self)
@@ -67,7 +63,7 @@ class Spinner(SimplePanel):
 #############################################################################
 
 if __name__ == "__main__":    
-    pyjd.setup("./media/spinner.html")
+    pyjd.setup("public/spinner.html")
     spinner=Spinner()
     RootPanel().add(spinner)
     spinner.draw()

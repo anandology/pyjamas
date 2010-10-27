@@ -13,11 +13,11 @@ from pyjamas.ui.HTML import HTML
 from pyjamas.ui import HasAlignment
 from pyjamas import DOM
 from pyjamas import log
-from pyjamas.raphael.raphael import Raphael
+#from pyjamas.raphael.raphael import Raphael
 
-from graffle import Graffle
-from events import Events
-from spinner import Spinner
+import graffle
+import events
+import spinner
 
 
 class TabContainer(DockPanel):
@@ -60,19 +60,19 @@ class ShowCaseApp(object):
         
         self.tab_events=TabRaphaelContainer()
         self.tab_events.set_headline('Events Example')
-        self.tab_events.set_raphael(Events(width=600,height=300))
+        self.tab_events.set_raphael(events.Events(width=600,height=300))
         self.tab_events.set_status('Execute events on Raphael Elemnts')
-        self.tabs.add(self.tab_simple, 'Events')
+        self.tabs.add(self.tab_events, 'Events')
 
-        tab_graffle=TabRaphaelContainer()
-        tab_graffle.set_headline('This is a simple example of the Raphael Graffle')
-        tab_graffle.set_raphael(Graffle(width=600,height=300))
-        self.tabs.add(tab_sgraffle, 'Graffle')
+        self.tab_graffle=TabRaphaelContainer()
+        self.tab_graffle.set_headline('This is a simple example of the Raphael Graffle')
+        self.tab_graffle.set_raphael(graffle.Graffle(width=600,height=300))
+        self.tabs.add(self.tab_graffle, 'Graffle')
 
-        tab_spinner=TabRaphaelContainer()
-        tab_spinner.set_headline('This Raphael Spinner Example')
-        tab_spinner.set_raphael(Spinner(width=600,height=300))
-        self.tabs.add(tab_sgraffle, 'Spinner')
+        self.tab_spinner=TabRaphaelContainer()
+        self.tab_spinner.set_headline('This Raphael Spinner Example')
+        self.tab_spinner.set_raphael(spinner.Spinner(width=600,height=300))
+        self.tabs.add(self.tab_spinner, 'Spinner')
         
         self.tabs.selectTab(0)
         self.tabs.setWidth("100%")
@@ -80,14 +80,18 @@ class ShowCaseApp(object):
         RootPanel().add(self.tabs)
     
     def draw(self):
-        self.tab_simple.raphael.draw()
+        self.tab_spinner.raphael.draw()
+        self.tab_graffle.raphael.draw()
+        #self.tab_events.raphael.draw()
 
+        
 
 if __name__ == "__main__":    
-    pyjd.setup("./media/raphael_showcase.html")
+    pyjd.setup("public/raphael_showcase.html")
     app=ShowCaseApp()
     app.onModuleLoad()
     app.draw()
-    app.rect1.getBBox()
+    app.tab_graffle.raphael.connect()
+    app.tab_events.raphael.connect()    
     pyjd.run()
 

@@ -1,8 +1,3 @@
-""" test.py
-
-    Simple testing framework for the raphael wrapper.
-"""
-
 import pyjd
 from pyjamas.ui.RootPanel   import RootPanel
 from pyjamas.ui.TabPanel import TabPanel
@@ -160,7 +155,7 @@ class Events(VerticalPanel):
         DOM.eventPreventDefault(event)
         
 if __name__ == "__main__":    
-    pyjd.setup("./media/events.html")
+    pyjd.setup("public/events.html")
     events=Events()
     RootPanel().add(events)
     events.draw()
