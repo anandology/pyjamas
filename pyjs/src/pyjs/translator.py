@@ -3217,7 +3217,13 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 raise TranslationError(
                     "unsupported flag (in _assign)", v, self.module_name)
             if self.descriptors:
-                self.w( self.spacing() + "@{{setattr}}(%s, '%s', %s);" % (lhs, attr_name, rhs))
+                desc_setattr = [
+                    "%(l)s.__is_instance__ &&",
+                    "typeof %(l)s.__setattr__ == 'function' ?",
+                    "%(l)s.__setattr__('%(a)s', %(r)s) :",
+                    "@{{setattr}}(%(l)s, '%(a)s', %(r)s);",
+                ]
+                self.w( self.spacing() + ' '.join(desc_setattr) % {'l': lhs, 'a': attr_name, 'r': rhs})
                 return
             lhs += '.' + attr_name
 
