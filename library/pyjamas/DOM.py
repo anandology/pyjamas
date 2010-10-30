@@ -447,6 +447,8 @@ eventmap = {
       "DOMMouseScroll": 0x40000,
       "input": 0x80000,
       "propertychange": 0x80000,
+      "dragevents": 0x100000,
+      "dropevents": 0x200000,
       }
 
 
@@ -982,6 +984,16 @@ def sinkEvents(element, bits):
         aev(element, "contextmenu", cb)
     if (bits & 0x80000):
         aev(element, "input", cb)
+    if (bits & 0x100000):
+        aev(element, "drag", cb)
+        aev(element, 'dragstart', cb)
+        aev(element, 'dragend', cb)
+    if (bits & 0x200000):
+        aev(element, "drop", cb)
+        aev(element, "dragenter", cb)
+        aev(element, "dragover", cb)
+        aev(element, "dragleave", cb)
+
 
     # mozilla stupidly has DOMMouseScroll...
     sinkEventsMozilla(element, bits)

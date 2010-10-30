@@ -3,13 +3,13 @@
 
 
 TARGETS = [
-    'AbsolutePositionExample.py',
+    'DNDTest.py',
 ]
 
 
 PACKAGE = {
-    'title': 'Drag \'n Drop',
-    'desc': '(unknown)',
+    'title': 'Drag and Drop Tests',
+    'desc': 'Several tests of pyjamas drag and drop',
 }
 
 

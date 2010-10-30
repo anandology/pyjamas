@@ -22,6 +22,8 @@ from ClickListener import ClickHandler
 from FocusListener import FocusHandler
 from KeyboardListener import KeyboardHandler
 from MouseListener import MouseHandler, MouseWheelHandler
+from DragHandler import DragHandler
+from DropHandler import DropHandler
 
 class Widget(UIObject):
     """
@@ -72,6 +74,10 @@ class Widget(UIObject):
             MouseWheelHandler.onBrowserEvent(self, event)
         if hasattr(self, "_focusListeners"):
             FocusHandler.onBrowserEvent(self, event)
+        if hasattr(self, "_dragListeners"):
+            DragHandler.onBrowserEvent(self, event)
+        if hasattr(self, "_dropListeners"):
+            DropHandler.onBrowserEvent(self, event)
 
         if self.contextMenu is None:
             return True

@@ -172,6 +172,13 @@ def eventGetTypeInt(event):
       case "DOMMouseScroll": return 0x40000;
       case "input": return 0x80000;
       case "propertychange": return 0x80000;
+      case "dragstart": return 0x100000;
+      case "drag": return 0x100000;
+      case "dragend": return 0x100000;
+      case "dragenter": return 0x200000;
+      case "drop": return 0x200000;
+      case "dragleave": return 0x200000;
+      case "dragover": return 0x200000;
     }
     """)
 
@@ -602,6 +609,13 @@ def sinkEvents(element, bits):
 @{{element}}.oncontextmenu = (@{{bits}} & 0x20000) ? $wnd.__dispatchEvent:null;
 @{{element}}.onmousewheel = (@{{bits}} & 0x40000) ? $wnd.__dispatchEvent:null;
 @{{element}}.oninput    = (@{{bits}} & 0x80000) ? $wnd.__dispatchEvent:null;
+@{{element}}.ondragend = (@{{bits}} & 0x100000) ? $wnd.__dispatchEvent:null;
+@{{element}}.ondragstart = (@{{bits}} & 0x100000) ? $wnd.__dispatchEvent:null;
+@{{element}}.ondrag = (@{{bits}} & 0x100000) ? $wnd.__dispatchEvent:null;
+@{{element}}.ondragenter = (@{{bits}} & 0x200000) ? $wnd.__dispatchEvent:null;
+@{{element}}.ondrop = (@{{bits}} & 0x200000) ? $wnd.__dispatchEvent:null;
+@{{element}}.ondragleave = (@{{bits}} & 0x200000) ? $wnd.__dispatchEvent:null;
+@{{element}}.ondragover = (@{{bits}} & 0x200000) ? $wnd.__dispatchEvent:null;
     """)
     sinkEventsMozilla(element, bits)
 

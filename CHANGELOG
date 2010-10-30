@@ -57,6 +57,8 @@
 
  * Added "glass" opaque background option to PopupPanel, by Serge Tarkovski 
 
+ * Added HTML5 drag-and-drop support (native and emulated), by Jim Washington
+
                     Changes made to Pyjamas since 0.6
                     ---------------------------------
 

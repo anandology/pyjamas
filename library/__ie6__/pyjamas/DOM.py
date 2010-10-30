@@ -239,6 +239,13 @@ def sinkEvents(elem, bits):
 @{{elem}}.oncontextmenu = (@{{bits}} & 0x20000) ? $wnd.__dispatchEvent:null; 
 @{{elem}}.onmousewheel  = (@{{bits}} & 0x40000) ? $wnd.__dispatchEvent:null;
 @{{elem}}.onpropertychange = (@{{bits}} & 0x80000) ? $wnd.__dispatchEvent:null;
+@{{elem}}.ondragend = (@{{bits}} & 0x100000) ? $wnd.__dispatchEvent:null;
+@{{elem}}.ondragstart = (@{{bits}} & 0x100000) ? $wnd.__dispatchEvent:null;
+@{{elem}}.ondrag = (@{{bits}} & 0x100000) ? $wnd.__dispatchEvent:null;
+@{{elem}}.ondragenter = (@{{bits}} & 0x200000) ? $wnd.__dispatchEvent:null;
+@{{elem}}.ondrop = (@{{bits}} & 0x200000) ? $wnd.__dispatchEvent:null;
+@{{elem}}.ondragleave = (@{{bits}} & 0x200000) ? $wnd.__dispatchEvent:null;
+@{{elem}}.ondragover = (@{{bits}} & 0x200000) ? $wnd.__dispatchEvent:null;
     """)
 
 def toString(elem):
