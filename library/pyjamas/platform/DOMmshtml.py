@@ -9,10 +9,7 @@ def set_listener(item, listener):
 
 
 def _dispatchEvent(sender, event, useCap):
-    if event is not None:
-        evt = wnd().event
-    else:
-        evt = event
+    evt = wnd().event
     #print "_dispatchEvent", sender, evt, evt.type, evt.returnValue
 
     if evt.returnValue is None:
@@ -170,6 +167,8 @@ def isOrHasChild(parent, child):
     if parent is None:
         return False
     while child is not None:
+        if not hasattr(child, 'uniqueID'):
+            return False
         if parent.uniqueID == child.uniqueID:
             return True
         child = child.parentElement
