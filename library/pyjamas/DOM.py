@@ -505,7 +505,10 @@ def getAbsoluteTop(elem):
 
 
 def getAttribute(elem, attr):
-    return str(getattr(elem, attr))
+    attr = getattr(elem, attr)
+    if attr is None:
+        return None
+    return str(attr)
 
 
 def getElemAttribute(elem, attr):
