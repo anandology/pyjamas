@@ -9,7 +9,10 @@ def set_listener(item, listener):
 
 
 def _dispatchEvent(sender, event, useCap):
-    evt = wnd().event
+    if event is None:
+        evt = wnd().event
+    else:
+        evt = event
     #print "_dispatchEvent", sender, evt, evt.type, evt.returnValue
 
     if evt.returnValue is None:
@@ -99,7 +102,7 @@ def eventGetTarget(evt):
     return evt.srcElement
 
 def eventGetToElement(evt):
-    return hasattr(evt, "toElement") and (evt.toElement is not None) or None
+    return getattr(evt, "toElement", None)
 
 def eventPreventDefault(evt):
     evt.returnValue = False
@@ -167,8 +170,6 @@ def isOrHasChild(parent, child):
     if parent is None:
         return False
     while child is not None:
-        if not hasattr(child, 'uniqueID'):
-            return False
         if parent.uniqueID == child.uniqueID:
             return True
         child = child.parentElement
