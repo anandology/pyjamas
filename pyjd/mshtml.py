@@ -324,7 +324,12 @@ class Browser(EventSink):
         rcvr.sender = node
         ifc = rcvr.QueryInterface(IDispatch)
         v = VARIANT(ifc)
-        setattr(node, "on"+event_name, v)
+        try:
+            setattr(node, "on"+event_name, v)
+        except NameError, e:
+            print "mshtml.Browser.addEventListener: node %r, error: %r" % (
+                node, e,
+            )
         return ifc
 
         rcvr = mshtmlevents.GetDispEventReceiver(MSHTML.HTMLElementEvents2, event_fn, "on%s" % event_name)
