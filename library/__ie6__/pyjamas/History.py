@@ -36,7 +36,7 @@ def init():
             $wnd.location.hash = encodeURI(token).replace('#','%23');
             // TODO - move init back into History
             // this.onHistoryChanged(token);
-            @{{pyjamas}}.History.onHistoryChanged(token);
+            @{{onHistoryChanged}}(token);
         }
     };
 
