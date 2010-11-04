@@ -13,49 +13,82 @@
 # limitations under the License.
 
 from pyjamas import Factory
-from pyjamas.dnd import html5_dnd, makeDraggable, DNDHelper
+from pyjamas import DOM
+from pyjamas.ui.Widget import Widget
 from pyjamas.ui.MouseListener import MouseHandler
 from pyjamas.ui.DragHandler import DragHandler
-from pyjamas.ui.Widget import Widget
+from pyjamas.dnd import makeDraggable, DNDHelper
+import pyjd
 
-if not html5_dnd:
-    dndHelper = DNDHelper.dndHelper
-
-class DragWidget(Widget, DragHandler, MouseHandler):
+class DragWidget(object):
     """
         Mix-in class for a draggable widget.
         Override DragHandler on*** methods to enable drag behavior.
 
-        create
-
-
+        At runtime, we change the implementation based on html5
+        dra-and-drop capabilities of the engine.
     """
-    def __init__(self, **kw):
-        if (not hasattr(self, 'attached')) or kw:
-            Widget.__init__(self, **kw)
-        self.html5_dnd = html5_dnd
-        self.makeDraggable()
-        if self.html5_dnd:
-            DragHandler.__init__(self)
-            self.addDragListener(self)
-        else:
-            MouseHandler.__init__(self)
-            self.addMouseListener(dndHelper)
-
-    def makeDraggable(self):
-        makeDraggable(self)
+    pass
 
 
-class DragContainer(DragWidget):
+class DragContainer(object):
     """
     mixin providing drag handlers for contained draggables
     events bubble up to here.  event.target will be the actual draggable
 
-    This class is the same as dragWidget, but does to make itself draggable.
-    """
-    def makeDraggable(self):
-        pass
+    This class is the same as DragWidget, but does not make itself draggable.
 
+    At runtime, we change the implementation based on html5
+    drag-and-drop capabilities of the engine.
+    """
+    pass
+
+
+class Draggable(Widget):
+    def makeDraggable(self):
+        makeDraggable(self)
+
+
+class Html5DragContainer(Widget, DragHandler):
+    def __init__(self, **kw):
+        if (not hasattr(self, 'attached')) or kw:
+            Widget.__init__(self, **kw)
+        DragHandler.__init__(self)
+        self.addDragListener(self)
+
+
+class MouseDragContainer(Widget, MouseHandler, DragHandler):
+    def __init__(self, **kw):
+        if (not hasattr(self, 'attached')) or kw:
+            Widget.__init__(self, **kw)
+        MouseHandler.__init__(self)
+        self.addMouseListener(DNDHelper.dndHelper)
+
+
+class Html5DragWidget(Html5DragContainer, Draggable):
+    def __init__(self, **kw):
+        Html5DragContainer.__init__(self, **kw)
+        self.makeDraggable()
+
+
+class MouseDragWidget(MouseDragContainer, Draggable):
+    def __init__(self, **kw):
+        MouseDragContainer.__init__(self, **kw)
+        self.makeDraggable()
+
+
+def init():
+    global DragWidget, DragContainer
+    html5_dnd = hasattr(DOM.createElement('span'), 'draggable')
+    if html5_dnd:
+        DragContainer = Html5DragContainer
+        DragWidget = Html5DragWidget
+    else:
+        DragContainer = MouseDragContainer
+        DragWidget = MouseDragWidget
+
+if not pyjd.is_desktop:
+    init()
 
 Factory.registerClass('pyjamas.ui.DragWidget', 'DragWidget', DragWidget)
 Factory.registerClass('pyjamas.ui.DragWidget', 'DragContainer', DragContainer)

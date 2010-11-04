@@ -14,24 +14,42 @@
 
 
 from pyjamas import Factory
-from pyjamas.dnd import html5_dnd
+from pyjamas import DOM
 from pyjamas.dnd.DNDHelper import dndHelper
 from pyjamas.ui.Widget import Widget
 from pyjamas.ui.DropHandler import DropHandler
+import pyjd
+
+class DropWidget(object):
+    """
+    Mix-in class for a drop-target widget
+    """
+    pass
 
 
-class DropWidget(Widget, DropHandler):
-    """
-        Mix-in class for a drop-target widget
-    """
+class Html5DropWidget(Widget, DropHandler):
     def __init__(self, **kw):
         if (not hasattr(self, 'attached')) or kw:
             Widget.__init__(self, **kw)
-        self.html5_dnd = html5_dnd
         DropHandler.__init__(self)
         self.addDropListener(self)
-        if not self.html5_dnd:
-            dndHelper.registerTarget(self)
+
+
+class EmulatedDropWidget(Html5DropWidget):
+    def __init__(self, **kw):
+        Html5DropWidget.__init__(self, **kw)
+        dndHelper.registerTarget(self)
+
+
+def init():
+    global DropWidget
+    html5_dnd = hasattr(DOM.createElement('span'), 'draggable')
+    if html5_dnd:
+        DropWidget = Html5DropWidget
+    else:
+        DropWidget = EmulatedDropWidget
+
+if not pyjd.is_desktop:
+    init()
 
 Factory.registerClass('pyjamas.ui.DropWidget', 'DropWidget', DropWidget)
-
