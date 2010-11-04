@@ -14,32 +14,12 @@
 
 from pyjamas import DOM
 
-# http://diveintohtml5.org/peeks-pokes-and-pointers.html
-html5_dnd = hasattr(DOM.createElement('span'), 'draggable')
-
-#html5_dnd = False
-
 def makeDraggable(widget):
     element = widget.getElement()
     DOM.setAttribute(element, 'draggable', True)
-    # the following are needed for older versions of webkit/safari
-    widget.setStyleAttribute('-webkit-user-drag', 'element')
-    widget.setStyleAttribute('-webkit-user-select', 'none')
 
-# getTarget and getTypes are utilities provided to get around some of the
-# various flavors of events and dataTransfer.type objects.
-
-def getTarget(event):
-    try:
-        # normal
-        target = event.target
-    except:
-        # ie
-        target = event.srcElement
-    # some old safari
-    if target.nodeType == 3:
-        target = target.parentNode
-    return target
+# getTypes is provided to get around some of the
+# various flavors dataTransfer.type objects.
 
 def getTypes(event):
     types = []
