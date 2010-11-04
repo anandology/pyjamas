@@ -510,7 +510,7 @@ class DNDHelper(object):
                 self.returnDrag()
             else:
                 drop_event = DragEvent(event,'drop', self.currentTargetElement)
-                drop_event.dataTransfer._data = dndHelper.data
+                drop_event.dataTransfer._data = self.data
                 self.dropEffect = self.currentDragOperation
                 self.currentDropWidget.onDrop(drop_event)
                 if isCanceled(drop_event):
