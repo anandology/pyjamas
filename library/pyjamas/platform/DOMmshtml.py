@@ -7,40 +7,6 @@ def get_listener(item):
 def set_listener(item, listener):
     listeners[item.uniqueID] = listener
 
-
-def _dispatchEvent(sender, event, useCap):
-    if event is None:
-        evt = wnd().event
-    else:
-        evt = event
-    #print "_dispatchEvent", sender, evt, evt.type, evt.returnValue
-
-    if evt.returnValue is None:
-        evt.returnValue = True
-        if not previewEvent(evt):
-            return
-
-    cap = getCaptureElement()
-    listener = get_listener(cap)
-    if cap and (listener is not None):
-        #print "_dispatchEvent capture", cap, listener
-        dispatchEvent(evt, cap, listener)
-        return
-
-    curElem = sender
-    while curElem and (get_listener(curElem) is None):
-        curElem = curElem.parentElement
-    
-    listener = get_listener(curElem)
-    if listener is not None:
-        dispatchEvent(evt, curElem, listener)
-
-
-def buttonClick(elem):
-    newEvent = doc().createEventObject()
-    elem.fireEvent('onclick', newEvent)
-
-
 def init():
     
     mf = get_main_frame()
@@ -79,7 +45,38 @@ def _init_mousewheel():
     # XXX whoops, see above...
     body = doc().body
     mf.addEventListener(body, "mousewheel", _dispatchEvent)
+
+def _dispatchEvent(sender, event, useCap):
+    if event is None:
+        evt = wnd().event
+    else:
+        evt = event
+    #print "_dispatchEvent", sender, evt, evt.type, evt.returnValue
+
+    if evt.returnValue is None:
+        evt.returnValue = True
+        if not previewEvent(evt):
+            return
+
+    cap = getCaptureElement()
+    listener = get_listener(cap)
+    if cap and (listener is not None):
+        #print "_dispatchEvent capture", cap, listener
+        dispatchEvent(evt, cap, listener)
+        return
+
+    curElem = sender
+    while curElem and (get_listener(curElem) is None):
+        curElem = curElem.parentElement
     
+    listener = get_listener(curElem)
+    if listener is not None:
+        dispatchEvent(evt, curElem, listener)
+
+def buttonClick(elem):
+    newEvent = doc().createEventObject()
+    elem.fireEvent('onclick', newEvent)
+
 def compare(elem1, elem2):
     e1 = elem1 is not None
     e2 = elem2 is not None
@@ -92,17 +89,27 @@ def compare(elem1, elem2):
 def createInputRadio(group):
     return doc().createElement("<INPUT type='RADIO' name='" + group + "'>")
 
-def eventGetType(event):
-    etype = event.type
-    if etype == 'propertychange':
-        return 'input'
-    return etype
+def eventStopPropagation(evt):
+    eventCancelBubble(evt,True)
+
+def eventGetKeyCode(evt):
+    if hasattr(evt, "which"):
+        return evt.which
+    if hasattr(evt, "keyCode"):
+        return evt.keyCode
+    return 0
 
 def eventGetTarget(evt):
     return evt.srcElement
 
 def eventGetToElement(evt):
     return getattr(evt, "toElement", None)
+
+def eventGetType(event):
+    etype = event.type
+    if etype == 'propertychange':
+        return 'input'
+    return etype
 
 def eventPreventDefault(evt):
     evt.returnValue = False
@@ -157,15 +164,6 @@ def insertChild(parent, child, index):
     else:
         parent.insertBefore(child, parent.children.item(index))
 
-def insertListItem(select, text, value, index):
-    newOption = doc().createElement("Option")
-    if index == -1:
-        select.add(newOption)
-    else:
-        select.add(newOption,index)
-    newOption.text = text
-    newOption.value = value
-
 def isOrHasChild(parent, child):
     if parent is None:
         return False
@@ -198,15 +196,14 @@ def setOptionText(select, text, index):
     option = select.options.item(index)
     option.text = text
 
-def eventGetKeyCode(evt):
-    if hasattr(evt, "which"):
-        return evt.which
-    if hasattr(evt, "keyCode"):
-        return evt.keyCode
-    return 0
-
-def eventStopPropagation(evt):
-    eventCancelBubble(evt,True)
+def insertListItem(select, text, value, index):
+    newOption = doc().createElement("Option")
+    if index == -1:
+        select.add(newOption)
+    else:
+        select.add(newOption,index)
+    newOption.text = text
+    newOption.value = value
 
 def eventGetMouseWheelVelocityY(evt):
     return round(-evt.wheelDelta / 40.0) or 0.0
