@@ -29,6 +29,7 @@ sEventPreviewStack = []
 
 listeners = {}
 
+from pyjamas.ui import Event
 from pyjamas.ui.Event import (
     ONBLUR,
     ONCHANGE,
@@ -75,7 +76,6 @@ hack_timer_workaround_bug_button = None
 
 
 def init():
-
     mf = get_main_frame()
     mf._addWindowEventListener("click", browser_event_cb)
     mf._addWindowEventListener("change", browser_event_cb)
@@ -86,10 +86,6 @@ def init():
     mf._addWindowEventListener("keyup", browser_event_cb)
     mf._addWindowEventListener("keydown", browser_event_cb)
     mf._addWindowEventListener("keypress", browser_event_cb)
-    _init_mousewheel()
-
-def _init_mousewheel():
-    mf = get_main_frame()
     mf._addWindowEventListener("mousewheel", browser_event_cb)
 
 def _init_testing():
@@ -424,36 +420,8 @@ def eventGetToElement(evt):
 def eventGetType(event):
     return event.type
 
-eventmap = {
-      "blur": 0x01000,
-      "change": 0x00400,
-      "click": 0x00001,
-      "dblclick": 0x00002,
-      "focus": 0x00800,
-      "keydown": 0x00080,
-      "keypress": 0x00100,
-      "keyup": 0x00200,
-      "load": 0x08000,
-      "losecapture": 0x02000,
-      "mousedown": 0x00004,
-      "mousemove": 0x00040,
-      "mouseout": 0x00020,
-      "mouseover": 0x00010,
-      "mouseup": 0x00008,
-      "scroll": 0x04000,
-      "error": 0x10000,
-      "contextmenu": 0x20000,
-      "mousewheel": 0x40000,
-      "DOMMouseScroll": 0x40000,
-      "input": 0x80000,
-      "propertychange": 0x80000,
-      "dragevents": 0x100000,
-      "dropevents": 0x200000,
-      }
-
-
 def eventGetTypeInt(event):
-    return eventmap.get(str(event.type), 0)
+    return Event.eventmap.get(str(event.type), 0)
 
 
 def eventGetTypeString(event):
@@ -949,57 +917,19 @@ def sinkEvents(element, bits):
         aev = mf.addEventListener
     #cb = lambda x,y,z: _dispatchEvent(y)
     cb = _dispatchEvent
-    if (bits & 0x00001):
-        aev(element, "click", cb)
-    if (bits & 0x00002):
-        aev(element, "dblclick", cb)
-    if (bits & 0x00004):
-        aev(element, "mousedown", cb)
-    if (bits & 0x00008):
-        aev(element, "mouseup", cb)
-    if (bits & 0x00010):
-        aev(element, "mouseover", cb)
-    if (bits & 0x00020):
-        aev(element, "mouseout", cb)
-    if (bits & 0x00040):
-        aev(element, "mousemove", cb)
-    if (bits & 0x00080):
-        aev(element, "keydown", cb)
-    if (bits & 0x00100):
-        aev(element, "keypress", cb)
-    if (bits & 0x00200):
-        aev(element, "keyup", cb)
-    if (bits & 0x00400):
-        aev(element, "change", cb)
-    if (bits & 0x00800):
-        aev(element, "focus", cb)
-    if (bits & 0x01000):
-        aev(element, "blur", cb)
-    if (bits & 0x02000):
-        aev(element, "losecapture", cb)
-    if (bits & 0x04000):
-        aev(element, "scroll", cb)
-    if (bits & 0x08000):
-        aev(element, "load", cb)
-    if (bits & 0x10000):
-        aev(element, "error", cb)
-    if (bits & 0x20000):
-        aev(element, "contextmenu", cb)
-    if (bits & 0x80000):
-        aev(element, "input", cb)
-    if (bits & 0x100000):
-        aev(element, "drag", cb)
-        aev(element, 'dragstart', cb)
-        aev(element, 'dragend', cb)
-    if (bits & 0x200000):
-        aev(element, "drop", cb)
-        aev(element, "dragenter", cb)
-        aev(element, "dragover", cb)
-        aev(element, "dragleave", cb)
-
 
     # mozilla stupidly has DOMMouseScroll...
     sinkEventsMozilla(element, bits)
+
+    bit = 1
+    while bits:
+        if bit > bits:
+            raise RuntimeError("sinkEvents: bit outruns bits")
+        if (bits & bit):
+            for event_name in Event.eventbits[bit][1]:
+                aev(element, event_name, cb)
+            bits ^= bit
+        bit <<= 1
 
 def sinkEventsMozilla(element, bits):
     pass

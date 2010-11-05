@@ -8,7 +8,6 @@ def set_listener(item, listener):
     listeners[item.uniqueID] = listener
 
 def init():
-    
     mf = get_main_frame()
     mf._addWindowEventListener("click", browser_event_cb)
     mf._addWindowEventListener("change", browser_event_cb)
@@ -19,6 +18,7 @@ def init():
     mf._addWindowEventListener("keyup", browser_event_cb)
     mf._addWindowEventListener("keydown", browser_event_cb)
     mf._addWindowEventListener("keypress", browser_event_cb)
+    mf._addWindowEventListener("mousewheel", browser_event_cb)
 
     # this is somewhat cheating, but hey.  if someone
     # ever tries to wrap body with a Widget, and attaches
@@ -36,14 +36,6 @@ def init():
     mf.addEventListener(body, "blur", _dispatchEvent)
     mf.addEventListener(body, "dblclick", _dispatchEvent)
     mf.addEventListener(body, "propertychange", _dispatchEvent)
-
-    _init_mousewheel()
-
-def _init_mousewheel():
-    mf._addWindowEventListener("mousewheel", browser_event_cb)
-
-    # XXX whoops, see above...
-    body = doc().body
     mf.addEventListener(body, "mousewheel", _dispatchEvent)
 
 def _dispatchEvent(sender, event, useCap):

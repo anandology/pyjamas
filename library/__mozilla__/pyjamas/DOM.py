@@ -194,13 +194,6 @@ def releaseCapture(elem):
     }
     """)
 
-
-def _init_mousewheel():
-    JS("""
-    var dcme = $wnd.__dispatchCapturedMouseEvent;
-    $wnd.addEventListener('DOMMouseWheel', dcme, true);
-    """)
-
 def eventGetMouseWheelVelocityY(evt):
     JS("""
     return @{{evt}}.detail || 0;
