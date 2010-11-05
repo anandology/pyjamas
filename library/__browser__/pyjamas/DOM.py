@@ -14,6 +14,7 @@
 # limitations under the License.
 
 def init():
+    mousewheel = Event.eventbits[Event.eventmap['mousewheel']][0]
     JS("""
     // Set up capture event dispatchers.
     $wnd.__dispatchCapturedMouseEvent = function(evt) {
@@ -84,13 +85,8 @@ def init():
             @{{dispatchEvent}}(evt, curElem, listener);
         }
     };
-    """)
-    _init_mousewheel()
-
-def _init_mousewheel():
-    JS("""
     var dcme = $wnd.__dispatchCapturedMouseEvent;
-    $wnd.addEventListener('mousescroll', dcme, true);
+    $wnd.addEventListener(@{{mousewheel}}, dcme, true);
     """)
 
 def addEventPreview(preview):
@@ -145,41 +141,6 @@ def eventGetTarget(event):
 def eventGetToElement(evt):
     JS("""
     return @{{evt}}.relatedTarget ? @{{evt}}.relatedTarget : null;
-    """)
-
-def eventGetTypeInt(event):
-    JS("""
-    switch (@{{event}}.type) {
-      case "blur": return 0x01000;
-      case "change": return 0x00400;
-      case "click": return 0x00001;
-      case "dblclick": return 0x00002;
-      case "focus": return 0x00800;
-      case "keydown": return 0x00080;
-      case "keypress": return 0x00100;
-      case "keyup": return 0x00200;
-      case "load": return 0x08000;
-      case "losecapture": return 0x02000;
-      case "mousedown": return 0x00004;
-      case "mousemove": return 0x00040;
-      case "mouseout": return 0x00020;
-      case "mouseover": return 0x00010;
-      case "mouseup": return 0x00008;
-      case "scroll": return 0x04000;
-      case "error": return 0x10000;
-      case "contextmenu": return 0x20000;
-      case "mousewheel": return 0x40000;
-      case "DOMMouseScroll": return 0x40000;
-      case "input": return 0x80000;
-      case "propertychange": return 0x80000;
-      case "dragstart": return 0x100000;
-      case "drag": return 0x100000;
-      case "dragend": return 0x100000;
-      case "dragenter": return 0x200000;
-      case "drop": return 0x200000;
-      case "dragleave": return 0x200000;
-      case "dragover": return 0x200000;
-    }
     """)
 
 def eventToString(evt):
@@ -586,38 +547,15 @@ def sinkEvents(element, bits):
     
     @param bits: A combination of bits; see ui.Event for bit values
     """
-    JS("""
-@{{element}}.__eventBits = @{{bits}};
-
-@{{element}}.onclick    = (@{{bits}} & 0x00001) ? $wnd.__dispatchEvent:null;
-@{{element}}.ondblclick  = (@{{bits}} & 0x00002) ? $wnd.__dispatchEvent:null;
-@{{element}}.onmousedown   = (@{{bits}} & 0x00004) ? $wnd.__dispatchEvent:null;
-@{{element}}.onmouseup    = (@{{bits}} & 0x00008) ? $wnd.__dispatchEvent:null;
-@{{element}}.onmouseover   = (@{{bits}} & 0x00010) ? $wnd.__dispatchEvent:null;
-@{{element}}.onmouseout  = (@{{bits}} & 0x00020) ? $wnd.__dispatchEvent:null;
-@{{element}}.onmousemove   = (@{{bits}} & 0x00040) ? $wnd.__dispatchEvent:null;
-@{{element}}.onkeydown    = (@{{bits}} & 0x00080) ? $wnd.__dispatchEvent:null;
-@{{element}}.onkeypress  = (@{{bits}} & 0x00100) ? $wnd.__dispatchEvent:null;
-@{{element}}.onkeyup    = (@{{bits}} & 0x00200) ? $wnd.__dispatchEvent:null;
-@{{element}}.onchange      = (@{{bits}} & 0x00400) ? $wnd.__dispatchEvent:null;
-@{{element}}.onfocus    = (@{{bits}} & 0x00800) ? $wnd.__dispatchEvent:null;
-@{{element}}.onblur      = (@{{bits}} & 0x01000) ? $wnd.__dispatchEvent:null;
-@{{element}}.onlosecapture = (@{{bits}} & 0x02000) ? $wnd.__dispatchEvent:null;
-@{{element}}.onscroll      = (@{{bits}} & 0x04000) ? $wnd.__dispatchEvent:null;
-@{{element}}.onload      = (@{{bits}} & 0x08000) ? $wnd.__dispatchEvent:null;
-@{{element}}.onerror    = (@{{bits}} & 0x10000) ? $wnd.__dispatchEvent:null;
-@{{element}}.oncontextmenu = (@{{bits}} & 0x20000) ? $wnd.__dispatchEvent:null;
-@{{element}}.onmousewheel = (@{{bits}} & 0x40000) ? $wnd.__dispatchEvent:null;
-@{{element}}.oninput    = (@{{bits}} & 0x80000) ? $wnd.__dispatchEvent:null;
-@{{element}}.ondragend = (@{{bits}} & 0x100000) ? $wnd.__dispatchEvent:null;
-@{{element}}.ondragstart = (@{{bits}} & 0x100000) ? $wnd.__dispatchEvent:null;
-@{{element}}.ondrag = (@{{bits}} & 0x100000) ? $wnd.__dispatchEvent:null;
-@{{element}}.ondragenter = (@{{bits}} & 0x200000) ? $wnd.__dispatchEvent:null;
-@{{element}}.ondrop = (@{{bits}} & 0x200000) ? $wnd.__dispatchEvent:null;
-@{{element}}.ondragleave = (@{{bits}} & 0x200000) ? $wnd.__dispatchEvent:null;
-@{{element}}.ondragover = (@{{bits}} & 0x200000) ? $wnd.__dispatchEvent:null;
-    """)
+    JS("@{{element}}.__eventBits = @{{bits}};")
     sinkEventsMozilla(element, bits)
+    dispEvnt = JS("$wnd.__dispatchEvent")
+    for bit in Event.eventbits:
+        if (bits & bit):
+            for event_name in Event.eventbits[bit][1]:
+                JS("@{{element}}['on'+@{{event_name}}] = @{{dispEvnt}}")
+        else:
+            JS("@{{element}}[@{{event_name}}] = null")
 
 def toString(elem):
     JS("""
