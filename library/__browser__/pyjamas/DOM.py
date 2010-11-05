@@ -555,7 +555,8 @@ def sinkEvents(element, bits):
             for event_name in Event.eventbits[bit][1]:
                 JS("@{{element}}['on'+@{{event_name}}] = @{{dispEvnt}}")
         else:
-            JS("@{{element}}[@{{event_name}}] = null")
+            for event_name in Event.eventbits[bit][1]:
+                JS("@{{element}}['on'+@{{event_name}}] = null")
 
 def toString(elem):
     JS("""

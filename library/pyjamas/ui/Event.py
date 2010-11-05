@@ -70,8 +70,8 @@ eventbits = {
     0x020000 : ("contextmenu", ["contextmenu"]),
     0x040000 : ("mousewheel", ["mousewheel"]),
     0x080000 : ("input", ["input"]),
-    0x010000 : ("dragevents", ["drag", "dragstart", "dragend"]),
-    0x020000 : ("dropevents", ["drop", "dragenter", "dragover", "dragleave"]),
+    0x100000 : ("dragevents", ["drag", "dragstart", "dragend"]),
+    0x200000 : ("dropevents", ["drop", "dragenter", "dragover", "dragleave"]),
 }
 # eventmap will be filled in init(), but some names
 # will be added manually for interoperability
