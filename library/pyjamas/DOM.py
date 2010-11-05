@@ -595,7 +595,7 @@ def getInnerText(element):
     child = element.firstChild
     while child:
         if child.nodeType == 1:
-            text += child.getInnerText()
+            text += getInnerText(child)
         elif child.nodeValue:
             text += child.nodeValue
         child = child.nextSibling
@@ -849,7 +849,7 @@ def setEventListener(element, listener):
 
 
 def createTextNode(txt):
-    return doc().createTextNode(txt) 
+    return doc().createTextNode(txt)
 
 
 def setInnerHTML(element, html):
