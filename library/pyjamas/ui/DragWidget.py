@@ -77,9 +77,12 @@ class MouseDragWidget(MouseDragContainer, Draggable):
         self.makeDraggable()
 
 
-def init():
+def init(native=None):
     global DragWidget, DragContainer
-    html5_dnd = hasattr(DOM.createElement('span'), 'draggable')
+    if native is None:
+        html5_dnd = hasattr(DOM.createElement('span'), 'draggable')
+    else:
+        html5_dnd = native
     if html5_dnd:
         DragContainer = Html5DragContainer
         DragWidget = Html5DragWidget
@@ -87,7 +90,9 @@ def init():
         DragContainer = MouseDragContainer
         DragWidget = MouseDragWidget
 
-if not pyjd.is_desktop:
+if pyjd.is_desktop:
+    init(pyjd.native_dnd)
+else:
     init()
 
 Factory.registerClass('pyjamas.ui.DragWidget', 'DragWidget', DragWidget)

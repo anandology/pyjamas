@@ -41,15 +41,20 @@ class EmulatedDropWidget(Html5DropWidget):
         dndHelper.registerTarget(self)
 
 
-def init():
+def init(native=None):
     global DropWidget
-    html5_dnd = hasattr(DOM.createElement('span'), 'draggable')
+    if native is None:
+        html5_dnd = hasattr(DOM.createElement('span'), 'draggable')
+    else:
+        html5_dnd = native
     if html5_dnd:
         DropWidget = Html5DropWidget
     else:
         DropWidget = EmulatedDropWidget
 
-if not pyjd.is_desktop:
+if pyjd.is_desktop:
+    init(pyjd.native_dnd)
+else:
     init()
 
 Factory.registerClass('pyjamas.ui.DropWidget', 'DropWidget', DropWidget)
