@@ -322,7 +322,7 @@ class DropWidget2(DropWidget, AddablePanel):
         button = Button("+ Add another")
         return button
 
-    def onClick(self):
+    def onClick(self, sender):
         self.addDropWidget()
 
     def addMessage(self, message):
