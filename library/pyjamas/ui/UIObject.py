@@ -118,8 +118,6 @@ class UIObject(Applier):
         """Set the height of the element associated with this UIObject.  The
            value should be given as a CSS value, such as 100px, 30%, or 50pi
         """
-        if height is None:
-            height = ""
         DOM.setStyleAttribute(self.element, "height", str(height))
 
     def getHeight(self):
@@ -201,8 +199,6 @@ class UIObject(Applier):
         """Set the width of the element associated with this UIObject.  The
            value should be given as a CSS value, such as 100px, 30%, or 50pi
         """
-        if width is None:
-            width = ""
         DOM.setStyleAttribute(self.element, "width", str(width))
 
     def getWidth(self):
