@@ -3289,6 +3289,30 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                         self.w( self.spacing() + self.track_call(obj + ".__setitem__(" \
                                            + idx + ", " + rhs + ")", v.lineno) + ';')
                         continue
+                elif isinstance(child, self.ast.Slice):
+                    if child.flags == "OP_ASSIGN":
+                        if not child.lower:
+                            lower = 0
+                        else:
+                            lower = self.expr(child.lower, current_klass)
+                        if not child.upper:
+                            upper = 'null'
+                        else:
+                            upper = self.expr(child.upper, current_klass)
+                        obj = self.expr(child.expr, current_klass)
+                        self.w( self.spacing()
+                                + self.track_call("@{{__setslice}}"
+                                                  "(%s, %s, %s, %s)"
+                                                  % (obj, lower, upper, rhs)
+                                                  , v.lineno) + ';')
+                        continue
+                    else:
+                        raise TranslationError(
+                            "unsupported flag (in _assign)", v, self.module_name)
+                else:
+                    raise TranslationError(
+                        "unsupported type in assignment list",
+                        v, self.module_name)                
                 self.w( self.spacing() + lhs + " = " + rhs + ";")
             return
         else:
