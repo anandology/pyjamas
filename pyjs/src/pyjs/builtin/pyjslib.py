@@ -78,7 +78,24 @@ def type(clsname, bases=None, methods=None):
     JS(" return $pyjs_type(@{{clsname}}, @{{!bss}}, @{{!mths}}); ")
 
 class object:
-    pass
+    
+    def __setattr__(self, name, value):
+        JS("""
+        if (typeof @{{name}} != 'string') {
+            throw @{{TypeError}}("attribute name must be string");
+        }
+        if (attrib_remap.indexOf(@{{name}}) >= 0) {
+            @{{name}} = '$$' + @{{name}};
+        }
+        if (typeof @{{self}}[@{{name}}] != 'undefined'
+            && @{{self}}.__is_instance__
+            && @{{self}}[@{{name}}] !== null
+            && typeof @{{self}}[@{{name}}].__set__ == 'function') {
+            @{{self}}[@{{name}}].__set__(@{{self}}, @{{value}});
+        } else {
+            @{{self}}[@{{name}}] = @{{value}};
+        }
+        """)
 
 
 class basestring(object):

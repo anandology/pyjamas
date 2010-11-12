@@ -14,6 +14,7 @@
 
 # ui borrowed from http://decafbad.com/2009/07/drag-and-drop/api-demos.html
 
+import pyjd
 from datetime import datetime
 
 from __pyjamas__ import doc
@@ -34,7 +35,7 @@ from pyjamas.dnd import makeDraggable
 from pyjamas.ui.DragWidget import DragWidget, DragContainer
 from pyjamas.ui.DropWidget import DropWidget
 from pyjamas.ui.Panel import Panel
-from pyjamas.dnd import getTypes, getTarget
+from pyjamas.dnd import getTypes
 
 
 class DNDDemos(VerticalPanel):
@@ -81,6 +82,8 @@ class TopVerbage(AddablePanel):
         as a test tool for the background implementation.</p>
         """
        ))
+
+
 class DragWidget1(DragWidget, Label):
     def __init__(self):
         Label.__init__(self, Element=DOM.createElement('div'))
@@ -102,6 +105,7 @@ class DragWidget1(DragWidget, Label):
         while not hasattr(parent, 'addMessage'):
             parent = parent.getParent()
         parent.addMessage(message)
+
 
 class DropWidget1(DropWidget, Label):
     def __init__(self):
@@ -128,7 +132,7 @@ class DropWidget1(DropWidget, Label):
             self.addMessage(item)
         except:
             self.addMessage('unsupported data type')
-        DOM.eventPreventDefault(event)
+        #DOM.eventPreventDefault(event)
 
     def addMessage(self, message):
         parent = self.getParent()
@@ -190,16 +194,18 @@ class DNDDemo(AddablePanel):
 
 
 class NewSchool(DNDDemo):
-    title = "Drag and drop"
-    id = 'newschool'
-    drag_widget = DragWidget1()
-    drop_widget = DropWidget1()
+    def __init__(self):
+        self.title = "Drag and drop"
+        self.id = 'newschool'
+        self.drag_widget = DragWidget1()
+        self.drop_widget = DropWidget1()
+        DNDDemo.__init__(self)
 
 
 class DragWidget2(DragContainer, AddablePanel):
 
     def onDragStart(self, event):
-        target = getTarget(event)
+        target = DOM.eventGetTarget(event)
         dt = event.dataTransfer
         dt.setData("Text", "Dropped %s" % target.id)
         dt.effectAllowed = 'copy'
@@ -273,7 +279,7 @@ class DropWidget2(DropWidget, AddablePanel):
         self.append(self.button)
 
     def onDragEnter(self, event):
-        target = getTarget(event)
+        target = DOM.eventGetTarget(event)
         t = Widget(Element=target)
         class_names = t.getStyleName()
         dt = event.dataTransfer
@@ -284,7 +290,7 @@ class DropWidget2(DropWidget, AddablePanel):
                 DOM.eventPreventDefault(event)
 
     def onDragOver(self, event):
-        target = getTarget(event)
+        target = DOM.eventGetTarget(event)
         t = Widget(Element=target)
         dt = event.dataTransfer
         dt.dropEffect = 'copy'
@@ -294,7 +300,7 @@ class DropWidget2(DropWidget, AddablePanel):
                 DOM.eventPreventDefault(event)
 
     def onDragLeave(self, event):
-        target = getTarget(event)
+        target = DOM.eventGetTarget(event)
         t = Widget(Element=target)
         class_names = t.getStyleName()
         if class_names is not None:
@@ -304,7 +310,7 @@ class DropWidget2(DropWidget, AddablePanel):
     def onDrop(self, event):
         dt = event.dataTransfer
         text = dt.getData('Text')
-        target = getTarget(event)
+        target = DOM.eventGetTarget(event)
         t = Widget(Element=target)
         class_names = t.getStyleName()
         if class_names is not None:
@@ -316,7 +322,7 @@ class DropWidget2(DropWidget, AddablePanel):
         button = Button("+ Add another")
         return button
 
-    def onClick(self):
+    def onClick(self, sender):
         self.addDropWidget()
 
     def addMessage(self, message):
@@ -360,15 +366,15 @@ class DragWidget3(DragWidget2):
         ctx.beginPath()
         ctx.setLineWidth(3)
         ctx.setStrokeStyle(Color.ORANGE)
-        ctx.moveTo(25, 0)
+        ctx.moveTo(25,1.5)
         ctx.lineTo(50, 50)
-        ctx.lineTo(0, 50)
-        ctx.lineTo(25, 0)
+        ctx.lineTo(1.5, 50)
+        ctx.lineTo(25, 1.5)
         ctx.stroke()
 
     def onDragStart(self, event):
         dt = event.dataTransfer
-        target = getTarget(event)
+        target = DOM.eventGetTarget(event)
         target = Widget(Element=target)
         id = target.getID()
         dt.setData("Text", "Dropped %s" % target.getID())
@@ -381,10 +387,16 @@ class DragWidget3(DragWidget2):
         elif id == 'imgdrag2':
             dt.setDragImage(doc().getElementById('logo'), 10, 10)
         elif id == 'imgdrag3':
-            # TODO: canvas only seems to work in Firefox and IE
+            # OK, it's a bit of a cheat, but the following works on current
+            # Opera, IE, Firefox, Safari, Chrome.
             ctx = GWTCanvas(50, 50)
-            dt.setDragImage(ctx.canvas, 25, 25)
             self.makeCanvasImg(ctx)
+            try:
+                img = DOM.createImg()
+                DOM.setAttribute(img, 'src', ctx.canvas.toDataURL())
+                dt.setDragImage(img, 25, 25)
+            except:
+                dt.setDragImage(ctx.canvas, 25,25)
 
     def addDragWidget(self):
         s = len(self.children)
@@ -407,10 +419,12 @@ class DropWidget3(DropWidget1):
 
 
 class ImageDrop(DNDDemo):
-    title = "Using drag feedback images"
-    id = "feedback_image"
-    drop_widget = DropWidget3()
-    drag_widget = DragWidget3()
+    def __init__(self):
+        self.title = "Using drag feedback images"
+        self.id = "feedback_image"
+        self.drop_widget = DropWidget3()
+        self.drag_widget = DragWidget3()
+        DNDDemo.__init__(self)
 
 
 class DragWidget4(DragWidget2):
@@ -424,8 +438,7 @@ class DragWidget4(DragWidget2):
         self.following_text = HTML("""<li><p>
                ... and try dragging to other windows and applications.
                </p></li>
-            """
-                )
+            """)
         for k in range(3):
             self.addDragWidget()
         self.append(self.following_text)
@@ -444,7 +457,7 @@ class DragWidget4(DragWidget2):
 
     def onDragStart(self, event):
         dt = event.dataTransfer
-        target = getTarget(event)
+        target = DOM.eventGetTarget(event)
         target = Widget(Element=target)
         id = target.getID()
         if id == 'datadrag0':
@@ -474,6 +487,7 @@ class DropWidget4(DropWidget1):
         self.addMessage("drop types received: " + ", ".join(types))
         parent = self.getParent()
         parent.clearContent()
+        self.addMessage('dt: ' + str(dt))
         types.sort()
         for ctype in types:
             data = dt.getData(ctype)
@@ -537,15 +551,17 @@ class DropWidgetPanel4(AddablePanel):
 
 
 class DataTransfer(DNDDemo):
-    title = "Using data transfer content types"
-    id = "data_transfer"
-    drag_widget = DragWidget4()
-    drop_widget = DropWidgetPanel4()
+    def __init__(self):
+        self.title = "Using data transfer content types"
+        self.id = "data_transfer"
+        self.drag_widget = DragWidget4()
+        self.drop_widget = DropWidgetPanel4()
+        DNDDemo.__init__(self)
 
 class DragWidget5(DragWidget2):
 
     def onDragStart(self, event):
-        target = getTarget(event)
+        target = DOM.eventGetTarget(event)
         dt = event.dataTransfer
         id = Widget(Element=target).getID()
         dt.setData("Text", "Dropped %s" % id)
@@ -585,7 +601,7 @@ class DropWidget5(DropWidget2):
         self.append(w)
 
     def onDragEnter(self, event):
-        target = getTarget(event)
+        target = DOM.eventGetTarget(event)
         t = Widget(Element=target)
         class_names = t.getStyleName()
         if class_names is not None:
@@ -594,7 +610,7 @@ class DropWidget5(DropWidget2):
                 DOM.eventPreventDefault(event)
 
     def onDragOver(self, event):
-        target = getTarget(event)
+        target = DOM.eventGetTarget(event)
         t = Widget(Element=target)
         class_names = t.getStyleName()
         if class_names is not None:
@@ -606,7 +622,7 @@ class DropWidget5(DropWidget2):
                 DOM.eventPreventDefault(event)
 
     def onDragLeave(self, event):
-        target = getTarget(event)
+        target = DOM.eventGetTarget(event)
         t = Widget(Element=target)
         class_names = t.getStyleName()
         if class_names is not None:
@@ -616,7 +632,7 @@ class DropWidget5(DropWidget2):
     def onDrop(self, event):
         dt = event.dataTransfer
         text = dt.getData('Text')
-        target = getTarget(event)
+        target = DOM.eventGetTarget(event)
         t = Widget(Element=target)
         class_names = t.getStyleName()
         if class_names is not None:
@@ -626,14 +642,17 @@ class DropWidget5(DropWidget2):
 
 
 class DragEffects(DNDDemo):
-    title = "Using drag effects"
-    id = "data_transfer"
-    drag_widget = DragWidget5()
-    drop_widget = DropWidget5()
-
+    def __init__(self):
+        self.title = "Using drag effects"
+        self.id = "data_transfer"
+        self.drag_widget = DragWidget5()
+        self.drop_widget = DropWidget5()
+        DNDDemo.__init__(self)
 
 
 
 if __name__ == '__main__':
+    pyjd.setup("./public/DNDTest.html")
     j = RootPanel()
     j.add(DNDDemos())
+    pyjd.run()

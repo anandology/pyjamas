@@ -7,9 +7,39 @@ def get_listener(item):
 def set_listener(item, listener):
     listeners[item.uniqueID] = listener
 
+def init():
+    mf = get_main_frame()
+    mf._addWindowEventListener("click", browser_event_cb)
+    mf._addWindowEventListener("change", browser_event_cb)
+    mf._addWindowEventListener("mouseout", browser_event_cb)
+    mf._addWindowEventListener("mousedown", browser_event_cb)
+    mf._addWindowEventListener("mouseup", browser_event_cb)
+    mf._addWindowEventListener("resize", browser_event_cb)
+    mf._addWindowEventListener("keyup", browser_event_cb)
+    mf._addWindowEventListener("keydown", browser_event_cb)
+    mf._addWindowEventListener("keypress", browser_event_cb)
+    mf._addWindowEventListener("mousewheel", browser_event_cb)
+
+    # this is somewhat cheating, but hey.  if someone
+    # ever tries to wrap body with a Widget, and attaches
+    # events to it, whoops...
+    body = doc().body
+
+    mf.addEventListener(body, "click", _dispatchEvent)
+    mf.addEventListener(body, "mousedown", _dispatchEvent)
+    mf.addEventListener(body, "mouseup", _dispatchEvent)
+    mf.addEventListener(body, "mousemove", _dispatchEvent)
+    mf.addEventListener(body, "keydown", _dispatchEvent)
+    mf.addEventListener(body, "keyup", _dispatchEvent)
+    mf.addEventListener(body, "keypress", _dispatchEvent)
+    mf.addEventListener(body, "focus", _dispatchEvent)
+    mf.addEventListener(body, "blur", _dispatchEvent)
+    mf.addEventListener(body, "dblclick", _dispatchEvent)
+    mf.addEventListener(body, "propertychange", _dispatchEvent)
+    mf.addEventListener(body, "mousewheel", _dispatchEvent)
 
 def _dispatchEvent(sender, event, useCap):
-    if event is not None:
+    if event is None:
         evt = wnd().event
     else:
         evt = event
@@ -35,51 +65,10 @@ def _dispatchEvent(sender, event, useCap):
     if listener is not None:
         dispatchEvent(evt, curElem, listener)
 
-
 def buttonClick(elem):
     newEvent = doc().createEventObject()
     elem.fireEvent('onclick', newEvent)
 
-
-def init():
-    
-    mf = get_main_frame()
-    mf._addWindowEventListener("click", browser_event_cb)
-    mf._addWindowEventListener("change", browser_event_cb)
-    mf._addWindowEventListener("mouseout", browser_event_cb)
-    mf._addWindowEventListener("mousedown", browser_event_cb)
-    mf._addWindowEventListener("mouseup", browser_event_cb)
-    mf._addWindowEventListener("resize", browser_event_cb)
-    mf._addWindowEventListener("keyup", browser_event_cb)
-    mf._addWindowEventListener("keydown", browser_event_cb)
-    mf._addWindowEventListener("keypress", browser_event_cb)
-
-    # this is somewhat cheating, but hey.  if someone
-    # ever tries to wrap body with a Widget, and attaches
-    # events to it, whoops...
-    body = doc().body
-
-    mf.addEventListener(body, "click", _dispatchEvent)
-    mf.addEventListener(body, "mousedown", _dispatchEvent)
-    mf.addEventListener(body, "mouseup", _dispatchEvent)
-    mf.addEventListener(body, "mousemove", _dispatchEvent)
-    mf.addEventListener(body, "keydown", _dispatchEvent)
-    mf.addEventListener(body, "keyup", _dispatchEvent)
-    mf.addEventListener(body, "keypress", _dispatchEvent)
-    mf.addEventListener(body, "focus", _dispatchEvent)
-    mf.addEventListener(body, "blur", _dispatchEvent)
-    mf.addEventListener(body, "dblclick", _dispatchEvent)
-    mf.addEventListener(body, "propertychange", _dispatchEvent)
-
-    _init_mousewheel()
-
-def _init_mousewheel():
-    mf._addWindowEventListener("mousewheel", browser_event_cb)
-
-    # XXX whoops, see above...
-    body = doc().body
-    mf.addEventListener(body, "mousewheel", _dispatchEvent)
-    
 def compare(elem1, elem2):
     e1 = elem1 is not None
     e2 = elem2 is not None
@@ -92,17 +81,27 @@ def compare(elem1, elem2):
 def createInputRadio(group):
     return doc().createElement("<INPUT type='RADIO' name='" + group + "'>")
 
-def eventGetType(event):
-    etype = event.type
-    if etype == 'propertychange':
-        return 'input'
-    return etype
+def eventStopPropagation(evt):
+    eventCancelBubble(evt,True)
+
+def eventGetKeyCode(evt):
+    if hasattr(evt, "which"):
+        return evt.which
+    if hasattr(evt, "keyCode"):
+        return evt.keyCode
+    return 0
 
 def eventGetTarget(evt):
     return evt.srcElement
 
 def eventGetToElement(evt):
-    return hasattr(evt, "toElement") and (evt.toElement is not None) or None
+    return getattr(evt, "toElement", None)
+
+def eventGetType(event):
+    etype = event.type
+    if etype == 'propertychange':
+        return 'input'
+    return etype
 
 def eventPreventDefault(evt):
     evt.returnValue = False
@@ -157,15 +156,6 @@ def insertChild(parent, child, index):
     else:
         parent.insertBefore(child, parent.children.item(index))
 
-def insertListItem(select, text, value, index):
-    newOption = doc().createElement("Option")
-    if index == -1:
-        select.add(newOption)
-    else:
-        select.add(newOption,index)
-    newOption.text = text
-    newOption.value = value
-
 def isOrHasChild(parent, child):
     if parent is None:
         return False
@@ -198,15 +188,14 @@ def setOptionText(select, text, index):
     option = select.options.item(index)
     option.text = text
 
-def eventGetKeyCode(evt):
-    if hasattr(evt, "which"):
-        return evt.which
-    if hasattr(evt, "keyCode"):
-        return evt.keyCode
-    return 0
-
-def eventStopPropagation(evt):
-    eventCancelBubble(evt,True)
+def insertListItem(select, text, value, index):
+    newOption = doc().createElement("Option")
+    if index == -1:
+        select.add(newOption)
+    else:
+        select.add(newOption,index)
+    newOption.text = text
+    newOption.value = value
 
 def eventGetMouseWheelVelocityY(evt):
     return round(-evt.wheelDelta / 40.0) or 0.0

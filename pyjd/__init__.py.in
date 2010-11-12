@@ -42,6 +42,12 @@ elif engine == 'hulahop':
 elif engine == 'mshtml':
     from mshtml import *
 
+native_dnd = False
+try:
+    native_dnd = cfg.getboolean('gui', 'native_dnd')
+except:
+    native_dnd = True
+
 sys.path = [os.path.join(pyjdinitpth, 'pygtkweb', 'library')] + sys.path
 
 import importers

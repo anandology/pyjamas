@@ -7,7 +7,6 @@ def getAbsoluteTop(elem):
     return top + elem.ownerDocument.body.scrollTop
 
 def init():
-
     mf = get_main_frame()
     mf._addWindowEventListener("click", browser_event_cb)
     mf._addWindowEventListener("change", browser_event_cb)
@@ -23,13 +22,10 @@ def init():
     global hack_timer_workaround_bug_button
     mf._hack_timer_workaround_bug_button = createButton()
     mf.addEventListener(mf._hack_timer_workaround_bug_button, "click", cb)
-    _init_mousewheel()
-
-def _init_mousewheel():
-    mf = get_main_frame()
     mf._addWindowEventListener("DOMMouseScroll", browser_event_cb)
 
 def sinkEventsMozilla(element, bits):
+    return
     mf = get_main_frame()
     if (bits & 0x40000):
         print "add scroll", element

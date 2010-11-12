@@ -68,11 +68,7 @@ def getComputedStyle(element, style=None):
     Get computed style of an element, like in
     http://efreedom.com/Question/1-1848445/Duplicating-Element-Style-JavaScript
     """
-    try:
-        # ie
-        element_style = element.currentStyle
-    except:
-        element_style = doc().defaultView.getComputedStyle(element, None)
+    element_style = doc().defaultView.getComputedStyle(element, None)
     if style:
         return element_style[style]
     return element_style
@@ -82,7 +78,11 @@ def copyStyles(elem1, elem2):
     Copy styles from one element to another, like in
     http://efreedom.com/Question/1-1848445/Duplicating-Element-Style-JavaScript
     """
-    element_style = dict(getComputedStyle(elem1))
+    element_style = getComputedStyle(elem1)
+    if element_style:
+        element_style = dict(element_style)
+    else:
+        return
     for style in element_style:
         try:
             value = element_style[style]
@@ -122,45 +122,11 @@ def eventCoordinates(event):
     """ Get the absolute coordinates of a mouse event.
     http://www.quirksmode.org/js/events_properties.html#position
     """
-    try:
-        test = event.pageX
-    except:
-        test = None
-    if test:
-        return event.pageX, event.pageY
-
-    offsetX, offsetY = getScrollOffsets()
-    pageX = event.clientX + offsetX
-    pageY = event.clientY + offsetY
-    return pageX, pageY
+    return event.pageX, event.pageY
 
 def getScrollOffsets():
-    """
-    Get the window scroll offset values.
-    We only need these if pageX, pageY are not provided.
-
-    The uncommented formulation seems to work.
-    """
-
-#    st = Window.getScrollTop()
-#    sl = Window.getScrollLeft()
-#    return sl, st
-
-# http://www.howtocreate.co.uk/tutorials/javascript/browserwindow
-    try:
-        scrollOffsetY = wnd().pageYOffset
-        scrollOffsetX = wnd().pageXOffset
-        return scrollOffsetX, scrollOffsetY
-    except:
-        try:
-            scrollOffsetY = doc().body.scrollTop
-            scrollOffsetX = doc().body.scrollLeft
-            return scrollOffsetX, scrollOffsetY
-        except:
-            scrollOffsetY = doc().documentElement.scrollTop
-            scrollOffsetX = doc().documentElement.scrollLeft
-            return scrollOffsetX, scrollOffsetY
-
+    # this is only needed in ie
+    pass
 
 class DraggingWidget(Widget):
     """
@@ -180,7 +146,8 @@ class DraggingWidget(Widget):
 
     def cloneElement(self, element):
         clone = element.cloneNode(True)
-        copyStyles(element, clone)
+        if not element.tagName.lower() == 'canvas':
+            copyStyles(element, clone)
         return clone
 
     def setImage(self,element):
@@ -232,7 +199,7 @@ class DNDHelper(object):
     def setCurrentTargetElement(self, element):
         if self._currentTargetElement is not None:
             if not DOM.compare(self._currentTargetElement, element):
-                leave_event = DragEvent(self.mouseEvent,'dragleave',
+                leave_event = self.makeDragEvent(self.mouseEvent, 'dragleave',
                                                 self.currentTargetElement)
                 self.currentDropWidget.onDragLeave(leave_event)
         self._currentTargetElement = element
@@ -294,7 +261,7 @@ class DNDHelper(object):
         else:
             self.currentDragOperation = 'none'
 
-    def registerTarget(self,target):
+    def registerTarget(self, target):
         """
         Rather than searching the entire document for drop target widgets and
         maybe drop targets within widgets, this implementation holds a list of
@@ -367,6 +334,11 @@ class DNDHelper(object):
         """
         return self.dragWidget.getAbsoluteTop()
 
+    def makeDragEvent(self, event, type, target=None):
+        drag_event = DragEvent(event, type, target)
+        self.updateDropEffect(type)
+        return drag_event
+
     def onMouseMove(self, sender, x, y):
         event = DOM.eventGetCurrentEvent()
         self.mouseEvent = event
@@ -389,7 +361,7 @@ class DNDHelper(object):
             self.effectAllowed = 'uninitialized'
             self.dropEffect = 'none'
             self.currentDragOperation = 'none'
-            dragStartEvent = DragEvent(event, 'dragstart')
+            dragStartEvent = self.makeDragEvent(event, 'dragstart')
             self.dragWidget.onDragStart(dragStartEvent)
             if not isCanceled(dragStartEvent):
                 fromElement = self.dragWidget.getElement()
@@ -442,7 +414,7 @@ class DNDHelper(object):
     def doDrag(self, event, x, y):
         self.dragBusy = True
         self.dropEffect = 'none'
-        drag_event = DragEvent(event,'drag')
+        drag_event = self.makeDragEvent(event,'drag')
         self.dragWidget.onDrag(drag_event)
         # drag event was not canceled
         if not isCanceled(drag_event):
@@ -459,7 +431,8 @@ class DNDHelper(object):
                 drop_element = target
                 if (not self.currentTargetElement or
                     not DOM.compare(drop_element, self.currentTargetElement)):
-                    enter_event = DragEvent(event,'dragenter', drop_element)
+                    enter_event = self.makeDragEvent(event,'dragenter',
+                                                     drop_element)
                     self.provideTypes(enter_event)
                     drop_widget.onDragEnter(enter_event)
                     if isCanceled(enter_event):
@@ -468,7 +441,8 @@ class DNDHelper(object):
 
                 if self.currentTargetElement is not None:
                     # disable dropping if over event is not canceled
-                    over_event = DragEvent(event, 'dragover', drop_element)
+                    over_event = self.makeDragEvent(event, 'dragover',
+                                                    drop_element)
                     self.provideTypes(over_event)
                     self.currentDropWidget.onDragOver(over_event)
                     if isCanceled(over_event):
@@ -504,13 +478,14 @@ class DNDHelper(object):
             if (self.currentDragOperation == 'none'
                     or not self.currentTargetElement):
                 if self.currentTargetElement:
-                    leave_event = DragEvent(event,'dragleave',
+                    leave_event = self.makeDragEvent(event,'dragleave',
                                             self.currentTargetElement)
                     self.currentDropWidget.onDragLeave(leave_event)
                 self.returnDrag()
             else:
-                drop_event = DragEvent(event,'drop', self.currentTargetElement)
-                drop_event.dataTransfer._data = dndHelper.data
+                drop_event = self.makeDragEvent(event,'drop',
+                                                self.currentTargetElement)
+                drop_event.dataTransfer._data = self.data
                 self.dropEffect = self.currentDragOperation
                 self.currentDropWidget.onDrop(drop_event)
                 if isCanceled(drop_event):
@@ -518,7 +493,7 @@ class DNDHelper(object):
                 else:
                     self.currentDragOperation = 'none'
                 self.zapDragImage()
-                dragEnd_event = DragEvent(event,'dragend')
+                dragEnd_event = self.makeDragEvent(event,'dragend')
                 self.dropEffect = self.currentDragOperation
                 self.dragWidget.onDragEnd(dragEnd_event)
 
@@ -729,54 +704,61 @@ class DragEvent(object):
     def __init__(self, evt, type, target=None):
         self.evt = evt
         self.type = type
-        if target:
+        self.setTarget(target)
+        self.dataTransfer = DataTransfer()
+
+    def setTarget(self, target=None):
+        if target is not None:
             self.target = target
         else:
-            try:
-                self.target = evt.target
-            except:
-                # ie
-                self.target = evt.srcElement
-        self.dataTransfer = DataTransfer()
-        dndHelper.updateDropEffect(type)
+            self.target = DOM.eventGetTarget(self.evt)
+
     # rather than copying a bunch of attributes on init, we provide a bunch
     # of property statements.  These properties hardly ever get looked at
     # during dnd events anyway, but they're there if we need them.
-    def getScreenX(self):
+    @property
+    def screenX(self):
         return self.evt.screenX
-    screenX = property(getScreenX)
 
-    def getScreenY(self):
+    @property
+    def screenY(self):
         return self.evt.screenY
-    screenY = property(getScreenY)
 
-    def getClientX(self):
+    @property
+    def pageX(self):
+        return self.evt.pageX
+
+    @property
+    def pageY(self):
+        return self.evt.pageY
+
+    @property
+    def clientX(self):
         return self.evt.clientX
-    clientX = property(getClientX)
 
-    def getClientY(self):
+    @property
+    def clientY(self):
         return self.evt.clientY
-    clientY = property(getClientY)
 
-    def getAltKey(self):
+    @property
+    def altKey(self):
         return self.evt.altKey
-    altKey = property(getAltKey)
 
-    def getCtrlKey(self):
+    @property
+    def ctrlKey(self):
         return self.evt.ctrlKey
-    ctrlKey = property(getCtrlKey)
 
-    def getShiftKey(self):
+    @property
+    def shiftKey(self):
         return self.evt.shiftKey
-    shiftKey = property(getShiftKey)
 
-    def getMetaKey(self):
+    @property
+    def metaKey(self):
         return self.evt.metaKey
-    metaKey = property(getMetaKey)
 
-    def getButton(self):
+    @property
+    def button(self):
         return self.evt.button
-    button = property(getButton)
 
     def preventDefault(self):
         """
@@ -808,5 +790,4 @@ class DragEvent(object):
 #        self.button = button
 #        self.relatedTarget = relatedTarget
 #        self.dataTransfer = dataTransfer
-
 

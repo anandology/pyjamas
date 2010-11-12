@@ -106,7 +106,7 @@ class CellPanel(ComplexPanel):
         if height is None:
             DOM.removeAttribute(td, "height")
         else:
-            DOM.setAttribute(td, "height", height)
+            DOM.setAttribute(td, "height", str(height))
 
     def setCellHorizontalAlignment(self, widget, align):
         td = self.getWidgetTd(widget)
@@ -129,7 +129,7 @@ class CellPanel(ComplexPanel):
         if width is None:
             DOM.removeAttribute(td, "width")
         else:
-            DOM.setAttribute(td, "width", width)
+            DOM.setAttribute(td, "width", str(width))
 
     def setSpacing(self, spacing):
         self.spacing = spacing

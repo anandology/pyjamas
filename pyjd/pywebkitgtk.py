@@ -94,9 +94,7 @@
 import os
 import new
 import sys
-import logging
 import time
-from gettext import gettext as _
 from traceback import print_stack, print_exc
 
 import gtk
@@ -225,8 +223,6 @@ class Browser(gtk.Window):
         self.set_size_request(width, height)
 
         self.already_initialised = False
-
-        logging.debug("initializing web browser window")
 
         self._loading = False
         self._browser= pywebkit.WebView()
@@ -368,7 +364,7 @@ class Browser(gtk.Window):
     def _loading_start_cb(self, view, frame):
         main_frame = self._browser.get_main_frame()
         if frame is main_frame:
-            self._set_title(_("Loading %s - %s") % (frame.get_title(),
+            self._set_title("Loading %s - %s" % (frame.get_title(),
                                                     frame.get_uri()))
 
     def _loading_stop_cb(self, view, frame):
@@ -380,7 +376,7 @@ class Browser(gtk.Window):
         self.init_app()
 
     def _title_changed_cb(self, widget, frame, title):
-        self._set_title(_("%s") % title)
+        self._set_title("%s" % title)
 
     def _icon_loaded_cb(self):
         print "icon loaded"
