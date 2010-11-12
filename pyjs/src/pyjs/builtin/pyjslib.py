@@ -88,6 +88,7 @@ class object:
             @{{name}} = '$$' + @{{name}};
         }
         if (typeof @{{self}}[@{{name}}] != 'undefined'
+            && @{{self}}.__is_instance__
             && @{{self}}[@{{name}}] !== null
             && typeof @{{self}}[@{{name}}].__set__ == 'function') {
             @{{self}}[@{{name}}].__set__(@{{self}}, @{{value}});
