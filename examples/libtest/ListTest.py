@@ -88,6 +88,14 @@ class ListTest(UnitTest):
         value[3:] = [21,22,23]
         self.assertTrue(value == [1, 11, 12, 21, 22, 23], "%s == [1, 11, 12, 21, 22, 23]" % value)
 
+    def testMultipleSliceSet(self):
+        """Test assignment to a slice in an assignment list (issue 514)."""
+        l1 = [1, 2, 3]
+        l2 = [4, 5, 6]
+        l1[:], l2[:] = [7, 8, 9], [10, 11, 12]
+        self.assertTrue(l1 == [7, 8, 9], "%s == [7, 8, 9]" % l1)
+        self.assertTrue(l2 == [10, 11, 12], "%s == [10, 11, 12]" % l2)
+
     def testDelete(self):
         self.assertTrue(delete_value == [1, 2, 5], "%s == [1, 2, 5]" % (delete_value,))
 
