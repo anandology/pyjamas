@@ -22,10 +22,16 @@ from pyjamas.ui import Event
 
 from pyjamas import DOM
 
+
 class SplitPanel(Panel):
     """ Abstract base class for {@link HorizontalSplitPanel} and
         {@link VerticalSplitPanel}.
     """
+
+    _props = [
+        ("splitPosition", "Split Position", "SplitPosition", None),
+        ("thumbImage", "Thumb Image", "ThumbImage", None),
+    ]
 
     def __init__(self, mainElem, splitElem, headElem, tailElem, **kwargs):
         """ Initializes the split panel.
@@ -48,6 +54,10 @@ class SplitPanel(Panel):
         Panel.__init__(self, **kwargs)
 
         self.sinkEvents(Event.MOUSEEVENTS)
+
+    @classmethod
+    def _getProps(self):
+        return TextBoxBase._getProps() + self._props
 
     def setThumbImage(self, ti):
         self.thumb_image = ti
@@ -155,9 +165,6 @@ class SplitPanel(Panel):
         """
         return self.isResizing
 
-    def __iter__(self):
-        return self.widgets.__iter__()
-
     def onBrowserEvent(self, event):
         typ = DOM.eventGetType(event)
 
@@ -183,11 +190,11 @@ class SplitPanel(Panel):
                 DOM.eventPreventDefault(event)
 
     def remove(self, widget):
-        if widgets[0] == widget:
-            setWidget(0, None)
+        if self.widgets[0] == widget:
+            self.setWidget(0, None)
             return True
-        elif widgets[1] == widget:
-            setWidget(1, None)
+        elif self.widgets[1] == widget:
+            self.setWidget(1, None)
             return True
         return False
 
@@ -210,6 +217,9 @@ class SplitPanel(Panel):
             @return the element
         """
         return self.splitElem
+
+    def getChildren(self):
+        return [w for w in self.widgets if w is not None]
 
     def getWidget(self, index):
         """ Gets one of the contained widgets.
