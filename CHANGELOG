@@ -61,6 +61,9 @@
 
  * Enable __setattr__ support to object [pyjs], by C Anthony Risinger
 
+ * Implement assignment to slices in an assignment list (issue 514),
+   by Karl Voigtland
+
                     Changes made to Pyjamas since 0.6
                     ---------------------------------
 
