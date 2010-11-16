@@ -378,7 +378,7 @@ class Browser(gtk.Window):
     def _title_changed_cb(self, widget, frame, title):
         self._set_title("%s" % title)
 
-    def _icon_loaded_cb(self):
+    def _icon_loaded_cb(self, view, icon_uri):
         print "icon loaded"
 
     def _selection_changed_cb(self):
