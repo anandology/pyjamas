@@ -257,7 +257,7 @@ class Browser(gtk.Window):
         self.add(vbox)
         self.set_default_size(600, 480)
 
-        self.connect('destroy', gtk.main_quit)
+        self.connect('destroy', self._destroy_cb)
 
         self.application = application
         self.appdir = appdir
@@ -357,6 +357,11 @@ class Browser(gtk.Window):
         #for m in pygwt_processMetas():
         #    minst = module_load(m)
         #    minst.onModuleLoad()
+
+    def _destroy_cb(self, window):
+        window.destroy()
+        while gtk.events_pending():
+            gtk.main_iteration(False)
 
     def _set_title(self, title):
         self.props.title = title
@@ -464,7 +469,7 @@ def run(one_event=False, block=True):
             sys.stdout.flush()
         return gtk.events_pending()
     else:
-        while 1:
+        while wv.flags() & gtk.REALIZED:
             gtk.main_iteration()
             sys.stdout.flush()
 
