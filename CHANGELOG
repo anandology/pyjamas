@@ -59,6 +59,8 @@
 
  * Added HTML5 drag-and-drop support (native and emulated), by Jim Washington
 
+ * Enable __setattr__ support to object [pyjs], by C Anthony Risinger
+
                     Changes made to Pyjamas since 0.6
                     ---------------------------------
 
