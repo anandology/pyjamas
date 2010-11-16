@@ -215,6 +215,9 @@ class BuiltinTest(UnitTest):
         self.assertFalse(isinstance(s, str), "s is an integer not a string")
         self.assertTrue(isinstance(s, int), "s is an integer")
 
+        self.assertFalse(isinstance('', list), "'' is not instance of list")
+        self.assertTrue(isinstance([], list), "'' is not instance of list")
+
     def testImport(self):
         self.assertEqual(builtin_value, None, "The builtin is loaded before import!")
         try:
@@ -430,6 +433,9 @@ class BuiltinTest(UnitTest):
             self.assertTrue(type(object) is type)
         except NotImplementedError, why:
             self.fail("Bug #229" + str(why))
+        self.assertTrue(type([]) is type([]))
+        self.assertTrue(type([]) is list)
+        self.assertTrue(type([]) == list)
 
     def testIter(self):
         class G(object):
