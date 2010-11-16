@@ -1,4 +1,4 @@
-import pyjd # dummy in pyjs
+import pyjd  # dummy in pyjs
 
 from pyjamas.ui.RootPanel import RootPanel
 from pyjamas.ui.HTML import HTML
@@ -10,16 +10,19 @@ from pyjamas import Window
 from pyjamas.ui.VerticalSplitPanel import VerticalSplitPanel
 from pyjamas.ui.HorizontalSplitPanel import HorizontalSplitPanel
 
+
 class SplitPanel:
 
     def onModuleLoad(self):
-        self.vertpanel=VerticalSplitPanel()
+        self.vertpanel = VerticalSplitPanel()
         self.vertpanel.setSize("500px", "350px")
         self.vertpanel.setSplitPosition("30%")
+        self.vertpanel.setStyleAttribute("background", "red")
 
-        self.horzpanel=HorizontalSplitPanel()
+        self.horzpanel = HorizontalSplitPanel()
         self.horzpanel.setSize("500px", "350px")
-        self.horzpanel.setSplitPosition("30%")
+        self.horzpanel.setSplitPosition("50%")
+        self.horzpanel.setStyleAttribute("background", "yellow")
 
         randomText = ""
         for i in range(200):

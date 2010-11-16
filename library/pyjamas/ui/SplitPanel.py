@@ -1,275 +1,306 @@
 """
-/*
- * Copyright 2008 Google Inc.
- * Copyright (C) 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
- * 
- * Licensed under the Apache License, Version 2.0 (the "License") you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- * 
- * http:#www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
- */
+- /*
+- * Copyright 2008 Google Inc.
+- * Copyright (C) 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
+- * Copyright (C) 2010 Rich Newpol <rich.newpol@gmail.com>
+- *
+- * Licensed under the Apache License, Version 2.0 (the "License") you may not
+- * use this file except in compliance with the License. You may obtain a copy
+- * of the License at
+- *
+- * http:#www.apache.org/licenses/LICENSE-2.0
+- *
+- * Unless required by applicable law or agreed to in writing, software
+- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+- * License for the specific language governing permissions and limitations
+- * under the License.
+- */
 """
-from Panel import Panel
-from pyjamas import Factory
-from pyjamas.ui import Event
 
+from __pyjamas__ import console
 from pyjamas import DOM
+from pyjamas import Window
+from pyjamas.DeferredCommand import queue_Call
+from pyjamas.EventController import EventGenerator
+from pyjamas.ui import GlassWidget
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.AbsolutePanel import AbsolutePanel
+from pyjamas.ui.ScrollPanel import ScrollPanel
+from pyjamas.ui.MouseListener import MouseHandler, fireMouseEvent
 
-class SplitPanel(Panel):
-    """ Abstract base class for {@link HorizontalSplitPanel} and
-        {@link VerticalSplitPanel}.
-    """
 
-    def __init__(self, mainElem, splitElem, headElem, tailElem, **kwargs):
-        """ Initializes the split panel.
-           @param mainElem the root element for the split panel
-           @param splitElem the element that acts as the splitter
-           @param headElem the element to contain the top or left most widget
-           @param tailElem the element to contain the bottom or right most widget
-        """
+class SplitPanelSplitter(SimplePanel, MouseHandler):
+    """ a splitter is just a SimplePanel which can receive mouse events """
 
-        self.widgets = [None, None]
-        self.elements = [headElem, tailElem]
-        self.isResizing = False
-
-        self.setElement(mainElem)
-        self.splitElem = splitElem
-
-        if not kwargs.has_key('ThumbImage'):
-            kwargs['ThumbImage'] = "splitPanelThumb.png"
-
-        Panel.__init__(self, **kwargs)
-
-        self.sinkEvents(Event.MOUSEEVENTS)
-
-    def setThumbImage(self, ti):
-        self.thumb_image = ti
-
-    def getThumbImageHTML(self):
-        if self.thumb_image is not None:
-             return '<img src="%s" />' % self.thumb_image
-        return ""
-
-    def addAbsolutePositoning(self, elem):
-        """ Sets an elements positioning to absolute.
-        """
-        DOM.setStyleAttribute(elem, "position", "absolute")
-
-    def addClipping(self, elem):
-        """ Adds clipping to an element.
-        """
+    def __init__(self, splitPanel, **kwargs):
+        # keep a ref to our parent panel for event callback
+        self._splitpanel = splitPanel
+        SimplePanel.__init__(self, **kwargs)
+        MouseHandler.__init__(self)
+        self.addMouseListener(self)
+        # set some constant styles
+        elem = self.getElement()
+        # the following allows splitter to be small enough in IE
         DOM.setStyleAttribute(elem, "overflow", "hidden")
 
-    def addScrolling(self, elem):
-        """ Adds as-needed scrolling to an element.
-        """
-        DOM.setStyleAttribute(elem, "overflow", "auto")
+    def onMouseDown(self, sender, x, y):
+        """ catch a mouse down for parent """
 
-    def expandToFitParentUsingCssOffsets(self, elem):
-        """ Sizes and element to consume the full area of its parent
-            using the CSS properties left, right, top, and
-            bottom. This method is used for all browsers except IE6/7.
-        """
-        zeroSize = "0px"
+        ev = DOM.eventGetCurrentEvent()
+        # ignore right-button downs
+        if DOM.eventGetButton(ev) != 1:
+            return
+        DOM.eventPreventDefault(DOM.eventGetCurrentEvent())
+        # parent will capture the mouse and handle the dragging from here
+        self._splitpanel.startSplitterDrag(x, y)
 
-        self.addAbsolutePositoning(elem)
-        self.setLeft(elem, zeroSize)
-        self.setRight(elem, zeroSize)
-        self.setTop(elem, zeroSize)
-        self.setBottom(elem, zeroSize)
 
-    def expandToFitParentUsingPercentages(self, elem):
-        """ Sizes an element to consume the full areas of its parent
-            using 100% width and height. This method is used on IE6/7
-            where CSS offsets don't work reliably.
-        """
-        zeroSize = "0px"
-        fullSize = "100%"
+class SplitPanel(AbsolutePanel, MouseHandler, EventGenerator):
+    """ Provides the SplitPanel baseclass functionality
+        A SplitPanel is an AbsolutePanel containing an HTMLTable
+        with three cells. The first cell holds the first ScrollPanel,
+        while the center cell holds a Splitter, and the last cell
+        holds the other ScrollPanel.
+    """
 
-        self.addAbsolutePositoning(elem)
-        self.setTop(elem, zeroSize)
-        self.setLeft(elem, zeroSize)
-        self.setElemWidth(elem, fullSize)
-        self.setElemHeight(elem, fullSize)
+    def __init__(self, vertical=False, **kwargs):
+        # set defaults
+        if not 'StyleName' in kwargs:
+            if vertical:    # vertical split panel
+                kwargs['StyleName'] = "gwt-VerticalSplitPanel"
+            else:
+                kwargs['StyleName'] = "gwt-HorizontalSplitPanel"
+        # splitter drag state vars
+        self._drag_start = None
+        self._pos = "50%"
+        # orientation
+        self._vertical = vertical
+        # now init the bases
+        AbsolutePanel.__init__(self, **kwargs)
+        MouseHandler.__init__(self)
+        # add our event support?
+        self.addListenedEvent("Resize")
+        # create the top/left widget container
+        self._container1 = ScrollPanel()
+        # create the bottom/right widget container
+        self._container2 = ScrollPanel()
+        # create the splitter
+        self._splitter = SplitPanelSplitter(self)
+        # add splitter handling
+        self._splitter.addMouseListener(self)
+        # add mouse event handling
+        self.addMouseListener(self)
+        # add the parts
+        AbsolutePanel.add(self, self._container1, 0, 0)
+        AbsolutePanel.add(self, self._splitter, 0, 0)
+        AbsolutePanel.add(self, self._container2, 0, 0)
 
-    def preventBoxStyles(self, elem):
-        """ Adds zero or none CSS values for padding, margin and
-            border to prevent stylesheet overrides. Returns the
-            element for convenience to support builder pattern.
-        """
-        DOM.setIntStyleAttribute(elem, "padding", 0)
-        DOM.setIntStyleAttribute(elem, "margin", 0)
-        DOM.setStyleAttribute(elem, "border", "none")
-        return elem
+        # set the layout
+        if vertical:    # vertical split panel
+            self._splitter.setStyleName("vsplitter")
+            self._splitter.setWidth("100%")
+            self._container1.setWidth("100%")
+            self._container2.setWidth("100%")
+            # set drag cursor
+            DOM.setStyleAttribute(self._splitter.getElement(),
+                                    "cursor", "n-resize")
+        else:   # horizontal split panel
+            self._splitter.setStyleName("hsplitter")
+            self._splitter.setHeight("100%")
+            self._container1.setHeight("100%")
+            self._container2.setHeight("100%")
+            # set drag cursor
+            DOM.setStyleAttribute(self._splitter.getElement(),
+                                    "cursor", "e-resize")
 
-    def setBottom(self, elem, size):
-        """ Convenience method to set bottom offset of an element.
-        """
-        DOM.setStyleAttribute(elem, "bottom", size)
+    def onAttach(self):
+        AbsolutePanel.onAttach(self)
+        self.setSplitPosition()
 
-    def setElemHeight(self, elem, height):
-        """ Convenience method to set the height of an element.
-        """
-        DOM.setStyleAttribute(elem, "height", height)
+    # fixup the container 2 size and position
+    def _finalizePositions(self, pos=None):
+        finalized = False
+        if self._vertical:
+            if pos is None:
+                pos = self._container1.getOffsetHeight()
+            space = self.getOffsetHeight()
+            sz = self._splitter.getOffsetHeight()
+            if space > 0 and sz > 0 and pos > 0:
+                # limit pos
+                if pos > space - sz:
+                    pos = space - sz
+                    self._container1.setHeight(pos)
+                self.setWidgetPosition(self._splitter, 0, pos)
+                self.setWidgetPosition(self._container2, 0, pos + sz)
+                self._container2.setHeight(space - (pos + sz))
+                finalized = True
+        else:
+            if pos is None:
+                pos = self._container1.getOffsetWidth()
+            space = self.getOffsetWidth()
+            sz = self._splitter.getOffsetWidth()
+            if space > 0 and sz > 0 and pos > 0:
+                # limit pos
+                if pos > space - sz:
+                    pos = space - sz
+                    self._container1.setWidth(pos)
+                self.setWidgetPosition(self._splitter, pos, 0)
+                self.setWidgetPosition(self._container2, pos + sz, 0)
+                self._container2.setWidth(space - (pos + sz))
+                finalized = True
+        if finalized:
+            self.dispatchResizeEvent(self, pos)
+        return finalized
 
-    def setLeft(self, elem, left):
-        """ Convenience method to set the left offset of an element.
-        """
-        DOM.setStyleAttribute(elem, "left", left)
+    # end a drag operation
+    def _stopDragging(self):
+        if self._drag_start is not None:
+            # we are no longer dragging
+            self._drag_start = None
+            # deactivate the transparent overlay
+            GlassWidget.hide()
+            # don't let a mouse-up become a click event
+            DOM.eventCancelBubble(DOM.eventGetCurrentEvent(), True)
 
-    def setRight(self, elem, right):
-        """ Convenience method to set the right offset of an element.
-        """
-        DOM.setStyleAttribute(elem, "right", right)
+    def _isDragging(self):
+        return self._drag_start is not None
 
-    def setTop(self, elem, top):
-        """ Convenience method to set the top offset of an element.
-        """
-        DOM.setStyleAttribute(elem, "top", top)
+    # start a drag operation (called by splitter)
+    def startSplitterDrag(self, x, y):
+        if self._drag_start is None:
+            # remember where on the slider we are dragging
+            if self._vertical:
+                self._drag_start = y
+            else:
+                self._drag_start = x
+            # activate the transparent overlay to keep mouse events flowing to
+            # the splitter (and to us) even if the mouse leaves the splitter
+            GlassWidget.show(self)
 
-    def setElemWidth(self, elem, width):
-        """ Convenience method to set the width of an element.
-        """
-        DOM.setStyleAttribute(elem, "width", width)
+    # add handlers for mouse events to support dragging the slider
+    # NOTE: the x,y positioni s relative to the splitter
+    def onMouseMove(self, sender, x, y):
+        # if dragging, then use current mouse position
+        #to reset splitter position
+        if not self._isDragging():
+            return
+        # remove the offset into the splitter
+        # where we started dragging
+        if self._vertical:
+            self._pos = y - self._drag_start
+        else:
+            self._pos = x - self._drag_start
+        # apply limit
+        if self._pos < 1:
+            self._pos = 1
+        # apply new position
+        self.setSplitPosition()
 
-    def add(self, w):
-        if self.getWidget(0) is None:
-            self.setWidget(0, w)
-        elif self.getWidget(1) is None:
-            self.setWidget(1, w)
-        #else:
-        #    raise IllegalStateException("A Splitter can only contain two Widgets.")
+    def onMouseUp(self, sender, x, y):
+        ev = DOM.eventGetCurrentEvent()
+        # ignore right-button ups
+        if DOM.eventGetButton(ev) != 1:
+            return
+        DOM.eventPreventDefault(ev)
+        # if we are dragging
+        if self._isDragging():
+            # stop dragging on mouse up
+            self._stopDragging()
 
-    def isResizing(self):
-        """ Indicates whether the split panel is being resized.
-
-            @return <code>True</code> if the user is dragging the splitter,
-                    <code>False</code> otherwise
-        """
-        return self.isResizing
-
-    def __iter__(self):
-        return self.widgets.__iter__()
-
-    def onBrowserEvent(self, event):
-        typ = DOM.eventGetType(event)
-
-        if typ == "mousedown":
-            target = DOM.eventGetTarget(event)
-            if DOM.isOrHasChild(self.splitElem, target):
-                self.startResizingFrom(DOM.eventGetClientX(event) -
-                                       self.getAbsoluteLeft(),
-                          DOM.eventGetClientY(event) - self.getAbsoluteTop())
-                DOM.setCapture(self.getElement())
-                DOM.eventPreventDefault(event)
-
-        elif typ == "mouseup":
-            DOM.releaseCapture(self.getElement())
-            self.stopResizing()
-
-        elif typ == 'mousemove':
-            if self.isResizing:
-                #assert DOM.getCaptureElement() is not None
-                self.onSplitterResize(DOM.eventGetClientX(event) -
-                                      self.getAbsoluteLeft(),
-                          DOM.eventGetClientY(event) - self.getAbsoluteTop())
-                DOM.eventPreventDefault(event)
-
-    def remove(self, widget):
-        if widgets[0] == widget:
-            setWidget(0, None)
-            return True
-        elif widgets[1] == widget:
-            setWidget(1, None)
-            return True
-        return False
-
-    def setSplitPosition(self, size):
-        """ Moves the position of the splitter.
-            @param size the new size of the left region in CSS units
-            (e.g. "10px", "1em")
-        """
+    # called when we start dragging
+    def onMouseGlassEnter(self, sender):
         pass
 
-    def getWidgetElement(self, index):
-        """ Gets the content element for the given index.
-            @param index the index of the element, only 0 and 1 are valid.
-            @return the element
-        """
-        return self.elements[index]
+    # called when we drag out of the window
+    # (NOT called when we just stop dragging)
+    def onMouseGlassLeave(self, sender):
+        # we left the window, so stop dragging
+        self._stopDragging()
 
-    def getSplitElement(self):
-        """ Gets the element that is acting as the splitter.
-            @return the element
-        """
-        return self.splitElem
+    #
+    # Start the inherited 'public' API
+    #
+
+    # specify splitter position in pix OR percentage
+    # if pixels (number) specified, we can make change now
+    # otherwise, we have to set the offset as specified, then
+    # 'fixup' the remaining space after rendering
+    def setSplitPosition(self, pos=None):
+        if pos is not None:
+            # remember last pos set
+            self._pos = pos
+        else:
+            pos = self._pos
+        if pos < 1:
+            pos = 1
+            self._pos = pos
+        # change adjustable dimension
+        if self._vertical:
+            self._container1.setHeight(pos)
+        else:
+            self._container1.setWidth(pos)
+        # if pix are given, we can try to finalize the positions
+        finalized = False
+        if isinstance(pos, int):
+            finalized = self._finalizePositions(pos)
+        # if needed, queue callback to finalize
+        if not finalized:
+            queue_Call(self._finalizePositions)
 
     def getWidget(self, index):
-        """ Gets one of the contained widgets.
-            @param index the index of the widget, only 0 and 1 are valid.
-            @return the widget
-        """
-        return self.widgets[index]
+        if index == 0:
+            return self._container1.getWidget()
+        return self._container2.getWidget()
 
-    def setWidget(self, index, w):
-        """ Sets one of the contained widgets.
-            @param index the index, only 0 and 1 are valid
-            @param w the widget
-        """
-        oldWidget = self.widgets[index]
+    def setWidget(self, index, widget):
+        if index == 0:
+            return self._container1.setWidget(widget)
+        return self._container2.setWidget(widget)
 
-        if oldWidget == w:
-          return
+    # Adds a widget to a pane
+    def add(self, widget):
+        if self.getWidget(0) == None:
+            self.setWidget(0, widget)
+        elif self.getWidget(1) == None:
+            self.setWidget(1, widget)
+        else:
+            console.error("SimplePanel can only contain one child widget")
 
-        if w is not None:
-          w.removeFromParent()
+    # Removes a child widget.
+    def remove(self, widget):
+        if self.getWidget(0) == widget:
+            self._container1.remove(widget)
+        elif self.getWidget(1) == widget:
+            self._container2.remove(widget)
+        else:
+            AbsolutePanel.remove(self, widget)
 
-        # Remove the old child.
-        if oldWidget is not None:
-          # Orphan old.
-          self.disown(oldWidget)
-          # Physical detach old.
-          #DOM.removeChild(self.elements[index], oldWidget.getElement())
+    # Gets the content element for the given index.
+    def getElement(self, index=None):
+        if index is None:
+            return AbsolutePanel.getElement(self)
+        return self.getWidget(index).getElement()
 
-        # Logical detach old / attach new.
-        self.widgets[index] = w
+    # Gets the widget in the pane at end of the line direction for the layout
+    def getEndOfLineWidget(self):
+        return self.getWidget(1)
 
-        if w is not None:
-            # Physical attach new.
-            DOM.appendChild(self.elements[index], w.getElement())
+    # Gets the element that is acting as the splitter.
+    def getSplitElement(self):
+        return self._splitter.getElement()
 
-            # Adopt new.
-            self.adopt(w, None)
+    # Gets the widget in the pane at the start of line direction for the layout
+    def getStartOfLineWidget(self):
+        return self.getWidget(0)
 
-    def onSplitterResize(self, x, y):
-        """ Called on each mouse drag event as the user is dragging
-            the splitter.
-            @param x the x coord of the mouse relative to the panel's extent
-            @param y the y coord of the mosue relative to the panel's extent
-        """
-        pass
+    # Indicates whether the split panel is being resized.
+    def isResizing(self):
+        return False
 
-    def onSplitterResizeStarted(self, x, y):
-        """ Called when the user starts dragging the splitter.
-            @param x the x coord of the mouse relative to the panel's extent
-            @param y the y coord of the mouse relative to the panel's extent
-        """
+    # Sets the widget in the pane at the end of line direction for the layout
+    def setEndOfLineWidget(self, widget):
+        self.setWidget(1, widget)
 
-    def startResizingFrom(self, x, y):
-        self.isResizing = True
-        self.onSplitterResizeStarted(x, y)
-
-    def stopResizing(self):
-        self.isResizing = False
-
-# TODO: this is really an internal base class for Horizontal and Vertical
-# SplitPanels?
-#Factory.registerClass('pyjamas.ui.SplitPanel', 'SplitPanel', SplitPanel)
-
+    def setStartOfLineWidget(self, widget):
+        self.setWidget(0, widget)
