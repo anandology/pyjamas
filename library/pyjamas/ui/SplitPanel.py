@@ -182,7 +182,7 @@ class SplitPanel(AbsolutePanel, MouseHandler, EventGenerator):
     # NOTE: the x,y positioni s relative to the splitter
     def onMouseMove(self, sender, x, y):
         # if dragging, then use current mouse position
-        #to reset splitter position
+        # to reset splitter position
         if not self._isDragging():
             return
         # remove the offset into the splitter
