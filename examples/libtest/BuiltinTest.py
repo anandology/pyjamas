@@ -435,7 +435,10 @@ class BuiltinTest(UnitTest):
             self.fail("Bug #229" + str(why))
         self.assertTrue(type([]) is type([]))
         self.assertTrue(type([]) is list)
-        self.assertTrue(type([]) == list)
+        try:
+            self.assertTrue(type([]) == list)
+        except:
+            self.fail("Bug #515")
 
     def testIter(self):
         class G(object):
