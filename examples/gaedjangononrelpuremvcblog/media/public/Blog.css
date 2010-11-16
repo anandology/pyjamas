@@ -1,0 +1,68 @@
+.gwt-DialogBox {
+    font-family: 'Garamond', 'Georgia', serif;
+    border: 2px outset;
+    background-color: white;
+    width: 300px;
+}
+
+.gwt-DialogBox .Caption {
+    background-color: #C3D9FF;
+    padding: 3px;
+    margin: 2px;
+    font-weight: bold;
+    cursor: default;
+}
+
+.gwt-DialogBox .Contents {
+    padding: 10px;
+    width: 300px;
+} 
+
+.gwt-PopupPanelGlass {
+    background-color: #000;
+    opacity: 0.3;
+    filter: alpha(opacity=30);
+}
+
+.gwt-Button {
+    font-family: 'Garamond', 'Georgia', serif;
+    width: 125px;
+}
+
+.gwt-TextArea {
+    width: 270px;
+    height: 115px;
+}
+
+.gwt-TextBox {
+    width: 270px;
+}
+
+.hidden_button {
+    opacity: 0;
+    filter: alpha(opacity=0);
+}
+
+.title_label {
+    font-family: 'Garamond', 'Georgia', serif;
+    font-size: 26;
+    color: MidnightBlue;
+}
+
+.content_label {
+    font-family: 'Garamond', 'Georgia', serif;
+    font-size: 16;
+    color: gray;
+}
+
+.header_label {
+    font-family: 'Garamond', 'Georgia', serif;
+    font-size: 30;
+    color: black;
+}
+
+.error_message_label {
+    font-family: 'Garamond', 'Georgia', serif;
+    font-size: 16;
+    color: red;
+}

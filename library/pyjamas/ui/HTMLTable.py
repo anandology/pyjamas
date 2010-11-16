@@ -191,7 +191,10 @@ class HTMLTable(Panel):
         self.tableListeners.remove(listener)
 
     def setBorderWidth(self, width):
-        DOM.setAttribute(self.tableElem, "border", str(width))
+        if width is None:
+            DOM.removeAttribute(self.tableElem, "border")
+        else:
+            DOM.setAttribute(self.tableElem, "border", str(width))
 
     def setCellPadding(self, padding):
         DOM.setAttribute(self.tableElem, "cellPadding", str(padding))

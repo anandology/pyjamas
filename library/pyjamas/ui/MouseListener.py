@@ -96,7 +96,7 @@ class MouseWheelHandler(object):
 
     def onBrowserEvent(self, event):
         etype = DOM.eventGetType(event)
-        if etype in ["mousewheel", "DOMMouseScroll"]:
+        if etype == "mousewheel":
             if self._mouseWheelPreventDefault:
                 DOM.eventPreventDefault(event)
             velocity = DOM.eventGetMouseWheelVelocityY(event)

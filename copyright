@@ -73,6 +73,8 @@ Copyright: 2010 Scott Scites <scott.scites@railcar88.com>
 Copyright: 2010 Daniel Kluev <dan.kluev@gmail.com>
 Copyright: 2010 Mickael Kerbrat <mickael.kerbrat@gmail.com>
 Copyright: 2010 Phil Charlesworth <phil.charlesworth@physics.org>
+Copyright: 2010 Jim Washington <washington.jim@gmail.com>
+Copyright: 2010 Karl Voigtland <voigtk@alum.rpi.edu>
 
 Files: contrib/pyjscompressor.py
 Copyright: 2010 Sujan Shakya, suzan.shakya@gmail.com
@@ -91,9 +93,7 @@ Copyright: 2006 Jan-Klaas Kollhof
 License: GPL-2
 
 Files: library/pyjamas/dnd/* examples/dnd/*
-Copyright: 2009 Fred Sauer
-Copyright: 2007 Fred Sauer
-Copyright: 2008 Fred Sauer
+Copyright: 2010 Jim Washington
 License: Apache
 
 Files: examples/jsonrpc/public/services/phpolait/* examples/dynamictable/public/phpolait/JSON.php

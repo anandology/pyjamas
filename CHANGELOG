@@ -1,6 +1,9 @@
                     Changes made to Pyjamas since 0.7
                     ---------------------------------
  
+ * Added oninput and onpropertychange event support, thanks to Maxim
+   Lacrima.
+
  * Make pyjsbuild call out to translator.py using subprocess.Popen,
    with a view to adding "build generators" that will create Makefiles,
    scons build files etc.  pyjsbuild should not be doing the job of make,
@@ -53,6 +56,10 @@
  * Added log10 to math module
 
  * Added "glass" opaque background option to PopupPanel, by Serge Tarkovski 
+
+ * Added HTML5 drag-and-drop support (native and emulated), by Jim Washington
+
+ * Enable __setattr__ support to object [pyjs], by C Anthony Risinger
 
                     Changes made to Pyjamas since 0.6
                     ---------------------------------

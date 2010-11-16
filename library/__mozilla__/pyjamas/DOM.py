@@ -22,6 +22,12 @@ def compare(elem1, elem2):
     return (@{{elem1}}.isSameNode(@{{elem2}}));
     """)
 
+def eventGetType(event):
+    etype = event.type
+    if etype == 'DOMMouseScroll':
+        return 'mousewheel'
+    return etype
+
 def eventGetButton(evt):
     JS("""
     var button = @{{evt}}.which;
@@ -188,13 +194,6 @@ def releaseCapture(elem):
     }
     """)
 
-
-def _init_mousewheel():
-    JS("""
-    var dcme = $wnd.__dispatchCapturedMouseEvent;
-    $wnd.addEventListener('DOMMouseWheel', dcme, true);
-    """)
-
 def eventGetMouseWheelVelocityY(evt):
     JS("""
     return @{{evt}}.detail || 0;
@@ -207,6 +206,13 @@ def sinkEventsMozilla(element, bits):
                                     false);
     } else {
         @{{element}}.removeEventListener("DOMMouseScroll", $wnd.__dispatchEvent,
+                                    false);
+    }
+    if (@{{bits}} & 0x80000) {
+        @{{element}}.addEventListener("input", $wnd.__dispatchEvent,
+                                    false);
+    } else {
+        @{{element}}.removeEventListener("input", $wnd.__dispatchEvent,
                                     false);
     }
     """)

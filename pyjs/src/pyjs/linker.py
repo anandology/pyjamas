@@ -93,10 +93,10 @@ def out_translate(platform, file_names, out_file, module_name,
         for file_name in file_names:
             if is_modified(file_name,out_file):
                 if platform is not None:
-                    platform = "[%s]" % platform
+                    platform = "[%s] " % platform
                 else:
                     platform = ''
-                print "Compiling %s:" % platform, file_name
+                print "Translating %s:" % platform, file_name
                 do_translate = True
                 break
     if not incremental or do_translate:
@@ -107,7 +107,7 @@ def out_translate(platform, file_names, out_file, module_name,
         opts = ["--module-name", module_name,
                 "-o", out_file.replace(" ", r"\ "),
                ] + get_translator_opts(translator_args) + file_names
-        opts = ['python'] + ['translator.py'] + opts
+        opts = [pyjs.PYTHON] + ['translator.py'] + opts
         pyjscompile_cmd = ' '.join(opts)
         #print pyjscompile_cmd - use this to create Makefile code-fragment
         proc = subprocess.Popen(pyjscompile_cmd,

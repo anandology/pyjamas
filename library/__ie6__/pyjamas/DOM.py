@@ -49,6 +49,12 @@ def createInputRadio(group):
     return $doc.createElement("<INPUT type='RADIO' name='" + @{{group}} + "'>");
     """)
 
+def eventGetType(event):
+    etype = event.type
+    if etype == 'propertychange':
+        return 'input'
+    return etype
+
 def eventGetCurrentTarget(event):
     return event.currentEventTarget
 
@@ -207,31 +213,6 @@ def setInnerText(elem, text):
         @{{elem}}.innerText = '';
     else
         @{{elem}}.innerText = @{{text}};
-    """)
-
-def sinkEvents(elem, bits):
-    JS("""
-@{{elem}}.__eventBits = @{{bits}};
-
-@{{elem}}.onclick       = (@{{bits}} & 0x00001) ? $wnd.__dispatchEvent:null;
-@{{elem}}.ondblclick=(@{{bits}} & 0x00002) ? $wnd.__dispatchDblClickEvent:null;
-@{{elem}}.onmousedown   = (@{{bits}} & 0x00004) ? $wnd.__dispatchEvent:null;
-@{{elem}}.onmouseup     = (@{{bits}} & 0x00008) ? $wnd.__dispatchEvent:null;
-@{{elem}}.onmouseover   = (@{{bits}} & 0x00010) ? $wnd.__dispatchEvent:null;
-@{{elem}}.onmouseout    = (@{{bits}} & 0x00020) ? $wnd.__dispatchEvent:null;
-@{{elem}}.onmousemove   = (@{{bits}} & 0x00040) ? $wnd.__dispatchEvent:null;
-@{{elem}}.onkeydown     = (@{{bits}} & 0x00080) ? $wnd.__dispatchEvent:null;
-@{{elem}}.onkeypress    = (@{{bits}} & 0x00100) ? $wnd.__dispatchEvent:null;
-@{{elem}}.onkeyup       = (@{{bits}} & 0x00200) ? $wnd.__dispatchEvent:null;
-@{{elem}}.onchange      = (@{{bits}} & 0x00400) ? $wnd.__dispatchEvent:null;
-@{{elem}}.onfocus       = (@{{bits}} & 0x00800) ? $wnd.__dispatchEvent:null;
-@{{elem}}.onblur        = (@{{bits}} & 0x01000) ? $wnd.__dispatchEvent:null;
-@{{elem}}.onlosecapture = (@{{bits}} & 0x02000) ? $wnd.__dispatchEvent:null;
-@{{elem}}.onscroll      = (@{{bits}} & 0x04000) ? $wnd.__dispatchEvent:null;
-@{{elem}}.onload        = (@{{bits}} & 0x08000) ? $wnd.__dispatchEvent:null;
-@{{elem}}.onerror       = (@{{bits}} & 0x10000) ? $wnd.__dispatchEvent:null;
-@{{elem}}.oncontextmenu = (@{{bits}} & 0x20000) ? $wnd.__dispatchEvent:null; 
-@{{elem}}.onmousewheel  = (@{{bits}} & 0x40000) ? $wnd.__dispatchEvent:null;
     """)
 
 def toString(elem):

@@ -3217,7 +3217,13 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 raise TranslationError(
                     "unsupported flag (in _assign)", v, self.module_name)
             if self.descriptors:
-                self.w( self.spacing() + "@{{setattr}}(%s, '%s', %s);" % (lhs, attr_name, rhs))
+                desc_setattr = [
+                    "%(l)s.__is_instance__ &&",
+                    "typeof %(l)s.__setattr__ == 'function' ?",
+                    "%(l)s.__setattr__('%(a)s', %(r)s) :",
+                    "@{{setattr}}(%(l)s, '%(a)s', %(r)s);",
+                ]
+                self.w( self.spacing() + ' '.join(desc_setattr) % {'l': lhs, 'a': attr_name, 'r': rhs})
                 return
             lhs += '.' + attr_name
 
@@ -3283,6 +3289,30 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                         self.w( self.spacing() + self.track_call(obj + ".__setitem__(" \
                                            + idx + ", " + rhs + ")", v.lineno) + ';')
                         continue
+                elif isinstance(child, self.ast.Slice):
+                    if child.flags == "OP_ASSIGN":
+                        if not child.lower:
+                            lower = 0
+                        else:
+                            lower = self.expr(child.lower, current_klass)
+                        if not child.upper:
+                            upper = 'null'
+                        else:
+                            upper = self.expr(child.upper, current_klass)
+                        obj = self.expr(child.expr, current_klass)
+                        self.w( self.spacing()
+                                + self.track_call("@{{__setslice}}"
+                                                  "(%s, %s, %s, %s)"
+                                                  % (obj, lower, upper, rhs)
+                                                  , v.lineno) + ';')
+                        continue
+                    else:
+                        raise TranslationError(
+                            "unsupported flag (in _assign)", v, self.module_name)
+                else:
+                    raise TranslationError(
+                        "unsupported type in assignment list",
+                        v, self.module_name)                
                 self.w( self.spacing() + lhs + " = " + rhs + ";")
             return
         else:
@@ -3804,9 +3834,9 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         if not self.operator_funcs:
             return """((%(v1)s=%(e1)s)!=null && (%(v2)s=%(e2)s)!=null && typeof %(v1)s=='string'?
 %(s)s\t@{{sprintf}}(%(v1)s,%(v2)s):
-%(s)s\t%(v1)s%%%(v2)s)""" % locals()
+%(s)s\t((%(v1)s=%(v1)s%%%(v2)s)<0&&%(v2)s>0?%(v1)s+%(v2)s:%(v1)s))""" % locals()
         return """(typeof (%(v1)s=%(e1)s)==typeof (%(v2)s=%(e2)s) && typeof %(v1)s=='number'?
-%(s)s\t%(v1)s%%%(v2)s:
+%(s)s\t((%(v1)s=%(v1)s%%%(v2)s)<0&&%(v2)s>0?%(v1)s+%(v2)s:%(v1)s):
 %(s)s\t@{{op_mod}}(%(v1)s,%(v2)s))""" % locals()
 
     def _power(self, node, current_klass):

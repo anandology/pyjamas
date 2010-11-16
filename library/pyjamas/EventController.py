@@ -69,6 +69,8 @@ class EventListener():
 class Handler(object):
 
     def __init__(self, parent, event_type, *args, **kwargs):
+        if parent is None:
+            parent = self
         self.parent = parent
         self.event_type = event_type
         self.listeners = {}

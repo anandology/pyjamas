@@ -55,3 +55,8 @@ class ClickHandler(object):
     def removeDoubleClickListener(self, listener):
         self._doubleclickListeners.remove(listener)
 
+    def clearClickListener(self):
+        self._clickListeners[:] = []
+
+    def clearDoubleClickListener(self):
+        self._doubleclickListeners.remove(listener)[:] = []

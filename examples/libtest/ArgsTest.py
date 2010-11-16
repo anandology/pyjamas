@@ -725,6 +725,29 @@ class ArgsTest(UnitTest):
         self.assertEqual(__name__, 'ArgsTest', "Argument to fn must be equal to module name")
         self.assertEqual(fn('foo'), ['foo', 2, 3])
 
+    def testGetattr(self):
+        instance = ArgsTestClass()
+        foo = instance.foo
+
+        values = foo(1, 2, 3)
+        self.assertEquals(values[0], 1)
+        self.assertEquals(values[1], 2)
+        self.assertEquals(values[2], 3)
+
+        values = foo(*(1, 2, 3))
+        self.assertEquals(values[0], 1)
+        self.assertEquals(values[1], 2)
+        self.assertEquals(values[2], 3)
+
+        try:
+            values = foo(*(1, 2), **dict(c=3))
+            self.assertEquals(values[0], 1)
+            self.assertEquals(values[1], 2)
+            self.assertEquals(values[2], 3)
+        except TypeError:
+            self.fail('foo() takes exactly 4 arguments (5 given), bug #503')
+
+
 def foo(a, b, c):
     return [a, b, c]
 

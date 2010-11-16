@@ -40,9 +40,55 @@ ONMOUSEOVER   = 0x00010
 ONMOUSEUP     = 0x00008
 ONMOUSEWHEEL  = 0x40000
 ONSCROLL      = 0x04000
+ONINPUT       = 0x80000
+DRAGEVENTS    = 0x100000
+DROPEVENTS    = 0x200000
 
 FOCUSEVENTS   = 0x01800 # ONFOCUS | ONBLUR
 KEYEVENTS     = 0x00380 # ONKEYDOWN | ONKEYPRESS | ONKEYUP
 MOUSEEVENTS   = 0x0007C # ONMOUSEDOWN | ONMOUSEUP | ONMOUSEMOVE | ONMOUSEOVER | ONMOUSEOUT
 
+eventbits = {
+    # bit    :  name, sinkEvents
+    0x000001 : ("click", ["click"]),
+    0x000002 : ("dblclick", ["dblclick"]),
+    0x000004 : ("mousedown", ["mousedown"]),
+    0x000008 : ("mouseup", ["mouseup"]),
+    0x000010 : ("mouseover", ["mouseover"]),
+    0x000020 : ("mouseout", ["mouseout"]),
+    0x000040 : ("mousemove", ["mousemove"]),
+    0x000080 : ("keydown", ["keydown"]),
+    0x000100 : ("keypress", ["keypress"]),
+    0x000200 : ("keyup", ["keyup"]),
+    0x000400 : ("change", ["change"]),
+    0x000800 : ("focus", ["focus"]),
+    0x001000 : ("blur", ["blur"]),
+    0x002000 : ("losecapture", ["losecapture"]),
+    0x004000 : ("scroll", ["scroll"]),
+    0x008000 : ("load", ["load"]),
+    0x010000 : ("error", ["error"]),
+    0x020000 : ("contextmenu", ["contextmenu"]),
+    0x040000 : ("mousewheel", ["mousewheel"]),
+    0x080000 : ("input", ["input"]),
+    0x100000 : ("dragevents", ["drag", "dragstart", "dragend"]),
+    0x200000 : ("dropevents", ["drop", "dragenter", "dragover", "dragleave"]),
+}
+# eventmap will be filled in init(), but some names
+# will be added manually for interoperability
+# (duplicate names for bit)
+eventmap = {
+    "mousewheel": 0x040000,
+    "mousescroll": 0x040000,
+    "DOMMouseScroll": 0x040000,
+    "input": 0x080000,
+    "propertychange": 0x080000,
+}
 
+def _create_eventmap():
+    for bit, bitmap in eventbits.iteritems():
+        eventmap[bitmap[0]] = bit
+
+def init():
+    _create_eventmap()
+
+init()

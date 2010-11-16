@@ -349,8 +349,8 @@ def serve(path):
 
 def build(top_module, pyjs, options, app_platforms,
           runtime_options, args):
-    print "Building:", top_module
-    print "PYJSPATH:", pyjs.path
+    print "Building :", top_module
+    print "PYJSPATH :", '\n    '.join(['['] + [p for p in pyjs.path]) + '\n]'
     translator_arguments=dict(
         debug=options.debug,
         print_statements = options.print_statements,

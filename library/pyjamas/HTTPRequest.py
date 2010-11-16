@@ -148,12 +148,18 @@ class HTTPRequest:
         xmlHttp = self.doCreateXmlHTTPRequest()
         url = self._convertUrlToAbsolute(url)
 
-        if mf.platform == 'webkit' or mf.platform == 'mshtml':
-            mf._addXMLHttpRequestEventListener(xmlHttp, "readystatechange",
-                                         self.onReadyStateChange)
+        if mf.platform == 'webkit':
+            mf._addXMLHttpRequestEventListener(
+                xmlHttp, "readystatechange", self.onReadyStateChange,
+            )
+        elif mf.platform == 'mshtml':
+            mf._addXMLHttpRequestEventListener(
+                xmlHttp, "onreadystatechange", self.onReadyStateChange,
+            )
         else:
-            mf._addXMLHttpRequestEventListener(xmlHttp, "load",
-                                         self.onLoad)
+            mf._addXMLHttpRequestEventListener(
+                xmlHttp, "load", self.onLoad,
+            )
 
         print "xmlHttp", method, user, pwd, url, postData, handler, dir(xmlHttp)
         #try :
