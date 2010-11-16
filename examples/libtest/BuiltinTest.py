@@ -108,7 +108,18 @@ class BuiltinTest(UnitTest):
 
     def testMod(self):
         self.assertEqual(12 % 5, 2)
-        self.assertEqual(-0.4 % 1, 0.6, "Modulo error for negative base, bug #473")
+        self.assertEqual(-0.4 % 1, 0.6, "Modulo error 1 for negative base, bug #473")
+        self.assertEqual(-0.3 % 1.0, 0.7)
+        self.assertEqual(-1 % 2, 1)
+        self.assertEqual(-1 % -2, -1)
+        self.assertEqual(-1 % 3L, 2L)
+        self.assertEqual(-2 % -3L, -2L)
+        self.assertEqual(-1L % 4, 3L)
+        self.assertEqual(-3L % -4, -3L)
+        self.assertEqual(-1L % 5L, 4L)
+        self.assertEqual(-4L % -5L, -4L)
+        self.assertEqual(-1.0 % 6, 5.0)
+        self.assertEqual(-5.0 % -6, -5.0)
 
     def testPower(self):
         self.assertEqual(3 ** 4, 81)

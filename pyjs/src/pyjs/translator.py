@@ -3810,9 +3810,9 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         if not self.operator_funcs:
             return """((%(v1)s=%(e1)s)!=null && (%(v2)s=%(e2)s)!=null && typeof %(v1)s=='string'?
 %(s)s\t@{{sprintf}}(%(v1)s,%(v2)s):
-%(s)s\t%(v1)s%%%(v2)s)""" % locals()
+%(s)s\t((%(v1)s=%(v1)s%%%(v2)s)<0&&%(v2)s>0?%(v1)s+%(v2)s:%(v1)s))""" % locals()
         return """(typeof (%(v1)s=%(e1)s)==typeof (%(v2)s=%(e2)s) && typeof %(v1)s=='number'?
-%(s)s\t%(v1)s%%%(v2)s:
+%(s)s\t((%(v1)s=%(v1)s%%%(v2)s)<0&&%(v2)s>0?%(v1)s+%(v2)s:%(v1)s):
 %(s)s\t@{{op_mod}}(%(v1)s,%(v2)s))""" % locals()
 
     def _power(self, node, current_klass):
