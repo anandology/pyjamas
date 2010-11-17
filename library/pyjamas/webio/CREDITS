@@ -1,0 +1,7 @@
+pyjamas.webio is mostly a translation from javascript to python of client
+network code in js.io and hookbox
+
+js.io (http://js.io) and hookbox (http://hookbox.org) are MIT licensed.
+
+Due credit to Michael Carter, cartermichael at gmail dot com and
+contributors to the js.io and orbited projects for their excellent work.
