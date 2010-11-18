@@ -3962,8 +3962,6 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.add_lookup('variable', resultlist, resultlist)
         save_output = self.output
         self.output = StringIO()
-        self.w( "function(){")
-        self.w( "var %s = $p['list']();" % resultlist)
 
         tnode = self.ast.Discard(self.ast.CallFunc(self.ast.Getattr(self.ast.Name(resultlist), 'append'), [node.expr], None, None))
         for qual in node.quals[::-1]:
@@ -3979,11 +3977,21 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             tnode = self.ast.For(tassign, tlist, tbody, telse_, node.lineno)
         self._for(tnode, current_klass)
 
-        self.w( "return %s;}()" % resultlist, False)
         captured_output = self.output
         self.output = save_output
+        listcomp_code = """\
+function(){
+\t%s
+\t%s = $p['list']();
+%s
+\treturn %s;}()""" % (
+            self.local_js_vars_decl([]),
+            resultlist,
+            captured_output.getvalue(),
+            resultlist,
+        )
         self.pop_lookup()
-        return captured_output.getvalue()
+        return listcomp_code
 
     def _genexpr(self, node, current_klass):
         save_has_yield = self.has_yield
