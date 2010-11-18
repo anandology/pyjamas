@@ -852,7 +852,7 @@ class Translator(object):
             self.w( self.spacing() + "%s__track_lines__ = new Array();" % self.module_prefix)
         name = module_name.split(".")
         if len(name) > 1:
-            jsname = self.add_lookup('variable', name[-1], name[-1])
+            jsname = self.jsname('variable', name[-1])
             self.w( self.spacing() + "$pyjs.loaded_modules['%s']['%s'] = $pyjs.loaded_modules['%s'];" % (
                 '.'.join(name[:-1]), jsname, module_name,
             ))
