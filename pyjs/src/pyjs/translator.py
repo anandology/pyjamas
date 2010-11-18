@@ -2302,7 +2302,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         self.w( self.spacing() + "continue;")
 
 
-    def _callfunc_code(self, v, current_klass, is_statement=False):
+    def _callfunc_code(self, v, current_klass, is_statement=False, optlocal_var=False):
 
         self.ignore_debug = False
         method_name = None
@@ -2334,7 +2334,14 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                 if name_type is None:
                     # What to do with a (yet) unknown name?
                     # Just nothing...
-                    call_name = self.scopeName(v.node.name, depth, is_local)
+                    if optlocal_var:
+                        call_name = '(typeof %s == "undefined"?%s:%s)' % (
+                            v.node.name,
+                            self.scopeName(v.node.name, depth, is_local),
+                            v.node.name,
+                        )
+                    else:
+                        call_name = self.scopeName(v.node.name, depth, is_local)
                 else:
                     call_name = jsname
             call_args = []
@@ -2427,8 +2434,13 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             call_code = call_name + "(" + ", ".join(call_args) + ")"
         return call_code
 
-    def _callfunc(self, v, current_klass, is_statement=False):
-        call_code = self._callfunc_code(v, current_klass, is_statement=is_statement)
+    def _callfunc(self, v, current_klass, is_statement=False, optlocal_var=False):
+        call_code = self._callfunc_code(
+            v, 
+            current_klass, 
+            is_statement=is_statement, 
+            optlocal_var=optlocal_var,
+        )
         if not self.ignore_debug:
             call_code = self.track_call(call_code, v.lineno)
         return call_code
@@ -2652,7 +2664,9 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         return strip_py(self.module_prefix)
 
     def _name(self, v, current_klass, 
-              return_none_for_module=False):
+              return_none_for_module=False,
+              optlocal_var=False,
+             ):
 
         if not hasattr(v, 'name'):
             name = v.attrname
@@ -2663,7 +2677,13 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         if name_type is None:
             # What to do with a (yet) unknown name?
             # Just nothing...
-            return self.scopeName(name, depth, is_local)
+            if not optlocal_var:
+                return self.scopeName(name, depth, is_local)
+            return '(typeof %s == "undefined"?%s:%s)' % (
+                name,
+                self.scopeName(name, depth, is_local),
+                name,
+            )
         return jsname
 
     def _name2(self, v, current_klass, attr_name):
@@ -4135,9 +4155,9 @@ function(){
         elif isinstance(node, self.ast.Compare):
             return self._compare(node, current_klass)
         elif isinstance(node, self.ast.CallFunc):
-            return self._callfunc(node, current_klass)
+            return self._callfunc(node, current_klass, optlocal_var=True)
         elif isinstance(node, self.ast.Name):
-            return self._name(node, current_klass)
+            return self._name(node, current_klass, optlocal_var=True)
         elif isinstance(node, self.ast.Subscript):
             return self._subscript(node, current_klass)
         elif isinstance(node, self.ast.Getattr):
