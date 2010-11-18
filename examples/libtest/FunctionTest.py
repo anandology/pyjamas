@@ -129,6 +129,20 @@ class FunctionTest(UnitTest):
         self.assertEqual(aFunctionReturningLocalX(), expected_result2)
         self.assertEqual(aFunctionReturningArgX('test'), 'test')
 
+    def testLookupLate(self):
+        self.assertEqual(late_global, 'late_global')
+
+        def local_lookup1():
+            self.assertEqual(late_local, 'late_local')
+            self.assertTrue(callable(local_lookup2))
+            self.assertEqual(local_lookup2(), 'late_local')
+
+        def local_lookup2():
+            return late_local
+
+        late_local = 'late_local'
+        local_lookup1()
+
     def testNameMapping(self):
         r = call(1, 2, this=3, label=4)
         self.assertEqual(r[0], 'mapping-test')
@@ -239,3 +253,4 @@ class FunctionTest(UnitTest):
     def testTopLevelContionalFunction(self):
         self.assertEqual(imports.conditional_func(), "overridden")
 
+late_global = 'late_global'
