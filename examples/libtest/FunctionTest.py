@@ -6,6 +6,7 @@ from ClassTest import ExampleMultiSuperclassParent1
 import Factory2
 
 import imports.decors # must be in this form
+import imports.enum.Late
 
 class Handler:
 
@@ -142,6 +143,9 @@ class FunctionTest(UnitTest):
 
         late_local = 'late_local'
         local_lookup1()
+
+        late = imports.enum.Late.getLate()
+        self.assertEqual(late.value, 'late')
 
     def testNameMapping(self):
         r = call(1, 2, this=3, label=4)
