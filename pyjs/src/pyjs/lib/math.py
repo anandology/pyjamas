@@ -1,22 +1,22 @@
 from __pyjamas__ import JS
 JS("""
-math.ceil = Math.ceil;
-math.fabs = Math.abs;
-math.floor = Math.floor;
-math.exp = Math.exp;
-math.log = Math.log;
-math.pow = Math.pow;
-math.sqrt = Math.sqrt;
-math.cos = Math.cos;
-math.sin = Math.sin;
-math.tan = Math.tan;
-math.acos = Math.acos;
-math.asin = Math.asin;
-math.atan = Math.atan;
-math.atan2 = Math.atan2;
-math.pi = Math.PI;
-math.e = Math.E;
-math.__log10__ = Math.LN10;
+$m.ceil = Math.ceil;
+$m.fabs = Math.abs;
+$m.floor = Math.floor;
+$m.exp = Math.exp;
+$m.log = Math.log;
+$m.pow = Math.pow;
+$m.sqrt = Math.sqrt;
+$m.cos = Math.cos;
+$m.sin = Math.sin;
+$m.tan = Math.tan;
+$m.acos = Math.acos;
+$m.asin = Math.asin;
+$m.atan = Math.atan;
+$m.atan2 = Math.atan2;
+$m.pi = Math.PI;
+$m.e = Math.E;
+$m.__log10__ = Math.LN10;
 """)
 
 __log2__ = log(2)

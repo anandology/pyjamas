@@ -695,23 +695,6 @@ class TranslationError(Exception):
 def strip_py(name):
     return name
 
-def mod_var_name_decl(module_name):
-    """ function to get the last component of the module e.g.
-        pyjamas.ui.DOM into the "namespace".  i.e. doing
-        "import pyjamas.ui.DOM" actually ends up with _two_
-        variables - one pyjamas.ui.DOM, the other just "DOM".
-        but "DOM" is actually local, hence the "var" prefix.
-
-        for PyV8, this might end up causing problems - we'll have
-        to see: gen_mod_import and mod_var_name_decl might have
-        to end up in a library-specific module, somewhere.
-    """
-    name = module_name.split(".")
-    if len(name) == 1:
-        return ''
-    child_name = name[-1]
-    return "var %s = %s;\n" % (child_name, module_name)
-
 class Translator(object):
 
     decorator_compiler_options = {\
@@ -837,7 +820,8 @@ class Translator(object):
             #    raise TranslationError(
             #        "reserved word used for top-level module %r" % module_name,
             #        mod, self.module_name)
-            self.w( self.spacing() + 'var %s;' % self.js_module_name)
+            if self.js_module_name in ['pyjslib', 'sys']:
+                self.w( self.spacing() + 'var %s;' % self.js_module_name)
             self.parent_module_name = None
         else:
             self.parent_module_name = '.'.join(module_name.split('.')[:-1])
@@ -855,19 +839,23 @@ class Translator(object):
         parts = self.js_module_name.split('.')
         if len(parts) > 1:
             self.w( self.spacing() + 'var %s = $pyjs.loaded_modules["%s"];' % (parts[0], module_name.split('.')[0]))
-        self.w( self.spacing() + 'var $m = %s = $pyjs.loaded_modules["%s"];' % (self.js_module_name, module_name))
+        if self.js_module_name in ['pyjslib', 'sys']:
+            self.w( self.spacing() + 'var %s = %s = $pyjs.loaded_modules["%s"];' % (self.module_prefix[:-1], self.js_module_name, module_name,))
+        else:
+            self.w( self.spacing() + 'var %s = $pyjs.loaded_modules["%s"];' % (self.module_prefix[:-1], module_name,))
 
-        self.w( self.spacing() + self.js_module_name+".__was_initialized__ = true;")
+        self.w( self.spacing() + self.module_prefix + "__was_initialized__ = true;")
         self.w( self.spacing() + "if ((__mod_name__ === null) || (typeof __mod_name__ == 'undefined')) __mod_name__ = '%s';" % (module_name))
-        lhs = "%s.__name__" % self.js_module_name
-        self.add_lookup('builtin', '__name__', lhs)
-        self.w( self.spacing() + "var __name__ = %s = __mod_name__;" % (lhs))
+        lhs = self.scopeName('__name__', 0, False)
+        self.w( self.spacing() + "%s = __mod_name__;" % (lhs))
         if self.source_tracking:
-            self.w( self.spacing() + "%s.__track_lines__ = new Array();" % self.js_module_name)
+            self.w( self.spacing() + "%s__track_lines__ = new Array();" % self.module_prefix)
         name = module_name.split(".")
         if len(name) > 1:
-            jsname = self.jsname("variable", name[-1])
-            self.w( self.spacing() + "var %s = %s;" % (jsname, self.js_module_name))
+            jsname = self.add_lookup('variable', name[-1], name[-1])
+            self.w( self.spacing() + "$pyjs.loaded_modules['%s']['%s'] = $pyjs.loaded_modules['%s'];" % (
+                '.'.join(name[:-1]), jsname, module_name,
+            ))
 
         if self.attribute_checking and not module_name in ['sys', 'pyjslib']:
             attribute_checking = True
@@ -940,7 +928,7 @@ class Translator(object):
         self.output = save_output
         if self.source_tracking and self.store_source:
             for l in self.track_lines.keys():
-                self.w( self.spacing() + '''%s.__track_lines__[%d] = "%s";''' % (self.js_module_name, l, self.track_lines[l].replace('"', '\"')), translate=False)
+                self.w( self.spacing() + '''%s__track_lines__[%d] = "%s";''' % (self.module_prefix, l, self.track_lines[l].replace('"', '\"')), translate=False)
         self.w( self.local_js_vars_decl([]))
         if captured_output.find("@CONSTANT_DECLARATION@") >= 0:
             captured_output = captured_output.replace("@CONSTANT_DECLARATION@", self.constant_decl())
@@ -2536,7 +2524,7 @@ if (%(e)s.__name__ == 'TryElse') {""" % {'e': pyjs_try_err})
         self.w( self.spacing() + """\
 var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__name__ );\
 """ % {'e': pyjs_try_err})
-        self.w( self.spacing() + "$pyjs.__last_exception__ = {error: %s, module: %s};" % (pyjs_try_err, self.module_name))
+        self.w( self.spacing() + "$pyjs.__last_exception__ = {error: %s, module: %s};" % (pyjs_try_err, self.module_prefix[:-1]))
         if self.source_tracking:
             self.w( """\
 %(s)sif ($pyjs.trackstack.length > $pyjs__trackstack_size_%(d)d) {
@@ -2903,7 +2891,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         save_output = self.output
         self.output = StringIO()
         if self.source_tracking:
-            self.w( self.spacing() + "$pyjs.track={module:%s, lineno:%d};$pyjs.trackstack.push($pyjs.track);" % (self.module_name, node.lineno))
+            self.w( self.spacing() + "$pyjs.track={module:'%s', lineno:%d};$pyjs.trackstack.push($pyjs.track);" % (self.module_name, node.lineno))
         self.track_lineno(node, True)
         for child in node.code:
             self._stmt(child, current_klass)
