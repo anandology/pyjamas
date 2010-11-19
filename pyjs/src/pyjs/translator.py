@@ -3334,7 +3334,12 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
     def _discard(self, node, current_klass):
         
         if isinstance(node.expr, self.ast.CallFunc):
-            expr = self._callfunc(node.expr, current_klass, is_statement=True)
+            expr = self._callfunc(
+                node.expr, 
+                current_klass, 
+                is_statement=True,
+                optlocal_var=isinstance(node.expr.node, self.ast.Name),
+            )
             if isinstance(node.expr.node, self.ast.Name):
                 name_type, pyname, jsname, depth, is_local = self.lookup(node.expr.node.name)
                 if name_type == '__pyjamas__' and \

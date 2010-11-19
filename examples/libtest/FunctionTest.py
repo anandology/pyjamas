@@ -137,9 +137,18 @@ class FunctionTest(UnitTest):
             self.assertEqual(late_local, 'late_local')
             self.assertTrue(callable(local_lookup2))
             self.assertEqual(local_lookup2(), 'late_local')
+            try:
+                local_lookup3()
+                self.fail("lookup3")
+            except NotImplementedError, e:
+                self.assertTrue(True)
 
         def local_lookup2():
             return late_local
+
+        def local_lookup3():
+            raise NotImplementedError
+
 
         late_local = 'late_local'
         local_lookup1()
