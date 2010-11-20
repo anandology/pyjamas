@@ -13,6 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import pyjd
 from pyjamas import DOM
 from pyjamas import Window
 from pyjamas import Factory
@@ -24,11 +25,13 @@ from RootPanel import RootPanel
 
 mousecapturer = None
 
+
 def getMouseCapturer(**kwargs):
     global mousecapturer
     if mousecapturer is None:
         mousecapturer = GlassWidget(**kwargs)
     return mousecapturer
+
 
 def show(mousetarget, **kwargs):
     global mousecapturer
@@ -36,9 +39,11 @@ def show(mousetarget, **kwargs):
     mc.mousetarget = mousetarget
     mc.show()
 
+
 def hide():
     global mousecapturer
     mousecapturer.hide()
+
 
 class GlassWidget(Widget, MouseHandler):
     def __init__(self, **kwargs):
@@ -49,7 +54,7 @@ class GlassWidget(Widget, MouseHandler):
         if not 'StyleName' in kwargs:
             kwargs['StyleName'] = "gwt-GlassWidget"
 
-        if kwargs.has_key('Element'):
+        if 'Element' in kwargs:
             element = kwargs.pop('Element')
         else:
             element = DOM.createDiv()
@@ -85,16 +90,11 @@ class GlassWidget(Widget, MouseHandler):
 
     def onEventPreview(self, event):
         etype = DOM.eventGetType(event)
-        if (   etype == "mousedown"
-              or etype == "blur"
-             ):
+        if etype == "mousedown" or etype == "blur":
             if DOM.getCaptureElement() is not None:
                 return True
-        elif (   etype == "mouseup"
-              or etype == "click"
-              or etype == "mousemove"
-              or etype == "dblclick"
-             ):
+        elif etype == "mouseup" or etype == "click" or \
+             etype == "mousemove" or etype == "dblclick":
             if DOM.getCaptureElement() is not None:
                 return True
         return self._event_targets_popup(event)
@@ -113,13 +113,22 @@ class GlassWidget(Widget, MouseHandler):
         left = Window.getScrollLeft()
         height = Window.getClientHeight()
         width = Window.getClientWidth()
-
         el = self.getElement()
         DOM.setStyleAttribute(el, "position", "absolute")
-        DOM.setStyleAttribute(el, "left", "%s" % left if left == 0 else "%spx" % left)
-        DOM.setStyleAttribute(el, "top", "%s" % top if top == 0 else "%spx" % top)
+        DOM.setStyleAttribute(el, "left",
+                                  "%s" % left if left == 0 else "%spx" % left)
+        DOM.setStyleAttribute(el, "top",
+                                  "%s" % top if top == 0 else "%spx" % top)
         DOM.setStyleAttribute(el, "height", "%spx" % (top + height))
         DOM.setStyleAttribute(el, "width", "%spx" % (left + width))
+        # under pyjd glasswidget cannot be transparent,
+        # otherwise it drops the mousecapture, so we have
+        # to give it a 1% opaque background color
+        if pyjd.is_desktop:
+            # pyjd uses IE style opacity
+            DOM.setStyleAttribute(el, "filter", "alpha(opacity=1)")
+            # this is the Moz form of transparency
+            DOM.setStyleAttribute(el, "background", "rgba(255,255,255,0.1)")
 
     def showGlass(self):
         Window.enableScrolling(False)
@@ -174,4 +183,3 @@ class GlassWidget(Widget, MouseHandler):
 
 
 Factory.registerClass('pyjamas.ui.GlassWidget', 'GlassWidget', GlassWidget)
-

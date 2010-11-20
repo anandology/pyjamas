@@ -108,6 +108,18 @@ class BuiltinTest(UnitTest):
 
     def testMod(self):
         self.assertEqual(12 % 5, 2)
+        self.assertEqual(-0.4 % 1, 0.6, "Modulo error 1 for negative base, bug #473")
+        self.assertEqual(-0.3 % 1.0, 0.7)
+        self.assertEqual(-1 % 2, 1)
+        self.assertEqual(-1 % -2, -1)
+        self.assertEqual(-1 % 3L, 2L)
+        self.assertEqual(-2 % -3L, -2L)
+        self.assertEqual(-1L % 4, 3L)
+        self.assertEqual(-3L % -4, -3L)
+        self.assertEqual(-1L % 5L, 4L)
+        self.assertEqual(-4L % -5L, -4L)
+        self.assertEqual(-1.0 % 6, 5.0)
+        self.assertEqual(-5.0 % -6, -5.0)
 
     def testPower(self):
         self.assertEqual(3 ** 4, 81)
@@ -202,6 +214,9 @@ class BuiltinTest(UnitTest):
         s = 1
         self.assertFalse(isinstance(s, str), "s is an integer not a string")
         self.assertTrue(isinstance(s, int), "s is an integer")
+
+        self.assertFalse(isinstance('', list), "'' is not instance of list")
+        self.assertTrue(isinstance([], list), "'' is not instance of list")
 
     def testImport(self):
         self.assertEqual(builtin_value, None, "The builtin is loaded before import!")
@@ -418,6 +433,12 @@ class BuiltinTest(UnitTest):
             self.assertTrue(type(object) is type)
         except NotImplementedError, why:
             self.fail("Bug #229" + str(why))
+        self.assertTrue(type([]) is type([]))
+        self.assertTrue(type([]) is list)
+        try:
+            self.assertTrue(type([]) == list)
+        except:
+            self.fail("Bug #515")
 
     def testIter(self):
         class G(object):

@@ -93,10 +93,10 @@ def out_translate(platform, file_names, out_file, module_name,
         for file_name in file_names:
             if is_modified(file_name,out_file):
                 if platform is not None:
-                    platform = "[%s]" % platform
+                    platform = "[%s] " % platform
                 else:
                     platform = ''
-                print "Compiling %s:" % platform, file_name
+                print "Translating %s:" % platform, file_name
                 do_translate = True
                 break
     if not incremental or do_translate:

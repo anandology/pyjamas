@@ -78,7 +78,24 @@ def type(clsname, bases=None, methods=None):
     JS(" return $pyjs_type(@{{clsname}}, @{{!bss}}, @{{!mths}}); ")
 
 class object:
-    pass
+    
+    def __setattr__(self, name, value):
+        JS("""
+        if (typeof @{{name}} != 'string') {
+            throw @{{TypeError}}("attribute name must be string");
+        }
+        if (attrib_remap.indexOf(@{{name}}) >= 0) {
+            @{{name}} = '$$' + @{{name}};
+        }
+        if (typeof @{{self}}[@{{name}}] != 'undefined'
+            && @{{self}}.__is_instance__
+            && @{{self}}[@{{name}}] !== null
+            && typeof @{{self}}[@{{name}}].__set__ == 'function') {
+            @{{self}}[@{{name}}].__set__(@{{self}}, @{{value}});
+        } else {
+            @{{self}}[@{{name}}] = @{{value}};
+        }
+        """)
 
 
 class basestring(object):
@@ -386,16 +403,20 @@ def op_mod(x, y):
             case 0x0104:
             case 0x0401:
                 if (@{{y}} == 0) throw @{{ZeroDivisionError}}('float divmod()');
-                return @{{x}} % @{{y}};
+                var v = @{{x}} % @{{y}};
+                return (v < 0 && @{{y}} > 0 ? v + @{{y}} : v);
             case 0x0102:
                 if (@{{y}}.__v == 0) throw @{{ZeroDivisionError}}('float divmod()');
-                return @{{x}} % @{{y}}.__v;
+                var v = @{{x}} % @{{y}}.__v;
+                return (v < 0 && @{{y}}.__v > 0 ? v + @{{y}}.__v : v);
             case 0x0201:
                 if (@{{y}} == 0) throw @{{ZeroDivisionError}}('float divmod()');
-                return @{{x}}.__v % @{{y}};
+                var v = @{{x}}.__v % @{{y}};
+                return (v < 0 && @{{y}}.__v > 0 ? v + @{{y}}.__v : v);
             case 0x0202:
                 if (@{{y}}.__v == 0) throw @{{ZeroDivisionError}}('integer division or modulo by zero');
-                return new @{{int}}(@{{x}}.__v % @{{y}}.__v);
+                var v = @{{x}}.__v % @{{y}}.__v;
+                return new @{{int}}(v < 0 && @{{y}}.__v > 0 ? v + @{{y}}.__v : v);
             case 0x0204:
                 return (new @{{long}}(@{{x}}.__v)).__mod(@{{y}});
             case 0x0402:
