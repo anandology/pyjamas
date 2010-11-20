@@ -213,11 +213,16 @@ class BrowserLinker(linker.BaseLinker):
 
         def skip_unlinked(lst):
             new_lst = []
-            pltfrm = '.__%s__' % platform_name
+            pltfrm = '__%s__' % platform_name
             for path in lst:
-                fname = os.path.basename(path)[:-3]
-                if fname.endswith(pltfrm):
-                    fname = '.'.join(fname.split('.')[:-1])
+                fname = os.path.basename(path).rpartition(pyjs.MOD_SUFFIX)[0]
+                frags = fname.split('.')
+                # TODO: do not combine module chunks until we write the file
+                if self.cache_buster and len(frags[-1])==32 and len(frags[-1].strip('0123456789abcdef'))==0:
+                    frags.pop()
+                if frags[-1] == pltfrm:
+                    frags.pop()
+                fname = '.'.join(frags)
                 in_not_unlinked_modules = False
                 for m in not_unlinked_modules:
                     if m.match(fname):
