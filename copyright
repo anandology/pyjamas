@@ -87,6 +87,10 @@ Files: examples/employeeadmin/*
 Copyright: 2007-08 Toby de Havilland
 License: Apache
 
+Files: pyjs/src/pyjs/lib/StringIO.py pyjs/src/pyjs/lib/getopt.py pyjs/src/pyjs/lib/urlparse.py 
+Copyright: PyPy
+License: MIT
+
 Files: examples/jsonrpc/public/services/jsonrpc/* examples/infohierarchy/public/services/jsonrpc/*, examples/test/cgi-bin/jsonrpc/*
 Copyright: 2006 Jan-Klaas Kollhof
 License: GPL-2
