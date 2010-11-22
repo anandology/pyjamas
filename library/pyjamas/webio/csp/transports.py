@@ -105,6 +105,7 @@ def chooseTransport(url, options):
 #    ssestream = {"bp": "data: ", "bs": "\r\n", "se": "1", "is": "1"}
 
 class BaseTransport(object):
+    _ifr = None
     def __init__(self):
         self._aborted = False
         self._handshakeArgs = {'d':{}, 'ct':'application/javascript'}
@@ -126,7 +127,7 @@ class BaseTransport(object):
         logger.debug("send: %s %s %s %s" % (url, sessionKey, data,
                                             options))
         args = {'d':data, 's':sessionKey, 'a':lastEventId}
-        self._makeRequest('send', 'url' + '/send', args, self.sendSuccess,
+        self._makeRequest('send', url + '/send', args, self.sendSuccess,
                           self.sendFailure)
 
     def encodePacket(self, packetId, data, options):
@@ -237,11 +238,11 @@ def EMPTY_FUNCTION():
 def createIframe():
     body = Window.getDocumentRoot()
     i = DOM.createElement('iframe')
-    attrs = [('display','block'), ('width', '0'), ('height','0'),
+    style_attributes = [('display','block'), ('width', '0'), ('height','0'),
              ('border','0'), ('margin','0'), ('padding', '0'),
              ('overflow', 'hidden'), ('visibility', 'hidden'),
              ('position','absolute'),('top','-999px'),('left', '-999px')]
-    for name, value in attrs:
+    for name, value in style_attributes:
         DOM.setStyleAttribute(i, name, value)
     DOM.setAttribute(i,'cbId', '0')
     DOM.appendChild(body, i)
@@ -257,18 +258,19 @@ def cleanupIframe(ifr):
     doc = win.document
 
     scripts = doc.getElementsByTagName('script')
-    while scripts.length:
-        doc.body.removeChild(scripts[0])
+    while scripts.length > 0:
+        DOM.removeChild(doc.body, scripts[0])
         scripts = doc.getElementsByTagName('script')
     logger.debug('deleting iframe callbacks')
     win['cb' + DOM.getAttribute(ifr, 'cbId')] = EMPTY_FUNCTION
     win['eb' + DOM.getAttribute(ifr, 'cbId')] = EMPTY_FUNCTION
 
-def removeIframe(ifr):
+def removeIframe(ifr=None):
     def remove():
         if ifr is not None:
-            if ifr.parentNode is not None:
-                ifr.parentNode.removeChild(ifr)
+            parentNode = DOM.getParent(ifr)
+            if parentNode is not None:
+                DOM.removeChild(parentNode, ifr)
     Timer(delayMillis=60000, notify=remove)
 
 
@@ -312,8 +314,8 @@ class Jsonp(BaseTransport):
                'id': id,
                'cb': cb,
                'eb': eb,
-               'cbName': 'cb' + id,
-               'ebName': 'eb' + id,
+               'cbName': 'cb' + str(id),
+               'ebName': 'eb' + str(id),
                'completed': False
                 }
         args['n'] = str(random())[2:]
@@ -337,29 +339,15 @@ class Jsonp(BaseTransport):
             self.checkForError(req, resp)
         def ons(resp):
             self.onSuccess(req, resp)
+        setattr(win, req['ebName'], cfe)
+        setattr(win, req['cbName'], ons)
 
-        win[req['ebName']] = cfe
-        win[req['cbName']] = ons
+        s = DOM.createElement('script')
+        DOM.setAttribute(s, 'src', req['url'])
 
-        # webkit
-#        doc.open()
-#        doc.write('<scr' + 'ipt src="' + req['url'] + '"></scr'+'ipt>'+
-#                  '<scr' + 'ipt>'+req['ebName']+'(false)</scr'+'ipt>')
-#        doc.close()
-#
-        # browser
-        s = doc.createElement('script')
-        s.src = req['url']
-
-        # browser == ie
-        if hasattr(s, 'onreadystatechange'):
-            def orsc(event):
-                self.onReadyStateChange(s)
-            s.onreadystatechange = orsc
-        else:
-            s = DOM.createElement('script')
-            DOM.setInnerHTML(s, req['ebName']+ '(false)')
-        body.appendChild(s)
+        s = DOM.createElement('script')
+        DOM.setInnerHTML(s, req['ebName']+ '(false)')
+        DOM.appendChild(body, s)
 
         self.killLoadingBar()
 
@@ -367,15 +355,14 @@ class Jsonp(BaseTransport):
         logger.debug('successful: %s %s' % (req['url'], response) )
         req['completed'] = True
         logger.debug('calling the cb')
-        req['cb'](GLOBAL, {'status': 200, 'response': response})
+        req['cb']({'status': 200, 'response': response})
         logger.debug('cb called')
 
+    # used only in ie6 impl
     def onReadyStateChange(self, scriptTag):
-        if scriptTag and scriptTag.readyState !='loaded':
-            return
-        scriptTag.onreadystatechange = EMPTY_FUNCTION()
+        pass
 
-    def checkForError(self, req, response):
+    def checkForError(self, req, response=None):
         cleanupIframe(self._ifr[req['type']])
         if not req['completed']:
             data = {}
@@ -387,7 +374,7 @@ class Jsonp(BaseTransport):
                 data['response'] = 'Unable to load resource'
             logger.debug('error making request: %s %s' % (req['url'], data))
             logger.debug('calling eb')
-            req['eb'](GLOBAL, data)
+            req['eb'](data)
 
     def killLoadingBar(self):
         # only needed in firefox and opera...

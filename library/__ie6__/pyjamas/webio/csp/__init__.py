@@ -11,24 +11,3 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-from pyjamas.webio import interfaces
-from pyjamas.webio import logger
-
-
-class Echo(interfaces.Protocol):
-
-    def connectionMade(self, func=None):
-        logger.debug('connection made')
-        self.transport.write('Welcome!')
-
-    def dataReceived(self, data):
-        logger.debug('dataReceived: %s' % data)
-        self.transport.write('Echo: %s' % data)
-
-    def connectionLost(self, reason=None):
-        logger.debug('conn lost')
-
-
-
-

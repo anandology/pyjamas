@@ -12,23 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyjamas.webio import interfaces
-from pyjamas.webio import logger
+from pyjamas.webio.interfaces import Protocol
+from pyjamas.webio.buffer import Buffer
 
+class BufferedProtocol(Protocol):
+    def __init__(self):
+        super(Protocol, self).__init__()
+        self.buffer = Buffer()
 
-class Echo(interfaces.Protocol):
-
-    def connectionMade(self, func=None):
-        logger.debug('connection made')
-        self.transport.write('Welcome!')
+    def bufferUpdated(self):
+        """
+        override this instead of dataReceived in descendent classes
+        """
+        pass
 
     def dataReceived(self, data):
-        logger.debug('dataReceived: %s' % data)
-        self.transport.write('Echo: %s' % data)
-
-    def connectionLost(self, reason=None):
-        logger.debug('conn lost')
-
-
-
+        self.buffer.append(data)
+        self.bufferUpdated()
 

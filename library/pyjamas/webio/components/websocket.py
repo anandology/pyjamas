@@ -12,62 +12,35 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyjamas.webio import interfaces, errors, utf8
-from __pyjamas__ import wnd
+from pyjamas.webio import READYSTATE
+from pyjamas.webio.protocols.multiplexing import getMultiplexer
 
-class Connector(interfaces.Connector):
-    def connect(self):
-        self._state = interfaces.STATE.CONNECTING
-        url = self._opts['url']
-        ctor = self._opts.get('wsConstructor', None)
-        if not ctor:
-            ctor = wnd().WebSocket
-        logger.info('_opts is %s' % self._opts)
-        ws = ctor(url)
-        ws.onOpen = self.webSocketOnOpen
-        ws.onClose = self.webSocketOnClose
-
-    def webSocketOnOpen(self, ws):
-        self.onConnect(Transport(ws))
-
-    def webSocketOnClose(self, ws, e):
-        data = {'rawError': e, 'webSocket':ws}
-        if e.get('wasClean', None):
-            err = errors.ServerClosedConnection(
-                    'Websocket connection closed. %s' % data)
-        else:
-           if self._state == interfaces.STATE.CONNECTED:
-               err = errors.ConnectionTimeout(
-                   'Websocket connection timed out. %s' % data
-               )
-           else:
-               err = errors.ServerUnreachable(
-                       'Websocket connection failed. %s' % data)
-        logger.debug('conn closed %s' % err)
-        self.onDisconnect(err)
-
-
-class Transport(interfaces.Transport):
-    def __init__(self, ws):
-        self._ws = ws
-
-    def makeConnection(self, protocol):
-        def doMessage(data):
-            payload = utf8.encode(data['data'])
-            protocol.dataReceived(payload)
-        self._ws.onMessage = doMessage
-
-    def write(self, data, encoding):
-        if self._encoding == 'plain':
-            result = utf8.decode(data)
-            data = result
-        self._ws.send(data)
-
-    def loseConnection(self, protocol):
-        self._ws.close()
+class WebSocket(object):
+    def __init__(self, url, protocol):
+        self.URL = url
+        self.readyState = READYSTATE.CONNECTING
+        self.bufferedAmount = 0
+        multiplexer = getMultiplexer()
 
 
 
 
 
 
+
+
+
+
+
+
+
+def validateOpts(opts):
+    pv = opts.get('protocolVersion', 'hixie76')
+    opts['protocolVersion'] = pv
+    fv = opts.get('forceProxy', False)
+    opts['forceProxy'] = fv
+    z = s.split('/')
+            self._serverUri = '/'.join(z[:-2]) + '/'
+        while not self._serverUri.endswith('/'):
+            self._serverUri += '/'
+    su = opts.get('serverUri', )

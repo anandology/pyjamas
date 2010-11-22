@@ -12,14 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import webio
-from webio.csp.client import CometSession
-from webio import logger
+from pyjamas.webio import interfaces
+from pyjamas.webio.csp.client import CometSession
+from pyjamas.webio import logger
+from pyjamas.webio import utf8
 
 
-class Connector(webio.interfaces.Connector):
+class Connector(interfaces.Connector):
     def connect(self):
-        self._state = webio.interfaces.STATE.CONNECTING
+        self._state = interfaces.STATE.CONNECTING
         conn = CometSession()
         def csoc():
             self.cometSessionOnConnect(conn)
@@ -37,7 +38,7 @@ class Connector(webio.interfaces.Connector):
         self.onConnect(Transport(conn))
 
 
-class Transport(webio.interfaces.Transport):
+class Transport(interfaces.Transport):
     def __init__(self, conn):
         self._conn = conn
 
@@ -46,7 +47,7 @@ class Transport(webio.interfaces.Transport):
 
     def write(self, data, encoding=None):
         if self._encoding == 'utf8':
-            data = data.encode('utf8')
+            data = utf8.encode(data)
         self._conn.write(data)
 
     def loseConnection(self, protocol=None):
