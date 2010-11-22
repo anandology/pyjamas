@@ -30,8 +30,8 @@ class HyperlinkDemo(SimplePanel):
         vPanel.add(self.stateDisplay)
 
         hPanel = HorizontalPanel(Spacing=5)
-        hPanel.add(Hyperlink("State 1", False, "state number 1"))
-        hPanel.add(Hyperlink("State 2", False, "state number 2"))
+        hPanel.add(Hyperlink("State 1", False, TargetHistoryToken="state number 1"))
+        hPanel.add(Hyperlink("State 2", False, TargetHistoryToken="state number 2"))
 
         vPanel.add(hPanel)
         self.add(vPanel)
