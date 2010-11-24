@@ -187,7 +187,7 @@ class Browser:
         return self._browser.GetDomDocument()
 
     def getXmlHttpRequest(self):
-        return self._browser.GetXMLHttpRequesdt()
+        return self._browser.GetXMLHttpRequest()
 
     def _addWindowEventListener(self, event_name, cb):
         cb = Callback(self, cb, True)
