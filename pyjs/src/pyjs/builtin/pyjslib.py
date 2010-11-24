@@ -145,6 +145,12 @@ def op_eq(a,b):
     if (@{{b}} === null) {
         return false;
     }
+    if (@{{a}} === @{{b}}) {
+        if (@{{a}}.__is_instance__ === false && 
+            @{{b}}.__is_instance__ === false) {
+            return true;
+        }
+    }
     switch ((@{{a}}.__number__ << 8) | @{{b}}.__number__) {
         case 0x0101:
         case 0x0401:
