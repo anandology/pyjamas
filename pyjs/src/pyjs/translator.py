@@ -333,6 +333,7 @@ PYJSLIB_BUILTIN_FUNCTIONS=frozenset((
 
 PYJSLIB_BUILTIN_CLASSES=[
     "ArithmeticError",
+    "AssertionError",
     "AttributeError",
     "BaseException",
     "Exception",

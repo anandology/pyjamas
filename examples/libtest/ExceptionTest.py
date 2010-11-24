@@ -258,3 +258,20 @@ class ExceptionTest(UnitTest):
             self.assertTrue(True)
         except:
             self.fail("Failed to catch exception: bug #254")
+
+    def testAssertionError(self):
+        try:
+            assert True
+            self.assertTrue(True)
+        except AssertionError, e:
+            self.fail("Got an unexpected assertion error: %r" % e)
+        try:
+            assert False
+            self.fail("AssertionError expected")
+        except AssertionError, e:
+            self.assertTrue(True)
+        try:
+            assert False, 'reason'
+            self.fail("AssertionError expected")
+        except AssertionError, e:
+            self.assertEqual(e.args[0], 'reason')
