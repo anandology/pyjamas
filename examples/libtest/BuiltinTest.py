@@ -439,6 +439,12 @@ class BuiltinTest(UnitTest):
             self.assertTrue(type([]) == list)
         except:
             self.fail("Bug #515")
+        self.assertTrue(type("") is str, "str")
+        self.assertTrue(type(True) is bool, "bool")
+        self.assertTrue(type(1) is int, "int")
+        self.assertTrue(type(1L) is long, "long")
+        self.assertTrue(type(1.1) is float, "float 1.1")
+        self.assertTrue(type(1.0) is float, "float 1.0 issue #524")
 
     def testIter(self):
         class G(object):

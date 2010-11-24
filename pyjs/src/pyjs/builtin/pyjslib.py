@@ -64,7 +64,20 @@ def _create_class(clsname, bases=None, methods=None):
 
 def type(clsname, bases=None, methods=None):
     if bases is None and methods is None:
-        return clsname.__class__
+        if hasattr(clsname, '__class__'):
+            return clsname.__class__
+        if isinstance(clsname, str):
+            return str
+        if isinstance(clsname, bool):
+            return bool
+        if isinstance(clsname, int):
+            return int
+        if isinstance(clsname, float):
+            return float
+        if JS("typeof @{{clsname}} == 'number'"):
+            return float
+        raise ValueError("Cannot determine type for %r" % clsname)
+
     # creates a class, derived from bases, with methods and variables
     JS(" var mths = {}; ")
     if methods:
@@ -5392,10 +5405,17 @@ def isinstance(object_, classinfo):
             return typeof @{{object_}}== 'number' && @{{object_}}.__number__ == 0x01 && isFinite(@{{object_}});
         case 'int':
         case 'float_int':
-            return @{{object_}}!== null
-                    && @{{object_}}.__number__
-                    && (@{{object_}}.__number__ != 0x01
-                    || isFinite(@{{object_}}));/* XXX TODO: check rounded? */
+            if (@{{object_}}!== null
+                && @{{object_}}.__number__) {
+                if (@{{object_}}.__number__ == 0x02) {
+                    return true;
+                }
+                if (isFinite(@{{object_}}) && 
+                    Math.ceil(@{{object_}}) == @{{object_}}) {
+                    return true;
+                }
+            }
+            return false;
         case 'basestring':
         case 'str':
             return typeof @{{object_}}== 'string';
