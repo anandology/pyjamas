@@ -185,6 +185,9 @@ def _alert(self, msg):
 def getDomDocument(self):
     return self.get_dom_document()
 
+def getDomWindow(self):
+    return self.get_dom_window()
+
 def getXmlHttpRequest(self):
     return self.get_xml_http_request()
 
@@ -346,6 +349,7 @@ class Browser(gtk.Window):
         main_frame._addEventListener = addEventListener
         main_frame.getUri = self.getUri
 
+        main_frame.getDomWindow = new.instancemethod(getDomWindow, main_frame)
         main_frame.getDomDocument = new.instancemethod(getDomDocument, main_frame)
         main_frame.getXmlHttpRequest = new.instancemethod(getXmlHttpRequest, main_frame)
         main_frame._addXMLHttpRequestEventListener = addXMLHttpRequestEventListener
