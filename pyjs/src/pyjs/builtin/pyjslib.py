@@ -907,7 +907,7 @@ class Exception(BaseException):
 class StandardError(Exception):
     pass
 
-class AssertionError(Exception):
+class AssertionError(StandardError):
     pass
 
 class GeneratorExit(Exception):
