@@ -5556,6 +5556,7 @@ def getattr(obj, name, default_value=None):
         return method.__get__(null, @{{obj}}.__class__);
     }
     if (   typeof method != 'function'
+        || typeof method.__is_instance__ != 'undefined'
         || @{{obj}}.__is_instance__ !== true
         || @{{name}}== '__class__') {
         return @{{obj}}[mapped_name];
