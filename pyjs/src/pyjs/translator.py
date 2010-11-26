@@ -341,6 +341,7 @@ PYJSLIB_BUILTIN_CLASSES=[
     "ImportError",
     "IndexError",
     "KeyError",
+    "KeyboardInterrupt",
     "LookupError",
     "NameError",
     "NotImplemented",   # is in fact an instance
