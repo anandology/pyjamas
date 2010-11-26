@@ -6332,15 +6332,23 @@ if (   typeof $wnd.console != 'undefined'
 }
 """)
 
-def printFunc(objs, newline):
+def _print_to_console(s):
     JS("""
     if ($printFunc === null) return null;
+    $printFunc(@{{s}});
+    """)
+
+def printFunc(objs, newline):
+    JS("""
     var s = "";
     for(var i=0; i < @{{objs}}.length; i++) {
         if(s != "") s += " ";
         s += @{{objs}}[i];
     }
-    $printFunc(s);
+    if (newline) {
+      s += '\\n';
+    }
+    @{{sys}}.stdout.write(s);
     """)
 
 def pow(x, y, z = None):

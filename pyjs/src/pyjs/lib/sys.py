@@ -115,3 +115,19 @@ def _get_traceback(err, tb=None, limit=None):
 platform = JS('$pyjs.platform')
 byteorder = 'little' # Needed in struct.py, assume all systems are little endian and not big endian
 maxint = 2147483647  # javascript bit operations are on 32 bit signed numbers
+
+class _StdStream(object):
+    def __init__(self):
+        self.content = ''
+
+    def flush(self):
+        JS("$p._print_to_console(@{{self}}.content)")
+        self.content = ''
+
+    def write(self, output):
+        self.content += output
+        if self.content.endswith('\n'):
+            self.flush()
+
+stdout = _StdStream()
+stderr = _StdStream()
