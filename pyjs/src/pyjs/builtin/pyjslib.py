@@ -35,17 +35,12 @@ $max_int = 0x7fffffff;
 $min_int = -0x80000000;
 """)
 
-JS("""
-$m['_handle_exception'] = function(err) {
+_handle_exception = JS("""function(err) {
     $pyjs.loaded_modules['sys'].save_exception_stack();
 
     if (!$pyjs.in_try_except) {
-        var $pyjs_msg = '';
-        try {
-            $pyjs_msg = $pyjs.loaded_modules['sys'].trackstackstr();
-        } catch (s) {};
+        var $pyjs_msg = $pyjs.loaded_modules['sys']._get_traceback(err);
         $pyjs.__active_exception_stack__ = null;
-        $pyjs_msg = err + '\\nTraceback:\\n' + $pyjs_msg;
         @{{printFunc}}([$pyjs_msg], true);
         @{{debugReport}}($pyjs_msg);
     }

@@ -2497,7 +2497,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         self.w( self.dedent() + "} catch(%s) {" % pyjs_try_err)
         self.indent()
         if self.source_tracking:
-            self.w( self.spacing() + "$pyjs.__last_exception_stack__ = sys.save_exception_stack();")
+            self.w( self.spacing() + "$pyjs.__last_exception_stack__ = sys.save_exception_stack($pyjs__trackstack_size_%d);" % self.stacksize_depth)
             self.w( self.spacing() + "$pyjs.__active_exception_stack__ = null;")
         if self.is_generator:
             self.w( self.spacing() + "$generator_exc[%d] = %s;" % (self.try_depth, pyjs_try_err))
