@@ -898,6 +898,9 @@ class BaseException:
             return "<type '%s'>" % self.__name__
         return self.__name__ + repr(self.args)
 
+class KeyboardInterrupt(BaseException):
+    pass
+
 class Exception(BaseException):
     pass
 
