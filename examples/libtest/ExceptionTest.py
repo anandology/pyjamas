@@ -146,7 +146,6 @@ class ExceptionTest(UnitTest):
             while tb.tb_next:
                 tb = tb.tb_next
                 count += 1
-            print 'count:', count
             self.assertEqual(count, 2, 'sys.exc_info() traceback must be relative to caller')
         else:
             self.fail('Exception expected')
