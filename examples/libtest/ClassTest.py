@@ -160,6 +160,105 @@ class ClassTest(UnitTest):
             x = ExampleClass().fail_a()
             self.assertTrue(JS('pyjslib.isUndefined(@{{x}})'))
 
+    def test_iops(self):
+        class X(object):
+            def __init__(self, x):
+                self.x = x
+
+            def __add__(self, y):
+                return X(self.x + y.x)
+
+            def __mul__(self, y):
+                return X(self.x * y.x)
+
+            def __sub__(self, y):
+                return X(self.x - y.x)
+
+            def __iadd__(self, y):
+                self.x += y.x
+                return self
+
+            def __imul__(self, y):
+                self.x *= y.x
+                return self
+
+        a = a0 = X(2)
+        b = b0 = X(4)
+        c = a + b
+        d = a * b
+        self.assertTrue(c is not a and c is not b)
+        self.assertTrue(d is not a and d is not b and d is not c)
+        self.assertEqual(c.x, 6)
+        self.assertEqual(d.x, 8)
+        a += b
+        self.assertTrue(a is a0, '__iadd__ should modify object in-place')
+        self.assertEqual(a.x, 6)
+        self.assertEqual(a0.x, a.x, '__iadd__ should modify all references to an object')
+        a -= b
+        self.assertTrue(a is not a0)
+        self.assertEqual(a.x, 2)
+        self.assertNotEqual(a0.x, a.x, 'reference should not have same value after __iadd__ & __neg__')
+        b *= c
+        self.assertTrue(b is b0, '__imul__ should modify object in-place')
+        self.assertEqual(b.x, 24)
+        self.assertEqual(b0.x, b.x, '__imul__ should modify all references to an object')
+
+    def test_getattr(self):
+        class X(object):
+            def __init__(self, x=0):
+                self.x = x
+
+            def __getattr__(self, name):
+                return X(self.x + 1)
+
+        x = X()
+        self.assertEqual(x.x, 0)
+        self.assertEqual(x.next.x, 1)
+        self.assertEqual(x.next.bla.x, 2)
+        self.assertEqual(x.a.b.c.x, 3)
+
+    def test_deep_property_access(self):
+        class X(object):
+            def __init__(self, x=0):
+                self.x = x
+
+            @property
+            def bla(self):
+                return self.next
+
+            @property
+            def next(self):
+                return X(self.x + 1)
+
+        x = X()
+
+        self.assertEqual(x.x, 0)
+        self.assertEqual(x.next.x, 1)
+        self.assertEqual(x.next.bla.x, 2)
+        self.assertEqual(x.next.bla.next.x, 3)
+        self.assertEqual(x.bla.next.bla.next.bla.x, 5)
+
+    def test_slice(self):
+        class X(object):
+            def __init__(self, data):
+                self.data = data
+
+            def __getitem__(self, index):
+                assert isinstance(index, slice)
+                return self.data[index]
+
+            def __setitem__(self, index, value):
+                assert isinstance(index, slice)
+                self.data[index] = value
+
+        data = [1, 2, 3]
+        x = X(data)
+        self.assertEqual(data[:2], x[:2], '__getitem__ should be used for slicing')
+        self.assertEqual(x[:2], [1, 2])
+        x[1:2] = [5]
+        self.assertEqual(data[:], x[:], '__setitem__ should be used for slice assignment')
+        self.assertEqual(x[1:], [5, 3])
+
     # test Class().x
     def testInheritedProperties(self):
         expected_result1="test"
@@ -333,6 +432,26 @@ class ClassTest(UnitTest):
             exc = sys.exc_info()
             self.fail("Issue #415?: %s" % exc[1])
             print sys.trackstackstr()
+
+    def test_method_alias(self):
+        class C(object):
+            def original(self):
+                return 5
+
+            alias = original
+
+            def method_using_alias(self):
+                return self.alias()
+
+        c = C()
+        self.assertEqual(c.original(), 5)
+        self.assertEqual(c.alias(), 5)
+        self.assertEqual(c.method_using_alias(), 5)
+
+    def test_class_isinstance_type(self):
+        class C(object):
+            pass
+        self.assertTrue(isinstance(C, type))
 
     def test__new__Method(self):
         c = OtherClass1()
