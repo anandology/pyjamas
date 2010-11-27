@@ -134,6 +134,23 @@ class ExceptionTest(UnitTest):
         self.assertEqual(str(e), args[0])
         self.assertEqual(repr(e), "IndexError('test',)")
 
+    def test_exc_info_traceback(self):
+        def func():
+            raise ValueError('Baaa!')
+
+        try:
+            func()
+        except:
+            tb = sys.exc_info()[2]
+            count = 1
+            while tb.tb_next:
+                tb = tb.tb_next
+                count += 1
+            print 'count:', count
+            self.assertEqual(count, 2, 'sys.exc_info() traceback must be relative to caller')
+        else:
+            self.fail('Exception expected')
+
     def testSyntax(self):
         try:
             pass
