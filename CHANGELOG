@@ -1,6 +1,14 @@
                     Changes made to Pyjamas since 0.7
                     ---------------------------------
- 
+ * Fixed sys.exc_info() to behave more like Python (i.e. returning the
+   traceback starting from the current context instead of the whole
+   execution stack). Also includes tb_frame.f_globals, contributed
+   by Waldemar Kornewald
+
+ * Added very basic traceback module with format_traceback() function
+   which only works when compiling with debug information,
+   contributed by Waldemar Kornewald
+
  * Added oninput and onpropertychange event support, thanks to Maxim
    Lacrima.
 
