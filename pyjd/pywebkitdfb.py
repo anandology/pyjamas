@@ -97,8 +97,6 @@ import sys
 import time
 from traceback import print_stack, print_exc
 
-import gtk
-import gobject
 import webkitdfb as pywebkit
 
 def module_load(m):
