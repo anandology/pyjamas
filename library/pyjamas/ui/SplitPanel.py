@@ -28,6 +28,7 @@ from pyjamas.ui.SimplePanel import SimplePanel
 from pyjamas.ui.AbsolutePanel import AbsolutePanel
 from pyjamas.ui.ScrollPanel import ScrollPanel
 from pyjamas.ui.MouseListener import MouseHandler, fireMouseEvent
+from pyjamas.ui import Event
 
 
 class SplitPanelSplitter(SimplePanel, MouseHandler):
@@ -49,7 +50,7 @@ class SplitPanelSplitter(SimplePanel, MouseHandler):
 
         ev = DOM.eventGetCurrentEvent()
         # ignore right-button downs
-        if DOM.eventGetButton(ev) != 1:
+        if DOM.eventGetButton(ev) != Event.BUTTON_LEFT:
             return
         DOM.eventPreventDefault(DOM.eventGetCurrentEvent())
         # parent will capture the mouse and handle the dragging from here
@@ -200,7 +201,7 @@ class SplitPanel(AbsolutePanel, MouseHandler, EventGenerator):
     def onMouseUp(self, sender, x, y):
         ev = DOM.eventGetCurrentEvent()
         # ignore right-button ups
-        if DOM.eventGetButton(ev) != 1:
+        if DOM.eventGetButton(ev) != Event.BUTTON_LEFT:
             return
         DOM.eventPreventDefault(ev)
         # if we are dragging
