@@ -328,6 +328,13 @@ class Tree(Widget):
         if item == self.root:
             return
 
+        if fireEvents and len(self.listeners):
+            for listener in self.listeners:
+                onBefore = getattr(listener, "onBeforeTreeItemSelected", None)
+                if onBefore is not None:
+                    if not onBefore(item):
+                        return
+
         if self.curSelection is not None:
             self.curSelection.setSelected(False)
 

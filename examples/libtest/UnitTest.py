@@ -36,9 +36,9 @@ class UnitTest:
             try:
                 test_method()
             except Exception,e:
-                self.fail("uncought exception:" + str(e))
+                self.fail("uncaught exception:" + str(e))
         except:
-            self.fail("uncought javascript exception")
+            self.fail("uncaught javascript exception")
         self.tearDown()
         self.current_test_name = None
 

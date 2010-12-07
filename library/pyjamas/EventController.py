@@ -32,6 +32,7 @@ class EventGenerator():
         return "dispatch"+ev+"Event"
     def addListenedEvent(self, ev):
         # create the EventListener with event-specific lists and funcs
+        global EventListener # is also a javascript global
         el = EventListener(ev)
         # add the "addXXXListener() method to ourself
         attr_add = self._get_add_listener_func_name(ev)

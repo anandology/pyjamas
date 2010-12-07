@@ -16,6 +16,10 @@ class Handler:
     def handle(self, y):
         return self._x is y
 
+class Callable(object):
+    def __call__(self):
+        return 5
+
 def aProcedure():
     x = 1
     if x is 2:
@@ -110,6 +114,11 @@ class FunctionTest(UnitTest):
         else:
             c = ClassWithLambdas2()
             self.assertEqual(c.f2(1), c, 'issue #385 - bound method lambda called as function')
+
+    def test_callable(self):
+        self.assertEqual(Callable()(), 5)
+        self.assertTrue(callable(Callable))
+        self.assertTrue(callable(Callable()))
 
     def testProcedure(self):
         self.assertTrue(aFunctionReturningNone() is None,

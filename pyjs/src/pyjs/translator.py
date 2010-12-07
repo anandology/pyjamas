@@ -333,6 +333,7 @@ PYJSLIB_BUILTIN_FUNCTIONS=frozenset((
 
 PYJSLIB_BUILTIN_CLASSES=[
     "ArithmeticError",
+    "AssertionError",
     "AttributeError",
     "BaseException",
     "Exception",
@@ -340,6 +341,7 @@ PYJSLIB_BUILTIN_CLASSES=[
     "ImportError",
     "IndexError",
     "KeyError",
+    "KeyboardInterrupt",
     "LookupError",
     "NameError",
     "NotImplemented",   # is in fact an instance
@@ -844,6 +846,7 @@ class Translator(object):
         else:
             self.w( self.spacing() + 'var %s = $pyjs.loaded_modules["%s"];' % (self.module_prefix[:-1], module_name,))
 
+        self.w( self.spacing() + self.module_prefix + '__repr__ = function() { return "<module: %s>"; };' % (module_name))
         self.w( self.spacing() + self.module_prefix + "__was_initialized__ = true;")
         self.w( self.spacing() + "if ((__mod_name__ === null) || (typeof __mod_name__ == 'undefined')) __mod_name__ = '%s';" % (module_name))
         lhs = self.scopeName('__name__', 0, False)
@@ -2495,7 +2498,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         self.w( self.dedent() + "} catch(%s) {" % pyjs_try_err)
         self.indent()
         if self.source_tracking:
-            self.w( self.spacing() + "$pyjs.__last_exception_stack__ = sys.save_exception_stack();")
+            self.w( self.spacing() + "$pyjs.__last_exception_stack__ = sys.save_exception_stack($pyjs__trackstack_size_%d - 1);" % self.stacksize_depth)
             self.w( self.spacing() + "$pyjs.__active_exception_stack__ = null;")
         if self.is_generator:
             self.w( self.spacing() + "$generator_exc[%d] = %s;" % (self.try_depth, pyjs_try_err))
@@ -2731,7 +2734,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
 %(s)s%(p)s.__module__ = '%(module)s';""" % {'s': self.spacing(), 'p': local_prefix, 'module': self.module_name})
 
         if self.function_argument_checking or self.module_name == 'pyjslib':
-            self.w( self.indent() + "%(p)s.__md5__ = '%(m)s';" % {'p': local_prefix, 'm': current_klass.__md5__})
+            self.w( self.spacing() + "%(p)s.__md5__ = '%(m)s';" % {'p': local_prefix, 'm': current_klass.__md5__})
 
         self.push_lookup(name_scope)
         for child in node.code:

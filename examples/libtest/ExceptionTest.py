@@ -134,6 +134,22 @@ class ExceptionTest(UnitTest):
         self.assertEqual(str(e), args[0])
         self.assertEqual(repr(e), "IndexError('test',)")
 
+    def test_exc_info_traceback(self):
+        def func():
+            raise ValueError('Baaa!')
+
+        try:
+            func()
+        except:
+            tb = sys.exc_info()[2]
+            count = 1
+            while tb.tb_next:
+                tb = tb.tb_next
+                count += 1
+            self.assertEqual(count, 2, 'sys.exc_info() traceback must be relative to caller')
+        else:
+            self.fail('Exception expected')
+
     def testSyntax(self):
         try:
             pass
@@ -258,3 +274,20 @@ class ExceptionTest(UnitTest):
             self.assertTrue(True)
         except:
             self.fail("Failed to catch exception: bug #254")
+
+    def testAssertionError(self):
+        try:
+            assert True
+            self.assertTrue(True)
+        except AssertionError, e:
+            self.fail("Got an unexpected assertion error: %r" % e)
+        try:
+            assert False
+            self.fail("AssertionError expected")
+        except AssertionError, e:
+            self.assertTrue(True)
+        try:
+            assert False, 'reason'
+            self.fail("AssertionError expected")
+        except AssertionError, e:
+            self.assertEqual(e.args[0], 'reason')

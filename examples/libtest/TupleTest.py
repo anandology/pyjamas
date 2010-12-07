@@ -40,3 +40,27 @@ class TupleTest(UnitTest):
             self.assertEqual(item, t[i])
             i += 1
 
+    # XXX: This does not even compile
+    def test_tuple_unpacking(self):
+        self.fail('Tuple unpacking not supported for more than one level')
+    #    (a, b), c, (d, e) = x
+    #    self.assertEqual((a, b, c, d, e), (1, 2, 3, 4, 5))
+
+    # XXX: This does not even compile
+    def test_tuple_unpacking_in_loop(self):
+        self.fail('Tuple unpacking in for-loops not supported for more than one level')
+    #    x = ((1, 2), 3, (4, 5))
+    #    for (a, b), c, (d, e) in [x, x, x]:
+    #        self.assertEqual((a, b, c, d, e), (1, 2, 3, 4, 5))
+
+    def test_tuple_unpacking_args(self):
+        def func(a, (b, c), d):
+            return a + b + c + d
+        self.assertEqual(func(1, (2, 3), 4), 10, 'Tuple unpacking for args not supported')
+
+    # XXX: This does not even compile
+    def test_deep_tuple_unpacking_args(self):
+        self.fail('Tuple unpacking in function args not supported for more than one level')
+    #    def func(a, (b, (c, d)), e):
+    #        return a + b + c + d + e
+    #    self.assertEqual(func(1, (2, (3, 4)), 5), 15, 'Tuple unpacking for args not supported')

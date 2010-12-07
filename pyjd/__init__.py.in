@@ -41,6 +41,8 @@ elif engine == 'hulahop':
     from hula import *
 elif engine == 'mshtml':
     from mshtml import *
+elif engine == 'pywebkitdfb':
+    from pywebkitdfb import *
 
 native_dnd = False
 try:

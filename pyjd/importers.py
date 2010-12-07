@@ -63,20 +63,21 @@ def _fs_import(dir, modname, fqname):
 
         # look for dynload modules
         for desc in _c_suffixes:
-            file = pathname + desc[0]
+            fname = pathname + desc[0]
             try:
-                fp = open(file, desc[1])
+                fp = open(fname, desc[1])
             except IOError:
                 pass
             else:
-                module = imp.load_module(fqname, fp, file, desc)
-                values['__file__'] = file
+                module = imp.load_module(fqname, fp, fname, desc)
+                values['__file__'] = fname
                 return 0, module, values
 
     filename = pathname + '.py'
     filenamec = pathname + _suffix
     t_py = _timestamp(filename)
     t_pyc = _timestamp(filenamec)
+    #print "timestamp", filename, t_py, t_pyc
     if t_py is None and t_pyc is None:
         return None
     code = None
@@ -103,19 +104,24 @@ def _fs_import(dir, modname, fqname):
                 # .py exists, platform.pyc exists, .py is newer than pyc: nope
                 ok = False
 
+            #print "platform file ok", platform_file, platform_filec
             if ok and \
                 (t_p_py is None or (t_p_pyc is not None and t_p_pyc >= t_p_py)):
                 f = open(platform_filec, 'rb')
-                if f.read(4) == imp.get_magic():
+                magic = f.read(4)
+                #print "reading platform file", platform_filec, repr(magic), repr(imp.get_magic())
+                if magic == imp.get_magic():
                     t = struct.unpack('<I', f.read(4))[0]
-                    if t == t_py:
+                    #print "time?", platform_filec, t, t_p_py
+                    if t == t_p_py:
                         code = marshal.load(f)
                 f.close()
 
     if code is None and \
        (t_py is None or (t_pyc is not None and t_pyc >= t_py)):
-        f = open(filename, 'rb')
-        if f.read(4) == imp.get_magic():
+        f = open(filenamec, 'rb')
+        magic = f.read(4)
+        if magic == imp.get_magic():
             t = struct.unpack('<I', f.read(4))[0]
             if t == t_py:
                 code = marshal.load(f)
@@ -123,6 +129,7 @@ def _fs_import(dir, modname, fqname):
 
     if code is None:
         filename = pathname + '.py'
+        "compiling", filename
         mod, filename = parser.parseModule(modname, filename)
         code = Module(mod, filename)
         code.compile()
@@ -135,9 +142,11 @@ def _fs_import(dir, modname, fqname):
         # try to cache the compiled code
         try:
             f = open(out_filename + _suffix_char, 'wb')
-        except IOError:
+        except IOError, e:
+            #print "write cache error", out_filename + _suffix_char, e
             pass
         else:
+            #print "writing cache to ", out_filename + _suffix_char
             f.write('\0\0\0\0')
             f.write(struct.pack('<I', out_t_py))
             marshal.dump(code, f)
