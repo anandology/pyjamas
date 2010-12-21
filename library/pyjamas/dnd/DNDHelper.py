@@ -361,35 +361,32 @@ class DNDHelper(object):
             self.effectAllowed = 'uninitialized'
             self.dropEffect = 'none'
             self.currentDragOperation = 'none'
+            fromElement = self.dragWidget.getElement()
+            # Is the widget itself draggable?
+            try:
+                draggable = fromElement.draggable
+            except:
+                draggable = False
+            # if not, find the draggable element at (x, y) in the widget
+            if not draggable:
+                fromElement = findDraggable(sender.getElement(),
+                    self.origMouseX, self.origMouseY)
+            # Nothing draggable found. return.
+            if fromElement is None:
+                self.dragging = NOT_DRAGGING
+                return
+            # Get the location for the dragging widget
+            self.origTop = DOM.getAbsoluteTop(fromElement)
+            self.origLeft = DOM.getAbsoluteLeft(fromElement)
+            self.setDragImage(fromElement,
+                             self.origMouseX - self.origLeft,
+                             self.origMouseY - self.origTop)
             dragStartEvent = self.makeDragEvent(event, 'dragstart')
             self.dragWidget.onDragStart(dragStartEvent)
             if not isCanceled(dragStartEvent):
-                fromElement = self.dragWidget.getElement()
                 dt = dragStartEvent.dataTransfer
                 self.stashData(dt)
-                # Is the widget itself draggable?
-                try:
-                    draggable = fromElement.draggable
-                except:
-                    draggable = False
-                # if not, find the draggable element at (x, y) in the widget
-                if not draggable:
-                    fromElement = findDraggable(sender.getElement(),
-                        self.origMouseX, self.origMouseY)
-                # Nothing draggable found. return.
-                if fromElement is None:
-                    self.dragging = NOT_DRAGGING
-                    return
-                # Get the location for the dragging widget
-                self.origTop = DOM.getAbsoluteTop(fromElement)
-                self.origLeft = DOM.getAbsoluteLeft(fromElement)
-                # Dragging image might have been set in the dragstart
-                # event through dataTransfer. If we do not have one,
-                # create one by cloning the indicated element.
-                if not self.draggingImage:
-                    self.setDragImage(fromElement,
-                                      self.origMouseX - self.origLeft,
-                                      self.origMouseY - self.origTop)
+
                 RootPanel().add(self.draggingImage)
                 self.setDragImageLocation(x, y)
                 self.dragging = ACTIVELY_DRAGGING

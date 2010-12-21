@@ -47,7 +47,7 @@ class DNDDemos(VerticalPanel):
         self.add(NewSchool())
         self.add(Delegated())
         self.add(ImageDrop())
-        self.add(DataTransfer())
+        self.add(DataTransferDemo())
         self.add(DragEffects())
 
 class AddablePanel(Panel):
@@ -281,7 +281,10 @@ class DropWidget2(DropWidget, AddablePanel):
     def onDragEnter(self, event):
         target = DOM.eventGetTarget(event)
         t = Widget(Element=target)
-        class_names = t.getStyleName()
+        try:
+            class_names = t.getStyleName()
+        except:
+            class_names = None
         dt = event.dataTransfer
         dt.dropEffect = 'copy'
         if class_names is not None:
@@ -302,7 +305,10 @@ class DropWidget2(DropWidget, AddablePanel):
     def onDragLeave(self, event):
         target = DOM.eventGetTarget(event)
         t = Widget(Element=target)
-        class_names = t.getStyleName()
+        try:
+            class_names = t.getStyleName()
+        except:
+            class_names = None
         if class_names is not None:
             if 'drophere' in class_names:
                 t.removeStyleName('dragover')
@@ -459,7 +465,10 @@ class DragWidget4(DragWidget2):
         dt = event.dataTransfer
         target = DOM.eventGetTarget(event)
         target = Widget(Element=target)
-        id = target.getID()
+        try:
+            id = target.getID()
+        except:
+            id = ''
         if id == 'datadrag0':
             dt.setData('text/plain', 'Hello World!')
         elif id == 'datadrag1':
@@ -550,7 +559,7 @@ class DropWidgetPanel4(AddablePanel):
         self.contentPanel.add(display)
 
 
-class DataTransfer(DNDDemo):
+class DataTransferDemo(DNDDemo):
     def __init__(self):
         self.title = "Using data transfer content types"
         self.id = "data_transfer"
@@ -563,7 +572,10 @@ class DragWidget5(DragWidget2):
     def onDragStart(self, event):
         target = DOM.eventGetTarget(event)
         dt = event.dataTransfer
-        id = Widget(Element=target).getID()
+        try:
+            id = Widget(Element=target).getID()
+        except:
+            id = ''
         dt.setData("Text", "Dropped %s" % id)
         effect_allowed = self.data[int(id[-1])]
         dt.effectAllowed = effect_allowed
@@ -603,7 +615,10 @@ class DropWidget5(DropWidget2):
     def onDragEnter(self, event):
         target = DOM.eventGetTarget(event)
         t = Widget(Element=target)
-        class_names = t.getStyleName()
+        try:
+            class_names = t.getStyleName()
+        except:
+            class_names = None
         if class_names is not None:
             if 'drophere' in class_names:
                 t.addStyleName('dragover')
@@ -624,7 +639,10 @@ class DropWidget5(DropWidget2):
     def onDragLeave(self, event):
         target = DOM.eventGetTarget(event)
         t = Widget(Element=target)
-        class_names = t.getStyleName()
+        try:
+            class_names = t.getStyleName()
+        except:
+            class_names = None
         if class_names is not None:
             if 'drophere' in class_names:
                 t.removeStyleName('dragover')
