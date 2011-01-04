@@ -49,7 +49,7 @@ class Color:
         elif a is None:
             self.colorStr = "rgb(%d,%d,%d)" % (r, g, b)
         else:
-            self.colorStr = "rgba(%d,%d,%d,%d)" % (r, g, b, a)
+            self.colorStr = "rgba(%d,%d,%d,%f)" % (r, g, b, a)
     
     def __str__(self):
         return self.colorStr
