@@ -26,6 +26,12 @@ h2 {
     padding: 0.25em 0;
     margin: 0 0 1em 0;
 }
+
+
+li {
+    list-style:none;
+}
+
 .toclink {
     padding-left: 1em;
     font-size: 0.5em;
@@ -55,22 +61,34 @@ p.srclink {
     display: block;
     font-family: monospace;
     margin-bottom: 1em;
+    padding: 1em;
 }
-.dragme {
-    height: 64px;
-    width: 64px;
+.dragme1 {
     border: 1px solid #666;
-    background: #acf;
+    background: #aaccff;
+    height: 64px;
     margin: 0.25em;
     padding: 0.25em;
     cursor: pointer;
+    width: 64px;
 }
+
+.dragme {
+    border: 1px solid #666;
+    background: #aaccff;
+    height: 32px;
+    margin: 0.25em;
+    padding: 0.25em;
+    cursor: pointer;
+/*    width: 5em;*/
+}
+
 .drophere {
     padding: 0.25em;
     width: 15ex;
     height: 15ex;
     border: 1px solid #666;
-    background: #eee;
+    background: #eeeeee;
     margin: 0 0 0 15ex;
 }
 .dragover {
@@ -86,9 +104,12 @@ p.srclink {
 #newschool {
     clear: both;
 }
-#newschool .dragme {
+/*#newschool .dragme {
     float: left;
+    height: 64px;
+    width: 64px;
 }
+*/
 #newschool .drophere {
     margin: 0 0 0 15ex;
 }
@@ -96,20 +117,21 @@ p.srclink {
     background: #8f8;
 }
 
-.dragging{padding: 4px;}
-
 ul.draglist {
     float: left;
-    list-style: none;
     padding: 0;
     margin: 0;
+    /*width: 20em;*/
 }
+/*
 ul.draglist li {
     margin: 0 0 10px 0;
 }
+
 ul.draglist li.dragme {
     height: 32px;
 }
+*/
 ul.droplist {
     list-style: none;
     padding: 0;
@@ -122,7 +144,10 @@ ul.droplist li.drophere {
     height: 32px;
 }
 
-canvas {width:50px;height:50px}
+canvas {
+    width: 50px;
+    height: 50px;
+}
 
 #feedback_image .drophere {
     margin: 0 0 0 22ex;
@@ -164,16 +189,17 @@ canvas {width:50px;height:50px}
 }
 
 #data_transfer .draglist li {
-    width: 17ex;
+/*    width: 17ex;*/
     margin: 0.25em;
     padding: 0.25em;
 }
+/*
 #data_transfer .dragme {
     border: 1px solid #666;
     background: #acf;
     cursor: pointer;
 }
-
+*/
 .events_monitor {
     float: left;
     margin: 0.25em;
@@ -189,6 +215,7 @@ canvas {width:50px;height:50px}
     font-family: monospace;
     margin: 0; padding: 0 0 1em 0;
 }
+/*
 .toys {
     margin: 0.25em 0.25em 0.25em 310px;
     padding: 0.25em;
@@ -243,3 +270,4 @@ canvas {width:50px;height:50px}
     margin: 0.25em;
     padding: 0.25em;
 }
+*/

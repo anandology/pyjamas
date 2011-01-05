@@ -1,4 +1,3 @@
-
 def getComputedStyle(element, style=None):
     """
     Get computed style of an element, like in
@@ -39,14 +38,3 @@ def eventCoordinates(event):
     pageX = event.clientX + offsetX
     pageY = event.clientY + offsetY
     return pageX, pageY
-
-
-class DragEvent:
-
-    def setTarget(self, target=None):
-        if target is not None:
-            self.srcElement = target
-            #self.target = target
-        else:
-            self.srcElement = DOM.eventGetTarget(self.evt)
-            #self.target = target

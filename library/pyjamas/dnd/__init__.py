@@ -18,6 +18,11 @@ def makeDraggable(widget):
     element = widget.getElement()
     DOM.setAttribute(element, 'draggable', True)
 
+PROTECTED = 1
+READ_WRITE = 2
+READ_ONLY = 3
+DISABLED = 4
+
 # getTypes is provided to get around some of the
 # various flavors dataTransfer.type objects.
 

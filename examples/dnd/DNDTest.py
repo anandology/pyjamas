@@ -36,7 +36,9 @@ from pyjamas.ui.DragWidget import DragWidget, DragContainer
 from pyjamas.ui.DropWidget import DropWidget
 from pyjamas.ui.Panel import Panel
 from pyjamas.dnd import getTypes
+from pyjamas.JSONParser import JSONParser
 
+json = JSONParser()
 
 class DNDDemos(VerticalPanel):
     def __init__(self):
@@ -89,16 +91,21 @@ class DragWidget1(DragWidget, Label):
         Label.__init__(self, Element=DOM.createElement('div'))
         self.setText("Drag me!")
         DragWidget.__init__(self)
-        self.setStyleName('dragme')
+        self.setStyleName('dragme1')
 
     def onDragStart(self, event):
-        dt= event.dataTransfer
+        dt = event.dataTransfer
+        #self.addMessage('types is %s' % dt.getTypes())
         dt.setData('Text', 'Dropped in zone!')
+        #self.addMessage('after setting, len is %s' % len(dt.dataStore.items))
+        #self.addMessage('types is %s' % dt.getTypes())
         dt.setDragImage(self.getElement(), 15, 15)
         dt.effectAllowed = 'copy'
+        #self.addMessage('mode is %s' % dt.dataStore.items.mode)
 
     def onDragEnd(self, event):
         self.addMessage('Drag ended')
+        #self.addMessage('mode is %s' % dt._data.mode)
 
     def addMessage(self, message):
         parent = self.getParent()
@@ -666,6 +673,108 @@ class DragEffects(DNDDemo):
         self.drag_widget = DragWidget5()
         self.drop_widget = DropWidget5()
         DNDDemo.__init__(self)
+
+
+class StudentWidget(DragWidget, Label):
+    def __init__(self, name, age):
+        Label.__init__(self, Element=DOM.createElement('div'))
+        self.name = name
+        self.age = int(age)
+        self.setText("%s (%s)" % (self.name, self.age))
+        DragWidget.__init__(self)
+        self.setStyleName('dragme')
+
+    def onDragStart(self, event):
+        dt= event.dataTransfer
+        dt.setData('Text', json.encode({'name':self.name, 'age':self.age}))
+        dt.effectAllowed = 'move'
+        self.setVisible(False)
+
+    def onDragEnd(self, event):
+        dt = event.dataTransfer
+        if dt.dropEffect == 'move':
+            self.getParent().remove(self)
+            msg = 'drop succeeded'
+        else:
+            self.setVisible(True)
+            msg = 'drop failed'
+        self.addMessage(msg)
+
+    def addMessage(self, message):
+        parent = self.getParent()
+        while not hasattr(parent, 'addMessage'):
+            parent = parent.getParent()
+        parent.addMessage(message)
+
+
+class StudentContainer(DropWidget, VerticalPanel):
+    def __init__(self, min_age, max_age):
+        self.min_age = min_age
+        self.max_age = max_age
+        VerticalPanel.__init__(self)
+        DropWidget.__init__(self)
+        #self.setText("Drop here!")
+        self.setStyleName('drophere')
+
+    def getNames(self):
+        names = []
+        for item in self.children:
+            names.append((item.name, item.age))
+        return names
+
+    def notAlreadyHere(self, name):
+        for item in self.children:
+            if item.name == name:
+                return False
+        return True
+
+    def addStudent(self, name, age):
+        new_names = self.getNames()
+        new_names.append(name)
+        new_names.sort()
+        self.clear()
+        for name in new_names:
+            self.append(StudentWidget(name, age))
+
+    def onDragEnter(self, event):
+        self.addStyleName('dragover')
+        DOM.eventPreventDefault(event)
+
+    def onDragLeave(self, event):
+        self.removeStyleName('dragover')
+
+    def onDragOver(self, event):
+        dt = event.dataTransfer
+        dt.dropEffect = 'move'
+        types = getTypes(event)
+        if 'Text' in types:
+            DOM.eventPreventDefault(event)
+
+    def age_is_ok(self, age):
+        return age >= self.min_age and age <= self.max_age
+
+    def onDrop(self, event):
+        dt = event.dataTransfer
+        try:
+            item = dt.getData("Text")
+            data = json.decode(item)
+            if 'name' in data and 'age' in data:
+                age = data['age']
+                name = data['name']
+                if self.age_is_ok(age) and self.notAlreadyHere(name):
+                    self.addStudent(name, age)
+                    DOM.eventPreventDefault(event)
+                else:
+                    self.addMessage('student could not be added')
+        except:
+            self.addMessage('unsupported data type for drop')
+
+
+    def addMessage(self, message):
+        parent = self.getParent()
+        while not hasattr(parent, 'addMessage'):
+            parent = parent.getParent()
+        parent.addMessage(message)
 
 
 
