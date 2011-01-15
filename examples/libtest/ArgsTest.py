@@ -711,12 +711,12 @@ class ArgsTest(UnitTest):
             self.assertEquals(kwa.get('z'), 8)
 
     def testKwArgsNameMapping(self):
-        kwargs = dict(comment='Comment')
-        def fn(comment):
-            return dict(comment=comment)
+        kwargs = dict(comment='Comment', name='Name')
+        def fn(comment=None, name=None):
+            return dict(comment=comment, name=name)
         kwargs_out = fn(**kwargs)
         self.assertEquals(kwargs, kwargs_out)
-        kwargs = {'comment': 'Comment'}
+        kwargs = {'comment': 'Comment', 'name': 'Name'}
         kwargs_out = fn(**kwargs)
         self.assertEquals(kwargs, kwargs_out)
 

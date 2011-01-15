@@ -4242,7 +4242,7 @@ class dict:
                     // d = dict(comment='value')
                     // comment will be in the object as $$comment
                     _key = key.substring(2);
-                    if (attrib_remap.indexOf(_key) < 0) {
+                    if (var_remap.indexOf(_key) < 0) {
                         _key = key;
                     }
                 }
