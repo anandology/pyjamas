@@ -1,11 +1,30 @@
+# Simple canvas demo game
+# Copyright (C) 2010 James Hedley (jameskhedley@gmail.com)
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# Distributed as part of pyjamas (http://pyjs.org)
+# Wordlists derived from http://wordlist.sourceforge.net
+
 from pyjamas.ui.VerticalPanel import VerticalPanel
 from pyjamas.ui.HorizontalPanel import HorizontalPanel
 from pyjamas.ui.Composite import Composite
 from pyjamas.ui.Button import Button
 from pyjamas.ui.HTML import HTML
 from pyjamas.ui.RadioButton import RadioButton
-from pyjamas.Canvas2D import Canvas, CanvasImage, ImageLoadListener
+from pyjamas.Canvas.GWTCanvas import GWTCanvas
 from pyjamas import Window
+import math
 import random
 import string
 import Wordlist_20
@@ -132,15 +151,17 @@ class HangManWidget(Composite):
         elif sender == self.radLevel20:
             self.level = 20
 
-class HangDude(Canvas):
+class HangDude(HorizontalPanel):
     def __init__(self):
-        Canvas.__init__(self, 300, 300)
+        HorizontalPanel.__init__(self)
+        self.context = GWTCanvas(300,300,300,300)
+        self.context.addStyleName("gwt-canvas")
+        self.add(self.context)
 
     def clear(self):
-        self.context.clearRect(0,0,300,300)
+        self.context.clear()
 
     def draw(self, guesses):
-        pi = 3.14159265358979323
         self.context.fillStyle = '#000'
         self.context.lineWidth = 2 
         if guesses == 1:
@@ -150,43 +171,43 @@ class HangDude(Canvas):
         elif guesses == 3:
             self.context.fillRect(20, 20, 160,10)
         elif guesses == 4:
-            self.context.save()
+            self.context.saveContext()
             self.context.translate(80,30)
-            self.context.rotate(130 * pi / 180)
+            self.context.rotate(130 * math.pi / 180)
             self.context.fillRect(0,0, 50,10)
-            self.context.restore()
+            self.context.restoreContext()
         elif guesses == 5:
             self.context.fillRect(140, 20, 10, 50)
         elif guesses == 6:
             self.context.beginPath()
-            self.context.arc(145, 100, 30, 0, pi * 2, True)
+            self.context.arc(145, 100, 30, 0, math.pi * 2, True)
             self.context.closePath()
             self.context.stroke()
         elif guesses == 7:
             self.context.fillRect(145, 130, 2, 80)
         elif guesses == 8:
-            self.context.save()
+            self.context.saveContext()
             self.context.translate(147,160)
-            self.context.rotate(130 * pi / 180)
+            self.context.rotate(130 * math.pi / 180)
             self.context.fillRect(0,0, 50,2)
-            self.context.restore()
+            self.context.restoreContext()
         elif guesses == 9:
-            self.context.save()
+            self.context.saveContext()
             self.context.translate(147,160)
-            self.context.rotate(45 * pi / 180)
+            self.context.rotate(45 * math.pi / 180)
             self.context.fillRect(0,0, 50,2)
-            self.context.restore()
+            self.context.restoreContext()
         elif guesses == 10:
-            self.context.save()
+            self.context.saveContext()
             self.context.translate(147,210)
-            self.context.rotate(130 * pi / 180)
+            self.context.rotate(130 * math.pi / 180)
             self.context.fillRect(0,0, 60,2)
-            self.context.restore()
+            self.context.restoreContext()
         elif guesses == 11:
-            self.context.save()
+            self.context.saveContext()
             self.context.translate(147,210)
-            self.context.rotate(45 * pi / 180)
+            self.context.rotate(45 * math.pi / 180)
             self.context.fillRect(0,0, 60,2)
-            self.context.restore()
-        self.context.restore()
+            self.context.restoreContext()
+        self.context.restoreContext()
 
