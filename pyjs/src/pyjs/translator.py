@@ -1221,7 +1221,8 @@ class Translator(object):
         lines = []
         remap = pyjs_attrib_remap.keys()
         remap.sort()
-        lines.append("%(s)svar attrib_remap = %(remap)s;" % locals())
+        module_prefix = self.module_prefix
+        lines.append("%(s)svar attrib_remap = %(module_prefix)sattrib_remap = %(remap)s;" % locals())
         return "\n".join(lines)
 
     def constant_decl(self):

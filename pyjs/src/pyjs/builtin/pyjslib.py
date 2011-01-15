@@ -4236,7 +4236,17 @@ class dict:
             }
         } else if (typeof data == 'object' || typeof data == 'function') {
             for (var key in data) {
-                @{{self}}.__object['$'+key] = [key, data[key]];
+                var _key = key;
+                if (key.substring(0,2) == '$$') {
+                    // handle back mapping of name
+                    // d = dict(comment='value')
+                    // comment will be in the object as $$comment
+                    _key = key.substring(2);
+                    if (attrib_remap.indexOf(_key) < 0) {
+                        _key = key;
+                    }
+                }
+                @{{self}}.__object['$'+_key] = [_key, data[key]];
             }
             return null;
         } else {
