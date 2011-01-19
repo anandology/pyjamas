@@ -32,6 +32,7 @@ def init():
     $doc.body.onkeyup       =
     $doc.body.onfocus       =
     $doc.body.onblur        =
+    $doc.body.onselectstart =
     $doc.body.ondblclick    = $wnd.__dispatchEvent;
     """)
 
