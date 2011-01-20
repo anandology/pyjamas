@@ -1219,9 +1219,13 @@ class Translator(object):
     def attrib_remap_decl(self):
         s = self.spacing()
         lines = []
+        module_prefix = self.module_prefix
         remap = pyjs_attrib_remap.keys()
         remap.sort()
-        lines.append("%(s)svar attrib_remap = %(remap)s;" % locals())
+        lines.append("%(s)svar attrib_remap = %(module_prefix)sattrib_remap = %(remap)s;" % locals())
+        remap = pyjs_vars_remap.keys()
+        remap.sort()
+        lines.append("%(s)svar var_remap = %(module_prefix)svar_remap = %(remap)s;" % locals())
         return "\n".join(lines)
 
     def constant_decl(self):

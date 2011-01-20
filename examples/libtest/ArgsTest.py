@@ -710,6 +710,16 @@ class ArgsTest(UnitTest):
             self.assertEquals(kwa.get('y'), 6)
             self.assertEquals(kwa.get('z'), 8)
 
+    def testKwArgsNameMapping(self):
+        kwargs = dict(comment='Comment', name='Name')
+        def fn(comment=None, name=None):
+            return dict(comment=comment, name=name)
+        kwargs_out = fn(**kwargs)
+        self.assertEquals(kwargs, kwargs_out)
+        kwargs = {'comment': 'Comment', 'name': 'Name'}
+        kwargs_out = fn(**kwargs)
+        self.assertEquals(kwargs, kwargs_out)
+
     def testLookupOrder(self):
         def fn(fint = int):
             return fint(1.2);
