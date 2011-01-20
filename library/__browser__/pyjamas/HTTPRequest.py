@@ -2,16 +2,18 @@
 class HTTPRequest:
 
     def doCreateXmlHTTPRequest(self):
-        if JS("""typeof $wnd.XMLHttpRequest != 'undefined'"""):
-            # IE7+, Mozilla, Safari, ...
-           return JS("""new XMLHttpRequest()""")
-
         # Check for IE6/ActiveX
         try:
             res = JS("""new ActiveXObject("Msxml2.XMLHTTP")""")
             return res
         except:
             pass
+
+        # now try all others
+        if JS("""typeof $wnd.XMLHttpRequest != 'undefined'"""):
+            # IE7+, Mozilla, Safari, ...
+           res = JS("""new XMLHttpRequest()""")
+           return res
         return None
 
     def asyncImpl(self, method, user, pwd, url, postData, handler,

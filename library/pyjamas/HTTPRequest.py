@@ -78,19 +78,19 @@ class HTTPRequest:
             xmlHttp = get_main_frame().gobject_wrap(xmlHttp) # HACK!
         except:
             pass # hula / XUL
-        print xmlHttp.readyState
+        #print xmlHttp.readyState
         if xmlHttp.readyState != 4:
             return
         # TODO - delete xmlHttp.onreadystatechange
         localHandler = handlers.get(xmlHttp)
         del handlers[xmlHttp]
         responseText = xmlHttp.responseText
-        print "headers", xmlHttp.getAllResponseHeaders()
+        #print "headers", xmlHttp.getAllResponseHeaders()
         status = xmlHttp.status
         handler = None
         xmlHttp = None
-        print "status", status
-        print "local handler", localHandler
+        #print "status", status
+        #print "local handler", localHandler
         # XXX HACK! webkit wrapper returns 0 not 200!
         if status == 0:
             print "HACK ALERT! webkit wrapper returns 0 not 200!"
@@ -161,14 +161,15 @@ class HTTPRequest:
                 xmlHttp, "load", self.onLoad,
             )
 
-        print "xmlHttp", method, user, pwd, url, postData, handler, dir(xmlHttp)
+        #print "xmlHttp", method, user, pwd, url, postData, handler, dir(xmlHttp)
         #try :
         if mf.platform == 'webkit' or mf.platform == 'mshtml':
             xmlHttp.open(method, url, True, '', '')
         else:
             # EEK!  xmlhttprequest.open in xpcom is a miserable bastard.
             #xmlHttp.open("POST", url, True, '', '')
-            print url, xmlHttp.open(method, url)
+            res = xmlHttp.open(method, url)
+            #print url, res
         for h in headers:
             if isinstance(headers[h], str):
                 xmlHttp.setRequestHeader(h, headers[h])
