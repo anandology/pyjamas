@@ -23,14 +23,12 @@ from PageLoader import PageListLoader, PageLoader
 from pyjamas.ui.HTMLLinkPanel import HTMLLinkPanel
 from pyjamas import History
 
-
 #class PrettyTab(DecoratorPanel):
 class PrettyTab(Composite):
 
     def __init__(self, text, imageUrl):
 
         DecoratorPanel.__init__(self, DecoratorPanel.DECORATE_ALL)
-
         p = HorizontalPanel()
         p.setSpacing(3)
         self.img = Image(imageUrl)
@@ -73,7 +71,7 @@ class Tabs:
 
         History.addHistoryListener(self)
         initToken = History.getToken()
-        print "initial token", initToken
+        #print "initial token", initToken
 
         RootPanel().add(dock)
         self.dock = dock
@@ -150,6 +148,8 @@ class Tabs:
         if self.pages.has_key(token):
             idx = self.tab_index[token]
             self.fTabs.selectTab(idx)
+    def onError(self, text, code):
+        print "LOAD ERROR(",code,"):",text
 
     def loadPageList(self):
         HTTPRequest().asyncGet("sidebar.html",

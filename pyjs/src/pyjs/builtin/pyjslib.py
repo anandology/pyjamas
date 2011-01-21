@@ -6339,6 +6339,13 @@ if (   typeof $wnd.console != 'undefined'
     $printFunc = function(s) {
         $wnd.opera.postError(s);
     };
+} else if ( typeof console != 'undefined') {
+    if (   typeof console.log == 'function'
+        || typeof console.log == 'object') {
+        $printFunc = function(s){
+            console.log(s);
+        };
+    }
 }
 """)
 
