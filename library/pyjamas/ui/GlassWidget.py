@@ -37,6 +37,8 @@ def show(mousetarget, **kwargs):
     global mousecapturer
     mc = getMouseCapturer(**kwargs)
     mc.mousetarget = mousetarget
+    if isinstance(mousetarget, MouseHandler):
+        mc.mousehandler = True
     mc.show()
 
 
@@ -50,6 +52,7 @@ class GlassWidget(Widget, MouseHandler):
 
         self.glassListeners = []
         self.showing = False
+        self.mousehandler = False
 
         if not 'StyleName' in kwargs:
             kwargs['StyleName'] = "gwt-GlassWidget"
@@ -165,7 +168,10 @@ class GlassWidget(Widget, MouseHandler):
 
     def onMouseDown(self, sender, x, y):
         x, y = self.adjustMousePos(x, y)
-        self.mousetarget.onMouseDown(sender, x, y)
+        if self.mousehandler:
+            self.mousetarget.onBrowserEvent(DOM.eventGetCurrentEvent())
+        else:
+            self.mousetarget.onMouseDown(sender, x, y)
 
     def onMouseEnter(self, sender):
         self.mousetarget.onMouseGlassEnter(sender)
@@ -175,11 +181,17 @@ class GlassWidget(Widget, MouseHandler):
 
     def onMouseMove(self, sender, x, y):
         x, y = self.adjustMousePos(x, y)
-        self.mousetarget.onMouseMove(sender, x, y)
+        if self.mousehandler:
+            self.mousetarget.onBrowserEvent(DOM.eventGetCurrentEvent())
+        else:
+            self.mousetarget.onMouseMove(sender, x, y)
 
     def onMouseUp(self, sender, x, y):
         x, y = self.adjustMousePos(x, y)
-        self.mousetarget.onMouseUp(sender, x, y)
+        if self.mousehandler:
+            self.mousetarget.onBrowserEvent(DOM.eventGetCurrentEvent())
+        else:
+            self.mousetarget.onMouseUp(sender, x, y)
 
 
 Factory.registerClass('pyjamas.ui.GlassWidget', 'GlassWidget', GlassWidget)
