@@ -33,10 +33,11 @@ def exc_info():
     else:
         cls = le.error.__class__
     tb = JS('$pyjs.__last_exception_stack__')
-    start = tb.start
-    while tb and start > 0:
-        tb = tb.tb_next
-        start -= 1
+    if tb:
+        start = tb.start
+        while tb and start > 0:
+            tb = tb.tb_next
+            start -= 1
     return (cls, le.error, tb)
 
 def exc_clear():
