@@ -65,15 +65,15 @@ class TooltipListener:
 
     def __init__(self, text, show_delay = 1000, hide_delay = 5000, styleName = ""):
         if not styleName:
-            styleName = TooltipListener.DEFAULT_TOOLTIP_STYLE
+            styleName = self.DEFAULT_TOOLTIP_STYLE
         
         self.tooltip = None
         self.text = text
         self.styleName = styleName
         self.show_delay = show_delay
         self.hide_delay = hide_delay
-        self.offsetX = TooltipListener.DEFAULT_OFFSET_X
-        self.offsetY = TooltipListener.DEFAULT_OFFSET_Y
+        self.offsetX = self.DEFAULT_OFFSET_X
+        self.offsetY = self.DEFAULT_OFFSET_Y
 
     def onMouseEnter(self, sender):
         if self.tooltip is not None:
