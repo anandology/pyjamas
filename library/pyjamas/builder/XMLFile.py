@@ -38,6 +38,9 @@ class XMLFile(object):
         raise XMLFileError("Line %s: %s" % (self.lineno, msg))
 
     def parseValue(self, v, unpackStr=False):
+        if v == "":
+            # Quick return
+            return v
         vlower =  v.lower()
         if vlower in ["null", "none"]:
             return None
