@@ -2417,7 +2417,7 @@ class GChart (Composite, FocusHandler, KeyboardHandler,
     *
     """
     def setChartTitle(self, chartTitle):
-        if isinstance(chartTitle, str):
+        if isinstance(chartTitle, basestring):
             chartTitle = HTML(chartTitle)
         self.chartDecorationsChanged = True
         self.chartTitle = chartTitle

@@ -211,14 +211,14 @@ class CustomButton (ButtonBase):
             listener = upImageText
             upImageText = None
 
-        if upImageText and isinstance(upImageText, str):
+        if upImageText and isinstance(upImageText, basestring):
            upText = upImageText
            upImage = None
         else:
            upImage = upImageText
            upText = None
 
-        if downImageText and isinstance(downImageText, str):
+        if downImageText and isinstance(downImageText, basestring):
            downText = downImageText
            downImage = None
         else:

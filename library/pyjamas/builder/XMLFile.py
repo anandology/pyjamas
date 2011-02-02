@@ -28,7 +28,7 @@ class XMLFile(object):
     re_attr = re.compile('''\S+="[^"]*"''')
 
     def __init__(self, lines):
-        if isinstance(lines, str):
+        if isinstance(lines, basestring):
             lines = lines.split("\n")
         self.lines = lines
         self.lineno = 0

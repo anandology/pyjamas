@@ -292,7 +292,7 @@ class Axis:
         if tickWidget is None:
             tiickWidget = self.formatAsTickLabel(tickPosition)
 
-        if isinstance(tickWidget, str):
+        if isinstance(tickWidget, basestring):
             if widthUpperBound is None and heightUpperBound is None:
                 widthUpperBound = NAI
                 heightUpperBound = NAI
@@ -1071,7 +1071,7 @@ class Axis:
     """
 
     def setAxisLabel(self, axisLabel):
-        if isinstance(axisLabel, str):
+        if isinstance(axisLabel, basestring):
             axisLabel = HTML(axisLabel)
         self.axisLabel = axisLabel
         self.chartDecorationsChanged = True

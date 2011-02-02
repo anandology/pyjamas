@@ -26,7 +26,7 @@ def PolygonOptions(adict):
         try:
             if isinstance(adict["paths"], (list,tuple)):
                 adict["paths"] = listToJs(adict["paths"])
-            elif isinstance(adict["paths"], str): #Gmaps 
+            elif isinstance(adict["paths"], basestring): #Gmaps 
                 adict["paths"] = decodePoly(adict["paths"])
         except: #isinstance throws exception for raw javascript objects. 
             pass #That means it's already good.

@@ -171,7 +171,7 @@ class HTTPRequest:
             res = xmlHttp.open(method, url)
             #print url, res
         for h in headers:
-            if isinstance(headers[h], str):
+            if isinstance(headers[h], basestring):
                 xmlHttp.setRequestHeader(h, headers[h])
             else:
                 hval = ';'.join([str(i) for i in headers[h]])

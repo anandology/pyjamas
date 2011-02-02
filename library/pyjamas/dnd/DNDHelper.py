@@ -86,7 +86,7 @@ def copyStyles(elem1, elem2):
     for style in element_style:
         try:
             value = element_style[style]
-            if isinstance(value, str):
+            if isinstance(value, basestring):
                 if not style == 'cssText':
                     DOM.setStyleAttribute(elem2, style, value)
         except:

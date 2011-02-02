@@ -73,7 +73,7 @@ class Tree(Widget):
         return self.insertItem(item)
 
     def insertItem(self, item, index=None):
-        if isinstance(item, str):
+        if isinstance(item, basestring):
             item = TreeItem(item)
 
         ret = self.root.addItem(item)

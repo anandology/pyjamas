@@ -181,7 +181,7 @@ class Annotation:
     def setWidget(self, widget,
                     widthUpperBound=DEFAULT_WIDGET_WIDTH_UPPERBOUND,
                     heightUpperBound=DEFAULT_WIDGET_HEIGHT_UPPERBOUND):
-        if isinstance(widget, str):
+        if isinstance(widget, basestring):
             widget = HTML(widget)
         self.widthUpperBound = widthUpperBound
         self.heightUpperBound = heightUpperBound

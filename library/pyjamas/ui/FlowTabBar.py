@@ -100,7 +100,7 @@ class FlowTabBar(Composite):
             #throw new IndexOutOfBoundsException();
             pass
 
-        if isinstance(text, str):
+        if isinstance(text, basestring):
             if asHTML:
                 item = HTML(text)
             else:

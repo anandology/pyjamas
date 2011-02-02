@@ -81,12 +81,12 @@ class TreeItem(UIObject):
                 # messy. pyjd can do unicode, pyjs can't
                 if isinstance(html, unicode):
                     ka['HTML'] = html
-                elif isinstance(html, str):
+                elif isinstance(html, basestring):
                     ka['HTML'] = html
                 else:
                     ka['Widget'] = html
             except:
-                if isinstance(html, str):
+                if isinstance(html, basestring):
                     ka['HTML'] = html
                 else:
                     ka['Widget'] = html

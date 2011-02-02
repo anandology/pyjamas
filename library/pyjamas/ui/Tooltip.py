@@ -19,7 +19,7 @@ class Tooltip(PopupPanel):
         self.show_delay = show_delay
         self.hide_delay = hide_delay
         
-        if isinstance(contents, str):
+        if isinstance(contents, basestring):
             contents = HTML(contents)
         self.add(contents)
 
