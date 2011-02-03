@@ -17,6 +17,8 @@ from DictTest import DictTest
 from BuiltinTest import BuiltinTest
 from GeneratorTest import GeneratorTest
 from LongTest import LongTest
+from FloatTest import FloatTest
+
 import CompileTest
 if 1L << 31 > 0:
     has_long_type = True
@@ -75,6 +77,7 @@ def main():
     t.add(LongTest)
     if has_long_type:
         t.add(LongTypeTest)
+    t.add(FloatTest)
     t.add(TypeCompatibilityTest)
     t.add(MD5Test)
     t.add(TimeModuleTest)
