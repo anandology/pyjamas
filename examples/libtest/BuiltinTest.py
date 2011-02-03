@@ -89,6 +89,12 @@ class BuiltinTest(UnitTest):
         except TypeError, e:
             self.assertEqual(e[0], "int() can't convert non-string with explicit base")
 
+        try:
+            int('10px')
+            self.fail("No int() argument error raised: int('10px')")
+        except ValueError, e:
+            self.assertEqual(e[0], "invalid literal for int() with base 10: '10px'")
+
     def testFloat(self):
         self.assertEqual(float("5.1"), 5.1)
         self.assertEqual(float("09"), 9)
