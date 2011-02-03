@@ -99,12 +99,19 @@ class BuiltinTest(UnitTest):
         self.assertEqual(float("5.1"), 5.1)
         self.assertEqual(float("09"), 9)
         self.assertEqual(6.1, 6.1)
+        self.assertEqual("0", 0)
 
         try:
             float('not float')
-            self.fail("No float() argument error raised")
+            self.fail("No float('not float') argument error raised")
         except ValueError, e:
             self.assertEqual(e[0], "invalid literal for float(): not float")
+
+        try:
+            float('')
+            self.fail("No float('') argument error raised")
+        except ValueError, e:
+            self.assertEqual(e[0], "empty string for float()")
 
         self.assertTrue(isinstance(1.0, float), "1.0 should be instance of float")
 

@@ -1533,9 +1533,11 @@ class float:
     __number__ = JS("0x01")
     def __new__(self, num):
         JS("""
-        if (@{{num}} == "") {
+        /*
+        if (@{{num}} === "") {
             throw @{{ValueError}}("empty string for float()");
         }
+        */
         var v = Number(@{{num}});
         if (isNaN(v)) {
             throw @{{ValueError}}("invalid literal for float(): " + @{{!num}});
