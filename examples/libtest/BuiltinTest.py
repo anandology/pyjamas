@@ -99,7 +99,8 @@ class BuiltinTest(UnitTest):
         self.assertEqual(float("5.1"), 5.1)
         self.assertEqual(float("09"), 9)
         self.assertEqual(6.1, 6.1)
-        self.assertEqual("0", 0)
+        self.assertEqual(float("0"), 0)
+        self.assertEqual(float(0), 0)
 
         try:
             float('not float')
