@@ -1533,8 +1533,11 @@ class float:
     __number__ = JS("0x01")
     def __new__(self, num):
         JS("""
-        if (@{{num}} === "") {
-            throw @{{ValueError}}("empty string for float()");
+        if (typeof @{{num}} == 'string') {
+            @{{num}} = @{{num}}.lstrip();
+            if (@{{num}} === "") {
+                throw @{{ValueError}}("empty string for float()");
+            }
         }
         var v = Number(@{{num}});
         if (isNaN(v)) {
@@ -1687,6 +1690,7 @@ def float_int(value, radix=None):
         if (@{{radix}} === null) {
             @{{radix}} = 10;
         }
+        @{{value}} = @{{value}}.lstrip();
         switch (@{{value}}[@{{value}}.length-1]) {
             case 'l':
             case 'L':
@@ -1780,6 +1784,7 @@ var $radix_regex = [
                 radix = 10;
             }
             if (value.match($radix_regex[radix]) === null) {
+                value = value.lstrip();
                 v = NaN;
             } else {
                 v = parseInt(value, radix);

@@ -76,6 +76,20 @@ class BuiltinTest(UnitTest):
         self.assertEqual(int("5"), 5)
         self.assertEqual(int("09"), 9)
         self.assertEqual(6, 6)
+        self.assertEqual(int("0"), 0)
+        self.assertEqual(int(0), 0)
+
+        try:
+            int('')
+            self.fail("No int() argument error raised: int('')")
+        except ValueError, e:
+            self.assertEqual(e[0], "invalid literal for int() with base 10: ''")
+
+        try:
+            int(' ')
+            self.fail("No int() argument error raised: int(' ')")
+        except ValueError, e:
+            self.assertEqual(e[0], "invalid literal for int() with base 10: ''")
 
         try:
             int('not int')
@@ -111,6 +125,12 @@ class BuiltinTest(UnitTest):
         try:
             float('')
             self.fail("No float('') argument error raised")
+        except ValueError, e:
+            self.assertEqual(e[0], "empty string for float()")
+
+        try:
+            float(' ')
+            self.fail("No float(' ') argument error raised")
         except ValueError, e:
             self.assertEqual(e[0], "empty string for float()")
 
