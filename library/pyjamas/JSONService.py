@@ -265,9 +265,9 @@ class JSONProxy(JSONService):
         self.headers = {} if headers is None else headers
         # Init with JSONService, for the use of callMethod
         JSONService.__init__(self, url, headers=self.headers)
-        self.__registerMethods(methods)
+        self._registerMethods(methods)
 
-    def __registerMethods(self, methods):
+    def _registerMethods(self, methods):
         if methods:
             for method in methods:
                 setattr(self, 
@@ -277,8 +277,8 @@ class JSONProxy(JSONService):
                                 '__call__')
                        )
 
-    # It would be nice to use __getattr__ (in stead of __registerMethods)
-    # However, that doesn't work with pyjs and the use of __registerMethods
+    # It would be nice to use __getattr__ (instead of _registerMethods)
+    # However, that doesn't work with pyjs and the use of _registerMethods
     # saves some repeated instance creations (now only once per method and 
     # not once per call)
     #def __getattr__(self, name):
