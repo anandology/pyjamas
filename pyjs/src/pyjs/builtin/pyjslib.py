@@ -1533,8 +1533,11 @@ class float:
     __number__ = JS("0x01")
     def __new__(self, num):
         JS("""
-        if (@{{num}} == "") {
-            throw @{{ValueError}}("empty string for float()");
+        if (typeof @{{num}} == 'string') {
+            @{{num}} = @{{num}}.lstrip();
+            if (@{{num}} === "") {
+                throw @{{ValueError}}("empty string for float()");
+            }
         }
         var v = Number(@{{num}});
         if (isNaN(v)) {
@@ -1687,6 +1690,7 @@ def float_int(value, radix=None):
         if (@{{radix}} === null) {
             @{{radix}} = 10;
         }
+        @{{value}} = @{{value}}.lstrip();
         switch (@{{value}}[@{{value}}.length-1]) {
             case 'l':
             case 'L':
@@ -1695,7 +1699,11 @@ def float_int(value, radix=None):
             default:
                 v = @{{value}};
         }
-        v = parseInt(v, @{{radix}});
+        if (v.match($radix_regex[@{{radix}}]) === null) {
+            v = NaN;
+        } else {
+            v = parseInt(v, @{{radix}});
+        }
     } else {
         throw @{{TypeError}}("TypeError: int() argument must be a string or a number");
     }
@@ -1706,6 +1714,46 @@ def float_int(value, radix=None):
 """)
 
 JS("""
+var $radix_regex = [
+    /^$/i,              //  0
+    /^$/i,              //  1
+    /^ *[01]+ *$/i,     //  2
+    /^ *[0-2]+ *$/i,    //  3
+    /^ *[0-3]+ *$/i,    //  4
+    /^ *[0-4]+ *$/i,    //  5
+    /^ *[0-5]+ *$/i,    //  6
+    /^ *[0-6]+ *$/i,    //  7
+    /^ *[0-7]+ *$/i,    //  8
+    /^ *[0-8]+ *$/i,    //  9
+    /^ *[0-9]+ *$/i,    // 10
+    /^ *[0-9a]+ *$/i,   // 11
+    /^ *[0-9ab]+ *$/i,  // 12
+    /^ *[0-9a-c]+ *$/i, // 13
+    /^ *[0-9a-d]+ *$/i, // 14
+    /^ *[0-9a-e]+ *$/i, // 15
+    /^ *[0-9a-f]+ *$/i, // 16
+    /^ *[0-9a-g]+ *$/i, // 17
+    /^ *[0-9a-h]+ *$/i, // 18
+    /^ *[0-9a-i]+ *$/i, // 19
+    /^ *[0-9a-j]+ *$/i, // 20
+    /^ *[0-9a-k]+ *$/i, // 21
+    /^ *[0-9a-l]+ *$/i, // 22
+    /^ *[0-9a-m]+ *$/i, // 23
+    /^ *[0-9a-n]+ *$/i, // 24
+    /^ *[0-9a-o]+ *$/i, // 25
+    /^ *[0-9a-p]+ *$/i, // 26
+    /^ *[0-9a-q]+ *$/i, // 27
+    /^ *[0-9a-r]+ *$/i, // 28
+    /^ *[0-9a-s]+ *$/i, // 29
+    /^ *[0-9a-t]+ *$/i, // 30
+    /^ *[0-9a-u]+ *$/i, // 31
+    /^ *[0-9a-v]+ *$/i, // 32
+    /^ *[0-9a-w]+ *$/i, // 33
+    /^ *[0-9a-x]+ *$/i, // 34
+    /^ *[0-9a-y]+ *$/i, // 35
+    /^ *[0-9a-z]+ *$/i, // 36
+];
+
 (function(){
     /* XXX do not convert to @{{int}} - this is correct */
     var $int = pyjslib['int'] = function (value, radix) {
@@ -1735,7 +1783,12 @@ JS("""
             if (radix === null) {
                 radix = 10;
             }
-            v = parseInt(value, radix);
+            if (value.match($radix_regex[radix]) === null) {
+                value = value.lstrip();
+                v = NaN;
+            } else {
+                v = parseInt(value, radix);
+            }
         } else {
             throw @{{TypeError}}("TypeError: int() argument must be a string or a number");
         }

@@ -15,7 +15,7 @@
 from pyjamas import Window
 from pyjamas.webio import json, utf8, READYSTATE
 from pyjamas.webio.protocols.multiplexing import getMultiplexer, releaseMultiplexer
-
+import urlparse
 
 class TCPSocket(object):
     _serverUri=None

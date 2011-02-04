@@ -17,6 +17,7 @@ from DictTest import DictTest
 from BuiltinTest import BuiltinTest
 from GeneratorTest import GeneratorTest
 from LongTest import LongTest
+
 import CompileTest
 if 1L << 31 > 0:
     has_long_type = True

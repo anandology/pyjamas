@@ -107,7 +107,7 @@ class DisclosurePanel(Composite):
         if len(args) == 2:
             header, isOpen = args[:2]
         # apparently "basestring" is not understood
-        if isinstance(header, str):
+        if isinstance(header, basestring):
             headerText = header
         else:
             headerWidget = header

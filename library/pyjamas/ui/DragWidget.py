@@ -63,6 +63,8 @@ class MouseDragContainer(Widget, MouseHandler, DragHandler):
             Widget.__init__(self, **kw)
         MouseHandler.__init__(self)
         self.addMouseListener(DNDHelper.dndHelper)
+        DragHandler.__init__(self)
+        self.addDragListener(self)
 
 
 class Html5DragWidget(Html5DragContainer, Draggable):

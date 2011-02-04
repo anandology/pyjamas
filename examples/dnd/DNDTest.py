@@ -766,6 +766,7 @@ class StudentContainer(DropWidget, VerticalPanel):
                     DOM.eventPreventDefault(event)
                 else:
                     self.addMessage('student could not be added')
+                    DOM.eventCancelEvent(event)
         except:
             self.addMessage('unsupported data type for drop')
 

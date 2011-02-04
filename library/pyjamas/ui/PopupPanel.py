@@ -166,6 +166,19 @@ class PopupPanel(SimplePanel):
         self.popupListeners.remove(listener)
 
     def setPopupPosition(self, left, top):
+        if isinstance(left, basestring):
+            if left.endswith('%'):
+                left = int(left[:-1])
+                left = int(left * Window.getClientWidth() / 100)
+            elif left.lower().endswith('px'):
+                left = int(left[:-2])
+        if isinstance(top, basestring):
+            if top.lower().endswith('%'):
+                top = int(top[:-1])
+                top = int(top * Window.getClientHeight() / 100)
+            elif top.endswith('px'):
+                top = int(top[:-2])
+
         left = max(left, 0)
         top = max(top, 0)
 

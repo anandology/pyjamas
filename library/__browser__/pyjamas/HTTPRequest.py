@@ -57,7 +57,7 @@ class HTTPRequest:
         try:
             xmlHttp.open(method, url, True);
             for h in headers:
-                if isinstance(headers[h], str):
+                if isinstance(headers[h], basestring):
                     xmlHttp.setRequestHeader(h, str(headers[h]))
                 else:
                     hval = ';'.join([str(i) for i in headers[h]])

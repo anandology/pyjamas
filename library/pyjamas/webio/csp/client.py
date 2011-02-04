@@ -17,8 +17,8 @@
 
 import base64
 from pyjamas.Timer import Timer
-from webio import errors
-from webio import json, logger
+from pyjamas.webio import errors
+from pyjamas.webio import json, logger
 import transports
 
 class READYSTATE(object):

@@ -97,7 +97,7 @@ class UIObject(Applier):
             getStyleAttribute(self, (attr1,attr2,...)) - returns dictionary
                                                          of attr:value pairs
         """
-        if isinstance(attribute, str):
+        if isinstance(attribute, basestring):
             return DOM.getStyleAttribute(self.getElement(), attribute)
         # if attribute is not a string, assume it is iterable,
         # and return the multi-attribute form

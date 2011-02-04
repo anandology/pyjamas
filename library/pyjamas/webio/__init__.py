@@ -15,8 +15,12 @@
 # basics for webio
 
 from pyjamas.JSONParser import JSONParser
-from pyjamas import Window
+from pyjamas import Window, DOM
 import logging
+from __pyjamas__ import doc, wnd
+from urlparse import urlparse
+#import utf8
+#import components.csp.Connector
 
 logger = logging.getLogger('webio')
 json = JSONParser()
@@ -28,14 +32,50 @@ class READYSTATE(object):
     CLOSING = 2
     CLOSED = 3
 
+baseUri = None
+
+defaultServerUri = None
+
 #ctx = webio.__env.global
 def getBaseUri():
-    baseUri = Window.getLocation().getHref()
+    if baseUri is not None:
+        return baseUri
+    global defaultServerUri
+    global baseUri
+    baseUri = urlparse(Window.getLocation().getHref())
+    scripts = doc().getElementsByTagName('script')
+    match_string = 'bootstrap.js'
+    for scripttag in scripts:
+        src = DOM.getAttribute(scripttag, 'src')
+        if src.endswith(match_string):
+            found = True
+            uri = urlparse(src[src.find(match_string)])
+            if uri.scheme:
+                scheme = uri.scheme
+            else:
+                scheme = baseUri.scheme
+            if uri.netloc:
+                netloc = uri.netloc
+            else:
+                netloc = baseUri.netloc
+            if uri.path:
+                path = uri.path
+            else:
+                path = baseUri.path
+
+
+
+            defaultServerUri = uri.geturl()
+
+
+
     z = baseUri.split('/')
     z = '/'.join(z[:-2]) + '/'
     while not z.endswith('/'):
         z += '/'
     return z
+
+#wnd().addEventListener('onload', getBaseUri)
 
 def getObj(objectName, transportName):
     try:

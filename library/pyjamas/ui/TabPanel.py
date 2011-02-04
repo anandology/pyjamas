@@ -99,7 +99,7 @@ class TabPanel(PanelBase, Composite):
             or by name (string).  if by name, the name has to be one
             which was given to add or insert
         """
-        if isinstance(widget, str):
+        if isinstance(widget, basestring):
             widget = self.tab_names[widget]
         elif isinstance(widget, int):
             widget = self.getWidget(widget)
@@ -127,7 +127,7 @@ class TabPanel(PanelBase, Composite):
              * by tab name (matching TabPanel.insert name arg if given)
              * or by widget.
         """
-        if isinstance(index, str):
+        if isinstance(index, basestring):
             index = self.tab_names[index]
         if not isinstance(index, int):
             index = self.getWidgetIndex(index)

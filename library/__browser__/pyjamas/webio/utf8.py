@@ -36,6 +36,9 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 
+class UnicodeCodecError(Exception):
+    pass
+
 def encode(unicode_string):
     """
     Unicode encoder: Given an arbitrary unicode string, returns a string

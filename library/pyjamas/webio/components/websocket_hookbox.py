@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyjamas.webio import interfaces, errors, utf8
+from pyjamas.webio import interfaces, errors, utf8, logger
 from __pyjamas__ import wnd
 
 class Connector(interfaces.Connector):

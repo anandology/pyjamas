@@ -12,9 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from rtjp import RtjpProtocol
+from pyjamas.webio.protocols.rtjp import RtjpProtocol
 from __pyjamas__ import doc
-from webio import connect as jsioConnect
+from pyjamas.webio import connect as jsioConnect
+from pyjamas.webio import json, logger
 
 def connect(url, cookieString):
     if not url.endswith('/'):
@@ -26,8 +27,71 @@ def connect(url, cookieString):
     p.connectionLost = connectionLost
     return p
 
-class HookBoxProtocol(RtjpProtocol):
 
+class Subscription(object):
+    def __init__(self, conn, args):
+        self.channelName = args['channel_name']
+        self.history = args['history']
+        self.historySize = args['history_size']
+        self.state = args['state']
+        self.presence = args['presence']
+        self.canceled = False
+        def publish(data):
+            conn.publish(self.channelName, data)
+        self.publish = publish
+
+    def onPublish(self, frame):
+        pass
+
+    def onSubscribe(self, frame):
+        pass
+
+    def onUnsubscribe(self, frame):
+        pass
+
+    def onState(self, frame):
+        pass
+
+    def updateHistory(self, name, args):
+        if self.historySize:
+            self.history.append([name, {'user': args['user'],
+                'payload': args['payload']}])
+            while len(self.history) > self.historySize:
+                self.history.pop(0)
+
+    def frame(self, name, args):
+        logger.debug('received frame %s %s' % (name, args))
+        if name == 'PUBLISH':
+            self.updateHistory(name, args)
+            self.onPublish(args)
+        elif name == 'UNSUBSCRIBE':
+            self.updateHistory(name, args)
+            user = args['user']
+            if user in self.presence:
+                self.presence.remove(user)
+            self.onUnsubscribe(args)
+        elif name == 'SUBSCRIBE':
+            self.updateHistory(name, args)
+            self.presence.append(args['user'])
+            self.onSubscribe(args)
+        elif name == 'STATE_UPDATE':
+            for key in args['deletes']:
+                del self.state[key]
+            for key in args['updates']:
+                self.state[key] = args['updates'][key]
+            self.onState(args)
+
+    def cancel(self):
+        if not self.canceled:
+            logger.debug('calling _onCancel()')
+            self._onCancel()
+
+    def _onCancel(self):
+        pass
+
+
+class HookBoxProtocol(RtjpProtocol):
+    transport=None
     def __init__(self, url, cookieString=None):
         super(HookBoxProtocol, self).__init__('\r\n')
         self.url = url
@@ -126,66 +190,6 @@ class HookBoxProtocol(RtjpProtocol):
     def disconnect(self):
         self.transport.loseConnection()
 
-class Subscription(object):
-    def __init__(self, conn, args):
-        self.channelName = args['channel_name']
-        self.history = args['history']
-        self.historySize = args['history_size']
-        self.state = args['state']
-        self.presence = args['presence']
-        self.canceled = False
-        def publish(data):
-            conn.publish(self.channelName, data)
-        self.publish = publish
-
-    def onPublish(self, args):
-        pass
-
-    def onSubscribe(self, args):
-        pass
-
-    def onUnsubscribe(self, args):
-        pass
-
-    def onState(self, args):
-        pass
-
-    def updateHistory(self, name, args):
-        if self.historySize:
-            self.history.append([name, {'user': args['user'],
-                'payload': args['payload']}])
-            while len(self.history) > self.historySize:
-                self.history.pop(0)
-
-    def frame(self, name, args):
-        logger.debug('received frame %s %s' % (name, args))
-        if name == 'PUBLISH':
-            self.updateHistory(name, args)
-            self.onPublish(args)
-        elif name == 'UNSUBSCRIBE':
-            self.updateHistory(name, args)
-            user = args['user']
-            if user in self.presence:
-                self.presence.remove(user)
-            self.onUnsubscribe(args)
-        elif name == 'SUBSCRIBE':
-            self.updateHistory(name, args)
-            self.presence.append(args['user'])
-            self.onSubscribe(args)
-        elif name == 'STATE_UPDATE':
-            for key in args['deletes']:
-                del self.state[key]
-            for key in args['updates']:
-                self.state[key] = args['updates'][key]
-            self.onState(args)
-
-    def cancel(self):
-        if not self.canceled:
-            logger.debug('calling _onCancel()')
-            self._onCancel()
-
-    def _onCancel(self):
-        pass
 
 
 

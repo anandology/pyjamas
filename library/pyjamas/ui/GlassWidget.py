@@ -30,6 +30,11 @@ def getMouseCapturer(**kwargs):
     global mousecapturer
     if mousecapturer is None:
         mousecapturer = GlassWidget(**kwargs)
+    # if mousecapturer has been overloaded with something
+    # other than a GlassWidget (as in IE override)
+    # just return None
+    elif not isinstance(mousecapturer, GlassWidget):
+        return None
     return mousecapturer
 
 

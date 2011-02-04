@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from webio.net import Protocol
-from webio import logger
+from pyjamas.webio.interfaces import Protocol
+from pyjamas.webio import logger
 
 
 class DelimitedProtocol(Protocol):
@@ -33,7 +33,7 @@ class DelimitedProtocol(Protocol):
         self.buffer += data
         while self.delimiter in self.buffer:
             idx = self.buffer.find(self.delimiter)
-            line  = self.buffer[0,idx]
+            line  = self.buffer[0:idx]
             self.buffer = self.buffer[idx+len(self.delimiter):]
             self.lineReceived(line)
 

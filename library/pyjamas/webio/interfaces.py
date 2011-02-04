@@ -57,24 +57,24 @@ class Transport(object):
         return self._encoding
 
 
-#class Listener(object):
-#    def __init__(self, server, opts):
-#        self._server = server
-#        self.__opts = opts
-#
-#    def onConnect(self, transport):
-#        p = self._server.buildProtocol()
-#        p.transport = transport
-#        p.server = self._server
-#        transport.protocol = p
-#        transport.makeConnection(p)
-#        p.connectionMade()
-#
-#    def listen(self):
-#        raise NotImplementedError()
-#
-#    def stop(self):
-#        pass
+class Listener(object):
+    def __init__(self, server, opts):
+        self._server = server
+        self.__opts = opts
+
+    def onConnect(self, transport):
+        p = self._server.buildProtocol()
+        p.transport = transport
+        p.server = self._server
+        transport.protocol = p
+        transport.makeConnection(p)
+        p.connectionMade()
+
+    def listen(self):
+        raise NotImplementedError()
+
+    def stop(self):
+        pass
 
 
 class STATE(object):

@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from delimited import DelimitedProtocol
-from webio import json, logger
+from pyjamas.webio import json, logger
 
 class RtjpProtocol(DelimitedProtocol):
     def __init__(self):

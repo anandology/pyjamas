@@ -76,6 +76,20 @@ class BuiltinTest(UnitTest):
         self.assertEqual(int("5"), 5)
         self.assertEqual(int("09"), 9)
         self.assertEqual(6, 6)
+        self.assertEqual(int("0"), 0)
+        self.assertEqual(int(0), 0)
+
+        try:
+            int('')
+            self.fail("No int() argument error raised: int('')")
+        except ValueError, e:
+            self.assertEqual(e[0], "invalid literal for int() with base 10: ''")
+
+        try:
+            int(' ')
+            self.fail("No int() argument error raised: int(' ')")
+        except ValueError, e:
+            self.assertEqual(e[0], "invalid literal for int() with base 10: ''")
 
         try:
             int('not int')
@@ -89,16 +103,36 @@ class BuiltinTest(UnitTest):
         except TypeError, e:
             self.assertEqual(e[0], "int() can't convert non-string with explicit base")
 
+        try:
+            int('10px')
+            self.fail("No int() argument error raised: int('10px')")
+        except ValueError, e:
+            self.assertEqual(e[0], "invalid literal for int() with base 10: '10px'")
+
     def testFloat(self):
         self.assertEqual(float("5.1"), 5.1)
         self.assertEqual(float("09"), 9)
         self.assertEqual(6.1, 6.1)
+        self.assertEqual(float("0"), 0)
+        self.assertEqual(float(0), 0)
 
         try:
             float('not float')
-            self.fail("No float() argument error raised")
+            self.fail("No float('not float') argument error raised")
         except ValueError, e:
             self.assertEqual(e[0], "invalid literal for float(): not float")
+
+        try:
+            float('')
+            self.fail("No float('') argument error raised")
+        except ValueError, e:
+            self.assertEqual(e[0], "empty string for float()")
+
+        try:
+            float(' ')
+            self.fail("No float(' ') argument error raised")
+        except ValueError, e:
+            self.assertEqual(e[0], "empty string for float()")
 
         self.assertTrue(isinstance(1.0, float), "1.0 should be instance of float")
 

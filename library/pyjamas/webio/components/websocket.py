@@ -34,13 +34,13 @@ class WebSocket(object):
 
 
 
-def validateOpts(opts):
-    pv = opts.get('protocolVersion', 'hixie76')
-    opts['protocolVersion'] = pv
-    fv = opts.get('forceProxy', False)
-    opts['forceProxy'] = fv
-    z = s.split('/')
-            self._serverUri = '/'.join(z[:-2]) + '/'
-        while not self._serverUri.endswith('/'):
-            self._serverUri += '/'
-    su = opts.get('serverUri', )
+    def validateOpts(self, opts):
+        pv = opts.get('protocolVersion', 'hixie76')
+        opts['protocolVersion'] = pv
+        fv = opts.get('forceProxy', False)
+        opts['forceProxy'] = fv
+        z = s.split('/')
+                self._serverUri = '/'.join(z[:-2]) + '/'
+            while not self._serverUri.endswith('/'):
+                self._serverUri += '/'
+        su = opts.get('serverUri', )
