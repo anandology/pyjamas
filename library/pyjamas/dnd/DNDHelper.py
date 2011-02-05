@@ -20,7 +20,7 @@ from pyjamas.ui.RootPanel import RootPanel
 from pyjamas.ui import Event
 from pyjamas.Timer import Timer
 from pyjamas.dnd.utils import DraggingWidget, isCanceled, \
-     cloneElement, findDraggable, eventCoordinates, \
+     findDraggable, eventCoordinates, \
      getElementUnderMouse
 from pyjamas.dnd.DataTransfer import DataTransfer, DragDataStore
 from pyjamas.dnd.DragEvent import DragEvent
@@ -206,21 +206,7 @@ class DNDHelper(object):
         elif name == 'drop':
             self.dragDataStore.setMode(READ_ONLY)
         event = self.makeDragEvent(self.mouseEvent, name, target)
-
-        if name == 'dragstart':
-            widget.onDragStart(event)
-        elif name == 'dragover':
-            widget.onDragOver(event)
-        elif name == 'drag':
-            widget.onDrag(event)
-        elif name == 'dragend':
-            widget.onDragEnd(event)
-        elif name == 'drop':
-            widget.onDrop(event)
-        elif name == 'dragleave':
-            widget.onDragLeave(event)
-        elif name == 'dragenter':
-            widget.onDragEnter(event)
+        widget.onBrowserEvent(event)
         self.finalize(event)
         return event
 
