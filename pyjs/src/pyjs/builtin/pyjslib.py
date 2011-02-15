@@ -1135,6 +1135,42 @@ String.prototype.$$split = function(sep, maxsplit) {
     return items;
 };
 
+String.prototype.rsplit = function(sep, maxsplit) {
+    var items=@{{list}}();
+    var do_max=false;
+    var subject=this;
+    var pos=0;
+
+    if (sep === null || typeof sep == 'undefined') {
+        sep=" ";
+        if (subject.length == 0) {
+            return items;
+        }
+        subject=subject.strip();
+        subject=subject.$$replace(/\s+/g, sep);
+    }
+    else if (typeof maxsplit != 'undefined') do_max=true;
+
+    if (subject.length == 0) {
+        items.__array.push('');
+        return items;
+    }
+
+    while (subject.length > 0) {
+        if (do_max && !maxsplit--) break;
+
+        pos=subject.lastIndexOf(sep);
+        if (pos<0) break;
+
+        items.__array.push(subject.substr(pos+sep.lenght));
+        subject = subject.substr(0, pos);
+    }
+    if (subject.length > 0) items.__array.push(subject);
+    items.__array.reverse()
+
+    return items;
+};
+
 if (typeof "a"[0] == 'undefined' ) {
     // IE: cannot do "abc"[idx]
     String.prototype.__iter__ = function() {
