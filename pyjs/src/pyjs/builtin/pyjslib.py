@@ -59,12 +59,14 @@ def _create_class(clsname, bases=None, methods=None):
 
 def type(clsname, bases=None, methods=None):
     if bases is None and methods is None:
-        if hasattr(clsname, '__class__'):
-            return clsname.__class__
+        # First check for str and bool, since these are not implemented 
+        # as real classes, but instances do have a __class__ method
         if isinstance(clsname, str):
             return str
         if isinstance(clsname, bool):
             return bool
+        if hasattr(clsname, '__class__'):
+            return clsname.__class__
         if isinstance(clsname, int):
             return int
         if isinstance(clsname, float):
@@ -1375,12 +1377,12 @@ String.prototype.__name__ = 'str';
 String.prototype.__class__ = String.prototype;
 String.prototype.__is_instance__ = null;
 String.prototype.__str__ = function () {
-    if (typeof this == 'string') return this.toString();
-    return "<type 'str'>";
+    if (typeof this == 'function') return "<type '" + this.__name__ + "'>";
+    return this.toString();
 };
 String.prototype.__repr__ = function () {
-    if (typeof this == 'string') return "'" + this.toString() + "'";
-    return "<type 'str'>";
+    if (typeof this == 'function') return "<type '" + this.__name__ + "'>";
+    return "'" + this.toString() + "'";
 };
 String.prototype.__mro__ = [@{{basestring}}];
 """)
@@ -1392,11 +1394,9 @@ Boolean.prototype.__name__ = 'bool';
 Boolean.prototype.__class__ = Boolean.prototype;
 Boolean.prototype.__is_instance__ = null;
 Boolean.prototype.__str__= function () {
-    if (typeof this == 'string') {
-     	if (this === true) return "True";
-    	return "False";
-    }
-    return "<type 'bool'>";
+    if (typeof this == 'function') return "<type '" + this.__name__ + "'>";
+    if (this == true) return "True";
+    return "False";
 };
 Boolean.prototype.__repr__ = Boolean.prototype.__str__;
 Boolean.prototype.__and__ = function (y) {
@@ -1591,13 +1591,13 @@ Number.prototype.__init__ = function (value, radix) {
 };
 
 Number.prototype.__str__ = function () {
-    if (typeof this == 'number') return this.toString();
-    return "<type 'float'>";
+    if (typeof this == 'function') return "<type '" + this.__name__ + "'>";
+    return this.toString();
 };
 
 Number.prototype.__repr__ = function () {
-    if (typeof this == 'number') return this.toString();
-    return "<type 'float'>";
+    if (typeof this == 'function') return "<type '" + this.__name__ + "'>";
+    return this.toString();
 };
 
 Number.prototype.__nonzero__ = function () {
@@ -1869,13 +1869,15 @@ var $radix_regex = [
     };
 
     $int.__str__ = function () {
-        if (typeof this == 'object' && this.__number__ == 0x02) return this.__v.toString();
-        return "<type 'int'>";
+        if (typeof this == 'function') return "<type '" + this.__name__ + "'>";
+        if (this.__number__ == 0x02) return this.__v.toString();
+        return this.toString();
     };
 
     $int.__repr__ = function () {
-        if (typeof this == 'object' && this.__number__ == 0x02) return this.__v.toString();
-        return "<type 'int'>";
+        if (typeof this == 'function') return "<type '" + this.__name__ + "'>";
+        if (this.__number__ == 0x02) return this.__v.toString();
+        return this.toString();
     };
 
     $int.__nonzero__ = function () {
@@ -2960,10 +2962,12 @@ JS("""
     };
 
     $long.__str__ = function () {
+        if (typeof this == 'function') return "<type '" + this.__name__ + "'>";
         return Format(this, 10, false, false);
     };
 
     $long.__repr__ = function () {
+        if (typeof this == 'function') return "<type '" + this.__name__ + "'>";
         return Format(this, 10, true, false);
     };
 
@@ -5417,27 +5421,21 @@ def get_pyjs_classtype(x):
 def repr(x):
     """ Return the string representation of 'x'.
     """
-    if hasattr(x, '__repr__'):
-        if callable(x):
-            return x.__repr__(x)
-        return x.__repr__()
+    # First some short cuts for speedup
+    # by avoiding function calls
     JS("""
        if (@{{x}}=== null)
            return "None";
 
-       if (@{{x}}=== undefined)
-           return "undefined";
-
        var t = typeof(@{{x}});
 
-        //alert("repr typeof " + t + " : " + xXXX);
+       if (t == "undefined")
+           return "undefined";
 
        if (t == "boolean") {
            if (@{{x}}) return "True";
            return "False";
        }
-       if (t == "function")
-           return "<function " + @{{x}}.toString() + ">";
 
        if (t == "number")
            return @{{x}}.toString();
@@ -5451,8 +5449,14 @@ def repr(x):
            return '"' + s + '"';
        }
 
-       if (t == "undefined")
-           return "undefined";
+""")
+    if hasattr(x, '__repr__'):
+        if callable(x):
+            return x.__repr__(x)
+        return x.__repr__()
+    JS("""
+       if (t == "function")
+           return "<function " + @{{x}}.toString() + ">";
 
        // If we get here, x is an object.  See if it's a Pyjamas class.
 
@@ -5767,8 +5771,8 @@ def hasattr(obj, name):
       ) {
         return false;
     }
-    if (typeof @{{obj}}!= 'object' && typeof @{{obj}}!= 'function')
-        return false;
+    //if (@{{obj}}!= 'object' && typeof @{{obj}}!= 'function')
+    //    return false;
     return true;
     """)
 
