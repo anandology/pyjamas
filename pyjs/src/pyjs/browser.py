@@ -525,6 +525,9 @@ def build_script():
     if options.platforms:
        app_platforms = options.platforms.lower().split(',')
 
+    if options.multi_file and options.compile_inplace:
+        options.compile_inplace = False
+
     runtime_options = []
     runtime_options.append(("arg_ignore", options.function_argument_checking))
     runtime_options.append(("arg_count", options.function_argument_checking))
