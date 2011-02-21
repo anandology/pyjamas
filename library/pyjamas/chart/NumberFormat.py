@@ -6,7 +6,10 @@ class NF:
         """ cheerfully ignore the number format requested
             and just return the number converted to a string
         """
-        return str(num)
+        # To speedup int when not compiled with --number-classes
+        # (or with --strict)
+        from __pyjamas__ import INT
+        return str(INT(num))
 
 def getFormat(fmt):
     return NF(fmt)
