@@ -130,9 +130,6 @@ class HTTPRequest:
             headers["Authorization"] = 'Basic %s' % (base64.b64encode('%s:%s' % (user, pwd)))
 
         mf = get_main_frame()
-        if mf.platform != 'webkit':
-            if postData is not None and not "Content-Length" in headers:
-                headers["Content-Length"] = str(len(postData))
         if content_type is not None:
             headers["Content-Type"] = content_type
         if not "Content-Type" in headers:

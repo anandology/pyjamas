@@ -24,8 +24,6 @@ class HTTPRequest:
             import base64
             headers["Authorization"] = 'Basic %s' % (base64.b64encode('%s:%s' % (user, pwd)))
         
-        if postData is not None and not "Content-Length" in headers:
-            headers["Content-Length"] = str(len(postData))
         if content_type is not None:
             headers["Content-Type"] = content_type
         if not "Content-Type" in headers:
