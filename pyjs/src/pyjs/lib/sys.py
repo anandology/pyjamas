@@ -44,16 +44,12 @@ def exc_clear():
     JS('$pyjs.__last_exception_stack__ = $pyjs.__last_exception__ = null;')
 
 # save_exception_stack is totally javascript, to prevent trackstack pollution
-JS("""@{{!sys}}.save_exception_stack = function (start) {
+JS("""@{{!sys}}._exception_from_trackstack = function (trackstack, start) {
     if (typeof start == 'undefined') {
       start = 0;
     }
-    var save_stack = null;
+    var exception_stack = null;
     var top = null;
-    if ($pyjs.__active_exception_stack__) {
-        $pyjs.__active_exception_stack__.start = start;
-        return $pyjs.__active_exception_stack__;
-    }
     for (var needle=0; needle < $pyjs.trackstack.length; needle++) {
         var t = new Object();
         for (var p in $pyjs.trackstack[needle]) {
@@ -66,23 +62,35 @@ JS("""@{{!sys}}.save_exception_stack = function (start) {
           }
           t.tb_frame = {f_globals: f_globals};
         }
-        if (save_stack == null) {
-          save_stack = top = t;
+        if (exception_stack == null) {
+            exception_stack = top = t;
         } else {
           top.tb_next = t;
         }
         top = t;
     }
     top.tb_next = null;
-    save_stack.start = start;
-    $pyjs.__active_exception_stack__ = save_stack;
+    exception_stack.start = start;
+    return exception_stack;
+};""")
+
+JS("""@{{!sys}}.save_exception_stack = function (start) {
+    if ($pyjs.__active_exception_stack__) {
+        $pyjs.__active_exception_stack__.start = start;
+        return $pyjs.__active_exception_stack__;
+    }
+    $pyjs.__active_exception_stack__ = @{{!sys}}._exception_from_trackstack($pyjs.trackstack, start);
     return $pyjs.__active_exception_stack__;
 };""")
 
 def trackstacklist(stack=None, limit=None):
     if stack is None:
         stack = JS('$pyjs.__active_exception_stack__')
-    if not stack:
+    else:
+        import pyjslib
+        if pyjslib.isArray(stack):
+            stack = _exception_from_trackstack(stack)
+    if stack is None:
         return ''
     stackstrings = []
     msg = ''
@@ -90,6 +98,7 @@ def trackstacklist(stack=None, limit=None):
         limit = -1
     while stack and limit:
         JS("@{{msg}} = $pyjs.loaded_modules[@{{stack}}.module]['__track_lines__'][@{{stack}}['lineno']];")
+        JS("if (typeof @{{msg}} == 'undefined') @{{msg}} = null;")
         if msg:
             stackstrings.append(msg + '\n')
         else:
