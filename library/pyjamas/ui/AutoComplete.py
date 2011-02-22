@@ -65,7 +65,7 @@ class AutoCompleteTextBox(TextBox):
             selectedIndex = self.choices.getSelectedIndex()
             selectedIndex -= 1
             if selectedIndex < 0:
-                selectedIndex = self.choices.getItemCount()
+                selectedIndex = self.choices.getItemCount() - 1
             self.choices.setSelectedIndex(selectedIndex)
             return
 
