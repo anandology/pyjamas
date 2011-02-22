@@ -5407,20 +5407,24 @@ def __setslice(object, lower, upper, value):
     return null;
     """)
 
-def str(text):
-    JS("""
-    if (@{{text}}=== null) {
-        return "None";
-    }
-    if (typeof @{{text}}== 'boolean') {
-        if (@{{text}}) return "True";
-        return "False";
-    }
-    if (@{{hasattr}}(@{{text}},"__str__")) {
-        return @{{text}}.__str__();
-    }
-    return String(@{{text}});
-    """)
+class str(basestring):
+    def __new__(self, text=''):
+        JS("""
+        if (@{{text}}==='') {
+            return @{{text}};
+        }
+        if (@{{text}}===null) {
+            return 'None';
+        }
+        if (typeof @{{text}}=='boolean') {
+            if (@{{text}}) return 'True';
+            return 'False';
+        }
+        if (@{{hasattr}}(@{{text}},'__str__')) {
+            return @{{text}}.__str__();
+        }
+        return String(@{{text}});
+""")
 
 def ord(x):
     if(JS("typeof @{{x}}== 'string'") and len(x) is 1):
