@@ -310,6 +310,7 @@ PYJSLIB_BUILTIN_FUNCTIONS=frozenset((
     "op_usub",
     "op_mul",
     "op_div",
+    "op_truediv",
     "op_pow",
     "op_invert",
     "op_bitshiftleft",
@@ -633,6 +634,15 @@ def JS(content, unescape, **kwargs):
 
 __pyjamas__ = __Pyjamas__()
 
+
+class __Future__(object):
+
+    def division(self, translator):
+        translator.future_division = True
+
+__future__ = __Future__()
+
+
 # This is taken from the django project.
 # Escape every ASCII character with a value less than 32.
 JS_ESCAPES = (
@@ -796,6 +806,8 @@ class Translator(object):
         self.number_classes = number_classes
         if self.number_classes:
             self.operator_funcs = True
+
+        self.future_division = False
 
         self.imported_modules = []
         self.imported_js = []
@@ -2077,6 +2089,15 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             for name in node.names:
                 ass_name = name[1] or name[0]
                 self.add_lookup("__javascript__", ass_name, ass_name)
+            return
+        if node.modname == '__future__':
+            for name in node.names:
+                future = getattr(__future__, name[0], None)
+                if callable(future):
+                    future(self)
+                else:
+                    # Ignoring from __future__ import name[0]
+                    pass
             return
         # XXX: hack for in-function checking, we should have another
         # object to check our scope
@@ -3821,9 +3842,11 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.add_lookup('variable', v1, v1)
         self.add_lookup('variable', v2, v2)
         s = self.spacing()
+        op_div = 'op_div' if self.future_division else 'op_div'
+        op_div = 'op_truediv' if self.future_division else 'op_div'
         return """(typeof (%(v1)s=%(e1)s)==typeof (%(v2)s=%(e2)s) && typeof %(v1)s=='number' && %(v2)s !== 0?
 %(s)s\t%(v1)s/%(v2)s:
-%(s)s\t@{{op_div}}(%(v1)s,%(v2)s))""" % locals()
+%(s)s\t@{{%(op_div)s}}(%(v1)s,%(v2)s))""" % locals()
 
     def _mul(self, node, current_klass):
         if not self.operator_funcs:

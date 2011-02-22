@@ -377,6 +377,41 @@ def op_div(x, y):
 """)
     raise TypeError("unsupported operand type(s) for /: '%r', '%r'" % (x, y))
 
+def op_truediv(x, y):
+    JS("""
+    if (@{{x}} !== null && @{{y}} !== null) {
+        switch ((@{{x}}.__number__ << 8) | @{{y}}.__number__) {
+            case 0x0101:
+            case 0x0104:
+            case 0x0401:
+            case 0x0204:
+            case 0x0402:
+            case 0x0404:
+                if (@{{y}} == 0) throw @{{ZeroDivisionError}}('float divmod()');
+                return @{{x}} / @{{y}};
+            case 0x0102:
+                if (@{{y}}.__v == 0) throw @{{ZeroDivisionError}}('float divmod()');
+                return @{{x}} / @{{y}}.__v;
+            case 0x0201:
+                if (@{{y}} == 0) throw @{{ZeroDivisionError}}('float divmod()');
+                return @{{x}}.__v / @{{y}};
+            case 0x0202:
+                if (@{{y}}.__v == 0) throw @{{ZeroDivisionError}}('float divmod()');
+                return @{{x}}.__v / @{{y}}.__v;
+        }
+        if (!@{{x}}.__number__) {
+            if (   !@{{y}}.__number__
+                && @{{x}}.__mro__.length > @{{y}}.__mro__.length
+                && @{{isinstance}}(@{{x}}, @{{y}})
+                && typeof @{{x}}['__truediv__'] == 'function')
+                return @{{y}}.__truediv__(@{{x}});
+            if (typeof @{{x}}['__truediv__'] == 'function') return @{{x}}.__truediv__(@{{y}});
+        }
+        if (!@{{y}}.__number__ && typeof @{{y}}['__rtruediv__'] == 'function') return @{{y}}.__rtruediv__(@{{x}});
+    }
+""")
+    raise TypeError("unsupported operand type(s) for /: '%r', '%r'" % (x, y))
+
 def op_mul(x, y):
     JS("""
     if (@{{x}} !== null && @{{y}} !== null) {
