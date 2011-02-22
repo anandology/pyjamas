@@ -14,7 +14,7 @@ class SinkList(Composite):
 
     def addSink(self, info):
         name = info.getName()
-        link = Hyperlink(name, False, name)
+        link = Hyperlink(name, False, TargetHistoryToken=name)
         link.setStyleName("ks-SinkItem")
         self.vp_list.add(link)
         self.sinks.append(info)
