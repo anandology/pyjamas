@@ -13,27 +13,24 @@ def getCookie(cookie_name):
 # expires can be int or Date
 def setCookie(name, value, expires, domain=None, path=None, secure=False):
     JS("""
-    var expires = @{{_expires}};
-    var domain = @{{_domain}};
-    var path = @{{_path}};
-    var secure = @{{_secure}};
-    if (expires instanceof Date) expires = expires.getTime();
-    if (@{{isUndefined}}(domain)) domain = null;
-    if (@{{isUndefined}}(path)) path = null;
-    if (@{{isUndefined}}(secure)) secure = false;
+    if (@{{expires}} instanceof Date) @{{expires}} = @{{expires}}.getTime();
+    if (@{{isUndefined}}(@{{domain}})) @{{domain}} = null;
+    if (@{{isUndefined}}(@{{path}})) @{{path}} = null;
+    if (@{{isUndefined}}(@{{secure}})) @{{secure}} = false;
     
     var today = new Date();
     var expiration = new Date();
-	expiration.setTime(today.getTime() + expires)
+    if (!@{{expires}}) @{{expires}} = 0;
+    expiration.setTime(today.getTime() + @{{expires}});
 
     var c = encodeURIComponent(@{{name}}) + '=' + encodeURIComponent(@{{value}});
     c += ';expires=' + expiration.toGMTString();
 
-    if (domain)
-        c += ';domain=' + domain;
-    if (path)
-        c += ';path=' + path;
-    if (secure)
+    if (@{{domain}})
+        c += ';domain=' + @{{domain}};
+    if (@{{path}})
+        c += ';path=' + @{{path}};
+    if (@{{secure}})
         c += ';secure';
 
     $doc.cookie = c;
