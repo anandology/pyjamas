@@ -294,7 +294,8 @@ class HTMLTable(Panel):
     def getEventTargetCell(self, event):
         td = DOM.eventGetTarget(event)
         while td is not None:
-            if DOM.getAttribute(td, "tagName").lower() == "td":
+            tagName = DOM.getAttribute(td, "tagName")
+            if tagName is not None and tagName.lower() == "td":
                 tr = DOM.getParent(td)
                 body = DOM.getParent(tr)
                 if DOM.compare(body, self.bodyElem):
