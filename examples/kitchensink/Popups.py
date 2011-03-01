@@ -16,10 +16,12 @@ class Popups(Sink):
 
         self.fDialogButton = Button("Show Dialog", self)
         self.fPopupButton = Button("Show Popup", self)
+        self.fMultipleDialogButton = Button("Show muliple dialogs", self)
         
         panel = VerticalPanel()
         panel.add(self.fPopupButton)
         panel.add(self.fDialogButton)
+        panel.add(self.fMultipleDialogButton)
         
         list = ListBox()
         list.setVisibleItemCount(5)
@@ -46,6 +48,12 @@ class Popups(Sink):
             top = self.fDialogButton.getAbsoluteTop() + 10
             dlg.setPopupPosition(left, top)
             dlg.show()
+        elif sender == self.fMultipleDialogButton:
+            dlg = MyDialog(self.baseURL(), True)
+            left = self.fDialogButton.getAbsoluteLeft() + 10
+            top = self.fDialogButton.getAbsoluteTop() + 10
+            dlg.setPopupPosition(left, top)
+            dlg.show()
 
 
 def init():
@@ -64,8 +72,15 @@ def init():
 
 
 class MyDialog(DialogBox):
-    def __init__(self, baseURL):
-        DialogBox.__init__(self, glass=True, Closeable=True)
+    def __init__(self, baseURL, mulitple=False):
+        if not mulitple:
+            DialogBox.__init__(self, glass=True, Closeable=True)
+        else:
+            DialogBox.__init__(
+                self, modal=False, 
+                minimize=True, maximize=True, close=True,
+                captionStyle="WindowCaption",
+            )
         self.setText("Sample DialogBox with embedded Frame")
         
         iframe = Frame(baseURL + "rembrandt/LaMarcheNocturne.html")
