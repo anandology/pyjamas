@@ -44,3 +44,9 @@ def ldexp(x, i):
 
 def log10 (arg):
     return log(arg) / __log10__
+
+def degrees(x):
+    return x * 180 / pi
+
+def radians(x):
+    return x * pi / 180
