@@ -14,7 +14,7 @@ def getCookie(key):
 
 def getCookie2(cookie_name):
     cookiestr = doc().cookie
-    c = SimpleCookie(cookiestr)
+    c = SimpleCookie(str(cookiestr))
     cs = c.get(cookie_name, None)
     print "getCookie2", cookiestr, "name", cookie_name, "val", cs
     if cs:
@@ -24,7 +24,7 @@ def getCookie2(cookie_name):
 # expires can be int or Date
 def setCookie(name, value, expires, domain=None, path=None, secure=False):
     cookiestr = doc().cookie
-    c = SimpleCookie(cookiestr)
+    c = SimpleCookie(str(cookiestr))
     c[name] = value
     m = c[name]
     d = datetime.datetime.now() + datetime.timedelta(0, expires/1000)
