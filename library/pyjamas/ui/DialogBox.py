@@ -300,7 +300,7 @@ class DialogBox(PopupPanel):
                               absY - self.dragStartY)
 
     def onMouseUp(self, sender, x, y):
-        if self.dragStartX != x and self.dragStartY != y:
+        if self.dragStartX != x or self.dragStartY != y:
             self.onActivate()
         self.endDragging()
 
