@@ -6,6 +6,7 @@ from pyjamas.ui.ListBox import ListBox
 from pyjamas.ui.HTML import HTML
 from pyjamas.ui.DockPanel import DockPanel
 from pyjamas.ui.DialogBox import DialogBox
+from pyjamas.ui.DialogWindow import DialogWindow
 from pyjamas.ui.Frame import Frame
 from pyjamas.ui import HasAlignment
 from pyjamas import DOM
@@ -49,7 +50,7 @@ class Popups(Sink):
             dlg.setPopupPosition(left, top)
             dlg.show()
         elif sender == self.fMultipleDialogButton:
-            dlg = MyDialog(self.baseURL(), True)
+            dlg = MyDialogWindow(self.baseURL())
             left = self.fDialogButton.getAbsoluteLeft() + 10
             top = self.fDialogButton.getAbsoluteTop() + 10
             dlg.setPopupPosition(left, top)
@@ -71,16 +72,9 @@ def init():
     return SinkInfo("Popups", text, Popups)
 
 
-class MyDialog(DialogBox):
-    def __init__(self, baseURL, mulitple=False):
-        if not mulitple:
-            DialogBox.__init__(self, glass=True, Closeable=True)
-        else:
-            DialogBox.__init__(
-                self, modal=False, 
-                minimize=True, maximize=True, close=True,
-                captionStyle="WindowCaption",
-            )
+
+class DialogMixin(object):
+    def __init__(self, baseURL):
         self.setText("Sample DialogBox with embedded Frame")
         
         iframe = Frame(baseURL + "rembrandt/LaMarcheNocturne.html")
@@ -103,6 +97,21 @@ class MyDialog(DialogBox):
 
     def onClick(self, sender):
         self.hide()
+
+
+class MyDialog(DialogBox, DialogMixin):
+    def __init__(self, baseURL):
+        DialogBox.__init__(self, glass=True)
+        DialogMixin.__init__(self, baseURL)
+
+
+class MyDialogWindow(DialogWindow, DialogMixin):
+    def __init__(self, baseURL):
+        DialogWindow.__init__(
+            self, modal=False,
+            minimize=True, maximize=True, close=True,
+        )
+        DialogMixin.__init__(self, baseURL)
 
 
 class MyPopup(PopupPanel):
