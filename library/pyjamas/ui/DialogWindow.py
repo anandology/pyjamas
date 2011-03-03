@@ -67,21 +67,30 @@ class DialogWindow(DialogBox):
             self.caption.setStyleName(captionStyle)
         self.setControls(minimize, maximize, close)
 
+    def createDefaultControl(self, control_type):
+        if control_type == 'minimize':
+            return Button("_")
+        elif control_type == 'maximize':
+            return Button("^")
+        elif control_type == 'close':
+            return Button("X")
+        raise ValueError("Invalid control '%s'" % control_type)
+
     def setControls(self, minimize, maximize, close):
         if minimize is True:
-            self.minimizeWidget = Button("_")
+            self.minimizeWidget = self.createDefaultControl('minimize')
         elif isinstance(minimize, basestring):
             self.minimizeWidget = Image(minimize)
         else:
             self.minimizeWidget = minimize
         if maximize is True:
-            self.maximizeWidget = Button("^")
+            self.maximizeWidget = self.createDefaultControl('maximize')
         elif isinstance(maximize, basestring):
             self.maximizeWidget = Image(maximize)
         else:
             self.maximizeWidget = maximize
         if close is True:
-            self.closeWidget = Button("X")
+            self.closeWidget = self.createDefaultControl('close')
         elif isinstance(close, basestring):
             self.closeWidget = Image(close)
         else:
