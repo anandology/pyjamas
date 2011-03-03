@@ -524,7 +524,7 @@ class __Pyjamas__(object):
                 data = open(node.args[0].value, 'r').read()
             except IOError, e:
                 raise TranslationError(
-                    "Cannot include file '%s': %s" % (node.args[0].value, e))
+                    "Cannot include file '%s': %s" % (node.args[0].value, e), node.node)
             translator.ignore_debug = True
             return data, False
         else:

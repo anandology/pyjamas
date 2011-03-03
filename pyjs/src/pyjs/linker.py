@@ -107,7 +107,7 @@ def out_translate(platform, file_names, out_file, module_name,
         opts = ["--module-name", module_name,
                 "-o", out_file.replace(" ", r"\ "),
                ] + get_translator_opts(translator_args) + file_names
-        opts = [pyjs.PYTHON] + ['translator.py'] + opts
+        opts = [pyjs.PYTHON] + [os.path.join(pydir, 'translator.py')] + opts
         pyjscompile_cmd = ' '.join(opts)
         #print pyjscompile_cmd - use this to create Makefile code-fragment
         proc = subprocess.Popen(pyjscompile_cmd,
@@ -115,7 +115,7 @@ def out_translate(platform, file_names, out_file, module_name,
                            stdout=subprocess.PIPE,
                            stderr=subprocess.PIPE,
                            shell=True,
-                           cwd=pydir,
+                           cwd=os.path.dirname(file_names[0]),
                            env=os.environ
                            )
         stdout_value, stderr_value = proc.communicate('')
