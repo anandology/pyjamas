@@ -15,7 +15,7 @@
 from pyjamas import Factory
 from pyjamas import DOM
 
-from CellPanel import CellPanel
+from pyjamas.ui.CellPanel import CellPanel
 from pyjamas.ui import HasHorizontalAlignment
 from pyjamas.ui import HasVerticalAlignment
 

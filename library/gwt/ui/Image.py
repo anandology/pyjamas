@@ -15,10 +15,10 @@
 from pyjamas import DOM
 from pyjamas import Factory
 
-from Widget import Widget
+from pyjamas.ui.Widget import Widget
 from pyjamas.ui import Event
-from MouseListener import MouseHandler
-from ClickListener import ClickHandler
+from pyjamas.ui.MouseListener import MouseHandler
+from pyjamas.ui.ClickListener import ClickHandler
 
 prefetchImages = {}
 

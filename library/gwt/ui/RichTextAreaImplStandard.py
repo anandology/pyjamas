@@ -20,7 +20,7 @@ from __pyjamas__ import doc, wnd, get_main_frame, JS
 from pyjamas import DOM
 from pyjamas.Timer import Timer
 
-from RichTextAreaImpl import RichTextAreaImpl
+from pyjamas.ui.RichTextAreaImpl import RichTextAreaImpl
 #from pyjamas.ui import FontSize
 #from pyjamas.ui import Justification
 

@@ -15,7 +15,7 @@
 from pyjamas import DOM
 from pyjamas import Factory
 
-from CheckBox import CheckBox
+from pyjamas.ui.CheckBox import CheckBox
 
 class RadioButton(CheckBox):
 

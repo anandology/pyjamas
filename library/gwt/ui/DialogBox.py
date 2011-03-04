@@ -15,9 +15,9 @@
 from pyjamas import DOM
 from pyjamas import Factory
 
-from PopupPanel import PopupPanel
-from HTML import HTML
-from FlexTable import FlexTable
+from pyjamas.ui.PopupPanel import PopupPanel
+from pyjamas.ui.HTML import HTML
+from pyjamas.ui.FlexTable import FlexTable
 from pyjamas.ui import HasHorizontalAlignment
 from pyjamas.ui import HasVerticalAlignment
 from pyjamas.ui import GlassWidget

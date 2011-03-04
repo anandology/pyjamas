@@ -15,7 +15,7 @@
 from pyjamas import DOM
 from pyjamas import Factory
 
-from Label import Label
+from pyjamas.ui.Label import Label
 from pyjamas.ui import Event
 from pyjamas.ui.InnerHTML import InnerHTML
 from pyjamas.ui.Widget import Widget

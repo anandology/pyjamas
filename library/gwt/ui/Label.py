@@ -16,9 +16,9 @@ from pyjamas import DOM
 from pyjamas import Factory
 from pyjamas.ui.InnerText import InnerText
 
-from Widget import Widget
-from MouseListener import MouseHandler
-from ClickListener import ClickHandler
+from pyjamas.ui.Widget import Widget
+from pyjamas.ui.MouseListener import MouseHandler
+from pyjamas.ui.ClickListener import ClickHandler
 
 class Label(Widget, MouseHandler, ClickHandler, InnerText):
 

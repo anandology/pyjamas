@@ -16,7 +16,7 @@ from __pyjamas__ import console
 from pyjamas import Factory
 from pyjamas import DOM
 
-from Widget import Widget
+from pyjamas.ui.Widget import Widget
 
 class Hidden(Widget):
 

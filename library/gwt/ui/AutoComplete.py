@@ -8,12 +8,12 @@
 # TODO: textarea autocomplete
 # http://gwt.components.googlepages.com/auto-completiontextbox
 
-from TextBox import TextBox
+from pyjamas.ui.TextBox import TextBox
 from pyjamas import Factory
-from PopupPanel import PopupPanel
-from ListBox import ListBox
+from pyjamas.ui.PopupPanel import PopupPanel
+from pyjamas.ui.ListBox import ListBox
 from pyjamas.ui import KeyboardListener
-from RootPanel import RootPanel
+from pyjamas.ui.RootPanel import RootPanel
 
 class AutoCompleteTextBox(TextBox):
     def __init__(self, **kwargs):

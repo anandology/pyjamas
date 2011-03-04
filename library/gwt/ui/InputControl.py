@@ -16,8 +16,8 @@
 from pyjamas import Factory
 from pyjamas import DOM
 from pyjamas.ui import KeyboardListener
-from TextBox import TextBox
-from Control import Control
+from pyjamas.ui.TextBox import TextBox
+from pyjamas.ui.Control import Control
 
 
 class InputControl(Control):

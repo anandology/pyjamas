@@ -17,8 +17,8 @@ from pyjamas import Factory
 import math
 from pyjamas import DOM
 from pyjamas import Window
-from FocusWidget import FocusWidget
-from MouseListener import MouseHandler, MouseWheelHandler
+from pyjamas.ui.FocusWidget import FocusWidget
+from pyjamas.ui.MouseListener import MouseHandler, MouseWheelHandler
 from pyjamas.ui import KeyboardListener
 from pyjamas.ui import GlassWidget
 

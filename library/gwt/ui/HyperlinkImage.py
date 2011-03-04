@@ -2,9 +2,9 @@
 # Copyright (C) 2009 Yit Choong (http://code.google.com/u/yitchoong/)
 # Copyright (C) 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
 
-from Hyperlink import Hyperlink
+from pyjamas.ui.Hyperlink import Hyperlink
 from pyjamas import Factory
-from Image import Image
+from pyjamas.ui.Image import Image
 from pyjamas import DOM
 from pyjamas.ui import Event
 from pyjamas.ui import MouseListener

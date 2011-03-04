@@ -17,7 +17,7 @@
 from pyjamas import Factory
 from pyjamas import DOM
 from pyjamas.ui import Focus
-from Control import Control
+from pyjamas.ui.Control import Control
 
 
 class VerticalSlider(Control):

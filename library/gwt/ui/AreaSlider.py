@@ -16,7 +16,7 @@
 from pyjamas import Factory
 from pyjamas import DOM
 from pyjamas.ui import Focus
-from DoubleControl import DoubleControl
+from pyjamas.ui.DoubleControl import DoubleControl
 
 
 class AreaSlider(DoubleControl):

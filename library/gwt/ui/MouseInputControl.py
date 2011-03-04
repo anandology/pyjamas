@@ -16,7 +16,7 @@
 from pyjamas import Factory
 from pyjamas import DOM
 from pyjamas.ui import MouseListener
-from InputControl import InputControl
+from pyjamas.ui.InputControl import InputControl
 
 
 class MouseInputControl(InputControl):

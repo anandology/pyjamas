@@ -15,9 +15,9 @@
 from pyjamas import DOM
 from pyjamas import Factory
 
-from HTMLTable import HTMLTable
-from CellFormatter import CellFormatter
-from RowFormatter import RowFormatter
+from pyjamas.ui.HTMLTable import HTMLTable
+from pyjamas.ui.CellFormatter import CellFormatter
+from pyjamas.ui.RowFormatter import RowFormatter
 
 class Grid(HTMLTable):
 

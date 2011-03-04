@@ -14,7 +14,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-from CustomButton import CustomButton
+from pyjamas.ui.CustomButton import CustomButton
 from pyjamas import Factory
 
 class PushButton (CustomButton):

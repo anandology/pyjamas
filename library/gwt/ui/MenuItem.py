@@ -15,7 +15,7 @@
 from pyjamas import DOM
 from pyjamas import Factory
 
-from UIObject import UIObject
+from pyjamas.ui.UIObject import UIObject
 from pyjamas.ui import Event
 from pyjamas.ui.InnerHTML import InnerHTML
 from pyjamas.ui.InnerText import InnerText

@@ -13,11 +13,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from Composite import Composite
+from pyjamas.ui.Composite import Composite
 from pyjamas import Factory
-from Widget import Widget
-from SimplePanel import SimplePanel
-from VerticalPanel import VerticalPanel 
+from pyjamas.ui.Widget import Widget
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.VerticalPanel import VerticalPanel 
 from pyjamas.ui import Event
 from pyjamas import DOM
 import pygwt

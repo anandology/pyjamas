@@ -15,10 +15,10 @@
 from __pyjamas__ import JS
 
 
-from Utils import dictToJs
+from pyjamas.gmaps.Utils import dictToJs
 
 
-from DirectionsService import translateDirectionsResults
+from pyjamas.gmaps.DirectionsService import translateDirectionsResults
 
 
 class DirectionsRenderer:

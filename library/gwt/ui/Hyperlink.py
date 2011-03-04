@@ -16,9 +16,9 @@ from pyjamas import DOM
 from pyjamas import Factory
 from pyjamas import History
 
-from Widget import Widget
+from pyjamas.ui.Widget import Widget
 from pyjamas.ui import Event
-from ClickListener import ClickHandler
+from pyjamas.ui.ClickListener import ClickHandler
 
 class Hyperlink(Widget, ClickHandler):
 

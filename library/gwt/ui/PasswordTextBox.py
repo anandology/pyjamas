@@ -15,7 +15,7 @@
 from pyjamas import DOM
 from pyjamas import Factory
 
-from TextBox import TextBox
+from pyjamas.ui.TextBox import TextBox
 
 class PasswordTextBox(TextBox):
     def __init__(self, **ka):

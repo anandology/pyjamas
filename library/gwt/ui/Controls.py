@@ -15,12 +15,12 @@
 
 print "WARNING: Controls.py is deprecated and split into AreaSlider, Control, etc."
 
-from Control import Control
-from DoubleControl import DoubleControl as DControl
-from VerticalSlider import VerticalSlider as VerticalDemoSlider
-from InputControl import InputControl
-from HorizontalSlider import HorizontalSlider as HorizontalDemoSlider
-from AreaSlider import AreaSlider as AreaDemoSlider
+from pyjamas.ui.Control import Control
+from pyjamas.ui.DoubleControl import DoubleControl as DControl
+from pyjamas.ui.VerticalSlider import VerticalSlider as VerticalDemoSlider
+from pyjamas.ui.InputControl import InputControl
+from pyjamas.ui.HorizontalSlider import HorizontalSlider as HorizontalDemoSlider
+from pyjamas.ui.AreaSlider import AreaSlider as AreaDemoSlider
 
 class VerticalDemoSlider2(VerticalDemoSlider):
 

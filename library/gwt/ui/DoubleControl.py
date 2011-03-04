@@ -16,11 +16,11 @@
 from pyjamas import Factory
 import math
 from pyjamas import DOM
-from FocusWidget import FocusWidget
+from pyjamas.ui.FocusWidget import FocusWidget
 from pyjamas.ui import Focus
-from MouseListener import MouseHandler
+from pyjamas.ui.MouseListener import MouseHandler
 from pyjamas.ui import KeyboardListener
-from Control import Control
+from pyjamas.ui.Control import Control
 
 
 class DoubleControl(Control):

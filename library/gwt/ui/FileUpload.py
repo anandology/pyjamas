@@ -15,7 +15,7 @@
 from pyjamas import DOM
 from pyjamas import Factory
 
-from Widget import Widget
+from pyjamas.ui.Widget import Widget
 
 class FileUpload(Widget):
 

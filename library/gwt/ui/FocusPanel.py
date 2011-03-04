@@ -15,14 +15,14 @@
 from pyjamas import DOM
 from pyjamas import Factory
 
-from SimplePanel import SimplePanel
-from Focus import FocusMixin
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.Focus import FocusMixin
 from pyjamas.ui import Focus
 
-from ClickListener import ClickHandler
-from KeyboardListener import KeyboardHandler
-from FocusListener import FocusHandler
-from MouseListener import MouseHandler
+from pyjamas.ui.ClickListener import ClickHandler
+from pyjamas.ui.KeyboardListener import KeyboardHandler
+from pyjamas.ui.FocusListener import FocusHandler
+from pyjamas.ui.MouseListener import MouseHandler
 
 class FocusPanel(SimplePanel, FocusHandler, KeyboardHandler,
                           MouseHandler, ClickHandler,

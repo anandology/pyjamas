@@ -2,10 +2,10 @@
 # Ported by Willie Gollino from Tooltip component for GWT - Originally by Alexei Sokolov http://gwt.components.googlepages.com/
 # Copyright (C) 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
 
-from PopupPanel import PopupPanel
+from pyjamas.ui.PopupPanel import PopupPanel
 from pyjamas import Factory
-from HTML import HTML
-from RootPanel import RootPanel
+from pyjamas.ui.HTML import HTML
+from pyjamas.ui.RootPanel import RootPanel
 from pyjamas.Timer import Timer
 
 tooltip_hide_timer = None

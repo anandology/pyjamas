@@ -16,7 +16,7 @@ from __pyjamas__ import console
 from pyjamas import Factory
 from pyjamas import DOM
 
-from ComplexPanel import ComplexPanel
+from pyjamas.ui.ComplexPanel import ComplexPanel
 
 class AbsolutePanel(ComplexPanel):
 

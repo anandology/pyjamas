@@ -14,7 +14,7 @@
 # limitations under the License.
 from pyjamas import DOM
 from pyjamas import Factory
-from FocusWidget import FocusWidget
+from pyjamas.ui.FocusWidget import FocusWidget
 from pyjamas.ui.InnerHTML import InnerHTML
 from pyjamas.ui.InnerText import InnerText
 

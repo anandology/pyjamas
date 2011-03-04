@@ -17,8 +17,8 @@ from pyjamas import DOM
 from pyjamas import Window
 from pyjamas import Factory
 from __pyjamas__ import JS, doc
-from SimplePanel import SimplePanel
-from RootPanel import RootPanel
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.RootPanel import RootPanel
 from pyjamas.ui import MouseListener
 from pyjamas.ui import KeyboardListener
 

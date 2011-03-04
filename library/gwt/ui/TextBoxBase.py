@@ -15,7 +15,7 @@
 from pyjamas import DOM
 from pyjamas import Factory
 from __pyjamas__ import console, JS
-from FocusWidget import FocusWidget
+from pyjamas.ui.FocusWidget import FocusWidget
 from pyjamas.ui import Event
 
 class TextBoxBase(FocusWidget):

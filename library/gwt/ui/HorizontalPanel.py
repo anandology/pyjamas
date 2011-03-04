@@ -15,7 +15,7 @@
 from pyjamas import DOM
 from pyjamas import Factory
 
-from CellPanel import CellPanel
+from pyjamas.ui.CellPanel import CellPanel
 
 
 class HorizontalPanel(CellPanel):

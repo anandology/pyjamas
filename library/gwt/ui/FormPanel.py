@@ -18,9 +18,9 @@ import pyjd
 if pyjd.is_desktop:
     from __pyjamas__ import get_main_frame
 
-from SimplePanel import SimplePanel
+from pyjamas.ui.SimplePanel import SimplePanel
 from pyjamas.ui import Event
-from EventObject import EventObject
+from pyjamas.ui.EventObject import EventObject
 
 class FormSubmitEvent(EventObject):
     def __init__(self, source):

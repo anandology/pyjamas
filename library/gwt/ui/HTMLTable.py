@@ -23,10 +23,10 @@
 from pyjamas import DOM
 from pyjamas import Factory
 
-from Panel import Panel
+from pyjamas.ui.Panel import Panel
 from pyjamas.ui import Event
-from CellFormatter import CellFormatter
-from RowFormatter import RowFormatter
+from pyjamas.ui.CellFormatter import CellFormatter
+from pyjamas.ui.RowFormatter import RowFormatter
 
 widgethash = {}
 

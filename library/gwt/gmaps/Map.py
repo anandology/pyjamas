@@ -14,7 +14,7 @@
 
 from __pyjamas__ import JS
 
-from Utils import dictToJs, createListenerMethods
+from pyjamas.gmaps.Utils import dictToJs, createListenerMethods
 
 ### GOOGLE MAPS WRAPPERS ###
 MapTypeId = JS("$wnd.google.maps.MapTypeId")

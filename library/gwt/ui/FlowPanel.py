@@ -16,7 +16,7 @@
 from pyjamas import DOM
 from pyjamas import Factory
 
-from ComplexPanel import ComplexPanel
+from pyjamas.ui.ComplexPanel import ComplexPanel
 
 class FlowPanel(ComplexPanel):
     def __init__(self, **kwargs):

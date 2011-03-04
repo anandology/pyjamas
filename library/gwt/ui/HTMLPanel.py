@@ -16,7 +16,7 @@ from pyjamas import DOM
 from pyjamas import Factory
 from pyjamas.ui.InnerHTML import InnerHTML
 
-from ComplexPanel import ComplexPanel
+from pyjamas.ui.ComplexPanel import ComplexPanel
 
 HTMLPanel_sUid = 0
 

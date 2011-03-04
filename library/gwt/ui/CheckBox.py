@@ -15,7 +15,7 @@
 from pyjamas import DOM
 from pyjamas import Factory
 
-from ButtonBase import ButtonBase
+from pyjamas.ui.ButtonBase import ButtonBase
 from pyjamas.ui import Event
 from pyjamas.ui import Focus
 

@@ -15,7 +15,7 @@
 
 from pyjamas import Factory
 from pyjamas import DOM
-from VerticalSlider import VerticalSlider
+from pyjamas.ui.VerticalSlider import VerticalSlider
 
 
 class HorizontalSlider(VerticalSlider):

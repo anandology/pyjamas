@@ -16,7 +16,7 @@
 from pyjamas import DOM
 from pyjamas import Factory
 
-from CellPanel import CellPanel
+from pyjamas.ui.CellPanel import CellPanel
 from pyjamas.ui import Event
 
 class StackPanel(CellPanel):

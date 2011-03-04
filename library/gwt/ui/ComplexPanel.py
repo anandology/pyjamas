@@ -15,7 +15,7 @@
 from pyjamas import DOM
 from pyjamas import Factory
 
-from Panel import Panel
+from pyjamas.ui.Panel import Panel
 
 class ComplexPanel(Panel):
     """

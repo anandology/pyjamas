@@ -18,10 +18,10 @@ from pyjamas import DOM
 from pyjamas import Window
 from pyjamas import Factory
 from __pyjamas__ import JS, doc
-from SimplePanel import SimplePanel
-from Widget import Widget
-from MouseListener import MouseHandler
-from RootPanel import RootPanel
+from pyjamas.ui.SimplePanel import SimplePanel
+from pyjamas.ui.Widget import Widget
+from pyjamas.ui.MouseListener import MouseHandler
+from pyjamas.ui.RootPanel import RootPanel
 
 mousecapturer = None
 

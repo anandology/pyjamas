@@ -15,7 +15,7 @@
 from pyjamas import DOM
 from pyjamas import Factory
 
-from TextBoxBase import TextBoxBase
+from pyjamas.ui.TextBoxBase import TextBoxBase
 
 class TextBox(TextBoxBase):
     '''

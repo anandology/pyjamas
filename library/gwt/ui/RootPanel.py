@@ -19,7 +19,7 @@ from pyjamas import Factory
 from pyjamas import DOM
 from pyjamas import Window
 
-from AbsolutePanel import AbsolutePanel
+from pyjamas.ui.AbsolutePanel import AbsolutePanel
 
 rootPanels = {}
 class RootPanelManager(object):

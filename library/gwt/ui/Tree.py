@@ -15,13 +15,13 @@
 from pyjamas import DOM
 from pyjamas import Factory
 from __pyjamas__ import console
-from sets import Set
+from pyjamas.ui.sets import Set
 import pygwt
 
-from Widget import Widget
+from pyjamas.ui.Widget import Widget
 from pyjamas.ui import Event
 from pyjamas.ui import Focus
-from TreeItem import RootTreeItem, TreeItem
+from pyjamas.ui.TreeItem import RootTreeItem, TreeItem
 from pyjamas.ui import MouseListener
 from pyjamas.ui import KeyboardListener
 from pyjamas.ui import FocusListener

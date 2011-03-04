@@ -16,11 +16,11 @@ from pyjamas import DOM
 from pyjamas import Factory
 from __pyjamas__ import console
 
-from Composite import Composite
-from DeckPanel import DeckPanel
-from VerticalPanel import VerticalPanel
-from Panel import PanelBase
-from TabBar import TabBar
+from pyjamas.ui.Composite import Composite
+from pyjamas.ui.DeckPanel import DeckPanel
+from pyjamas.ui.VerticalPanel import VerticalPanel
+from pyjamas.ui.Panel import PanelBase
+from pyjamas.ui.TabBar import TabBar
 
 class TabPanel(PanelBase, Composite):
     def __init__(self, tabBar=None, **kwargs):

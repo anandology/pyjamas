@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from __pyjamas__ import JS
-from Utils import dictToJs, createListenerMethods, listToJs
+from pyjamas.gmaps.Utils import dictToJs, createListenerMethods, listToJs
 
 
 def Polygon(options):

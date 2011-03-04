@@ -22,7 +22,7 @@ if __name__ == '__main__':
 
 from pyjamas import DOM
 from pyjamas.ui.Widget import Widget
-from ClickListener import ClickHandler
+from pyjamas.ui.ClickListener import ClickHandler
 
 class _Attribute(object):
     "Attribute definition class with method set and remove"

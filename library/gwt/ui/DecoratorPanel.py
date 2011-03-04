@@ -2,10 +2,10 @@
 # Copyright (C) 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
 
 from pyjamas import DOM
-from SimplePanel import SimplePanel
+from pyjamas.ui.SimplePanel import SimplePanel
 from pyjamas import Factory
-from TabPanel import TabPanel
-from TabBar import TabBar
+from pyjamas.ui.TabPanel import TabPanel
+from pyjamas.ui.TabBar import TabBar
 
 """
   

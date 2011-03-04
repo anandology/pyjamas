@@ -15,7 +15,7 @@
 from pyjamas import DOM
 from pyjamas import Factory
 
-from SimplePanel import SimplePanel
+from pyjamas.ui.SimplePanel import SimplePanel
 from pyjamas.ui import Event
 
 class ScrollPanel(SimplePanel):

@@ -15,7 +15,7 @@
 from pyjamas import DOM
 from pyjamas import Factory
 
-from ComplexPanel import ComplexPanel
+from pyjamas.ui.ComplexPanel import ComplexPanel
 from pyjamas.ui import HasHorizontalAlignment
 from pyjamas.ui import HasVerticalAlignment
 

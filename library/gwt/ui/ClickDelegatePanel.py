@@ -16,10 +16,10 @@ from pyjamas import DOM
 from pyjamas import Factory
 
 
-from Composite import Composite
+from pyjamas.ui.Composite import Composite
 from pyjamas.ui import Event
 from pyjamas.ui import Focus
-from SimplePanel import SimplePanel
+from pyjamas.ui.SimplePanel import SimplePanel
 from pyjamas.ui import KeyboardListener
 
 class ClickDelegatePanel(Composite):

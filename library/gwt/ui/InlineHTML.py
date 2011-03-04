@@ -14,7 +14,7 @@
 
 from pyjamas import DOM
 from pyjamas import Factory
-from HTML import HTML
+from pyjamas.ui.HTML import HTML
 
 class InlineHTML(HTML):
     '''An HTML, but using <span> instead of <div>'''

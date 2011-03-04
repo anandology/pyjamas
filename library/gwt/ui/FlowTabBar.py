@@ -14,12 +14,12 @@
 # limitations under the License.
 from pyjamas import DOM
 from pyjamas import Factory
-from Composite import Composite
+from pyjamas.ui.Composite import Composite
 from pyjamas.ui import Event
-from HTML import HTML
-from Label import Label
-from FlowPanel import FlowPanel
-from ClickDelegatePanel import ClickDelegatePanel
+from pyjamas.ui.HTML import HTML
+from pyjamas.ui.Label import Label
+from pyjamas.ui.FlowPanel import FlowPanel
+from pyjamas.ui.ClickDelegatePanel import ClickDelegatePanel
 from pyjamas.ui import HasAlignment
 
 class FlowTabBar(Composite):

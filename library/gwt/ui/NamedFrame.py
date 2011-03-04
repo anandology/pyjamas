@@ -15,7 +15,7 @@
 from pyjamas import DOM
 from pyjamas import Factory
 
-from Frame import Frame
+from pyjamas.ui.Frame import Frame
 
 class NamedFrame(Frame):
 

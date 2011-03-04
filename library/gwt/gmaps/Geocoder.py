@@ -15,7 +15,7 @@
 from __pyjamas__ import JS
 from pyjamas.JSONParser import JSONParser
 
-from Utils import translateGmapsObject, dictToJs #, gmapsPyObjectToJs
+from pyjamas.gmaps.Utils import translateGmapsObject, dictToJs #, gmapsPyObjectToJs
 
 
 GeocoderStatus = JS("$wnd.google.maps.GeocoderStatus")

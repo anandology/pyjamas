@@ -16,10 +16,10 @@
 from pyjamas import DOM
 from pyjamas import Factory
 
-from ComplexPanel import ComplexPanel
-from Widget import Widget
-from MouseListener import MouseHandler
-from ClickListener import ClickHandler
+from pyjamas.ui.ComplexPanel import ComplexPanel
+from pyjamas.ui.Widget import Widget
+from pyjamas.ui.MouseListener import MouseHandler
+from pyjamas.ui.ClickListener import ClickHandler
 
 class ImageMap(ComplexPanel):
     """ An imagemap

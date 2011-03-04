@@ -14,7 +14,7 @@
 
 from pyjamas import DOM
 from pyjamas import Factory
-from Label import Label
+from pyjamas.ui.Label import Label
 
 class InlineLabel(Label):
     '''A Label, but using <span> instead of <div>'''
