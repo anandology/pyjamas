@@ -1,0 +1,18 @@
+from gwt.gmaps.DirectionsService import (
+    DirectionsDistance,
+    DirectionsDuration,
+    DirectionsRequest,
+    DirectionsRoute,
+    DirectionsService,
+    DirectionsStatus,
+    DirectionsStep,
+    DirectionsTravelMode,
+    DirectionsTrip,
+    DirectionsUnitSystem,
+    DirectionsWaypoint,
+    dictToJs,
+    directionsResultsFields,
+    translateDirectionsResults,
+    translateGeocoderResult,
+    translateGmapsObject,
+)

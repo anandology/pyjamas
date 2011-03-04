@@ -15,7 +15,7 @@
 from pyjamas import DOM
 from pyjamas import Factory
 from __pyjamas__ import console
-from pyjamas.ui.sets import Set
+from sets import Set
 import pygwt
 
 from pyjamas.ui.Widget import Widget
