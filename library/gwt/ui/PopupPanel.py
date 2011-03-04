@@ -28,24 +28,13 @@ class PopupPanel(SimplePanel):
     _props = [("modal", "Modal", "Modal", None),
             ]
 
-    def __init__(self, autoHide=False, modal=True, rootpanel=None, glass=False,
-                       **kwargs):
+    def __init__(self, autoHide=False, modal=True, **kwargs):
 
         self.popupListeners = []
         self.showing = False
         self.autoHide = autoHide
+        self.glass = None
         kwargs['Modal'] = kwargs.get('Modal', modal)
-
-        self.glass = glass
-        if self.glass:
-            self.glass = DOM.createDiv()
-            if not 'GlassStyleName' in kwargs:
-                kwargs['GlassStyleName'] = "gwt-PopupPanelGlass"
-
-        if rootpanel is None:
-            rootpanel = RootPanel()
-
-        self.rootpanel = rootpanel
 
         if kwargs.has_key('Element'):
             element = kwargs.pop('Element')
@@ -191,9 +180,27 @@ class PopupPanel(SimplePanel):
         DOM.setStyleAttribute(element, "left", "%dpx" % left)
         DOM.setStyleAttribute(element, "top", "%dpx" % top)
 
+    def isGlassEnabled(self):
+        return self.glass is not None
+
+    def setGlassEnabled(self, enabled):
+        if enabled:
+            if self.glass is None:
+                self.glass = DOM.createDiv()
+                self.setGlassStyleName()
+        elif self.glass is not None:
+            self.hideGlass()
+
+    def getGlassElement(self):
+        return self.glass
+
     def setGlassStyleName(self, style="gwt-PopupPanelGlass"):
         if self.glass:
             DOM.setAttribute(self.glass, "className", style)
+
+    def getGlassStyleName(self):
+        if self.glass:
+            return DOM.setAttribute(self.glass, "className")
 
     def setGlassPosition(self):
         top = Window.getScrollTop()
@@ -238,6 +245,10 @@ class PopupPanel(SimplePanel):
 
         self.setPopupPosition(self_left, self_top)
 
+    def center(self):
+        self.centerBox()
+        self.show()
+
     def add(self, widget):
         self.setWidget(widget)
 
@@ -255,5 +266,4 @@ class PopupPanel(SimplePanel):
         self.rootpanel.add(self)
         self.onShowImpl(self.getElement())
 
-Factory.registerClass('pyjamas.ui.PopupPanel', 'PopupPanel', PopupPanel)
-
+Factory.registerClass('gwt.ui.PopupPanel', 'PopupPanel', PopupPanel)

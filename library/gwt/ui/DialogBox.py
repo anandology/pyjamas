@@ -28,8 +28,7 @@ class DialogBox(PopupPanel):
         ("caption", "Caption", "HTML", None),
     ]
 
-    def __init__(self, autoHide=None, modal=True, centered=False,
-                 **kwargs):
+    def __init__(self, autoHide=None, modal=True, **kwargs):
         # Init section
         self.dragging = False
         self.dragStartX = 0
@@ -52,7 +51,6 @@ class DialogBox(PopupPanel):
 
         # Arguments section
         self.modal = modal
-        self.centered = centered
         self.caption = HTML()
         self.panel.setWidget(0, 0, self.caption)
         self.caption.setStyleName("Caption")
@@ -153,12 +151,8 @@ class DialogBox(PopupPanel):
 
     def onWindowResized(self, width, height):
         super(DialogBox, self).onWindowResized(width, height)
-        if self.centered:
-            self.centerBox()
 
     def show(self):
         super(DialogBox, self).show()
-        if self.centered:
-            self.centerBox()
 
-Factory.registerClass('pyjamas.ui.DialogBox', 'DialogBox', DialogBox)
+Factory.registerClass('gwt.ui.DialogBox', 'DialogBox', DialogBox)
