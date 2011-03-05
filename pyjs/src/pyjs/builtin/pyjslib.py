@@ -1054,6 +1054,19 @@ String.prototype.find = function(sub, start, end) {
     return pos;
 };
 
+String.prototype.count = function(sub, start, end) {
+    var pos, count = 0, n = sub.length;
+    if (typeof start == 'undefined') start = 0;
+    if (typeof end == 'undefined') end = this.length;
+    while (start < end) {
+        pos = this.find(sub, start, end);
+        if (pos < 0) break;
+        count ++;
+        start = pos + n;
+    }
+    return count;
+}
+
 String.prototype.join = function(data) {
     var text="";
 
