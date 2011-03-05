@@ -15,6 +15,7 @@
 import time
 from __pyjamas__ import wnd, doc
 from pyjamas import DOM
+from pyjamas import Window
 from pyjamas.ui import GlassWidget
 from pyjamas.ui.RootPanel import RootPanel
 from pyjamas.ui import Event
@@ -141,6 +142,14 @@ class DNDHelper(object):
 
 
     def setDragImage(self, element, x, y):
+#        position_absolute = DOM.getStyleAttribute(element,
+#                                    'position') == 'absolute'
+#        if position_absolute:
+#            self.dragLeftOffset = x + DOM.getAbsoluteLeft(
+#                    element.offsetParent)
+#            self.dragTopOffset = y + DOM.getAbsoluteTop(
+#                    element.offsetParent)
+#        else:
         self.dragLeftOffset = x
         self.dragTopOffset = y
         if element.tagName.lower().endswith('img'):
@@ -171,7 +180,11 @@ class DNDHelper(object):
         """
         elt_top = y - self.dragTopOffset
         elt_left = x - self.dragLeftOffset
-
+#        if self.absParent:
+#            ap = self.absParent
+#            elt_top -= int(self.absTop)
+#            elt_left -= int(self.absLeft)
+        
         self.draggingImage.setStyleAttribute('top', elt_top )
         self.draggingImage.setStyleAttribute('left', elt_left)
 
@@ -179,14 +192,21 @@ class DNDHelper(object):
         """
         GlassWidget wants this
         """
+#        return 0
+#        if self.absParent:
+#            return self.absParent.getAbsoluteLeft()
         return self.dragWidget.getAbsoluteLeft()
+        #return self.origLeft
 
     def getAbsoluteTop(self):
         """
         GlassWidget wants this
         """
+#        return 0
+#        if self.absParent:
+#            return self.absParent.getAbsoluteTop()
         return self.dragWidget.getAbsoluteTop()
-
+        #return self.origTop
     def makeDragEvent(self, event, type, target=None):
         dt = DataTransfer(self.dragDataStore)
         self.updateDropEffect(dt, type)
@@ -245,6 +265,8 @@ class DNDHelper(object):
         x, y = eventCoordinates(event)
 
         if self.dragging == DRAGGING_NO_MOVEMENT_YET:
+            self.origMouseX = x
+            self.origMouseY = y
             self.currentDragOperation = 'none'
             fromElement = self.dragWidget.getElement()
             # Is the widget itself draggable?
@@ -261,11 +283,33 @@ class DNDHelper(object):
                 self.dragging = NOT_DRAGGING
                 return
             # Get the location for the dragging widget
+
+            #self.absParent = None
+
+                #self.absParent = self.dragWidget.getParent()
+                #self.absLeft = DOM.getStyleAttribute(fromElement, 'left')
+
+                #print self.absLeft
+                #self.absTop = DOM.getStyleAttribute(fromElement, 'top')
+                #print self.absTop
+                #self.origTop = DOM.getAbsoluteTop(fromElement) + parent.getAbsoluteTop()
+                #self.origLeft = DOM.getAbsoluteLeft(fromElement) + parent.getAbsoluteLeft()
             self.origTop = DOM.getAbsoluteTop(fromElement)
             self.origLeft = DOM.getAbsoluteLeft(fromElement)
-            self.dragLeftOffset = self.origMouseX - self.origLeft
-            self.dragTopOffset = self.origMouseY - self.origTop
-#            self.setDragImage(fromElement,
+            #self.glassTop = DOM.getAbsoluteTop(fromElement.offsetParent)
+            #self.glassLeft = DOM.getAbsoluteTop(fromElement.offsetParent)
+            position_absolute = DOM.getStyleAttribute(fromElement,
+                                'position') == 'absolute'
+            if position_absolute:
+                self.dragLeftOffset = (self.origMouseX -
+                                DOM.getAbsoluteLeft(fromElement.offsetParent))
+                self.dragTopOffset = (self.origMouseY -
+                                DOM.getAbsoluteTop(fromElement.offsetParent))
+            else:
+                self.dragLeftOffset = self.origMouseX - self.origLeft
+                self.dragTopOffset = self.origMouseY - self.origTop
+            
+# self.setDragImage(fromElement,
 #                             self.origMouseX - self.origLeft,
 #                             self.origMouseY - self.origTop)
             self.dragDataStore.elements = [fromElement]
@@ -351,9 +395,9 @@ class DNDHelper(object):
         button = DOM.eventGetButton(event)
         if button != Event.BUTTON_LEFT:
             return
-        x, y = eventCoordinates(event)
-        self.origMouseX = x
-        self.origMouseY = y
+#        x, y = eventCoordinates(event)
+#        self.origMouseX = x
+#        self.origMouseY = y
         self.dragging = DRAGGING_NO_MOVEMENT_YET
         self.drag_time = time.time()
         self.dragDataStore = DragDataStore()
@@ -372,6 +416,8 @@ class DNDHelper(object):
                                       self.currentDropWidget)
 #                    self.currentDropWidget.onDragLeave(leave_event)
 #                    self.finalize(leave_event)
+                else:
+                    self.currentDragOperation = 'none'
                 self.returnDrag()
             else:
 #                self.dragDataStore.mode = READ_ONLY
@@ -387,9 +433,11 @@ class DNDHelper(object):
                 else:
                     self.currentDragOperation = 'none'
                 self.zapDragImage()
-                self.fireDNDEvent('dragend', None, self.dragWidget)
+
+            self.dropEffect = self.currentDragOperation
+            self.fireDNDEvent('dragend', None, self.dragWidget)
 #                dragEnd_event = self.makeDragEvent(event, 'dragend')
-                self.dropEffect = self.currentDragOperation
+            
 #                self.dragWidget.onDragEnd(dragEnd_event)
 #                self.finalize(dragEnd_event)
 
