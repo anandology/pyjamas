@@ -614,6 +614,12 @@ class ClassTest(UnitTest):
         MultiInherit2.set_x(i, 5)
         self.assertEqual(MultiInherit1.get_x(i), 5)
 
+        self.assertEqual(i.getName(), 'MultiInherit2', 'Inheritance prolem issue #560')
+        self.assertEqual(str(i), 'MultiInherit2', 'Inheritance prolem issue #560')
+        i = DoubleInheritReversed(1,2,3)
+        self.assertEqual(i.getName(), 'MultiInherit2')
+        self.assertEqual(str(i), 'MultiInherit2')
+
     def testClassArguments(self):
         c = ClassArguments()
         try:
@@ -1164,6 +1170,10 @@ class MultiBase(object):
     def prototype(self, default, arguments, this):
         return (self.name, default, arguments, this)
 
+    def getName(self):
+        return 'MultiBase'
+
+
 class MultiInherit1(MultiBase):
     name = 'MultiInherit1'
     def __init__(self, x, y):
@@ -1176,6 +1186,7 @@ class MultiInherit1(MultiBase):
     def call(self, default, arguments, this):
         return self.prototype(default, arguments, this)
 
+
 class MultiInherit2(MultiBase):
     name = 'MultiInherit2'
     def __init__(self, x, z):
@@ -1185,11 +1196,26 @@ class MultiInherit2(MultiBase):
     def get_z(self):
         return self.z
 
+    def __str__(self):
+        return 'MultiInherit2'
+
+    def getName(self):
+        return 'MultiInherit2'
+
+
 class DoubleInherit(MultiInherit1, MultiInherit2):
     name = 'DoubleInherit'
     def __init__(self, x, y, z):
         MultiInherit1.__init__(self, x, y) # MultiBase __init__ called once
         MultiInherit2.__init__(self, x, z) # MultiBase __init__ called twice
+
+
+class DoubleInheritReversed(MultiInherit2, MultiInherit1):
+    name = 'DoubleInheritReversed'
+    def __init__(self, x, y, z):
+        MultiInherit1.__init__(self, x, y) # MultiBase __init__ called once
+        MultiInherit2.__init__(self, x, z) # MultiBase __init__ called twice
+
 
 class RecurseMe(object):
     chain = []
