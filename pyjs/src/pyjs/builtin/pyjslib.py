@@ -1760,6 +1760,9 @@ Number.prototype.__pow__ = function (y, z) {
 def float_int(value, radix=None):
     JS("""
     var v;
+    if (typeof @{{value}}['__int__'] != 'undefined') {
+        return @{{value}}['__int__']();
+    }
     if (@{{value}}.__number__) {
         if (@{{radix}} !== null) {
             throw @{{TypeError}}("int() can't convert non-string with explicit base");
@@ -1845,6 +1848,9 @@ var $radix_regex = [
         if (typeof radix == 'undefined' || radix === null) {
             if (typeof value == 'undefined') {
                 throw @{{TypeError}}("int() takes at least 1 argument");
+            }
+            if (typeof value['__int__'] != 'undefined') {
+                return value['__int__']();
             }
             switch (value.__number__) {
                 case 0x01:
