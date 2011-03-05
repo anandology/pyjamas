@@ -13,11 +13,16 @@
 # limitations under the License.
 
 # ui borrowed from http://decafbad.com/2009/07/drag-and-drop/api-demos.html
+from pyjamas.Timer import Timer
+from pyjamas.Window import alert
+from pyjamas.dnd.utils import eventCoordinates
+from pyjamas.ui.DragHandler import DragHandler
+from pyjamas.ui.InnerText import InnerText
 
 import pyjd
 from datetime import datetime
 
-from __pyjamas__ import doc
+from __pyjamas__ import doc, wnd
 
 from pyjamas.ui.Widget import Widget
 from pyjamas import DOM
@@ -27,6 +32,7 @@ from pyjamas.ui.HTML import HTML
 from pyjamas.ui.RootPanel import RootPanel
 from pyjamas.ui.VerticalPanel import VerticalPanel
 from pyjamas.ui.HorizontalPanel import HorizontalPanel
+from pyjamas.ui.AbsolutePanel import AbsolutePanel
 
 from pyjamas.Canvas.GWTCanvas import GWTCanvas
 import pyjamas.Canvas.Color as Color
@@ -37,6 +43,8 @@ from pyjamas.ui.DropWidget import DropWidget
 from pyjamas.ui.Panel import Panel
 from pyjamas.dnd import getTypes
 from pyjamas.JSONParser import JSONParser
+from pyjamas import Window
+import random
 
 json = JSONParser()
 
@@ -51,6 +59,7 @@ class DNDDemos(VerticalPanel):
         self.add(ImageDrop())
         self.add(DataTransferDemo())
         self.add(DragEffects())
+        self.add(AbsolutePosition())
 
 class AddablePanel(Panel):
     def __init__(self, **kw):
@@ -99,7 +108,7 @@ class DragWidget1(DragWidget, Label):
         dt.setData('Text', 'Dropped in zone!')
         #self.addMessage('after setting, len is %s' % len(dt.dataStore.items))
         #self.addMessage('types is %s' % dt.getTypes())
-        dt.setDragImage(self.getElement(), 15, 15)
+        #dt.setDragImage(self.getElement(), 15, 15)
         dt.effectAllowed = 'copy'
         #self.addMessage('mode is %s' % dt.dataStore.items.mode)
 
@@ -675,108 +684,117 @@ class DragEffects(DNDDemo):
         DNDDemo.__init__(self)
 
 
-class StudentWidget(DragWidget, Label):
-    def __init__(self, name, age):
-        Label.__init__(self, Element=DOM.createElement('div'))
-        self.name = name
-        self.age = int(age)
-        self.setText("%s (%s)" % (self.name, self.age))
-        DragWidget.__init__(self)
-        self.setStyleName('dragme')
+
+
+class AbsolutePosition(DNDDemo):
+    def __init__(self):
+        self.title = "Absolute Position Drag and Drop"
+        self.id = "absolute_position"
+        self.drop_widget = DropWidget6()
+        DNDDemo.__init__(self)
+
+
+class DragWidget6(Label):
+    def __init__(self,text):
+        Label.__init__(self, text)
+        self.setStyleName('dragme2')
+        self.setStyleAttribute('position', 'absolute')
+
+
+class DropWidget6(DropWidget, DragContainer, AddablePanel):
+    def __init__(self):
+        AddablePanel.__init__(self, Element=DOM.createElement('div'))
+        DropWidget.__init__(self)
+        DragContainer.__init__(self)
+        self.setStyleName('drophere2')
+        self.setStyleAttribute('position', 'relative')
+        drag = DragWidget6("Drag1")
+        drag2 = DragWidget6("Drag2")
+        self.setSize('600px', '300px')
+        self.add(drag2)
+        drag2.setStyleAttribute('top', 0)
+        drag2.setStyleAttribute('left', 0)
+        makeDraggable(drag2)
+        self.add(drag)
+        drag.setStyleAttribute('top', 0)
+        drag.setStyleAttribute('left', 100)
+        makeDraggable(drag)
 
     def onDragStart(self, event):
         dt= event.dataTransfer
-        dt.setData('Text', json.encode({'name':self.name, 'age':self.age}))
-        dt.effectAllowed = 'move'
-        self.setVisible(False)
+        target = DOM.eventGetTarget(event)
+        clientX = event.clientX
+        clientY = event.clientY
+        absx = clientX + Window.getScrollLeft()
+        absy = clientY + Window.getScrollTop()
+        package = json.encode({"text":DOM.getInnerText(target),
+                            "offsetX":absx - DOM.getAbsoluteLeft(target) ,
+                            "offsetY":absy - DOM.getAbsoluteTop(target)})
+        dt.setData('text', package)
+        # using "copy" here because Windows Chrome does not like "move"
+        dt.allowedEffects='copy'
+        self.movingWidget = None
+        for widget in self.children:
+            if target == widget.getElement():
+                self.movingWidget = widget
+
+    def onDragLeave(self, event):
+        dt = event.dataTransfer
+        dt.dropEffect = 'none'
+
+    def onDrag(self,event):
+        self.movingWidget.addStyleName('invisible')
 
     def onDragEnd(self, event):
         dt = event.dataTransfer
-        if dt.dropEffect == 'move':
-            self.getParent().remove(self)
-            msg = 'drop succeeded'
+        self.addMessage('Drop effect is "%s"' % dt.dropEffect)
+        if dt.dropEffect != 'none':
+            self.remove(self.movingWidget)
         else:
-            self.setVisible(True)
-            msg = 'drop failed'
-        self.addMessage(msg)
-
-    def addMessage(self, message):
-        parent = self.getParent()
-        while not hasattr(parent, 'addMessage'):
-            parent = parent.getParent()
-        parent.addMessage(message)
-
-
-class StudentContainer(DropWidget, VerticalPanel):
-    def __init__(self, min_age, max_age):
-        self.min_age = min_age
-        self.max_age = max_age
-        VerticalPanel.__init__(self)
-        DropWidget.__init__(self)
-        #self.setText("Drop here!")
-        self.setStyleName('drophere')
-
-    def getNames(self):
-        names = []
-        for item in self.children:
-            names.append((item.name, item.age))
-        return names
-
-    def notAlreadyHere(self, name):
-        for item in self.children:
-            if item.name == name:
-                return False
-        return True
-
-    def addStudent(self, name, age):
-        new_names = self.getNames()
-        new_names.append(name)
-        new_names.sort()
-        self.clear()
-        for name in new_names:
-            self.append(StudentWidget(name, age))
+            # Restore widget visibility. Allow 0.5 seconds for the fly-back.
+            def ontimer():
+                self.movingWidget.removeStyleName('invisible')
+            Timer(500, notify=ontimer)
 
     def onDragEnter(self, event):
-        self.addStyleName('dragover')
         DOM.eventPreventDefault(event)
-
-    def onDragLeave(self, event):
-        self.removeStyleName('dragover')
 
     def onDragOver(self, event):
         dt = event.dataTransfer
         dt.dropEffect = 'move'
-        types = getTypes(event)
-        if 'Text' in types:
-            DOM.eventPreventDefault(event)
-
-    def age_is_ok(self, age):
-        return age >= self.min_age and age <= self.max_age
-
+        DOM.eventPreventDefault(event)
+        
     def onDrop(self, event):
         dt = event.dataTransfer
-        try:
-            item = dt.getData("Text")
-            data = json.decode(item)
-            if 'name' in data and 'age' in data:
-                age = data['age']
-                name = data['name']
-                if self.age_is_ok(age) and self.notAlreadyHere(name):
-                    self.addStudent(name, age)
-                    DOM.eventPreventDefault(event)
-                else:
-                    self.addMessage('student could not be added')
-                    DOM.eventCancelEvent(event)
-        except:
-            self.addMessage('unsupported data type for drop')
+        text = dt.getData('text')
+        package = json.decode(text)
+        x =  event.clientX
+        y =  event.clientY
+        scrollY = Window.getScrollTop()
+        scrollX = Window.getScrollLeft()
+        offsetX = int(package['offsetX'])
+        offsetY = int(package['offsetY'])
+        at = self.getAbsoluteTop()
+        al = self.getAbsoluteLeft()
+        posX, posY = x - (al - scrollX),  y - (at - scrollY)
+        w = DragWidget6(package['text'])
+        self.add(w)
+        makeDraggable(w)
+        # firefox seems to be off-by-one in x.
+        # firefox-specific code?
+        #w.setStyleAttribute('left', posX - offsetX -1)
+        w.setStyleAttribute('left', posX - offsetX)
+        w.setStyleAttribute('top', posY - offsetY)
+        w.removeStyleName('invisible')
+        self.addMessage("top:%s, left:%s, cy:%s cx:%s, sy:%s sx:%s dropy:%s dropx:%s" % (at, al, y, x, scrollY, scrollX, posY, posX))
 
+        DOM.eventPreventDefault(event)
 
     def addMessage(self, message):
         parent = self.getParent()
         while not hasattr(parent, 'addMessage'):
             parent = parent.getParent()
         parent.addMessage(message)
-
 
 
 if __name__ == '__main__':

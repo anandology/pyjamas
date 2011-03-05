@@ -1,3 +1,4 @@
+
 def getComputedStyle(element, style=None):
     """
     Get computed style of an element, like in

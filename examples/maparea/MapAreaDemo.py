@@ -20,7 +20,7 @@ class MapAreaDemo:
 
     def onModuleLoad(self):
         # build image display
-        img = Image("babykatie_small.jpg", width="300px", height="300px")
+        img = Image("babykatie_small.jpg", Width="300px", Height="300px")
         img.element.setAttribute("usemap", "#themap")
         img.element.setAttribute("ismap", "1")
         imagepanel = ScrollPanel()
@@ -37,11 +37,11 @@ class MapAreaDemo:
         imageClickHandler = MapClickHandler(msgarea1, msgarea2)
 
         # build imagemap
-        map = ImageMap("themap", width="300px", height="300px")
+        map = ImageMap("themap", Width="300px", Height="300px")
         areas = [ \
             NamedMapArea("right eye", "circle", "73, 97, 7"),
             NamedMapArea("left eye", "circle", "116, 88, 5"),
-            NamedMapArea("nose", "rect", "88, 97, 115, 115", href="http://lkcl.net"),
+            NamedMapArea("nose", "rect", "88, 97, 115, 115", Href="http://lkcl.net"),
             NamedMapArea("mouth", "polygon", "82, 129, 102, 124, 119, 119, 121, 125, 103, 132, 79, 133"),
             ]
         for nma in areas:
@@ -62,9 +62,9 @@ class NamedMapArea(MapArea):
     """ An area inside an imagemap with a name
     """
     
-    def __init__(self, areaname, shape, coords, href="", **kwargs):
+    def __init__(self, areaname, shape, coords, Href="", **kwargs):
         self.areaname = areaname
-        MapArea.__init__(self, shape, coords, href=href, **kwargs)
+        MapArea.__init__(self, shape, coords, Href=Href, **kwargs)
     
 
 class MapClickHandler:

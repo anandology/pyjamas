@@ -89,6 +89,9 @@ def type(clsname, bases=None, methods=None):
 
 class object:
     
+    def __str__(self):
+        JS("""return (@{{self}}.__is_instance__ === true ? "instance of " : "class ") + (@{{self}}.__module__?@{{self}}.__module__ + "." : "") + @{{self}}.__name__;""")
+
     def __setattr__(self, name, value):
         JS("""
         if (typeof @{{name}} != 'string') {
@@ -166,24 +169,46 @@ def op_eq(a,b):
         case 0x0402:
             return @{{a}}.__cmp__(new @{{long}}(@{{b}}.valueOf())) == 0;
     }
-    if ((typeof @{{a}} == 'object' || typeof @{{a}} == 'function') && typeof @{{a}}.__cmp__ == 'function') {
-        if (typeof @{{b}}.__cmp__ != 'function') {
+    if (typeof @{{a}} == 'object' || typeof @{{a}} == 'function') {
+        if (typeof @{{a}}.__eq__ == 'function') {
+            if (typeof @{{b}}.__eq__ != 'function') {
+                return false;
+            }
+            if (@{{a}}.__eq__ === @{{b}}.__eq__) {
+                return @{{a}}.__eq__(@{{b}});
+            }
+            if (@{{_isinstance}}(@{{a}}, @{{b}})) {
+                return @{{a}}.__eq__(@{{b}});
+            }
             return false;
         }
-        if (@{{a}}.__cmp__ === @{{b}}.__cmp__) {
-            return @{{a}}.__cmp__(@{{b}}) == 0;
+        if (typeof @{{a}}.__cmp__ == 'function') {
+            if (typeof @{{b}}.__cmp__ != 'function') {
+                return false;
+            }
+            if (@{{a}}.__cmp__ === @{{b}}.__cmp__) {
+                return @{{a}}.__cmp__(@{{b}}) == 0;
+            }
+            if (@{{_isinstance}}(@{{a}}, @{{b}})) {
+                return @{{a}}.__cmp__(@{{b}}) == 0;
+            }
+            return false;
         }
-        if (@{{_isinstance}}(@{{a}}, @{{b}})) {
-            return @{{a}}.__cmp__(@{{b}}) == 0;
+    } else if (typeof @{{b}} == 'object' || typeof @{{b}} == 'function') {
+        if (typeof @{{b}}.__eq__ == 'function') {
+            if (@{{_isinstance}}(@{{a}}, @{{b}})) {
+                return @{{b}}.__eq__(@{{a}});
+            }
+            return false;
         }
-        return false;
-    } else if ((typeof @{{b}} == 'object' || typeof @{{b}} == 'function') && typeof @{{b}}.__cmp__ == 'function') {
-        // typeof bXXX.__cmp__ != 'function'
-        // aXXX.__cmp__ !== bXXX.__cmp__
-        if (@{{_isinstance}}(@{{a}}, @{{b}})) {
-            return @{{b}}.__cmp__(@{{a}}) == 0;
+        if (typeof @{{b}}.__cmp__ == 'function') {
+            // typeof bXXX.__cmp__ != 'function'
+            // aXXX.__cmp__ !== bXXX.__cmp__
+            if (@{{_isinstance}}(@{{a}}, @{{b}})) {
+                return @{{b}}.__cmp__(@{{a}}) == 0;
+            }
+            return false;
         }
-        return false;
     }
     return @{{a}} == @{{b}};
     """)
@@ -1054,6 +1079,19 @@ String.prototype.find = function(sub, start, end) {
     return pos;
 };
 
+String.prototype.count = function(sub, start, end) {
+    var pos, count = 0, n = sub.length;
+    if (typeof start == 'undefined') start = 0;
+    if (typeof end == 'undefined') end = this.length;
+    while (start < end) {
+        pos = this.find(sub, start, end);
+        if (pos < 0) break;
+        count ++;
+        start = pos + n;
+    }
+    return count;
+}
+
 String.prototype.join = function(data) {
     var text="";
 
@@ -1747,6 +1785,9 @@ Number.prototype.__pow__ = function (y, z) {
 def float_int(value, radix=None):
     JS("""
     var v;
+    if (typeof @{{value}}['__int__'] != 'undefined') {
+        return @{{value}}['__int__']();
+    }
     if (@{{value}}.__number__) {
         if (@{{radix}} !== null) {
             throw @{{TypeError}}("int() can't convert non-string with explicit base");
@@ -1832,6 +1873,9 @@ var $radix_regex = [
         if (typeof radix == 'undefined' || radix === null) {
             if (typeof value == 'undefined') {
                 throw @{{TypeError}}("int() takes at least 1 argument");
+            }
+            if (typeof value['__int__'] != 'undefined') {
+                return value['__int__']();
             }
             switch (value.__number__) {
                 case 0x01:

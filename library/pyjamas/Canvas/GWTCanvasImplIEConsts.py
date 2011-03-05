@@ -1,6 +1,5 @@
-BUTT = "flat"
-
-DESTINATION_OVER = "afterBegin"
-
-SOURCE_OVER = "beforeEnd"
-
+from gwt.Canvas.GWTCanvasImplIEConsts import (
+    BUTT,
+    DESTINATION_OVER,
+    SOURCE_OVER,
+)

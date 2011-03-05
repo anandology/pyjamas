@@ -83,6 +83,21 @@ p.srclink {
 /*    width: 5em;*/
 }
 
+.dragme2 {
+    height: 64px;
+    width: 64px;
+    background: #acf;
+    cursor: pointer;
+    display:inline;
+}
+
+.drophere2 {
+    width: 15ex;
+    height: 15ex;
+    background: #eee;
+}
+
+
 .drophere {
     padding: 0.25em;
     width: 15ex;
@@ -215,6 +230,9 @@ canvas {
     font-family: monospace;
     margin: 0; padding: 0 0 1em 0;
 }
+
+.invisible{display:none}
+
 /*
 .toys {
     margin: 0.25em 0.25em 0.25em 310px;
