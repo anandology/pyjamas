@@ -26,7 +26,7 @@ class DragWidget(object):
         Override DragHandler on*** methods to enable drag behavior.
 
         At runtime, we change the implementation based on html5
-        dra-and-drop capabilities of the engine.
+        drag-and-drop capabilities of the engine.
     """
     pass
 
