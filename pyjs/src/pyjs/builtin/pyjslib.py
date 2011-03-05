@@ -89,6 +89,9 @@ def type(clsname, bases=None, methods=None):
 
 class object:
     
+    def __str__(self):
+        JS("""return (@{{self}}.__is_instance__ === true ? "instance of " : "class ") + (@{{self}}.__module__?@{{self}}.__module__ + "." : "") + @{{self}}.__name__;""")
+
     def __setattr__(self, name, value):
         JS("""
         if (typeof @{{name}} != 'string') {

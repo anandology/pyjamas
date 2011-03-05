@@ -392,7 +392,6 @@ function $pyjs__class_instance(class_name, module_name) {
     cls_fn.__name__ = class_name;
     cls_fn.__module__ = module_name;
     cls_fn.__class__ = pyjslib['type'];
-    cls_fn.__str__ = function() { return (this.__is_instance__ === true ? "instance of " : "class ") + (this.__module__?this.__module__ + "." : "") + this.__name__;};
     cls_fn.toString = function() { return this.__str__();};
     return cls_fn;
 }
