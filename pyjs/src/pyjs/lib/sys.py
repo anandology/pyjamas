@@ -10,6 +10,8 @@ stacktrace = None
 
 appname = None
 
+version_info = (2, 5, 0, 'pyjamas', 0)
+
 def setloadpath(lp):
     global loadpath
     loadpath = lp
