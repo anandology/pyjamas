@@ -13,12 +13,11 @@
 # limitations under the License.
 
 # ui borrowed from http://decafbad.com/2009/07/drag-and-drop/api-demos.html
-from gwt.ui import HasVerticalAlignment
+from pyjamas.ui import HasVerticalAlignment
 from pyjamas.Timer import Timer
 from pyjamas.Window import alert
 from pyjamas.dnd.utils import eventCoordinates
 from pyjamas.ui.DragHandler import DragHandler
-from pyjamas.ui.InnerText import InnerText
 
 import pyjd
 from datetime import datetime

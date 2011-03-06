@@ -41,6 +41,14 @@ class DragEvent(object):
         return self.evt.screenY
 
     @property
+    def pageX(self):
+        return self.evt.pageX
+
+    @property
+    def pageY(self):
+        return self.evt.pageY
+
+    @property
     def clientX(self):
         return self.evt.clientX
 
