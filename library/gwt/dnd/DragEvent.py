@@ -28,6 +28,10 @@ class DragEvent(object):
     # rather than copying a bunch of attributes on init, we provide a bunch
     # of property statements.  These properties hardly ever get looked at
     # during dnd events anyway, but they're there if we need them.
+
+    def stopPropagation(self):
+        self.evt.stopPropagation()
+
     @property
     def screenX(self):
         return self.evt.screenX
@@ -35,14 +39,6 @@ class DragEvent(object):
     @property
     def screenY(self):
         return self.evt.screenY
-
-    @property
-    def pageX(self):
-        return self.evt.pageX
-
-    @property
-    def pageY(self):
-        return self.evt.pageY
 
     @property
     def clientX(self):

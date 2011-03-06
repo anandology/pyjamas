@@ -13,6 +13,7 @@
 # limitations under the License.
 
 # ui borrowed from http://decafbad.com/2009/07/drag-and-drop/api-demos.html
+from gwt.ui import HasVerticalAlignment
 from pyjamas.Timer import Timer
 from pyjamas.Window import alert
 from pyjamas.dnd.utils import eventCoordinates
@@ -60,6 +61,7 @@ class DNDDemos(VerticalPanel):
         self.add(DataTransferDemo())
         self.add(DragEffects())
         self.add(AbsolutePosition())
+        self.add(MultiTargetDemo())
 
 class AddablePanel(Panel):
     def __init__(self, **kw):
@@ -690,8 +692,29 @@ class AbsolutePosition(DNDDemo):
     def __init__(self):
         self.title = "Absolute Position Drag and Drop"
         self.id = "absolute_position"
-        self.drop_widget = DropWidget6()
+        self.drop_widget = Drop6Container()
         DNDDemo.__init__(self)
+
+class Drop6Container(HorizontalPanel):
+    def __init__(self):
+        HorizontalPanel.__init__(self)
+        left = DropWidget6()
+        right = DropWidget6()
+        self.setSpacing('10px')
+
+        drag = DragWidget6("Drag1")
+        drag2 = DragWidget6("Drag2")
+        left.add(drag2)
+        drag2.setStyleAttribute('top', 0)
+        drag2.setStyleAttribute('left', 0)
+        makeDraggable(drag2)
+        left.add(drag)
+        drag.setStyleAttribute('top', 0)
+        drag.setStyleAttribute('left', 100)
+        makeDraggable(drag)
+
+        self.add(left)
+        self.add(right)
 
 
 class DragWidget6(Label):
@@ -701,6 +724,7 @@ class DragWidget6(Label):
         self.setStyleAttribute('position', 'absolute')
 
 
+
 class DropWidget6(DropWidget, DragContainer, AddablePanel):
     def __init__(self):
         AddablePanel.__init__(self, Element=DOM.createElement('div'))
@@ -708,17 +732,7 @@ class DropWidget6(DropWidget, DragContainer, AddablePanel):
         DragContainer.__init__(self)
         self.setStyleName('drophere2')
         self.setStyleAttribute('position', 'relative')
-        drag = DragWidget6("Drag1")
-        drag2 = DragWidget6("Drag2")
-        self.setSize('600px', '300px')
-        self.add(drag2)
-        drag2.setStyleAttribute('top', 0)
-        drag2.setStyleAttribute('left', 0)
-        makeDraggable(drag2)
-        self.add(drag)
-        drag.setStyleAttribute('top', 0)
-        drag.setStyleAttribute('left', 100)
-        makeDraggable(drag)
+        self.setSize('300px', '300px')
 
     def onDragStart(self, event):
         dt= event.dataTransfer
@@ -761,7 +775,7 @@ class DropWidget6(DropWidget, DragContainer, AddablePanel):
 
     def onDragOver(self, event):
         dt = event.dataTransfer
-        dt.dropEffect = 'move'
+        dt.dropEffect = 'copy'
         DOM.eventPreventDefault(event)
         
     def onDrop(self, event):
@@ -796,6 +810,169 @@ class DropWidget6(DropWidget, DragContainer, AddablePanel):
             parent = parent.getParent()
         parent.addMessage(message)
 
+class StudentWidget(Label):
+    def __init__(self, name, age):
+        #Label.__init__(self, Element=DOM.createElement('div'))
+        #self.dragHandler = DragHandler()
+        #self.dragHandler.addDragListener(self)
+        Label.__init__(self, Element=DOM.createElement('li'))
+        self.student_name = name
+        self.age = int(age)
+        self.setText("%s (%s)" % (self.student_name, self.age))
+        self.setStyleName('dragme')
+        self.addStyleName('age_%s' % self.age)
+
+    def onClick(self, sender):
+        self.addMessage("clicked")
+
+    def addMessage(self, message):
+        parent = self.getParent()
+        while not hasattr(parent, 'addMessage'):
+            parent = parent.getParent()
+        parent.addMessage(message)
+
+
+class StudentContainer(DragContainer, DropWidget, VerticalPanel):
+    def __init__(self, min_age, max_age, id):
+        self.min_age = min_age
+        self.max_age = max_age
+        VerticalPanel.__init__(self)
+        DropWidget.__init__(self)
+        DragContainer.__init__(self)
+        self.setID(id)
+        self.setWidth(200)
+        self.setHeight(300)
+        self.setVerticalAlignment(HasVerticalAlignment.ALIGN_TOP)
+        self.setStyleName('drophere2')
+        self.addTitle()
+
+    def getNames(self):
+        names = []
+        for item in self.children:
+            if isinstance(item, StudentWidget):
+                names.append((item.student_name, item.age))
+        return names
+
+    def addTitle(self):
+        self.append(Label("Allowed: %s to %s" % (self.min_age, self.max_age)))
+
+    def addStudent(self, name, age):
+        new_names = self.getNames()
+        found = False
+        for item in new_names:
+            if item == (name, age):
+                found = True
+                break
+        if not found:
+            new_names.append((name, age))
+        new_names.sort()
+        while len(self.children):
+            self.remove(self.children[0])
+        #self.clear()
+        self.addTitle()
+        for student in new_names:
+            sw = StudentWidget(student[0], student[1])
+            makeDraggable(sw)
+            self.append(sw)
+            self.setCellVerticalAlignment(sw, HasVerticalAlignment.ALIGN_TOP)
+
+    def onDragStart(self, event):
+        self.removeStyleName('drop_fail')
+        dt= event.dataTransfer
+        dt.effectAllowed = 'copy'
+        target = DOM.eventGetTarget(event)
+        widget = None
+        for widget in self.children:
+            if widget.getElement() == target:
+                self.movingWidget = widget
+                break
+        dt.setData('Text', json.encode({'name':widget.student_name,
+                                        'age':widget.age,
+                                        'parent':self.getID()}))
+
+    def onDrag(self, event):
+        self.movingWidget.addStyleName('invisible')
+
+    def onDragEnd(self, event):
+        dt = event.dataTransfer
+        styles = self.getStyleName()
+        if dt.dropEffect != 'none' and not 'drop_fail' in styles:
+            self.remove(self.movingWidget)
+            msg = 'drop succeeded'
+        else:
+            self.movingWidget.removeStyleName('invisible')
+            msg = 'drop failed'
+        self.addMessage(msg)
+
+    def onDragEnter(self, event):
+        self.addStyleName('dragover')
+        DOM.eventPreventDefault(event)
+
+    def onDragLeave(self, event):
+        self.removeStyleName('dragover')
+
+    def onDragOver(self, event):
+        DOM.eventPreventDefault(event)
+
+    def age_is_ok(self, age):
+        return age >= self.min_age and age <= self.max_age
+
+    def onDrop(self, event):
+        dt = event.dataTransfer
+
+        item = dt.getData("Text")
+        data = json.decode(item)
+        if 'name' in data and 'age' in data:
+            age = data['age']
+            name = data['name']
+            if self.age_is_ok(age):
+                self.addStudent(name, age)
+                dt.dropEffect = 'copy'
+            else:
+                dt.dropEffect = 'none'
+                self.addMessage('student could not be added')
+                # setting dropEffect to 'none' should be sufficient to notify
+                # that the drop failed, but
+                # we need to cheat a bit for now...
+                # this is the only reason for parent id in data
+                item_parent_id = data['parent']
+                item_parent = self.parent.containerFromId(item_parent_id)
+                item_parent.addStyleName('drop_fail')
+        # prevent default allows onDragEnd to see the dropEffect we set here
+        DOM.eventPreventDefault(event)
+
+    def addMessage(self, message):
+        parent = self.getParent()
+        while not hasattr(parent, 'addMessage'):
+            parent = parent.getParent()
+        parent.addMessage(message)
+
+
+class ClassContainer(HorizontalPanel):
+    def __init__(self):
+        HorizontalPanel.__init__(self)
+        #self.setSpacing('10px')
+
+        pool = StudentContainer(1, 20, 'pool_1')
+        for item in [['Fred', 12], ['Jane', 10], ['Sam', 18],
+                     ['Ginger', 8],['Mary', 4]]:
+            pool.addStudent(name=item[0], age=item[1])
+        self.append(pool)
+        self.append(StudentContainer(6, 13, 'pool_2'))
+        self.append(StudentContainer(11, 20, 'pool_3'))
+        self.setSpacing('10px')
+
+    def containerFromId(self, id):
+        for item in self.children:
+            if item.getID() == id:
+                return item
+
+class MultiTargetDemo(DNDDemo):
+    def __init__(self):
+        self.drop_widget = ClassContainer()
+        self.title = 'Drop with Validation'
+        self.id = 'multi'
+        DNDDemo.__init__(self)
 
 if __name__ == '__main__':
     pyjd.setup("./public/DNDTest.html")
