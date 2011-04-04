@@ -893,6 +893,15 @@ def setStyleAttribute(element, name, value):
     else:
         element.style.setAttribute(name, value, "")
 
+def setStyleAttributes(element, **kwargs):
+   """ 
+   multi attr: setStyleAttributes(self, {attr1:val1, attr2:val2, ...})
+   """ 
+   for attr, val in kwargs.items():
+        if hasattr(element.style, 'setProperty'):
+                element.style.setProperty(mash_name_for_glib(attr), val, "")
+        else:
+                element.style.setAttribute(attr, val, "")
 
 def sinkEvents(element, bits):
     """
