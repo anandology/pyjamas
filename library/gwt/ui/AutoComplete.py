@@ -2,6 +2,7 @@
 # Ported by Willie Gollino from Autocomplete component for GWT -
 # Originally by Oliver Albers http://gwt.components.googlepages.com/
 # Copyright (C) 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
+# Copyright (C) 2011 goffi <goffi@goffi.org>
 #
 # Licensed under the LGPL 2.1
 #
@@ -122,6 +123,7 @@ class AutoCompleteTextBox(TextBox):
         self.choices.clear()
         self.choicesPopup.hide()
         self.setFocus(True)
+        self.visible = False
 
 Factory.registerClass('pyjamas.ui.AutoComplete', 'AutoCompleteTextBox', AutoCompleteTextBox)
 
