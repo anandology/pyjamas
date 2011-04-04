@@ -149,7 +149,9 @@ class DropWidget1(DropWidget, Label):
             self.addMessage(item)
         except:
             self.addMessage('unsupported data type')
-        #DOM.eventPreventDefault(event)
+
+        DOM.eventPreventDefault(event)
+        #DOM.eventStopPropagation(event)
 
     def addMessage(self, message):
         parent = self.getParent()
@@ -336,6 +338,7 @@ class DropWidget2(DropWidget, AddablePanel):
         target = DOM.eventGetTarget(event)
         t = Widget(Element=target)
         class_names = t.getStyleName()
+        DOM.eventPreventDefault(event)
         if class_names is not None:
             if 'drophere' in class_names:
                 self.addMessage('%s onto %s' % (text, target.id))
@@ -531,7 +534,9 @@ class DropWidget4(DropWidget1):
                     file_names.append(name)
                 data = '<br>'.join(file_names)
             parent.addContent(ctype, data)
+        DOM.eventPreventDefault(event)
         # cancel bubble so first file is not opened in browser.
+
         DOM.eventCancelBubble(event, True)
 
 
@@ -674,7 +679,7 @@ class DropWidget5(DropWidget2):
             if 'drophere' in class_names:
                 self.addMessage('%s onto %s<br>effectAllowed=%s, dropEffect=%s'
             % (text, target.id, dt.effectAllowed, dt.dropEffect))
-
+                DOM.eventPreventDefault(event)
 
 class DragEffects(DNDDemo):
     def __init__(self):
@@ -781,8 +786,8 @@ class DropWidget6(DropWidget, DragContainer, AddablePanel):
         dt = event.dataTransfer
         text = dt.getData('text')
         package = json.decode(text)
-        x =  event.clientX
-        y =  event.clientY
+        x =  DOM.eventGetClientX(event)
+        y =  DOM.eventGetClientY(event)
         scrollY = Window.getScrollTop()
         scrollX = Window.getScrollLeft()
         offsetX = int(package['offsetX'])
@@ -819,7 +824,7 @@ class StudentWidget(Label):
         self.age = int(age)
         self.setText("%s (%s)" % (self.student_name, self.age))
         self.setStyleName('dragme')
-        self.addStyleName('age_%s' % self.age)
+        #self.addStyleName('age_%s' % self.age)
 
     def onClick(self, sender):
         self.addMessage("clicked")
@@ -924,9 +929,15 @@ class StudentContainer(DragContainer, DropWidget, VerticalPanel):
         if 'name' in data and 'age' in data:
             age = data['age']
             name = data['name']
+            self.removeStyleName('dragover')
             if self.age_is_ok(age):
                 self.addStudent(name, age)
                 dt.dropEffect = 'copy'
+
+                self.addStyleName('flash')
+                def unflash():
+                    self.removeStyleName('flash')
+                Timer(250, unflash)
             else:
                 dt.dropEffect = 'none'
                 self.addMessage('student could not be added')

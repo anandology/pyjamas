@@ -233,6 +233,8 @@ canvas {
 
 .invisible{display:none}
 
+.flash{background-color:#fafad2;}
+
 /*
 .toys {
     margin: 0.25em 0.25em 0.25em 310px;
