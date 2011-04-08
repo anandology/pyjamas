@@ -58,7 +58,7 @@ def manageRootPanel(panel, id=None):
 
 class RootPanelCls(AbsolutePanel):
     def __init__(self, Element=None, **kwargs):
-        if Element is None:
+        if Element is not None:
             kwargs['Element'] = Element
         AbsolutePanel.__init__(self, **kwargs)
         if Element is None:
