@@ -62,15 +62,16 @@ class DNDDemos(VerticalPanel):
         self.add(AbsolutePosition())
         self.add(MultiTargetDemo())
 
+
 class AddablePanel(Panel):
     def __init__(self, **kw):
         Panel.__init__(self, **kw)
 
     def add(self, widget, container=None):
-        self.adopt(widget,self.getElement())
+        self.adopt(widget, self.getElement())
         self.children.append(widget)
 
-    def remove(self,widget):
+    def remove(self, widget):
         self.disown(widget)
         self.children.remove(widget)
 
@@ -84,16 +85,16 @@ class TopVerbage(AddablePanel):
         img = '<img id="logo" src="pyjamas.png">'
         self.add(HTML('<h1>%s</h1>' % (self.title % img,)))
         self.add(HTML(
-        """
-        <p>This page is a reimagining of
-        <a href="http://decafbad.com/2009/07/drag-and-drop/api-demos.html">
-        http://decafbad.com/2009/07/drag-and-drop/api-demos.html</a> using
-        pyjamas.</p>
-        <p>
-        <p>This page offers a few demonstrations and experiments, mostly
-        as a test tool for the background implementation.</p>
-        """
-       ))
+            """
+            <p>This page is a reimagining of
+            <a href="http://decafbad.com/2009/07/drag-and-drop/api-demos.html">
+            http://decafbad.com/2009/07/drag-and-drop/api-demos.html</a> using
+            pyjamas.</p>
+            <p>
+            <p>This page offers a few demonstrations and experiments, mostly
+            as a test tool for the background implementation.</p>
+            """
+        ))
 
 
 class DragWidget1(DragWidget, Label):
@@ -161,7 +162,6 @@ class DropWidget1(DropWidget, Label):
 
 
 class Messages(Widget):
-
     def __init__(self):
         Widget.__init__(self, Element=DOM.createElement('ul'))
         self.setStyleName('messages')
@@ -222,7 +222,6 @@ class NewSchool(DNDDemo):
 
 
 class DragWidget2(DragContainer, AddablePanel):
-
     def onDragStart(self, event):
         target = DOM.eventGetTarget(event)
         dt = event.dataTransfer
@@ -375,8 +374,6 @@ class Delegated(DNDDemo):
 
 
 class DragWidget3(DragWidget2):
-
-
     def __init__(self):
         self.setElement(DOM.createElement('ul'))
         super(DragWidget3, self).__init__()
@@ -392,7 +389,7 @@ class DragWidget3(DragWidget2):
         ctx.beginPath()
         ctx.setLineWidth(3)
         ctx.setStrokeStyle(Color.ORANGE)
-        ctx.moveTo(25,1.5)
+        ctx.moveTo(25, 1.5)
         ctx.lineTo(50, 50)
         ctx.lineTo(1.5, 50)
         ctx.lineTo(25, 1.5)
@@ -422,7 +419,7 @@ class DragWidget3(DragWidget2):
                 DOM.setAttribute(img, 'src', ctx.canvas.toDataURL())
                 dt.setDragImage(img, 25, 25)
             except:
-                dt.setDragImage(ctx.canvas, 25,25)
+                dt.setDragImage(ctx.canvas, 25, 25)
 
     def addDragWidget(self):
         s = len(self.children)
@@ -570,7 +567,7 @@ class DropWidgetPanel4(AddablePanel):
     def onLoad(self):
         self.drop_widget = DropWidget4()
         self.add(self.drop_widget)
-        self.contentPanel = AddablePanel(Element = DOM.createElement('div'))
+        self.contentPanel = AddablePanel(Element=DOM.createElement('div'))
         self.add(self.contentPanel)
 
     def clearContent(self):
@@ -589,8 +586,8 @@ class DataTransferDemo(DNDDemo):
         self.drop_widget = DropWidgetPanel4()
         DNDDemo.__init__(self)
 
-class DragWidget5(DragWidget2):
 
+class DragWidget5(DragWidget2):
     def onDragStart(self, event):
         target = DOM.eventGetTarget(event)
         dt = event.dataTransfer
@@ -605,7 +602,7 @@ class DragWidget5(DragWidget2):
     def onLoad(self):
         self.setStyleName('drag_delegates')
         self.addStyleName('draglist')
-        self.data =['copy', 'move','link','all','none']
+        self.data = ['copy', 'move', 'link', 'all', 'none']
         for k in range(5):
             self.addDragWidget()
 
@@ -618,9 +615,10 @@ class DragWidget5(DragWidget2):
         self.add(w)
         makeDraggable(w)
 
+
 class DropWidget5(DropWidget2):
     def onLoad(self):
-        self.data =['copy', 'move','link','all','none']
+        self.data = ['copy', 'move', 'link', 'all', 'none']
         self.setStyleName('drop_delegates')
         self.addStyleName('droplist')
         for k in range(5):
@@ -678,8 +676,9 @@ class DropWidget5(DropWidget2):
         if class_names is not None:
             if 'drophere' in class_names:
                 self.addMessage('%s onto %s<br>effectAllowed=%s, dropEffect=%s'
-            % (text, target.id, dt.effectAllowed, dt.dropEffect))
+                % (text, target.id, dt.effectAllowed, dt.dropEffect))
                 DOM.eventPreventDefault(event)
+
 
 class DragEffects(DNDDemo):
     def __init__(self):
@@ -690,14 +689,13 @@ class DragEffects(DNDDemo):
         DNDDemo.__init__(self)
 
 
-
-
 class AbsolutePosition(DNDDemo):
     def __init__(self):
         self.title = "Absolute Position Drag and Drop"
         self.id = "absolute_position"
         self.drop_widget = Drop6Container()
         DNDDemo.__init__(self)
+
 
 class Drop6Container(HorizontalPanel):
     def __init__(self):
@@ -722,11 +720,10 @@ class Drop6Container(HorizontalPanel):
 
 
 class DragWidget6(Label):
-    def __init__(self,text):
+    def __init__(self, text):
         Label.__init__(self, text)
         self.setStyleName('dragme2')
         self.setStyleAttribute('position', 'absolute')
-
 
 
 class DropWidget6(DropWidget, DragContainer, AddablePanel):
@@ -739,18 +736,18 @@ class DropWidget6(DropWidget, DragContainer, AddablePanel):
         self.setSize('300px', '300px')
 
     def onDragStart(self, event):
-        dt= event.dataTransfer
+        dt = event.dataTransfer
         target = DOM.eventGetTarget(event)
         clientX = event.clientX
         clientY = event.clientY
         absx = clientX + Window.getScrollLeft()
         absy = clientY + Window.getScrollTop()
-        package = json.encode({"text":DOM.getInnerText(target),
-                            "offsetX":absx - DOM.getAbsoluteLeft(target) ,
-                            "offsetY":absy - DOM.getAbsoluteTop(target)})
+        package = json.encode({"text": DOM.getInnerText(target),
+                               "offsetX": absx - DOM.getAbsoluteLeft(target),
+                               "offsetY": absy - DOM.getAbsoluteTop(target)})
         dt.setData('text', package)
         # using "copy" here because Windows Chrome does not like "move"
-        dt.allowedEffects='copy'
+        dt.allowedEffects = 'copy'
         self.movingWidget = None
         for widget in self.children:
             if target == widget.getElement():
@@ -760,7 +757,7 @@ class DropWidget6(DropWidget, DragContainer, AddablePanel):
         dt = event.dataTransfer
         dt.dropEffect = 'none'
 
-    def onDrag(self,event):
+    def onDrag(self, event):
         self.movingWidget.addStyleName('invisible')
 
     def onDragEnd(self, event):
@@ -770,8 +767,9 @@ class DropWidget6(DropWidget, DragContainer, AddablePanel):
             self.remove(self.movingWidget)
         else:
             # Restore widget visibility. Allow 0.5 seconds for the fly-back.
-            def ontimer():
+            def ontimer(timer):
                 self.movingWidget.removeStyleName('invisible')
+
             Timer(500, notify=ontimer)
 
     def onDragEnter(self, event):
@@ -781,20 +779,20 @@ class DropWidget6(DropWidget, DragContainer, AddablePanel):
         dt = event.dataTransfer
         dt.dropEffect = 'copy'
         DOM.eventPreventDefault(event)
-        
+
     def onDrop(self, event):
         dt = event.dataTransfer
         text = dt.getData('text')
         package = json.decode(text)
-        x =  DOM.eventGetClientX(event)
-        y =  DOM.eventGetClientY(event)
+        x = DOM.eventGetClientX(event)
+        y = DOM.eventGetClientY(event)
         scrollY = Window.getScrollTop()
         scrollX = Window.getScrollLeft()
         offsetX = int(package['offsetX'])
         offsetY = int(package['offsetY'])
         at = self.getAbsoluteTop()
         al = self.getAbsoluteLeft()
-        posX, posY = x - (al - scrollX),  y - (at - scrollY)
+        posX, posY = x - (al - scrollX), y - (at - scrollY)
         w = DragWidget6(package['text'])
         self.add(w)
         makeDraggable(w)
@@ -804,7 +802,9 @@ class DropWidget6(DropWidget, DragContainer, AddablePanel):
         w.setStyleAttribute('left', posX - offsetX)
         w.setStyleAttribute('top', posY - offsetY)
         w.removeStyleName('invisible')
-        self.addMessage("top:%s, left:%s, cy:%s cx:%s, sy:%s sx:%s dropy:%s dropx:%s" % (at, al, y, x, scrollY, scrollX, posY, posX))
+        self.addMessage(
+            "top:%s, left:%s, cy:%s cx:%s, sy:%s sx:%s dropy:%s dropx:%s" % (
+            at, al, y, x, scrollY, scrollX, posY, posX))
 
         DOM.eventPreventDefault(event)
 
@@ -813,6 +813,7 @@ class DropWidget6(DropWidget, DragContainer, AddablePanel):
         while not hasattr(parent, 'addMessage'):
             parent = parent.getParent()
         parent.addMessage(message)
+
 
 class StudentWidget(Label):
     def __init__(self, name, age):
@@ -872,7 +873,7 @@ class StudentContainer(DragContainer, DropWidget, VerticalPanel):
         new_names.sort()
         while len(self.children):
             self.remove(self.children[0])
-        #self.clear()
+            #self.clear()
         self.addTitle()
         for student in new_names:
             sw = StudentWidget(student[0], student[1])
@@ -882,7 +883,7 @@ class StudentContainer(DragContainer, DropWidget, VerticalPanel):
 
     def onDragStart(self, event):
         self.removeStyleName('drop_fail')
-        dt= event.dataTransfer
+        dt = event.dataTransfer
         dt.effectAllowed = 'copy'
         target = DOM.eventGetTarget(event)
         widget = None
@@ -890,9 +891,9 @@ class StudentContainer(DragContainer, DropWidget, VerticalPanel):
             if widget.getElement() == target:
                 self.movingWidget = widget
                 break
-        dt.setData('Text', json.encode({'name':widget.student_name,
-                                        'age':widget.age,
-                                        'parent':self.getID()}))
+        dt.setData('Text', json.encode({'name': widget.student_name,
+                                        'age': widget.age,
+                                        'parent': self.getID()}))
 
     def onDrag(self, event):
         self.movingWidget.addStyleName('invisible')
@@ -921,6 +922,9 @@ class StudentContainer(DragContainer, DropWidget, VerticalPanel):
     def age_is_ok(self, age):
         return age >= self.min_age and age <= self.max_age
 
+
+
+
     def onDrop(self, event):
         dt = event.dataTransfer
 
@@ -935,9 +939,10 @@ class StudentContainer(DragContainer, DropWidget, VerticalPanel):
                 dt.dropEffect = 'copy'
 
                 self.addStyleName('flash')
-                def unflash():
+                def removeFlash(timer):
                     self.removeStyleName('flash')
-                Timer(250, unflash)
+
+                Timer(250, notify=removeFlash)
             else:
                 dt.dropEffect = 'none'
                 self.addMessage('student could not be added')
@@ -948,7 +953,7 @@ class StudentContainer(DragContainer, DropWidget, VerticalPanel):
                 item_parent_id = data['parent']
                 item_parent = self.parent.containerFromId(item_parent_id)
                 item_parent.addStyleName('drop_fail')
-        # prevent default allows onDragEnd to see the dropEffect we set here
+            # prevent default allows onDragEnd to see the dropEffect we set here
         DOM.eventPreventDefault(event)
 
     def addMessage(self, message):
@@ -965,7 +970,7 @@ class ClassContainer(HorizontalPanel):
 
         pool = StudentContainer(1, 20, 'pool_1')
         for item in [['Fred', 12], ['Jane', 10], ['Sam', 18],
-                     ['Ginger', 8],['Mary', 4]]:
+                     ['Ginger', 8], ['Mary', 4]]:
             pool.addStudent(name=item[0], age=item[1])
         self.append(pool)
         self.append(StudentContainer(6, 13, 'pool_2'))
@@ -976,6 +981,7 @@ class ClassContainer(HorizontalPanel):
         for item in self.children:
             if item.getID() == id:
                 return item
+
 
 class MultiTargetDemo(DNDDemo):
     def __init__(self):

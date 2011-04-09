@@ -460,7 +460,7 @@ class DNDHelper(object):
             yield start_x, start_y
         raise StopIteration
 
-    def onReturningWidget(self):
+    def onReturningWidget(self, timer):
         try:
             next_loc = self.return_iterator.next()
         except StopIteration:
