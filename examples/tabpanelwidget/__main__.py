@@ -3,13 +3,13 @@
 
 
 TARGETS = [
-    'Hello.py',
+    'Tabs.py',
 ]
 
 
 PACKAGE = {
-    'title': 'helloworld',
-    'desc': 'Port of GWT hello world example',
+    'title': 'tabpanelwidget',
+    'desc': 'Tab Panel example',
 }
 
 

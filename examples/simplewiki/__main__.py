@@ -3,13 +3,13 @@
 
 
 TARGETS = [
-    'Hello.py',
+    'Wiki.py',
 ]
 
 
 PACKAGE = {
-    'title': 'helloworld',
-    'desc': 'Port of GWT hello world example',
+    'title': 'simplewiki',
+    'desc': 'Simple Wiki example',
 }
 
 

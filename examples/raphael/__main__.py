@@ -3,13 +3,13 @@
 
 
 TARGETS = [
-    'Hello.py',
+    'test.py',
 ]
 
 
 PACKAGE = {
-    'title': 'helloworld',
-    'desc': 'Port of GWT hello world example',
+    'title': 'raphael',
+    'desc': 'Raphael JS wrapper example',
 }
 
 

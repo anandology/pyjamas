@@ -3,13 +3,13 @@
 
 
 TARGETS = [
-    'Hello.py',
+    'AutoGtk.py',
 ]
 
 
 PACKAGE = {
-    'title': 'helloworld',
-    'desc': 'Port of GWT hello world example',
+    'title': 'pywebgtkbuilder',
+    'desc': 'Python Web-Gtk "GtkBuilder" example',
 }
 
 

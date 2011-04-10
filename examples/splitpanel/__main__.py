@@ -3,13 +3,13 @@
 
 
 TARGETS = [
-    'Hello.py',
+    'SplitPanel.py',
 ]
 
 
 PACKAGE = {
-    'title': 'helloworld',
-    'desc': 'Port of GWT hello world example',
+    'title': 'splitpanel',
+    'desc': 'Split Panels example',
 }
 
 
