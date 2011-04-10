@@ -5,28 +5,37 @@ from random import randrange, shuffle
 class PassThru(Exception):
     pass
 
+
 def check_pass_thru():
     raise PassThru
     yield 1
 
+
 class BadCmp:
     def __hash__(self):
         return 1
+
     def __cmp__(self, other):
         raise RuntimeError
 
+
 class ReprWrapper:
     'Used to test self-referential repr() calls'
+
     def __repr__(self):
         return repr(self.value)
 
+
 class HashCountingInt(int):
     'int-like object that counts the number of times __hash__ is called'
+
     def __init__(self, *args):
         self.hash_count = 0
+
     def __hash__(self):
         self.hash_count += 1
         return int.__hash__(self)
+
 
 class TestJointOps(UnitTest):
     # Tests common to both set and frozenset
@@ -70,7 +79,8 @@ class TestJointOps(UnitTest):
         #for C in set, frozenset, dict.fromkeys, str, unicode, list, tuple:
         for C in set, frozenset, dict.fromkeys, str, list, tuple:
             self.assertEqual(self.thetype('abcba').union(C('cdc')), set('abcd'))
-            self.assertEqual(self.thetype('abcba').union(C('efgfe')), set('abcefg'))
+            self.assertEqual(self.thetype('abcba').union(C('efgfe')),
+                             set('abcefg'))
             self.assertEqual(self.thetype('abcba').union(C('ccb')), set('abc'))
             self.assertEqual(self.thetype('abcba').union(C('ef')), set('abcef'))
             # Py2.6:
@@ -96,10 +106,14 @@ class TestJointOps(UnitTest):
         self.assertRaises(PassThru, self.s.intersection, check_pass_thru())
         #for C in set, frozenset, dict.fromkeys, str, unicode, list, tuple:
         for C in set, frozenset, dict.fromkeys, str, list, tuple:
-            self.assertEqual(self.thetype('abcba').intersection(C('cdc')), set('cc'))
-            self.assertEqual(self.thetype('abcba').intersection(C('efgfe')), set(''))
-            self.assertEqual(self.thetype('abcba').intersection(C('ccb')), set('bc'))
-            self.assertEqual(self.thetype('abcba').intersection(C('ef')), set(''))
+            self.assertEqual(self.thetype('abcba').intersection(C('cdc')),
+                             set('cc'))
+            self.assertEqual(self.thetype('abcba').intersection(C('efgfe')),
+                             set(''))
+            self.assertEqual(self.thetype('abcba').intersection(C('ccb')),
+                             set('bc'))
+            self.assertEqual(self.thetype('abcba').intersection(C('ef')),
+                             set(''))
             # Py2.6:
             #self.assertEqual(self.thetype('abcba').intersection(C('cbcf'), C('bag')), set('b'))
         s = self.thetype('abcba')
@@ -115,9 +129,11 @@ class TestJointOps(UnitTest):
         if not hasattr(set, 'isdisjoint'):
             self.fail("isdisjoint not supported")
             return
+
         def f(s1, s2):
             'Pure python equivalent of isdisjoint()'
             return not set(s1).intersection(s2)
+
         for larg in '', 'a', 'ab', 'abc', 'ababac', 'cdc', 'cc', 'efgfe', 'ccb', 'ef':
             s1 = self.thetype(larg)
             for rarg in '', 'a', 'ab', 'abc', 'ababac', 'cdc', 'cc', 'efgfe', 'ccb', 'ef':
@@ -150,10 +166,14 @@ class TestJointOps(UnitTest):
         self.assertRaises(TypeError, self.s.difference, [[]])
         #for C in set, frozenset, dict.fromkeys, str, unicode, list, tuple:
         for C in set, frozenset, dict.fromkeys, str, list, tuple:
-            self.assertEqual(self.thetype('abcba').difference(C('cdc')), set('ab'))
-            self.assertEqual(self.thetype('abcba').difference(C('efgfe')), set('abc'))
-            self.assertEqual(self.thetype('abcba').difference(C('ccb')), set('a'))
-            self.assertEqual(self.thetype('abcba').difference(C('ef')), set('abc'))
+            self.assertEqual(self.thetype('abcba').difference(C('cdc')),
+                             set('ab'))
+            self.assertEqual(self.thetype('abcba').difference(C('efgfe')),
+                             set('abc'))
+            self.assertEqual(self.thetype('abcba').difference(C('ccb')),
+                             set('a'))
+            self.assertEqual(self.thetype('abcba').difference(C('ef')),
+                             set('abc'))
             # Py2.6:
             #self.assertEqual(self.thetype('abcba').difference(), set('abc'))
             #self.assertEqual(self.thetype('abcba').difference(C('a'), C('b')), set('c'))
@@ -175,14 +195,21 @@ class TestJointOps(UnitTest):
             self.assertEqual(c in i, (c in self.d) ^ (c in self.otherword))
         self.assertEqual(self.s, self.thetype(self.word))
         #self.assertEqual(type(i), self.thetype)
-        self.assertRaises(PassThru, self.s.symmetric_difference, check_pass_thru())
+        self.assertRaises(PassThru, self.s.symmetric_difference,
+                          check_pass_thru())
         self.assertRaises(TypeError, self.s.symmetric_difference, [[]])
         #for C in set, frozenset, dict.fromkeys, str, unicode, list, tuple:
         for C in set, frozenset, dict.fromkeys, str, list, tuple:
-            self.assertEqual(self.thetype('abcba').symmetric_difference(C('cdc')), set('abd'))
-            self.assertEqual(self.thetype('abcba').symmetric_difference(C('efgfe')), set('abcefg'))
-            self.assertEqual(self.thetype('abcba').symmetric_difference(C('ccb')), set('a'))
-            self.assertEqual(self.thetype('abcba').symmetric_difference(C('ef')), set('abcef'))
+            self.assertEqual(
+                self.thetype('abcba').symmetric_difference(C('cdc')),
+                set('abd'))
+            self.assertEqual(
+                self.thetype('abcba').symmetric_difference(C('efgfe')),
+                set('abcefg'))
+            self.assertEqual(
+                self.thetype('abcba').symmetric_difference(C('ccb')), set('a'))
+            self.assertEqual(self.thetype('abcba').symmetric_difference(C('ef'))
+                             , set('abcef'))
 
     def test_xor(self):
         i = self.s.symmetric_difference(self.otherword)
@@ -243,39 +270,44 @@ class TestJointOps(UnitTest):
     def test_badcmp(self):
         s = self.thetype([BadCmp()])
         # Detect comparison errors during insertion and lookup
-        self.assertRaises(RuntimeError, self.thetype, [BadCmp(), BadCmp()])
-        #self.assertRaises(RuntimeError, s.__contains__, BadCmp())
-        # Detect errors during mutating operations
-        #if hasattr(s, 'add'):
-        #    self.assertRaises(RuntimeError, s.add, BadCmp())
-        #    self.assertRaises(RuntimeError, s.discard, BadCmp())
-        #    self.assertRaises(RuntimeError, s.remove, BadCmp())
+        try:
+            s = self.thetype([BadCmp(), BadCmp()])
+            self.fail(
+            "Issue #571 Set allows adding objects with bad comparison methods")
+        except RuntimeError:
+            pass
+            #self.assertRaises(RuntimeError, s.__contains__, BadCmp())
+            # Detect errors during mutating operations
+            #if hasattr(s, 'add'):
+            #    self.assertRaises(RuntimeError, s.add, BadCmp())
+            #    self.assertRaises(RuntimeError, s.discard, BadCmp())
+            #    self.assertRaises(RuntimeError, s.remove, BadCmp())
 
-    #def test_cyclical_repr(self):
-    #    w = ReprWrapper()
-    #    s = self.thetype([w])
-    #    w.value = s
-    #    name = repr(s).partition('(')[0]    # strip class name from repr string
-    #    self.assertEqual(repr(s), '%s([%s(...)])' % (name, name))
+            #def test_cyclical_repr(self):
+            #    w = ReprWrapper()
+            #    s = self.thetype([w])
+            #    w.value = s
+            #    name = repr(s).partition('(')[0]    # strip class name from repr string
+            #    self.assertEqual(repr(s), '%s([%s(...)])' % (name, name))
 
-    #def test_do_not_rehash_dict_keys(self):
-    #    n = 10
-    #    d = dict.fromkeys(map(HashCountingInt, xrange(n)))
-    #    self.assertEqual(sum(elem.hash_count for elem in d), n)
-    #    s = self.thetype(d)
-    #    self.assertEqual(sum(elem.hash_count for elem in d), n)
-    #    s.difference(d)
-    #    self.assertEqual(sum(elem.hash_count for elem in d), n)
-    #    if hasattr(s, 'symmetric_difference_update'):
-    #        s.symmetric_difference_update(d)
-    #    self.assertEqual(sum(elem.hash_count for elem in d), n)
-    #    d2 = dict.fromkeys(set(d))
-    #    self.assertEqual(sum(elem.hash_count for elem in d), n)
-    #    d3 = dict.fromkeys(frozenset(d))
-    #    self.assertEqual(sum(elem.hash_count for elem in d), n)
-    #    d3 = dict.fromkeys(frozenset(d), 123)
-    #    self.assertEqual(sum(elem.hash_count for elem in d), n)
-    #    self.assertEqual(d3, dict.fromkeys(d, 123))
+            #def test_do_not_rehash_dict_keys(self):
+            #    n = 10
+            #    d = dict.fromkeys(map(HashCountingInt, xrange(n)))
+            #    self.assertEqual(sum(elem.hash_count for elem in d), n)
+            #    s = self.thetype(d)
+            #    self.assertEqual(sum(elem.hash_count for elem in d), n)
+            #    s.difference(d)
+            #    self.assertEqual(sum(elem.hash_count for elem in d), n)
+            #    if hasattr(s, 'symmetric_difference_update'):
+            #        s.symmetric_difference_update(d)
+            #    self.assertEqual(sum(elem.hash_count for elem in d), n)
+            #    d2 = dict.fromkeys(set(d))
+            #    self.assertEqual(sum(elem.hash_count for elem in d), n)
+            #    d3 = dict.fromkeys(frozenset(d))
+            #    self.assertEqual(sum(elem.hash_count for elem in d), n)
+            #    d3 = dict.fromkeys(frozenset(d), 123)
+            #    self.assertEqual(sum(elem.hash_count for elem in d), n)
+            #    self.assertEqual(d3, dict.fromkeys(d, 123))
 
 
 class SetTest(TestJointOps):
@@ -287,8 +319,8 @@ class SetTest(TestJointOps):
         self.assertEqual(s, set(self.word))
         s.__init__(self.otherword)
         self.assertEqual(s, set(self.otherword))
-        self.assertRaises(TypeError, s.__init__, s, 2);
-        self.assertRaises(TypeError, s.__init__, 1);
+        self.assertRaises(TypeError, s.__init__, s, 2)
+        self.assertRaises(TypeError, s.__init__, 1)
 
     #def test_constructor_identity(self):
     #    s = self.thetype(range(3))
@@ -344,7 +376,7 @@ class SetTest(TestJointOps):
             self.s.remove(key)
         except KeyError, e:
             self.assertTrue(e[0] is key,
-                         "KeyError should be %s, not %s" % (key, e[0]))
+                            "KeyError should be %s, not %s" % (key, e[0]))
         else:
             self.fail()
 
@@ -374,13 +406,14 @@ class SetTest(TestJointOps):
             self.assert_(c in self.s)
         self.assertRaises(PassThru, self.s.update, check_pass_thru())
         self.assertRaises(TypeError, self.s.update, [[]])
-        for p, q in (('cdc', 'abcd'), ('efgfe', 'abcefg'), ('ccb', 'abc'), ('ef', 'abcef')):
+        for p, q in (
+        ('cdc', 'abcd'), ('efgfe', 'abcefg'), ('ccb', 'abc'), ('ef', 'abcef')):
             #for C in set, frozenset, dict.fromkeys, str, unicode, list, tuple:
             for C in set, frozenset, dict.fromkeys, str, list, tuple:
                 s = self.thetype('abcba')
                 self.assertEqual(s.update(C(p)), None)
                 self.assertEqual(s, set(q))
-        # Py2.6:
+                # Py2.6:
         return
         for p in ('cdc', 'efgfe', 'ccb', 'ef', 'abcda'):
             q = 'ahi'
@@ -394,12 +427,12 @@ class SetTest(TestJointOps):
         self.s |= set(self.otherword)
         #for c in (self.word + self.otherword):
         t = self.word + self.otherword
-        if isinstance(self.s,set):
+        if isinstance(self.s, set):
             for c in t:
                 self.assert_(c in self.s)
         else:
             self.fail("|= result not a set")
-              
+
 
     def test_intersection_update(self):
         retval = self.s.intersection_update(self.otherword)
@@ -411,7 +444,8 @@ class SetTest(TestJointOps):
                 self.assert_(c in self.s)
             else:
                 self.assert_(c not in self.s)
-        self.assertRaises(PassThru, self.s.intersection_update, check_pass_thru())
+        self.assertRaises(PassThru, self.s.intersection_update,
+                          check_pass_thru())
         self.assertRaises(TypeError, self.s.intersection_update, [[]])
         for p, q in (('cdc', 'c'), ('efgfe', ''), ('ccb', 'bc'), ('ef', '')):
             #for C in set, frozenset, dict.fromkeys, str, unicode, list, tuple:
@@ -430,7 +464,7 @@ class SetTest(TestJointOps):
         self.s &= set(self.otherword)
         #for c in (self.word + self.otherword):
         t = self.word + self.otherword
-        if isinstance(self.s,set):
+        if isinstance(self.s, set):
             for c in t:
                 if c in self.otherword and c in self.word:
                     self.assert_(c in self.s)
@@ -452,7 +486,8 @@ class SetTest(TestJointOps):
         self.assertRaises(PassThru, self.s.difference_update, check_pass_thru())
         self.assertRaises(TypeError, self.s.difference_update, [[]])
         self.assertRaises(TypeError, self.s.symmetric_difference_update, [[]])
-        for p, q in (('cdc', 'ab'), ('efgfe', 'abc'), ('ccb', 'a'), ('ef', 'abc')):
+        for p, q in (
+        ('cdc', 'ab'), ('efgfe', 'abc'), ('ccb', 'a'), ('ef', 'abc')):
             #for C in set, frozenset, dict.fromkeys, str, unicode, list, tuple:
             for C in set, frozenset, dict.fromkeys, str, list, tuple:
                 s = self.thetype('abcba')
@@ -493,9 +528,11 @@ class SetTest(TestJointOps):
                 self.assert_(c in self.s)
             else:
                 self.assert_(c not in self.s)
-        self.assertRaises(PassThru, self.s.symmetric_difference_update, check_pass_thru())
+        self.assertRaises(PassThru, self.s.symmetric_difference_update,
+                          check_pass_thru())
         self.assertRaises(TypeError, self.s.symmetric_difference_update, [[]])
-        for p, q in (('cdc', 'abd'), ('efgfe', 'abcefg'), ('ccb', 'a'), ('ef', 'abcef')):
+        for p, q in (
+        ('cdc', 'abd'), ('efgfe', 'abcefg'), ('ccb', 'a'), ('ef', 'abcef')):
             #for C in set, frozenset, dict.fromkeys, str, unicode, list, tuple:
             for C in set, frozenset, dict.fromkeys, str, list, tuple:
                 s = self.thetype('abcba')
@@ -506,7 +543,7 @@ class SetTest(TestJointOps):
         self.s ^= set(self.otherword)
         #for c in (self.word + self.otherword):
         t = self.word + self.otherword
-        if isinstance(self.s,set):
+        if isinstance(self.s, set):
             for c in t:
                 if (c in self.word) ^ (c in self.otherword):
                     self.assert_(c in self.s)
@@ -528,21 +565,25 @@ class SetTest(TestJointOps):
         t ^= t
         self.assertEqual(t, self.thetype())
 
+
 class SetSubclass(set):
     pass
 
+
 class TestSetSubclass(SetTest):
     thetype = SetSubclass
+
 
 class SetSubclassWithKeywordArgs(set):
     def __init__(self, iterable=[], newarg=None):
         set.__init__(self, iterable)
 
-class TestSetSubclassWithKeywordArgs(SetTest):
 
+class TestSetSubclassWithKeywordArgs(SetTest):
     def test_keywords_in_subclass(self):
         'SF bug #1486663 -- this used to erroneously raise a TypeError'
         SetSubclassWithKeywordArgs(newarg=1)
+
 
 class FrozenSetTest(TestJointOps):
     thetype = frozenset
@@ -604,13 +645,17 @@ class FrozenSetTest(TestJointOps):
         hashvalues = set()
         addhashvalue = hashvalues.add
         #elemmasks = [(i+1, 1<<i) for i in range(n)]
-        elemmasks = [(1, 1), (2, 2), (3, 4), (4, 8), (5, 16), (6, 32), (7, 64), (8, 128), (9, 256), (10, 512), (11, 1024), (12, 2048), (13, 4096)]
-        for i in xrange(2**n):
-            addhashvalue(hash(frozenset([e for e, m in elemmasks if m&i])))
-        self.assertEqual(len(hashvalues), 2**n)
+        elemmasks = [(1, 1), (2, 2), (3, 4), (4, 8), (5, 16), (6, 32), (7, 64),
+                     (8, 128), (9, 256), (10, 512), (11, 1024), (12, 2048),
+                     (13, 4096)]
+        for i in xrange(2 ** n):
+            addhashvalue(hash(frozenset([e for e, m in elemmasks if m & i])))
+        self.assertEqual(len(hashvalues), 2 ** n)
+
 
 class FrozenSetSubclass(frozenset):
     pass
+
 
 class FrozenSetSubclassTest(FrozenSetTest):
     thetype = FrozenSetSubclass
@@ -649,7 +694,6 @@ empty_set = set()
 #==============================================================================
 
 class TestBasicOps(UnitTest):
-
     def test_repr(self):
         if self.repr is not None:
             self.assertEqual(repr(self.set), self.repr)
@@ -735,23 +779,23 @@ class TestBasicOps(UnitTest):
 
 class TestBasicOpsEmpty(TestBasicOps):
     def setUp(self):
-        self.case   = "empty set"
+        self.case = "empty set"
         self.values = []
-        self.set    = set(self.values)
-        self.dup    = set(self.values)
+        self.set = set(self.values)
+        self.dup = set(self.values)
         self.length = 0
-        self.repr   = "set([])"
+        self.repr = "set([])"
 
 #------------------------------------------------------------------------------
 
 class TestBasicOpsSingleton(TestBasicOps):
     def setUp(self):
-        self.case   = "unit set (number)"
+        self.case = "unit set (number)"
         self.values = [3]
-        self.set    = set(self.values)
-        self.dup    = set(self.values)
+        self.set = set(self.values)
+        self.dup = set(self.values)
         self.length = 1
-        self.repr   = "set([3])"
+        self.repr = "set([3])"
 
     def test_in(self):
         self.failUnless(3 in self.set)
@@ -763,12 +807,12 @@ class TestBasicOpsSingleton(TestBasicOps):
 
 class TestBasicOpsTuple(TestBasicOps):
     def setUp(self):
-        self.case   = "unit set (tuple)"
+        self.case = "unit set (tuple)"
         self.values = [(0, "zero")]
-        self.set    = set(self.values)
-        self.dup    = set(self.values)
+        self.set = set(self.values)
+        self.dup = set(self.values)
         self.length = 1
-        self.repr   = "set([(0, 'zero')])"
+        self.repr = "set([(0, 'zero')])"
 
     def test_in(self):
         self.failUnless((0, "zero") in self.set)
@@ -784,8 +828,10 @@ def baditer():
     raise TypeError
     yield True
 
+
 def gooditer():
     yield True
+
 
 class TestExceptionPropagation(UnitTest):
     """SF 628246:  Set constructor should not trap iterator TypeErrors"""
@@ -795,15 +841,15 @@ class TestExceptionPropagation(UnitTest):
 
     def test_instancesWithoutException(self):
         # All of these iterables should load without exception.
-        set([1,2,3])
-        set((1,2,3))
-        set({'one':1, 'two':2, 'three':3})
+        set([1, 2, 3])
+        set((1, 2, 3))
+        set({'one': 1, 'two': 2, 'three': 3})
         set(xrange(3))
         set('abc')
         set(gooditer())
 
     def test_changingSizeWhileIterating(self):
-        s = set([1,2,3])
+        s = set([1, 2, 3])
         try:
             for i in s:
                 s.update([4])
@@ -832,7 +878,7 @@ class TestBinaryOps(UnitTest):
         self.set = set((2, 4, 6))
 
     def test_eq(self):              # SF bug 643115
-        self.assertEqual(self.set, set({2:1,4:3,6:5}))
+        self.assertEqual(self.set, set({2: 1, 4: 3, 6: 5}))
 
     def test_union_subset(self):
         result = self.set | set([2])
@@ -1074,18 +1120,17 @@ class TestMutate(UnitTest):
 #==============================================================================
 
 class TestSubsets(UnitTest):
-
     case2method = {"<=": "issubset",
                    ">=": "issuperset",
-                  }
+                   }
 
     reverse = {"==": "==",
                "!=": "!=",
-               "<":  ">",
-               ">":  "<",
+               "<": ">",
+               ">": "<",
                "<=": ">=",
                ">=": "<=",
-              }
+               }
 
     def test_issubset(self):
         x = self.left
@@ -1109,50 +1154,50 @@ class TestSubsets(UnitTest):
                 method = getattr(y, TestSubsets.case2method[rcase])
                 result = method(x)
                 self.assertEqual(result, expected)
+
 #------------------------------------------------------------------------------
 
 class TestSubsetEqualEmpty(TestSubsets):
-    left  = set()
+    left = set()
     right = set()
-    name  = "both empty"
+    name = "both empty"
     cases = "==", "<=", ">="
 
 #------------------------------------------------------------------------------
 
 class TestSubsetEqualNonEmpty(TestSubsets):
-    left  = set([1, 2])
+    left = set([1, 2])
     right = set([1, 2])
-    name  = "equal pair"
+    name = "equal pair"
     cases = "==", "<=", ">="
 
 #------------------------------------------------------------------------------
 
 class TestSubsetEmptyNonEmpty(TestSubsets):
-    left  = set()
+    left = set()
     right = set([1, 2])
-    name  = "one empty, one non-empty"
+    name = "one empty, one non-empty"
     cases = "!=", "<", "<="
 
 #------------------------------------------------------------------------------
 
 class TestSubsetPartial(TestSubsets):
-    left  = set([1])
+    left = set([1])
     right = set([1, 2])
-    name  = "one a non-empty proper subset of other"
+    name = "one a non-empty proper subset of other"
     cases = "!=", "<", "<="
 
 #------------------------------------------------------------------------------
 
 class TestSubsetNonOverlap(TestSubsets):
-    left  = set([1])
+    left = set([1])
     right = set([2])
-    name  = "neither empty, neither contains"
+    name = "neither empty, neither contains"
     cases = "!="
 
 #==============================================================================
 
 class TestOnlySetsInBinaryOps(UnitTest):
-
     def test_eq_ne(self):
         # Unlike the others, this is testing that == and != *are* allowed.
         self.assertEqual(self.other == self.set, False)
@@ -1239,7 +1284,8 @@ class TestOnlySetsInBinaryOps(UnitTest):
         if self.otherIsIterable:
             self.set.symmetric_difference(self.other)
         else:
-            self.assertRaises(TypeError, self.set.symmetric_difference, self.other)
+            self.assertRaises(TypeError, self.set.symmetric_difference,
+                              self.other)
 
     def test_difference_update_operator(self):
         try:
@@ -1269,7 +1315,7 @@ class TestOnlySetsInBinaryOps(UnitTest):
 
 class TestOnlySetsNumeric(TestOnlySetsInBinaryOps):
     def setUp(self):
-        self.set   = set((1, 2, 3))
+        self.set = set((1, 2, 3))
         self.other = 19
         self.otherIsIterable = False
 
@@ -1277,15 +1323,15 @@ class TestOnlySetsNumeric(TestOnlySetsInBinaryOps):
 
 class TestOnlySetsDict(TestOnlySetsInBinaryOps):
     def setUp(self):
-        self.set   = set((1, 2, 3))
-        self.other = {1:2, 3:4}
+        self.set = set((1, 2, 3))
+        self.other = {1: 2, 3: 4}
         self.otherIsIterable = True
 
 #------------------------------------------------------------------------------
 
 class TestOnlySetsOperator(TestOnlySetsInBinaryOps):
     def setUp(self):
-        self.set   = set((1, 2, 3))
+        self.set = set((1, 2, 3))
         self.other = operator.add
         self.otherIsIterable = False
 
@@ -1293,7 +1339,7 @@ class TestOnlySetsOperator(TestOnlySetsInBinaryOps):
 
 class TestOnlySetsTuple(TestOnlySetsInBinaryOps):
     def setUp(self):
-        self.set   = set((1, 2, 3))
+        self.set = set((1, 2, 3))
         self.other = (2, 4, 6)
         self.otherIsIterable = True
 
@@ -1301,7 +1347,7 @@ class TestOnlySetsTuple(TestOnlySetsInBinaryOps):
 
 class TestOnlySetsString(TestOnlySetsInBinaryOps):
     def setUp(self):
-        self.set   = set((1, 2, 3))
+        self.set = set((1, 2, 3))
         self.other = 'abc'
         self.otherIsIterable = True
 
@@ -1312,18 +1358,20 @@ class TestOnlySetsGenerator(TestOnlySetsInBinaryOps):
         def gen():
             for i in xrange(0, 10, 2):
                 yield i
-        self.set   = set((1, 2, 3))
+
+        self.set = set((1, 2, 3))
         self.other = gen()
         self.otherIsIterable = True
 
 #==============================================================================
 
 class TestCopying(UnitTest):
-
     def test_copy(self):
         dup = self.set.copy()
-        dup_list = list(dup); dup_list.sort()
-        set_list = list(self.set); set_list.sort()
+        dup_list = list(dup);
+        dup_list.sort()
+        set_list = list(self.set);
+        set_list.sort()
         self.assertEqual(len(dup_list), len(set_list))
         for i in range(len(dup_list)):
             self.failUnless(dup_list[i] is set_list[i])
@@ -1331,8 +1379,10 @@ class TestCopying(UnitTest):
     def test_deep_copy(self):
         dup = copy.deepcopy(self.set)
         ##print type(dup), repr(dup)
-        dup_list = list(dup); dup_list.sort()
-        set_list = list(self.set); set_list.sort()
+        dup_list = list(dup);
+        dup_list.sort()
+        set_list = list(self.set);
+        set_list.sort()
         self.assertEqual(len(dup_list), len(set_list))
         for i in range(len(dup_list)):
             self.assertEqual(dup_list[i], set_list[i])
@@ -1386,29 +1436,29 @@ class TestIdentities(UnitTest):
 
     def test_commutativity(self):
         a, b = self.a, self.b
-        self.assertEqual(a&b, b&a)
-        self.assertEqual(a|b, b|a)
-        self.assertEqual(a^b, b^a)
+        self.assertEqual(a & b, b & a)
+        self.assertEqual(a | b, b | a)
+        self.assertEqual(a ^ b, b ^ a)
         if a != b:
-            self.assertNotEqual(a-b, b-a)
+            self.assertNotEqual(a - b, b - a)
 
     def test_summations(self):
         # check that sums of parts equal the whole
         a, b = self.a, self.b
-        self.assertEqual((a-b)|(a&b)|(b-a), a|b)
-        self.assertEqual((a&b)|(a^b), a|b)
-        self.assertEqual(a|(b-a), a|b)
-        self.assertEqual((a-b)|b, a|b)
-        self.assertEqual((a-b)|(a&b), a)
-        self.assertEqual((b-a)|(a&b), b)
-        self.assertEqual((a-b)|(b-a), a^b)
+        self.assertEqual((a - b) | (a & b) | (b - a), a | b)
+        self.assertEqual((a & b) | (a ^ b), a | b)
+        self.assertEqual(a | (b - a), a | b)
+        self.assertEqual((a - b) | b, a | b)
+        self.assertEqual((a - b) | (a & b), a)
+        self.assertEqual((b - a) | (a & b), b)
+        self.assertEqual((a - b) | (b - a), a ^ b)
 
     def test_exclusion(self):
         # check that inverse operations show non-overlap
         a, b, zero = self.a, self.b, set()
-        self.assertEqual((a-b)&b, zero)
-        self.assertEqual((b-a)&a, zero)
-        self.assertEqual((a&b)&(a^b), zero)
+        self.assertEqual((a - b) & b, zero)
+        self.assertEqual((b - a) & a, zero)
+        self.assertEqual((a & b) & (a ^ b), zero)
 
 # Tests derived from test_itertools.py =======================================
 
@@ -1417,88 +1467,116 @@ def R(seqn):
     for i in seqn:
         yield i
 
+
 class G:
     'Sequence using __getitem__'
+
     def __init__(self, seqn):
         self.seqn = seqn
+
     def __getitem__(self, i):
         return self.seqn[i]
 
+
 class I:
     'Sequence using iterator protocol'
+
     def __init__(self, seqn):
         self.seqn = seqn
         self.i = 0
+
     def __iter__(self):
         return self
+
     def next(self):
         if self.i >= len(self.seqn): raise StopIteration
         v = self.seqn[self.i]
         self.i += 1
         return v
 
+
 class Ig:
     'Sequence using iterator protocol defined with a generator'
+
     def __init__(self, seqn):
         self.seqn = seqn
         self.i = 0
+
     def __iter__(self):
         for val in self.seqn:
             yield val
 
+
 class X:
     'Missing __getitem__ and __iter__'
+
     def __init__(self, seqn):
         self.seqn = seqn
         self.i = 0
+
     def next(self):
         if self.i >= len(self.seqn): raise StopIteration
         v = self.seqn[self.i]
         self.i += 1
         return v
 
+
 class N:
     'Iterator missing next()'
+
     def __init__(self, seqn):
         self.seqn = seqn
         self.i = 0
+
     def __iter__(self):
         return self
+
 
 class E:
     'Test propagation of exceptions'
+
     def __init__(self, seqn):
         self.seqn = seqn
         self.i = 0
+
     def __iter__(self):
         return self
+
     def next(self):
         t = 3 // 0
 
+
 class S:
     'Test immediate stop'
+
     def __init__(self, seqn):
         pass
+
     def __iter__(self):
         return self
+
     def next(self):
         raise StopIteration
 
-class TestVariousIteratorArgs(UnitTest):
 
+class TestVariousIteratorArgs(UnitTest):
     def test_constructor(self):
         for cons in (set, frozenset):
-            for s in ("123", "", range(1000), ('do', 1.2), xrange(2000,2200,5)):
+            for s in (
+            "123", "", range(1000), ('do', 1.2), xrange(2000, 2200, 5)):
                 for g in (G, I, Ig, S, R):
                     self.assertEqual(sorted(cons(g(s))), sorted(g(s)))
-                self.assertRaises(TypeError, cons , X(s))
-                self.assertRaises(TypeError, cons , N(s))
-                self.assertRaises(ZeroDivisionError, cons , E(s))
+                self.assertRaises(TypeError, cons, X(s))
+                self.assertRaises(TypeError, cons, N(s))
+                self.assertRaises(ZeroDivisionError, cons, E(s))
 
     def test_inline_methods(self):
         s = set('november')
-        for data in ("123", "", range(1000), ('do', 1.2), xrange(2000,2200,5), 'december'):
-            for meth in (s.union, s.intersection, s.difference, s.symmetric_difference, s.isdisjoint):
+        for data in (
+        "123", "", range(1000), ('do', 1.2), xrange(2000, 2200, 5), 'december'):
+            for meth in (
+            s.union, s.intersection, s.difference, s.symmetric_difference,
+            s.isdisjoint):
                 for g in (G, I, Ig, R):
                     expected = meth(data)
                     actual = meth(G(data))
@@ -1511,9 +1589,11 @@ class TestVariousIteratorArgs(UnitTest):
                 self.assertRaises(ZeroDivisionError, meth, E(s))
 
     def test_inplace_methods(self):
-        for data in ("123", "", range(1000), ('do', 1.2), xrange(2000,2200,5), 'december'):
+        for data in (
+        "123", "", range(1000), ('do', 1.2), xrange(2000, 2200, 5), 'december'):
             for methname in ('update', 'intersection_update',
-                             'difference_update', 'symmetric_difference_update'):
+                             'difference_update',
+                             'symmetric_difference_update'):
                 for g in (G, I, Ig, S, R):
                     s = set('january')
                     t = s.copy()
@@ -1521,8 +1601,11 @@ class TestVariousIteratorArgs(UnitTest):
                     getattr(t, methname)(g(data))
                     self.assertEqual(sorted(s), sorted(t))
 
-                self.assertRaises(TypeError, getattr(set('january'), methname), X(data))
-                self.assertRaises(TypeError, getattr(set('january'), methname), N(data))
-                self.assertRaises(ZeroDivisionError, getattr(set('january'), methname), E(data))
+                self.assertRaises(TypeError, getattr(set('january'), methname),
+                                  X(data))
+                self.assertRaises(TypeError, getattr(set('january'), methname),
+                                  N(data))
+                self.assertRaises(ZeroDivisionError,
+                                  getattr(set('january'), methname), E(data))
 
 
