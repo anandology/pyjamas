@@ -77,6 +77,18 @@ Copyright: 2010 Jim Washington <washington.jim@gmail.com>
 Copyright: 2010 Karl Voigtland <voigtk@alum.rpi.edu>
 Copyright: 2011 goffi <goffi@goffi.org>
 
+Files: pyjs/src/pyjs/lib/socket.py
+Copyright: 2008-2010, David P. D. Moss.
+License: BSD
+
+Files: pyjs/src/pyjs/lib/logging/*
+Copyright: 2001-2007 Vinay Sajip.
+License: MIT
+
+Files: pyjs/src/pyjs/pyjampiler.py
+Copyright: 2009, David Siroky (siroky@dasir.cz)
+License: Apache
+
 Files: contrib/pyjscompressor.py
 Copyright: 2010 Sujan Shakya, suzan.shakya@gmail.com
 License: Apache
@@ -106,7 +118,7 @@ Copyright: 2005 Michal Migurski
 Copyright: 2006 Craig Mason-Jones
 License: GPL-2
 
-Files: examples/gcharttestapp/* library/pyjamas/chart/*
+Files: examples/gcharttestapp/* library/gwt/chart/*
 Copyright: 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
 Copyright: 2007,2008,2009 John C. Gunther
 License: Apache
@@ -148,7 +160,7 @@ License: PSF
 Copyright: 2001, 2002, 2003, 2004, 2005, 2006 Python Software Foundation
 Copyright: 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
 
-Files: pyjd/pywebkitgtk.py
+Files: pyjd/pywebkitgtk.py pyjd/pywebkitdfb.py
 Copyright: 2006, Red Hat, Inc.
 Copyright: 2007, One Laptop Per Child
 Copyright: 2007 Jan Alonzo <jmalonzo@unpluggable.com>
@@ -215,9 +227,13 @@ License: Apache
 Copyright: 2009, Luke Kenneth Casson Leighton <lkcl@lkcl.net>
 Copyright: 2009, Phil Hands <phil@hands.com>
 
-Files: library/pyjamas/gmaps/*
+Files: library/gwt/gmaps/*
 License: Apache
 Copyright: 2009, Daniel Carvalho <idnael@gmail.com>
+
+Files: examples/asteroids/*
+License: Apache
+Copyright: 2009, Joe Rumsey (joe@rumsey.org)
 
 Files: examples/gmaps/*
 License: Apache
