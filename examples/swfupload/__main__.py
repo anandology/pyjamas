@@ -3,13 +3,13 @@
 
 
 TARGETS = [
-    'Hello.py',
+    'swfu.py',
 ]
 
 
 PACKAGE = {
-    'title': 'helloworld',
-    'desc': 'Port of GWT hello world example',
+    'title': 'swfupload',
+    'desc': 'swfupload example',
 }
 
 

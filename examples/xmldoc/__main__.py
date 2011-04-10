@@ -3,13 +3,13 @@
 
 
 TARGETS = [
-    'Hello.py',
+    'XMLload.py',
 ]
 
 
 PACKAGE = {
-    'title': 'helloworld',
-    'desc': 'Port of GWT hello world example',
+    'title': 'xmldoc',
+    'desc': 'XML doc example',
 }
 
 

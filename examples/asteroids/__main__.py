@@ -3,13 +3,13 @@
 
 
 TARGETS = [
-    'EmployeeAdmin.py',
+    'Space.py',
 ]
 
 
 PACKAGE = {
-    'title': 'employeeadmin',
-    'desc': 'employeeadmin example',
+    'title': 'asteroids',
+    'desc': 'Asteroids game example',
 }
 
 

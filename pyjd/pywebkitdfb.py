@@ -2,7 +2,7 @@
 # Copyright (C) 2006, Red Hat, Inc.
 # Copyright (C) 2007, One Laptop Per Child
 # Copyright (C) 2007 Jan Alonzo <jmalonzo@unpluggable.com>
-# Copyright (C) 2008, 2009 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
+# Copyright (C) 2008, 2009, 2010 Luke Kenneth Casson Leighton <lkcl@lkcl.net>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

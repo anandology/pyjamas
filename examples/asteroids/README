@@ -1,0 +1,25 @@
+
+"Pyjamas Space Game" is Copyright 2009 Joe Rumsey (joe@rumsey.org)
+Licensed under the Apache 2.0 License, see COPYING for details
+
+Version 0.1
+
+Main link: http://rumsey.org/space/Space.html
+
+This is just a quickie project I wrote in about a day to test out
+Pyjamas.  The test was a success, it's 300 lines of code for all the
+basic Asteroids gameplay.  Who needs Flash any more, right?
+
+To build it, you need these things installed:
+ o Pyjamas
+ o SCons
+ o ImageMagick
+
+If those requirements are met, then you need to first edit the
+SConstruct file to point to the locations of Pyjamas and ImageMagick's
+convert program.  Once you've done that, just run scons in this
+directory and if all goes well, the output directory will contain the
+final HTML+js+images+etc.  You can load it locally by opening
+output/Space.html
+
+I am building and testing on Mac OS 10.6.

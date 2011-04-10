@@ -3,13 +3,13 @@
 
 
 TARGETS = [
-    'Hello.py',
+    'svg_test.py',
 ]
 
 
 PACKAGE = {
-    'title': 'helloworld',
-    'desc': 'Port of GWT hello world example',
+    'title': 'svgtest',
+    'desc': 'svg test example',
 }
 
 
