@@ -3,13 +3,13 @@
 
 
 TARGETS = [
-    'Hello.py',
+    'JSONRPCExample.py',
 ]
 
 
 PACKAGE = {
-    'title': 'helloworld',
-    'desc': 'Port of GWT hello world example',
+    'title': 'JSONRPCExample',
+    'desc': 'JSONRPC example',
 }
 
 
