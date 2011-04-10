@@ -87,6 +87,7 @@ License: MIT
 
 Files: pyjs/src/pyjs/pyjampiler.py
 Copyright: 2009, David Siroky (siroky@dasir.cz)
+Copryright: 2009, Luke Kenneth Casson Leighton <lkcl@lkcl.net>
 License: Apache
 
 Files: contrib/pyjscompressor.py
