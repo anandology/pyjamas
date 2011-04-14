@@ -56,9 +56,8 @@ class AutoCompleteTextBox(TextBox):
         if arg1 == KeyboardListener.KEY_DOWN:
             selectedIndex = self.choices.getSelectedIndex()
             selectedIndex += 1
-            if selectedIndex > self.choices.getItemCount():
+            if selectedIndex >= self.choices.getItemCount():
                 selectedIndex = 0
-        
             self.choices.setSelectedIndex(selectedIndex)           
             return
 
