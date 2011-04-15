@@ -96,7 +96,7 @@ class RowDataAcceptorImpl:
     def failed(self, message): 
         msg = "Failed to access data"
         if message:
-            msg += ": " + message
+            msg = "%s: %s" % (msg, message)
         RootPanel().add(HTML(msg))
 
 
