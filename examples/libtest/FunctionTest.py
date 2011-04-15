@@ -116,9 +116,15 @@ class FunctionTest(UnitTest):
             self.assertEqual(c.f2(1), c, 'issue #385 - bound method lambda called as function')
 
     def test_callable(self):
-        self.assertEqual(Callable()(), 5)
+        try:
+            self.assertEqual(Callable()(), 5)
+        except:
+            self.fail("Bug #572 Callable()() __call__ not supported")
         self.assertTrue(callable(Callable))
-        self.assertTrue(callable(Callable()))
+        self.assertTrue(
+            callable(Callable()),
+            "Bug #572 callable(Callable()) __call__ not supported",
+        )
 
     def testProcedure(self):
         self.assertTrue(aFunctionReturningNone() is None,
