@@ -970,7 +970,7 @@ class ClassTest(UnitTest):
             msg = str(e)
             if "fnc() takes exactly 2 arguments (1 given)" in msg:
                 msg = "bug #318 - " + msg
-            self.fail(msg)
+                self.fail("Bug #580 : %s " % msg)
 
 class PassMeAClass(object):
     def __init__(self):
