@@ -463,7 +463,7 @@ class ClassTest(UnitTest):
     def test_class_isinstance_type(self):
         class C(object):
             pass
-        self.assertTrue(isinstance(C, type))
+        self.assertTrue(isinstance(C, type), "Bug #579 type type not supported")
 
     def test__new__Method(self):
         c = OtherClass1()
