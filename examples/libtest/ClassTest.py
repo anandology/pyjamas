@@ -236,10 +236,13 @@ class ClassTest(UnitTest):
         x = X()
 
         self.assertEqual(x.x, 0)
-        self.assertEqual(x.next.x, 1)
-        self.assertEqual(x.next.bla.x, 2)
-        self.assertEqual(x.next.bla.next.x, 3)
-        self.assertEqual(x.bla.next.bla.next.bla.x, 5)
+        try:
+            self.assertEqual(x.next.x, 1)
+            self.assertEqual(x.next.bla.x, 2)
+            self.assertEqual(x.next.bla.next.x, 3)
+            self.assertEqual(x.bla.next.bla.next.bla.x, 5)
+        except:
+            self.fail("Bug #576 Deep property access not supported")
 
     def test_slice(self):
         class X(object):
