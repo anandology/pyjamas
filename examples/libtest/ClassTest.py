@@ -454,8 +454,11 @@ class ClassTest(UnitTest):
 
         c = C()
         self.assertEqual(c.original(), 5)
-        self.assertEqual(c.alias(), 5)
-        self.assertEqual(c.method_using_alias(), 5)
+        try:
+            self.assertEqual(c.alias(), 5)
+            self.assertEqual(c.method_using_alias(), 5)
+        except:
+            self.fail("Bug #578 : method alias fails")
 
     def test_class_isinstance_type(self):
         class C(object):
