@@ -213,9 +213,12 @@ class ClassTest(UnitTest):
 
         x = X()
         self.assertEqual(x.x, 0)
-        self.assertEqual(x.next.x, 1)
-        self.assertEqual(x.next.bla.x, 2)
-        self.assertEqual(x.a.b.c.x, 3)
+        try:
+            self.assertEqual(x.next.x, 1)
+            self.assertEqual(x.next.bla.x, 2)
+            self.assertEqual(x.a.b.c.x, 3)
+        except:
+            self.fail("Bug #575 __getattr__ method not supported")
 
     def test_deep_property_access(self):
         class X(object):
