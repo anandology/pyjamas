@@ -191,17 +191,17 @@ class ClassTest(UnitTest):
         self.assertEqual(c.x, 6)
         self.assertEqual(d.x, 8)
         a += b
-        self.assertTrue(a is a0, '__iadd__ should modify object in-place')
+        self.assertTrue(a is a0, 'Bug #573 __iadd__ should modify object in-place')
         self.assertEqual(a.x, 6)
-        self.assertEqual(a0.x, a.x, '__iadd__ should modify all references to an object')
+        self.assertEqual(a0.x, a.x, 'Bug #573 __iadd__ should modify all references to an object')
         a -= b
         self.assertTrue(a is not a0)
         self.assertEqual(a.x, 2)
-        self.assertNotEqual(a0.x, a.x, 'reference should not have same value after __iadd__ & __neg__')
+        self.assertNotEqual(a0.x, a.x, 'Bug #573 reference should not have same value after __iadd__ & __neg__')
         b *= c
-        self.assertTrue(b is b0, '__imul__ should modify object in-place')
+        self.assertTrue(b is b0, 'Bug #573 __imul__ should modify object in-place')
         self.assertEqual(b.x, 24)
-        self.assertEqual(b0.x, b.x, '__imul__ should modify all references to an object')
+        self.assertEqual(b0.x, b.x, 'Bug #573 __imul__ should modify all references to an object')
 
     def test_getattr(self):
         class X(object):
