@@ -103,7 +103,7 @@ class PendingItem(TreeItem):
 
 class InfoServicePython(JSONProxy):
     def __init__(self):
-        JSONProxy.__init__(self, "/infoservice/EchoService.py",
+        JSONProxy.__init__(self, "services/EchoService.py",
                                     ["index"])
 
 
