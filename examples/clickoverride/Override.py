@@ -19,6 +19,11 @@ class Board(VerticalPanel, ClickHandler):
     def __init__(self):
         """ Standard initialiser.
         """
+        global Text
+        # There's an issue with javascript reserved words
+        # Eigther add the global statement (as above) or
+        # define the class Text before this class
+        # See issue #574
         VerticalPanel.__init__(self)
         ClickHandler.__init__(self)
         self.addClickListener(self)
@@ -58,4 +63,3 @@ if __name__ == "__main__":
     board = Board()
     RootPanel().add(board)
     pyjd.run()
-

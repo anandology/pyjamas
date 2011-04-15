@@ -178,6 +178,10 @@ class FunctionTest(UnitTest):
         self.assertEqual(r[2], 2)
         self.assertEqual(r[3], 3)
         self.assertEqual(r[4], 4)
+        try:
+            self.assertEqual(Text('foo'), 'Text: foo')
+        except:
+            self.fail("Bug #574: javascript keywords")
 
     def testFactory(self):
 
@@ -282,3 +286,7 @@ class FunctionTest(UnitTest):
         self.assertEqual(imports.conditional_func(), "overridden")
 
 late_global = 'late_global'
+
+# Text is a reserved javascript word
+def Text(x):
+    return str("Text: %s" % x)
