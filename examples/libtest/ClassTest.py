@@ -259,11 +259,14 @@ class ClassTest(UnitTest):
 
         data = [1, 2, 3]
         x = X(data)
-        self.assertEqual(data[:2], x[:2], '__getitem__ should be used for slicing')
-        self.assertEqual(x[:2], [1, 2])
-        x[1:2] = [5]
-        self.assertEqual(data[:], x[:], '__setitem__ should be used for slice assignment')
-        self.assertEqual(x[1:], [5, 3])
+        self.assertEqual(data[:2], x[:2], 'Bug #577 __getitem__ should be used for slicing')
+        self.assertEqual(x[:2], [1, 2], 'Bug #577 __getitem__ not supported')
+        try:
+            x[1:2] = [5]
+            self.assertEqual(data[:], x[:], 'Bug #577 __setitem__ should be used for slice assignment')
+            self.assertEqual(x[1:], [5, 3])
+        except:
+            self.fail('Bug #577 slice / __getitem__ / __setitem__ not supported')
 
     # test Class().x
     def testInheritedProperties(self):
