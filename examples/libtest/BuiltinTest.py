@@ -522,3 +522,37 @@ class BuiltinTest(UnitTest):
         self.assertEqual(6, sum([0,1,2,3]))
         self.assertEqual(5, sum([0,1,2,3], -1))
         self.assertRaises(TypeError, sum, [0,1,2,3], "a")
+    
+    def testSlice(self):
+        # repr()
+        self.assertEqual(repr(slice(1, 2, 3)), "slice(1, 2, 3)")
+        # cmp, partial
+        s1 = slice(1, 2, 3)
+        s2 = slice(1, 2, 3)
+        s3 = slice(1, 2, 4)
+        self.assertEqual(s1, s2)
+        self.assertNotEqual(s1, s3)                        
+        # members
+        s = slice(1)
+        self.assertEqual(s.start, None)
+        self.assertEqual(s.stop, 1)
+        self.assertEqual(s.step, None)
+
+        s = slice(1, 2)
+        self.assertEqual(s.start, 1)
+        self.assertEqual(s.stop, 2)
+        self.assertEqual(s.step, None)
+
+        s = slice(1, 2, 3)
+        self.assertEqual(s.start, 1)
+        self.assertEqual(s.stop, 2)
+        self.assertEqual(s.step, 3)
+
+        class AnyClass:
+            pass
+
+        obj = AnyClass()
+        s = slice(obj)
+        self.assertTrue(s.stop is obj)
+        # indices
+
