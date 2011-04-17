@@ -162,6 +162,7 @@ $pyjs.options.set_all = function (v) {
     $pyjs.options.arg_kwarg_dup = v;
     $pyjs.options.arg_kwarg_unexpected_keyword = v;
     $pyjs.options.arg_kwarg_multiple_values = v;
+    $pyjs.options.dynamic_loading = v;
 };
 $pyjs.options.set_all(true);
 $pyjs.trackstack = [];
@@ -184,6 +185,12 @@ $pyjs.loadpath = './';
     return f(ctxt);
  }
     """
+    pyjslib_override = """
+
+def ___import___(path, context, module_name=None, get_base=True):
+    module = pyv8_import(path, context, module_name, get_base)
+    return JS("$pyjs.loaded_modules[@{{path}}]")
+    """
     banner = """
 Interactive PyJS/PyV8 shell.
 
@@ -204,7 +211,9 @@ jsglob - PyV8 globals
         self.paths = [join(path, 'pyjs', 'src', 'pyjs', 'lib'),
                       join(path, 'pyjs', 'src', 'pyjs', 'builtin'),
                       join(path, 'library'),
+                      currentdir
                       ]
+        print self.paths
         
         parser = OptionParser()
         translator.add_compile_options(parser)
@@ -272,7 +281,8 @@ jsglob - PyV8 globals
         self.dynamic, imppy, impjs = self.translate('', 'dynamic')
         self.pyjslib, imppy, impjs = self.translate(
             open(self.find_file('pyjslib.py')).read() + "\n" +
-            open(self.find_file('pyjslib.py', '__pyv8__')).read(),
+            open(self.find_file('pyjslib.py', '__pyv8__')).read() + "\n" + 
+            self.pyjslib_override,
             'pyjslib')
         self.sys, imppy, impjs = self.translate(
             open(self.find_file('sys.py')).read(),
@@ -281,9 +291,18 @@ jsglob - PyV8 globals
             open(self.find_file('string.py')).read(),
             'string')
         self.main, imppy, impjs = self.translate('', '__main__')
+        
+    def _import(self, path, context, module_name=None, get_base=True):
+        fp = self.find_file(path+'.py')
+        print fp
+        if fp:
+            code, imppy, impjs = self.translate(open(fp).read(), path)
+            self.evaluate(code)
+            self.evaluate("""$pyjs.loaded_modules['"""+path+"""']('"""+path+"""');""");
 
     def initialize_v8(self):
         self.g = Global()
+        self.g.pyv8_import = self._import
         self.ctxt = PyV8.JSContext(self.g)
         self.g.__context__ = self.ctxt
         self.ctxt.enter()
@@ -292,14 +311,19 @@ jsglob - PyV8 globals
         self.evaluate(self.sys)
         self.evaluate(self.dynamic)
         self.evaluate(self.pyjslib)
+        self.evaluate("""var $p = $pyjs.loaded_modules["pyjslib"];""")
         self.evaluate(self.main)
         self.evaluate("""$pyjs.loaded_modules['pyjslib']('pyjslib');""")
-        self.evaluate("""$pyjs.loaded_modules['__main__']('__main__');""")        
+        self.evaluate("""$pyjs.loaded_modules['__main__']('__main__');""")    
+        self.evaluate("""var __main__ = $pyjs.loaded_modules["__main__"];""")
         
     def evaluate(self, code, print_result=False):
-        res = self.ctxt.eval(code)
-        if print_result:
-            print res
+        try:
+            res = self.ctxt.eval(code)
+            if print_result:
+                print res            
+        except Exception, e:
+            print e
         return 0
 
     def run_ipython(self):
