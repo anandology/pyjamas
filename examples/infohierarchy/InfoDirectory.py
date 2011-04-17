@@ -468,7 +468,7 @@ class InfoDirectory:
 
 class InfoServicePython(JSONProxy):
     def __init__(self):
-            JSONProxy.__init__(self, "/infoservice/EchoService.py",
+            JSONProxy.__init__(self, "services/EchoService.py",
                     ["get_midpanel_data",
                      "get_rightpanel_datanames",
                      "get_rightpanel_data"])

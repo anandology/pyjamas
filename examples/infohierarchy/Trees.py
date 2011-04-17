@@ -48,7 +48,11 @@ class Trees(Composite):
             self.create_tree(response)
 
     def onRemoteError(self, code, message, request_info):
-        RootPanel().add(HTML("Server Error or Invalid Response: ERROR " + code + " - " + message))
+        RootPanel().add(HTML(
+            "Server Error or Invalid Response: ERROR %s - %s" % (
+                code, message,
+            ),
+        ))
 
     def onTreeItemSelected(self, item):
         pass
@@ -99,7 +103,7 @@ class PendingItem(TreeItem):
 
 class InfoServicePython(JSONProxy):
     def __init__(self):
-        JSONProxy.__init__(self, "/infoservice/EchoService.py",
+        JSONProxy.__init__(self, "services/EchoService.py",
                                     ["index"])
 
 

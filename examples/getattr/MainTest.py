@@ -1,3 +1,4 @@
+import pyjd
 from pyjamas import Window
 
 def log(text):
@@ -39,5 +40,7 @@ class StoringObject:
 
 
 if __name__ == '__main__':
+    pyjd.setup("MainTest.html")
     app = MainTest()
     app.onModuleLoad()
+    pyjd.run()

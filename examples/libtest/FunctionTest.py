@@ -116,9 +116,15 @@ class FunctionTest(UnitTest):
             self.assertEqual(c.f2(1), c, 'issue #385 - bound method lambda called as function')
 
     def test_callable(self):
-        self.assertEqual(Callable()(), 5)
+        try:
+            self.assertEqual(Callable()(), 5)
+        except:
+            self.fail("Bug #572 Callable()() __call__ not supported")
         self.assertTrue(callable(Callable))
-        self.assertTrue(callable(Callable()))
+        self.assertTrue(
+            callable(Callable()),
+            "Bug #572 callable(Callable()) __call__ not supported",
+        )
 
     def testProcedure(self):
         self.assertTrue(aFunctionReturningNone() is None,
@@ -172,6 +178,10 @@ class FunctionTest(UnitTest):
         self.assertEqual(r[2], 2)
         self.assertEqual(r[3], 3)
         self.assertEqual(r[4], 4)
+        try:
+            self.assertEqual(Text('foo'), 'Text: foo')
+        except:
+            self.fail("Bug #574: javascript keywords")
 
     def testFactory(self):
 
@@ -276,3 +286,7 @@ class FunctionTest(UnitTest):
         self.assertEqual(imports.conditional_func(), "overridden")
 
 late_global = 'late_global'
+
+# Text is a reserved javascript word
+def Text(x):
+    return str("Text: %s" % x)

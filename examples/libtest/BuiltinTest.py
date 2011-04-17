@@ -254,7 +254,7 @@ class BuiltinTest(UnitTest):
 
         class Cls(object):
             pass
-        self.assertTrue(isinstance(Cls, type), "classes are instances of type")
+        self.assertTrue(isinstance(Cls, type), "Bug #578 classes are instances of type")
 
     def testImport(self):
         self.assertEqual(builtin_value, None, "The builtin is loaded before import!")

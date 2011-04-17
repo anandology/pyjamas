@@ -32,7 +32,7 @@ class FlowPanelDemo:
         for x in range(0, 10):
             self.panel = VerticalPanel()
             #Label each image with its number in the sequence
-            title = Label("Item %s" % x, element=DOM.createElement('span'), StyleName="title item")
+            title = Label("Item %s" % x, Element=DOM.createElement('span'), StyleName="title item")
             #Add a neat-o image.
             image = Image('images/pyjamas.png', Width="200px", Height="200px", StyleName="cat-image cat-item")
             #Add to the Vertical Panel the image title

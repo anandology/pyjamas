@@ -1,3 +1,4 @@
+import pyjd
 from pyjamas.ui.RootPanel import RootPanel
 from pyjamas.ui.TextArea import TextArea
 from pyjamas.ui.Label import Label
@@ -66,12 +67,14 @@ class FormPanelExample:
     def onSubmit(self, event):
         # This event is fired just before the form is submitted. We can take
         # this opportunity to perform validation.
-        if (self.tb.getText().length == 0):
+        if (len(self.tb.getText()) == 0):
             Window.alert("The text box must not be empty")
             event.setCancelled(True)
 
 
 
 if __name__ == '__main__':
+    pyjd.setup("FormPanelExample.html")
     app = FormPanelExample()
     app.onModuleLoad()
+    pyjd.run()

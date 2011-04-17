@@ -48,6 +48,7 @@ def setStyleName(element, style, add):
 class UIObject(Applier):
 
     _props = [ ("visible", "Visibility", "Visible", None),
+              ("element", "Element", "Element", None),
               ("stylename", "Style name", "StyleName", None),
               ("width", "Width", "Width", None),
               ("height", "Height", "Height", None),
