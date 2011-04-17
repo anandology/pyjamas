@@ -525,15 +525,19 @@ class BuiltinTest(UnitTest):
     
     def testSlice(self):
         # repr()
-        self.assertEqual(repr(slice(1, 2, 3)), "slice(1, 2, 3)")
+        self.assertEqual(repr(slice(1, 2, 3)), "slice(1, 2, 3)", "slice() is mis-used, issue #582")
         # cmp, partial
         s1 = slice(1, 2, 3)
         s2 = slice(1, 2, 3)
         s3 = slice(1, 2, 4)
         self.assertEqual(s1, s2)
-        self.assertNotEqual(s1, s3)                        
+        self.assertNotEqual(s1, s3, "slice() is mis-used, issue #582")
         # members
-        s = slice(1)
+        try:
+            s = slice(1)
+        except Exception, e:
+            self.fail("slice() is mis-used, issue #582")
+            return False
         self.assertEqual(s.start, None)
         self.assertEqual(s.stop, 1)
         self.assertEqual(s.step, None)
@@ -555,4 +559,31 @@ class BuiltinTest(UnitTest):
         s = slice(obj)
         self.assertTrue(s.stop is obj)
         # indices
+        self.assertEqual(slice(None           ).indices(10), (0, 10,  1))
+        self.assertEqual(slice(None,  None,  2).indices(10), (0, 10,  2))
+        self.assertEqual(slice(1,     None,  2).indices(10), (1, 10,  2))
+        self.assertEqual(slice(None,  None, -1).indices(10), (9, -1, -1))
+        self.assertEqual(slice(None,  None, -2).indices(10), (9, -1, -2))
+        self.assertEqual(slice(3,     None, -2).indices(10), (3, -1, -2))
+        self.assertEqual(slice(None, -9).indices(10), (0, 1, 1))
+        self.assertEqual(slice(None, -10).indices(10), (0, 0, 1))
+        self.assertEqual(slice(None, -11).indices(10), (0, 0, 1))
+        self.assertEqual(slice(None, -10, -1).indices(10), (9, 0, -1))
+        self.assertEqual(slice(None, -11, -1).indices(10), (9, -1, -1))
+        self.assertEqual(slice(None, -12, -1).indices(10), (9, -1, -1))
+        self.assertEqual(slice(None, 9).indices(10), (0, 9, 1))
+        self.assertEqual(slice(None, 10).indices(10), (0, 10, 1))
+        self.assertEqual(slice(None, 11).indices(10), (0, 10, 1))
+        self.assertEqual(slice(None, 8, -1).indices(10), (9, 8, -1))
+        self.assertEqual(slice(None, 9, -1).indices(10), (9, 9, -1))
+        self.assertEqual(slice(None, 10, -1).indices(10), (9, 9, -1))
 
+        self.assertEqual(
+            slice(-100,  100     ).indices(10),
+            slice(None).indices(10)
+        )
+        self.assertEqual(
+            slice(100,  -100,  -1).indices(10),
+            slice(None, None, -1).indices(10)
+        )
+        self.assertEqual(slice(-100L, 100L, 2L).indices(10), (0, 10,  2))
