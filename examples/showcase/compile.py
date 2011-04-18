@@ -112,13 +112,13 @@ def main():
     if sys.platform == "win32":
         stmt = (os.path.join(PATH_TO_PYJAMAS, 'bin', 'pyjsbuild.py') +
                 " " + options +
-                " -o " + os.path.join(here,'build') + " " +
+                " -o " + os.path.join(here,'output') + " " +
                 " -I " + os.path.join(here, 'src') + " " +
                 'Showcase')
     else:
         stmt = (os.path.join(PATH_TO_PYJAMAS, 'bin', 'pyjsbuild') +
                 " " + options +
-                " -o " + os.path.join(here,'build') + " " +
+                " -o " + os.path.join(here,'output') + " " +
                 " -I " + os.path.join(here, 'src') + " " +
                 'Showcase' +
                 " > /dev/null")
@@ -126,7 +126,7 @@ def main():
 
     # Finally, launch a web browser to show the compiled application.
 
-    #webbrowser.open("file://" + os.path.abspath("build/Showcase.html"))
+    #webbrowser.open("file://" + os.path.abspath("output/Showcase.html"))
 
 #############################################################################
 

@@ -3,7 +3,6 @@
 
 
 TARGETS = [
-    'compile.py',
 ]
 
 
@@ -46,4 +45,7 @@ util.init(head)
 
 setup(TARGETS)
 translate()
+import compile
+compile.main()
+PACKAGE['target'] = 'Showcase'
 install(PACKAGE)
