@@ -20,7 +20,14 @@ from __pyjamas__ import jsimport
 
 jsimport("example.js")
 
-log.writebr(examplevar)
-examplevar = 'Altered'
-log.writebr( get_examplevar() )
+def main():
+    global examplevar
+    # Note that the javascript example var is globally
+    # defined, but not accessible from the global
+    # scope. You'll have to swich to a local scope
+    # and define the javascript names global
+    log.writebr(examplevar)
+    examplevar = 'Altered'
+    log.writebr( get_examplevar() )
 
+main()
