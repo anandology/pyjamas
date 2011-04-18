@@ -8,12 +8,12 @@ class DynaTable:
 
     def onModuleLoad(self):
         slot = RootPanel("calendar")
-        if slot:
+        if slot is not None:
             calendar = SchoolCalendarWidget(15)
             slot.add(calendar)
             
             slot = RootPanel("days")
-            if slot:
+            if slot is not None:
                 filterWidget = DayFilterWidget(calendar)
                 slot.add(filterWidget)
 

@@ -90,8 +90,10 @@ class JSONParser:
                 delete @{{obj}}["__jsonclass__"];
                 var _obj = this.jsObjectToPyObject(@{{obj}});
                 
-                return $pyjs_kwargs_call(null, eval(class_name),
-                                         null, _obj, [{}]);
+                return $pyjs_kwargs_call(
+                    null, eval('$pyjs.loaded_modules.' + class_name),
+                    null, _obj, [{}]
+                );
                 }
             else {
                 for (var i in @{{obj}}) 
