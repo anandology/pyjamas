@@ -20,6 +20,7 @@ def setup(targets):
 
 def translate():
     '''Translate example, MUST call util.translate().'''
+    util.ENV['ARG_PYJSBUILD'].append('--no-compile-inplace')
     util.translate()
 
 
