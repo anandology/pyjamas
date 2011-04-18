@@ -5,3 +5,8 @@ To start the backend, run:
     python server.py
 
 
+===
+NOTE. The example is cripple. It doesn't need pymongo (at least that's
+not imported anywhere).
+
+The server.py depends on web.py and listens on port 8080. It can serve the json files, but doesn't serve the (also needed) html and js files.

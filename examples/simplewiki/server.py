@@ -28,5 +28,7 @@ application = app.wsgifunc()
 
 if __name__ == "__main__":
     import os
-    os.mkdir('wikipages')
+    wikipages = 'wikipages'
+    if not os.path.isdir(wikipages):
+        os.mkdir(wikipages)
     app.run()
