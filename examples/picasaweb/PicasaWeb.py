@@ -16,10 +16,10 @@
 #
 # Distributed as part of pyjamas (http://pyjs.org)
 
+import pyjd # dummy in pyjs
 from Photos import Photos
 from pyjamas.ui.RootPanel import RootPanel
 
-import pyjd # dummy in pyjs
 
 class PicasaWeb:
     def onModuleLoad(self):
@@ -31,7 +31,7 @@ if __name__ == '__main__':
     # for pyjd, set up a web server and load the HTML from there:
     # this convinces the browser engine that the AJAX will be loaded
     # from the same URI base as the URL, it's all a bit messy...
-    pyjd.setup("http://127.0.0.1/examples/jsonrpc/public/PicasaWeb.html")
+    pyjd.setup("public/PicasaWeb.html")
     app = PicasaWeb()
     app.onModuleLoad()
     pyjd.run()
