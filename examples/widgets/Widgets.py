@@ -46,8 +46,8 @@ class SolarCanvas(Canvas):
         el = self.clock.getElement()
         self.width = DOM.getIntAttribute(el, "width")
         self.height = DOM.getIntAttribute(el, "height")
-        self.setWidth("%dpx" % self.width)
-        self.setHeight("%dpx" % self.height)
+        self.setWidth("%d" % self.width)
+        self.setHeight("%d" % self.height)
  
     def onError(self, sender):
         Window.alert("error of some kind (probably missing image at url)")
