@@ -33,7 +33,7 @@ class ListBoxDemo(SimplePanel):
         self.list1.addChangeListener(getattr(self, "onList1ItemSelected"))
 
         self.list2 = ListBox()
-        self.list2.setVisibleItemCount(0)
+        self.list2.setVisibleItemCount(1)
         self.list2.addItem("Item A")
         self.list2.addItem("Item B")
         self.list2.addItem("Item C")
