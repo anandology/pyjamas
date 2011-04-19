@@ -4,7 +4,7 @@ from pyjamas.ui.HTML import HTML
 from pyjamas.ui.Grid import Grid
 from pyjamas.ui.TextBox import TextBox
 from pyjamas.ui.Button import Button
-from pyjamas import log
+from pyjamas.Window import alert
 from time import time
 
 class DbTest():
@@ -27,8 +27,8 @@ class DbTest():
             self.db.open('database-demo')
             self.db.execute('create table if not exists Demo' +
                        ' (Phrase varchar(255), Timestamp int)')
-        except ex:
-            log("could not create database" + str(ex))
+        except:
+            alert("Could not create database.\nDo you have the google gears extension installed?")
 
     def onClick(self, sender):
         phrase = self.tb.getText()
