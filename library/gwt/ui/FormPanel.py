@@ -172,7 +172,7 @@ class FormPanel(SimplePanel):
     def setMethod(self, method):
         DOM.setAttribute(self.getElement(), "method", method)
 
-    def submit(self):
+    def submit(self, sender):
         event = FormSubmitEvent(self)
         for handler in self.formHandlers:
             handler.onSubmit(event)
