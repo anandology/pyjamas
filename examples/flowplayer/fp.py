@@ -21,7 +21,7 @@ class FlowPlayerExample:
         Create a player
         """
         # Url to the flowplayer flashmovie
-        url = 'swf/flowplayer-3.1.4.swf'
+        url = 'swf/flowplayer.swf'
         
         # Create the initial configuration
         config = Configuration()
@@ -63,7 +63,7 @@ class FlowPlayerExample:
         playlist.append(Clip('movies/movie1.flv'))
         playlist.append(Clip('movies/movie2.flv'))
         playlist.append(Clip('movies/movie3.flv'))
-        playlist.append(Clip('movies/movie4.flv'))
+        #playlist.append(Clip('movies/movie4.flv'))
         # Add Listener to the Clips
         for clip in playlist:
             clip.addListener(self)

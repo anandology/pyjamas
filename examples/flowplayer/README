@@ -3,14 +3,26 @@
 To use the example:
 
 
-- download (http://flowplayer.org) and copy flowplayer.swf,
-	flowplayer.controls.swf, flowplayer.content.swf to swf/
+- download (http://flowplayer.org):
+  * flowplayer.swf
+  * flowplayer.controls.swf
+  * flowplayer.content.swf
+  Some might be combined in one download. Check the main page and also
+  the flash plugin page
+
+- mkdir swf
+
+- Copy the downloaded files to swf/ (remove version number from file name)
 
 - run 'build.sh'
 
-- copy some flv-files to movies
+- mkdir html/movies
+
+- copy some flv-files to movies (search for 'sample flv files')
 
 - edit fp.py and set correct names for the swf-files and configure the playlist
+
+- run 'build.sh' again
 
 - start the server with 'python server.py'
 
