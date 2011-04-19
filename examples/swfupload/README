@@ -3,6 +3,12 @@ To use the example:
 
 - run 'build.sh'
 
+- download swfupload.swf (see http://swfupload.org)
+
+- mkdir swf
+
+- mkdir upload
+
 - copy swfupload.swf to swf/
 
 - start the server with 'python server.py'
