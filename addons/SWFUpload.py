@@ -10,12 +10,9 @@ API for SWFUpload http://swfupload.org
 from pyjamas.ui.FlashPanel import FlashPanel
 import DeferredHandler
 
-from pyjamas.Timer import Timer
 from pyjamas import DOM
 from urllib import quote
-import sys
 from __pyjamas__ import wnd, JS
-from pyjamas import log
 
 
 class SWFUploadInstances:
@@ -168,8 +165,11 @@ class SWFUpload(FlashPanel):
         Extended method from FlashPanel.
         """
         returnValue = FlashPanel.callFlash(self, functionName, arguments)
-        if str(returnValue) == '[object Object]':
-            returnValue = File(returnValue)
+        try:
+            if str(returnValue) == '[object Object]':
+                returnValue = SWFFile(returnValue)
+        except:
+            pass
         return returnValue
         
     def startUpload(self, file_id=None):
@@ -180,7 +180,7 @@ class SWFUpload(FlashPanel):
         start the upload process. If the file_id parameter is omitted
         then the first file in the queue is uploaded.
         """
-        if file_id:
+        if file_id is not None:
             self.callFlash('StartUpload', [file_id])
         else:
             self.callFlash('StartUpload')
@@ -226,7 +226,7 @@ class SWFUpload(FlashPanel):
         with the file specified by the file_id parameter.
         The name/value pair will only be sent with the file it is added to. 
         """
-        self.callFlash('AddFileParam', [fileID, name, value])
+        self.callFlash('AddFileParam', [file_id, name, value])
         
     def removeFileParam(self, file_id, name):
         """
@@ -236,7 +236,7 @@ class SWFUpload(FlashPanel):
         The removeFileParam function removes a name/value pair from a file upload that
         was added using addFileParam.
         """
-        self.callFlash('RemoveFileParam', [fileID, name])
+        self.callFlash('RemoveFileParam', [file_id, name])
     
     def setUploadURL(self, url):
         """
@@ -396,7 +396,7 @@ class SWFUpload(FlashPanel):
         self.settings.button_width = width;
         self.settings.button_height = height;
         movie = self.getMovieElement()
-        if movie:
+        if movie is not None:
             DOM.setStyleAttribute(movie, 'width', width + 'px')
             DOM.setStyleAttribute(movie, 'height', height + 'px')
         self.callFlash("SetButtonDimensions", [width, height])
@@ -428,7 +428,6 @@ class SWFUpload(FlashPanel):
         """
         Event-Method called by swfupload
         """
-        #log.writebr('Flash Ready')
         self.swfUploadLoaded()
     
     def swfUploadLoaded(self):
@@ -441,28 +440,28 @@ class SWFUpload(FlashPanel):
         """
         Event-Method called by swfupload
         """
-        file = File(file)
+        file = SWFFile(file)
         DeferredHandler.add(self.settings.upload_progress_handler, [file, bytesLoaded, totalBytes])
         
     def uploadError(self, file, errorCode, message):
         """
         Event-Method called by swfupload
         """
-        file = File(file)
+        file = SWFFile(file)
         DeferredHandler.add(self.settings.upload_error_handler, [file, errorCode, message])
         
     def uploadSuccess(self, file, receivedResponse, serverData):
         """
         Event-Method called by swfupload
         """
-        file = File(file)
+        file = SWFFile(file)
         DeferredHandler.add(self.settings.upload_success_handler, [file, receivedResponse, serverData])
         
     def uploadComplete(self, file):
         """
         Event-Method called by swfupload
         """
-        file = File(file)
+        file = SWFFile(file)
         DeferredHandler.add(self.settings.upload_complete_handler, [file])
         
     def fileDialogStart(self):
@@ -475,14 +474,14 @@ class SWFUpload(FlashPanel):
         """
         Event-Method called by swfupload
         """
-        file = File(file)
+        file = SWFFile(file)
         DeferredHandler.add(self.settings.file_queued_handler, [file])
         
     def fileQueueError(self, file, errorCode, message):
         """
         Event-Method called by swfupload
         """
-        file = File(file)
+        file = SWFFile(file)
         DeferredHandler.add(self.settings.file_queue_error_handler, [file, errorCode, message])
         
     def fileDialogComplete(self, sel, qu, tqu):
@@ -495,7 +494,7 @@ class SWFUpload(FlashPanel):
         """
         Event-Method called by swfupload
         """
-        file = File(file)
+        file = SWFFile(file)
         status = self.settings.upload_start_handler(file)
         self.callFlash('ReturnUploadStart', [status])
         
@@ -818,7 +817,6 @@ class Settings:
         """
         @return: the file size limit
         """
-        return self.file_types
         return self.file_size_limit
     
     def setFileType(self, file_types):
@@ -915,7 +913,7 @@ class Settings:
         """
         @return: thebutton action
         """
-        return button_action
+        return self.button_action
     
     def setButtonHTML(self, button_text):
         """
@@ -993,7 +991,7 @@ class Settings:
         self.upload_start_handler = getattr(listener, 'uploadStart')
         
 
-class File:
+class SWFFile:
     """
     The file object is passed to several event handlers. It contains information about the file.
     Some operating systems do not fill in all the values (this is especially true
@@ -1197,5 +1195,3 @@ class SWFUploadInterface:
         Returning 'false' will cause an uploadError event to fired.
         """
         return True
-    
-    
