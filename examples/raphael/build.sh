@@ -4,4 +4,6 @@
 
 options="$*"
 #if [ -z $options ] ; then options="-O";fi
-../../bin/pyjsbuild --print-statements $options test
+for f in events graffle raphael_showcase spinner test ; do
+	../../bin/pyjsbuild --print-statements $options $f
+done

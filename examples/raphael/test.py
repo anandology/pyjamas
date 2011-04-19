@@ -45,7 +45,7 @@ class TestPanel(SimplePanel):
             alpha = beta * i - math.pi/2
             cos   = math.cos(alpha)
             sin   = math.sin(alpha)
-            path  = self.canvas.path(pathParams)
+            path  = self.canvas.path(data=None, attrs=pathParams)
             path.moveTo(cx + r1 * cos, cy + r1 * sin)
             path.lineTo(cx + r2 * cos, cy + r2 * sin)
             self.opacity.append(1 / self.numSectors * i)
