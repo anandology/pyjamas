@@ -8,7 +8,7 @@ TARGETS = [
 
 
 PACKAGE = {
-    'title': 'ajaxlib Test',
+    'title': 'Ajaxlib Test',
     'desc': 'Experimental Dynamic Module loading of a Javascript Module',
 }
 

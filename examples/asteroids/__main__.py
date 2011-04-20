@@ -8,7 +8,7 @@ TARGETS = [
 
 
 PACKAGE = {
-    'title': 'asteroids',
+    'title': 'Asteroids',
     'desc': 'Asteroids game example',
 }
 

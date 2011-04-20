@@ -2,14 +2,16 @@
 # -*- coding: utf-8 -*-
 
 
-TARGETS = [
-    'ClickableRootPanel.py',
-]
+TARGETS = {
+    'ClickableRootPanel.py': dict(options=[
+         '--print-statements',
+    ]),
+}
 
 
 PACKAGE = {
     'title': 'Clickable RootPanel',
-    'desc': '(unknown)',
+    'desc': 'Propagation of events',
 }
 
 
@@ -20,7 +22,6 @@ def setup(targets):
 
 def translate():
     '''Translate example, MUST call util.translate().'''
-    util.ENV['ARG_PYJSBUILD'].append('--print-statements')
     util.translate()
 
 

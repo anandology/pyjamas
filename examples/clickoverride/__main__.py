@@ -9,7 +9,7 @@ TARGETS = [
 
 PACKAGE = {
     'title': 'Click Override',
-    'desc': '(unknown)',
+    'desc': 'Filter or ignore onBrowserEvent',
 }
 
 

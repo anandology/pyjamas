@@ -2,14 +2,16 @@
 # -*- coding: utf-8 -*-
 
 
-TARGETS = [
-    'Hello.py',
-]
+TARGETS = {
+    'fp.py': dict(options=[
+        '--output=html',
+    ]),
+}
 
 
 PACKAGE = {
-    'title': 'helloworld',
-    'desc': 'Port of GWT hello world example',
+    'title': 'FlowPlayer',
+    'desc': 'Use of flash component flowplayer',
 }
 
 

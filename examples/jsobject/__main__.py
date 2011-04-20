@@ -2,14 +2,15 @@
 # -*- coding: utf-8 -*-
 
 
-TARGETS = [
-    'Hello.py',
-]
+TARGETS = {
+    'TestRect.py': dict(options=['--include-js', 'jsrecttest.js']),
+    'TestDict.py': dict(options=['--no-compile-inplace']),
+}
 
 
 PACKAGE = {
-    'title': 'helloworld',
-    'desc': 'Port of GWT hello world example',
+    'title': 'TestRect and TestDict',
+    'desc': 'Import of javascript',
 }
 
 
@@ -20,7 +21,6 @@ def setup(targets):
 
 def translate():
     '''Translate example, MUST call util.translate().'''
-    util.ENV['ARG_PYJSBUILD'].append('--no-compile-inplace')
     util.translate()
 
 

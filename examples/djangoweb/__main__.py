@@ -2,9 +2,12 @@
 # -*- coding: utf-8 -*-
 
 
-TARGETS = [
-    'Hello.py',
-]
+TARGETS = {
+    'WebPage.py': dict(options=[
+        '--bootstrap-file=bootstrap_progress.js',
+        '--include-js=public/fckeditor/fckeditor.js',
+    ]),
+}
 
 
 PACKAGE = {

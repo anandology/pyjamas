@@ -16,6 +16,7 @@ examples = [
         if os.path.isfile(os.path.join(head, example, '__main__.py'))
             and not example.startswith('_')
 ]
+examples.sort()
 
 env = os.environ.copy()
 # Not ready yet

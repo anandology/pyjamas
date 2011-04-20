@@ -9,7 +9,7 @@ TARGETS = [
 
 PACKAGE = {
     'title': 'DateField',
-    'desc': 'DateField',
+    'desc': 'Calendar usage',
 }
 
 

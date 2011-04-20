@@ -1,15 +1,29 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os.path
 
-TARGETS = [
-    'Hello.py',
+head = os.path.dirname(__file__)
+TARGETS = {
+    'Blog.py': dict(
+        options=[
+            '--library_dir',
+            os.join(head, 'PureMVC_Python_1_1', 'src'),
+        ],
+        downloads=[
+            dict(
+                url='http://puremvc.org/pages/downloads/Python/PureMVC_Python.zip',
+                dst=os.path.join(head, PureMVC_Python.zip'),
+                unzip=True,
+            )
+        ],
+    ),
 ]
 
 
 PACKAGE = {
-    'title': 'helloworld',
-    'desc': 'Port of GWT hello world example',
+    'title': 'GAE django-nonrel puremvc blog',
+    'desc': 'Combines concepts from django-nonrel, puremvc and google app engine.',
 }
 
 

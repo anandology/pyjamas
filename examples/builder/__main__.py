@@ -8,8 +8,8 @@ TARGETS = [
 
 
 PACKAGE = {
-    'title': 'Builder (pyjsglade)',
-    'desc': '(unknown)',
+    'title': 'Builder',
+    'desc': 'Use the xml of pyjsglade to dynamically create interface elements',
 }
 
 

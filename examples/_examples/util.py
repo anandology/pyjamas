@@ -4,6 +4,12 @@
 import sys
 import os
 import subprocess
+import urllib
+#import zlib
+#import bz2
+import zipfile
+#import tarfile
+
 
 
 ENV = None
@@ -82,12 +88,14 @@ def _find_python():
 
 
 def _list_examples():
-    return [ 
+    examples = [ 
         example
         for example in os.listdir(ENV['DIR_EXAMPLES'])
         if os.path.isfile(os.path.join(ENV['DIR_EXAMPLES'], example, '__main__.py'))
             and not example.startswith('_')
     ]
+    examples.sort()
+    return examples
 
 
 def _process_pyjamas(root):
@@ -159,17 +167,37 @@ def init(path):
     ENV['DIR_EXAMPLE'] = path
 
 
+def download(downloads):
+    for download in downloads:
+        url = download['url']
+        dst = download['dst']
+        if not os.path.exists(dst):
+            urllib.urlretrieve(url, dst)
+            if download.get('unzip'):
+                path = download.get('path', os.path.dirname(dst))
+                z = zipfile.ZipFile(dst)
+                z.extractall(path)
+
+
 def setup(targets):
     for target in targets:
         if not os.path.isfile(os.path.join(PATH, target)):
             raise TypeError('Target `{0}` does not exist.'.format(target))
+        if isinstance(targets, dict):
+            downloads = targets[target].get('downloads')
+            if downloads:
+                download(downloads)
     global TARGETS
     TARGETS = targets
 
 
 def translate():
     for target in TARGETS:
-        cmd = [ENV['BIN_PYTHON'], ENV['BIN_PYJSBUILD'], ' '.join(ENV['ARG_PYJSBUILD']), target]
+        if isinstance(TARGETS, dict):
+            opts = TARGETS[target].get('options', [])
+        else:
+            opts = []
+        cmd = [ENV['BIN_PYTHON'], ENV['BIN_PYJSBUILD']] + ENV['ARG_PYJSBUILD'] + opts + [target]
         e = subprocess.Popen(cmd, cwd=PATH)
         ret = e.wait()
 

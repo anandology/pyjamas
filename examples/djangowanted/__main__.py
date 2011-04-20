@@ -2,9 +2,12 @@
 # -*- coding: utf-8 -*-
 
 
-TARGETS = [
-    'Hello.py',
-]
+TARGETS = {
+    'WebPage.py': dict(options=[
+        '--bootstrap-file=bootstrap_progress.js',
+        '--include-js=public/fckeditor/fckeditor.js',
+    ])
+}
 
 
 PACKAGE = {
@@ -42,7 +45,7 @@ sys.path.insert(0, os.path.join(head, '..'))
 from _examples import util
 sys.path.pop(0)
 
-util.init(head)
+util.init(os.path.join(head, 'media'))
 
 setup(TARGETS)
 translate()

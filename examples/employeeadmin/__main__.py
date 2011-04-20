@@ -1,15 +1,25 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import os.path
 
+head = os.path.dirname(__file__)
 
-TARGETS = [
-    'EmployeeAdmin.py',
-]
+TARGETS = {
+    'EmployeeAdmin.py': dict(
+        downloads=[
+            dict(
+                url='http://puremvc.org/pages/downloads/Python/PureMVC_Python.zip',
+                dst=os.path.join(head, 'PureMVC_Python.zip'),
+                unzip=True,
+            )
+        ],
+    ),
+}
 
 
 PACKAGE = {
-    'title': 'employeeadmin',
-    'desc': 'employeeadmin example',
+    'title': 'Employee Admin',
+    'desc': 'PureMVC employee admin example',
 }
 
 

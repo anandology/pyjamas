@@ -9,7 +9,7 @@ TARGETS = [
 
 PACKAGE = {
     'title': 'CSS Messer',
-    'desc': '(unknown)',
+    'desc': 'Change css contents on the fly',
 }
 
 
