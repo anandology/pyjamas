@@ -1,8 +1,11 @@
 #import pyjd - FIXME: import gtk doesn't work under hulahop, it's already loaded
 import gtk
 from pyjamas.HTTPRequest import HTTPRequest
-from __pyjamas__ import JS
 from pyjamas.XMLDoc import create_xml_doc
+
+def asyncGet(self, url, handler, returnxml=False,
+                 content_type=None, headers=None, user=None, pwd=None):
+        postData = None
 
 class XMLloader:
     def __init__(self, panel):
@@ -21,9 +24,10 @@ class XMLload:
 
     def onModuleLoad(self):
 
-        HTTPRequest().asyncGet(None, None,
-                    "address_form.ui", 
-                    XMLloader(self))
+        HTTPRequest().asyncGet(
+            "address_form.ui", 
+            XMLloader(self),
+        )
 
     def onError(self, text, code):
         # FIXME
