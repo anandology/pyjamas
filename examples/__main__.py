@@ -11,6 +11,8 @@ from __builtin__ import str # In case str is redefined in util
 
 
 head = os.path.dirname(__file__)
+if not head:
+    head = '.'
 examples = [
     example
     for example in os.listdir(head)

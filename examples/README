@@ -3,3 +3,10 @@ These are a set of examples of pyjamas. Many are direct ports of GWT examples.
 To get started, cd into helloworld and look at the README there.
 
 Then you can try out the other examples to get a feel for how pyjamas works.
+
+To build all examples, either execute 'python .' or 'python examples' from
+the pyjamas root. To build a specific example, execute 'python dirname' 
+(or 'python example/dirname' from the pyjamas root).
+
+If you've got a python version older than 2.6, you'll have to add 
+'/__main__.py' to the command (e.g. 'python ./__main__.py')
