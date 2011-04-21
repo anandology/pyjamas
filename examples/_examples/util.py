@@ -21,18 +21,22 @@ TARGETS = None
 if not hasattr(str, 'format'):
     # Dirty implementation of str.format()
     # Ignores format_spec
+    import __builtin__
     import re
-    re_format = re.compile('{(((([a-zA-Z_]\w*)|(\d*))(([.]\w+)|([[]\w+[]]))*))([!].)?(:[^}]*)?}')
-    re_format_field = re.compile('([.]\w+)|([[]\w+[]]).*')
-    class str(str):
+    re_format = re.compile('((^{)|([^{]{))(((([a-zA-Z_]\w*)|(\d*))(([.][^.[]+?)|([[][^.[]+?[]]))*?))([!].)?(:[^}]*)?}')
+    re_format_field = re.compile('([.][^.[]+)|([[][^.[]+[]]).*')
+    class str(__builtin__.str):
         def format(self, *args, **kwargs):
             idx = [0]
             def sub(m):
-                field = m.group(5)
-                conversion = m.group(9)
-                format_spec = m.group(10)
+                start_char = m.group(0)[0]
+                if start_char == '{':
+                    start_char = ''
+                field = m.group(8)
+                conversion = m.group(12)
+                format_spec = m.group(13)
                 if field is None:
-                    field = m.group(4)
+                    field = m.group(7)
                     v = kwargs[field]
                 else:
                     if field != '':
@@ -41,11 +45,10 @@ if not hasattr(str, 'format'):
                         i = idx[0]
                         idx[0] += 1
                     v = args[i]
-                s = m.group(1)
+                s = m.group(4)
                 s = s[len(field):]
                 while s:
                     m = re_format_field.match(s)
-                    print m.groups()
                     name = m.group(1)
                     if name is not None:
                         v = getattr(v, name[1:])
@@ -64,13 +67,10 @@ if not hasattr(str, 'format'):
                     v = repr(v)
                 else:
                     raise ValueError("Unknown conversion character '%s'" % conversion)
-                return v
-            src = self
-            dst = re_format.sub(sub, src)
-            while src != dst:
-                src = dst
-                dst = re_format.sub(sub, src)
-            return dst
+                return start_char + v
+            s = re_format.sub(sub, self)
+            return s.replace('{{', '{').replace('}}', '}')
+    __builtin__.str = str
 
 
 PACKAGE = {
@@ -168,17 +168,17 @@ def _process_pyjamas(root):
     if lim == 0:
         raise RuntimeError('Unable to locate pyjamas root.')
     # Bootstrap on test failure; attempts to fix a couple issues at once
-    with open(os.devnull, 'wb') as null:
-        try:
-            if subprocess.call(['python', pyjsbuild], stdout=null, stderr=subprocess.STDOUT) > 0:
-                raise OSError
-        except OSError:
-            subprocess.call(['python', boot], stdout=null, stderr=subprocess.STDOUT)
-        return {
-            'DIR_PYJAMAS': root,
-            'DIR_EXAMPLES': os.path.join(root, 'examples'),
-            'BIN_PYJSBUILD': pyjsbuild,
-        }
+    null = open(os.devnull, 'wb')
+    try:
+        if subprocess.call(['python', pyjsbuild], stdout=null, stderr=subprocess.STDOUT) > 0:
+            raise OSError
+    except OSError:
+        subprocess.call(['python', boot], stdout=null, stderr=subprocess.STDOUT)
+    return {
+        'DIR_PYJAMAS': root,
+        'DIR_EXAMPLES': os.path.join(root, 'examples'),
+        'BIN_PYJSBUILD': pyjsbuild,
+    }
 
 
 def _process_environ():
@@ -195,7 +195,6 @@ def _process_args(args):
 
 
 def _process_path(targets, target):
-    print '_process_path:', target, targets
     path = PATH
     if isinstance(targets, dict):
       	if 'path' in targets[target]:
@@ -308,8 +307,8 @@ def install(package=None, **packages):
                 for example in _list_examples()
             ])
             index_tpl = os.path.join(ENV['DIR_EXAMPLES'], '_examples', 'template', 'index.html.tpl')
-            with open(index_tpl, 'r') as idx_in_fd:
-                tpl = str(idx_in_fd.read()).format(examples)
+            idx_in_fd = open(index_tpl, 'r')
+            tpl = str(idx_in_fd.read()).format(examples)
         index_new = str(tpl).format(example=_e(packages))
     except:
         if index_orig is None:
