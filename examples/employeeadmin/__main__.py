@@ -6,6 +6,10 @@ head = os.path.dirname(__file__)
 
 TARGETS = {
     'EmployeeAdmin.py': dict(
+        options=[
+            '--library_dir',
+            os.path.join(head, 'PureMVC_Python_1_2', 'src'),
+        ],
         downloads=[
             dict(
                 url='http://puremvc.org/pages/downloads/Python/PureMVC_Python.zip',

@@ -9,12 +9,68 @@ import urllib
 #import bz2
 import zipfile
 #import tarfile
-
+from optparse import OptionParser
 
 
 ENV = None
+OPTS = None
 PATH = None
 TARGETS = None
+
+
+if not hasattr(str, 'format'):
+    # Dirty implementation of str.format()
+    # Ignores format_spec
+    import re
+    re_format = re.compile('{(((([a-zA-Z_]\w*)|(\d*))(([.]\w+)|([[]\w+[]]))*))([!].)?(:[^}]*)?}')
+    re_format_field = re.compile('([.]\w+)|([[]\w+[]]).*')
+    class str(str):
+        def format(self, *args, **kwargs):
+            idx = [0]
+            def sub(m):
+                field = m.group(5)
+                conversion = m.group(9)
+                format_spec = m.group(10)
+                if field is None:
+                    field = m.group(4)
+                    v = kwargs[field]
+                else:
+                    if field != '':
+                        i = int(field)
+                    else:
+                        i = idx[0]
+                        idx[0] += 1
+                    v = args[i]
+                s = m.group(1)
+                s = s[len(field):]
+                while s:
+                    m = re_format_field.match(s)
+                    print m.groups()
+                    name = m.group(1)
+                    if name is not None:
+                        v = getattr(v, name[1:])
+                        s = s[len(name):]
+                    else:
+                        i = m.group(2)[1:-1]
+                        s = s[len(i) + 2:]
+                        try:
+                            i = int(i)
+                        except:
+                            pass
+                        v = v[i]
+                if conversion is None or conversion == 's':
+                    v = str(v)
+                elif conversion == 'r':
+                    v = repr(v)
+                else:
+                    raise ValueError("Unknown conversion character '%s'" % conversion)
+                return v
+            src = self
+            dst = re_format.sub(sub, src)
+            while src != dst:
+                src = dst
+                dst = re_format.sub(sub, src)
+            return dst
 
 
 PACKAGE = {
@@ -66,7 +122,7 @@ class _e(object):
             if frag in self._special:
                 curr = self._special[frag]
             else:
-                curr = '{{{0}}}'.format('.'.join(self._path))
+                curr = '{{%s}}' % '.'.join(self._path)
         self._path[1:] = []
         return curr
 
@@ -132,30 +188,38 @@ def _process_environ():
         if k.startswith('PYJS')
     ])
 
-#FIXME
-def _process_opts(args):
-    opts = {}
-    possible = ('downloads',)
-    for name in possible:
-        for flag in ('yes', 'no'):
-            opt = '--{0}-{1}'.format(name, flag)
-            if opt in args:
-                args.remove(opt)
-                opts[opt] = flag
-    return opts
 
 
 def _process_args(args):
     return {'ARG_PYJSBUILD': args or ['-O']}
 
 
+def _process_path(targets, target):
+    print '_process_path:', target, targets
+    path = PATH
+    if isinstance(targets, dict):
+      	if 'path' in targets[target]:
+            path = targets[target]['path']
+            if not path.startswith(os.sep):
+                path = os.path.join(PATH, path)
+    return path
+
 def init(path):
-    global ENV, PATH
-    args = sys.argv[1:]
+    global ENV, PATH, OPTS
+    optparser = OptionParser()
+    add_option = optparser.add_option
+    add_option(
+        '--download',
+        dest='download',
+        action='store_true',
+        default=False,
+        help='permit downloads of files or libraries',
+    )
+    opts, args = optparser.parse_args()
+    OPTS=opts
     PATH = path
     ENV = {}
     ENV.update(_process_environ())
-    ENV.update(_process_opts(args))
     ENV.update(_process_args(args))
     if 'BIN_PYTHON' not in ENV:
         ENV['BIN_PYTHON'] = _find_python()
@@ -172,6 +236,8 @@ def download(downloads):
         url = download['url']
         dst = download['dst']
         if not os.path.exists(dst):
+            if not OPTS.download:
+                raise TypeError('Downloads not permitted. Use --download option to permit')
             urllib.urlretrieve(url, dst)
             if download.get('unzip'):
                 path = download.get('path', os.path.dirname(dst))
@@ -181,12 +247,14 @@ def download(downloads):
 
 def setup(targets):
     for target in targets:
-        if not os.path.isfile(os.path.join(PATH, target)):
-            raise TypeError('Target `{0}` does not exist.'.format(target))
+        downloads = None
+        path = _process_path(targets, target)
         if isinstance(targets, dict):
             downloads = targets[target].get('downloads')
-            if downloads:
-                download(downloads)
+        if not os.path.isfile(os.path.join(path, target)):
+            raise TypeError('Target `%s` does not exist.' % target)
+        if downloads:
+            download(downloads)
     global TARGETS
     TARGETS = targets
 
@@ -198,7 +266,8 @@ def translate():
         else:
             opts = []
         cmd = [ENV['BIN_PYTHON'], ENV['BIN_PYJSBUILD']] + ENV['ARG_PYJSBUILD'] + opts + [target]
-        e = subprocess.Popen(cmd, cwd=PATH)
+        path = _process_path(TARGETS, target)
+        e = subprocess.Popen(cmd, cwd=path)
         ret = e.wait()
 
 
@@ -207,7 +276,7 @@ def install(package=None, **packages):
         PACKAGE.update(package)
         name = ENV['NAME_EXAMPLE']
         demos = ''.join([
-            INDEX['demo'].format(name=name, target=target[:-3])
+            str(INDEX['demo']).format(name=name, target=target[:-3])
             for target in TARGETS
         ])  
         example = { 
@@ -235,13 +304,13 @@ def install(package=None, **packages):
             index_orig = tpl = None
         if tpl is None or '<style>' in tpl:
             examples = ''.join([
-                INDEX['example'].format(name=example)
+                str(INDEX['example']).format(name=example)
                 for example in _list_examples()
             ])
             index_tpl = os.path.join(ENV['DIR_EXAMPLES'], '_examples', 'template', 'index.html.tpl')
             with open(index_tpl, 'r') as idx_in_fd:
-                tpl = idx_in_fd.read().format(examples)
-        index_new = tpl.format(example=_e(packages))
+                tpl = str(idx_in_fd.read()).format(examples)
+        index_new = str(tpl).format(example=_e(packages))
     except:
         if index_orig is None:
             idx_out_fd.close()

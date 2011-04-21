@@ -4,21 +4,24 @@
 import os.path
 
 head = os.path.dirname(__file__)
+puremvc = os.path.join(head, '..', 'employeeadmin')
+
 TARGETS = {
     'Blog.py': dict(
+        path='media',
         options=[
             '--library_dir',
-            os.join(head, 'PureMVC_Python_1_1', 'src'),
+            os.path.join(puremvc, 'PureMVC_Python_1_2', 'src'),
         ],
         downloads=[
             dict(
-                url='http://puremvc.org/pages/downloads/Python/PureMVC_Python.zip',
-                dst=os.path.join(head, PureMVC_Python.zip'),
+                url='http://puremvc.org/pages/downloads/Python/PureMVC_Python.zip',             
+                dst=os.path.join(puremvc, 'PureMVC_Python.zip'),
                 unzip=True,
             )
         ],
     ),
-]
+}
 
 
 PACKAGE = {
@@ -57,6 +60,7 @@ from _examples import util
 sys.path.pop(0)
 
 util.init(head)
+#util.init(os.path.join(head, 'media'))
 
 setup(TARGETS)
 translate()

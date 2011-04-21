@@ -1,10 +1,26 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os.path
 
-TARGETS = [
-    'TimeSheet.py',
-]
+head = os.path.dirname(__file__)
+puremvc = os.path.join(head, '..', 'employeeadmin')
+
+TARGETS = {
+    'TimeSheet.py': dict(
+        options=[
+            '--library_dir',
+            os.path.join(puremvc, 'PureMVC_Python_1_2', 'src'),
+        ],
+        downloads=[
+            dict(
+                url='http://puremvc.org/pages/downloads/Python/PureMVC_Python.zip',             
+                dst=os.path.join(puremvc, 'PureMVC_Python.zip'),
+                unzip=True,
+            )
+        ],
+    ),
+}
 
 
 PACKAGE = {
