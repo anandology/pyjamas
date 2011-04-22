@@ -27,6 +27,8 @@ from os import path
 import subprocess
 import os
 
+currentdir = path.abspath(path.dirname(__file__))
+
 class PyjamasTester(object):
     parser = OptionParser()
     parser.add_option(
@@ -95,6 +97,12 @@ class PyjamasTester(object):
         
     def __init__(self):
         self.options, args = self.parser.parse_args()
+        
+        if not path.isabs(self.options.pyv8):
+            self.options.pyv8 = path.join(currentdir, self.options.pyv8)
+        
+        if not path.isabs(self.options.examples_path):
+            self.options.examples_path = path.join(currentdir, self.options.examples_path)
         
         if self.options.libtest_run:
             self.test_libtest_cpython()
