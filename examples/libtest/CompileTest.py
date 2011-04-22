@@ -1,11 +1,36 @@
-#This module does no actual work. It simply consists of some tests which may
-#cause compile to fail. When you find a new compiler bug, first add the test
-#here, in commented-out form. When you've patched the bug, remove the comments.
+"""
+This module does no actual work. It simply consists of some tests which may
+cause compile to fail. When you find a new compiler bug, first add the test
+here, in commented-out form and add exception with issue number.
+When you've patched the bug, remove the comments.
+"""
 
-#issue 432
-x, y = 1, 2
-del x, y
+import UnitTest
+class CompileTest(UnitTest.UnitTest):
+    def test_issue_432(self):
+        #issue 432
+        x, y = 1, 2
+        del x, y
+     
+    def test_issue_433(self):
+        #issue 433
+        for x in [1, 2] + [3, 4]:
+            pass
 
-#issue 433
-for x in [1, 2] + [3, 4]:
-  pass
+    def test_slice_span(self):
+        """
+        self.assertEqual([1,2,3,4][::2], [1,3])
+        """
+        raise Exception("Slice span, #364, #434, #577, #582")
+
+
+    def test_discard_expressions(self):
+        """
+        (1, 2)
+        x = 10
+        x
+        "some string"
+        """
+        raise Exception("ast.Discard nodes, #584")
+        
+

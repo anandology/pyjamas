@@ -17,8 +17,8 @@ from DictTest import DictTest
 from BuiltinTest import BuiltinTest
 from GeneratorTest import GeneratorTest
 from LongTest import LongTest
+from CompileTest import CompileTest
 
-import CompileTest
 if 1L << 31 > 0:
     has_long_type = True
     from LongTypeTest import LongTypeTest
@@ -55,6 +55,7 @@ from RunTests import RunTests
 def main():
 
     t = RunTests()
+    t.add(CompileTest)
     t.add(LoopTest)
     t.add(NoInlineCodeTest)
     t.add(BoolTest)
