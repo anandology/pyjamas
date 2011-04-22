@@ -4,7 +4,9 @@ from pyjamas.ui.RootPanel import RootPanel
 from pyjamas import Window
 from pyjamas.ui.Image import Image
 from pyjamas.ui.HTML import HTML
-from pyjamas.Canvas2D import Canvas, CanvasImage, ImageLoadListener
+from pyjamas.Canvas.GWTCanvas import GWTCanvas
+from pyjamas.Canvas.ImageLoader import loadImages
+from pyjamas.Canvas.Color import Color
 from pyjamas.Timer import Timer
 from pyjamas import DOM
 import time
@@ -28,21 +30,19 @@ class Widgets:
         self.solar.isActive = False
 
 
-class SolarCanvas(Canvas):
+class SolarCanvas(GWTCanvas):
 
     def __init__(self, img_url):
-        Canvas.__init__(self, 300, 300)
-        self.clock = CanvasImage(img_url)
+        GWTCanvas.__init__(self, 300, 300, 300, 300)
+        loadImages([img_url], self)
         self.width = 150
         self.height = 150
-        
-        self.loader = ImageLoadListener(self)
-        self.loader.add(self.clock)
         
         self.isActive = True
         self.onTimer()
 
-    def onLoad(self, sender=None):
+    def onImagesLoaded(self, imagesHandles):
+        self.clock = imagesHandles[0]
         el = self.clock.getElement()
         self.width = DOM.getIntAttribute(el, "width")
         self.height = DOM.getIntAttribute(el, "height")
@@ -73,45 +73,45 @@ class SolarCanvas(Canvas):
 
     def draw(self):
         pi = 3.14159265358979323
-        if not self.loader.isLoaded():
+        if not getattr(self, 'clock', None):
             return
         
-        self.context.globalCompositeOperation = 'destination-over'
+        self.setGlobalCompositeOperation('destination-over')
 
         # clear canvas
-        self.context.clearRect(0,0,self.width,self.height) 
+        self.clear()
         
-        self.context.save()
-        self.context.fillStyle = 'rgba(0,0,0,0.4)'
-        self.context.strokeStyle = 'rgba(0,153,255,0.4)'
-        self.context.translate(self.width/2,self.height/2)
+        self.saveContext()
+        self.setFillStyle(Color('rgba(0,0,0,0.4)'))
+        self.setStrokeStyle(Color('rgba(0,153,255,0.4)'))
+        self.translate(self.width/2,self.height/2)
         
         secs = self.getTimeSeconds()
         mins = self.getTimeMinutes() + secs / 60.0
         hours = self.getTimeHours() + mins / 60.0
 
         # Seconds
-        self.context.save()
-        self.context.fillStyle = 'rgba(255,0,0,0.4)'
-        self.context.rotate( ((2*pi)/60)*secs + pi)
-        self.context.fillRect(-1,-(self.width * 0.04),2, self.width * 0.38) 
-        self.context.restore()
+        self.saveContext()
+        self.setFillStyle(Color('rgba(255,0,0,0.4)'))
+        self.rotate( ((2*pi)/60)*secs + pi)
+        self.fillRect(-1,-(self.width * 0.04),2, self.width * 0.38) 
+        self.restoreContext()
         
         # Minutes
-        self.context.save()
-        self.context.rotate( ((2*pi)/60)*mins + pi)
-        self.context.fillRect(-1,-1,3,self.width * 0.35) 
-        self.context.restore()
+        self.saveContext()
+        self.rotate( ((2*pi)/60)*mins + pi)
+        self.fillRect(-1,-1,3,self.width * 0.35) 
+        self.restoreContext()
         
         # Hours
-        self.context.save()
-        self.context.rotate( ((2*pi)/12)*hours + pi)
-        self.context.fillRect(-2,-2,4,self.width * 0.2) 
-        self.context.restore()
+        self.saveContext()
+        self.rotate( ((2*pi)/12)*hours + pi)
+        self.fillRect(-2,-2,4,self.width * 0.2) 
+        self.restoreContext()
         
-        self.context.restore()
+        self.restoreContext()
         
-        self.context.drawImage(self.clock.getElement(),0,0)
+        self.drawImage(self.clock.getElement(),0,0)
 
 
 def AppInit():
