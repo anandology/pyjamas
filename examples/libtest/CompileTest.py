@@ -1,7 +1,7 @@
 """
 This module does no actual work. It simply consists of some tests which may
 cause compile to fail. When you find a new compiler bug, first add the test
-here, in commented-out form and add exception with issue number.
+here, in commented-out form and add self.fail() with issue number.
 When you've patched the bug, remove the comments.
 """
 
@@ -21,7 +21,7 @@ class CompileTest(UnitTest.UnitTest):
         """
         self.assertEqual([1,2,3,4][::2], [1,3])
         """
-        raise Exception("Slice span, #364, #434, #577, #582")
+        self.fail("Slice span, #364, #434, #577, #582")
 
 
     def test_discard_expressions(self):
@@ -31,6 +31,6 @@ class CompileTest(UnitTest.UnitTest):
         x
         "some string"
         """
-        raise Exception("ast.Discard nodes, #584")
+        self.fail("ast.Discard nodes, #584")
         
 
