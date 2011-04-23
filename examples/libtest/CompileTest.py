@@ -55,3 +55,23 @@ class CompileTest(UnitTest.UnitTest):
         x = d[1,2]
         """
         self.fail("Tuple subscripts issue #496")
+
+    def test_bad_import(self):
+        try: import _nonexistentmodule
+        except: pass
+
+        try: import _importtimeerror
+        except: pass
+        
+        """
+        try: import _badsyntaxmodule
+        except: pass
+        """
+        self.fail("try: import badcode/except does not catch SyntaxError, #592")
+
+        """
+        try: import _untranslatablemodule
+        except: pass
+        """
+        self.fail("try: import badcode/except does not catch TranslationError, #592")
+            
