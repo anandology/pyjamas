@@ -1,0 +1,6 @@
+All examples in the deprecated are (guess what?) deprecated. This means that
+they might work but don't have to. They are also not tested for releases or 
+whatsoever. Moreover, they might work for one browser and fail for another.
+
+Updates/fixes are welcome and might change the status from deprecated to
+maintained.

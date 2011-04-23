@@ -1,18 +1,24 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
+
+head = os.path.dirname(__file__)
+pygtkweb = os.path.join(head, '..', '..', '..', 'pygtkweb')
 
 TARGETS = {
-    'WebPage.py': dict(options=[
-        '--bootstrap-file=bootstrap_progress.js',
-        '--include-js=public/fckeditor/fckeditor.js',
-    ])
+    'AutoGtk.py': dict(
+        options=[
+            '--library_dir',
+            os.path.join(pygtkweb, 'library'),
+        ],
+    )
 }
 
 
 PACKAGE = {
-    'title': 'Django Wanted',
-    'desc': '(unknown)',
+    'title': 'pywebgtkbuilder',
+    'desc': 'Python Web-Gtk "GtkBuilder" example',
 }
 
 

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-PYJSBUILD="../../bin/pyjsbuild"
+PYJSBUILD="../../../bin/pyjsbuild"
 
 options="$*"
 #if [ -z $options ] ; then options="-O";fi

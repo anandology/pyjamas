@@ -2,14 +2,16 @@
 # -*- coding: utf-8 -*-
 
 
-TARGETS = [
-    'AutoGtk.py',
-]
+TARGETS = {
+    'TodoApp.py': dict(
+        path='media',
+    ),
+}
 
 
 PACKAGE = {
-    'title': 'pywebgtkbuilder',
-    'desc': 'Python Web-Gtk "GtkBuilder" example',
+    'title': 'Django Tasks',
+    'desc': '(unknown)',
 }
 
 

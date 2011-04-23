@@ -4,7 +4,7 @@
 import os.path
 
 head = os.path.dirname(__file__)
-puremvc = os.path.join(head, '..', 'employeeadmin')
+puremvc = os.path.join(head, '..', '..', 'employeeadmin')
 
 TARGETS = {
     'Blog.py': dict(

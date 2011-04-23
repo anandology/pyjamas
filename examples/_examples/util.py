@@ -217,6 +217,13 @@ def get_optparser():
             help='permit downloads of files or libraries',
         )
         add_option(
+            '--misc',
+            dest='misc',
+            action='store_true',
+            default=False,
+            help='build miscellaneous examples',
+        )
+        add_option(
             '--deprecated',
             dest='deprecated',
             action='store_true',

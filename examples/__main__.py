@@ -18,6 +18,8 @@ head = os.path.dirname(__file__)
 if not head:
     head = '.'
 paths = [head]
+if opts.misc:
+    paths.append(os.path.join(head, 'misc'))
 if opts.deprecated:
     paths.append(os.path.join(head, 'deprecated'))
 

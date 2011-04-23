@@ -10,3 +10,14 @@ the pyjamas root. To build a specific example, execute 'python dirname'
 
 If you've got a python version older than 2.6, you'll have to add 
 '/__main__.py' to the command (e.g. 'python ./__main__.py')
+
+The examples in this directory should be runnable right away (after 
+compiling of course) from an apache server (some need some apache 
+settings/configuration).
+
+In the misc directory you'll find examples that need additional steps 
+(e.g. setting up a server) or are more for displaying certain 
+coding/compiling features than showing some ui related features.
+
+In the deprecated directory contains examples that are not maintained
+(anymore).

@@ -3,10 +3,13 @@
 
 
 TARGETS = {
-    'WebPage.py': dict(options=[
-        '--bootstrap-file=bootstrap_progress.js',
-        '--include-js=public/fckeditor/fckeditor.js',
-    ]),
+    'WebPage.py': dict(
+        path='media',
+        options=[
+            '--bootstrap-file=bootstrap_progress.js',
+            '--include-js=public/fckeditor/fckeditor.js',
+        ],
+    ),
 }
 
 

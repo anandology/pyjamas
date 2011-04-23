@@ -6,5 +6,5 @@ ln -s ./output ./static
 
 options="$*"
 #if [ -z $options ] ; then options="-O";fi
-../../bin/pyjsbuild --print-statements $options Wiki
+../../../bin/pyjsbuild --print-statements $options Wiki
 
