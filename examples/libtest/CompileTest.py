@@ -40,4 +40,10 @@ class CompileTest(UnitTest.UnitTest):
         ("    " + s).rstrip()
         """
         self.fail("Callfunc over expressions, #591")
-        
+    
+    def test_deep_tuple_unpacking(self):
+        """
+        x = ((1, 2), 3, (4, 5))
+        (a, b), c, (d, e) = x
+        """
+        self.fail("Bug #527 Tuple unpacking not supported for more than one level")
