@@ -33,4 +33,11 @@ class CompileTest(UnitTest.UnitTest):
         """
         self.fail("ast.Discard nodes, #584")
         
-
+    def test_callfunc_expressions(self):
+        """
+        s = "123"
+        x = ('a' + 'b').strip()
+        ("    " + s).rstrip()
+        """
+        self.fail("Callfunc over expressions, #591")
+        
