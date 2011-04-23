@@ -14,6 +14,8 @@ import IntroTab
 import TooltipTab
 import AutoCompleteTab
 import Canvas2DTab
+import CanvasTab
+
 
 class AddonsGallery:
 
@@ -83,6 +85,7 @@ class AddonsGallery:
         self.sink_list.addSink(TooltipTab.init())
         self.sink_list.addSink(AutoCompleteTab.init())
         self.sink_list.addSink(Canvas2DTab.init())
+        self.sink_list.addSink(CanvasTab.init())
 
     def showIntro(self):
         self.show(self.sink_list.find("Intro"))
