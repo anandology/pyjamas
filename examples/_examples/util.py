@@ -177,7 +177,7 @@ def _process_pyjamas(root):
         subprocess.call(['python', boot], stdout=null, stderr=subprocess.STDOUT)
     return {
         'DIR_PYJAMAS': root,
-        'DIR_EXAMPLES': os.path.join(root, 'examples'),
+        'BASE_EXAMPLES': os.path.join(root, 'examples'),
         'BIN_PYJSBUILD': pyjsbuild,
     }
 
@@ -321,7 +321,7 @@ def install(package=None, **packages):
                 str(INDEX['example']).format(name=example)
                 for example in _list_examples()
             ])
-            index_tpl = os.path.join(ENV['DIR_EXAMPLES'], '_examples', 'template', 'index.html.tpl')
+            index_tpl = os.path.join(ENV['BASE_EXAMPLES'], '_examples', 'template', 'index.html.tpl')
             idx_in_fd = open(index_tpl, 'r')
             tpl = str(idx_in_fd.read()).format(examples)
         index_new = str(tpl).format(example=_e(packages))
