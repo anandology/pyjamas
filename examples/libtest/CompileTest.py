@@ -47,3 +47,11 @@ class CompileTest(UnitTest.UnitTest):
         (a, b), c, (d, e) = x
         """
         self.fail("Bug #527 Tuple unpacking not supported for more than one level")
+
+    def test_subscript_tuple(self):
+        """
+        d = {}
+        d[(1,2)] = 3
+        x = d[1,2]
+        """
+        self.fail("Tuple subscripts issue #496")
