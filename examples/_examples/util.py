@@ -16,6 +16,7 @@ ENV = None
 OPTS = None
 PATH = None
 TARGETS = None
+optparser = None
 
 
 if not hasattr(str, 'format'):
@@ -203,17 +204,31 @@ def _process_path(targets, target):
                 path = os.path.join(PATH, path)
     return path
 
+def get_optparser():
+    global optparser
+    if optparser is None:
+        optparser = OptionParser()
+        add_option = optparser.add_option
+        add_option(
+            '--download',
+            dest='download',
+            action='store_true',
+            default=False,
+            help='permit downloads of files or libraries',
+        )
+        add_option(
+            '--deprecated',
+            dest='deprecated',
+            action='store_true',
+            default=False,
+            help='build deprecated examples',
+        )
+    return optparser
+
+
 def init(path):
     global ENV, PATH, OPTS
-    optparser = OptionParser()
-    add_option = optparser.add_option
-    add_option(
-        '--download',
-        dest='download',
-        action='store_true',
-        default=False,
-        help='permit downloads of files or libraries',
-    )
+    optparser = get_optparser()
     opts, args = optparser.parse_args()
     OPTS=opts
     PATH = path
