@@ -82,3 +82,20 @@ class VarsTest(UnitTest.UnitTest):
         except:
             self.fail("Global module sys not available (bug #216)")
 
+    def testGlobalsBltin(self):
+        try:
+            self.assertEqual(set(globals().keys()), 
+                             set(['changeme', 'foo', 'myfoo_value', '__builtins__',
+                              'UnitTest', 'import_sys', 'VarsTest', 'data_test',
+                              '__package__', 'module_global_x', '__doc__',
+                              '__name__', 'myget_foo_value', 'myfoo',
+                              'data', '__file__']))
+        except:
+            self.fail("globals() not implemented, #590")
+            return False
+        
+        globals()['new_global_via_dict'] = True
+        self.assertTrue(globals()['new_global_via_dict'])
+        
+
+
