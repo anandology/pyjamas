@@ -13,7 +13,7 @@ from pyjamas import History
 import IntroTab
 import TooltipTab
 import AutoCompleteTab
-import CanvasTab
+import Canvas2DTab
 
 class AddonsGallery:
 
@@ -82,7 +82,7 @@ class AddonsGallery:
         self.sink_list.addSink(IntroTab.init())
         self.sink_list.addSink(TooltipTab.init())
         self.sink_list.addSink(AutoCompleteTab.init())
-        self.sink_list.addSink(CanvasTab.init())
+        self.sink_list.addSink(Canvas2DTab.init())
 
     def showIntro(self):
         self.show(self.sink_list.find("Intro"))

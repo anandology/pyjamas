@@ -46,11 +46,23 @@ class CanvasTab(Sink):
 
 
 def init():
-    text=r"<b>Canvas vector drawing component</b><p>Gives python access to the browser's native canvas tag (<a href=\"http://excanvas.sourceforge.net\">Explorer Canvas</a> in IE)"
-    text+=r"<p>Originally by Alexei Sokolov at <a href=\"http://gwt.components.googlepages.com\">gwt.components.googlepages.com</a>"
-    text+=r"<br>Samples ported from the <a href=\"http://developer.mozilla.org/en/docs/Canvas_tutorial\">Mozilla canvas tutorial</a>" 
+    text="""
+<b>Canvas vector drawing component: Canvas2D</b>
+<p>Gives python access to the browser's native canvas tag.
+
+<p>There are two canvas drawing libraries: Canvas2D (oldest) and Canvas 
+(preferred). Both work in modern browsers (that support canvas). For IE 
+the canvas functionality is emulated in javascript. This leads to
+lower performance in IE and missing/broken functionality. Canvas2D 
+depends on <a href=\"http://excanvas.sourceforge.net\">Explorer Canvas</a> 
+in IE.
+
+<p>Originally by Alexei Sokolov at <a href=\"http://gwt.components.googlepages.com\">gwt.components.googlepages.com</a>"
+<br>Samples ported from the <a href=\"http://developer.mozilla.org/en/docs/Canvas_tutorial\">Mozilla canvas tutorial</a>" 
+<br>Samples ported from the <a href=\"http://developer.mozilla.org/en/docs/Canvas_tutorial\">Mozilla canvas tutorial</a>
+""" 
     
-    return SinkInfo("Canvas", text, CanvasTab)
+    return SinkInfo("Canvas2D", text, CanvasTab)
 
 
 class ColourGridCanvas(Canvas):
