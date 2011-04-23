@@ -306,6 +306,37 @@ class BuiltinTest(UnitTest):
 
         local_vars = fn1()
         self.assertEqual(local_vars, {'b': 1})
+        
+        def fn2():
+            lx = 3
+            def g():
+                li = lx
+                return locals()
+            return g()
+        self.assertEqual(fn2(), {'li':3, 'lx':3}, "locals() bugs: #589")
+
+        def fn3():
+            lx = 3
+            def g():
+                def lh():
+                    li = lx
+                    return locals()
+                return locals(), lh()
+            return g()
+        outer_locals, inner_locals = fn3()
+        self.assertEqual(inner_locals, {'li':3, 'lx':3}, "locals() bugs: #589")
+        keys = outer_locals.keys()
+        keys.sort()
+        self.assertEqual(keys, ['lh', 'lx'], "locals() bugs: #589")
+
+        def fn4(x):
+            class X:
+                x = 12
+                def fn4(self):
+                    return x
+                locals()
+            return X
+        self.assertEqual(fn4(1).x, 12)
 
         args = {'test1': 5, 'test2': 'hello'}
         la = LocalsTest()
