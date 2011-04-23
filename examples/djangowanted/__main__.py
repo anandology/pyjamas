@@ -40,12 +40,16 @@ import sys
 import os
 
 
-head = os.path.dirname(__file__)
-sys.path.insert(0, os.path.join(head, '..'))
+examples = head = os.path.abspath(os.path.dirname(__file__))
+while os.path.split(examples)[1].lower() != 'examples':
+    examples = os.path.split(examples)[0]
+    if not examples:
+        raise ValueError("Cannot determine examples directory")
+sys.path.insert(0, os.path.join(examples))
 from _examples import util
 sys.path.pop(0)
 
-util.init(os.path.join(head, 'media'))
+util.init(head)
 
 setup(TARGETS)
 translate()
