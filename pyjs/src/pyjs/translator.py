@@ -3130,6 +3130,10 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 return self.ast.Div
             if op == "%=":
                 return self.ast.Mod
+            if op == "//=":
+                return self.ast.FloorDiv
+            if op == "**=":
+                return self.ast.Power
             if self.number_classes:
                 if op == "&=":
                     return self.ast.Bitand
