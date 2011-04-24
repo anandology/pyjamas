@@ -386,9 +386,9 @@ BIND_TYPES_NUMERIC = {
 # arguments -> arguments_
 # arguments_ -> arguments__
 # etc.
-# arguments is one of Other_JavaScript_Keywords, but is used 
+# arguments is one of Other_JavaScript_Keywords, but is used
 # in function/method initialization and therefore forbidden
-pyjs_vars_remap_names = ['arguments', 
+pyjs_vars_remap_names = ['arguments',
                         'final', 'char'] # to pass lint
 pyjs_vars_remap = {}
 for a in pyjs_vars_remap_names:
@@ -430,10 +430,10 @@ def monkey_patch_broken_transformer(compiler):
     extractLineNo = compiler.transformer.extractLineNo
     token = compiler.transformer.token
     symbol = compiler.transformer.symbol
-    Subscript = compiler.transformer.Subscript 
-    Tuple = compiler.transformer.Tuple 
-    Ellipsis = compiler.transformer.Ellipsis 
-    Sliceobj = compiler.transformer.Sliceobj 
+    Subscript = compiler.transformer.Subscript
+    Tuple = compiler.transformer.Tuple
+    Ellipsis = compiler.transformer.Ellipsis
+    Sliceobj = compiler.transformer.Sliceobj
 
     # Bugfix compiler.transformer.Transformer.com_subscriptlist
     def com_subscriptlist(self, primary, nodelist, assigning):
@@ -690,7 +690,7 @@ class Klass:
 
 
 class TranslationError(Exception):
-    def __init__(self, msg, node, module_name=''):
+    def __init__(self, msg, node='', module_name=''):
         if node:
             lineno = node.lineno
         else:
@@ -1024,7 +1024,7 @@ class Translator(object):
             self.operator_funcs, self.number_classes,
         ) = self.option_stack.pop()
 
-    def parse_decorators(self, node, funcname, current_class = None, 
+    def parse_decorators(self, node, funcname, current_class = None,
                           is_method = False, bind_type = None):
         if node.decorators is None:
             return False, False, '%s'
@@ -1217,7 +1217,7 @@ class Translator(object):
                 txt += substname
             txt += l[i+1]
         return txt
-        
+
     def scopeName(self, name, depth, local):
         if local:
             return name
@@ -1369,7 +1369,7 @@ class Translator(object):
 
     __inline_getitem_code_str = """(typeof (%(v1)s=%(e)s).__array != 'undefined'?
     ((typeof %(v1)s.__array[%(v2)s=%(i)s]) != 'undefined'?%(v1)s.__array[%(v2)s]:
-        %(v1)s.__getitem__(%(v2)s)): 
+        %(v1)s.__getitem__(%(v2)s)):
         %(v1)s.__getitem__(%(i)s))"""
     __inline_getitem_code_str = __inline_getitem_code_str.replace("    ", "\t").replace("\n", "\n%(s)s")
 
@@ -1872,9 +1872,9 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             # This is necessary when **kwargs in function definition
             # and the call didn't pass the pyjs_kwargs_call().
             # See libtest testKwArgsInherit
-            # This is not completely safe: if the last element in arguments 
-            # is an dict and the corresponding argument shoud be a dict and 
-            # the kwargs should be empty, the kwargs gets incorrectly the 
+            # This is not completely safe: if the last element in arguments
+            # is an dict and the corresponding argument shoud be a dict and
+            # the kwargs should be empty, the kwargs gets incorrectly the
             # dict and the argument becomes undefined.
             # E.g.
             # def fn(a = {}, **kwargs): pass
@@ -2407,7 +2407,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
 
         kwargs = []
         star_arg_name = None
-        if v.star_args: 
+        if v.star_args:
             star_arg_name = self.expr(v.star_args, current_klass)
         dstar_arg_name = None
         if v.dstar_args:
@@ -2434,13 +2434,13 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                 dstar_arg_name = 'null'
             if method_name is None:
                 call_code = ("$pyjs_kwargs_call(null, "+call_name+", "
-                                  + star_arg_name 
+                                  + star_arg_name
                                   + ", " + dstar_arg_name
                                   + ", ["+fn_args+"]"
                                   + ")")
             else:
                 call_code = ("$pyjs_kwargs_call("+call_name+", '"+method_name+"', "
-                                  + star_arg_name 
+                                  + star_arg_name
                                   + ", " + dstar_arg_name
                                   + ", ["+fn_args+"]"
                                   + ")")
@@ -2452,9 +2452,9 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
 
     def _callfunc(self, v, current_klass, is_statement=False, optlocal_var=False):
         call_code = self._callfunc_code(
-            v, 
-            current_klass, 
-            is_statement=is_statement, 
+            v,
+            current_klass,
+            is_statement=is_statement,
             optlocal_var=optlocal_var,
         )
         if not self.ignore_debug:
@@ -2583,10 +2583,10 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                     l = []
                     if isinstance(expr, self.ast.Tuple):
                         for x in expr.nodes:
-                            l.append("((%s_name == %s.__name__)||@{{_isinstance}}(%s,%s))" % (pyjs_try_err, 
+                            l.append("((%s_name == %s.__name__)||@{{_isinstance}}(%s,%s))" % (pyjs_try_err,
                                 self.expr(x, current_klass),pyjs_try_err, self.expr(x, current_klass)))
                     else:
-                        l = [ "(%s_name == %s.__name__)||@{{_isinstance}}(%s,%s)" % (pyjs_try_err, 
+                        l = [ "(%s_name == %s.__name__)||@{{_isinstance}}(%s,%s)" % (pyjs_try_err,
                                 self.expr(expr, current_klass),pyjs_try_err, self.expr(expr, current_klass)) ]
                     self.w( "%sif (%s) {" % (else_str, "||".join(l)))
                 self.indent()
@@ -2671,6 +2671,16 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             return [self._callfunc(v.expr, self.modpfx()), attr_name]
         elif isinstance(v.expr, self.ast.Const):
             return [self._const(v.expr), attr_name]
+        elif isinstance(v.expr, self.ast.List):
+            return [self._list(v.expr, current_klass), attr_name]
+        elif isinstance(v.expr, self.ast.Dict):
+            return [self._dict(v.expr, current_klass), attr_name]
+        elif isinstance(v.expr, self.ast.Tuple):
+            return [self._tuple(v.expr, current_klass), attr_name]
+        elif isinstance(v.expr, self.ast.Lambda):
+            return [self._lambda(v.expr, current_klass), attr_name]
+        elif isinstance(v.expr, self.ast.Slice):
+            return [self._slice(v.expr, current_klass), attr_name]
         else:
             raise TranslationError(
                 "unsupported type (in _getattr)", v.expr, self.module_name)
@@ -2679,7 +2689,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
     def modpfx(self):
         return strip_py(self.module_prefix)
 
-    def _name(self, v, current_klass, 
+    def _name(self, v, current_klass,
               return_none_for_module=False,
               optlocal_var=False,
              ):
@@ -3164,7 +3174,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 lhs = self.ast.Subscript(self.ast.Name(augexpr), "OP_ASSIGN", [self.ast.Name(augsub)])
                 v = self.ast.Subscript(self.ast.Name(augexpr), v.flags, [self.ast.Name(augsub)])
             op = astOP(node.op)
-            try: # python2.N 
+            try: # python2.N
                 tnode = self.ast.Assign([lhs], op((v, node.expr)))
             except: # lib2to3
                 tnode = self.ast.Assign([lhs], op(v, node.expr))
@@ -3184,7 +3194,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         if isinstance(v, self.ast.Name):
             self.add_lookup('global', v.name, lhs)
         op = astOP(node.op)
-        try: # python2.N 
+        try: # python2.N
             tnode = self.ast.Assign([lhs_ass], op((v, node.expr)))
         except: # lib2to3
             tnode = self.ast.Assign([lhs_ass], op(v, node.expr))
@@ -3348,7 +3358,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
                 else:
                     raise TranslationError(
                         "unsupported type in assignment list",
-                        v, self.module_name)                
+                        v, self.module_name)
                 self.w( self.spacing() + lhs + " = " + rhs + ";")
             return
         else:
@@ -3360,11 +3370,11 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.w( self.spacing() + lhs + " " + op + " " + rhs + ";")
 
     def _discard(self, node, current_klass):
-        
+
         if isinstance(node.expr, self.ast.CallFunc):
             expr = self._callfunc(
-                node.expr, 
-                current_klass, 
+                node.expr,
+                current_klass,
                 is_statement=True,
                 optlocal_var=isinstance(node.expr.node, self.ast.Name),
             )
@@ -3984,7 +3994,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
     def _lambda(self, node, current_klass):
         save_local_prefix, self.local_prefix = self.local_prefix, None
         save_is_class_definition, self.is_class_definition = self.is_class_definition, False
-        
+
         function_name = self.uniqid("$lambda")
         self.w( self.spacing() + "var", False)
         code_node = self.ast.Stmt([self.ast.Return(node.code, node.lineno)], node.lineno)
@@ -3993,10 +4003,10 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         except: # lib2to3
             func_node = self.ast.Function(None, function_name, node.argnames, node.defaults, node.varargs, node.kwargs, None, code_node, node.lineno)
         self._function(func_node, current_klass, True)
-        
+
         self.local_prefix = save_local_prefix
         self.is_class_definition = save_is_class_definition
-        
+
         return function_name
 
     def _listcomp(self, node, current_klass):
@@ -4693,8 +4703,8 @@ class AppTranslator:
                                            module_name)
             self.overrides[override_name] = override_name
         t = Translator(self.compiler,
-                       module_name, file_name, src, mod, output, 
-                       self.dynamic, self.findFile, 
+                       module_name, file_name, src, mod, output,
+                       self.dynamic, self.findFile,
                        debug = self.debug,
                        print_statements = self.print_statements,
                        function_argument_checking = self.function_argument_checking,
