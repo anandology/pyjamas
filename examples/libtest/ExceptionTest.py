@@ -291,3 +291,13 @@ class ExceptionTest(UnitTest):
             self.fail("AssertionError expected")
         except AssertionError, e:
             self.assertEqual(e.args[0], 'reason')
+    
+    def testClassScopeExceptions(self):
+        """
+        class X:
+            try:
+                z = somethingtocausenameerror
+            except NameError:
+                pass
+        """
+        self.fail("try/catch in class definition scope, issue #593")
