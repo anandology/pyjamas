@@ -146,3 +146,17 @@ class AttributeTest(UnitTest):
         self.assertTrue(hasattr(Foo, 'typeof'))
         del Foo.typeof
         self.assertFalse(hasattr(Foo, 'typeof'))
+    
+    def testTypeAttributes(self):
+        try:
+            x = [].append
+            x = {}.get
+            x = (1,2,3).count
+            x = (lambda x:z).__name__
+            x = [1,2,3,4][1:2].append
+        except Exception, e:
+            self.fail("Base type attribute, #594, '%s'" % e)
+        try:
+            x = "asdfgd".rjust
+        except Exception, e:
+            self.fail("String attribute, #595, '%s'" % e)
