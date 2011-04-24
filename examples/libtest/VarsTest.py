@@ -96,6 +96,46 @@ class VarsTest(UnitTest.UnitTest):
         
         globals()['new_global_via_dict'] = True
         self.assertTrue(globals()['new_global_via_dict'])
+   
+    def testAugmentedAssignments(self):
+        a = a0 = 100
+        self.assertTrue(a is a0)
+        a += 1
+        self.assertFalse(a is a0)
+        self.assertEqual(a, 101)
         
-
-
+        a -= 1
+        self.assertEqual(a, 100)
+        
+        a *= 2
+        self.assertEqual(a, 200)
+        
+        a /= 3
+        self.assertEqual(a, 66)
+        
+        a //= 60
+        self.assertEqual(a, 1)
+        
+        a = 15
+        a %= 10
+        self.assertEqual(a, 5)
+        
+        a **= 2
+        self.assertEqual(a, 25)
+        
+        a >>= 2
+        self.assertEqual(a, 6)
+        
+        a <<= 2
+        self.assertEqual(a, 24)
+        
+        a &= 16
+        self.assertEqual(a, 16)
+        
+        a ^= 8
+        self.assertEqual(a, 24)
+        
+        a |= 32
+        self.assertEqual(a, 56)
+        
+        
