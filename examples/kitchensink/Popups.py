@@ -4,6 +4,7 @@ from pyjamas.ui.VerticalPanel import VerticalPanel
 from pyjamas.ui.PopupPanel import PopupPanel
 from pyjamas.ui.ListBox import ListBox
 from pyjamas.ui.HTML import HTML
+from pyjamas.ui.Image import Image
 from pyjamas.ui.DockPanel import DockPanel
 from pyjamas.ui.DialogBox import DialogBox
 from pyjamas.ui.DialogWindow import DialogWindow
@@ -73,8 +74,9 @@ def init():
 
 
 
-class DialogMixin(object):
+class MyDialog(DialogBox):
     def __init__(self, baseURL):
+        DialogBox.__init__(self, glass=True)
         self.setText("Sample DialogBox with embedded Frame")
         
         iframe = Frame(baseURL + "rembrandt/LaMarcheNocturne.html")
@@ -99,19 +101,41 @@ class DialogMixin(object):
         self.hide()
 
 
-class MyDialog(DialogBox, DialogMixin):
-    def __init__(self, baseURL):
-        DialogBox.__init__(self, glass=True)
-        DialogMixin.__init__(self, baseURL)
+class MyDialogWindow(DialogWindow):
+    images = [
+        'JohannesElison.jpg',
+        'LaMarcheNocturne.jpg',
+        'SelfPortrait1628.jpg',
+        'SelfPortrait1640.jpg',
+        'TheArtistInHisStudio.jpg',
+        'TheReturnOfTheProdigalSon.jpg',
+    ]
 
-
-class MyDialogWindow(DialogWindow, DialogMixin):
     def __init__(self, baseURL):
         DialogWindow.__init__(
             self, modal=False,
             minimize=True, maximize=True, close=True,
         )
-        DialogMixin.__init__(self, baseURL)
+        closeButton = Button("Close", self)
+        imgname = self.images.pop(0)
+        self.images.append(imgname)
+        img = Image("%srembrandt/%s" % (baseURL, imgname))
+        msg = HTML("<center>This is an example of a standard dialog box component.<br>  You can put pretty much anything you like into it,<br>such as the following image '%s':</center>" % imgname, True)
+
+        dock = DockPanel()
+        dock.setSpacing(4)
+
+        dock.add(closeButton, DockPanel.SOUTH)
+        dock.add(msg, DockPanel.NORTH)
+        dock.add(img, DockPanel.CENTER)
+
+        dock.setCellHorizontalAlignment(closeButton, HasAlignment.ALIGN_RIGHT)
+        dock.setCellWidth(img, "100%")
+        dock.setWidth("100%")
+        self.setWidget(dock)
+
+    def onClick(self, sender):
+        self.hide()
 
 
 class MyPopup(PopupPanel):
