@@ -53,17 +53,17 @@ def translateGmapsObject(obj, fieldName, fields, pyToJs):
           var newobj = {}
           for (var i in @{{obj}})
              // vai ficar disponivel como uma propriedade, no python!
-             newobj[i] = @{{Utils}}.translateGmapsObject(@{{obj}}[i], i, @{{fields}}, @{{pyToJs}});
+             newobj[i] = $m['translateGmapsObject'](@{{obj}}[i], i, @{{fields}}, @{{pyToJs}});
           return newobj
 
         }
         else if (@{{action}} == 'l')
         {
           if (@{{pyToJs}}) {
-              var newobj = @{{Utils}}.listToJs(@{{obj}})
+              var newobj = $m['listToJs'](@{{obj}})
               //console.log("is list py->js")
               for (var i in newobj){
-                 newobj[i]=@{{Utils}}.translateGmapsObject(
+                 newobj[i]=$m['translateGmapsObject'](
                     newobj[i], @{{fieldName}} + "[]", @{{fields}},@{{pyToJs}} ) ;
               }
               return newobj
@@ -71,7 +71,7 @@ def translateGmapsObject(obj, fieldName, fields, pyToJs):
               //console.log("is list js->py")
               var newobj = @{{list}}([])
               for (var i in @{{obj}})
-                 newobj.append(@{{Utils}}.translateGmapsObject(
+                 newobj.append($m['translateGmapsObject'](
                      @{{obj}}[i], @{{fieldName}} + "[]", @{{fields}},@{{pyToJs}} ));
               return newobj
           }

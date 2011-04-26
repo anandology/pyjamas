@@ -13,8 +13,6 @@ TARGETS = [
     'EventProperties.py',
     'EventSimple.py',
     'GeocodingSimple.py',
-    'MapSimple.py',
-    'oldExample.py',
 ]
 
 

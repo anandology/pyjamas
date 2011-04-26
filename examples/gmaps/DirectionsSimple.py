@@ -107,16 +107,15 @@ class DirectionsSimple(DockPanel):
 
         if status == DirectionsStatus.OK:
 
-            for trip in response.trips:
-                print "copyrights:", trip.copyrights
+            Hf = response.Hf
+            print Hf.origin, Hf.destination, Hf.travelMode
 
-                for route in trip.routes:
-                    print route.start_geocode.formatted_address
-                    print route.end_geocode.formatted_address
-                    print route.steps[0].start_point
-                    print route.steps[0].end_point
-
-                print "\n"
+            for route in response.routes:
+                attrs = dir(route)
+                attrs.sort()
+                for attr in attrs:
+                    print '%s: %r' % (attr, getattr(route, attr))
+            print "\n"
 
             self.directionsDisplay.setDirections(response)
 

@@ -15,4 +15,3 @@ options="$*"
 ../../bin/pyjsbuild --print-statements $options EventSimple.py
 ../../bin/pyjsbuild --print-statements $options GeocodingSimple.py
 ../../bin/pyjsbuild --print-statements $options MapSimple.py
-../../bin/pyjsbuild --print-statements $options oldExample.py

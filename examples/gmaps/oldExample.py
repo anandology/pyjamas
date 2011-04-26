@@ -1,7 +1,7 @@
 from pyjamas.ui.RootPanel import RootPanelCls
 from pyjamas.ui.VerticalPanel import VerticalPanel
 from pyjamas.ui.SimplePanel import SimplePanel
-import pyjamas.DOM
+from pyjamas import DOM
 from pyjamas.JSONService import JSONProxy
 from pyjamas import Window
 from __pyjamas__ import JS
