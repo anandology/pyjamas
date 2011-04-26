@@ -6669,6 +6669,10 @@ def any(iterable):
     return False
 
 __iter_prepare = JS("""function(iter, reuse_tuple) {
+
+    if (typeof iter == 'undefined') {
+        throw @{{TypeError}}("iter is undefined");
+    }
     var it = {};
     it.$iter = iter;
     it.$loopvar = 0;
