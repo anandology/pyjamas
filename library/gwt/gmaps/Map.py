@@ -41,17 +41,17 @@ def ScaleControlOptions(**params):
 
 def Map(el, options):
     if options:
-        map = JS("""new $wnd.google.maps.Map(@{{el}}, @{{options}});""")
+        map = JS("""new $wnd.google.maps.Map(@{{el}}, @{{options}})""")
     else:
-        map = JS("""new $wnd.google.maps.Map(@{{el}});""")
+        map = JS("""new $wnd.google.maps.Map(@{{el}})""")
 
     createListenerMethods(map)
     return map
 
 
 def MapPanes(el):
-    JS("""return new $wnd.google.maps.MapPanes(@{{el}});""")
+    JS("""return new $wnd.google.maps.MapPanes(@{{el}})""")
 
 
 def MapCanvasProjection(el):
-    JS("""return new $wnd.google.maps.MapCanvasProjection(@{{el}});""")
+    JS("""return new $wnd.google.maps.MapCanvasProjection(@{{el}})""")

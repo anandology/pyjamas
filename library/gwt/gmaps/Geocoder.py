@@ -46,7 +46,7 @@ def translateGeocoderResult(jsResult, pyToJs=False):
 class Geocoder:
 
     def __init__(self):
-        self.geocoder = JS("new $wnd.google.maps.Geocoder();")
+        self.geocoder = JS("new $wnd.google.maps.Geocoder()")
 
     def geocode(self, request, callback):
 

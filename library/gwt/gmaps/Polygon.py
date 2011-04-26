@@ -17,7 +17,7 @@ from pyjamas.gmaps.Utils import dictToJs, createListenerMethods, listToJs
 
 
 def Polygon(options):
-    JS("return new $wnd.google.maps.Polygon(@{{options}});")
+    JS("return new $wnd.google.maps.Polygon(@{{options}})")
 
 def PolygonOptions(adict):
     """Accepts a dictionary of options. If necessary, transforms "paths" from
@@ -50,5 +50,5 @@ def decodePoly(poly):
         x+=(w<<31>>31)^(w>>1);
         @{{poly}}[++j]=new $wnd.google.maps.LatLng(y*z,x*z);
     }
-    return @{{poly}};
+    return @{{poly}}
 """)

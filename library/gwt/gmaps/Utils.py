@@ -103,7 +103,7 @@ def dictToJs(dict):
     try:
         for key in dict:
             value = dict[key]
-            JS("@{{obj}}[@{{key}}] = @{{value}};")
+            JS("@{{obj}}[@{{key}}] = @{{value}}")
     except:
         pass
 
@@ -150,7 +150,7 @@ def __addListener(eventName, callback):
     thelist = JS("""
        $wnd.google.maps.event.addListener(this, @{{eventName}}, function(event) {
          @{{callback}}(event);
-       });
+       })
     """)
 
     # I have to keep information about the registered listeners for
@@ -179,7 +179,7 @@ def __removeListener(list):
 def __clearListeners(eventName):
     self = JS("this")
 
-    JS("""$wnd.google.maps.event.clearListeners(this, @{{eventName}});""")
+    JS("""$wnd.google.maps.event.clearListeners(this, @{{eventName}})""")
     if eventName in self.__listeners:
         del self.__listeners[eventName]
 
@@ -187,5 +187,5 @@ def __clearListeners(eventName):
 def __clearInstanceListeners():
     self = JS("this")
 
-    JS("""$wnd.google.maps.event.clearInstanceListeners(this);""")
+    JS("""$wnd.google.maps.event.clearInstanceListeners(this)""")
     self.__listeners = {}
