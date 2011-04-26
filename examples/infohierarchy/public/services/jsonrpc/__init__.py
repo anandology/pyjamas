@@ -22,7 +22,10 @@ from threading import  Event,  Lock
 
 from errors import *
 
-from simplejson import JSONDecoder, JSONEncoder
+try:
+    from json import JSONDecoder, JSONEncoder
+except ImportError, e:
+    from simplejson import JSONDecoder, JSONEncoder
     
     
 class JSONRPCEncoder(JSONEncoder):
