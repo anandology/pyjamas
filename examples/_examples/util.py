@@ -156,7 +156,7 @@ def _list_examples():
 
 
 def _process_pyjamas(root):
-    lim = 2
+    lim = 3
     while lim > 0:
         root = os.path.join(root, '..')
         boot = os.path.join(root, 'bootstrap.py')
