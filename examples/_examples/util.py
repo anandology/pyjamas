@@ -282,11 +282,13 @@ def setup(targets):
 
 def translate():
     for target in TARGETS:
+        args = [target]
         if isinstance(TARGETS, dict):
             opts = TARGETS[target].get('options', [])
+            args += TARGETS[target].get('additional_args', [])
         else:
             opts = []
-        cmd = [ENV['BIN_PYTHON'], ENV['BIN_PYJSBUILD']] + ENV['ARG_PYJSBUILD'] + opts + [target]
+        cmd = [ENV['BIN_PYTHON'], ENV['BIN_PYJSBUILD']] + ENV['ARG_PYJSBUILD'] + opts + args
         path = _process_path(TARGETS, target)
         e = subprocess.Popen(cmd, cwd=path)
         ret = e.wait()

@@ -7,6 +7,13 @@ TARGETS = {
         options=[
             '--no-compile-inplace',
             '--strict',
+            '--dynamic',
+            '^I18N[.].*.._..',
+        ],
+        additional_args=[
+            'I18N/domain/subdomain/en_US.py',
+            'I18N/domain/en_US.py',
+            'I18N/en_US.py',
         ],
     ),
 }
