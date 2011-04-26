@@ -2,9 +2,14 @@
 # -*- coding: utf-8 -*-
 
 
-TARGETS = [
-    'LibTest.py',
-]
+TARGETS = {
+    'LibTest.py': dict(
+        options=[
+            '--no-compile-inplace',
+            '--strict',
+        ],
+    ),
+}
 
 
 PACKAGE = {
