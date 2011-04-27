@@ -114,6 +114,9 @@ class _e(object):
             self._examples.update(kwds)
         self._path = [self._ident]
 
+    def __repr__(self):
+        return '_e(%s)' % repr(self.__str__())
+
     def __str__(self):
         try:
             curr = self._examples
@@ -123,7 +126,7 @@ class _e(object):
             if frag in self._special:
                 curr = self._special[frag]
             else:
-                curr = '{{%s}}' % '.'.join(self._path)
+                curr = '{%s}' % '.'.join(self._path)
         self._path[1:] = []
         return curr
 

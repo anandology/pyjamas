@@ -1,9 +1,24 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import sys
+import os
+head = os.path.abspath(os.path.dirname(__file__))
+sys.path.insert(0, os.path.join(head))
+import compile
+sys.path.pop(0)
+oldpath = os.getcwd()
+os.chdir(head)
+compile.main()
+os.chdir(oldpath)
+del(oldpath)
 
-TARGETS = [
-]
+
+TARGETS = {
+    'Showcase.py': dict(
+        path='src',
+    )
+}
 
 
 PACKAGE = {
@@ -19,7 +34,8 @@ def setup(targets):
 
 def translate():
     '''Translate example, MUST call util.translate().'''
-    util.translate()
+    #util.translate()
+    pass
 
 
 def install(package):
