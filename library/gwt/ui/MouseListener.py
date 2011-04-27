@@ -86,6 +86,12 @@ class MouseHandler(object):
     def onMouseLeave(self, sender):
         pass
 
+    def onMouseGlassEnter(self, sender):
+        pass
+
+    def onMouseGlassLeave(self, sender):
+        pass
+
 class MouseWheelHandler(object):
 
     def __init__(self, preventDefault=False):

@@ -91,7 +91,7 @@ class DialogBox(PopupPanel):
 
     def onMouseDown(self, sender, x, y):
         self.dragging = True
-        GlassWidget.show(self)
+        GlassWidget.show(self.caption)
         self.dragStartX = x
         self.dragStartY = y
 

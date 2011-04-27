@@ -198,12 +198,12 @@ def isOrHasChild(parent, _child):
     return false;
     """)
 
-def releaseCapture(elem):
+def releaseCapture_impl(elem):
     JS("""
     @{{elem}}.releaseCapture();
     """)
 
-def setCapture(elem):
+def setCapture_impl(elem):
     JS("""
     @{{elem}}.setCapture();
     """)

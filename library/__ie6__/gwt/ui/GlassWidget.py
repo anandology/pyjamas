@@ -25,6 +25,9 @@
 # This file implements the IE version of GlassWidget simply by mapping
 # the GlassWidget API to the use of setCapture/releaseCapture
 
+# we re-use the global 'mousecapturer' to prevent GlassWidget.hide()
+# from releasing someone else's capture
+
 def show(mousetarget, **kwargs):
     global mousecapturer
     # get the element that wants events
@@ -34,10 +37,10 @@ def show(mousetarget, **kwargs):
         # remember it
         mousecapturer = target_element
         # start capturing
-        target_element.setCapture()
+        DOM.setCapture(target_element)
 
 def hide():
     global mousecapturer
     if hasattr(mousecapturer,"releaseCapture"):
-        mousecapturer.releaseCapture()
+        DOM.releaseCapture(mousecapturer)
     mousecapturer = None

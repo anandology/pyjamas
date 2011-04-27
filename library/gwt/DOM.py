@@ -753,9 +753,11 @@ def releaseCapture(elem):
     global sCaptureElem
     if sCaptureElem and compare(elem, sCaptureElem):
         sCaptureElem = None
+        releaseCapture_impl(elem)
     return
 
-
+# browser-specific overrides may implement this
+def releaseCapture_impl(elem): pass
 
 def removeEventPreview(preview):
     sEventPreviewStack.remove(preview)
@@ -836,7 +838,10 @@ def setCapture(elem):
     global sCaptureElem
     sCaptureElem = elem
     #print "setCapture", sCaptureElem
+    setCapture_impl(elem)
 
+# browser-specific overrides may implement this
+def setCapture_impl(elem): pass
 
 def setEventListener(element, listener):
     """

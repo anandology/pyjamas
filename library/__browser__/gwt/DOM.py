@@ -428,13 +428,6 @@ def walkChildren(elem):
     };
     """)
    
-def releaseCapture(elem):
-    JS("""
-    if ((@{{sCaptureElem}} != null) 
-            && @{{compare}}(@{{elem}}, @{{sCaptureElem}}))
-        @{{sCaptureElem}} = null;
-    """)
-
 def removeEventPreview(preview):
     sEventPreviewStack.remove(preview)
 
@@ -490,11 +483,6 @@ def setAttribute(element, attribute, value):
 def setBooleanAttribute(elem, attr, value):
     JS("""
     @{{elem}}[@{{attr}}] = @{{value}};
-    """)
-
-def setCapture(elem):
-    JS("""
-    @{{sCaptureElem}} = @{{elem}};
     """)
 
 def setEventListener(element, listener):
@@ -576,7 +564,6 @@ def previewEvent(evt):
     ret = True
     if len(sEventPreviewStack) > 0:
         preview = sEventPreviewStack[len(sEventPreviewStack) - 1]
-        
         ret = preview.onEventPreview(evt)
         if not ret:
             eventCancelBubble(evt, True)
