@@ -119,6 +119,7 @@ class MyDialogWindow(DialogWindow):
         closeButton = Button("Close", self)
         imgname = self.images.pop(0)
         self.images.append(imgname)
+        self.setText("Sample DialogWindow with embedded image")
         img = Image("%srembrandt/%s" % (baseURL, imgname))
         msg = HTML("<center>This is an example of a standard dialog box component.<br>  You can put pretty much anything you like into it,<br>such as the following image '%s':</center>" % imgname, True)
 
