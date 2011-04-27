@@ -15,6 +15,9 @@ from pyjamas import Window
 from pyjamas import DOM
 from pyjamas.ui.FocusWidget import FocusWidget
 
+
+game = None
+
 class GridCell(FocusWidget):
     def __init__(self,i,j):
         self.i = i
@@ -39,11 +42,10 @@ class GridCell(FocusWidget):
             self.light = True
         self.redraw()
             
-    def onClick(self, sender):
+    def onClick(self,sender):
         if self.i>0:
             self.parent.getWidget(self.i-1,self.j).toggle()
         if self.i<self.parent.getRowCount()-1:
-            print self.i+1, self.j
             self.parent.getWidget(self.i+1,self.j).toggle()
         if self.j>0:
             self.parent.getWidget(self.i,self.j-1).toggle()
@@ -65,9 +67,11 @@ class Game(SimplePanel):
     def __init__(self,level):
         self.level = level
         SimplePanel.__init__(self)
-        self.start_game()
+        self.start_game(self.level)
         
-    def start_game(self):
+    def start_game(self, level=None):
+        if level is not None:
+            self.level = level
         dim = self.level
         grid = Grid(dim,dim)
         grid.setStyleName("grid")
@@ -81,10 +85,10 @@ class Game(SimplePanel):
         self.remove(self.getWidget())
         self.level+=1
         self.start_game()
-        
+
+
 if __name__ == '__main__':
     pyjd.setup("public/lightout.html")
     game = Game(3)
     RootPanel('game').add(game)
-    #RootPanel().add(game)
     pyjd.run()

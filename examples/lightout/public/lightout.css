@@ -1,5 +1,6 @@
 .on {
-  padding: 10px;
+  height: 20px;
+  width: 20px;
   background-color: #C8C506;
   -moz-user-select: none;
   -webkit-user-select: none;
@@ -7,7 +8,8 @@
 }
 
 .off {
-  padding: 10px;
+  height: 20px;
+  width: 20px;
   background-color: #111;
   -moz-user-select: none;
   -webkit-user-select: none;
@@ -21,11 +23,10 @@
     margin: 0px;
 }
 
-#footer{
+#footer {
 	position:relative;
 	left:-100px;
 	text-align:right;
 	color:#555;
 	font:italic 10px Arial;
-	}
-
+}
