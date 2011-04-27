@@ -51,6 +51,9 @@ class GetTestOutput:
             if hasattr(ec1, 'attributes') and hasattr(ec2, 'attributes'):
                 a1 = ec1.attributes
                 a2 = ec2.attributes
+                ok = hasattr(a1, 'length') and hasattr(a2, 'length')
+                if not ok:
+                    break
                 ok = ok and (a1.length == a2.length)
                 if not ok:
                     break
