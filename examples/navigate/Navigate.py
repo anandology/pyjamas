@@ -36,7 +36,9 @@ class Hovercraft(TabPanel):
         self.speed.addChangeListener(self)
 
         for tab in self.tabs:
-            self.add(tab['hovertype'], tab['name'])
+            h = HorizontalPanel()
+            h.add(tab['hovertype'])
+            self.add(h, tab['name'])
 
     def set_speed(self, buoy):
         params = buoy.plan()

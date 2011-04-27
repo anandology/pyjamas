@@ -1,0 +1,7 @@
+== Issues ==
+
+Some of the raphael files/examples are broken. These are ignored in the
+build tool's __main__.py
+
+The events.py fails on IE, since the event argument to onCanvasMousemove
+etc. appears to be undefined.

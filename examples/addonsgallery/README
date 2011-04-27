@@ -1,0 +1,5 @@
+== Issues ==
+
+IE is not fully supported since IE doesn't have (native) support for canvas.
+The canvas support is mimiced with javascript. As a result, the canvas 
+module is slow on IE.

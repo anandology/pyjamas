@@ -23,3 +23,10 @@ final HTML+js+images+etc.  You can load it locally by opening
 output/Space.html
 
 I am building and testing on Mac OS 10.6.
+
+
+== Issues ==
+
+IE doesn't have (native) support for canvas, so it's slow on IE.
+
+pyjd-hulahop doesn't support canvas images correctly, so it doesn't work.

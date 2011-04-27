@@ -1,0 +1,6 @@
+== Issues ==
+
+ - Text: 
+   You cannot enter text if you browse through the images of Popup-Dialog 
+   item first.
+   If you go to the Frames item, Text works OK again.

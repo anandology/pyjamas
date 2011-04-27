@@ -1,3 +1,5 @@
+== Issues==
+
 The browser detect example (BrowserDetect.py) is here to show how the
 overloading of class methods works. This is slightly different for pyjd 
 compared to pyjs. For pyjd you should start BrowserDetectApp.py, otherwise

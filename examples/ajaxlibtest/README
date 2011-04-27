@@ -1,0 +1,4 @@
+== Issues ==
+
+This example depends on javascript. The pyjamas desktop (pyjd) doesn't support
+javascript and therfore will not run this example.

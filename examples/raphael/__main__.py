@@ -3,7 +3,9 @@
 
 
 TARGETS = [
-    'test.py',
+    'events.py',
+    'graffle.py',
+    'spinner.py',
 ]
 
 
