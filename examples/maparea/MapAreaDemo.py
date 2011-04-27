@@ -20,7 +20,14 @@ class MapAreaDemo:
 
     def onModuleLoad(self):
         # build image display
-        img = Image("babykatie_small.jpg", Width="300px", Height="300px")
+        width = 200 #px
+        height = 215 #px
+        scale = 1.5
+        img = Image(
+            "babykatie_small.jpg", 
+            Width="%dpx" % int(scale * width),
+            Height="%dpx" % int(scale * height),
+        )
         img.element.setAttribute("usemap", "#themap")
         img.element.setAttribute("ismap", "1")
         imagepanel = ScrollPanel()
@@ -37,12 +44,32 @@ class MapAreaDemo:
         imageClickHandler = MapClickHandler(msgarea1, msgarea2)
 
         # build imagemap
-        map = ImageMap("themap", Width="300px", Height="300px")
+        map = ImageMap("themap",
+            Width="%dpx" % int(scale * width),
+            Height="%dpx" % int(scale * height),
+        )
         areas = [ \
-            NamedMapArea("right eye", "circle", "73, 97, 7"),
-            NamedMapArea("left eye", "circle", "116, 88, 5"),
-            NamedMapArea("nose", "rect", "88, 97, 115, 115", Href="http://lkcl.net"),
-            NamedMapArea("mouth", "polygon", "82, 129, 102, 124, 119, 119, 121, 125, 103, 132, 79, 133"),
+            NamedMapArea(
+                "right eye", 
+                "circle", 
+                [scale * i for i in [73, 97, 7]],
+            ),
+            NamedMapArea(
+                "left eye", 
+                "circle", 
+                [scale * i for i in [116, 88, 5]],
+            ),
+            NamedMapArea(
+                "nose", 
+                "rect", 
+                [scale * i for i in [88, 97, 115, 115]],
+                Href="http://lkcl.net",
+            ),
+            NamedMapArea(
+                "mouth", 
+                "polygon", 
+                [scale * i for i in [82, 129, 102, 124, 119, 119, 121, 125, 103, 132, 79, 133]],
+            ),
             ]
         for nma in areas:
             nma.addMouseListener(imageClickHandler)
@@ -64,6 +91,7 @@ class NamedMapArea(MapArea):
     
     def __init__(self, areaname, shape, coords, Href="", **kwargs):
         self.areaname = areaname
+        coords = ", ".join(["%d" % int(i) for i in coords])
         MapArea.__init__(self, shape, coords, Href=Href, **kwargs)
     
 

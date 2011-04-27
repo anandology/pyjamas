@@ -7,3 +7,8 @@ Then, run ./build.sh or:
     ../../bin/pyjsbuild ImageMapDemo.py
 
 and then open output/ImageMapDemo.html in a web browser.
+
+
+== Issues ==
+
+This example doesn't work with IE. The events are not catched.
