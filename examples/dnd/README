@@ -1,0 +1,11 @@
+== Issues ==
+
+Fails on pyjd-hulahop
+
+Different behavior in 'Using drag feedback images':
+FF3.6 - Canvas triangle becomes a browser default image on drop zone
+Chrome - All drags become a browser default image until dropped
+Opera11 - dragged elements shrink to fit around text on dragging
+
+Using data transfer content types
+Chrome - Text / HTML / URI only shows 'URL' content: http://pyjs-dev/examples/dnd/output/pyjamas.png

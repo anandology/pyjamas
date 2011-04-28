@@ -1,0 +1,6 @@
+== Issues ==
+
+pyjd is not supported (doesn't do javascript)
+IE is not supported (processing.js is not meant for IE).
+Chrome and Opera11 throw an error on curElement.getContext
+(this is a bug in the alien processing.js)
