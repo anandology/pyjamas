@@ -48,7 +48,7 @@ a:visited {
 .gwt-DialogBox .WindowCaption {
   background-color: #C3D9FF;
   padding: 0px;
-  margin: 0px;
+  margin: 2px;
   font-weight: bold;
   cursor: default;
 }

@@ -65,6 +65,8 @@ class DialogWindow(DialogBox):
             self.caption.addMouseListener(self)
         if captionStyle is not None:
             self.caption.setStyleName(captionStyle)
+        else:
+            self.caption.addStyleName('WindowCaption')
         self.setControls(minimize, maximize, close)
 
     def createDefaultControl(self, control_type):
@@ -99,22 +101,16 @@ class DialogWindow(DialogBox):
             isinstance(self.maximizeWidget, UIObject) or
             isinstance(self.closeWidget, UIObject)):
             cf = self.panel.getCellFormatter()
+            captionStyle = self.caption.getStyleName()
             captionPanel = FlexTable(
-                Height="100%",
+                Width="99%",
                 BorderWidth="0",
                 CellPadding="0",
                 CellSpacing="0",
             )
-            captionPanel.setStyleName(self.caption.getStyleName())
             controls = HorizontalPanel()
             controls.setStyleName("Controls")
             controls.setVerticalAlignment(HasAlignment.ALIGN_MIDDLE)
-            cf.setColSpan(1, 0, 2)
-            cf.setAlignment(
-                0, 1,
-                HasAlignment.ALIGN_RIGHT,
-                HasAlignment.ALIGN_MIDDLE,
-            )
             if isinstance(self.minimizeWidget, UIObject):
                 self.minimizeWidget.setStyleName("Minimize")
                 controls.add(self.minimizeWidget)
@@ -134,11 +130,13 @@ class DialogWindow(DialogBox):
                     getattr(self, "onClose"),
                 )
                 self.closeable = True
-            captionPanel.add(self.caption, 0, 0)
-            captionPanel.add(controls, 0, 1)
-            cf = captionPanel.getCellFormatter()
-            cf.setWidth(0, 0, "100%")
+            self.caption.removeStyleName(captionStyle)
             self.panel.setWidget(0, 0, captionPanel)
+            captionPanel.setWidget(0, 0, self.caption)
+            captionPanel.setWidget(0, 1, controls)
+            captionPanel.setStyleName(captionStyle)
+            cf = captionPanel.getCellFormatter()
+            cf.setWidth(0, 1, '1%')
 
     def getDialogListeners(self, listener):
         return self._dialogListeners
