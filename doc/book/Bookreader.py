@@ -142,7 +142,7 @@ class Bookreader:
 
 
 if __name__ == '__main__':
-    pyjd.setup("./public/Bookreader.html")
+    pyjd.setup("http://127.0.0.1/pyjamas/doc/book/public/Bookreader.html")
     app = Bookreader()
     app.onModuleLoad()
     pyjd.run()
