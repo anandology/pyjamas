@@ -7,7 +7,11 @@ import sys
 import subprocess
 
 from _examples import util
-from __builtin__ import str # In case str is redefined in util
+
+try:
+    from __builtin__ import str # In case str is redefined in util
+except ImportError:
+    pass
 
 
 argv = sys.argv
