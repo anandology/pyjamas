@@ -1,83 +1,38 @@
-Current Release: 0.7
+Current Release: 0.8alpha1
 ---------------
 
-This is the 0.7 release of Pyjamas.  Pyjamas comprises several projects,
+This is the 0.8alpha1 release of Pyjamas.  Pyjamas comprises several projects,
 one of which is a stand-alone python-to-javascript compiler; other projects
 include a Graphical Widget Toolkit, such that pyjamas applications can run
 either in web browsers as pure javascript (with no plugins required)
 or stand-alone on the desktop (as a competitor to PyGTK2 and PyQT4).
 
-Features and enhancements of the stand-alone 0.7 series javascript
-compiler include:
+Features and enhancements of the stand-alone 0.8 series javascript
+compiler and associated modules include:
 
-* the addition of generators (support for yield, by rewriting the function
-  so that it can be re-called and continue from the previous state);
-  the rewriting allows all browsers (not just firefox - the only browser
-  with a javascript-native "yield" feature) to appear to have python
-  "yield" functionality;
+* behaviour more like python, including sys.exc_info and tb_frame.f_globals,
+  a basic traceback module, class creation using __class__ on the base,
+  __delattr__ support, __setattr__ support and assignment to slices in lists.
 
-* the beginnings of decorators support, and full support for properties,
-  with the addition of property();
-
-* some dramatic performance improvements due to a rewrite of for-loops;
-
-* improved support for import syntax (from . import module);
-
-* the addition of a built-in AST parser, use of which allows python 2.4
-  to compile programs with python 2.5 / 2.6 syntax into javascript;
-
-* addition of int and long types, and support for operator functions,
-  so that e.g list multiplication by numbers and list addition now work,
-  along with coercion between int, float and long types, and support
-  for floating point exceptions including raising ZeroDivisionError;
-
-* reintroduction of pyjscompile (equivalent to gcc -c foo.c -o foo.o).
-  This is in preparation for adding a separate linker command
-  (equivalent to gcc *.o -o foo), at which point Pyjamas apps will
-  be suitable for building using make, and Makefiles:
-  .py.js:
-      pyjscompile -o $< $@
-
-Overall, this release is a significant "pythonic" upgrade: for full
-details, see the CHANGELOG.
+* further changes to pyjsbuild to make it more equivalent to gcc and Make.
 
 In the User-Interface suite, which is separate from the Pyjamas
 stand-alone python-to-javascript compiler, the features and
 enhancements include:
 
-* The beginnings of a User-Interface and DOM regression test suite, that
-  is asynchronous and can generate and test the consequences of events.
-  It works by recording, using Pyjamas-Desktop, the HTML created by adding
-  and interacting with widgets and DOM (in "record" mode), then fetching
-  that HTML back using AJAX when the tests are run by the Browsers.
-  Care is taken to ensure that browsers that re-order Element Attributes are
-  taken into consideration.
+* Enabling of asynchronous module loading (previously present in the 0.5
+  pyjamas release)
 
-* An SVG / VML Canvas Library (a port of GWTCanvas).  This has been ported
-  to pure python, and consequently work under Pyjamas-Desktop as well.
+* Adding HTML5-compliant drag-and-drop support (both native as well as
+  emulated, so that older browsers appear to have HTML5-style drag-and-drop)
 
-* A Graphical Chart Library (a port of GChart). This has been ported
-  to pure python, and consequently work under Pyjamas-Desktop as well.
-  For the same speed optimisations present in GChart, GChart for Pyjamas
-  can also use the python port of GWTCanvas.
+* Fixing a long-standing bug with DialogBox (still present in GWT) related
+  to mouse events being lost.
 
-* A Google GMaps (v3) wrapper library.  This wrapper library uses the
-  Google GMaps javascript API, directly.  There are over ten demos and
-  examples that show how to use the API from Pyjamas.  Unfortunately,
-  the direct use of the GMaps javascript API precludes the use of
-  Pyjamas-Desktop, as it is quite tricky for PyJD ports to interact
-  (safely, if at all) with Javascript.  Javascript can be run
-  (through standard HTML methods), but initiation from Python and
-  interaction through Python is tricky.  Developers who may be
-  expecting to use Google GMaps on Pyjamas Desktop should therefore
-  assist in porting the Google GMaps Javascript API directly to
-  Python.
+* Addition of an "auto-build" option - based on file-monitoring - to pyjsbuild
 
-* An internal restructure of Event handling, similar to GWT 1.7,
-  providing Focus, Mouse and Click "Mixin" modules so that developers
-  creating their own widgets have a minimal amount of work to do.
-  This redesign could only take place once Pyjamas supported multiple
-  inheritance (added in 0.6).
+* Addition of oninput and onpropertychange event support, as well as
+  DOM.createTextNode
 
 Pyjamas
 -------
@@ -89,7 +44,7 @@ python-to-javascript compiler, and also a Widget Set API that looks
 very similar to Desktop Widget Set APIs (such as PyQT4 or PyGTK2).
 
 Pyjamas also contains a Desktop Widget Set version, running as pure
-python, with three Desktop ports available.  Using web browser
+python, with four useable Desktop ports available.  Using web browser
 technology startlingly provides an alternative to traditional
 Widget sets, such as PyQT4 and PyGTK2, with the advantage of having
 full support for HTML, CSS, Plugins and other web-related features
@@ -136,18 +91,49 @@ GNU/Linux, FreeBSD and other POSIX systems are strongly advised
 to use XULRunner for Pyjamas-Desktop: it is the most stable of the
 PyJD ports.
 
+Sadly, modifications made by the Mozilla team to the xulrunner API
+have not propagated through to python-xpcom due to lack of attention
+and support by the Mozilla team.  Until funding is made available to
+keep python-xpcom up-to-date, older versions of XULRunner must be
+used: versions 1.9.0 or 1.9.1 are known to be suitable.
+
 2) - PyWebKitGtk
 
-you will need a patched version of pywebkitgtk:
-http://code.google.com/p/pywebkitgtk/issues/detail?id=13
+There are two versions of PyWebKitGTK: please do not use the older
+version which has been "taken over" by the Webkit team: the Webkit
+team have decided that full support of and direct-equivalent
+interoperability with the full W3C HTML specifications is not important.
 
-you will need a patched version of webkit:
-http://github.com/lkcl/webkit/16401.master
+The version of pywebkitgtk at http://www.gnu.org/software/pythonwebkit
+provides full and direct python-equivalent interoperability for all functions
+for which access through javascript has been provided: thus, Pyjamas
+Desktop will function correctly.
 
-Detailed build instructions are available here:
-http://wiki.github.com/lkcl/webkit/helping-with-16401master
+PyWebkitGtk must be explicitly enabled.  create a $HOME/.pyjd/pyjdrc file
+containing the following two lines:
 
-3) - MSHTML
+[gui]
+engine=pywebkitgtk
+
+3) - PyWebkitDFB
+
+This is an experimental but minimally functional engine that is extremely
+quick to start up.  The build dependencies are also drastically smaller than
+any of the other web browser engines (which indirectly contributes to the
+fast startup time).
+
+HTML5 is fully supported, with the exception of Video and Canvas; also
+missing at present is support for Frames.  Despite the present limitations,
+PyWebkitDFB is highly suited to embedded systems, as well as being useable
+as an excellent and ultra-quick general-purpose web browser engine.
+
+PyWebkitDFB must be explicitly enabled.  create a $HOME/.pyjd/pyjdrc file
+containing the following two lines:
+
+[gui]
+engine=pywebkitdfb
+
+4) - MSHTML
 
 For Windows users, all that's required, other than installing python
 and Internet Explorer, is one further tiny package: Win32 "comtypes".
@@ -160,16 +146,43 @@ of anything up to 30mb in size, the MSHTML port literally requires
 nothing more than comtypes, thanks to the far-sighted design of the
 MSHTML Trident Engine and its extensive COM interface.
 
-4) - PyQt4
+5) - PyQt4
 
 Kindly contributed by Thomas Henning, the PyQT4 port requires a current
-PyQt-snapshot with Qt 4.6 (which includes QWebElement,
-a DOM-like API for WebKit).
+PyQt-snapshot with Qt 4.6 (which includes QWebElement, a DOM-like API for
+WebKit).
 
-The PyQt4 engine is experimental, and requires a configuration file
+The PyQt4 engine is highly experimental, and requires a configuration file
 to explicitly enable it.  create a $HOME/.pyjd/pyjdrc file containing the
 following two lines:
 
 [gui]
 engine=pyqt4
+
+Sadly, the PyQT4 port serves more as a demonstration of how never to access
+web browser DOM functionality from python (ever).  The reason is simple:
+to access all but about 1% of the available DOM functionality, javascript
+code snippets must be created on-the-fly and executed, and all incoming and
+outgoing data must be dynamically translated between python and javascript
+(as Qt4 objects).
+
+Aside from providing truly dreadful performance, this technical approach
+should have you either in hysterics, throwing up or requiring counselling,
+depending on your resilience and constitution.  All is not lost: if funding
+is made available, the PythonWebkit project can, with very little actual
+coding required, be ported to Qt4, as the GNU PythonWebkit Project has been
+designed to provide python access to DOM functionality, independent of the
+actual GUI display engine being used.
+
+6) - PyKDE
+
+The PyKDE engine has been done as a "thank you" to the KDE Team, without
+whom Webkit would not exist.  Sadly, though, for technical reasons, the PyKDE
+engine requires that the entire KHTML Part be compiled with c++ "rtti" enabled,
+and the majority of GNU/Linux Distributions explicitly disable RTTI due to
+it having an impact on performance.
+
+If this is ever fixed, then out of sheer nostalgia and bloody-mindedness, the
+PyKDE engine will have continued support, even though the KHTML engine is only
+DOM TR2 compliant (at present).
 
