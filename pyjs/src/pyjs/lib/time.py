@@ -10,6 +10,7 @@ if altzone > timezone:
     d = timezone
     timezone = altzone
     altzone = d
+_dst = timezone - altzone
 d = JS("(new Date(new Date().getFullYear(), 0, 1))")
 d = d.toLocaleString().split()[-1]
 if d[0] == '(':
@@ -112,19 +113,10 @@ def localtime(t = None):
     dt = dt + 60 * (startOfYearOffset - dateOffset)
     tm.tm_yday = 1 + int(dt/86400.0)
     return tm
-    if startOfYearOffset != dateOffset:
-        # Changed from std to dst or the opposite
-        #if startOfYearOffset > dateOffset:
-        # Changed from std to dst
-        tm.tm_yday += 1
-        dt2 = dt + 60 * (startOfYearOffset - dateOffset)
-        print dt, dt/86400.0, (startOfYearOffset, dateOffset), dt2, dt2/86400.0
-        tm.tm_yday = 1 + int(dt2/86400.0)
-    #if tm.tm_isdst and 60*startOfYearOffset == timezone:
-    #    tm.tm_yday += 1
-    return tm
 
 def mktime(t):
+    """mktime(tuple) -> floating point number
+    Convert a time tuple in local time to seconds since the Epoch."""
     tm_year = t[0]
     tm_mon = t[1] - 1
     tm_mday = t[2]
@@ -132,10 +124,13 @@ def mktime(t):
     tm_min = t[4]
     tm_sec = t[5]
     date = JS("new Date(@{{tm_year}}, @{{tm_mon}}, @{{tm_mday}}, @{{tm_hour}}, @{{tm_min}}, @{{tm_sec}})") # local time
+    utc = JS("Date.UTC(@{{tm_year}}, @{{tm_mon}}, @{{tm_mday}}, @{{tm_hour}}, @{{tm_min}}, @{{tm_sec}})")/1000
+    ts = date.getTime() / 1000
     if t[8] == 0:
-        return date.getTime()/1000 - 60 * date.getTimezoneOffset()
-    #return date.getTime()/1000 - 60 * date.getTimezoneOffset() + (60 * date.getTimezoneOffset() - timezone)
-    return date.getTime()/1000 - timezone
+        if ts - utc == timezone:
+            return ts
+        return ts + _dst
+    return ts
 
 def strftime(fmt, t = None):
     if t is None:

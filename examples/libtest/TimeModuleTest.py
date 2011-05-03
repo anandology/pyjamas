@@ -108,7 +108,21 @@ class TimeModuleTest(UnitTest.UnitTest):
                 (2010, 1, i+1, 0, 0, 0, (4+i)%7, i+1, 0),
             )
 
+    def testMktime(self):
+        def cmp_times(t):
+            t1 = t
+            t2 = time.mktime(time.localtime(t))
+            self.assertEqual(t1, t2)
 
+        day = 86400
+        start2010utc = 1262304000
+        Apr2010utc = start2010utc + 90 * day # Apr 1 2010 UTC
+        Jul2010utc = start2010utc + 181 * day # Jul 1 2010 UTC
+        Oct2010utc = start2010utc + 273 * day # Oct 1 2010 UTC
+        cmp_times(start2010utc)
+        cmp_times(Apr2010utc)
+        cmp_times(Jul2010utc)
+        cmp_times(Oct2010utc)
 
 
 if __name__ == '__main__':
