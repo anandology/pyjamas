@@ -166,7 +166,10 @@ def _process_pyjamas(root):
         if os.path.isfile(boot):
             root = os.path.abspath(root)
             boot = os.path.abspath(boot)
-            pyjsbuild = os.path.join(root, 'bin', 'pyjsbuild')
+            if sys.platform == 'win32':
+                pyjsbuild = os.path.join(root, 'bin', 'pyjsbuild.py')
+            else:
+                pyjsbuild = os.path.join(root, 'bin', 'pyjsbuild')
             break
         lim = lim - 1
     if lim == 0:
