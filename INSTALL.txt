@@ -69,17 +69,22 @@ In this directory run:
 
  python bootstrap.py
 
-The files ``pyjd/__init__.py``, ``./bin/pyjsbuild`` and ``./bin/pyjscompile``
-will be created, custom-tailored with hard-coded paths specific to the exact
-absolute location that the bootstrap.py command is run from.  In this way, you
-will be able to install, test and use multiple versions of Pyjamas, without
-cross-interference.
+The files ``pyjd/__init__.py``, ``./bin/pyjsbuild``, ``./bin/pyjscompile`` 
+and ``pyjd`` will be created, custom-tailored with hard-coded paths specific 
+to the exact absolute location that the bootstrap.py command is run from.
+In this way, you will be able to install, test and use multiple versions 
+of Pyjamas, without cross-interference.
 
 As they contain hard-coded paths, these custom-tailored commands CANNOT
 be "moved around".  If you move the pyjamas installation, re-run bootstrap.py
 to recreate the commands, with suitable hard-coded paths.
 
 To build pyjamas apps see ``./bin/pyjsbuild --help``
+
+On windows the files ``pyjd/__init__.py``, ``./bin/pyjsbuild.py``, 
+``./bin/pyjsbuild.bat``, ``./bin/pyjscompile.py`` ``./bin/pyjscompile.bat``
+and ``pyjd.bat`` will be created. The .bat files are the commands to be used. They invoke the corresponding .py files (if any).
+
 
 Pyjamas Desktop
 ---------------
@@ -90,7 +95,7 @@ python bootstrap.py: see above).
 
 There are two options for doing this:
 
-1) export PYTHONPATH={path to pyjamas}
+1) export PYTHONPATH={path to pyjamas} (or use bin/pyjd, which does this)
 
 2) break the sandbox rules (specifically for pyjd) and run:
 

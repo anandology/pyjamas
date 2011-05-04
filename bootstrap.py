@@ -8,7 +8,7 @@ version = '0.8~+alpha1'
 import os
 import sys
 
-pyjsbuild = """#!%(exec)s
+pyjsbuild = """#!%(python)s
 
 pyjsversion = r'%(ver)s'
 pyjspth = r'%(pyjspth)s'
@@ -31,7 +31,7 @@ if __name__ == '__main__':
     pyjs.browser.build_script()
 """
 
-pyjscompile = """#!%(exec)s
+pyjscompile = """#!%(python)s
 
 pyjsversion = r'%(ver)s'
 pyjspth = r'%(pyjspth)s'
@@ -52,7 +52,7 @@ if __name__ == '__main__':
     pyjs.translator.main()
 """
 
-pyjampiler= """#!%(exec)s
+pyjampiler= """#!%(python)s
 
 pyjsversion = r'%(ver)s'
 pyjspth = r'%(pyjspth)s'
@@ -73,6 +73,19 @@ if __name__ == '__main__':
     pyjs.pyjampiler.Builder()
 """
 
+pyjdsh = """#!/bin/sh
+
+PYJAMAS_HOME="%(pyjspth)s"
+PYJAMAS_SITE="%(pyjssitepth)s"
+if [ "Q${PYTHONPATH}" == "Q" ] ; then
+    export PYTHONPATH="${PYJAMAS_HOME}:${PYJAMAS_SITE}"
+else
+    export PYTHONPATH="${PYJAMAS_HOME}:${PYJAMAS_SITE}:${PYTHONPATH}"
+fi
+
+%(python)s $@
+"""
+
 pyjdinitpth = os.path.join("pyjd", "__init__.py.in")
 pyjdinit = open(pyjdinitpth, "r").read()
 
@@ -85,13 +98,36 @@ shift
 goto setArgs
 :doneSetArgs
 
-python "%s.py" %%CMD_LINE_ARGS%%
+"%(python)s" "%(cmd)s.py" %%CMD_LINE_ARGS%%
+'''
+
+pyjdbat = '''@echo off
+
+set PYJAMAS_HOME=%(pyjspth)s
+set PYJAMAS_SITE=%(pyjssitepth)s
+
+set PYTHONPATH=%%PYJAMAS_HOME%%;%%PYJAMAS_SITE%%;%%PYTHONPATH%%
+
+set CMD_LINE_ARGS=
+:setArgs
+if ""%%1""=="""" goto doneSetArgs
+set CMD_LINE_ARGS=%%CMD_LINE_ARGS%% %%1
+shift
+goto setArgs
+:doneSetArgs
+
+"%(python)s" %%CMD_LINE_ARGS%%
 '''
 
 def make_cmd(prefix, pth, pyjsversion, pyjspth, cmdname, txt):
 
+    python = sys.executable
+    ver = pyjsversion
+    pyjssitepth = os.path.join(pyjspth, 'site-packages')
     if sys.platform == 'win32':
         cmd_name = cmdname + ".py"
+        if cmdname == 'pyjd':
+            cmd_name = 'pyjd.bat'
     else:
         cmd_name = cmdname
 
@@ -108,22 +144,19 @@ def make_cmd(prefix, pth, pyjsversion, pyjspth, cmdname, txt):
             os.chmod(cmd, 0x1ed)
         os.unlink(cmd)
     f = open(cmd, "w")
-    f.write(txt % {'exec': sys.executable, 
-                   'ver': pyjsversion,
-                   'pyjspth': pyjspth, 
-                   'pth': pth})
+    f.write(txt % locals())
     f.close()
 
     if hasattr(os, "chmod"):
         os.chmod(cmd, 0x16d)
 
-    if sys.platform == 'win32':
+    if sys.platform == 'win32' and cmdname != 'pyjd':
         cmd = os.path.join("bin", cmdname)
         cmd = os.path.join(prefix, cmd)
         cmd = os.path.abspath(cmd)
         batcmd = "%s.bat" % cmd
         f = open(batcmd, "w")
-        f.write(batcmdtxt % cmd)
+        f.write(batcmdtxt % locals())
         f.close()
 
 if __name__ == '__main__':
@@ -153,3 +186,7 @@ if __name__ == '__main__':
     f.write(pyjdinit % (version, pyjspth))
     f.close()
 
+    if sys.platform == 'win32':
+        make_cmd(prefix, pth, version, pyjspth, "pyjd", pyjdbat)
+    else:
+        make_cmd(prefix, pth, version, pyjspth, "pyjd", pyjdsh)
