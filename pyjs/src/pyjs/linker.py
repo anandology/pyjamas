@@ -103,18 +103,23 @@ def out_translate(platform, file_names, out_file, module_name,
         pydir = os.path.abspath(os.path.dirname(__file__))
         if not os.environ.has_key('PYJS_SYSPATH'):
             os.environ['PYJS_SYSPATH'] = sys.path[0]
-        file_names = map(lambda x: x.replace(" ", r"\ "), file_names)
-        opts = ["--module-name", module_name,
-                "-o", out_file.replace(" ", r"\ "),
-               ] + get_translator_opts(translator_args) + file_names
+        opts = ["--module-name", module_name, "-o"]
+        if sys.platform == 'win32':
+            opts.append(out_file)
+            shell = False
+        else:
+            file_names = map(lambda x: x.replace(" ", r"\ "), file_names)
+            opts.append(out_file.replace(" ", r"\ "))
+            shell=True
+        opts += get_translator_opts(translator_args) + file_names
         opts = [pyjs.PYTHON] + [os.path.join(pydir, 'translator.py')] + opts
-        pyjscompile_cmd = ' '.join(opts)
+        pyjscompile_cmd = '"%s"' % '" "'.join(opts)
         #print pyjscompile_cmd - use this to create Makefile code-fragment
         proc = subprocess.Popen(pyjscompile_cmd,
                            stdin=subprocess.PIPE,
                            stdout=subprocess.PIPE,
                            stderr=subprocess.PIPE,
-                           shell=True,
+                           shell=shell,
                            cwd=os.path.dirname(file_names[0]),
                            env=os.environ
                            )
