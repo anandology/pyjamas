@@ -82,9 +82,14 @@ class RolePanel(AbsolutePanel):
         vpanel.add(hpanel)
 
         self.add(vpanel)
-
+        self.clearForm()
         return
-    
+
+    def clearForm(self):
+        self.user = None
+        self.updateRoleList([])
+        self.roleCombo.setItemTextSelection(None)
+
     def updateRoleList(self,items):
         self.roleList.clear()
         for item in items:
@@ -241,25 +246,25 @@ class UserForm(AbsolutePanel):
         self.emailInput.addKeyboardListener(self)
         ftable.setWidget(2, 1, self.emailInput)
 
-        ftable.setWidget(3, 0, Label("Username", wordWrap=False))
+        ftable.setWidget(3, 0, Label("* Username", wordWrap=False))
         self.usernameInput = TextBox()
         self.usernameInput.addChangeListener(self.checkValid)
         self.usernameInput.addKeyboardListener(self)
         ftable.setWidget(3, 1, self.usernameInput)
 
-        ftable.setWidget(4, 0, Label("Password", wordWrap=False))
+        ftable.setWidget(4, 0, Label("* Password", wordWrap=False))
         self.passwordInput = PasswordTextBox()
         self.passwordInput.addChangeListener(self.checkValid)
         self.passwordInput.addKeyboardListener(self)
         ftable.setWidget(4, 1, self.passwordInput)
 
-        ftable.setWidget(5, 0, Label("Confirm", wordWrap=False))
+        ftable.setWidget(5, 0, Label("* Confirm", wordWrap=False))
         self.confirmInput = PasswordTextBox()
         self.confirmInput.addChangeListener(self.checkValid)
         self.confirmInput.addKeyboardListener(self)
         ftable.setWidget(5, 1, self.confirmInput)
 
-        ftable.setWidget(6, 0, Label("Department", wordWrap=False))
+        ftable.setWidget(6, 0, Label("* Department", wordWrap=False))
         self.departmentCombo = ListBox()
         self.departmentCombo.addChangeListener(self.checkValid)
         self.departmentCombo.addKeyboardListener(self)
@@ -275,16 +280,34 @@ class UserForm(AbsolutePanel):
         ftableFormatter.setColSpan(7, 0, 2)
 
         self.add(ftable)
+        self.clearForm()
         return
 
+    def clearForm(self):
+        self.user = None
+        self.usernameInput.setText('')
+        self.firstInput.setText('')
+        self.lastInput.setText('')
+        self.emailInput.setText('')
+        self.passwordInput.setText('')
+        self.confirmInput.setText('')
+        self.departmentCombo.setItemTextSelection(None)
+        self.updateMode(self.MODE_ADD)
+        self.checkValid()
+
     def updateUser(self, user):
+        def setText(elem, value):
+            if value:
+                elem.setText(value)
+            else:
+                elem.setText("")
         self.user = user
-        self.usernameInput.setText(self.user.username)
-        self.firstInput.setText(self.user.fname)
-        self.lastInput.setText(self.user.lname)
-        self.emailInput.setText(self.user.email)
-        self.passwordInput.setText(self.user.password)
-        self.confirmInput.setText(self.user.password)
+        setText(self.usernameInput, self.user.username)
+        setText(self.firstInput, self.user.fname)
+        setText(self.lastInput, self.user.lname)
+        setText(self.emailInput, self.user.email)
+        setText(self.passwordInput, self.user.password)
+        setText(self.confirmInput, self.user.password)
         self.departmentCombo.setItemTextSelection([self.user.department])
         self.checkValid()
 
