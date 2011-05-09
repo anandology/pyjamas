@@ -210,10 +210,10 @@ def _process_path(targets, target):
                 path = os.path.join(PATH, path)
     return path
 
-def get_optparser():
+def get_optparser(**kwargs):
     global optparser
     if optparser is None:
-        optparser = OptionParser()
+        optparser = OptionParser(**kwargs)
         add_option = optparser.add_option
         add_option(
             '--download',

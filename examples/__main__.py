@@ -13,9 +13,9 @@ try:
 except ImportError:
     pass
 
-
+usage = '''usage: %prog [options] -- [translator options]'''
 argv = sys.argv
-optparser = util.get_optparser()
+optparser = util.get_optparser(usage=usage)
 opts, args = optparser.parse_args()
 
 head = os.path.dirname(__file__)
