@@ -185,4 +185,12 @@ html>body .gwt-DecoratedStackPanel .gwt-StackPanelItem-below-selected .stackItem
   border-top: 1px solid #666;
 }
 
-
+.TooltipPopup {
+        background-color: #FFFFCC;
+        border: 1px solid #000000;
+        border-top: 1px solid #ccc;
+        border-left: 1px solid #ccc;
+        padding: 2px 4px 2px 4px;
+        font-family: arial,sans-serif;
+        font-size: 14px;
+}
