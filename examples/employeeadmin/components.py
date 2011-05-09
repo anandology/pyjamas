@@ -64,11 +64,11 @@ class RolePanel(AbsolutePanel):
         self.roleList = ListBox()
         self.roleList.setWidth('300px')
         self.roleList.setVisibleItemCount(6)
-        self.roleList.addClickListener(self.onListClick)
-        self.roleList.addKeyboardListener(self)
+        self.roleList.addChangeListener(self.onListChange)
+        #self.roleList.addKeyboardListener(self)
         self.roleCombo = ListBox()
-        self.roleCombo.addClickListener(self.onComboClick)
         self.roleCombo.addKeyboardListener(self)
+        self.roleCombo.addChangeListener(self.onComboChange)
         self.addBtn = Button("Add")
         self.addBtn.setEnabled(False)
         self.removeBtn = Button("Remove")
@@ -104,7 +104,7 @@ class RolePanel(AbsolutePanel):
             self.roleCombo.addItem(choice)
         self.roleCombo.selectValue(default_)
     
-    def onComboClick(self, sender, keyCode=None, modifiers=None):
+    def onComboChange(self, sender, keyCode=None, modifiers=None):
         selected = self.roleCombo.getSelectedItemText()
         if  not selected \
             or selected[0] == ApplicationConstants.ROLE_NONE_SELECTED \
@@ -117,7 +117,7 @@ class RolePanel(AbsolutePanel):
         self.removeBtn.setEnabled(False)
         self.roleList.setItemTextSelection(None)
     
-    def onListClick(self, sender):
+    def onListChange(self, sender):
         selected = self.roleList.getSelectedItemText()
         if selected:
             self.removeBtn.setEnabled(True)
@@ -133,9 +133,9 @@ class RolePanel(AbsolutePanel):
 
     def onKeyUp(self, sender, keyCode, modifiers):
         if sender == self.roleCombo:
-            self.onComboClick(sender)
+            self.onComboChange(sender)
         elif sender == self.roleList:
-            self.onListClick(sender)
+            self.onListChange(sender)
 
     def onKeyDown(self, sender, keyCode, modifiers):
         pass
