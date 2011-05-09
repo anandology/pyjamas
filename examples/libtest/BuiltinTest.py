@@ -78,6 +78,9 @@ class BuiltinTest(UnitTest):
         self.assertEqual(6, 6)
         self.assertEqual(int("0"), 0)
         self.assertEqual(int(0), 0)
+        self.assertEqual(int("-1"), -1)
+        self.assertEqual(int("- 2"), -2)
+        self.assertEqual(int(" - 3"), -3)
 
         try:
             int('')
