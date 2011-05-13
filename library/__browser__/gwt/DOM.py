@@ -511,12 +511,12 @@ def setInnerText(elem, text):
 
 def setIntAttribute(elem, attr, value):
     JS("""
-    @{{elem}}[@{{attr}}] = @{{value}};
+    @{{elem}}[@{{attr}}] = @{{value}}.valueOf();
     """)
 
 def setIntStyleAttribute(elem, attr, value):
     JS("""
-    @{{elem}}.style[@{{attr}}] = @{{value}};
+    @{{elem}}.style[@{{attr}}] = @{{value}}.valueOf();
     """)
 
 def setOptionText(select, text, index):
