@@ -16,6 +16,7 @@ from pyjamas.ui.VerticalPanel import VerticalPanel
 from pyjamas.ui.TextBox import TextBox
 from pyjamas.ui.PasswordTextBox import PasswordTextBox
 from pyjamas.ui.ListBox import ListBox
+from pyjamas.ui.Tooltip import TooltipListener
 
 from Grid import Grid
 import ApplicationConstants
@@ -63,11 +64,11 @@ class RolePanel(AbsolutePanel):
         self.roleList = ListBox()
         self.roleList.setWidth('300px')
         self.roleList.setVisibleItemCount(6)
-        self.roleList.addClickListener(self.onListClick)
-        self.roleList.addKeyboardListener(self)
+        self.roleList.addChangeListener(self.onListChange)
+        #self.roleList.addKeyboardListener(self)
         self.roleCombo = ListBox()
-        self.roleCombo.addClickListener(self.onComboClick)
         self.roleCombo.addKeyboardListener(self)
+        self.roleCombo.addChangeListener(self.onComboChange)
         self.addBtn = Button("Add")
         self.addBtn.setEnabled(False)
         self.removeBtn = Button("Remove")
@@ -82,9 +83,14 @@ class RolePanel(AbsolutePanel):
         vpanel.add(hpanel)
 
         self.add(vpanel)
-
+        self.clearForm()
         return
-    
+
+    def clearForm(self):
+        self.user = None
+        self.updateRoleList([])
+        self.roleCombo.setItemTextSelection(None)
+
     def updateRoleList(self,items):
         self.roleList.clear()
         for item in items:
@@ -98,7 +104,7 @@ class RolePanel(AbsolutePanel):
             self.roleCombo.addItem(choice)
         self.roleCombo.selectValue(default_)
     
-    def onComboClick(self, sender, keyCode=None, modifiers=None):
+    def onComboChange(self, sender, keyCode=None, modifiers=None):
         selected = self.roleCombo.getSelectedItemText()
         if  not selected \
             or selected[0] == ApplicationConstants.ROLE_NONE_SELECTED \
@@ -111,7 +117,7 @@ class RolePanel(AbsolutePanel):
         self.removeBtn.setEnabled(False)
         self.roleList.setItemTextSelection(None)
     
-    def onListClick(self, sender):
+    def onListChange(self, sender):
         selected = self.roleList.getSelectedItemText()
         if selected:
             self.removeBtn.setEnabled(True)
@@ -127,9 +133,9 @@ class RolePanel(AbsolutePanel):
 
     def onKeyUp(self, sender, keyCode, modifiers):
         if sender == self.roleCombo:
-            self.onComboClick(sender)
+            self.onComboChange(sender)
         elif sender == self.roleList:
-            self.onListClick(sender)
+            self.onListChange(sender)
 
     def onKeyDown(self, sender, keyCode, modifiers):
         pass
@@ -241,25 +247,33 @@ class UserForm(AbsolutePanel):
         self.emailInput.addKeyboardListener(self)
         ftable.setWidget(2, 1, self.emailInput)
 
-        ftable.setWidget(3, 0, Label("Username", wordWrap=False))
+        w = Label("* Username", wordWrap=False)
+        w.addMouseListener(TooltipListener("Required, not changable"))
+        ftable.setWidget(3, 0, w)
         self.usernameInput = TextBox()
         self.usernameInput.addChangeListener(self.checkValid)
         self.usernameInput.addKeyboardListener(self)
         ftable.setWidget(3, 1, self.usernameInput)
 
-        ftable.setWidget(4, 0, Label("Password", wordWrap=False))
+        w = Label("* Password", wordWrap=False)
+        w.addMouseListener(TooltipListener("Required"))
+        ftable.setWidget(4, 0, w)
         self.passwordInput = PasswordTextBox()
         self.passwordInput.addChangeListener(self.checkValid)
         self.passwordInput.addKeyboardListener(self)
         ftable.setWidget(4, 1, self.passwordInput)
 
-        ftable.setWidget(5, 0, Label("Confirm", wordWrap=False))
+        w = Label("* Confirm", wordWrap=False)
+        w.addMouseListener(TooltipListener("Required"))
+        ftable.setWidget(5, 0, w)
         self.confirmInput = PasswordTextBox()
         self.confirmInput.addChangeListener(self.checkValid)
         self.confirmInput.addKeyboardListener(self)
         ftable.setWidget(5, 1, self.confirmInput)
 
-        ftable.setWidget(6, 0, Label("Department", wordWrap=False))
+        w = Label("* Department", wordWrap=False)
+        w.addMouseListener(TooltipListener("Required"))
+        ftable.setWidget(6, 0, w)
         self.departmentCombo = ListBox()
         self.departmentCombo.addChangeListener(self.checkValid)
         self.departmentCombo.addKeyboardListener(self)
@@ -275,16 +289,34 @@ class UserForm(AbsolutePanel):
         ftableFormatter.setColSpan(7, 0, 2)
 
         self.add(ftable)
+        self.clearForm()
         return
 
+    def clearForm(self):
+        self.user = None
+        self.usernameInput.setText('')
+        self.firstInput.setText('')
+        self.lastInput.setText('')
+        self.emailInput.setText('')
+        self.passwordInput.setText('')
+        self.confirmInput.setText('')
+        self.departmentCombo.setItemTextSelection(None)
+        self.updateMode(self.MODE_ADD)
+        self.checkValid()
+
     def updateUser(self, user):
+        def setText(elem, value):
+            if value:
+                elem.setText(value)
+            else:
+                elem.setText("")
         self.user = user
-        self.usernameInput.setText(self.user.username)
-        self.firstInput.setText(self.user.fname)
-        self.lastInput.setText(self.user.lname)
-        self.emailInput.setText(self.user.email)
-        self.passwordInput.setText(self.user.password)
-        self.confirmInput.setText(self.user.password)
+        setText(self.usernameInput, self.user.username)
+        setText(self.firstInput, self.user.fname)
+        setText(self.lastInput, self.user.lname)
+        setText(self.emailInput, self.user.email)
+        setText(self.passwordInput, self.user.password)
+        setText(self.confirmInput, self.user.password)
         self.departmentCombo.setItemTextSelection([self.user.department])
         self.checkValid()
 

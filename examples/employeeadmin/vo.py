@@ -41,4 +41,4 @@ class UserVO(object):
         return (len(username) > 0 and len(password) > 0 and department is not [])
 
     def givenName(self):
-        return self.lname+', '+self.fname
+        return "%s, %s" % (self.lname, self.fname)

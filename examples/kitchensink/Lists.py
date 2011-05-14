@@ -29,6 +29,8 @@ class Lists(Sink):
             self.combo.setItemText(i, txt + " using set text")
         self.combo.setSelectedIndex(0)
         self.fillList(0)
+        self.list.setItemSelected(0, False)
+        self.list.setItemSelected(1, True)
         
         self.list.addChangeListener(self)
         

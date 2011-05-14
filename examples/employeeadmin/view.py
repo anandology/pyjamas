@@ -61,33 +61,23 @@ class UserFormMediator(Mediator):
         try:
             noteName = note.getName()
             if noteName == Notification.NEW_USER:
+                self.viewComponent.clearForm()
                 self.viewComponent.updateMode(self.viewComponent.MODE_ADD)
-                self.clearForm()
                 self.viewComponent.firstInput.setFocus(True)
             
             if noteName == Notification.USER_DELETED:
                 self.viewComponent.user = None
-                self.clearForm()
+                self.viewComponent.clearForm()
                 
             if noteName == Notification.USER_SELECTED:
                 user = note.getBody()
                 if not user:
-                    self.clearForm()
+                    self.viewComponent.clearForm()
                 else:
                     self.viewComponent.updateUser(note.getBody())
                     self.viewComponent.updateMode(self.viewComponent.MODE_EDIT)
         except:
             raise
-    
-    def clearForm(self):
-        self.viewComponent.user = None
-        self.viewComponent.usernameInput.setText('')
-        self.viewComponent.firstInput.setText('')
-        self.viewComponent.lastInput.setText('')
-        self.viewComponent.emailInput.setText('')
-        self.viewComponent.passwordInput.setText('')
-        self.viewComponent.confirmInput.setText('')
-        self.viewComponent.departmentCombo.setItemTextSelection(None)
     
     def onAdd(self, evnt):
         if self.viewComponent.mode == self.viewComponent.MODE_ADD:
@@ -107,7 +97,7 @@ class UserFormMediator(Mediator):
         self.viewComponent.user = user
         self.userProxy.addItem(user)
         self.sendNotification(Notification.USER_ADDED, user)
-        self.clearForm()
+        self.viewComponent.clearForm()
 
     def updateUser(self):
         l = self.viewComponent.departmentCombo.getSelectedItemText(True)
@@ -121,11 +111,11 @@ class UserFormMediator(Mediator):
         self.viewComponent.user = user
         self.userProxy.updateItem(user)
         self.sendNotification(Notification.USER_UPDATED, user)
-        self.clearForm()
+        self.viewComponent.clearForm()
 
     def onCancel(self, evnt):
         self.sendNotification(Notification.CANCEL_SELECTED)
-        self.clearForm()
+        self.viewComponent.clearForm()
 
 class UserListMediator(Mediator):
 
@@ -228,22 +218,22 @@ class RolePanelMediator(Mediator):
             noteName = note.getName()   
 
             if noteName == Notification.NEW_USER:
-                self.clearForm()
+                self.viewComponent.clearForm()
 
             elif noteName == Notification.USER_ADDED:
                 self.viewComponent.user = note.getBody()
                 roleVO = vo.RoleVO(self.viewComponent.user.username)
                 self.roleProxy.addItem(roleVO)
-                self.clearForm()
+                self.viewComponent.clearForm()
 
             elif noteName == Notification.USER_UPDATED:
-                self.clearForm()
+                self.viewComponent.clearForm()
 
             elif noteName == Notification.USER_DELETED:
-                self.clearForm()
+                self.viewComponent.clearForm()
 
             elif noteName == Notification.CANCEL_SELECTED:
-                self.clearForm()
+                self.viewComponent.clearForm()
 
             elif noteName == Notification.USER_SELECTED:
                 self.viewComponent.user = note.getBody()
@@ -256,8 +246,3 @@ class RolePanelMediator(Mediator):
                 self.viewComponent.updateRoleList(self.roleProxy.getUserRoles(self.viewComponent.user.username))
         except:
             raise
-        
-    def clearForm(self):   
-        self.viewComponent.user = None
-        self.viewComponent.updateRoleList([])
-        self.viewComponent.roleCombo.setItemTextSelection(None)

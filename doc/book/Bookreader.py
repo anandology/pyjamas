@@ -108,6 +108,8 @@ class Bookreader:
 
         self.curSink = info.getInstance()
         self.sink_list.setSinkSelection(info.getName())
+        self.sink_list.sp.setScrollPosition(0)
+        self.sink_list.sp.setHorizontalScrollPosition(0)
         self.description.setHTML(info.getDescription())
 
         if (affectHistory):

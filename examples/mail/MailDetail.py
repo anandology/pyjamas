@@ -44,6 +44,8 @@ class MailDetail(Composite):
         Logger("Mail detail", " ")
 
     def setItem(self, item):
+        self.scroller.setScrollPosition(0)
+        self.scroller.setHorizontalScrollPosition(0)
         self.subject.setHTML(item.subject)
         self.sender.setHTML("<b>From:</b>&nbsp;" + item.sender)
         self.recipient.setHTML("<b>To:</b>&nbsp;foo@example.com")
