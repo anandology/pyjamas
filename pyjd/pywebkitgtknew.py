@@ -99,7 +99,7 @@ from traceback import print_stack, print_exc
 
 import gtk
 import gobject
-import webkit as pywebkit
+import pywebkitgtk as pywebkit
 
 def module_load(m):
     minst = None
@@ -109,87 +109,8 @@ minst = %(mod)s()
 """ % ({'mod': m})
     return minst
 
-class WebToolbar(gtk.Toolbar):
-    def __init__(self, browser):
-        gtk.Toolbar.__init__(self)
-
-        self._browser = browser
-
-        # scale other content besides from text as well
-        self._browser.set_full_content_zoom(True)
-
-        self._browser.connect("title-changed", self._title_changed_cb)
-
-    def set_loading(self, loading):
-        self._loading = loading
-
-    def _set_address(self, address):
-        self._current_uri = address
-
-    def _entry_activate_cb(self, entry):
-        self._browser.open(entry.props.text)
-
-    def _go_back_cb(self, button):
-        self._browser.go_back()
-
-    def _go_forward_cb(self, button):
-        self._browser.go_forward()
-
-    def _title_changed_cb(self, widget, frame, title):
-        self._set_address(frame.get_uri())
-
-    def _stop_and_reload_cb(self, button):
-        if self._loading:
-            self._browser.stop_loading()
-        else:
-            self._browser.reload()
-
-    def _zoom_in_cb (self, widget):
-        """Zoom into the page"""
-        self._browser.zoom_in()
-
-    def _zoom_out_cb (self, widget):
-        """Zoom out of the page"""
-        self._browser.zoom_out()
-
-    def _zoom_hundred_cb (self, widget):
-        """Zoom 100%"""
-        if not (self._browser.get_zoom_level() == 1.0):
-            self._browser.set_zoom_level(1.0);
-
-class WebStatusBar(gtk.Statusbar):
-    def __init__(self):
-        gtk.Statusbar.__init__(self)
-        self.iconbox = gtk.EventBox()
-        self.iconbox.add(gtk.image_new_from_stock(gtk.STOCK_INFO, gtk.ICON_SIZE_BUTTON))
-        self.pack_start(self.iconbox, False, False, 6)
-        self.iconbox.hide_all()
-
-    def display(self, text, context=None):
-        cid = self.get_context_id("pywebkitgtk")
-        self.push(cid, str(text))
-
-    def show_javascript_info(self):
-        self.iconbox.show()
-
-    def hide_javascript_info(self):
-        self.iconbox.hide()
-
 def mash_attrib(name, joiner='-'):
     return name
-
-def _alert(self, msg):
-    global wv
-    wv._alert(msg)
-
-def getDomDocument(self):
-    return self.get_dom_document()
-
-def getDomWindow(self):
-    return self.get_dom_window()
-
-def getXmlHttpRequest(self):
-    return self.get_xml_http_request()
 
 class Callback:
     def __init__(self, sender, cb, boolparam):
@@ -204,124 +125,16 @@ class Callback:
             print_exc()
             return None
 
-def addWindowEventListener(self, event_name, cb):
-    cb = Callback(self, cb, True)
-    setattr(self.get_dom_window(), "on%s" % event_name, cb._callback)
-
-def addXMLHttpRequestEventListener(element, event_name, cb):
-    #print "add XMLHttpRequest", element, event_name, cb
-    cb = Callback(element, cb, True)
-    setattr(element, "on%s" % event_name, cb._callback)
-    #return element.addEventListener(event_name, cb._callback, True)
-
-def addEventListener(element, event_name, cb):
-    #    element._callbacks.append(cb)
-    cb = Callback(element, cb, True)
-    #print "addEventListener", element, event_name, cb
-    setattr(element, "on%s" % event_name, cb._callback)
-
-class Browser(gtk.Window):
+class Browser:
     def __init__(self, application, appdir=None, width=800, height=600):
-        gtk.Window.__init__(self)
-        self.set_size_request(width, height)
 
         self.already_initialised = False
 
         self._loading = False
-        self._browser= pywebkit.WebView()
-        #self._browser.connect('load-started', self._loading_start_cb)
-        #self._browser.connect('load-progress-changed', self._loading_progress_cb)
-        self._browser.connect('load-finished', self._loading_stop_cb)
-        self._browser.connect("title-changed", self._title_changed_cb)
-        self._browser.connect("icon-loaded", self._icon_loaded_cb)
-        self._browser.connect("selection-changed", self._selection_changed_cb)
-        self._browser.connect("set-scroll-adjustments", self._set_scroll_adjustments_cb)
-        self._browser.connect("populate-popup", self._populate_popup)
-#        self._browser.connect("navigation-requested", self._navigation_requested_cb)
-
-        self._browser.connect("console-message",
-                              self._javascript_console_message_cb)
-        self._browser.connect("script-alert",
-                              self._javascript_script_alert_cb)
-        self._browser.connect("script-confirm",
-                              self._javascript_script_confirm_cb)
-        self._browser.connect("script-prompt",
-                              self._javascript_script_prompt_cb)
-
-        self._scrolled_window = gtk.ScrolledWindow()
-        self._scrolled_window.props.hscrollbar_policy = gtk.POLICY_AUTOMATIC
-        self._scrolled_window.props.vscrollbar_policy = gtk.POLICY_AUTOMATIC
-        self._scrolled_window.add(self._browser)
-        self._scrolled_window.show_all()
-
-        vbox = gtk.VBox(spacing=0)
-        vbox.pack_start(self._scrolled_window)
-
-        self.add(vbox)
-        self.set_default_size(600, 480)
-
-        self.connect('destroy', self._destroy_cb)
-
+        self.width = width
+        self.height = height
         self.application = application
         self.appdir = appdir
-
-        return
-
-        if os.path.isfile(application):
-            
-            (pth, app) = os.path.split(application)
-            if appdir:
-                pth = os.path.abspath(appdir)
-            sys.path.append(pth)
-
-            m = None
-            # first, pretend it's a module. if success, create fake template
-            # otherwise, treat it as a URL
-            if application[-3:] == ".py":
-
-                try:
-                    m = module_load(app[:-3])
-                except ImportError, e:
-                    print_stack()
-                    print e
-                    m = None
-
-            if m is None:
-                application = os.path.abspath(application)
-                print application
-                self._browser.open(application)
-            else:
-                # it's a python app.
-                if application[-3:] != ".py":
-                    print "Application %s must be a python file (.py)"
-                    sys.exit(-1)
-                # ok, we create a template with the app name in it:
-                # pygwt_processMetas will pick up the app name
-                # and do the load, there.  at least this way we
-                # have a basic HTML page to start off with,
-                # including a possible stylesheet.
-                fqp = os.path.abspath(application[:-3])
-                template = """
-<html>
-    <head>
-        <meta name="pygwt:module" content="%(app)s" />
-        <link rel="stylesheet" href="%(app)s.css" />
-        <title>%(app)s</title>
-    </head>
-    <body bgcolor="white" color="white">
-        <iframe id='__pygwt_historyFrame' style='width:0px;height:0px;border:0px;margin:0px;padding:0px;display:none;'></iframe>
-    </body>
-</html>
-""" % {'app': app[:-3]}
-
-                print template
-                self._browser.load_string(template, "text/html", "iso-8859-15", fqp)
-        else:
-            # URL.
-            
-            sys.path.append(os.path.abspath(os.getcwd()))
-            self._browser.open(application)
-
 
     def load_app(self):
 
@@ -330,7 +143,8 @@ class Browser(gtk.Window):
             # assume file
             uri = 'file://'+os.path.abspath(uri)
 
-        self._browser.open(uri)
+        self._browser = pywebkit.WebView(self.width, self.height, uri)
+        self._browser.SetDocumentLoadedCallback(self._loading_stop_cb)
 
     def getUri(self):
         return self.application
@@ -342,50 +156,25 @@ class Browser(gtk.Window):
         from __pyjamas__ import set_gtk_module
         set_gtk_module(gtk)
 
-        main_frame = self._browser.get_main_frame()
+        main_frame = self
         main_frame._callbacks = []
         #main_frame.gobject_wrap = pywebkit.gobject_wrap
         main_frame.platform = 'webkit'
-        main_frame._addEventListener = addEventListener
         main_frame.getUri = self.getUri
 
-        main_frame.getDomWindow = new.instancemethod(getDomWindow, main_frame)
-        main_frame.getDomDocument = new.instancemethod(getDomDocument, main_frame)
-        main_frame.getXmlHttpRequest = new.instancemethod(getXmlHttpRequest, main_frame)
-        main_frame._addXMLHttpRequestEventListener = addXMLHttpRequestEventListener
-        main_frame._addWindowEventListener = new.instancemethod(addWindowEventListener, main_frame)
-        main_frame._alert = new.instancemethod(_alert, main_frame)
-        main_frame.mash_attrib = mash_attrib
         set_main_frame(main_frame)
 
         #for m in pygwt_processMetas():
         #    minst = module_load(m)
         #    minst.onModuleLoad()
 
-    def _destroy_cb(self, window):
-        window.destroy()
-        while gtk.events_pending():
-            gtk.main_iteration(False)
-
-    def _set_title(self, title):
-        self.props.title = title
-
-    def _loading_start_cb(self, view, frame):
-        main_frame = self._browser.get_main_frame()
-        if frame is main_frame:
-            self._set_title("Loading %s - %s" % (frame.get_title(),
-                                                    frame.get_uri()))
-
-    def _loading_stop_cb(self, view, frame):
+    def _loading_stop_cb(self):
         # FIXME: another frame may still be loading?
 
         if self.already_initialised:
             return
         self.already_initialised = True
         self.init_app()
-
-    def _title_changed_cb(self, widget, frame, title):
-        self._set_title("%s" % title)
 
     def _icon_loaded_cb(self, view, icon_uri):
         print "icon loaded"
@@ -396,9 +185,6 @@ class Browser(gtk.Window):
     def _set_scroll_adjustments_cb(self, view, hadjustment, vadjustment):
         self._scrolled_window.props.hadjustment = hadjustment
         self._scrolled_window.props.vadjustment = vadjustment
-
-    def _navigation_requested_cb(self, view, frame, networkRequest):
-        return 1
 
     def _javascript_console_message_cb(self, view, message, line, sourceid):
         #self._statusbar.show_javascript_info()
@@ -421,6 +207,9 @@ class Browser(gtk.Window):
         button.show()
         #dialog.Response += new ResponseHandler (on_dialog_response)
         dialog.run ()
+
+    def mash_attrib(self, name, joiner='-'):
+        return name
 
     def _alert(self, msg):
         self._javascript_script_alert_cb(None, None, msg)
@@ -446,6 +235,31 @@ class Browser(gtk.Window):
     def _about_pywebkitgtk_cb(self, widget):
         self._browser.open("http://live.gnome.org/PyWebKitGtk")
 
+    def getDomWindow(self):
+        return self._browser.GetDomWindow()
+
+    def getDomDocument(self):
+        return self._browser.GetDomDocument()
+
+    def getXmlHttpRequest(self):
+        return self._browser.GetXMLHttpRequest()
+
+    def _addWindowEventListener(self, event_name, cb):
+        cb = Callback(self, cb, True)
+        setattr(self._browser.GetDomWindow(), "on%s" % event_name, cb._callback)
+
+    def _addXMLHttpRequestEventListener(self, element, event_name, cb):
+        #print "add XMLHttpRequest", element, event_name, cb
+        cb = Callback(element, cb, True)
+        setattr(element, "on%s" % event_name, cb._callback)
+        #return element.addEventListener(event_name, cb._callback, True)
+
+    def _addEventListener(self, element, event_name, cb):
+        #    element._callbacks.append(cb)
+        cb = Callback(element, cb, True)
+        #print "addEventListener", element, event_name, cb
+        setattr(element, "on%s" % event_name, cb._callback)
+
 
 
 def setup(application, appdir=None, width=800, height=600):
@@ -456,7 +270,6 @@ def setup(application, appdir=None, width=800, height=600):
 
     wv = Browser(application, appdir, width, height)
     wv.load_app()
-    wv.show_all()
 
     while 1:
         if is_loaded():
@@ -473,7 +286,7 @@ def run(one_event=False, block=True):
             sys.stdout.flush()
         return gtk.events_pending()
     else:
-        while wv.flags() & gtk.REALIZED:
+        while 1:
             gtk.main_iteration()
             sys.stdout.flush()
 
