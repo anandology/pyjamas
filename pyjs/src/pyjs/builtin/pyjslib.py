@@ -1436,6 +1436,10 @@ String.prototype.__setitem__ = function(idx, val) {
 String.prototype.upper = String.prototype.toUpperCase;
 String.prototype.lower = String.prototype.toLowerCase;
 
+String.prototype.capitalize = function() {
+    return this.charAt(0).toUpperCase() + this.substring(1);
+};
+
 String.prototype.zfill = function(width) {
     return this.rjust(width, '0');
 };
