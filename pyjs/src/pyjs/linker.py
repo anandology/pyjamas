@@ -238,7 +238,7 @@ class BaseLinker(object):
             if not self.list_imports:
                 self.visit_end()
         except translator.TranslationError, e:
-            raise e
+            raise
 
     def visit_modules(self, module_names, platform=None, parent_file = None):
         prefix = ''
