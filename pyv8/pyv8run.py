@@ -76,12 +76,13 @@ class Global(PyV8.JSClass):
     def pyv8_load(self, modules):
         for i in range(len(modules)):
             fname = modules[i]
-            #print "pyv8_load", fname
             fp = open(fname, 'r')
             txt = fp.read()
             fp.close()
-
-            x = self.__context__.eval(txt)
+            try:
+                x = self.__context__.eval(txt)
+            except Exception, e:
+                print "Failed to load %s: '%s'" % (fname, e)
 
 
 
@@ -254,7 +255,7 @@ def build_script():
     if len(args) == 0:
         parser.error("incorrect number of arguments")
 
-    pyjs.path = ["."] + pyjs.path
+    #pyjs.path = ["."] + pyjs.path
     #top_module = args[0]
     for d in options.library_dirs:
         pyjs.path.append(os.path.abspath(d))
@@ -300,8 +301,12 @@ def main():
     g.__context__ = ctxt
     # enter the context
     ctxt.enter()
-    
-    x = ctxt.eval(txt)
+    try:
+        x = ctxt.eval(txt)
+    except Exception, e:
+        print e
+        ei = ctxt.locals['$pyjs']['loaded_modules']['sys']['exc_info']()
+        print ei
 
 
 if __name__ == '__main__':
