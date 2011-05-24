@@ -23,13 +23,14 @@ Should be also reflected at http://pyjs.org/wiki/githowto/
 """
 
 from optparse import OptionParser
-from os import path
+from os import path, mkdir
 import subprocess
 import os
 import re
 import urllib2
 import csv
 import collections
+from tempfile import mkdtemp
 
 test_msg_re = re.compile("""\s*([\w]+) (Known issue|Test failed) \(([\w\/]+)\) \: (.+)$""")
 issue_no_re = re.compile("""\#(\d+)""")
@@ -45,7 +46,7 @@ class PyjamasTester(object):
         default=False,
         help="Show detailed information")
     parser.add_option(
-        "--notracker",
+        "--no-tracker",
         dest="tracker",
         action="store_false",
         default=True,
@@ -65,56 +66,62 @@ class PyjamasTester(object):
         help="Path to PyV8-based interpreter"
         )
     parser.add_option(
-        "--nolibtest",
+        "--no-libtest",
         dest="libtest_run",
         action="store_false",
         default=True,
         help="Do not run any LibTest tests"
         )
     parser.add_option(
-        "--nopyv8",
+        "--no-pyv8",
         dest="pyv8_run",
         action="store_false",
         default=True,
         help="Do not run any PyV8 tests"
         )
     parser.add_option(
-        "--nobrowsers",
+        "--no-browsers",
         dest="browsers_run",
         action="store_false",
         default=True,
         help="Do not run any browsers tests"
         )
     parser.add_option(
-        "--nopyjd",
+        "--no-pyjd",
         dest="pyjd_run",
         action="store_false",
         default=True,
         help="Do not run any browsers tests"
         )
     parser.add_option(
-        "--noutils",
+        "--no-utils",
         dest="utils_run",
         action="store_false",
         default=True,
         help="Do not test utilities"
         )
     parser.add_option(
-        "--noexamples",
+        "--no-examples",
         dest="examples_run",
         action="store_false",
-        default=True,
+        default=False,
         help="Do not test examples"
         )
     parser.add_option(
         "--examples",
+        dest="examples_run",
+        action="store_true",
+        help="Test examples"
+        )    
+    parser.add_option(
+        "--examples-path",
         dest="examples_path",
         action="store",
         default="examples/",
         help="Path to examples dir"
         )
     parser.add_option(
-        "--trackerreport",
+        "--tracker-report",
         dest="tracker_report",
         action="store_true",
         default=False,
@@ -123,6 +130,11 @@ class PyjamasTester(object):
         
     def __init__(self):
         self.options, args = self.parser.parse_args()
+        
+        self.tmpdir = mkdtemp(prefix='pyjs')
+        self.root = path.dirname(__file__)
+        
+        print "Output will be produced in %s" % self.tmpdir
         
         self.tracker_url = "http://code.google.com/p/pyjamas/issues/csv"
         if not path.isabs(self.options.pyv8):
@@ -136,13 +148,18 @@ class PyjamasTester(object):
         
         if self.options.libtest_run:
             self._test(self.test_libtest_cpython)
-        
-        if self.options.utils_run:
-            self._test(self.test_utilities)
-        
+
         if self.options.libtest_run:
             if self.options.pyv8_run:
                 self._test(self.test_libtest_pyv8)
+                
+        if self.options.utils_run:
+            self._test(self.test_pyjsbuild)
+            self._test(self.test_pyjscompile)
+            self._test(self.test_pyjampiler)
+            
+        if self.options.examples_run:
+            self._test(self.test_examples)
         
         self.issues = {}
         if self.options.tracker:
@@ -175,39 +192,93 @@ class PyjamasTester(object):
         stdout_value, stderr_value = proc.communicate('')
         return stdout_value, stderr_value
 
-    def test_libtest_cpython(self):
+    def test_libtest_cpython(self, output):
         return self.parse_cmd_output(
             *self.run_cmd(opts="LibTest.py", cwd=path.join(self.options.examples_path, 'libtest'))
             )
 
-    def test_utilities(self):
-        return []
-
-    def test_libtest_pyv8(self):
+    def test_libtest_pyv8(self, output):
         return self.parse_cmd_output(
             *self.run_cmd(cmd=self.options.pyv8,
-                          opts=["--strict", "--dynamic '^I18N[.].*.._..'", "LibTest", 
+                          opts=["-o %s" % output, 
+                                "--strict", 
+                                "--dynamic '^I18N[.].*.._..'",
+                                "LibTest", 
                                 "`find I18N -name ??_??.py`"],
                           cwd=path.join(self.options.examples_path, 'libtest'))
             )
-
-    def test_libtest_browsers(self):
-        pass
-
-    def test_examples_compile(self):
-        pass
-
-    def test_examples_browsers(self):
-        pass
-
-    def test_examples_pyjd(self):
-        pass
+    
+    def test_examples(self, output):
+        return self.check_stderr(*self.run_cmd(
+            opts=["__main__.py", 
+                  "--", 
+                  "-o %s" % output,],
+            cwd=self.options.examples_path))
+    
+    def test_pyjsbuild(self, output):
+        return self.check_stderr(*(self.run_cmd(
+            path.join(self.root, 'bin', 'pyjsbuild'),
+            opts=["-o %s" % output,
+                  "--strict",
+                  "LibTest",
+                  ],
+            cwd=path.join(self.options.examples_path, 'libtest')) +
+                                   ('libtest', 'compile')))
+    
+    def test_pyjscompile(self, output):
+        return self.check_stderr(*(self.run_cmd(
+            path.join(self.root, 'bin', 'pyjscompile'),
+            opts=["-o %s/LibTest.js" % output,
+                  "--strict",
+                  "LibTest.py",
+                  ],
+            cwd=path.join(self.options.examples_path, 'libtest')) +
+                                   ('libtest', 'compile')))
+    
+    def test_pyjampiler(self, output):
+        cmd = path.join(self.root, 'bin', 'pyjampiler')
+        r = self.check_stderr(*(self.run_cmd(
+            cmd,
+            opts=["-r Hello",
+                  "-o %s/hello.js" % output,
+                  ],
+            cwd=path.join(self.options.examples_path, 'helloworld')) +
+                              ('helloworld', 'compile')))
+        r += self.check_stderr(*(self.run_cmd(
+            cmd,
+            opts=["-r LibTest",
+                  "-o %s/libtest.js" % output,
+                  ],
+            cwd=path.join(self.options.examples_path, 'libtest')) +
+                                 ('libtest', 'compile')))
+        return r
+                     
+    def check_stderr(self, stdout, stderr, cls='cmd', name=''):
+        if not name:
+            name = cls
+        if stderr:
+            return [dict(cls = cls,
+                    status = 'failed',
+                    name = name,
+                    message = "Error happened during execution\n"
+                    "Last STDOUT lines:\n"
+                    "------------------\n"
+                    "%(stdout)s\n"
+                    "STDERR:\n"
+                    "------------------\n"
+                    "%(stderr)s" % {'stdout':'\n'.join(stdout.split('\n')[-5:]),
+                                    'stderr':stderr}
+                    )]
+        else:
+            return [dict(cls = cls,
+                status = "passed",
+                name = name,
+                count = 1)] 
     
     def parse_cmd_output(self, stdout_value, stderr_value=None):
         """
         Parse stdout/stderr into list of dicts
         
-        .. TODO:: handle stderr (exceptions)
         """
         res = []
         for line in stdout_value.split('\n'):
@@ -234,6 +305,13 @@ class PyjamasTester(object):
                         count = int(groups[1])
                         )
                     res.append(test)
+        if stderr_value:
+            res.append(dict(
+                    cls = 'command',
+                    status = 'failed',
+                    name = 'execution',
+                    message = stderr_value
+                    ))
         return res
                     
         
@@ -245,8 +323,11 @@ class PyjamasTester(object):
                  total=0, passed=0,
                  failed=0, known=0, err=None)
         self.testsresults.append(d)
+        output = path.join(self.tmpdir, method.func_name)
+        if not path.exists(output):
+            mkdir(output)
         try:
-            d['tests'] = method()
+            d['tests'] = method(output=output)
         except Exception, e:
             print e
             d['err'] = e
@@ -295,9 +376,9 @@ class PyjamasTester(object):
                 if test_pack['failed'] > 0:
                     is_failed = True
                 for test in test_pack['known_list']:
-                    print "    Known issue: %(cls).%(name)s: %(message)s" % test
+                    print "    Known issue: %(cls)s.%(name)s: %(message)s" % test
                 for test in test_pack['failed_list']:
-                    print "[!] Failed test: %(cls).%(name)s: %(message)s" % test
+                    print "[!] Failed test: %(cls)s.%(name)s: %(message)s" % test
         else:
             for test_pack in self.testsresults:
                 print ("%(name)s: total %(total)s, passed %(passed)s,"
