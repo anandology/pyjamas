@@ -26,6 +26,9 @@ except:
 import logging
 import compiler
 from compiler.visitor import ASTVisitor
+from options import (all_compile_options, add_compile_options,
+                     get_compile_options, debug_options, speed_options, 
+                     pythonic_options)
 
 if os.environ.has_key('PYJS_SYSPATH'):
     sys.path[0:0] = [os.environ['PYJS_SYSPATH']]
@@ -464,9 +467,7 @@ def monkey_patch_broken_transformer(compiler):
 
     compiler.transformer.Transformer.com_subscriptlist = com_subscriptlist
 
-debug_options = {}
-speed_options = {}
-pythonic_options = {}
+
 
 re_return = re.compile(r'\breturn\b')
 class __Pyjamas__(object):
@@ -748,22 +749,7 @@ class Translator(object):
 
     def __init__(self, compiler,
                  module_name, module_file_name, src, mod, output,
-                 dynamic=0, findFile=None,
-                 debug = False,
-                 print_statements=True,
-                 function_argument_checking=True,
-                 attribute_checking=True,
-                 bound_methods=True,
-                 descriptors=True,
-                 source_tracking=True,
-                 stupid_mode=False,
-                 line_tracking=True,
-                 store_source=True,
-                 inline_code=True,
-                 operator_funcs=True,
-                 number_classes=True,
-                 create_locals=False,
-                ):
+                 dynamic=0, findFile=None, **kw):
 
         monkey_patch_broken_transformer(compiler)
 
@@ -783,29 +769,9 @@ class Translator(object):
         self.output = output
         self.dynamic = dynamic
         self.findFile = findFile
+        
+        self.set_compile_options(kw)
         # compile options
-        self.debug = debug
-        self.ignore_debug = False
-        self.print_statements = print_statements
-        self.function_argument_checking = function_argument_checking
-        self.attribute_checking = attribute_checking
-        self.bound_methods = bound_methods
-        self.descriptors = descriptors
-        self.source_tracking = source_tracking
-        self.stupid_mode = stupid_mode
-        self.line_tracking = line_tracking
-        self.store_source = store_source
-        self.inline_bool = inline_code
-        self.inline_len = inline_code
-        self.inline_eq = inline_code
-        self.inline_cmp = inline_code
-        self.inline_getitem = inline_code
-        self.inline_code = inline_code
-        self.create_locals = create_locals
-        self.operator_funcs = operator_funcs
-        self.number_classes = number_classes
-        if self.number_classes:
-            self.operator_funcs = True
 
         self.future_division = False
 
@@ -973,6 +939,22 @@ class Translator(object):
             self.w( '/*')
             self.w( 'PYJS_JS: %s' % repr(self.imported_js))
             self.w( '*/')
+            
+    def set_compile_options(self, opts):
+        for opt, value in opts.iteritems():
+            if opt in all_compile_options:
+                setattr(self, opt, value)
+            else:
+                raise Exception("Translator got an unknown option %s" % opt)
+        
+        self.ignore_debug = False
+        self.inline_bool = self.inline_code
+        self.inline_len = self.inline_code
+        self.inline_eq = self.inline_code
+        self.inline_cmp = self.inline_code
+        self.inline_getitem = self.inline_code
+        if self.number_classes:
+            self.operator_funcs = True        
 
     def w(self, txt, newline=True, output=None, translate=True):
         if translate and txt:
@@ -4295,23 +4277,9 @@ def import_compiler(internal_ast):
 
     return compiler
 
-def translate(compiler, sources, output_file, module_name=None,
-              debug=False,
-              print_statements = True,
-              function_argument_checking=True,
-              attribute_checking=True,
-              bound_methods=True,
-              descriptors=True,
-              source_tracking=True,
-              stupid_mode=False,
-              line_tracking=True,
-              store_source=True,
-              inline_code=False,
-              operator_funcs=True,
-              number_classes=True,
-              list_imports=False,
-             ):
-
+def translate(compiler, sources, output_file, module_name=None, **kw):
+    kw = dict(all_compile_options, **kw)
+    list_imports = kw.get('list_imports', False)
     sources = map(os.path.abspath, sources)
     output_file = os.path.abspath(output_file)
     if not module_name:
@@ -4346,21 +4314,7 @@ def translate(compiler, sources, output_file, module_name=None,
         output = file(output_file, 'w')
 
     t = Translator(compiler,
-                   module_name, sources[0], src, tree, output,
-                   debug = debug,
-                   print_statements = print_statements,
-                   function_argument_checking = function_argument_checking,
-                   attribute_checking = attribute_checking,
-                   bound_methods = bound_methods,
-                   descriptors = descriptors,
-                   source_tracking = source_tracking,
-                   stupid_mode = stupid_mode,
-                   line_tracking = line_tracking,
-                   store_source = store_source,
-                   inline_code = inline_code,
-                   operator_funcs = operator_funcs,
-                   number_classes = number_classes,
-                  )
+                   module_name, sources[0], src, tree, output, **kw)
     output.close()
     return t.imported_modules, t.imported_js
 
@@ -4769,216 +4723,7 @@ class AppTranslator:
               print >>sys.stderr, 'Warning: Unable to find imported javascript:', js
         return lib_code.getvalue(), app_code.getvalue()
 
-def add_compile_options(parser):
-    global debug_options, speed_options, pythonic_options
 
-    parser.add_option("--internal-ast",
-                      dest="internal_ast",
-                      action="store_true",
-                      help="Use internal AST parser instead of standard python one"
-                     )
-
-    parser.add_option("--debug-wrap",
-                      dest="debug",
-                      action="store_true",
-                      help="Wrap function calls with javascript debug code",
-                     )
-    parser.add_option("--no-debug-wrap",
-                      dest="debug",
-                      action="store_false",
-                     )
-    debug_options['debug'] = True
-    speed_options['debug'] = False
-
-    parser.add_option("--no-print-statements",
-                      dest="print_statements",
-                      action="store_false",
-                      help="Remove all print statements",
-                     )
-    parser.add_option("--print-statements",
-                      dest="print_statements",
-                      action="store_true",
-                      help="Generate code for print statements",
-                     )
-    speed_options['print_statements'] = False
-
-    parser.add_option("--no-function-argument-checking",
-                      dest = "function_argument_checking",
-                      action="store_false",
-                      help = "Do not generate code for function argument checking",
-                     )
-    parser.add_option("--function-argument-checking",
-                      dest = "function_argument_checking",
-                      action="store_true",
-                      help = "Generate code for function argument checking",
-                     )
-    speed_options['function_argument_checking'] = False
-    pythonic_options['function_argument_checking'] = True
-
-    parser.add_option("--no-attribute-checking",
-                      dest = "attribute_checking",
-                      action="store_false",
-                      help = "Do not generate code for attribute checking",
-                     )
-    parser.add_option("--attribute-checking",
-                      dest = "attribute_checking",
-                      action="store_true",
-                      help = "Generate code for attribute checking",
-                     )
-    speed_options['attribute_checking'] = False
-    pythonic_options['attribute_checking'] = True
-
-    parser.add_option("--no-bound-methods",
-                      dest = "bound_methods",
-                      action="store_false",
-                      help = "Do not generate code for binding methods",
-                     )
-    parser.add_option("--bound-methods",
-                      dest = "bound_methods",
-                      action="store_true",
-                      help = "Generate code for binding methods",
-                     )
-    speed_options['bound_methods'] = False
-    pythonic_options['bound_methods'] = True
-
-    parser.add_option("--no-descriptors",
-                      dest = "descriptors",
-                      action="store_false",
-                      help = "Do not generate code for descriptor calling",
-                     )
-    parser.add_option("--descriptors",
-                      dest = "descriptors",
-                      action="store_true",
-                      help = "Generate code for descriptor calling",
-                     )
-    speed_options['descriptors'] = False
-    pythonic_options['descriptors'] = True
-
-    parser.add_option("--no-source-tracking",
-                      dest = "source_tracking",
-                      action="store_false",
-                      help = "Do not generate code for source tracking",
-                     )
-    parser.add_option("--source-tracking",
-                      dest = "source_tracking",
-                      action="store_true",
-                      help = "Generate code for source tracking",
-                     )
-    debug_options['source_tracking'] = True
-    speed_options['source_tracking'] = False
-    pythonic_options['source_tracking'] = True
-
-    parser.add_option("--no-line-tracking",
-                      dest = "line_tracking",
-                      action="store_true",
-                      help = "Do not generate code for source tracking on every line",
-                     )
-    parser.add_option("--line-tracking",
-                      dest = "line_tracking",
-                      action="store_true",
-                      help = "Generate code for source tracking on every line",
-                     )
-    debug_options['line_tracking'] = True
-    pythonic_options['line_tracking'] = True
-
-    parser.add_option("--no-store-source",
-                      dest = "store_source",
-                      action="store_false",
-                      help = "Do not store python code in javascript",
-                     )
-    parser.add_option("--store-source",
-                      dest = "store_source",
-                      action="store_true",
-                      help = "Store python code in javascript",
-                     )
-    debug_options['store_source'] = True
-    pythonic_options['store_source'] = True
-
-    parser.add_option("--no-inline-code",
-                      dest = "inline_code",
-                      action="store_false",
-                      help = "Do not generate inline code for bool/eq/len",
-                     )
-    parser.add_option("--inline-code",
-                      dest = "inline_code",
-                      action="store_true",
-                      help = "Generate inline code for bool/eq/len",
-                     )
-    speed_options['inline_code'] = True
-
-    parser.add_option("--no-operator-funcs",
-                      dest = "operator_funcs",
-                      action="store_false",
-                      help = "Do not generate function calls for operators",
-                     )
-    parser.add_option("--operator-funcs",
-                      dest = "operator_funcs",
-                      action="store_true",
-                      help = "Generate function calls for operators",
-                     )
-    speed_options['operator_funcs'] = False
-    pythonic_options['operator_funcs'] = True
-
-    parser.add_option("--no-number-classes",
-                      dest = "number_classes",
-                      action="store_false",
-                      help = "Do not use number classes",
-                     )
-    parser.add_option("--number-classes",
-                      dest = "number_classes",
-                      action="store_true",
-                      help = "Use classes for numbers (float, int, long)",
-                     )
-    speed_options['number_classes'] = False
-    pythonic_options['number_classes'] = True
-
-    parser.add_option("--no-stupid-mode",
-                      dest = "stupid_mode",
-                      action="store_false",
-                      help = "Doesn't rely on javascriptisms",
-                     )
-    parser.add_option("--stupid-mode",
-                      dest = "stupid_mode",
-                      action="store_true",
-                      help = "Creates minimalist code, relying on javascript",
-                     )
-
-    def set_multiple(option, opt_str, value, parser, **kwargs):
-        for k in kwargs.keys():
-            setattr(parser.values, k, kwargs[k])
-
-    parser.add_option("-d", "--debug",
-                      action="callback",
-                      callback = set_multiple,
-                      callback_kwargs = debug_options,
-                      help="Set all debugging options",
-                     )
-    parser.add_option("-O",
-                      action="callback",
-                      callback = set_multiple,
-                      callback_kwargs = speed_options,
-                      help="Set all options that maximize speed",
-                     )
-    parser.add_option("--strict",
-                      action="callback",
-                      callback = set_multiple,
-                      callback_kwargs = pythonic_options,
-                      help="Set all options that mimic standard python behavior",
-                     )
-    parser.set_defaults(debug=False,
-                        print_statements=True,
-                        function_argument_checking = False,
-                        attribute_checking = False,
-                        bound_methods = True,
-                        descriptors = False,
-                        source_tracking = False,
-                        stupid_mode = False,
-                        line_tracking = False,
-                        store_source = False,
-                        inline_code = False,
-                        operator_funcs = True,
-                        number_classes = False,
-                       )
 
 
 usage = """
@@ -5020,20 +4765,7 @@ def main():
 
     imports, js = translate(compiler, file_names, options.output,
               options.module_name,
-              debug = options.debug,
-              print_statements = options.print_statements,
-              function_argument_checking = options.function_argument_checking,
-              attribute_checking = options.attribute_checking,
-              bound_methods = options.bound_methods,
-              source_tracking = options.source_tracking,
-              line_tracking = options.line_tracking,
-              stupid_mode = options.stupid_mode,
-              store_source = options.store_source,
-              inline_code = options.inline_code,
-              operator_funcs = options.operator_funcs,
-              number_classes = options.number_classes,
-              list_imports = options.list_imports,
-    )
+              **get_compile_options(options))
     if options.list_imports:
         if imports:
             print '/*'
