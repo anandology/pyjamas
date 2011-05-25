@@ -11,6 +11,7 @@ stacktrace = None
 appname = None
 
 version_info = (2, 5, 0, 'pyjamas', 0)
+subversion = ('Pyjamas', '', '')
 
 def setloadpath(lp):
     global loadpath
