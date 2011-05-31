@@ -197,7 +197,8 @@ class BaseLinker(object):
                  platforms=[], path=[],
                  translator_arguments={},
                  compile_inplace=False,
-                 list_imports=False):
+                 list_imports=False,
+                 translator_func=out_translate):
         modules = [mod.replace(os.sep, '.') for mod in modules]
         self.compiler = compiler
         self.js_path = os.path.abspath(output)
@@ -215,6 +216,7 @@ class BaseLinker(object):
         self.platforms = platforms
         self.path = path + [PYLIB_PATH]
         self.translator_arguments = translator_arguments
+        self.translator_func = translator_func
         self.compile_inplace = compile_inplace
         self.top_module_path = None
         self.remove_files = {}
@@ -332,12 +334,12 @@ class BaseLinker(object):
             else:
                 logging.info('Translating module:%s platform:%s out:%r' % (
                     module_name, platform or '-', out_file))
-                deps, js_libs = out_translate( platform,
-                                            [file_path] +  overrides,
-                                            out_file,
-                                            module_name,
-                                            self.translator_arguments,
-                                            self.keep_lib_files)
+                deps, js_libs = self.translator_func(platform,
+                                                     [file_path] +  overrides,
+                                                     out_file,
+                                                     module_name,
+                                                     self.translator_arguments,
+                                                     self.keep_lib_files)
                 #deps, js_libs = translator.translate(self.compiler,
                 #                            [file_path] +  overrides,
                 #                            out_file,
