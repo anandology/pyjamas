@@ -36,10 +36,11 @@ class Global(PyV8.JSClass):
     def pyv8_load(self, modules):
         for i in range(len(modules)):
             fname = modules[i]
-            fp = open(fname, 'r')
-            txt = fp.read()
-            fp.close()
             try:
+                fp = open(fname, 'r')
+                # XXX: Very bad hack! Do something about encoding of Translator
+                txt = fp.read().decode('latin1')
+                fp.close()            
                 x = self.__context__.eval(txt)
             except Exception, e:
                 raise ImportError("Failed to load %s: '%s'" % (fname, e))
