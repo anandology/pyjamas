@@ -42,4 +42,4 @@ class Global(PyV8.JSClass):
             try:
                 x = self.__context__.eval(txt)
             except Exception, e:
-                print "Failed to load %s: '%s'" % (fname, e)
+                raise ImportError("Failed to load %s: '%s'" % (fname, e))
