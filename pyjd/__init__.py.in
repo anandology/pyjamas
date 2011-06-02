@@ -36,7 +36,7 @@ if engine is None:
 if engine == 'pyqt4':
     from pyqt4 import *
 if engine == 'pywebkitgtk':
-    from pywebkitgtk import *
+    from pywebkitgtknew import *
 elif engine == 'hulahop':
     from hula import *
 elif engine == 'mshtml':
