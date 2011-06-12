@@ -6537,6 +6537,15 @@ def sprintf(strng, args):
     return result.join("");
 """)
 
+def _globals(module):
+    """
+    XXX: It should return dictproxy instead!
+    """
+    d = dict()
+    for name in dir(module):
+        d[name] = JS("@{{module}}[@{{name}}]")
+    return d
+    
 def debugReport(msg):
     JS("""
     alert(@{{msg}});

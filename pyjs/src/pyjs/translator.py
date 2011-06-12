@@ -333,6 +333,7 @@ PYJSLIB_BUILTIN_FUNCTIONS=frozenset((
     "__delslice",
     "___import___",
     "__import_all__",
+    "_globals",
     "_handle_exception",
     ))
 
@@ -2339,6 +2340,9 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                     raise TranslationError(e.msg, v, self.module_name)
             elif v.node.name == 'locals':
                 return """$p.dict({%s})""" % (",".join(["'%s': %s" % (pyname, self.lookup_stack[-1][pyname][2]) for pyname in self.lookup_stack[-1] if self.lookup_stack[-1][pyname][0] not in ['__pyjamas__', 'global']]))
+            elif v.node.name == 'globals':
+                # XXX: Should be dictproxy, to handle changes
+                return "@{{_globals}}(%s)" % self.modpfx()[:-1]
             elif v.node.name == 'len' and depth == -1 and len(v.args) == 1:
                 expr = self.expr(v.args[0], current_klass)
                 return self.inline_len_code(expr)
