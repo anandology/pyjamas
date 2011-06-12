@@ -332,6 +332,7 @@ PYJSLIB_BUILTIN_FUNCTIONS=frozenset((
     "slice",
     "__delslice",
     "___import___",
+    "__import_all__",
     "_handle_exception",
     ))
 
@@ -1970,7 +1971,8 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         # object to check our scope
         self._doImport(node.names, current_klass, root_level, True)
 
-    def _doImport(self, names, current_klass, root_level, assignBase, absPath=False):
+    def _doImport(self, names, current_klass, root_level, assignBase,
+                  absPath=False, all=False):
         if root_level:
             modtype = 'root-module'
         else:
@@ -2013,12 +2015,20 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                     context = 'null'
                 else:
                     context = self.import_context
-                import_stmt = "@{{___import___}}('%s', %s" % (
-                                    importName,
-                                    context,
-                                    )
+                if not all:
+                    import_stmt = "@{{___import___}}('%s', %s" % (
+                        importName,
+                        context,
+                    )
+                else:
+                    import_stmt = "@{{__import_all__}}('%s', %s, %s" %(
+                        importName,
+                        context,
+                        self.modpfx()[:-1],
+                    )                        
+                        
                 if not assignBase:
-                    self.w( self.spacing() + import_stmt + 'null, false);')
+                    self.w( self.spacing() + import_stmt + ', null, false);')
                 self._lhsFromName(importName, current_klass, modtype)
                 self.add_imported_module(importName)
             if assignBase:
@@ -2104,6 +2114,10 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
                 if modname[0] == '.':
                     modname = modname[1:]
         for name in node.names:
+            if name[0] == "*":
+                self._doImport(((modname, name[0]),), current_klass,
+                               root_level, False, absPath, True)
+                continue
             sub = modname + '.' + name[0]
             ass_name = name[1] or name[0]
             self._doImport(((sub, ass_name),), current_klass, root_level, True, absPath)

@@ -952,6 +952,16 @@ def __dynamic_load__(importName):
             __nondynamic_modules__[importName] = 1.0
     return module
 
+def __import_all__(path, context, namespace, module_name=None, get_base=True):
+    module = ___import___(path, context, module_name, get_base)
+    if JS("""typeof @{{module}}['__all__'] == 'undefined'"""):
+        for name in dir(module):
+            if not name.startswith('_'):
+                JS("""@{{namespace}}[@{{name}}] = @{{module}}[@{{name}}];""")
+    else:
+        for name in module.__all__:
+            JS("""@{{namespace}}[@{{name}}] = @{{module}}[@{{name}}];""")
+
 class BaseException:
 
     def __init__(self, *args):
