@@ -282,6 +282,13 @@ class BuiltinTest(UnitTest):
         import imports
         self.assertTrue(CLS is imports.loccls.CLS, "CLS is imports.loccls.CLS")
         self.assertTrue(CLS is imports.upcls.CLS, "CLS is imports.upcls.CLS")
+
+        # from ... import * tests, issue #615
+        self.assertEqual(imports.all_masked, False, "from ... import * should respect __all__, #615")
+        self.assertEqual(imports.all_override, True, "Should override globals, #615")
+        self.assertEqual(imports.all_import1, 1)
+        self.assertEqual(imports.all_import2, 3)
+        self.assertEqual(imports.all_import3, 3)
 	
     def testBitOperations(self):
         self.assertEqual(1 << 2 - 1, 2, "shift error 1")

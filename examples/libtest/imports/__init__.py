@@ -24,3 +24,9 @@ def conditional_func():
 if True:
     def conditional_func():
         return "overridden"
+
+# Import all
+all_masked = False
+all_override = False
+from allwith__all__ import *
+from allsimple import *
