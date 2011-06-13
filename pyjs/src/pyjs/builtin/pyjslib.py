@@ -5766,6 +5766,10 @@ def getattr(obj, name, default_value=None):
         mapped_name = '$$' + @{{name}};
         if (typeof @{{obj}}[mapped_name] == 'undefined' || attrib_remap.indexOf(@{{name}}) < 0) {
             if (arguments.length != 3) {
+                if (@{{obj}}.__is_instance__ === true &&
+                        typeof @{{obj}}.__getattr__ == 'function') {
+                    return @{{obj}}.__getattr__(@{{name}});
+                }
                 throw @{{AttributeError}}("'" + @{{repr}}(@{{obj}}) + "' has no attribute '" + @{{name}}+ "'");
             }
             return @{{default_value}};

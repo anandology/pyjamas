@@ -8,6 +8,7 @@ all_compile_options = dict(
     print_statements=True,
     function_argument_checking=False,
     attribute_checking=False,
+    getattr_support=True,
     bound_methods=True,
     descriptors=False,
     source_tracking=False,
@@ -83,6 +84,19 @@ def add_compile_options(parser):
                      )
     speed_options['attribute_checking'] = False
     pythonic_options['attribute_checking'] = True
+
+    parser.add_option("--no-getattr-support",
+                      dest = "getattr_support",
+                      action="store_false",
+                      help = "Do not support __getattr__()",
+                     )
+    parser.add_option("--getattr-support",
+                      dest = "getattr_support",
+                      action="store_true",
+                      help = "Support __getattr__()",
+                     )
+    speed_options['getattr_support'] = False
+    pythonic_options['getattr_support'] = True
 
     parser.add_option("--no-bound-methods",
                       dest = "bound_methods",

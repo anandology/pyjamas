@@ -721,6 +721,8 @@ class Translator(object):
         'noFunctionArgumentChecking': [('function_argument_checking', False)],
         'AttributeChecking': [('attribute_checking', True)],
         'noAttributeChecking': [('attribute_checking', False)],
+        'getattrSupport': [('getattrSupport', True)],
+        'noGetattrSupport': [('getattrSupport', False)],
         'BoundMethods': [('bound_methods', True)],
         'noBoundMethods': [('bound_methods', False)],
         'Descriptors': [('descriptors', True)],
@@ -943,6 +945,7 @@ class Translator(object):
             self.w( '*/')
             
     def set_compile_options(self, opts):
+        opts = dict(all_compile_options, **opts)
         for opt, value in opts.iteritems():
             if opt in all_compile_options:
                 setattr(self, opt, value)
@@ -994,7 +997,7 @@ class Translator(object):
     def push_options(self):
         self.option_stack.append((\
             self.debug, self.print_statements, self.function_argument_checking,
-            self.attribute_checking, self.bound_methods, self.descriptors,
+            self.attribute_checking, self.getattr_support, self.bound_methods, self.descriptors,
             self.source_tracking, self.line_tracking, self.store_source,
             self.inline_bool, self.inline_eq, self.inline_len, self.inline_cmp, self.inline_getitem,
             self.operator_funcs, self.number_classes,
@@ -1002,7 +1005,7 @@ class Translator(object):
     def pop_options(self):
         (\
             self.debug, self.print_statements, self.function_argument_checking,
-            self.attribute_checking, self.bound_methods, self.descriptors,
+            self.attribute_checking, self.getattr_support, self.bound_methods, self.descriptors,
             self.source_tracking, self.line_tracking, self.store_source,
             self.inline_bool, self.inline_eq, self.inline_len, self.inline_cmp, self.inline_getitem,
             self.operator_funcs, self.number_classes,
@@ -2653,10 +2656,15 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         self.generator_switch_case(increment=True)
         self.is_generator = save_is_generator
 
-    # XXX: change use_getattr to True to enable "strict" compilation
-    # but incurring a 100% performance penalty. oops.
-    def _getattr(self, v, current_klass, use_getattr=False):
+    def _getattr(self, v, current_klass, use_getattr=None):
+        if use_getattr is None:
+            use_getattr = self.getattr_support
+
         attr_name = self.attrib_remap(v.attrname)
+        if use_getattr:
+            expr = self.expr(v.expr, current_klass)
+            return ["@{{getattr}}(%s, '%s')" % (expr, attr_name)]
+
         if isinstance(v.expr, self.ast.Name):
             obj = self._name(v.expr, current_klass, return_none_for_module=True)
             if not use_getattr or attr_name == '__class__' or \
@@ -3235,7 +3243,7 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
         if isinstance(v.expr, self.ast.Name):
             lhs = self._name(v.expr, current_klass)
         elif isinstance(v.expr, self.ast.Getattr):
-            lhs = self.attrib_join(self._getattr(v, current_klass)[:-1])
+            lhs = self.attrib_join(self._getattr(v, current_klass, False)[:-1])
         elif isinstance(v.expr, self.ast.Subscript):
             lhs = self._subscript(v.expr, current_klass)
         elif isinstance(v.expr, self.ast.CallFunc):
@@ -4199,6 +4207,8 @@ function(){
             return self._subscript(node, current_klass)
         elif isinstance(node, self.ast.Getattr):
             attr_ = self._getattr(node, current_klass)
+            if len(attr_) == 1:
+                return attr_[0]
             attr = self.attrib_join(attr_)
             attr_left = self.attrib_join(attr_[:-1])
             attr_right = attr_[-1]
