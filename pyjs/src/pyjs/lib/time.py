@@ -160,13 +160,13 @@ def strftime(fmt, t = None):
         if c == '%':
             return '%'
         elif c == 'a':
-            raise NotImplementedError("strftime format character '%s'" % c)
+            return format('A')[:3]
         elif c == 'A':
-            raise NotImplementedError("strftime format character '%s'" % c)
+            return __c__days[format('w')]
         elif c == 'b':
-            raise NotImplementedError("strftime format character '%s'" % c)
+            return format('B')[:3]
         elif c == 'B':
-            raise NotImplementedError("strftime format character '%s'" % c)
+            return __c__months[tm_mon-1]
         elif c == 'c':
             return date.toLocaleString()
         elif c == 'd':
