@@ -139,7 +139,6 @@ class GlassWidget(Widget, MouseHandler):
             DOM.setStyleAttribute(el, "background", "rgba(255,255,255,0.1)")
 
     def showGlass(self):
-        Window.enableScrolling(False)
         self.setGlassPosition()
         doc().body.appendChild(self.getElement())
         Window.addWindowResizeListener(self)
@@ -147,7 +146,6 @@ class GlassWidget(Widget, MouseHandler):
     def hideGlass(self):
         Window.removeWindowResizeListener(self)
         doc().body.removeChild(self.getElement())
-        Window.enableScrolling(True)
 
     def onWindowResized(self, width, height):
         self.setGlassPosition()
