@@ -6268,8 +6268,6 @@ def toJSObjects(x):
         }
         return result;
         """)
-    if isFunction(x):
-        return x
     if isObject(x):
         if hasattr(x, '__number__'):
             return x.valueOf()
@@ -6288,6 +6286,7 @@ def toJSObjects(x):
             # we do not have a special implementation for custom
             # classes, just pass it on
             return x
+        return x
     if isObject(x):
         JS("""
         var result = {};
