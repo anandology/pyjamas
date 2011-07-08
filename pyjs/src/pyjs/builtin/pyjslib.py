@@ -6268,8 +6268,10 @@ def toJSObjects(x):
         }
         return result;
         """)
+    if isFunction(x):
+        return x
     if isObject(x):
-        if x.__number__:
+        if hasattr(x, '__number__'):
             return x.valueOf()
         elif isinstance(x, dict):
             JS("""
