@@ -6269,7 +6269,7 @@ def toJSObjects(x):
         return result;
         """)
     if isObject(x):
-        if hasattr(x, '__number__'):
+        if getattr(x, '__number__', None):
             return x.valueOf()
         elif isinstance(x, dict):
             JS("""
@@ -6286,7 +6286,8 @@ def toJSObjects(x):
             # we do not have a special implementation for custom
             # classes, just pass it on
             return x
-        return x
+        elif isFunction(x):
+            return x
     if isObject(x):
         JS("""
         var result = {};
