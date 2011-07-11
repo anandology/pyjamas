@@ -41,7 +41,6 @@ _handle_exception = JS("""function(err) {
     if (!$pyjs.in_try_except) {
         var $pyjs_msg = $pyjs.loaded_modules['sys']._get_traceback(err);
         $pyjs.__active_exception_stack__ = null;
-        @{{printFunc}}([$pyjs_msg], true);
         @{{debugReport}}($pyjs_msg);
     }
     throw err;
@@ -997,6 +996,9 @@ class StandardError(Exception):
 class AssertionError(StandardError):
     pass
 
+class StopIteration(Exception):
+    pass
+
 class GeneratorExit(Exception):
     pass
 
@@ -1072,12 +1074,6 @@ def init():
 @{{TryElse}} = function () { };
 @{{TryElse}}.prototype = new Error();
 @{{TryElse}}.__name__ = 'TryElse';
-""")
-    # StopIteration is used to get out of an iteration loop
-    JS("""
-@{{StopIteration}} = function () { };
-@{{StopIteration}}.prototype = new Error();
-@{{StopIteration}}.__name__ = 'StopIteration';
 """)
 
     # Patching of the standard javascript String object
@@ -6554,7 +6550,7 @@ def _globals(module):
     
 def debugReport(msg):
     JS("""
-    alert(@{{msg}});
+    @{{printFunc}}([@{{msg}}], true);
     """)
 
 JS("""

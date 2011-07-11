@@ -1392,7 +1392,7 @@ class Translator(object):
 (function(){try{try{$pyjs.in_try_except += 1;
 %(s)sreturn %(call_code)s;
 }finally{$pyjs.in_try_except-=1;}}catch(%(dbg)s_err){\
-if (%(dbg)s_err.__name__ != 'StopIteration')\
+if (!@{{isinstance}}(%(dbg)s_err, @{{StopIteration}}))\
 {@{{_handle_exception}}(%(dbg)s_err);}\
 throw %(dbg)s_err;
 }})()""" % locals()
@@ -1413,13 +1413,13 @@ $generator['next'] = function (noStop) {
                 $generator_state[0] = -1;
                 return;
             }
-            throw @{{StopIteration}};
+            throw @{{StopIteration}}();
         }
     } catch (e) {
 %(src2)s
         $is_executing=false;
         $generator_state[0] = -1;
-        if (noStop === true && e === @{{StopIteration}}) {
+        if (noStop === true && @{{isinstance}}(e, @{{StopIteration}})) {
             return;
         }
         throw e;
@@ -1433,7 +1433,7 @@ $generator['send'] = function ($val) {
     $exc = null;
     try {
         var $res = $generator['$genfunc']();
-        if (typeof $res == 'undefined') throw @{{StopIteration}};
+        if (typeof $res == 'undefined') throw @{{StopIteration}}();
     } catch (e) {
 %(src2)s
         $generator_state[0] = -1;
@@ -1446,7 +1446,9 @@ $generator['send'] = function ($val) {
 $generator['$$throw'] = function ($exc_type, $exc_value) {
 %(src1)s
     $yield_value = null;
-    $exc=(typeof $exc_value == 'undefined'?$exc_type():$exc_type($exc_value));
+    $exc=(typeof $exc_value == 'undefined' ? $exc_type() :
+                                            (@{{isinstance}}($exc_value, $exc_type)
+                                             ? $exc_value : $exc_type($exc_value)));
     try {
         var $res = $generator['$genfunc']();
     } catch (e) {
@@ -1470,7 +1472,7 @@ $generator['close'] = function () {
 %(src2)s
         $generator_state[0] = -1;
         $is_executing=false;
-        if (e.__name__ == 'StopIteration' || e.__name__ == 'GeneratorExit') return null;
+        if (@{{isinstance}}(e, @{{StopIteration}}) || @{{isinstance}}(e, @{{GeneratorExit}})) return null;
         throw (e);
     }
     return null;
