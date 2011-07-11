@@ -197,7 +197,7 @@ def load_script(url, onload, async):
     wnd().status = ('Loading ' + url)
 
     def onload_fn():
-        wnd.status = ('Loaded ' + url)
+        wnd().status = ('Loaded ' + url)
         if not onload is None:
             eval(onload)
         return True
