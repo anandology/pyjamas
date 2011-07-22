@@ -11036,7 +11036,7 @@ func(m$, null, @{{tuple}}, '__contains__', 1, ['self', 'value'], null, null, nul
 func(m$, null, @{{tuple}}, 'count', 1, ['self', 'value'], null, null, null, function ($self, $value) {
     var n = 0, __array = $self.__array;
     for (var i = 0; i < __array.length; i++) {
-        if (__array[i] === $value) {
+        if (@{{cmp}}(__array[i], $value)) {
             n++;
         }
     }
@@ -19931,7 +19931,6 @@ $reversed_iter_array.prototype.__iter__ = function ( ) {
     return this;
 };
 //$reversed_iter_array.prototype.$genfunc = $reversed_iter_array.prototype.next;
-//CGB
 var $enumerate_array = function (l) {
     this.array = l;
     this.i = -1;
@@ -20151,14 +20150,17 @@ class list(object):
         """)
 
     def remove(self, value):
+        index = self.index(value)
         JS("""
-        var index=@{{self}}.index(@{{value}});
+        var index = @{{index}}.valueOf();
         if (index<0) {
             @{{raise}}($new(@{{ValueError}}, B$str("list.remove(x): x not in list")));
         }
         @{{self}}.__array.splice(index, 1);
         return true;
         """)
+
+    count = tuple.count
 
     def index(self, value, _start=0):
         JS("""
@@ -22383,7 +22385,7 @@ def __import__(name, globals={}, locals={}, fromlist=[], level=0):
     else:
         # If a package was imported, try to import stuff from fromlist.
         if '*' in fromlist and hasattr(module, '__all__'):
-            fromlist = list(fromlist)
+            fromlist[:] = list(fromlist)
             fromlist.remove('*')
             fromlist.extend(module.__all__)
         none = NoneType()
@@ -22408,6 +22410,7 @@ def _import(assnames, name, globals, locals, fromlist, level):
     _globals = JS("B$dict(@{{globals}})")
     _fromlist = JS("B$list(@{{fromlist}})")
     _level = JS("@{{level}} === null ? @{{int_minus_one}} : $new(@{{int}}, @{{level}});")
+    star = '*'
     module = None
     module = __import__(name, _globals, None, _fromlist, _level)
     JS("""
@@ -22416,13 +22419,13 @@ def _import(assnames, name, globals, locals, fromlist, level):
         src = @{{assnames}}[i][0];
         dst = @{{assnames}}[i][1];
         name = src.valueOf()
-        if (name != '*') {
+        if (name.valueOf() != '*') {
             v = @{{module}}['$dict'][name];
             if (typeof v == "undefined") {
                 @{{raise}}($new(@{{ImportError}}, B$str("cannot import name " + name)));
             }
             @{{locals}}[dst === null ? name : dst.valueOf()] = v;
-        } else if (@{{_fromlist}}.__array.indexOf('*') >= 0) {
+        } else if (@{{list}}['$dict']['count'](@{{_fromlist}}, @{{star}}).valueOf() > 0) {
             for (name in @{{module}}['$dict']) {
                 if (name.charAt(0) != '_') {
                     v = @{{module}}['$dict'][name];
