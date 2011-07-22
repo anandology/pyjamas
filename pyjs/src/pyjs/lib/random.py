@@ -14,6 +14,7 @@ from binascii import hexlify as _hexlify
 #           "getstate","setstate","jumpahead", "WichmannHill", "getrandbits",
 #           "SystemRandom"]
 
+
 NV_MAGICCONST = 4 * _exp(-0.5)/_sqrt(2.0)
 TWOPI = 2.0*_pi
 LOG4 = _log(4.0)

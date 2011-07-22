@@ -384,16 +384,14 @@ def hexstr(s):
     r = ''
     i = None
     for x in range(16):
-        i = INT(JS("@{{s}}[@{{x}}]"))
+        i = int(JS("@{{s}}[@{{x}}]"))
         r = r + h[(i >> 4) & 0xF] + h[i & 0xF]
     return r
 
 class md5:
     def __init__(self, s=''):
         self.finished = False
-        JS("""
-            @{{self}}.md5 = new @{{!_md5}}();
-            """)
+        self.md5 = JS("new @{{!_md5}}()")
         self.md5.init()
         self.update(s)
 

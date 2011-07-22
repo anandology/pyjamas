@@ -12,7 +12,7 @@ if altzone > timezone:
     altzone = d
 _dst = timezone - altzone
 d = JS("(new Date(new Date().getFullYear(), 0, 1))")
-d = d.toLocaleString().split()[-1]
+d = str(d.toLocaleString()).split()[-1]
 if d[0] == '(':
     d = d[1:-1]
 tzname = (d, None)
@@ -23,7 +23,7 @@ __c__months = ["January", "February", "March", "April", "May", "June", "July", "
 
 
 def time():
-    JS("return new Date().getTime() / 1000.0;")
+    return float(JS("new Date().getTime() / 1000.0"))
 
 class struct_time(object):
     n_fields = 9
@@ -80,15 +80,15 @@ def gmtime(t = None):
         t = time()
     date = JS("new Date(@{{t}}*1000)")
     tm = struct_time()
-    tm.tm_year = date.getUTCFullYear()
-    tm.tm_mon = date.getUTCMonth() + 1
-    tm.tm_mday = date.getUTCDate()
-    tm.tm_hour = date.getUTCHours()
-    tm.tm_min = date.getUTCMinutes()
-    tm.tm_sec = date.getUTCSeconds()
-    tm.tm_wday = (date.getUTCDay() + 6) % 7
+    tm_year = tm.tm_year = int(date.getUTCFullYear())
+    tm.tm_mon = int(date.getUTCMonth()) + 1
+    tm.tm_mday = int(date.getUTCDate())
+    tm.tm_hour = int(date.getUTCHours())
+    tm.tm_min = int(date.getUTCMinutes())
+    tm.tm_sec = int(date.getUTCSeconds())
+    tm.tm_wday = (int(date.getUTCDay()) + 6) % 7
     tm.tm_isdst = 0
-    startOfYear = JS("new Date('Jan 1 '+ @{{tm}}.tm_year +' GMT+0000')")
+    startOfYear = JS("new Date('Jan 1 '+ @{{tm_year}} +' GMT+0000')")
     tm.tm_yday = 1 + int((t - startOfYear.getTime()/1000)/86400)
     return tm
 
@@ -98,18 +98,18 @@ def localtime(t = None):
     date = JS("new Date(@{{t}}*1000)")
     dateOffset = date.getTimezoneOffset()
     tm = struct_time()
-    tm.tm_year = date.getFullYear()
-    tm.tm_mon = date.getMonth() + 1
-    tm.tm_mday = date.getDate()
-    tm.tm_hour = date.getHours()
-    tm.tm_min = date.getMinutes()
-    tm.tm_sec = date.getSeconds()
-    tm.tm_wday = (date.getDay() + 6) % 7
+    tm_year = tm.tm_year = int(date.getFullYear())
+    tm_mon = tm.tm_mon = int(date.getMonth()) + 1
+    tm_mday = tm.tm_mday = int(date.getDate())
+    tm.tm_hour = int(date.getHours())
+    tm.tm_min = int(date.getMinutes())
+    tm.tm_sec = int(date.getSeconds())
+    tm.tm_wday = (int(date.getDay()) + 6) % 7
     tm.tm_isdst = 0 if timezone == 60*date.getTimezoneOffset() else 1
-    startOfYear = JS("new Date(@{{tm}}.tm_year,0,1)") # local time
+    startOfYear = JS("new Date(@{{tm_year}},0,1)") # local time
     startOfYearOffset = startOfYear.getTimezoneOffset()
-    startOfDay = JS("new Date(@{{tm}}.tm_year,@{{tm}}.tm_mon-1,@{{tm}}.tm_mday)")
-    dt = (startOfDay.getTime() - startOfYear.getTime())/1000
+    startOfDay = JS("new Date(@{{tm_year}},@{{tm_mon}}-1,@{{tm_mday}})")
+    dt = float(startOfDay.getTime() - startOfYear.getTime())/1000
     dt = dt + 60 * (startOfYearOffset - dateOffset)
     tm.tm_yday = 1 + int(dt/86400.0)
     return tm
@@ -213,7 +213,7 @@ def strftime(fmt, t = None):
         @{{!a}} = @{{re_pct}}.exec(@{{remainder}});
         if (!@{{!a}}) {
             @{{result}} += @{{remainder}};
-            @{{remainder}} = null;
+            @{{remainder}} = false;
         } else {
             @{{result}} += @{{!a}}[1];
             @{{!fmtChar}} = @{{!a}}[2];
@@ -223,7 +223,7 @@ def strftime(fmt, t = None):
             }
         }
         """)
-    return result
+    return str(result)
 
 def asctime(t = None):
     if t == None:
@@ -326,6 +326,6 @@ function strptime(datestring, format) {
 
 def strptime(datestring, format):
     try:
-        JS("return strptime(@{{datestring}}, @{{format}}).getTime() / 1000.0;")
+        return str(JS("strptime(@{{datestring}}, @{{format}}).getTime() / 1000.0"))
     except:
         raise ValueError("Invalid or unsupported values for strptime: '%s', '%s'" % (datestring, format))

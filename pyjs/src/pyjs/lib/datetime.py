@@ -26,19 +26,20 @@ class date:
     def fromtimestamp(self, timestamp):
         d = JS("""new Date()""")
         d.setTime(timestamp * 1000.0)
-        return date(d=d)
+        return date(0, 0, 0, d=d)
     
     @classmethod
     def fromordinal(self, ordinal):
         t = __Jan_01_0001 + (ordinal-1) * 86400000.0
         d = JS("""new Date(@{{t}})""")
-        return date(d=d)
+        return date(0, 0, 0, d=d)
     
     def ctime(self):
         return "%s %s %2d %02d:%02d:%02d %04d" % (__c__days[self._d.getDay()][:3], __c__months[self._d.getMonth()][:3], self._d.getDate(), self._d.getHours(), self._d.getMinutes(), self._d.getSeconds(), self._d.getFullYear())
     
     def isocalendar(self):
         isoyear = isoweeknr = isoweekday = None
+        _d = self._d
         JS("""
             var gregdaynumber = function(year, month, day) {
                 var y = year;
@@ -50,10 +51,10 @@ class date:
                 return Math.floor(365.25 * y) - Math.floor(y / 100) + Math.floor(y / 400) + Math.floor(30.6 * (m + 1)) + day - 62;
             };
             
-            var year = this._d.getFullYear();
-            var month = this._d.getMonth();
-            var day = this._d.getDate();
-            var wday = this._d.getDay();
+            var year = @{{_d}}.getFullYear();
+            var month = @{{_d}}.getMonth();
+            var day = @{{_d}}.getDate();
+            var wday = @{{_d}}.getDay();
             
             @{{isoweekday}} = ((wday + 6) % 7) + 1;
             @{{isoyear}} = year;
@@ -190,8 +191,8 @@ class datetime(date, time):
     def __init__(self, year, month, day, hour=0, minute=0, second=0, microsecond=0, tzinfo=None, d=None):
         if d is None:
             d = JS("""new Date(@{{year}}, @{{month}} - 1, @{{day}}, @{{hour}}, @{{minute}}, @{{second}}, 0.5 + @{{microsecond}} / 1000.0)""")
-        date.__init__(self, d=d)
-        time.__init__(self, d=d)
+        date.__init__(self, 0, 0, 0, d=d)
+        time.__init__(self, 0, d=d)
     
     @classmethod
     def combine(self, date, time):
@@ -203,19 +204,19 @@ class datetime(date, time):
             raise NotImplementedError("tz")
         d = JS("""new Date()""")
         d.setTime(timestamp * 1000.0)
-        return datetime(d=d)
+        return datetime(0, 0, 0, d=d)
     
     @classmethod
     def fromordinal(self, ordinal):
         d = JS("""new Date()""")
         d.setTime((ordinal - 719163.0) * 86400000.0)
-        return datetime(d=d)
+        return datetime(0, 0, 0, d=d)
     
     @classmethod
     def now(self, tz=None):
         if tz != None:
             raise NotImplementedError("tz")
-        return datetime(d=JS("""new Date()"""))
+        return datetime(0, 0, 0, d=JS("""new Date()"""))
     
     @classmethod
     def strptime(self, datestring, format):
@@ -276,7 +277,14 @@ class datetime(date, time):
 
     def __add__(self, other):
         if isinstance(other, timedelta):
-            d = JS("""new Date(this.year, this.month, this.day + @{{other}}.days, this.hour + (@{{other}}.seconds / 3600.0), this.minute + ((@{{other}}.seconds / 60.0) % 60), this.second + (@{{other}}.seconds % 60), this.microsecond + @{{other}}.microseconds)""")
+            year = self.year
+            month = self.month
+            day = self.day + other.days
+            hour = self.hour + (other.seconds / 3600.0)
+            minute = self.minute + ((other.seconds / 60.0) % 60)
+            second = self.second + (other.seconds % 60)
+            microsecond = self.microsecond + other.microseconds
+            d = JS("""new Date(@{{year}}, @{{month}}, @{{day}}, @{{hour}}, @{{minute}}, @{{second}}, @{{microsecond}})""")
             return datetime(d=d)
         else:
             raise TypeError("expected timedelta object")
@@ -286,7 +294,15 @@ class datetime(date, time):
             diff = self._d.getTime() - other._d.getTime()
             return timedelta(int(diff / 86400000.0), int(diff / 1000.0) % 86400, milliseconds=(diff % 86400000))
         elif isinstance(other, timedelta):
-            d = JS("""new Date(this.year, this.month, this.day - @{{other}}.days, this.hour - (@{{other}}.seconds / 3600.0), this.minute - ((@{{other}}.seconds / 60.0) % 60), this.second - (@{{other}}.seconds % 60), this.microsecond - @{{other}}.microseconds)""")
+            year = self.year
+            month = self.month
+            day = self.day - other.days
+            hour = self.hour - (other.seconds / 3600.0)
+            minute = self.minute - ((other.seconds / 60.0) % 60)
+            second = self.second - (other.seconds % 60)
+            microsecond = self.microsecond - other.microseconds
+
+            d = JS("""new Date(@{{year}}, @{{month}}, @{{day}}, @{{hour}}, @{{minute}}, @{{second}}, @{{microsecond}})""")
             return datetime(d=d)
         else:
             raise TypeError("expected date or datetime object")

@@ -150,6 +150,8 @@ class ClassTest(UnitTest):
             self.fail("Failed to raise error on ExampleClass().fail_a() bug #217")
         except (NameError, AttributeError), e:
             self.assertTrue(True)
+        except ValueError:
+            self.fail("Failed to raise NameError or AttributeError on ExampleClass().fail_a() bug #217")
         except:
             self.fail("Failed to raise NameError or AttributeError on ExampleClass().fail_a()")
 
@@ -157,8 +159,11 @@ class ClassTest(UnitTest):
         # ExampleClass.a
         if IN_BROWSER:
             from __pyjamas__ import JS
-            x = ExampleClass().fail_a()
-            self.assertTrue(JS('pyjslib.isUndefined(@{{x}})'))
+            try:
+                x = ExampleClass().fail_a()
+                self.assertTrue(JS('pyjslib.isUndefined(@{{x}})'))
+            except ValueError:
+                self.assertTrue(True)
 
     def test_iops(self):
         class X(object):

@@ -1,24 +1,23 @@
 from __pyjamas__ import JS
-JS("""
-$m.ceil = Math.ceil;
-$m.fabs = Math.abs;
-$m.floor = Math.floor;
-$m.exp = Math.exp;
-$m.log = Math.log;
-$m.pow = Math.pow;
-$m.sqrt = Math.sqrt;
-$m.cos = Math.cos;
-$m.sin = Math.sin;
-$m.tan = Math.tan;
-$m.acos = Math.acos;
-$m.asin = Math.asin;
-$m.atan = Math.atan;
-$m.atan2 = Math.atan2;
-$m.pi = Math.PI;
-$m.e = Math.E;
-$m.__log10__ = Math.LN10;
-""")
 
+def ceil(x): return float(JS("Math.ceil(@{{x}}.valueOf())"))
+def fabs(x): return float(JS("Math.abs(@{{x}}.valueOf())"))
+def floor(x): return float(JS("Math.floor(@{{x}}.valueOf())"))
+def exp(x): return float(JS("Math.exp(@{{x}}.valueOf())"))
+def log(x): return float(JS("Math.log(@{{x}}.valueOf())"))
+def pow(x, y): return float(JS("Math.pow(@{{x}}.valueOf(), @{{y}}.valueOf())"))
+def sqrt(x): return float(JS("Math.sqrt(@{{x}}.valueOf())"))
+def cos(x): return float(JS("Math.cos(@{{x}}.valueOf())"))
+def sin(x): return float(JS("Math.sin(@{{x}}.valueOf())"))
+def tan(x): return float(JS("Math.tan(@{{x}}.valueOf())"))
+def acos(x): return float(JS("Math.acos(@{{x}}.valueOf())"))
+def asin(x): return float(JS("Math.asin(@{{x}}.valueOf())"))
+def atan(x): return float(JS("Math.atan(@{{x}}.valueOf())"))
+def atan2(x): return float(JS("Math.atan2(@{{x}}.valueOf())"))
+
+pi = float(JS("Math.PI"))
+e = float(JS("Math.E"))
+__log10__ = float(JS("Math.LN10"))
 __log2__ = log(2)
 
 # This is not the real thing, but i helps to start with the small numbers

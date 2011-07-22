@@ -1,4 +1,7 @@
-import pyjslib
+try:
+    import pyjslib
+except:
+    import __builtin__ as pyjslib
 from UnitTest import UnitTest
 
 class Foo:pass

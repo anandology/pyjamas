@@ -28,7 +28,7 @@ def init():
     };
 
     $wnd.__dispatchCapturedEvent = function(evt) {
-        if (!@{{previewEvent}}(evt)) {
+        if (!@{{previewEvent}}(evt).valueOf()) {
             evt.stopPropagation();
             evt.preventDefault();
             return false;

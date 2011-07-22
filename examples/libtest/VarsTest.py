@@ -84,18 +84,19 @@ class VarsTest(UnitTest.UnitTest):
 
     def testGlobalsBltin(self):
         try:
-            self.assertEqual(set(globals().keys()), 
-                             set(['changeme', 'foo', 'myfoo_value', '__builtins__',
+            self.assertEqual(set(sorted(globals().keys())), 
+                             set(sorted(['changeme', 'foo', 'myfoo_value', '__builtins__',
                               'UnitTest', 'import_sys', 'VarsTest', 'data_test',
                               '__package__', 'module_global_x', '__doc__',
                               '__name__', 'myget_foo_value', 'myfoo',
-                              'data', '__file__']))
+                              'data', '__file__'])))
         except:
             self.fail("globals() not implemented, #590")
             return False
         
         globals()['new_global_via_dict'] = True
         self.assertTrue(globals()['new_global_via_dict'])
+        self.assertTrue(new_global_via_dict)
    
     def testAugmentedAssignments(self):
         a = a0 = 100

@@ -1,4 +1,4 @@
-from __pyjamas__ import JS
+from __pyjamas__ import JS, debugger
 
 # a dictionary of module override names (platform-specific)
 overrides = None # to be updated by app, on compile
@@ -47,7 +47,7 @@ def exc_clear():
     JS('$pyjs.__last_exception_stack__ = $pyjs.__last_exception__ = null;')
 
 # save_exception_stack is totally javascript, to prevent trackstack pollution
-JS("""@{{!sys}}._exception_from_trackstack = function (trackstack, start) {
+JS("""@{{_exception_from_trackstack}} = function (trackstack, start) {
     if (typeof start == 'undefined') {
       start = 0;
     }
@@ -77,12 +77,12 @@ JS("""@{{!sys}}._exception_from_trackstack = function (trackstack, start) {
     return exception_stack;
 };""")
 
-JS("""@{{!sys}}.save_exception_stack = function (start) {
+JS("""@{{save_exception_stack}} = function (start) {
     if ($pyjs.__active_exception_stack__) {
         $pyjs.__active_exception_stack__.start = start;
         return $pyjs.__active_exception_stack__;
     }
-    $pyjs.__active_exception_stack__ = @{{!sys}}._exception_from_trackstack($pyjs.trackstack, start);
+    $pyjs.__active_exception_stack__ = @{{_exception_from_trackstack}}($pyjs.trackstack, start);
     return $pyjs.__active_exception_stack__;
 };""")
 
@@ -90,8 +90,7 @@ def trackstacklist(stack=None, limit=None):
     if stack is None:
         stack = JS('$pyjs.__active_exception_stack__')
     else:
-        import pyjslib
-        if pyjslib.isArray(stack):
+        if JS("""@{{stack}} instanceof Array"""):
             stack = _exception_from_trackstack(stack)
     if stack is None:
         return ''
@@ -134,7 +133,8 @@ class _StdStream(object):
         self.content = ''
 
     def flush(self):
-        JS("$p._print_to_console(@{{self}}.content)")
+        content = self.content
+        JS("$p._print_to_console(@{{content}})")
         self.content = ''
 
     def write(self, output):

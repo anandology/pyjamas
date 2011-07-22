@@ -11,20 +11,22 @@ def writebr(text):
 
 
 data = ""
+element = None
 
 def write_web(text):
-    global data
+    global data, element
     from __pyjamas__ import JS
     data += text
-    JS(" $m.element.innerHTML = $m.data; ")
+    JS("@{{element}}.innerHTML = @{{data}}; ")
 
 def writebr_web(text):
     write(text + "<br />\n")
 
 def init_web():
     from __pyjamas__ import JS
-    JS(""" $m.element = $doc.createElement("div");
-           $doc.body.appendChild($m.element); """)
+    global element
+    JS("""@{{element}} = $doc.createElement("div");
+           $doc.body.appendChild(@{{element}}); """)
 
 def write_std(text):
     text = tag_re.sub("",text)

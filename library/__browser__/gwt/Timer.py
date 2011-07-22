@@ -17,8 +17,11 @@
 class Timer:
 
     def __setTimeout(self, delayMillis):
+        fire = self.__fire
         JS("""
-        return $wnd.setTimeout(function() { @{{self}}.__fire(); }, @{{delayMillis}});
+        return $wnd.setTimeout(function() {
+           @{{fire}}();
+          }, @{{delayMillis}});
         """)
 
     def __clearTimeout(self,tid):
@@ -27,8 +30,11 @@ class Timer:
         """)
 
     def __setInterval(self, periodMillis):
+        fire = self.__fire
         JS("""
-        return $wnd.setInterval(function() { @{{self}}.__fire(); }, @{{periodMillis}});
+        return $wnd.setInterval(function() {
+           @{{fire}}();
+          }, @{{periodMillis}});
         """)
 
     def __clearInterval(self,tid):

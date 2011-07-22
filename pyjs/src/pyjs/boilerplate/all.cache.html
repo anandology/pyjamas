@@ -82,12 +82,19 @@ var onExecutionError = function (exception, name) {
 
 function app_imported() {
     $p = $pyjs.loaded_modules['pyjslib'];
-    $p('pyjslib');
-    $pyjs.__modules__.pyjslib = $p['pyjslib']
-    pyjslib.___import___(
-               '%(app_name)s',
-               null,
-               '__main__');
+    if (typeof $p != "undefined") {
+        $p('pyjslib');
+        $pyjs.__modules__.pyjslib = $p['pyjslib']
+        pyjslib.___import___(
+            '%(app_name)s',
+            null,
+            '__main__');
+    } else {
+        var B$ = $pyjs.loaded_modules['__builtin__'];
+        $p = B$['$dict'];
+        B$.$module_init('__builtin__');
+        $p._start_main('%(app_name)s');
+    }
     return;
 }
 
@@ -102,7 +109,7 @@ function prepare_app() {
         var wait = function ( ) {
             var notLoaded = [];
             for (var i in module_list) {
-                if (typeof $pyjs.loaded_modules[module_list[i]] != 'function') {
+                if (typeof $pyjs.loaded_modules[module_list[i]] == 'undefined') {
                     notLoaded.push(module_list[i]);
                 }
             }
