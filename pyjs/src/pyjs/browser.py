@@ -7,6 +7,19 @@ import time
 import shutil
 from pyjs import linker
 from pyjs import translator
+if translator.name == 'proto':
+    required_modules =  [
+        'pyjslib', 'sys', 'imp', 'dynamic', 'pyjamas', 'pyjamas.DOM',
+    ]
+    early_static_app_libs = ['_pyjs.js']
+elif translator.name == 'dict':
+    required_modules =  [
+        '__builtin__', 'sys', 'imp', 'dynamic', 'pyjamas', 'pyjamas.DOM',
+    ]
+    early_static_app_libs = []
+else:
+    raise ValueError("unknown translator engine '%s'" % translator.name)
+
 from pyjs import util
 from cStringIO import StringIO
 from optparse import OptionParser
@@ -24,6 +37,7 @@ if pyjs.pyjspth is None:
     BOILERPLATE_PATH = os.path.join(os.path.dirname(__file__), 'boilerplate')
 else:
     BOILERPLATE_PATH = os.path.join(pyjs.pyjspth, 'pyjs', 'src','pyjs', 'boilerplate')
+
 
 APP_HTML_TEMPLATE = """\
 <html>
@@ -64,8 +78,7 @@ class BrowserLinker(linker.BaseLinker):
     def visit_start(self):
         super(BrowserLinker, self).visit_start()
         self.boilerplate_path = None
-        self.early_static_app_libs.append('_pyjs.js')
-        #self.js_libs.append('_pyjs.js')
+        self.early_static_app_libs += early_static_app_libs
         self.merged_public = set()
         self.app_files = {}
         self.renamed_libs = {}
@@ -175,7 +188,7 @@ class BrowserLinker(linker.BaseLinker):
         late_static_js_libs = [] + self.late_static_js_libs
         dynamic_modules = []
         not_unlinked_modules = [re.compile(m[1:]) for m in self.unlinked_modules if m[0] == '!']
-        for m in ['pyjslib', 'sys', 'dynamic', 'pyjamas', 'pyjamas.DOM']:
+        for m in required_modules:
             not_unlinked_modules.append(re.compile('^%s$' % m))
         unlinked_modules = [re.compile(m) for m in self.unlinked_modules if m[0] != '!' and m not in not_unlinked_modules]
 

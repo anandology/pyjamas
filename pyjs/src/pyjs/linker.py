@@ -1,10 +1,18 @@
-import translator
 import os
 import sys
 import util
 import logging
 import pyjs
 import subprocess
+from pyjs import translator
+if translator.name == 'proto':
+    builtin_module = 'pyjslib'
+elif translator.name == 'dict':
+    builtin_module = '__builtin__'
+else:
+    raise ValueError("unknown translator engine '%s'" % translator.name)
+translate_cmd = 'translator.py'
+translate_cmd_opts = ['--translator=%s' % translator.name]
 
 
 if pyjs.pyjspth is None:
@@ -17,6 +25,7 @@ else:
     PYLIB_PATH = os.path.join(pyjs.pyjspth, "pyjs", "src", "pyjs", "lib")
     BUILTIN_PATH = os.path.join(pyjs.pyjspth, "pyjs", "src", "pyjs", "builtin")
     PYJAMASLIB_PATH = os.path.join(pyjs.pyjspth, "library")
+
 
 
 translator_opts = [ 'debug', 
@@ -34,6 +43,7 @@ translator_opts = [ 'debug',
         'operator_funcs ', 
         'number_classes', 
         'list_imports',
+        'translator',
     ]
 
 def is_modified(in_file,out_file):
@@ -63,13 +73,20 @@ def parse_outfile(out_file):
     jslibs = []
 
     f = open(out_file)
-    spos = os.path.getsize(out_file)
+    spos = os.path.getsize(out_file) - 200
+    if spos < 0:
+        spos = 0
     while True:
         f.seek(spos)
-        txt = f.read()
-        if txt.startswith("/* end module:"):
+        txt = f.read(200)
+        p = txt.find('/* end module:')
+        if p >= 0:
+            f.seek(spos + p)
+            txt = f.read()
             break
-        spos -= 1
+        spos -= 100
+        if spos < 0:
+            raise ValueError("Invalid file: %s" % out_file)
     for l in txt.split("\n"):
         if l.startswith("PYJS_DEPS:"):
             deps = eval(l[10:])
@@ -112,7 +129,7 @@ def out_translate(platform, file_names, out_file, module_name,
             opts.append(out_file.replace(" ", r"\ "))
             shell=True
         opts += get_translator_opts(translator_args) + file_names
-        opts = [pyjs.PYTHON] + [os.path.join(pydir, 'translator.py')] + opts
+        opts = [pyjs.PYTHON] + [os.path.join(pydir, translate_cmd)] + translate_cmd_opts + opts
         pyjscompile_cmd = '"%s"' % '" "'.join(opts)
         #print pyjscompile_cmd - use this to create Makefile code-fragment
         proc = subprocess.Popen(pyjscompile_cmd,
@@ -232,7 +249,7 @@ class BaseLinker(object):
                 self.visit_start_platform(platform)
                 old_path = self.path
                 self.path = [BUILTIN_PATH, PYLIB_PATH, PYJAMASLIB_PATH]
-                self.visit_modules(['pyjslib'], platform)
+                self.visit_modules([builtin_module], platform)
                 self.path = old_path
                 self.visit_modules(self.modules, platform)
                 if not self.list_imports:

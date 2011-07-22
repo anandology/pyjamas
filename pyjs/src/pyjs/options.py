@@ -18,7 +18,8 @@ all_compile_options = dict(
     operator_funcs=True,
     number_classes=False,
     create_locals=False,
-    stupid_mode=False,                 
+    stupid_mode=False,
+    translator='proto',
 )
 
 def add_compile_options(parser):
@@ -217,6 +218,12 @@ def add_compile_options(parser):
                       dest = "stupid_mode",
                       action="store_true",
                       help = "Creates minimalist code, relying on javascript",
+                     )
+
+    parser.add_option("--translator",
+                      dest = "translator",
+                      default="proto",
+                      help = "Specify the translator: proto|dict",
                      )
 
     def set_multiple(option, opt_str, value, parser, **kwargs):
