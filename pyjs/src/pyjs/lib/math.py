@@ -4,7 +4,10 @@ def ceil(x): return float(JS("Math.ceil(@{{x}}.valueOf())"))
 def fabs(x): return float(JS("Math.abs(@{{x}}.valueOf())"))
 def floor(x): return float(JS("Math.floor(@{{x}}.valueOf())"))
 def exp(x): return float(JS("Math.exp(@{{x}}.valueOf())"))
-def log(x): return float(JS("Math.log(@{{x}}.valueOf())"))
+def log(x, base=None):
+    if base is None:
+        return float(JS("Math.log(@{{x}}.valueOf())"))
+    return float(JS("Math.log(@{{x}}.valueOf()), @{{base}}.valueOf()"))
 def pow(x, y): return float(JS("Math.pow(@{{x}}.valueOf(), @{{y}}.valueOf())"))
 def sqrt(x): return float(JS("Math.sqrt(@{{x}}.valueOf())"))
 def cos(x): return float(JS("Math.cos(@{{x}}.valueOf())"))
