@@ -3266,6 +3266,11 @@ var %(e)s_name = (typeof %(e)s.__name__ == 'undefined' ? %(e)s.name : %(e)s.__na
             else:
                 raise TranslationError(
                     "unsupported flag (in _assign)", v, self.module_name)
+            if self.getattr_support and not self.descriptors:
+                # getattr support implies the use of setattr
+                code = "@{{setattr}}(%(l)s, '%(a)s', %(r)s);"
+                self.w( self.spacing() + code % {'l': lhs, 'a': attr_name, 'r': rhs})
+                return
             if self.descriptors:
                 desc_setattr = [
                     "%(l)s.__is_instance__ &&",
