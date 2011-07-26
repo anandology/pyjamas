@@ -2076,7 +2076,7 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         if node.modname == '__javascript__':
             for name in node.names:
                 ass_name = name[1] or name[0]
-                self.add_lookup("__javascript__", ass_name, ass_name)
+                self.add_lookup("__javascript__", ass_name, name[0])
             return
         if node.modname == '__future__':
             for name in node.names:
