@@ -801,10 +801,13 @@ class Translator(object):
             self.parent_module_name = '.'.join(module_name.split('.')[:-1])
         if module_file_name.endswith('__init__.py'):
             self.import_context = "'%s'" % module_name
+            self.relative_import_context = module_name
         elif self.parent_module_name:
             self.import_context = "'%s'" % self.parent_module_name
+            self.relative_import_context = self.parent_module_name
         else:
             self.import_context = "null"
+            self.relative_import_context = None
 
         self.w( self.indent() + "$pyjs.loaded_modules['%s'] = function (__mod_name__) {" % module_name)
         self.w( self.spacing() + "if($pyjs.loaded_modules['%s'].__was_initialized__) return $pyjs.loaded_modules['%s'];"% (module_name, module_name))
@@ -2093,13 +2096,16 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
         modname = node.modname
         if hasattr(node, 'level') and node.level > 0:
             absPath = True
-            modname = self.module_name.split('.')
-            level = node.level
+            modname = self.relative_import_context.split('.')
+            level = node.level - 1
             if len(modname) <= level:
                 raise TranslationError(
                     "Attempted relative import beyond toplevel package",
                     node, self.module_name)
-            modname = '.'.join(modname[:-node.level])
+            if level:
+                modname = '.'.join(modname[:-node.level])
+            else:
+                modname = self.relative_import_context
             if node.modname:
                 modname += '.' + node.modname
         for name in node.names:

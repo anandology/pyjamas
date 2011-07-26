@@ -12,11 +12,13 @@ overrideme = "not overridden"
 
 from . import cls as loccls
 
+# TODO: Generate an ImportError
 # This is not valid since Python 2.6!
-try:
-    from .imports import cls as upcls
-except ImportError:
-    upcls = loccls
+#try:
+#    from .imports import cls as upcls
+#except ImportError:
+#    upcls = loccls
+upcls = loccls
 
 def conditional_func():
     return "not overridden"
