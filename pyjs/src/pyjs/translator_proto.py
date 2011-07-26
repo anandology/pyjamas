@@ -2095,20 +2095,13 @@ var %s = arguments.length >= %d ? arguments[arguments.length-1] : arguments[argu
             absPath = True
             modname = self.module_name.split('.')
             level = node.level
-            if len(modname) < level:
+            if len(modname) <= level:
                 raise TranslationError(
                     "Attempted relative import beyond toplevel package",
                     node, self.module_name)
-            if node.modname != '':
-                level += 1
-            if level > 1:
-                modname = '.'.join(modname[:-(node.level-1)])
-            else:
-                modname = self.module_name
-            if node.modname != '':
+            modname = '.'.join(modname[:-node.level])
+            if node.modname:
                 modname += '.' + node.modname
-                if modname[0] == '.':
-                    modname = modname[1:]
         for name in node.names:
             if name[0] == "*":
                 self._doImport(((modname, name[0]),), current_klass,
