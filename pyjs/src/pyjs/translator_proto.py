@@ -4305,7 +4305,6 @@ def translate(compiler, sources, output_file, module_name=None, **kw):
     kw = dict(all_compile_options, **kw)
     list_imports = kw.get('list_imports', False)
     sources = map(os.path.abspath, sources)
-    output_file = os.path.abspath(output_file)
     if not module_name:
         module_name, extension = os.path.splitext(os.path.basename(sources[0]))
 

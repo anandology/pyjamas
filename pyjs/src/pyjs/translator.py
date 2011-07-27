@@ -46,7 +46,7 @@ def main():
 
     if not options.output:
         parser.error("No output file specified")
-    if options.output == '-':
+    if options.output != '-':
         options.output = os.path.abspath(options.output)
 
     file_names = map(os.path.abspath, args)
